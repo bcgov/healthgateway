@@ -3,7 +3,7 @@
 The goal of the healthgateway project is to develop a responsive design web application that empowers citizens with access and control over their health record. It enables a citizen to not only view and act on their health informatoin, but also to connect it safely and security with third-party health care applications. 
 
 ## Objectives
-**The short-term objectives of the project are:
+**The short-term objectives of the project are:**
 
 •	Deliver an adaptable first iteration of a patient centred platform, focussed on successfully delivering a secure, unified and coordinated gateway that provides patients a single view of their health information to start and over time will expand access to information, services and functionality. The gateway will develop or leverage existing capabilities of the Digital Health Strategy reference architecture, such as: 
 
@@ -15,7 +15,7 @@ The goal of the healthgateway project is to develop a responsive design web appl
   
 •	Improve patient access to health information and available services.
 
-**The long-term objectives of the project are:
+**The long-term objectives of the project are:**
 
 •	Empower patients by enabling access to their own health information when they want it.
 
