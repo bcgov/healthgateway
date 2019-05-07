@@ -6,11 +6,12 @@ The goal of the healthgateway project is to develop a responsive design web appl
 The short-term objectives of the project are:
 
 •	Deliver an adaptable first iteration of a patient centred platform, focussed on successfully delivering a secure, unified and coordinated gateway that provides patients a single view of their health information to start and over time will expand access to information, services and functionality. The gateway will develop or leverage existing capabilities of the Digital Health Strategy reference architecture, such as: 
-  o	Establish a secure and seamless entry point to online health tools using a proven provincial asset (BC Services Card). 
-  
-  o	Establish a secure and trusted identity proofing mechanism which can be leveraged for future online engagement tools for both patients    and health care professionals.
-  
-  o	Where possible and feasible utilize existing capabilities (e.g. BC Services Card, HealthLink BC, MyGov platform) or create reusable       functional scope that can be leveraged by other initiatives within the Ministry, health sector and broader public sector to support         innovation and responsible use of resources.
+
+    o	Establish a secure and seamless entry point to online health tools using a proven provincial asset (BC Services Card). 
+
+    o	Establish a secure and trusted identity proofing mechanism which can be leveraged for future online engagement tools for both patients    and health care professionals.
+
+    o	Where possible and feasible utilize existing capabilities (e.g. BC Services Card, HealthLink BC, MyGov platform) or create reusable       functional scope that can be leveraged by other initiatives within the Ministry, health sector and broader public sector to support         innovation and responsible use of resources.
   
 •	Improve patient access to health information and available services.
 
