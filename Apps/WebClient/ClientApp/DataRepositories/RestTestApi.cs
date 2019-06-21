@@ -15,7 +15,8 @@ public class RestfulTestApi : ITestApi
 
     public async Task<List<PatientData>> GetPatients()
     {
-        string url = "http://localhost:3001/api/Fhir/";
+        string url = "http://immunization/api/Fhir/";
+        //string url = "http://localhost:3001/api/Fhir/";
         //string url = "http://test.fhir.org/r3/";
         string type = "Patient";
 
