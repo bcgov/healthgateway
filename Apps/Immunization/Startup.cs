@@ -22,7 +22,7 @@ namespace HealthGateway
         {
             services.AddMvc(options => {
                 options.OutputFormatters.Insert(0, new FhirResponseFormatter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
