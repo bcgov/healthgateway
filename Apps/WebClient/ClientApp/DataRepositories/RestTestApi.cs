@@ -16,7 +16,7 @@ public class RestfulTestApi : ITestApi
     public async Task<List<PatientData>> GetPatients()
     {
         // This needs to be picked up from the environment configuration
-        string url = "immunization:8080/api/Fhir/";
+        string url = "http://immunization:8080/api/Fhir/";
         //string url = "http://localhost:3001/api/Fhir/";
         //string url = "http://test.fhir.org/r3/";
         string type = "Patient";
