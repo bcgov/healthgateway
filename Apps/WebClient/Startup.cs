@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
@@ -18,15 +19,8 @@ namespace WebClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            /*services.AddHttpClient<ITestApi, RestfulTestApi>(client =>
-            {
-                //client.BaseAddress = new Uri("http://testapi:80/api/");
-                client.BaseAddress = new Uri("http://localhost:3001/api/Fhir/");                
-                client.Timeout = TimeSpan.FromMinutes(1);
-            });*/
-            
-
-            services.AddSingleton(typeof(ITestApi), typeof(RestfulTestApi));
+            services.AddSingleton(typeof(IEnvironment), typeof(EnvironmentManager));
+            services.AddTransient<IPatientService, RestfulPatientService>();
             services.AddMvc();
         }
 

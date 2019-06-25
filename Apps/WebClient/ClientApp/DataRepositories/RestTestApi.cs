@@ -1,30 +1,37 @@
-using System.Net.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Model;
-using System.Linq;
 using WebClient.Log;
 
-public class RestfulTestApi : ITestApi
+public class RestfulPatientService : IPatientService
 {
+    private string baseUrl;
 
-    public RestfulTestApi()
+    public RestfulPatientService(IEnvironment environment)
     {
+        string host = environment.GetValue("IMMUNIZATION_URL");
+        string version = environment.GetValue("IMMUNIZATION_VERSION");
+        string path = environment.GetValue("IMMUNIZATION_PATH");
+        
+
+        baseUrl = new UriBuilder(host + version + path).ToString();
+    }
+
+    public RestfulPatientService(string url)
+    {
+        baseUrl = url;
     }
 
     public async Task<List<PatientData>> GetPatients()
     {
-        // This needs to be picked up from the environment configuration
-        string url = "http://immunization:8080/api/Fhir/";
-        //string url = "http://localhost:3001/api/Fhir/";
-        //string url = "http://test.fhir.org/r3/";
         string type = "Patient";
 
         SearchParams searchCommand = new SearchParams();
         searchCommand.Add("Patient", "Steven");
 
-        var FhirClient = new LogFhirClient(url);
+        var FhirClient = new LogFhirClient(baseUrl);
         FhirClient.Timeout = (60 * 1000);
         FhirClient.PreferredFormat = ResourceFormat.Json;
         Bundle bundle = await FhirClient.SearchAsync(searchCommand, type);

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface ITestApi
+public interface IPatientService
 {
     Task<List<PatientData>> GetPatients();
 }

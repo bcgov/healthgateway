@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HealthGateway.Service;
@@ -20,7 +21,8 @@ namespace HealthGateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options => {
+            services.AddMvc(options =>
+            {
                 options.OutputFormatters.Insert(0, new FhirResponseFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -35,6 +37,11 @@ namespace HealthGateway
 
             // Fhir Service
             services.AddSingleton(typeof(IFhirService), typeof(TestService));
+
+            /*services.AddApiVersioning(o =>
+            {
+                o.ApiVersionReader = new HeaderApiVersionReader("api-version");
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

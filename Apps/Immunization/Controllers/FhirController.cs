@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using HealthGateway.Service;
 using HealthGateway.Engine.Extensions;
 
-namespace HealthGateway.Controllers
+namespace HealthGateway.v1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]    
     [ApiController]
     public class FhirController : ControllerBase
     {
+        //private const string RESOURCE_NAME = "Immunization";
+
         readonly IFhirService _fhirService;
 
         private readonly string FHIR_VERSION = "SOME VERSION";
