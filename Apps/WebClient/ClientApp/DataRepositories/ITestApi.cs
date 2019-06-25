@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface IPatientService
+namespace WebClient
 {
-    Task<List<PatientData>> GetPatients();
+    public interface IPatientService
+    {
+        Task<List<PatientData>> GetPatients();
+    }
 }
