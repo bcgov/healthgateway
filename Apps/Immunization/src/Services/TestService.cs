@@ -11,11 +11,11 @@ namespace HealthGateway.Service
 {
     public class TestService : IFhirService
     {
-        private readonly IHttpClientFactory clientFactory;
+        private readonly IFhirClient fhirClient;
 
-        public TestService(IHttpClientFactory _clientFactory)
+        public TestService(IFhirClient fhirClient)
         {
-            clientFactory = _clientFactory;
+            this.fhirClient = fhirClient;
         }
 
         public ServerFhirResponse AddMeta(IKey key, Parameters parameters)
@@ -111,15 +111,7 @@ namespace HealthGateway.Service
         public ServerFhirResponse Read(IKey key, ConditionalHeaderParameters parameters = null)
         {
             //ValidateKey(key);
-
-            string url = "http://test.fhir.org/r3/";
-            var FhirClient = new Hl7.Fhir.Rest.FhirClient(url);
-            FhirClient.Timeout = (60 * 1000);
-            FhirClient.PreferredFormat = ResourceFormat.Json;
-
-            Uri baseUri = new Uri(url);
-            Uri location = new Uri(baseUri, key.ToRelativeUri());
-            DomainResource patient = FhirClient.Read<DomainResource>(location);
+            DomainResource patient = fhirClient.Read<DomainResource>(key.ToRelativeUri().ToString());
 
             FhirResponseFactory responseFactory = new FhirResponseFactory();
             Entry entry = Entry.Create(Bundle.HTTPVerb.GET, key, patient);
@@ -134,12 +126,7 @@ namespace HealthGateway.Service
 
         public ServerFhirResponse Search(string type, SearchParams searchCommand, int pageIndex = 0)
         {
-            string url = "http://test.fhir.org/r3/";
-            var FhirClient = new Hl7.Fhir.Rest.FhirClient(url);
-            FhirClient.Timeout = (60 * 1000);
-            FhirClient.PreferredFormat = ResourceFormat.Json;
-
-            Bundle bundle = FhirClient.Search(searchCommand, type);
+            Bundle bundle = fhirClient.Search(searchCommand, type);
 
             FhirResponseFactory responseFactory = new FhirResponseFactory();
             return responseFactory.GetFhirResponse(bundle);

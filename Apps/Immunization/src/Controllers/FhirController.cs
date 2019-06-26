@@ -18,14 +18,14 @@ namespace HealthGateway.v1.Controllers
     {
         //private const string RESOURCE_NAME = "Immunization";
 
-        readonly IFhirService _fhirService;
+        readonly IFhirService fhirService;
 
         private readonly string FHIR_VERSION = "SOME VERSION";
 
         public FhirController(IFhirService fhirService)
         {
             // This will be a (injected) constructor parameter in ASP.vNext.
-            _fhirService = fhirService;
+            this.fhirService = fhirService;
         }
 
         [HttpGet, Route("{type}/{id}")]
@@ -33,7 +33,7 @@ namespace HealthGateway.v1.Controllers
         {
             ConditionalHeaderParameters parameters = new ConditionalHeaderParameters(Request);
             Key key = Key.Create(type, id);
-            ServerFhirResponse response = _fhirService.Read(key, parameters);
+            ServerFhirResponse response = fhirService.Read(key, parameters);
 
             return response;
         }
@@ -42,7 +42,7 @@ namespace HealthGateway.v1.Controllers
         public ServerFhirResponse VRead(string type, string id, string vid)
         {
             Key key = Key.Create(type, id, vid);
-            return _fhirService.VersionRead(key);
+            return fhirService.VersionRead(key);
         }
 
         [HttpPut, Route("{type}/{id?}")]
@@ -52,12 +52,12 @@ namespace HealthGateway.v1.Controllers
             Key key = Key.Create(type, id, versionid);
             if (key.HasResourceId())
             {
-                return _fhirService.Update(key, resource);
+                return fhirService.Update(key, resource);
             }
             else
             {
                 SearchParams searchparams = SearchParams.FromUriParamList(HttpHeaderUtil.TupledParameters(HttpContext.Request));
-                return _fhirService.ConditionalUpdate(key, resource, searchparams);
+                return fhirService.ConditionalUpdate(key, resource, searchparams);
             }
         }
 
@@ -77,10 +77,10 @@ namespace HealthGateway.v1.Controllers
                         .Select(k => new Tuple<string, string>(k, searchQueryString[k]));
 
 
-                return _fhirService.ConditionalCreate(key, resource, SearchParams.FromUriParamList(searchValues));
+                return fhirService.ConditionalCreate(key, resource, SearchParams.FromUriParamList(searchValues));
             }
 
-            return _fhirService.Create(key, resource);
+            return fhirService.Create(key, resource);
         }
 
         [HttpDelete, Route("{type}/{id}")]
@@ -88,7 +88,7 @@ namespace HealthGateway.v1.Controllers
 
         {
             Key key = Key.Create(type, id);
-            ServerFhirResponse response = _fhirService.Delete(key);
+            ServerFhirResponse response = fhirService.Delete(key);
             return response;
         }
 
@@ -96,7 +96,7 @@ namespace HealthGateway.v1.Controllers
         public ServerFhirResponse ConditionalDelete(string type)
         {
             Key key = Key.Create(type);
-            return _fhirService.ConditionalDelete(key, HttpHeaderUtil.TupledParameters(Request));
+            return fhirService.ConditionalDelete(key, HttpHeaderUtil.TupledParameters(Request));
         }
 
         [HttpGet, Route("{type}/{id}/_history")]
@@ -104,7 +104,7 @@ namespace HealthGateway.v1.Controllers
         {
             Key key = Key.Create(type, id);
             var parameters = new HistoryParameters(HttpContext.Request);
-            return _fhirService.History(key, parameters);
+            return fhirService.History(key, parameters);
         }
 
         // ============= Validate
@@ -113,7 +113,7 @@ namespace HealthGateway.v1.Controllers
         {
             //entry.Tags = Request.GetFhirTags();
             Key key = Key.Create(type, id);
-            return _fhirService.ValidateOperation(key, resource);
+            return fhirService.ValidateOperation(key, resource);
         }
 
         [HttpPost, Route("{type}/$validate")]
@@ -122,7 +122,7 @@ namespace HealthGateway.v1.Controllers
             // DSTU2: tags
             //entry.Tags = Request.GetFhirTags();
             Key key = Key.Create(type);
-            return _fhirService.ValidateOperation(key, resource);
+            return fhirService.ValidateOperation(key, resource);
         }
 
         // ============= Type Level Interactions
@@ -132,7 +132,7 @@ namespace HealthGateway.v1.Controllers
         {
             int start = FhirHttpUtil.GetIntParameter(HttpContext.Request, FhirParameter.SNAPSHOT_INDEX) ?? 0;
             var searchparams = HttpHeaderUtil.GetSearchParams(HttpContext.Request);
-            return _fhirService.Search(type, searchparams, start);
+            return fhirService.Search(type, searchparams, start);
         }
 
         [HttpPost, HttpGet, Route("{type}/_search")]
@@ -146,7 +146,7 @@ namespace HealthGateway.v1.Controllers
         public ServerFhirResponse History(string type)
         {
             var parameters = new HistoryParameters(Request);
-            return _fhirService.History(type, parameters);
+            return fhirService.History(type, parameters);
         }
 
         // ============= Whole System Interactions
@@ -154,26 +154,26 @@ namespace HealthGateway.v1.Controllers
         [HttpGet, Route("metadata")]
         public ServerFhirResponse Metadata()
         {
-            return _fhirService.CapabilityStatement(FHIR_VERSION);
+            return fhirService.CapabilityStatement(FHIR_VERSION);
         }
 
         [HttpOptions, Route("")]
         public ServerFhirResponse Options()
         {
-            return _fhirService.CapabilityStatement(FHIR_VERSION);
+            return fhirService.CapabilityStatement(FHIR_VERSION);
         }
 
         [HttpPost, Route("")]
         public ServerFhirResponse Transaction(Bundle bundle)
         {
-            return _fhirService.Transaction(bundle);
+            return fhirService.Transaction(bundle);
         }
 
         [HttpGet, Route("_history")]
         public ServerFhirResponse History()
         {
             var parameters = new HistoryParameters(Request);
-            return _fhirService.History(parameters);
+            return fhirService.History(parameters);
         }
 
         [HttpGet, Route("_snapshot")]
@@ -181,7 +181,7 @@ namespace HealthGateway.v1.Controllers
         {
             string snapshot = FhirHttpUtil.GetStringParameter(Request, FhirParameter.SNAPSHOT_ID);
             int start = FhirHttpUtil.GetIntParameter(Request, FhirParameter.SNAPSHOT_INDEX) ?? 0;
-            return _fhirService.GetPage(snapshot, start);
+            return fhirService.GetPage(snapshot, start);
         }
 
         // Operations
@@ -208,9 +208,9 @@ namespace HealthGateway.v1.Controllers
             switch (operation.ToLower())
             {
                 case "meta":
-                    return _fhirService.ReadMeta(key);
+                    return fhirService.ReadMeta(key);
                 case "meta-add":
-                    return _fhirService.AddMeta(key, parameters);
+                    return fhirService.AddMeta(key, parameters);
                 case "meta-delete":
                 default:
                     //return Respond.WithError(HttpStatusCode.NotFound, "Unknown operation");
@@ -222,21 +222,21 @@ namespace HealthGateway.v1.Controllers
         public ServerFhirResponse Everything(string type, string id = null)
         {
             Key key = Key.Create(type, id);
-            return _fhirService.Everything(key);
+            return fhirService.Everything(key);
         }
 
         [HttpPost, HttpGet, Route("{type}/$everything")]
         public ServerFhirResponse Everything(string type)
         {
             Key key = Key.Create(type);
-            return _fhirService.Everything(key);
+            return fhirService.Everything(key);
         }
 
         [HttpPost, HttpGet, Route("Composition/{id}/$document")]
         public ServerFhirResponse Document(string id)
         {
             Key key = Key.Create("Composition", id);
-            return _fhirService.Document(key);
+            return fhirService.Document(key);
         }
     }
 }

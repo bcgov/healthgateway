@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HealthGateway.Service;
 using HealthGateway.Formatters;
+using Hl7.Fhir.Rest;
 
 namespace HealthGateway
 {
@@ -35,13 +36,19 @@ namespace HealthGateway
             // Http Service. Maybe it should be testeable too
             services.AddHttpClient();
 
-            // Fhir Service
-            services.AddSingleton(typeof(IFhirService), typeof(TestService));
-
-            /*services.AddApiVersioning(o =>
+            // Test Service
+            services.AddSingleton<IFhirService>(serviceProvider =>
             {
-                o.ApiVersionReader = new HeaderApiVersionReader("api-version");
-            });*/
+                // url should be retrieved from evironment 
+                string url = "http://test.fhir.org/r3/";
+                IFhirClient client = new FhirClient(url)
+                {
+                    Timeout = (60 * 1000),
+                    PreferredFormat = ResourceFormat.Json
+                };
+
+                return new TestService(client);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

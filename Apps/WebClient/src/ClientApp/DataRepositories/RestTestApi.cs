@@ -17,7 +17,6 @@ namespace WebClient
             string version = environment.GetValue("IMMUNIZATION_VERSION");
             string path = environment.GetValue("IMMUNIZATION_PATH");
 
-
             baseUrl = new UriBuilder(host + version + path).ToString();
         }
 
