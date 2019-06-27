@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using HealthGateway.Service;
 using HealthGateway.Formatters;
+using HealthGateway.Database;
+using HealthGateway.Util;
 using Hl7.Fhir.Rest;
 
 namespace HealthGateway
@@ -49,6 +52,10 @@ namespace HealthGateway
 
                 return new TestService(client);
             });
+
+            services.AddDbContextPool<HealthGatewayContext>(options => {});
+            services.AddSingleton<IUserPreferenceService, UserPreferenceService>();
+            services.AddSingleton<IEnvironment, EnvironmentManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
