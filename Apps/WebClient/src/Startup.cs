@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Hl7.Fhir.Rest;
 
 namespace WebClient
 {
@@ -20,7 +21,23 @@ namespace WebClient
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(typeof(IEnvironment), typeof(EnvironmentManager));
-            services.AddTransient<IPatientService, RestfulPatientService>();
+
+            // Not sure if this is what we want. Ideally this would be using the singleton
+            EnvironmentManager env = new EnvironmentManager();
+
+            // Test Service
+            services.AddTransient<IPatientService>(serviceProvider =>
+            {
+                string url = env.GetValue("IMMUNIZATION_URL") + env.GetValue("IMMUNIZATION_VERSION") + env.GetValue("IMMUNIZATION_PATH");
+                IFhirClient client = new FhirClient(url)
+                {
+                    Timeout = (60 * 1000),
+                    PreferredFormat = ResourceFormat.Json
+                };
+
+                return new RestfulPatientService(client);
+            });
+
             services.AddMvc();
         }
 

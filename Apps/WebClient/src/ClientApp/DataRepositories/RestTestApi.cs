@@ -9,33 +9,20 @@ namespace WebClient
 {
     public class RestfulPatientService : IPatientService
     {
-        private string baseUrl;
+        private IFhirClient fhirClient;
 
-        public RestfulPatientService(IEnvironment environment)
+        public RestfulPatientService(IFhirClient fhirClient)
         {
-            string host = environment.GetValue("IMMUNIZATION_URL");
-            string version = environment.GetValue("IMMUNIZATION_VERSION");
-            string path = environment.GetValue("IMMUNIZATION_PATH");
-
-            baseUrl = new UriBuilder(host + version + path).ToString();
-        }
-
-        public RestfulPatientService(string url)
-        {
-            baseUrl = url;
+            this.fhirClient = fhirClient;
         }
 
         public async Task<List<PatientData>> GetPatients()
         {
             string type = "Patient";
-
             SearchParams searchCommand = new SearchParams();
             searchCommand.Add("Patient", "Steven");
 
-            var FhirClient = new LogFhirClient(baseUrl);
-            FhirClient.Timeout = (60 * 1000);
-            FhirClient.PreferredFormat = ResourceFormat.Json;
-            Bundle bundle = await FhirClient.SearchAsync(searchCommand, type);
+            Bundle bundle = await fhirClient.SearchAsync(searchCommand, type);
 
             List<PatientData> patientDataList = new List<PatientData>();
             foreach (var patient in bundle.GetResources())
