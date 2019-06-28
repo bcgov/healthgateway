@@ -1,5 +1,5 @@
 # https://aka.ms/yaml
-name: 1.0.0.$(Rev:.r) #Build number
+name: 1.0.0$(Rev:.r) #Build number
 
 trigger:
 - dev
