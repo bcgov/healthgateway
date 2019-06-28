@@ -8,7 +8,7 @@ pool:
   name: 'HealthGateway'
 
 steps:
-- script: echo Hello, world!
+- script: echo Hello, world2!
   displayName: 'Run a one-line script'
 
 - script: |
