@@ -3,13 +3,14 @@ import click
 import requests
 from requests.auth import HTTPBasicAuth
 import subprocess
-from subprocess import PIPE
 import shlex
 
 URL_KEY = 'url_key'
+LOGIN_KEY = 'login_key'
 TOKEN_KEY = 'token_key'
 SERVICE = 'dolphin'
 PROJECTS_PATH = '/api/projects/'
+PERMISSIONS_PATH = '/api/permissions/'
 
 
 @click.group()
@@ -24,17 +25,25 @@ def main():
 def new(name, key):
     """Creates a new SonarQube project"""
 
-    token, url = _retrieve_settings()
+    login, token, base_url = _retrieve_settings()
 
+    url = base_url + PROJECTS_PATH + "create"
     post_params = {
         'name': name,
         'project': key,
     }
-
-    url = url + PROJECTS_PATH + "create"
-
     response = requests.post(url=url, data=post_params)
+    click.echo('Status: ' + str(response.status_code))
+    click.echo(response.text)
 
+    click.echo('Adding permissions...')
+    url = base_url + PERMISSIONS_PATH + "add_user"
+    post_params = {
+        'login': login,
+        'permission': 'admin',
+        'projectKey': key,
+    }
+    response = requests.post(url=url, data=post_params, auth=HTTPBasicAuth('admin', 'password321'))
     click.echo('Status: ' + str(response.status_code))
     click.echo(response.text)
 
@@ -44,7 +53,7 @@ def new(name, key):
 def delete(key):
     """Deletes the SonarQube project"""
 
-    token, url = _retrieve_settings()
+    login, token, url = _retrieve_settings()
 
     post_params = {'project': key}
 
@@ -60,7 +69,7 @@ def delete(key):
 def run(key):
     """Executes SonarQube analysis"""
 
-    token, url = _retrieve_settings()
+    login, token, url = _retrieve_settings()
 
     sonarparams = '/k:"{0}" ' \
                   '/d:sonar.host.url="{1}" ' \
@@ -109,38 +118,63 @@ def run(key):
 
 
 @main.command()
+@click.option('--login', '-l', required=True)
 @click.option('--token', '-t', required=True)
-@click.option('--url', '-u', required=True, help='url of the SonarQube instance')
-def init(token, url):
+@click.option('--url', '-u', help='url of the SonarQube instance')
+def init(login, token, url):
     """Initializes SonarQube settings and credentials"""
 
+    keyring.set_password(SERVICE, LOGIN_KEY, login)
     keyring.set_password(SERVICE, TOKEN_KEY, token)
     keyring.set_password(SERVICE, URL_KEY, url)
     click.echo('Settings saved')
 
 
 @main.command()
-def clear():
+@click.option('--login', '-l', 'login_flag', is_flag=True)
+@click.option('--url', '-u', 'url_flag', is_flag=True)
+@click.option('--all', '-a', 'all_flag', is_flag=True)
+def clear(login_flag, url_flag, all_flag):
     """Clears SonarQube credentials and data from the local machine"""
 
-    token = keyring.get_password(SERVICE, TOKEN_KEY)
+    if not login_flag and not url_flag and not all_flag:
+        ctx = click.get_current_context()
+        click.echo(ctx.get_help())
+        ctx.exit()
 
-    if token:
-        keyring.delete_password(SERVICE, TOKEN_KEY)
-        click.echo('Token deleted')
-    else:
-        click.echo('Token not found, its already clean')
+    if all_flag:
+        login_flag = all_flag
+        url_flag = all_flag
 
-    url = keyring.get_password(SERVICE, URL_KEY)
+    if login_flag:
+        login = keyring.get_password(SERVICE, LOGIN_KEY)
+        if login:
+            keyring.delete_password(SERVICE, LOGIN_KEY)
+            click.echo('User login deleted')
+        else:
+            click.echo('User login not found, its already clean')
 
-    if url:
-        keyring.delete_password(SERVICE, URL_KEY)
-        click.echo('URL deleted')
-    else:
-        click.echo('Url not found, its already clean')
+        token = keyring.get_password(SERVICE, TOKEN_KEY)
+        if token:
+            keyring.delete_password(SERVICE, TOKEN_KEY)
+            click.echo('Token deleted')
+        else:
+            click.echo('Token not found, its already clean')
+
+    if url_flag:
+        url = keyring.get_password(SERVICE, URL_KEY)
+        if url:
+            keyring.delete_password(SERVICE, URL_KEY)
+            click.echo('URL deleted')
+        else:
+            click.echo('Url not found, its already clean')
 
 
 def _retrieve_settings():
+    login = keyring.get_password(SERVICE, LOGIN_KEY)
+    if login is None:
+        click.echo('ERROR: No user login provided')
+
     token = keyring.get_password(SERVICE, TOKEN_KEY)
     if token is None:
         click.echo('ERROR: No user token provided')
@@ -149,11 +183,11 @@ def _retrieve_settings():
     if url is None:
         click.echo('ERROR: No url provided')
 
-    if not url and not token:
-        click.echo('Use "init --token [token] -url [url]" to set the SonarQube token and url')
+    if not url or not token or not login:
+        click.echo('Use "init --login [login] --token [token] --url [url]" to set the SonarQube login, token and url')
         exit()
 
-    return token, url
+    return login, token, url
 
 
 def _run_command(command):
