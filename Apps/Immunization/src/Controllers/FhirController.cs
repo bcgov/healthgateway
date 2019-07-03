@@ -219,7 +219,7 @@ namespace HealthGateway.v1.Controllers
         }
 
         [HttpPost, HttpGet, Route("{type}/{id}/$everything")]
-        public ServerFhirResponse Everything(string type, string id = null)
+        public ServerFhirResponse Everything(string type, string id)
         {
             Key key = Key.Create(type, id);
             return fhirService.Everything(key);
