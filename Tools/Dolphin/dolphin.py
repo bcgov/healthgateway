@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import keyring
 import click
 import requests
