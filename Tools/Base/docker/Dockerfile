@@ -1,17 +1,19 @@
 FROM registry.access.redhat.com/openshift3/rhel7:latest
 
+ARG NODE_MAJOR_VERSION=10
+ARG NODE_VERSION=v10.13.0
 ARG DOTNET_MAJOR_VERSION=2
 ARG DOTNET_VERSION=2.2
 
 ENV SUMMARY="Azure .NETi base image"  \
-    DESCRIPTION="Azure .NET v${DOTNET_VERSION}"
+    DESCRIPTION=".NET core v${DOTNET_VERSION} and nodejs v${NODE_VERSION}"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
       io.k8s.display-name="dotnet${NODE_MAJOR_VERSION}" \
       io.openshift.expose-services="5000:http" \
-      io.openshift.tags="dotnet,.net-v${DOTNET_VERSION}" \
+      io.openshift.tags="dotnet,.net-v${DOTNET_VERSION},nodejs-v${NODE_VERSION}" \
       release="1"
 
 ENV PATH=$HOME/.local/bin/:$PATH \
@@ -47,10 +49,17 @@ RUN mkdir -p /opt ${APP_HOME} && \
     chmod -R g=u ${APP_HOME} /etc/passwd && \
     chmod g+s ${APP_HOME}
 
+# Fetch stock nodejs and install
+RUN mkdir -p /opt && \
+    pushd /opt && \
+    curl -sL https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz | tar -Jx && \
+    rm -f node-${NODE_VERSION}-linux-x64.tar.xz
+
 # Update environment variables
-ENV PATH=$PATH:/opt/rh/rh-dotnet22/root/bin
+ENV PATH=$PATH:/opt/rh/rh-dotnet22/root/bin:/opt/node-${NODE_VERSION}-linux-x64/bin
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ENV HOME=${APP_HOME}
+ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 
 WORKDIR ${APP_HOME}
 
