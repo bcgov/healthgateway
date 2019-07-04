@@ -2,13 +2,11 @@
 
 Dolphin provides a simple Command Line Interface (CLI) for interacting with a SonarQube instance.
 
-## Dependencies
-#### Python dependencies:
-- [keyring](https://pypi.org/project/keyring/)
-- [click](https://pypi.org/project/click/)
-- [requests](https://pypi.org/project/requests/)
+## Installation
+If python is not installed it can be downloaded at [Python Downloads](https://www.python.org/downloads/).
 
-#### To install:
+### Dependencies
+#### Python dependencies installation:
 
 `$ pip install [dependency]`
 
@@ -19,14 +17,19 @@ $ pip install click
 $ pip install requests
 ~~~
 
+#### About the dependencies:
+- [keyring](https://pypi.org/project/keyring/)
+- [click](https://pypi.org/project/click/)
+- [requests](https://pypi.org/project/requests/)
+
 ## Usage
 ##### Initialize settings:
-Stores the credentials and sonarqube URL using the OS keyring (only needs to be done at the beggining or after using clear).
+Stores the credentials and sonarqube URL using the OS keyring (only needs to be done at the begging or after using clear).
 
 `$ python [installation_path]/dolphin.py prop -l [user_login] -t [user_token] -u [sonar_url] {-s}`
 
 ##### Create a project
-Create a new project with the given name and key. The current user is assigned admin privileges over the project
+Create a new project with the given name and key. The user is assigned admin privileges over the project
 
 `$ python [installation_path]/dolphin.py new -n [project_name] -k [project_key]`
 
