@@ -22,8 +22,8 @@ def main():
 
 
 @main.command()
-@click.option('--name', '-n', required=True)
-@click.option('--key', '-k', required=True)
+@click.option('--name', '-n', required=True, help='project name to delete')
+@click.option('--key', '-k', required=True, help='project key to delete')
 def new(name, key):
     """Creates a new SonarQube project"""
 
@@ -51,7 +51,7 @@ def new(name, key):
 
 
 @main.command()
-@click.argument('key')
+@click.argument('key', help='the key of the project to delete')
 def delete(key):
     """Deletes the SonarQube project"""
 
@@ -67,7 +67,7 @@ def delete(key):
 
 
 @main.command()
-@click.argument('key')
+@click.argument('key', help='the project key to run')
 def run(key):
     """Executes SonarQube analysis"""
 
@@ -120,8 +120,8 @@ def run(key):
 
 
 @main.command()
-@click.option('--login', '-l')
-@click.option('--token', '-t')
+@click.option('--login', '-l', help='the SonarQube user login name')
+@click.option('--token', '-t', help='user generated token on SonarQube')
 @click.option('--url', '-u', help='url of the SonarQube instance')
 @click.option('--show', '-s', help='show current settings', is_flag=True)
 def prop(login, token, url, show):
@@ -145,9 +145,9 @@ def prop(login, token, url, show):
 
 
 @main.command()
-@click.option('--login', '-l', 'login_flag', is_flag=True)
-@click.option('--url', '-u', 'url_flag', is_flag=True)
-@click.option('--all', '-a', 'all_flag', is_flag=True)
+@click.option('--login', '-l', 'login_flag', is_flag=True, help='clears the login username and token')
+@click.option('--url', '-u', 'url_flag', is_flag=True, help='clears the url')
+@click.option('--all', '-a', 'all_flag', is_flag=True, help='clears all data')
 def clear(login_flag, url_flag, all_flag):
     """Clears SonarQube credentials and data from the local machine"""
 
