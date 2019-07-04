@@ -12,9 +12,10 @@ using System.Net;
 
 namespace HealthGateway.Engine.Core
 {
+    [Serializable]
     public class ServerException : Exception
     {
-        public HttpStatusCode StatusCode;
+        public readonly HttpStatusCode StatusCode;
 
         public OperationOutcome Outcome { get; set; }
 

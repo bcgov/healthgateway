@@ -5,7 +5,7 @@ using Hl7.Fhir.Rest;
 using Hl7.Fhir.Model;
 using Moq;
 
-namespace HealthGateway.Test.Service
+namespace HealthGateway.Immunization.Test.Service
 {
     public class TestService_Test
     {

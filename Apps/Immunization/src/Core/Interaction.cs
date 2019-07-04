@@ -114,18 +114,15 @@ namespace HealthGateway.Engine.Core
             return Entry.Create(Bundle.HTTPVerb.DELETE, key, DateTimeOffset.UtcNow);
         }
 
-        public bool IsDelete
+        public bool IsDelete()
         {
-            get
-            {
-                return Method == Bundle.HTTPVerb.DELETE;
-            }
-            set
-            {
-                Method = Bundle.HTTPVerb.DELETE;
-                Resource = null;
+            return Method == Bundle.HTTPVerb.DELETE;
+        }
 
-            }
+        public void SetDeleted()
+        {
+            Method = Bundle.HTTPVerb.DELETE;
+            Resource = null;
         }
 
         public bool IsPresent

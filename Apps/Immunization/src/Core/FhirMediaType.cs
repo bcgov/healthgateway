@@ -25,7 +25,7 @@ namespace HealthGateway.Engine.Core
         public static readonly IList<String> StrictFormats = new ReadOnlyCollection<string>(
             new List<String> { ContentType.XML_CONTENT_HEADER, ContentType.JSON_CONTENT_HEADER });
 
-        public static string[] LooseXmlFormats = { "xml", "text/xml", "application/xml" };
+        public static readonly string[] LooseXmlFormats = { "xml", "text/xml", "application/xml" };
 
         public static readonly string[] LooseJsonFormats = { "json", "application/json" };
 

@@ -5,9 +5,9 @@ namespace HealthGateway.Engine.Core
 {
     public class ServerFhirResponse
     {
-        public HttpStatusCode StatusCode;
-        public IKey Key;
-        public Resource Resource;
+        public readonly HttpStatusCode StatusCode;
+        public readonly IKey Key;
+        public readonly Resource Resource;
 
         public ServerFhirResponse(HttpStatusCode code, IKey key, Resource resource)
         {
