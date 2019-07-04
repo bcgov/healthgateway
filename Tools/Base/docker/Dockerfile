@@ -5,7 +5,7 @@ ARG NODE_VERSION=v10.13.0
 ARG DOTNET_MAJOR_VERSION=2
 ARG DOTNET_VERSION=2.2
 
-ENV SUMMARY="Azure .NETi base image"  \
+ENV SUMMARY=".NET core ${DOTNET_VERSION} base image"  \
     DESCRIPTION=".NET core v${DOTNET_VERSION} and nodejs v${NODE_VERSION}"
 
 LABEL summary="$SUMMARY" \
@@ -52,6 +52,7 @@ RUN mkdir -p /opt ${APP_HOME} && \
 # Fetch stock nodejs and install
 RUN mkdir -p /opt && \
     pushd /opt && \
+    echo "Downloading https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz" && \
     curl -sL https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz | tar -Jx && \
     rm -f node-${NODE_VERSION}-linux-x64.tar.xz
 
