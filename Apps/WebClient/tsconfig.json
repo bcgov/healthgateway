@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "skipDefaultLibCheck": true,
+    "strict": true,
+    "types": ["jest"],
+    "strictFunctionTypes": false,
+    "esModuleInterop": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],  
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "exclude": [
+      "bin",
+      "node_modules"
+  ]
+}
