@@ -120,16 +120,28 @@ def run(key):
 
 
 @main.command()
-@click.option('--login', '-l', required=True)
-@click.option('--token', '-t', required=True)
+@click.option('--login', '-l')
+@click.option('--token', '-t')
 @click.option('--url', '-u', help='url of the SonarQube instance')
-def init(login, token, url):
-    """Initializes SonarQube settings and credentials"""
+@click.option('--show', '-s', help='show current settings', is_flag=True)
+def prop(login, token, url, show):
+    """SonarQube settings and credentials"""
 
-    keyring.set_password(SERVICE, LOGIN_KEY, login)
-    keyring.set_password(SERVICE, TOKEN_KEY, token)
-    keyring.set_password(SERVICE, URL_KEY, url)
-    click.echo('Settings saved')
+    if login:
+        keyring.set_password(SERVICE, LOGIN_KEY, login)
+    if token:
+        keyring.set_password(SERVICE, TOKEN_KEY, token)
+    if url:
+        keyring.set_password(SERVICE, URL_KEY, url)
+
+    if login or token or url:
+        click.echo('Settings saved')
+
+    if show:
+        login, token, url = _retrieve_settings()
+        click.echo('Url:\t' + url)
+        click.echo('User:\t' + login)
+        click.echo('Token:\t' + '*' * len(token))
 
 
 @main.command()
@@ -186,7 +198,7 @@ def _retrieve_settings():
         click.echo('ERROR: No url provided')
 
     if not url or not token or not login:
-        click.echo('Use "init --login [login] --token [token] --url [url]" to set the SonarQube login, token and url')
+        click.echo('Use "prop --login [login] --token [token] --url [url]" to set the SonarQube login, token and url')
         exit()
 
     return login, token, url
