@@ -14,13 +14,10 @@ pool:
   name: 'HealthGateway'
 
 steps:
-- script: echo Hello, world2!
-  displayName: 'testing a 1 line script'
-
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml 
     echo $(Build.BuildNumber)
-    oc projects
-  displayName: 'Testing multi-line scripts'
+    oc whoami
+  displayName: 'Stage 1'
 
+- script: oc start-build webclient-test --from-dir . --follow
+  displayName: 'Initiate OpenShift build'
