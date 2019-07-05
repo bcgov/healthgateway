@@ -2,8 +2,14 @@
 name: 1.0.0$(Rev:.r) #Build number
 
 trigger:
-- dev
-
+ batch: 'true'
+ branches:
+   include:
+     - dev
+ paths:
+   include:
+     - Apps/WebClient
+ 
 pool:
   name: 'HealthGateway'
 
