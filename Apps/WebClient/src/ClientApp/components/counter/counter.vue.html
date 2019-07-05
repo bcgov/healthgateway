@@ -4,9 +4,9 @@
 
         <p>This is a simple example of a Vue.js component.</p>
 
-        <p>Current count: <strong>{{ currentcount }}</strong></p>
+        <p>Current count: <strong id="currentCount">{{ currentcount }}</strong></p>
 
-        <button @click="incrementCounter">Increment</button>
+        <button id="btnIncrement" @click="incrementCounter">Increment</button>
     </div>
 </template>
 
