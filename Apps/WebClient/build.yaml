@@ -18,5 +18,5 @@ steps:
     echo $(Build.BuildNumber)
     echo $PWD
     oc whoami
-    oc start-build webclient-test --from-dir ${Build.SourcesDirectory} --follow
+    oc start-build webclient-test --from-dir $(Build.SourcesDirectory) --follow
   displayName: 'Stage 1'
