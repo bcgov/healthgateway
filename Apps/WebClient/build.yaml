@@ -22,3 +22,9 @@ steps:
     oc tag webclient-test:latest webclient-test:$(Build.BuildNumber)
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'OpenShift Build Image'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Pipeline Artifact'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+
