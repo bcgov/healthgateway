@@ -199,4 +199,4 @@ parameters:
 - description: Service account to be used by pods
   name: SERVICE_ACCOUNT
   required: true
-  value: jenkins
+  value: azure
