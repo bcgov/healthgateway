@@ -64,6 +64,4 @@ ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 
 WORKDIR ${APP_HOME}
 
-USER 1001
-
 CMD ["bash", "-c", "dotnet", "run"]
