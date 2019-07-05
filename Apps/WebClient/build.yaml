@@ -16,8 +16,7 @@ pool:
 steps:
 - script: |
     echo $(Build.BuildNumber)
+    echo $PWD
     oc whoami
+    oc start-build webclient-test --from-dir ${Build.SourcesDirectory} --follow
   displayName: 'Stage 1'
-
-- script: oc start-build webclient-test --from-dir . --follow
-  displayName: 'Initiate OpenShift build'
