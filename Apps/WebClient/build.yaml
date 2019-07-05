@@ -20,5 +20,5 @@ steps:
 - script: |
     oc start-build webclient-test --from-dir $(App.Home) --follow
     oc tag webclient-test:latest webclient-test:$(Build.BuildNumber)
-    touch $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'OpenShift Build Image'
