@@ -8,6 +8,27 @@ metadata:
     tags: "cicd,azure,build,deploy"
 objects:
 
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+  secrets:
+  - fieldPath: metadata.namespace
+
+- kind: RoleBinding
+  apiVersion: v1
+  metadata:
+    name: ${NAME}
+  roleRef:
+    apiGroup: v1
+    kind: Role
+    name: edit
+  subjects:
+  - apiVersion: v1
+    fieldPath: metadata.namespace
+    kind: ServiceAccount
+    name: ${NAME}
+
 - apiVersion: v1
   data:
     AZ_DEVOPS_ORG_URL: ${AZ_DEVOPS_ORG_URL}
@@ -21,16 +42,15 @@ objects:
   metadata:  
      name: ${NAME}-token
   type: Opaque
-  data:
+  stringData:
     AZ_DEVOPS_TOKEN: ${AZ_DEVOPS_TOKEN}
 
 - apiVersion: v1
   kind: Secret
   metadata:
     name: ${NAME}-hooksecret
-    template.openshift.io/base64-expose-password: '{.data[''password'']}'
   type: Opaque
-  data:
+  stringData:
     WebHookSecretKey: ${GIT_WEBHOOK_SECRET}
 
 - apiVersion: v1
@@ -143,7 +163,7 @@ objects:
             terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
-        serviceAccount: ${SERVICE_ACCOUNT}
+        serviceAccount: ${NAME}
         #schedulerName: default-scheduler
         #securityContext: {}
         terminationGracePeriodSeconds: 30
@@ -196,7 +216,3 @@ parameters:
 - description: Azure DevOps PAT Token
   name: AZ_DEVOPS_TOKEN
   required: true
-- description: Service account to be used by pods
-  name: SERVICE_ACCOUNT
-  required: true
-  value: jenkins

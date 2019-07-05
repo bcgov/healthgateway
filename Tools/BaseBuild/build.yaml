@@ -1,0 +1,46 @@
+apiVersion: template.openshift.io/v1
+apiVersion: v1
+kind: Template
+metadata:
+  name: ${NAME}-template
+objects:
+
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: ${NAME}
+
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      build: ${NAME}
+    name: ${NAME}
+  spec:
+    failedBuildsHistoryLimit: 5
+    output:
+      to:
+        kind: ImageStreamTag
+        name: '${NAME}:latest'
+    runPolicy: Serial
+    source:
+      binary: {}
+      type: Binary
+    strategy:
+      dockerStrategy:
+        from:
+          kind: DockerImage
+          name: ${BASE_IMAGE}
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+
+parameters:
+- description: The name of the Build and associated Image Stream
+  displayName: Name
+  name: NAME
+  required: true
+- description: The base Docker image to use 
+  displayName: BASE_IMAGE
+  name: BASE_IMAGE
+  required: true
+  value: docker-registry.default.svc:5000/q6qfzk-tools/dotnet22-base

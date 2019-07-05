@@ -1,0 +1,74 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: ${NAME}
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}
+    labels:
+        shared: 'true'
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:${VERSION}
+    postCommit: {}
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: ${SOURCE_CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'rhel7:latest'
+          namespace: openshift
+      type: Docker
+    successfulBuildsHistoryLimit: 2
+    failedBuildsHistoryLimit: 2
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+parameters:
+- description: A name used for all objects
+  displayName: Name
+  name: NAME
+  required: true
+  value: dotnet22-base
+- description: A version used for the image tags
+  displayName: version
+  name: VERSION
+  required: false
+  value: latest
+- name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/bcgov/healthgateway.git
+- name: SOURCE_CONTEXT_DIR
+  required: true
+  value: Tools/Base/docker
+- name: SOURCE_REPOSITORY_REF
+  required: true
+  value: dev
