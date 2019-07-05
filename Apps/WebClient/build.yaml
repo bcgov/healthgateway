@@ -15,12 +15,12 @@ pool:
 
 steps:
 - script: echo Hello, world2!
-  displayName: 'Run a one-line script'
+  displayName: 'testing a 1 line script'
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml 
     echo $(Build.BuildNumber)
     oc projects
-  displayName: 'Run a multi-line script'
+  displayName: 'Testing multi-line scripts'
 
