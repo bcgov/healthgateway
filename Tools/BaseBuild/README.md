@@ -13,7 +13,7 @@ oc process -f https://raw.githubusercontent.com/bcgov/healthgateway/dev/Tools/Ba
 To create the Build, be in your tools project and minimally execute:
 
 ```console
-oc process -f https://raw.githubusercontent.com/bcgov/healthgateway/dev/Tools/BaseBuild/build.yaml -p NAME=testbld
+oc process -f https://raw.githubusercontent.com/bcgov/healthgateway/dev/Tools/BaseBuild/build.yaml -p NAME=testbld | oc apply -f -
 ```
 
 In your App folder, create a Dockerfile
