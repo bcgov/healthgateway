@@ -18,9 +18,7 @@ pool:
 
 steps:
 - script: |
-    echo $(Build.BuildNumber)
-    echo $PWD
-    oc whoami
     oc start-build webclient-test --from-dir $(App.Home) --follow
     oc tag webclient-test:latest webclient-test:$(Build.BuildNumber)
-  displayName: 'Stage 1'
+    touch $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+  displayName: 'OpenShift Build Image'
