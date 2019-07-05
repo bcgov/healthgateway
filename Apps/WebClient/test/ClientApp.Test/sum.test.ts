@@ -1,6 +1,6 @@
 //import { mount } from '@vue/test-utils'
 //import AppComponent from '../../src/ClientApp/components/app/app';
-import sum from '../src/ClientApp/sum';
+import sum from '../../src/ClientApp/sum';
 
 // describe('Vue Components', () => {
 //   test('AppComponent is a Vue instance', () => {
