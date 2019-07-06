@@ -27,7 +27,7 @@ steps:
   displayName: 'Restore and publish .Net App'
 
 - script: |
-    oc start-build webclient-test --from-dir $(Build.BinariesDirectory) --follow -—wait
+    oc start-build webclient-test --from-dir $(Build.BinariesDirectory) -—wait --follow
     oc tag webclient-test:latest webclient-test:$(Build.BuildNumber)
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
