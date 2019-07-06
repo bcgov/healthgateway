@@ -3,6 +3,7 @@ name: 1.0.0$(Rev:.r) #Build number
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/WebClient
+  App.Name: webclient
 
 trigger:
  batch: 'true'
@@ -27,8 +28,9 @@ steps:
   displayName: 'Restore and publish .Net App'
 
 - script: |
-    oc start-build webclient-test --wait --follow --from-dir $(Build.BinariesDirectory) 
-    oc tag webclient-test:latest webclient-test:$(Build.BuildNumber)
+    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
+    oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
