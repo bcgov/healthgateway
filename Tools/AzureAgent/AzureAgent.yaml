@@ -158,7 +158,10 @@ objects:
                       /opt/az/agent/config.sh remove --unattended --auth PAT
                       --token $AZ_DEVOPS_TOKEN >> /dev/termination-log
             name: ${NAME}
-            resources: {}
+            resources: 
+              limits:
+                cpu: '2'
+                memory: 2Gi
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
