@@ -3,4 +3,4 @@ ENV APPDLL=WebClient.dll
 COPY . .
 EXPOSE 5000
 USER 1001
-CMD ["dotnet","$APPDLL"]
+CMD ["bash","-c","dotnet","$APPDLL"]
