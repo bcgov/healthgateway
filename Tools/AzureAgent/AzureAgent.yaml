@@ -160,8 +160,11 @@ objects:
             name: ${NAME}
             resources: 
               limits:
-                cpu: '2'
-                memory: 2Gi
+                cpu: 2500m
+                memory: 2048Mi
+              requests:
+                cpu: 250m
+                memory: 512Mi
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
