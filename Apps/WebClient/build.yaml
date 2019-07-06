@@ -18,8 +18,8 @@ pool:
 
 steps:
 - script: |
-  pushd $(App.Home)
-  dotnet publish -o $(Build.BinariesDirectory)
+    pushd $(App.Home)
+    dotnet publish -o $(Build.BinariesDirectory)
   displayName: 'Restore and publish .Net App'
 
 - script: |
