@@ -1,6 +1,6 @@
 FROM docker-registry.default.svc:5000/q6qfzk-tools/dotnet22-base:latest
 ENV ASPNETCORE_URLS=http://+:8080
-ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENV APPDLL=WebClient.dll
 COPY . .
 EXPOSE 8080
