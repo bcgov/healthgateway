@@ -20,7 +20,9 @@ steps:
 - script: |
     pushd $(App.Home)
     cp Dockerfile $(Build.BinariesDirectory)
+    pushd src
     dotnet publish -o $(Build.BinariesDirectory)
+    popd
     popd
   displayName: 'Restore and publish .Net App'
 
