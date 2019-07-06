@@ -19,7 +19,9 @@ pool:
 steps:
 - script: |
   pushd $(App.Home)
+  cp Dockerfile $(Build.BinariesDirectory)
   dotnet publish -o $(Build.BinariesDirectory)
+  popd
   displayName: 'Restore and publish .Net App'
 
 - script: |
