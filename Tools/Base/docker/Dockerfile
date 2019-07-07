@@ -63,5 +63,3 @@ ENV HOME=${APP_HOME}
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 
 WORKDIR ${APP_HOME}
-
-CMD ["dotnet","run"]

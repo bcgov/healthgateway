@@ -1,0 +1,32 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Tools/Base/
+  App.Name: dotnet22-base
+
+trigger:
+ batch: 'true'
+ branches:
+   include:
+     - dev
+ paths:
+   include:
+     - Tools/Base
+ 
+pool:
+  name: 'HealthGateway'
+
+steps:
+- script: |
+    oc process -f $(App.Home)/build.yaml | oc apply -f -
+    oc start-build $(App.Name) --wait --follow 
+    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+  displayName: 'Build OpenShift Image and push to Image Stream'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Pipeline Artifact'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+
