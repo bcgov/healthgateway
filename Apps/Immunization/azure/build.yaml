@@ -1,0 +1,41 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Apps/Immunization
+  App.Name: immunization
+
+trigger:
+ batch: 'true'
+ branches:
+   include:
+     - dev
+ paths:
+   include:
+     - Apps/Immunization
+ 
+pool:
+  name: 'HealthGateway'
+
+steps:
+- script: |
+    pushd $(App.Home)
+    cp Dockerfile $(Build.BinariesDirectory)
+    pushd src
+    dotnet publish -o $(Build.BinariesDirectory)
+    popd
+    popd
+  displayName: 'Restore and publish .Net App'
+
+- script: |
+    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
+    oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+  displayName: 'Build OpenShift Image and push to Image Stream'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Pipeline Artifact'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+
