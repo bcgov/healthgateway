@@ -26,16 +26,17 @@ steps:
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
-- script: |
+#- script: |
 #    pushd $(App.Home)
-    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+#     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
 #    pushd src
 #    dotnet publish -o $(Build.BinariesDirectory)
 #    popd
 #    popd
-  displayName: 'Restore and publish .Net App'
+#  displayName: 'Restore and publish .Net App'
 
 - script: |
+    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
