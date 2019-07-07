@@ -18,13 +18,21 @@ pool:
   name: 'HealthGateway'
 
 steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(App.Home)/src'
+    arguments: '-o $(Build.BinariesDirectory)'
+    zipAfterPublish: false
+
 - script: |
-    pushd $(App.Home)
-    cp Dockerfile $(Build.BinariesDirectory)
-    pushd src
-    dotnet publish -o $(Build.BinariesDirectory)
-    popd
-    popd
+#    pushd $(App.Home)
+    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+#    pushd src
+#    dotnet publish -o $(Build.BinariesDirectory)
+#    popd
+#    popd
   displayName: 'Restore and publish .Net App'
 
 - script: |
