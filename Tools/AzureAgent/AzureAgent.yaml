@@ -155,10 +155,15 @@ objects:
                     - bash
                     - '-c'
                     - >-
-                      /opt/az/agent/config.sh remove --unattended --auth PAT
-                      --token $AZ_DEVOPS_TOKEN >> /dev/termination-log
+                      kill -SIGTERM $(cat /opt/az/agent/agent.pid) >>/dev/termination-log
             name: ${NAME}
-            resources: {}
+            resources: 
+              limits:
+                cpu: 2500m
+                memory: 2048Mi
+              requests:
+                cpu: 250m
+                memory: 512Mi
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
