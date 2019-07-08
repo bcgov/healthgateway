@@ -1,0 +1,49 @@
+{
+  "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
+  "version": "2.0",
+  "name": "Webclient",
+  "url": "http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca",
+  "tests": [{
+    "id": "6d34d3d1-7e89-4376-9d46-d763fcb99367",
+    "name": "Increment Counter",
+    "commands": [{
+      "id": "a6c2af72-5258-4281-8066-5bf579c5d6a2",
+      "comment": "",
+      "command": "open",
+      "target": "/counter",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "16a1839f-cd02-47a1-9d55-cf3aa2eff822",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnIncrement",
+      "targets": [
+        ["id=btnIncrement", "id"],
+        ["css=#btnIncrement", "css:finder"],
+        ["xpath=//button[@id='btnIncrement']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Increment')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4e09cd0c-e2e2-45e7-865f-8afa89dcba47",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=currentCount",
+      "targets": [],
+      "value": "1"
+    }]
+  }],
+  "suites": [{
+    "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["6d34d3d1-7e89-4376-9d46-d763fcb99367"]
+  }],
+  "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/"],
+  "plugins": []
+}

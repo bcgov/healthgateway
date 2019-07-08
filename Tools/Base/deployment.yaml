@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: webclient-template
+  creationTimestamp: null
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: 2
+    selector:
+      deploymentconfig: ${APP_NAME}
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${APP_NAME}
+          deploymentconfig: ${APP_NAME}
+      spec:
+        containers:
+        - env:
+          - name: IMMUNIZATION_URL
+            value: http://immunization:8080/
+          - name: IMMUNIZATION_VERSION
+            value: v1/
+          - name: IMMUNIZATION_PATH
+            value: api/Fhir/
+          imagePullPolicy: Always
+          name: ${APP_NAME}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /${NAMESPACE}/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${APP_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${IMAGE}
+          namespace: ${TOOLS_NAMESPACE}
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: autoscaling/v1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    maxReplicas: 4
+    minReplicas: 2
+    scaleTargetRef:
+      apiVersion: v1
+      kind: DeploymentConfig
+      name: ${APP_NAME}
+    targetCPUUtilizationPercentage: 70
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    host: ${APP_NAME}-${NAMESPACE}.pathfinder.gov.bc.ca
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: ${APP_NAME}
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: ${APP_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+parameters: 
+  - name: NAMESPACE
+    displayName: App Namespace
+    description: The namespace of the application
+    value: q6qfzk-<ENV>
+    required: true 
+  - name: APP_NAME
+    displayName: App Name
+    description: The name of the application
+    value: webclient
+    required: true 
+  - name: TOOLS_NAMESPACE
+    displayName: Tools Namespace
+    description: The namespace of the tools environment
+    value: q6qfzk-tools
+    required: true 
+  - name: IMAGE
+    displayName: ImageStream:Tag
+    description: The ImageStream plus the Tag to look for
+    value: webclient:<TAG>
+    required: true         
