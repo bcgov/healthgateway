@@ -30,10 +30,11 @@ steps:
     
 - task: DotNetCoreCLI@2
   inputs:
+    modifyOutputPath: false
     command: 'publish'
     publishWebProjects: false
     projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory) --no-logo -v'
+    arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
 #- script: |
