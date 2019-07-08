@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace WebClient
+namespace HealthGateway.Util
 {
     public interface IEnvironment
     {

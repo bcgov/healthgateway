@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Model;
-using WebClient.Log;
 
-namespace WebClient
+namespace HealthGateway.WebClient
 {
     public class RestfulPatientService : IPatientService
     {
-        private IFhirClient fhirClient;
+        private readonly IFhirClient fhirClient;
 
         public RestfulPatientService(IFhirClient fhirClient)
         {

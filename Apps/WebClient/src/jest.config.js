@@ -1,11 +1,10 @@
 module.exports = {
-
+  verbose: true,
   name: 'Client app',
-  displayName: 'Client app',
-  rootDir: '../.',
+  displayName: 'Client app',  
   roots: [
-    '<rootDir>/src/', 
-    '<rootDir>/tests/'
+    '<rootDir>', 
+    '<rootDir>/../test/ClientApp.Test/', 
   ],
   moduleFileExtensions: [
     'js',
@@ -19,17 +18,13 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|my-project|react-native-button)/)',
   ],
-  testRegex: './*.test.ts',
+  testRegex: '.*test.ts',
   collectCoverage: true,
   collectCoverageFrom: [
-    '**/*.{js,jsx}',
+    '**/*.{ts,jsx}',
     '!**/node_modules/**',
     '!**/vendor/**',
-    '../src/ClientApp/**',
-    '../src/**/*.{ts, tsx, js,jsx}',
-    '/home/dev/Development/HealthGateway/Apps/WebClient/src/**/*.ts'
   ],
-  coverageDirectory: '<rootDir>',
-  testMatch: null,
-  verbose: true
+  coverageDirectory: '<rootDir>/../src/jest.out',
+  testMatch: null
 }

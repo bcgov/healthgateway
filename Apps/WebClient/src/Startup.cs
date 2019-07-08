@@ -1,12 +1,12 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Hl7.Fhir.Rest;
+using HealthGateway.Util;
 
-namespace WebClient
+namespace HealthGateway.WebClient
 {
     public class Startup
     {

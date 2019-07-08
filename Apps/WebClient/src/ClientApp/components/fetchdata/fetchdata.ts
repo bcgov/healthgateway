@@ -1,12 +1,4 @@
-import Vue from 'vue';
-import { Component } from 'vue-property-decorator';
-
-interface WeatherForecast {
-    dateFormatted: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
+import { Vue, Component} from 'vue-property-decorator';
 
 interface PatientData {
     name: string;
@@ -16,16 +8,9 @@ interface PatientData {
 
 @Component
 export default class FetchDataComponent extends Vue {
-    //forecasts: WeatherForecast[] = [];
-
     patients: PatientData[] = [];
 
     mounted() {
-        /*fetch('api/SampleData/WeatherForecasts')
-            .then(response => response.json() as Promise<WeatherForecast[]>)
-            .then(data => {
-                this.forecasts = data;
-            });*/
         fetch('api/SampleData/GetPatients')
             .then(response => response.json() as Promise<PatientData[]>)
             .then(data => {
