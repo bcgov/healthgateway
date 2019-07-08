@@ -17,8 +17,6 @@ trigger:
 pool:
   name: 'HealthGateway'
 
-  
-
 steps:
 - task: Bash@3
   inputs:
@@ -35,7 +33,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
+    arguments: '-o $(Build.BinariesDirectory)/'
     zipAfterPublish: false
 
 #- script: |
