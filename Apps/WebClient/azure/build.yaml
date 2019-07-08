@@ -35,7 +35,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '$(App.Home)/src'
-    arguments: '-o '
+    arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
 #- script: |
