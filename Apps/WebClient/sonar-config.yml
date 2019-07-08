@@ -1,0 +1,8 @@
+properties:
+  sonar.coverage.exclusions: '**Tests*.cs'
+  sonar.testExecutionReportPaths: src/jest.out/test-report.xml
+  sonar.typescript.lcov.reportPaths: jest.out/lcov.info
+  sonar.cs.opencover.reportsPaths: test/coverage.opencover.xml
+test-runners:
+  - xunit
+  - jest 

@@ -1,7 +1,10 @@
-public class PatientData
+namespace HealthGateway.WebClient
 {
-    public string Name { get; set; }
-    public string Id { get; set; }
+    public class PatientData
+    {
+        public string Name { get; set; }
+        public string Id { get; set; }
 
-    public string DivStruct { get; set; }
+        public string DivStruct { get; set; }
+    }
 }
