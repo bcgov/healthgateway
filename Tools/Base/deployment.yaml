@@ -11,7 +11,7 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
+    namespace: ${NAMESPACE}-${ENV}
   spec:
     replicas: 2
     selector:
@@ -56,7 +56,7 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
-          terminationMessagePath: /${NAMESPACE}/termination-log
+          terminationMessagePath: /${NAMESPACE}-${ENV}/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
@@ -72,7 +72,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${IMAGE}
-          namespace: ${TOOLS_NAMESPACE}
+          namespace: ${NAMESPACE}-tools
       type: ImageChange
     - type: ConfigChange
 - apiVersion: autoscaling/v1
@@ -82,7 +82,7 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
+    namespace: ${NAMESPACE}-${ENV}
   spec:
     maxReplicas: 4
     minReplicas: 2
@@ -98,9 +98,9 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
+    namespace: ${NAMESPACE}-${ENV}
   spec:
-    host: ${APP_NAME}-${NAMESPACE}.pathfinder.gov.bc.ca
+    host: ${ENV}.gateway.health.pathfinder.gov.bc.ca
     port:
       targetPort: 8080-tcp
     to:
@@ -115,7 +115,7 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
+    namespace: ${NAMESPACE}-${ENV}
   spec:
     ports:
     - name: 8080-tcp
@@ -130,17 +130,17 @@ parameters:
   - name: NAMESPACE
     displayName: App Namespace
     description: The namespace of the application
-    value: q6qfzk-<ENV>
+    value: q6qfzk
+    required: true 
+  - name: ENV
+    displayName: Enviroment
+    description: The environment to be deployed to
+    value: dev
     required: true 
   - name: APP_NAME
     displayName: App Name
     description: The name of the application
     value: webclient
-    required: true 
-  - name: TOOLS_NAMESPACE
-    displayName: Tools Namespace
-    description: The namespace of the tools environment
-    value: q6qfzk-tools
     required: true 
   - name: IMAGE
     displayName: ImageStream:Tag
