@@ -18,6 +18,11 @@ pool:
   name: 'HealthGateway'
 
 steps:
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '$(App.Home)/src'
+    
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
