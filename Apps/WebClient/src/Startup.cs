@@ -3,16 +3,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 using Hl7.Fhir.Rest;
-using HealthGateway.Util;
 
 namespace HealthGateway.WebClient
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger _logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -20,15 +24,14 @@ namespace HealthGateway.WebClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(IEnvironment), typeof(EnvironmentManager));
-
-            // Not sure if this is what we want. Ideally this would be using the singleton
-            EnvironmentManager env = new EnvironmentManager();
+            _logger.LogDebug("Starting Service Configuration...");
 
             // Test Service
             services.AddTransient<IPatientService>(serviceProvider =>
             {
-                string url = env.GetValue("IMMUNIZATION_URL") + env.GetValue("IMMUNIZATION_VERSION") + env.GetValue("IMMUNIZATION_PATH");
+                _logger.LogDebug("Configuring Transient Service");
+                string url = Configuration["Immunization:URL"] + Configuration["Immunization:Version"] + Configuration["Immunization:Path"];
+                _logger.LogDebug("Immunization URL=" + url);
                 IFhirClient client = new FhirClient(url)
                 {
                     Timeout = (60 * 1000),
