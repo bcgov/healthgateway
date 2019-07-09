@@ -33,6 +33,7 @@ steps:
     zipAfterPublish: false
 
 - script: |
+    dotnet tool install --global dotnet-sonarscanner --version 4.6.2
     dotnet sonarscanner begin /k:"webclient_dev" /d:sonar.host.url="https://sonarqube-q6qfzk-tools.pathfinder.gov.bc.ca" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" /d:sonar.testExecutionReportPaths="jest.out/test-report.xml" /d:sonar.typescript.lcov.reportsPaths="jest.out/lcov.info"
     dotnet build
     dotnet sonarscanner end /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
