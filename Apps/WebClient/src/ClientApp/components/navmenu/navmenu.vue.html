@@ -1,42 +1,40 @@
 <template>
-    <div class="main-nav">
-        <div class="navbar navbar-inverse">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">Health Gateway</a>
+            
+            <!-- Toggler/collapsibe Button -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                     <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">WebClient</a>
-            </div>
-            <div class="clearfix"></div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <router-link to="/" :exact="true">
-                            <span class="glyphicon glyphicon-home"></span> Home
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/" :exact="true">
+                            <span class="fa fa-home"></span> Home
                         </router-link>
                     </li>
-                    <li>
-                            <router-link to="/immunizations">
-                                <span class="glyphicon glyphicon-th-list"></span> Immunizations
-                            </router-link>
-                        </li>
-                    <li>
-                        <router-link to="/counter">
-                            <span class="glyphicon glyphicon-education"></span> Counter
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/immunizations">
+                            <span class="fa fa-th-list"></span> Immunizations
                         </router-link>
                     </li>
-                    <li>
-                        <router-link to="/fetchdata">
-                            <span class="glyphicon glyphicon-th-list"></span> Fetch data
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/counter">
+                            <span class="fa fa-plus"></span> Counter
+                        </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/fetchdata">
+                            <span class="fa fa-th-list"></span> Fetch data
                         </router-link>
                     </li>
                 </ul>
-            </div>
-        </div>
-    </div>
+            </div> 
+        </nav>
 </template>
 
 <style src="./navmenu.css" />
