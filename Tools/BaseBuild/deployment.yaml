@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: webclient-template
+  name: healthgateway-template
   creationTimestamp: null
 objects:
 - apiVersion: v1
@@ -11,7 +11,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}-${ENV}
   spec:
     replicas: 2
     selector:
@@ -56,7 +55,7 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
-          terminationMessagePath: /${NAMESPACE}-${ENV}/termination-log
+          terminationMessagePath: /${APP_NAME}/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
@@ -72,7 +71,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${IMAGE}
-          namespace: ${NAMESPACE}-tools
+          namespace: ${TOOLS_NAMESPACE}
       type: ImageChange
     - type: ConfigChange
 - apiVersion: autoscaling/v1
@@ -82,7 +81,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}-${ENV}
   spec:
     maxReplicas: 4
     minReplicas: 2
@@ -98,7 +96,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}-${ENV}
   spec:
     host: ${ENV}.gateway.health.pathfinder.gov.bc.ca
     port:
@@ -115,7 +112,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}-${ENV}
   spec:
     ports:
     - name: 8080-tcp
@@ -127,10 +123,10 @@ objects:
     sessionAffinity: None
     type: ClusterIP
 parameters: 
-  - name: NAMESPACE
-    displayName: App Namespace
-    description: The namespace of the application
-    value: q6qfzk
+  - name: TOOLS_NAMESPACE
+    displayName: Tools Project Namespace
+    description: The namespace of the tools project
+    value: q6qfzk-tools
     required: true 
   - name: ENV
     displayName: Enviroment
