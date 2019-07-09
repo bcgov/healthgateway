@@ -1,19 +1,82 @@
 <template>
-    <div>
-        <h1>Health Gateway</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-            <li><a href="https://get.asp.net/">ASP.NET Core</a> and <a href="https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx">C#</a> for cross-platform server-side code</li>
-            <li><a href="https://vuejs.org/">Vue.js</a> and <a href="http://www.typescriptlang.org/">TypeScript</a> for client-side code</li>
-            <li><a href="https://webpack.github.io/">Webpack</a> for building and bundling client-side resources</li>
-            <li><a href="http://getbootstrap.com/">Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we've also set up:</p>
-        <ul>
-            <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-            <li><strong>Webpack dev middleware</strong>. In development mode, there's no need to run the <code>webpack</code> build tool. Your client-side resources are dynamically built on demand. Updates are available as soon as you modify any file.</li>
-            <li><strong>Hot module replacement</strong>. In development mode, you don't even need to reload the page after making most changes. Within seconds of saving changes to files, your Vue app will be rebuilt and a new instance injected is into the page.</li>
-            <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and the <code>webpack</code> build tool produces minified static CSS and JavaScript files.</li>
-        </ul>
+    <div class="container">
+        <div class="row pt-5">
+            <div class="col-lg-12 col-md-12 text-center"> 
+                <h1>Health Gateway</h1>
+                <p>The Health Gateway is a secure entry point for viewing your health information in BC</p>
+            </div>
+        </div>
+        <div class="row pb-5 pt-5">
+            <div class="col-lg-6 col-md-6 pt-2"> 
+                <div class="shadow-box">
+                    <h3>
+                        <strong>New here?</strong>
+                    </h3>
+                    <p>Click the button below to register.</p>
+                    <a href="#" class="btn btn-secondary" id="btnStart" role="button">Start now</a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 pt-2"> 
+                <div class="shadow-box">
+                    <h3>
+                        <strong>Already registered?</strong>
+                    </h3>
+                    <p>Click the button below to login.</p>
+                    <a href="#" class="btn btn-primary" id="btnLogin" role="button">Login</a>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-5 pt-5">
+            <div class="col-lg-4 col-md-4"> 
+                <div class="row">
+                    <div class="col d-flex justify-content-center">
+                        <div class="border border-secondary rounded-circle">
+                            <h3 class="m-5">
+                                <span class="fa fa-4x fa-syringe"></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-1">
+                    <div class="col text-center">
+                        <h4>Immunizations</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4"> 
+                <div class="row">
+                    <div class="col d-flex justify-content-center">
+                        <div class="border border-secondary rounded-circle">
+                            <h3 class="m-5">
+                                <span class="fa fa-4x fa-medkit"></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-1">
+                    <div class="col text-center">
+                        <h4>Medications</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 text-center"> 
+                <div class="row">
+                    <div class="col d-flex justify-content-center">
+                        <div class="border border-secondary rounded-circle">
+                            <h3 class="m-5 pl-1 pr-2">
+                                <span class="fa fa-4x fa-flask"></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-1">
+                    <div class="col text-center">
+                        <h4>Lab Tests</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
+
+<style src="./home.css" />

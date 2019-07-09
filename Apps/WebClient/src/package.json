@@ -6,11 +6,12 @@
     "test": "jest --config jest.config.js"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.9.0",
     "@types/jest": "^24.0.15",
     "@types/webpack-env": "^1.13.9",
     "aspnet-webpack": "^2.0.3",
     "awesome-typescript-loader": "^3.5.0",
-    "bootstrap": "^3.4.1",
+    "bootstrap": "^4.3.1",
     "css-loader": "^0.25.0",
     "event-source-polyfill": "^0.0.7",
     "extract-text-webpack-plugin": "^2.0.0-rc.3",
@@ -19,6 +20,7 @@
     "jest": "^24.8.0",
     "jest-sonar-reporter": "^2.0.0",
     "jquery": "^3.4.1",
+    "popper.js": "^1.15.0",
     "style-loader": "^0.13.1",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.2",
