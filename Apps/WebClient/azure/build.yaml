@@ -18,11 +18,6 @@ pool:
   name: 'HealthGateway'
 
 steps:
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: 'echo $(Build.BinariesDirectory)'
-    
 - task: Npm@1
   inputs:
     command: 'install'
@@ -37,6 +32,11 @@ steps:
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
+- script: |
+    dotnet sonarscanner begin /k:"webclient_dev" /d:sonar.host.url="https://sonarqube-q6qfzk-tools.pathfinder.gov.bc.ca" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" /d:sonar.testExecutionReportPaths="jest.out/test-report.xml" /d:sonar.typescript.lcov.reportsPaths="jest.out/lcov.info"
+    dotnet build
+    dotnet sonarscanner end /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+    displayName: 'Perform static analisis'
 #- script: |
 #    pushd $(App.Home)
 #    cp Dockerfile $(Build.BinariesDirectory)
