@@ -31,7 +31,6 @@ steps:
     dotnet sonarscanner end /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16"
     echo "$@" >&2
   displayName: 'Perform static analisis'
-  failOnStderr: 'true'
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
