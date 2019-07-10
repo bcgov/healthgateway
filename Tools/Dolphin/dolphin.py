@@ -76,33 +76,12 @@ def run(key):
     login, token, url = _retrieve_credentials()
     properties_string, test_runners = _load_scanner_config()
 
-    sonarparams = '/d:sonar.verbose=true /k:"{0}" ' \
+    sonarparams = '/k:"{0}" ' \
                   '/d:sonar.host.url="{1}" ' \
                   '/d:sonar.login="{2}" ' \
                   + properties_string
-    print(sonarparams)
-    exit()
 
     params_string = sonarparams.format(key, url, token)
-    print(params_string)
-
-    click.echo()
-    click.echo('Running tests...')
-    for runner_name in test_runners:
-        click.echo('Executing ' + runner_name + ' test')
-        if runner_name == 'xunit':
-            output = _run_command('dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover ')
-            if output != 0:
-                click.secho('Error, please check logs', fg='red')
-                exit()
-        elif runner_name == 'jest':
-            output = _run_command('npm --prefix src test')
-            if output != 0:
-                click.secho('Error, please check logs', fg='red')
-                exit()
-        else:
-            click.secho('Error, runner [' + runner_name + '] not configured', fg='red')
-            exit()
 
     click.echo()
     click.echo('Shutting down build-server...')
@@ -120,10 +99,28 @@ def run(key):
 
     click.echo()
     click.echo('Building solution...')
-    output = _run_command('dotnet build')
+    output = _run_command('dotnet build --no-incremental')
     if output != 0:
         click.secho('Error, please check logs', fg='red')
         exit()
+
+    click.echo()
+    click.echo('Running tests...')
+    for runner_name in test_runners:
+        click.echo('Executing ' + runner_name + ' test')
+        if runner_name == 'xunit':
+            output = _run_command('dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults ')
+            if output != 0:
+                click.secho('Error, please check logs', fg='red')
+                exit()
+        elif runner_name == 'jest':
+            output = _run_command('npm --prefix src test')
+            if output != 0:
+                click.secho('Error, please check logs', fg='red')
+                exit()
+        else:
+            click.secho('Error, runner [' + runner_name + '] not configured', fg='red')
+            exit()
 
     click.echo()
     click.echo('SonarScanner end...')

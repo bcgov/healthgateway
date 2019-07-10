@@ -22,6 +22,7 @@
     <PackageReference Include="Selenium.Webdriver" Version="3.141.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
