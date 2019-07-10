@@ -9,6 +9,9 @@ pool:
   name: 'HealthGateway'
 
 pr:
+  branches:
+   include:
+   - dev  
   paths:
    include:
    - Apps/WebClient
