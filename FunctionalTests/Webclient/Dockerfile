@@ -1,7 +1,6 @@
 FROM registry.access.redhat.com/openshift3/rhel7:latest
 
-RUN apt-get update
-RUN apt-get install -y npm
+RUN yum install nodejs
 
 RUN npm install selenium-side-runner@latest -g
 RUN npm install chromedriver -g
