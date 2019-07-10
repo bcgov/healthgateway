@@ -221,7 +221,11 @@ def _retrieve_credentials():
 
 def _run_command(command):
     print(command)
-    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
+    # Windows cannot run npm if its not as a shell
+    is_shell = False
+    if os.name == 'nt':
+        is_shell = True
+    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, shell=is_shell)
     while True:
         output = process.stdout.readline()
         if output.decode() == '' and process.poll() is not None:
