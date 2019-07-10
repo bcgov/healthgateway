@@ -1,0 +1,3 @@
+# WebClient
+
+WebClient is the client facing UI for the Health Gateway...
