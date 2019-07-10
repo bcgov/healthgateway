@@ -5,6 +5,8 @@ variables:
   App.Home: $(Build.SourcesDirectory)/Tools/Base/
   App.Name: dotnet22-base
 
+pr: none
+
 trigger:
  batch: 'true'
  branches:
