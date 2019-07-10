@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace HealthGateway.WebClient.Controllers
 {
@@ -14,7 +16,7 @@ namespace HealthGateway.WebClient.Controllers
 
         public IActionResult Logout()
         {
-            return new SignOutResult(new[] { "Cookies", "OpenIdConnect" });
+            return new SignOutResult(new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme });
         }
     }
 }
