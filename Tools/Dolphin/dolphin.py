@@ -86,6 +86,7 @@ def run(key):
 
     click.echo()
     click.echo('Running tests...')
+    test_runners = []
     for runner_name in test_runners:
         click.echo('Executing ' + runner_name + ' test')
         if runner_name == 'xunit':
