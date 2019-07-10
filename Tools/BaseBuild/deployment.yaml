@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: webclient-template
+  name: healthgateway-template
   creationTimestamp: null
 objects:
 - apiVersion: v1
@@ -11,7 +11,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
   spec:
     replicas: 2
     selector:
@@ -25,6 +24,19 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
+        post:
+          execNewPod:
+            command:
+              - curl
+              - '-X'
+              - POST
+              - '-H'
+              - 'Content-Type: application/json'
+              - '--data'
+              - '{"text": "New Version Deployed to **${ENV}** [Check it out!](https://${ENV}.gateway.health.pathfinder.gov.bc.ca) :rocket:"}'
+              - https://chat.pathfinder.gov.bc.ca/hooks/pLdurJfnQ2EQgmbT9/PtFJ77rC2vZRjycwXgJYnDcQEkH8emtu97jdxHXJke4mCjuo
+            containerName: webclient
+          failurePolicy: Ignore
       type: Rolling
     template:
       metadata:
@@ -56,7 +68,7 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
-          terminationMessagePath: /${NAMESPACE}/termination-log
+          terminationMessagePath: /${APP_NAME}/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
@@ -82,7 +94,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
   spec:
     maxReplicas: 4
     minReplicas: 2
@@ -98,9 +109,11 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
   spec:
-    host: ${APP_NAME}-${NAMESPACE}.pathfinder.gov.bc.ca
+    host: ${ENV}-gateway.pathfinder.gov.bc.ca
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
     port:
       targetPort: 8080-tcp
     to:
@@ -115,7 +128,6 @@ objects:
     labels:
       app: ${APP_NAME}
     name: ${APP_NAME}
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: 8080-tcp
@@ -127,20 +139,20 @@ objects:
     sessionAffinity: None
     type: ClusterIP
 parameters: 
-  - name: NAMESPACE
-    displayName: App Namespace
-    description: The namespace of the application
-    value: q6qfzk-<ENV>
+  - name: TOOLS_NAMESPACE
+    displayName: Tools Project Namespace
+    description: The namespace of the tools project
+    value: q6qfzk-tools
+    required: true 
+  - name: ENV
+    displayName: Enviroment
+    description: The environment to be deployed to
+    value: dev
     required: true 
   - name: APP_NAME
     displayName: App Name
     description: The name of the application
     value: webclient
-    required: true 
-  - name: TOOLS_NAMESPACE
-    displayName: Tools Namespace
-    description: The namespace of the tools environment
-    value: q6qfzk-tools
     required: true 
   - name: IMAGE
     displayName: ImageStream:Tag

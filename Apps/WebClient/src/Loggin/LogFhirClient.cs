@@ -2,7 +2,7 @@ using System.Net;
 using System;
 using Hl7.Fhir.Rest;
 
-namespace WebClient.Log
+namespace HealthGateway.WebClient
 {
     public class LogFhirClient : FhirClient
     {
@@ -10,19 +10,15 @@ namespace WebClient.Log
         public LogFhirClient(Uri endpoint, bool verifyFhirVersion = false) : base(endpoint, verifyFhirVersion) { }
         public LogFhirClient(string endpoint, bool verifyFhirVersion = false) : base(endpoint, verifyFhirVersion) { }
 
-        public LogFhirClient(Uri endpoint) : base(endpoint) { }
-
         protected override void BeforeRequest(HttpWebRequest rawRequest, byte[] body)
         {
-            //Do not log now
-            //logRequest(rawRequest, body);
+            logRequest(rawRequest, body);
             base.BeforeRequest(rawRequest, body);
         }
 
         protected override void AfterResponse(HttpWebResponse webResponse, byte[] body)
         {
-            //Do not log now
-            //logResponse(webResponse, body);
+            logResponse(webResponse, body);
             base.AfterResponse(webResponse, body);
         }
 

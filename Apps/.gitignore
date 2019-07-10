@@ -443,7 +443,4 @@ package-lock.json
 #SonarQube
 **/.sonarqube
 
-#Coverage
-**/coverage.opencover.xml
-
 

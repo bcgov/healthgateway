@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace WebClient
+namespace HealthGateway.WebClient
 {
     public interface IPatientService
     {

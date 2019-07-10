@@ -15,12 +15,14 @@ or
 $ pip install keyring
 $ pip install click
 $ pip install requests
+$ pip install pyyml
 ~~~
 
 #### About the dependencies:
 - [keyring](https://pypi.org/project/keyring/)
 - [click](https://pypi.org/project/click/)
 - [requests](https://pypi.org/project/requests/)
+- [PyYAML](https://pypi.org/project/PyYAML/)
 
 ## Usage
 ##### Initialize settings:

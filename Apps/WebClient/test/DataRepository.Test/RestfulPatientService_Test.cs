@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xunit;
-using WebClient;
 using Moq;
 using Fhir = Hl7.Fhir;
 

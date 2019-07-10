@@ -8,7 +8,7 @@
     "sourceMap": true,
     "skipDefaultLibCheck": true,
     "strict": true,
-    "types": ["webpack-env"]
+    "types": ["jest","webpack-env"]
   },
   "exclude": [
       "bin",

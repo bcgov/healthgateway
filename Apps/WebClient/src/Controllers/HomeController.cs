@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebClient.Controllers
+namespace HealthGateway.WebClient.Controllers
 {
     public class HomeController : Controller
     {
