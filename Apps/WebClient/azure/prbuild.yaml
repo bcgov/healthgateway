@@ -8,6 +8,11 @@ variables:
 pool:
   name: 'HealthGateway'
 
+pr:
+  paths:
+   include:
+   - Apps/WebClient
+   
 steps:
 - task: Npm@1
   inputs:
