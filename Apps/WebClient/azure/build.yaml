@@ -5,6 +5,8 @@ variables:
   App.Home: $(Build.SourcesDirectory)/Apps/WebClient
   App.Name: webclient
 
+pr: none
+
 trigger:
  batch: 'true'
  branches:
