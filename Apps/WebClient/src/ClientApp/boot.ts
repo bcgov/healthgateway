@@ -6,6 +6,8 @@ import './css/site.css';
 import 'bootstrap';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import i18n from './i18n';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -16,8 +18,11 @@ const routes = [
 
 ];
 
+
 new Vue({
+    i18n: i18n,
     el: '#app-root',
     router: new VueRouter({ mode: 'history', routes: routes }),
     render: h => h(require('./components/app/app.vue.html'))
+
 });
