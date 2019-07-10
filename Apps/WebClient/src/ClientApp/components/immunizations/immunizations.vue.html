@@ -1,18 +1,20 @@
 <template>
     <div>
-        <h1>Immunizations</h1>
+            <span>Language: {{ $i18n.locale }}<br/></span>
 
-        <p>Prototype immunizations view.</p>
+        <h1>{{ $t('immz-component.immunizations')}}</h1>
+
+        <p>{{ $t('immz-component.prototype')}}</p>
 
         <table class="table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Vaccine</th>
-                    <th>Dose</th>
-                    <th>Site</th>
-                    <th>Lot</th>
-                    <th>Boost Due</th>
+                    <th>{{ $t('immz-component.fields.date')}}</th>
+                    <th>{{ $t('immz-component.fields.vaccine')}}</th>
+                    <th>{{ $t('immz-component.fields.dose')}}</th>
+                    <th>{{ $t('immz-component.fields.site')}}</th>
+                    <th>{{ $t('immz-component.fields.lot')}}</th>
+                    <th>{{ $t('immz-component.fields.boost')}}</th>
                 </tr>
             </thead>
             <tbody>

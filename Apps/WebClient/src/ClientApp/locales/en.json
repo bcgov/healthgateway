@@ -1,0 +1,17 @@
+{
+    "main-menu" : {
+        "Immunizations" : "Immunizations"
+    },
+    "immz-component": {
+        "immunizations": "Immunizations",
+        "prototype": "Prototype immunizations view",
+        "fields" : {
+            "date" : "date",
+            "vaccine" : "Vaccine",
+            "dose" : "Dose",
+            "site" : "Site",
+            "lot" : "Lot",
+            "boost" : "Boost Due"
+        }
+    }
+}
