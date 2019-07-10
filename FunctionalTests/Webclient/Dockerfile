@@ -72,8 +72,7 @@ RUN mkdir -p /opt && \
   pushd /opt && \
   echo "Downloading https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm" && \
   curl -sL https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && \
-  rpm -i google-chrome-stable_current_x86_64.rpm && \
-  rm -f google-chrome-stable_current_x86_64.rpm
+  rpm -i google-chrome-stable_current_x86_64.rpm
 
 # Install chromedriver for Selenium
 RUN mkdir -p /opt && \
