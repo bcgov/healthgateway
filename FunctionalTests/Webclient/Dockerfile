@@ -1,4 +1,7 @@
-FROM node:10
+FROM registry.access.redhat.com/openshift3/rhel7:latest
+
+RUN apt-get update
+RUN apt-get install -y npm
 
 RUN npm install selenium-side-runner@latest -g
 RUN npm install chromedriver -g
