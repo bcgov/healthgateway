@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Functional tests for the webclient application",
   "scripts": {
-    "start": "selenium-side-runner .\\Tests\\**\\*.side",
-    "run": "selenium-side-runner .\\Tests\\**\\*.side",
-    "test": "selenium-side-runner .\\Tests\\**\\*.side"
+    "test": "selenium-side-runner .\\Tests\\**\\*.side --output-directory ."
   },
   "repository": {
     "type": "git",
