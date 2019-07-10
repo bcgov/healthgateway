@@ -24,14 +24,15 @@ steps:
     workingDir: '$(App.Home)/src'
 
 - script: |
-    pushd $(Build.SourcesDirectory)/Apps/WebClient
     dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     npm --prefix src test
     dotnet sonarscanner begin /k:"webclient_dev" /v:$(Build.BuildNumber) /d:sonar.host.url="https://sonarqube-q6qfzk-tools.pathfinder.gov.bc.ca" /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportPaths="jest.out/lcov.info" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.verbose=true
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16"
-    popd
   displayName: 'Perform static analisis'
+  failOnStderr: 'true'
+  continueOnError: 'false'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
 - task: DotNetCoreCLI@2
   inputs:
