@@ -1,4 +1,4 @@
-name: 1.0.0$(Rev:.r) #Build number
+name: PR$(Rev:.r) #Build number
 
 #Build variables
 variables:
