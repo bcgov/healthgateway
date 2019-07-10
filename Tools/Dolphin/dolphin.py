@@ -80,13 +80,14 @@ def run(key):
                   '/d:sonar.host.url="{1}" ' \
                   '/d:sonar.login="{2}" ' \
                   + properties_string
+    print(sonarparams)
+    exit()
 
     params_string = sonarparams.format(key, url, token)
     print(params_string)
 
     click.echo()
     click.echo('Running tests...')
-    test_runners = []
     for runner_name in test_runners:
         click.echo('Executing ' + runner_name + ' test')
         if runner_name == 'xunit':
