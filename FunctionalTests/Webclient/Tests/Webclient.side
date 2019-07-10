@@ -2,7 +2,7 @@
   "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
   "version": "2.0",
   "name": "Webclient",
-  "url": "http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca",
+  "url": "https://dev-gateway.pathfinder.gov.bc.ca",
   "tests": [{
     "id": "6d34d3d1-7e89-4376-9d46-d763fcb99367",
     "name": "Increment Counter",

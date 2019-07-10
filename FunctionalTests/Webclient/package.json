@@ -2,9 +2,8 @@
   "name": "webclient",
   "version": "1.0.0",
   "description": "Functional tests for the webclient application",
-  "main": "index.js",
   "scripts": {
-    "test": "selenium-side-runner .\\Tests\\**\\*.side"
+    "test": "selenium-side-runner .\\Tests\\**\\*.side --output-directory ."
   },
   "repository": {
     "type": "git",

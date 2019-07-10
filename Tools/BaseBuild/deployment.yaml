@@ -24,6 +24,19 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
+        post:
+          execNewPod:
+            command:
+              - curl
+              - '-X'
+              - POST
+              - '-H'
+              - 'Content-Type: application/json'
+              - '--data'
+              - '{"text": "New Version Deployed to **${ENV}** [Check it out!](https://${ENV}.gateway.health.pathfinder.gov.bc.ca) :rocket:"}'
+              - https://chat.pathfinder.gov.bc.ca/hooks/pLdurJfnQ2EQgmbT9/PtFJ77rC2vZRjycwXgJYnDcQEkH8emtu97jdxHXJke4mCjuo
+            containerName: webclient
+          failurePolicy: Ignore
       type: Rolling
     template:
       metadata:
@@ -97,7 +110,10 @@ objects:
       app: ${APP_NAME}
     name: ${APP_NAME}
   spec:
-    host: ${ENV}.gateway.health.pathfinder.gov.bc.ca
+    host: ${ENV}-gateway.pathfinder.gov.bc.ca
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
     port:
       targetPort: 8080-tcp
     to:
