@@ -62,9 +62,6 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ENV HOME=${APP_HOME}
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 
-RUN npm install selenium-side-runner@latest -g
-RUN npm install chromedriver -g
-
 # Install Chrome for Selenium
 RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
 RUN dpkg -i /chrome.deb || apt-get install -yf
@@ -73,5 +70,7 @@ RUN rm /chrome.deb
 # Install chromedriver for Selenium
 RUN curl https://chromedriver.storage.googleapis.com/2.31/chromedriver_linux64.zip -o /usr/local/bin/chromedriver
 RUN chmod +x /usr/local/bin/chromedriver
+
+RUN npm install
 
 CMD ["npm", "test"]
