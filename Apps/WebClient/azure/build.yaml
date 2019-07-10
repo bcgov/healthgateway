@@ -25,7 +25,7 @@ steps:
 
 - script: |
     pushd $(Build.SourcesDirectory)/Apps/WebClient
-    dotnet sonarscanner begin /k:"webclient_dev" /d:sonar.host.url="https://sonarqube-q6qfzk-tools.pathfinder.gov.bc.ca" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportsPaths="jest.out/lcov.info" /v:$(Build.BuildNumber)
+    dotnet sonarscanner begin /k:"webclient_dev" /v:$(Build.BuildNumber) /d:sonar.host.url="https://sonarqube-q6qfzk-tools.pathfinder.gov.bc.ca" /d:sonar.login="70a09cf96a40f256e999ecfa7a59359f06167b16" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportsPaths="jest.out/lcov.info" /d:sonar.cs.opencover.reportsPaths="test/coverage.opencover.xml" /d:sonar.verbose=true
     dotnet build
     dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     npm --prefix src test
