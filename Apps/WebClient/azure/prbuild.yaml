@@ -8,6 +8,8 @@ variables:
 pool:
   name: 'HealthGateway'
 
+trigger: none
+
 pr:
   branches:
    include:
