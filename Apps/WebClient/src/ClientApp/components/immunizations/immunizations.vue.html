@@ -1,90 +1,38 @@
 <template>
-    <div>
-            <span>Language: {{ $i18n.locale }}<br/></span>
-
+    <div id="immz">
+        <div>
+            <select v-model="$i18n.locale">
+                <option disabled value="">Language</option>
+                <option>en</option>
+                <option>fr</option>
+                <option v-for="(lang, i) in langs" :key="`Lang${i}`" :value="lang">{{ lang }}</option>
+            </select>
+        </div>
         <h1>{{ $t('immz-component.immunizations')}}</h1>
-
         <p>{{ $t('immz-component.prototype')}}</p>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{ $t('immz-component.fields.date')}}</th>
-                    <th>{{ $t('immz-component.fields.vaccine')}}</th>
-                    <th>{{ $t('immz-component.fields.dose')}}</th>
-                    <th>{{ $t('immz-component.fields.site')}}</th>
-                    <th>{{ $t('immz-component.fields.lot')}}</th>
-                    <th>{{ $t('immz-component.fields.boost')}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- <tr v-for="record in immunizations"> -->
-                <tr>
-                    <td>1999 Jun 10</td>
-                    <td>DTaP-HB-IPV-Hib</td>
-                    <td>1</td>
-                    <td>left vastus lateralis</td>
-                    <td>4792AB</td>
-                    <td>1999 Aug 10</td>
-                </tr>
-                <tr>
-                    <td>1999 Aug 14</td>
-                    <td>DTaP-HB-IPV-Hib</td>
-                    <td>2</td>
-                    <td>left vastus lateralis</td>
-                    <td>8793BC</td>
-                    <td>1999 Oct 15</td>
-                </tr>
-                <tr>
-                    <td>1999 Oct 11</td>
-                    <td>DTaP-HB-IPV-Hib</td>
-                    <td>3</td>
-                    <td>right vastus externus</td>
-                    <td>9056AA</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2000 Apr 11</td>
-                    <td>Chickenpox (Varicella)</td>
-                    <td>1</td>
-                    <td>right vastus externus</td>
-                    <td>29946BA</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2000 Apr 29</td>
-                    <td>Measles, Mumps, Rubella (MMR)</td>
-                    <td>1</td>
-                    <td>left deltoid</td>
-                    <td>987510DD</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2000 Sep 9</td>
-                    <td>Inactivated Influenza (Flu)</td>
-                    <td></td>
-                    <td>left deltoid</td>
-                    <td>8039403CD</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2000 OCt 22</td>
-                    <td>DTaP-IPV-Hib</td>
-                    <td></td>
-                    <td>right deltoid</td>
-                    <td>400103AD</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2003 Sep 12</td>
-                    <td>Measles, Mumps, Rubella, Varicella (MMRV)</td>
-                    <td></td>
-                    <td>right deltoid</td>
-                    <td>998338AA</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+        <b-table striped responsive="sm" small :items="items" :fields="fields">
+            <template slot="HEAD_date" slot-scope="data">
+                {{ $t('immz-component.fields.date') }}
+            </template>
+            <template slot="HEAD_vaccine" slot-scope="data">
+                {{ $t('immz-component.fields.vaccine') }}
+            </template>
+            <template slot="HEAD_dose" slot-scope="data">
+                {{ $t('immz-component.fields.dose') }}
+            </template>
+            <template slot="HEAD_site" slot-scope="data">
+                {{ $t('immz-component.fields.site') }}
+            </template>
+            <template slot="HEAD_lot" slot-scope="data">
+                {{ $t('immz-component.fields.lot') }}
+            </template>
+            <template slot="HEAD_boost" slot-scope="data">
+                {{ $t('immz-component.fields.boost') }}
+            </template>
+        </b-table>
     </div>
 </template>
+
+s
 <script src="./immunizations.ts"></script>

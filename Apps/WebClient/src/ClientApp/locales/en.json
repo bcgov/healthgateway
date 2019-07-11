@@ -6,7 +6,7 @@
         "immunizations": "Immunizations",
         "prototype": "Prototype immunizations view",
         "fields" : {
-            "date" : "date",
+            "date" : "Date",
             "vaccine" : "Vaccine",
             "dose" : "Dose",
             "site" : "Site",
