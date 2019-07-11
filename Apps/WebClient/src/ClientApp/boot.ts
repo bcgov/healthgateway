@@ -3,10 +3,13 @@ import '@fortawesome/fontawesome-free/js/solid'
 import '@fortawesome/fontawesome-free/js/regular'
 import '@fortawesome/fontawesome-free/js/brands'
 import './css/site.css';
-import 'bootstrap';
+import BootstrapVue from 'bootstrap-vue';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import i18n from './i18n';
+
 Vue.use(VueRouter);
+Vue.use(BootstrapVue);
 
 const routes = [
     { path: '/', component: require('./components/home/home.vue.html') },
@@ -16,8 +19,11 @@ const routes = [
     { path: '/registration', component: require('./components/registration/registration.vue.html') }
 ];
 
+
 new Vue({
+    i18n: i18n,
     el: '#app-root',
     router: new VueRouter({ mode: 'history', routes: routes }),
     render: h => h(require('./components/app/app.vue.html'))
+
 });

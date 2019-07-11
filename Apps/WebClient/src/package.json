@@ -37,5 +37,9 @@
     "reportPath": "../src/jest.out",
     "reportFile": "test-report.xml",
     "indent": 4
+  },
+  "dependencies": {
+    "bootstrap-vue": "^2.0.0-rc.26",
+    "vue-i18n": "^8.12.0"
   }
 }
