@@ -11,7 +11,7 @@
         <h1>{{ $t('immz-component.immunizations')}}</h1>
         <p>{{ $t('immz-component.prototype')}}</p>
 
-        <b-table striped responsive="sm" small :items="items" :fields="fields">
+        <b-table striped responsive small :items="items" :fields="fields">
             <template slot="HEAD_date" slot-scope="data">
                 {{ $t('immz-component.fields.date') }}
             </template>
