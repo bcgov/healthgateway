@@ -1,27 +1,25 @@
-name: 1.0.0$(Rev:.r) #Build number
+name: PR$(Rev:.r) #Build number
 
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/WebClient
   App.Name: webclient
 
-pr: none
-
-trigger:
- batch: 'true'
- branches:
-   include:
-     - dev
- paths:
-   include:
-     - Apps/WebClient/src
-     - Apps/WebClient/test
-     - Apps/WebClient/azure/build.yaml
-     - Apps/WebClient/Dockerfile
- 
 pool:
   name: 'HealthGateway'
 
+trigger: none
+
+pr:
+  branches:
+   include:
+   - dev  
+  paths:
+   include:
+   - Apps/WebClient/src
+   - Apps/WebClient/test
+   - Apps/WebClient/azure/prbuild.yaml
+   
 steps:
 - task: Npm@1
   inputs:
@@ -47,26 +45,3 @@ steps:
     projects: '$(App.Home)/src'
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
-
-#- script: |
-#    pushd $(App.Home)
-#    cp Dockerfile $(Build.BinariesDirectory)
-#    pushd src
-#    dotnet publish -o $(Build.BinariesDirectory)
-#    popd
-#    popd
-#  displayName: 'Restore and publish .Net App'
-
-- script: |
-    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
-    oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-  displayName: 'Build OpenShift Image and push to Image Stream'
-
-- task: PublishPipelineArtifact@0
-  displayName: 'Publish Pipeline Artifact'
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)'
-

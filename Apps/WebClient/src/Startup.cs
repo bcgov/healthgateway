@@ -48,7 +48,15 @@ namespace HealthGateway.WebClient
                  o.Authority = Configuration["OIDC:Authority"];
                  o.ClientId = Configuration["OIDC:Audience"];
                  o.ClientSecret = Configuration["OIDC:ClientSecret"];
-                 o.RequireHttpsMetadata = false;
+                 if(Boolean.TryParse(Configuration["OIDC:SecureMetadata"], out bool secure))
+                 {//set HttpsMetadata to whatever configuration says
+                     o.RequireHttpsMetadata = secure;
+                 }
+                 else
+                 {//If config isn't parseable then set HttpsMetadata to true
+                     _logger.LogWarning("OIDC Require HTTPS Metadata configuration is invalid and will be defaulted to true");
+                     o.RequireHttpsMetadata = true;
+                 }
                  o.SaveTokens = true;
                  o.GetClaimsFromUserInfoEndpoint = true;
                  o.ResponseType = "code id_token";
@@ -56,8 +64,7 @@ namespace HealthGateway.WebClient
                  o.Scope.Clear();
                  o.Scope.Add("openid");
                  o.Scope.Add("email");
-                 o.Scope.Add("openid");
-                 o.Scope.Add("offline_access");
+
                  o.GetClaimsFromUserInfoEndpoint = true;
 
                  o.Events = new OpenIdConnectEvents()
@@ -88,7 +95,7 @@ namespace HealthGateway.WebClient
 
                 return new RestfulPatientService(client);
             });
-
+            
             services.AddMvc();
         }
 

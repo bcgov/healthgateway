@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace HealthGateway.WebClient
 {
@@ -21,6 +22,11 @@ namespace HealthGateway.WebClient
                     config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
                 })
                 .UseStartup<Startup>()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                })
                 .Build();
     }
 }
