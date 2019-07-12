@@ -67,7 +67,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(App.Home)'
+    SourceFolder: '$(App.FunctionalTests)'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     
