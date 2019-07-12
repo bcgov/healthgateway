@@ -48,8 +48,6 @@ steps:
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
-
-
 - task: DotNetCoreCLI@2
   inputs:
     modifyOutputPath: false
