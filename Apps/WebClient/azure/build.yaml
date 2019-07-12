@@ -65,6 +65,20 @@ steps:
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '$(Build.SourcesDirectory)/FunctionalTests/WebClient'
+
+- script: |
+    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/deployment.yaml -p APP_NAME=functionaltests -p ENV=tools -p IMAGE="webclient:$(Build.BuildNumber)" | oc apply --wait -f -
+    oc rollout status dc/functionaltests -w
+    npm test
+    echo "$@" >&2
+  displayName: 'Perform functional tests'
+  continueOnError: 'false'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
   inputs:
