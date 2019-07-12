@@ -62,9 +62,15 @@ steps:
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+#    echo `date` > /$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(App.Home)'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
 # - task: Npm@1
 #   inputs:
 #     command: 'install'
