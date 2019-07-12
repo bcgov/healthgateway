@@ -3,7 +3,7 @@
         "Immunizations" : "Immunisations"
     },
     "immz-component": {
-        "immunizations": "Immunisation",
+        "immunizations": "Immunisations",
         "prototype": "Vue prototype d'immunizations",
         "fields" : {
             "date" : "Date",
