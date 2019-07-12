@@ -18,6 +18,7 @@ trigger:
      - Apps/WebClient/test
      - Apps/WebClient/azure/build.yaml
      - Apps/WebClient/Dockerfile
+     - FunctionalTests/WebClient
  
 pool:
   name: 'HealthGateway'
