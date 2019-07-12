@@ -1,0 +1,6 @@
+capabilities:
+  browserName: "chrome"
+  chromeOptions:
+          args: ["--headless", "--disable-gpu", "--disable-extensions", "--no-sandbox"]
+#server: "http://selenium-hub.pathfinder.gov.bc.ca/wd/hub"
+baseUrl: "http://localhost:5000"
