@@ -4,7 +4,7 @@ name: 1.0.0$(Rev:.r) #Build number
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/WebClient
   App.Name: webclient
-  App.FunctionalTests: $(Build.SourcesDirectory)/Apps/WebClient/FunctionalTests/WebClient
+  App.FunctionalTests: $(App.Home)/functional
 
 pr: none
 
@@ -19,7 +19,7 @@ trigger:
      - Apps/WebClient/test
      - Apps/WebClient/azure/build.yaml
      - Apps/WebClient/Dockerfile
-     - Apps/WebClient/FunctionalTests/WebClient
+     - Apps/WebClient/functional
  
 pool:
   name: 'HealthGateway'
@@ -30,8 +30,15 @@ steps:
     command: 'install'
     workingDir: '$(App.Home)/src'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '$(App.Home)/test'
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+    testRunTitle: 'WebClient'
+
 - script: |
-    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    dotnet test test/test.csproj 
     npm --prefix src test
     dotnet sonarscanner begin /k:"webclient_dev" /v:$(Build.BuildNumber) /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportPaths="jest.out/lcov.info" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.verbose=true
     dotnet build    
@@ -50,15 +57,6 @@ steps:
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
-#- script: |
-#    pushd $(App.Home)
-#    cp Dockerfile $(Build.BinariesDirectory)
-#    pushd src
-#    dotnet publish -o $(Build.BinariesDirectory)
-#    popd
-#    popd
-#  displayName: 'Restore and publish .Net App'
-
 - script: |
     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
@@ -67,19 +65,19 @@ steps:
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
-- task: Npm@1
-  inputs:
-    command: 'install'
-    workingDir: '$(App.FunctionalTests)'
+# - task: Npm@1
+#   inputs:
+#     command: 'install'
+#     workingDir: '$(App.FunctionalTests)'
 
-- script: |
-    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/deployment.yaml -p APP_NAME=functionaltests -p ENV=tools -p IMAGE="webclient:$(Build.BuildNumber)" | oc apply --wait -f -
-    oc rollout status dc/functionaltests -w
-    npm test
-    echo "$@" >&2
-  displayName: 'Perform functional tests'
-  continueOnError: 'false'
-  workingDirectory: $(App.FunctionalTests)
+# - script: |
+#     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/deployment.yaml -p APP_NAME=functionaltests -p ENV=tools -p IMAGE="webclient:$(Build.BuildNumber)" | oc apply --wait -f -
+#     oc rollout status dc/functionaltests -w
+#     npm test
+#     echo "$@" >&2
+#   displayName: 'Perform functional tests'
+#   continueOnError: 'false'
+#   workingDirectory: $(App.FunctionalTests)
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
