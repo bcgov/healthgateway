@@ -119,12 +119,10 @@ namespace HealthGateway.WebClient
             app.UseStaticFiles();
             
             // forwarded Header middleware required for apps behind proxies and load balancers
-            var fordwardedHeaderOptions = new ForwardedHeadersOptions
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
-                ForwardedHeaders = ForwardedHeaders.All
-            };
-
-            app.UseForwardedHeaders(fordwardedHeaderOptions);
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            });
 
             app.UseAuthentication();
             app.UseCookiePolicy();
