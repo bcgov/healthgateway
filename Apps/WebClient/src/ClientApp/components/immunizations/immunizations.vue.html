@@ -1,6 +1,6 @@
 <template>
     <div id="immz">
-        <div>
+        <div align="right">
             <select v-model="$i18n.locale">
                 <option disabled value="">Language</option>
                 <option>en</option>
@@ -8,7 +8,8 @@
                 <option v-for="(lang, i) in langs" :key="`Lang${i}`" :value="lang">{{ lang }}</option>
             </select>
         </div>
-        <h1>{{ $t('immz-component.immunizations')}}</h1>
+        
+        <h1><span class="fa fa-1x fa-syringe"></span>&nbsp;{{ $t('immz-component.immunizations')}}</h1>
         <p>{{ $t('immz-component.prototype')}}</p>
 
         <b-table striped responsive small :items="items" :fields="fields">
