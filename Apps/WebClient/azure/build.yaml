@@ -50,15 +50,6 @@ steps:
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
-#- script: |
-#    pushd $(App.Home)
-#    cp Dockerfile $(Build.BinariesDirectory)
-#    pushd src
-#    dotnet publish -o $(Build.BinariesDirectory)
-#    popd
-#    popd
-#  displayName: 'Restore and publish .Net App'
-
 - script: |
     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
@@ -67,19 +58,19 @@ steps:
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
-- task: Npm@1
-  inputs:
-    command: 'install'
-    workingDir: '$(App.FunctionalTests)'
+# - task: Npm@1
+#   inputs:
+#     command: 'install'
+#     workingDir: '$(App.FunctionalTests)'
 
-- script: |
-    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/deployment.yaml -p APP_NAME=functionaltests -p ENV=tools -p IMAGE="webclient:$(Build.BuildNumber)" | oc apply --wait -f -
-    oc rollout status dc/functionaltests -w
-    npm test
-    echo "$@" >&2
-  displayName: 'Perform functional tests'
-  continueOnError: 'false'
-  workingDirectory: $(App.FunctionalTests)
+# - script: |
+#     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/deployment.yaml -p APP_NAME=functionaltests -p ENV=tools -p IMAGE="webclient:$(Build.BuildNumber)" | oc apply --wait -f -
+#     oc rollout status dc/functionaltests -w
+#     npm test
+#     echo "$@" >&2
+#   displayName: 'Perform functional tests'
+#   continueOnError: 'false'
+#   workingDirectory: $(App.FunctionalTests)
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
