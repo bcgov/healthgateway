@@ -44,6 +44,7 @@ steps:
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
+    pathToSources: '${App.Home}/src'
     reportDirectory: '$(App.Home)/CodeCoverage'
 
 #- script: |
