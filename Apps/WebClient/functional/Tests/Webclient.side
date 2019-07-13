@@ -4,38 +4,6 @@
   "name": "Webclient",
   "url": "https://dev-gateway.pathfinder.gov.bc.ca",
   "tests": [{
-    "id": "6d34d3d1-7e89-4376-9d46-d763fcb99367",
-    "name": "Increment Counter",
-    "commands": [{
-      "id": "a6c2af72-5258-4281-8066-5bf579c5d6a2",
-      "comment": "",
-      "command": "open",
-      "target": "/counter",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "16a1839f-cd02-47a1-9d55-cf3aa2eff822",
-      "comment": "",
-      "command": "click",
-      "target": "id=btnIncrement",
-      "targets": [
-        ["id=btnIncrement", "id"],
-        ["css=#btnIncrement", "css:finder"],
-        ["xpath=//button[@id='btnIncrement']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/div/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div[2]/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,'Increment')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "4e09cd0c-e2e2-45e7-865f-8afa89dcba47",
-      "comment": "",
-      "command": "assertText",
-      "target": "id=currentCount",
-      "targets": [],
-      "value": "1"
-    }]
-  }, {
     "id": "6882f45d-be6c-451f-a50c-80d2f1ab64d1",
     "name": "Subject in FR",
     "commands": [{
@@ -285,6 +253,51 @@
       "targets": [],
       "value": "Home - Health Gateway"
     }]
+  }, {
+    "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
+    "name": "Redirect to registration landing page",
+    "commands": [{
+      "id": "255cc728-fec0-4135-8bb9-9610aa1a5639",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "71c246ef-7e07-4fb0-8b69-5c264dfa8bd3",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Start now", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Start now')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/div[2]/div/div/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registration')]", "xpath:href"],
+        ["xpath=//div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Start now')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "dc5d4516-920a-4660-b429-000ffaba9c82",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=btnCreateAccount",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Create Health Gateway Account", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Create Health Gateway Account')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/div[3]/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[2]", "xpath:href"],
+        ["xpath=//div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Create Health Gateway Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -292,7 +305,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["6d34d3d1-7e89-4376-9d46-d763fcb99367", "6882f45d-be6c-451f-a50c-80d2f1ab64d1", "5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523", "2d57d1f0-ac1e-4899-b52e-219bbdaba866"]
+    "tests": ["6882f45d-be6c-451f-a50c-80d2f1ab64d1", "5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523", "2d57d1f0-ac1e-4899-b52e-219bbdaba866"]
   }],
   "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/", "https://dev-gateway.pathfinder.gov.bc.ca/"],
   "plugins": []
