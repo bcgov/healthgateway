@@ -1,4 +1,4 @@
-import '@fortawesome/fontawesome-free/js/fontawesome'
+﻿import '@fortawesome/fontawesome-free/js/fontawesome'
 import '@fortawesome/fontawesome-free/js/solid'
 import '@fortawesome/fontawesome-free/js/regular'
 import '@fortawesome/fontawesome-free/js/brands'
@@ -18,7 +18,8 @@ const routes = [
     { path: '/counter', component: require('./components/counter/counter.vue.html') },
     { path: '/fetchdata', component: require('./components/fetchdata/fetchdata.vue.html') },
     { path: '/immunizations', component: require('./components/immunizations/immunizations.vue.html') },
-    { path: '/registration', component: require('./components/registration/registration.vue.html') }
+    { path: '/registration', component: require('./components/registration/registration.vue.html') },
+    { path: '/logout', component: require('./components/logout/logout.vue.html') },
 ];
 
 
