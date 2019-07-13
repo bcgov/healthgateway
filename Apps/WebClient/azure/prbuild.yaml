@@ -34,10 +34,10 @@ steps:
     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     testRunTitle: 'WebClient'
 
-#- script: |
-#    dotnet tool install -g dotnet-reportgenerator-globaltool
-#    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-#  displayName: Create Code coverage report
+- script: |
+   dotnet tool install -g dotnet-reportgenerator-globaltool
+   reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+ displayName: Create Code coverage report
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage'
@@ -45,7 +45,7 @@ steps:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
     pathToSources: '$(App.Home)/src'
-#    reportDirectory: '$(App.Home)/CodeCoverage'
+    reportDirectory: '$(App.Home)/CodeCoverage'
 
 #- script: |
 #    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
