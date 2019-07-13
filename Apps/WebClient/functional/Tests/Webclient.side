@@ -275,7 +275,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["6d34d3d1-7e89-4376-9d46-d763fcb99367", "6882f45d-be6c-451f-a50c-80d2f1ab64d1"]
+    "tests": ["6d34d3d1-7e89-4376-9d46-d763fcb99367", "6882f45d-be6c-451f-a50c-80d2f1ab64d1", "5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523", "2d57d1f0-ac1e-4899-b52e-219bbdaba866"]
   }],
   "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/"],
   "plugins": []
