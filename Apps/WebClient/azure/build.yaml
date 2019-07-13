@@ -62,7 +62,6 @@ steps:
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-#    echo `date` > /$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
 - task: CopyFiles@2
@@ -71,20 +70,6 @@ steps:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     
-# - task: Npm@1
-#   inputs:
-#     command: 'install'
-#     workingDir: '$(App.FunctionalTests)'
-
-# - script: |
-#     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/deployment.yaml -p APP_NAME=functionaltests -p ENV=tools -p IMAGE="webclient:$(Build.BuildNumber)" | oc apply --wait -f -
-#     oc rollout status dc/functionaltests -w
-#     npm test
-#     echo "$@" >&2
-#   displayName: 'Perform functional tests'
-#   continueOnError: 'false'
-#   workingDirectory: $(App.FunctionalTests)
-
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
   inputs:
