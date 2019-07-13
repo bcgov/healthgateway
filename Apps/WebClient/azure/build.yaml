@@ -4,6 +4,7 @@ name: 1.0.0$(Rev:.r) #Build number
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/WebClient
   App.Name: webclient
+  App.FunctionalTests: $(App.Home)/functional
 
 pr: none
 
@@ -18,28 +19,39 @@ trigger:
      - Apps/WebClient/test
      - Apps/WebClient/azure/build.yaml
      - Apps/WebClient/Dockerfile
+     - Apps/WebClient/functional
  
 pool:
   name: 'HealthGateway'
 
 steps:
 - task: Npm@1
+  displayName: Install NPM Packages
   inputs:
     command: 'install'
     workingDir: '$(App.Home)/src'
 
+- task: DotNetCoreCLI@2
+  displayName: Run dotnet Tests
+  inputs:
+    command: 'test'
+    projects: '$(App.Home)/test'
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+    testRunTitle: 'WebClient'
+
 - script: |
-    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    dotnet test test/test.csproj 
     npm --prefix src test
     dotnet sonarscanner begin /k:"webclient_dev" /v:$(Build.BuildNumber) /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportPaths="jest.out/lcov.info" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.verbose=true
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
     echo "$@" >&2
-  displayName: 'Perform static analisis'
+  displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
 - task: DotNetCoreCLI@2
+  displayName: Publish dotnet code
   inputs:
     modifyOutputPath: false
     command: 'publish'
@@ -48,25 +60,22 @@ steps:
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
 
-#- script: |
-#    pushd $(App.Home)
-#    cp Dockerfile $(Build.BinariesDirectory)
-#    pushd src
-#    dotnet publish -o $(Build.BinariesDirectory)
-#    popd
-#    popd
-#  displayName: 'Restore and publish .Net App'
-
 - script: |
     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
 
+- task: CopyFiles@2
+  displayName: Copy Functional Tests to Staging
+  inputs:
+    SourceFolder: '$(App.FunctionalTests)'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
 - task: PublishPipelineArtifact@0
-  displayName: 'Publish Pipeline Artifact'
+  displayName: 'Publish Pipeline Artifacts'
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
 

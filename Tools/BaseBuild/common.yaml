@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: ${NAME}-template
+objects:
+- apiVersion: v1
+  data:
+    HealthGateway_Common_OIDC__Authority: ${AUTH_OIDC_AUTHORITY}
+    HealthGateway_Common_OIDC__Audience: ${AUTH_OIDC_AUDIENCE}
+    HealthGateway_Common_OIDC__ClientSecret: ${AUTH_OIDC_CLIENTSECRET}
+  kind: ConfigMap
+  metadata:
+    name: ${NAME}-config
+    
+parameters: 
+  - name: NAME
+    displayName: Template Name
+    description: The name of the template and all related entities (override for multiple deployments in the same namespace)
+    value: common
+    required: true 
+  - name: AUTH_OIDC_AUTHORITY
+    displayName: OIDC Authority
+    description: The OIDC Authority to use for authentication
+    required: false
+  - name: AUTH_OIDC_AUDIENCE
+    displayName: OIDC Audience
+    description: The OIDC Audience to use for authentication
+    required: false
+  - name: AUTH_OIDC_CLIENTSECRET
+    displayName: OIDC Client Secret
+    description: The OIDC Client Secret
+    required: false  
