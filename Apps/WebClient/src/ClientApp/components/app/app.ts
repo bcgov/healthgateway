@@ -1,4 +1,4 @@
-import Vue from 'vue';
+﻿import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
 
 @Component({
@@ -7,4 +7,10 @@ import { Component } from 'vue-property-decorator';
     }
 })
 export default class AppComponent extends Vue {
+    host: string = window.location.hostname.toLocaleUpperCase();
+
+    constructor() {
+        super();
+        console.log(this.host);
+    }
 }
