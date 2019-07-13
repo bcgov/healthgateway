@@ -45,7 +45,7 @@ steps:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
     pathToSources: '$(App.Home)/src'
-    reportDirectory: '$(App.Home)/CodeCoverage'
+#    reportDirectory: '$(App.Home)/CodeCoverage'
 
 #- script: |
 #    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
