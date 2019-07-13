@@ -26,11 +26,13 @@ pool:
 
 steps:
 - task: Npm@1
+  displayName: Install NPM Packages
   inputs:
     command: 'install'
     workingDir: '$(App.Home)/src'
 
 - task: DotNetCoreCLI@2
+  displayName: Run dotnet Tests
   inputs:
     command: 'test'
     projects: '$(App.Home)/test'
@@ -49,6 +51,7 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
 - task: DotNetCoreCLI@2
+  displayName: Publish dotnet code
   inputs:
     modifyOutputPath: false
     command: 'publish'
@@ -65,13 +68,14 @@ steps:
   displayName: 'Build OpenShift Image and push to Image Stream'
 
 - task: CopyFiles@2
+  displayName: Copy Functional Tests to Staging
   inputs:
     SourceFolder: '$(App.FunctionalTests)'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     
 - task: PublishPipelineArtifact@0
-  displayName: 'Publish Pipeline Artifact'
+  displayName: 'Publish Pipeline Artifacts'
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
 
