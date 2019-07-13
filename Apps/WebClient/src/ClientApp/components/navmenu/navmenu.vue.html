@@ -1,11 +1,11 @@
-<template>
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+﻿<template>
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark shadow-lg border-bottom border-light">
         <!-- Brand -->
         <a class="navbar-brand" href="#">Health Gateway</a>
             
             <!-- Toggler/collapsibe Button -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-                    <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only">Toggle navigation</span>
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -32,6 +32,11 @@
                             <span class="fa fa-th-list"></span> Fetch data
                         </router-link>
                     </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><span class="navbar-text text-light">Hi User...</span></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
                 </ul>
             </div> 
         </nav>
