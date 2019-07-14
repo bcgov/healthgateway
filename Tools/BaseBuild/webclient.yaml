@@ -41,8 +41,8 @@ objects:
               - '-H'
               - 'Content-Type: application/json'
               - '--data'
-              - '{"text": "Updated Health Gateway App ${NAME} Deployed to **${ENV}** [Check it out!](https://${ENV}-gateway.pathfinder.gov.bc.ca) :rocket:"}'
-              - https://chat.pathfinder.gov.bc.ca/hooks/pLdurJfnQ2EQgmbT9/PtFJ77rC2vZRjycwXgJYnDcQEkH8emtu97jdxHXJke4mCjuo
+              - '{"icon_emoji":":cloud:","text":"[Updated Health Gateway App ${NAME} Deployed](https://${ENV}-gateway.pathfinder.gov.bc.ca)  to **${ENV}**"}'
+              - https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
             containerName: ${NAME}
           failurePolicy: Ignore
       type: Rolling
@@ -131,7 +131,7 @@ objects:
       apiVersion: v1
       kind: DeploymentConfig
       name: ${NAME}
-    targetCPUUtilizationPercentage: 70
+    targetCPUUtilizationPercentage: 60
 - apiVersion: v1
   kind: Route
   metadata:

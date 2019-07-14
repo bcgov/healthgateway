@@ -7,7 +7,6 @@
     <IsPackable>false</IsPackable>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{4EF62115-3012-4911-B7AA-3B798231ADC4}</ProjectGuid>
   </PropertyGroup>  
 
   <ItemGroup>
@@ -16,6 +15,11 @@
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +34,9 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClientApp\components\logout\" />
   </ItemGroup>
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
     <!-- Ensure Node.js is installed -->
