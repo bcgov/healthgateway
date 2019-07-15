@@ -13,11 +13,11 @@ The template will create a Web Hook that can be used to monitor the source GIT r
 To review the parameters execute:
 
 ```console
-oc process -f https://raw.githubusercontent.com/bcgov/healthgateway/master/Tools/AzureAgent/AzureAgent.yaml --parameters
+oc process -f ./openshift/AzureAgent.yaml --parameters
 ```
 
 To create the Azure Agent, be in your tools project and minimally execute:
 
 ```console
-oc process -f https://raw.githubusercontent.com/bcgov/healthgateway/master/Tools/AzureAgent/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=https://qslvic.visualstudio.com -p AZ_DEVOPS_TOKEN=blah
+oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT>
 ```

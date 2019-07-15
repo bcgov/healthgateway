@@ -3,34 +3,38 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "test": "jest --config jest.config.js"
+    "test": "jest --config jest.config.js",
+    "dev": "webpack --config webpack.config.js --env.prod=0",
+    "prod": "webpack --config webpack.config.js --env.prod=1 --env.min",
+    "vendor": "webpack --config webpack.config.vendor.js --env.prod=1 --env.min"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.9.0",
     "@types/jest": "^24.0.15",
-    "@types/webpack-env": "^1.13.9",
-    "aspnet-webpack": "^2.0.3",
-    "awesome-typescript-loader": "^3.5.0",
-    "bootstrap": "^4.3.1",
-    "css-loader": "^0.25.0",
-    "event-source-polyfill": "^0.0.7",
-    "extract-text-webpack-plugin": "^2.0.0-rc.3",
-    "file-loader": "^0.9.0",
+    "@types/webpack-env": "^1.14.0",
+    "aspnet-webpack": "^3.0.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "css-loader": "^3.0.0",
+    "event-source-polyfill": "^1.0.7",
+    "file-loader": "^4.0.0",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
     "jest-sonar-reporter": "^2.0.0",
     "jquery": "^3.4.1",
+    "mini-css-extract-plugin": "^0.7.0",
     "popper.js": "^1.15.0",
-    "style-loader": "^0.13.1",
+    "style-loader": "^0.23.1",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.5.2",
-    "url-loader": "^0.5.7",
+    "ts-loader": "6.0.4",
+    "typescript": "^3.5.3",
+    "url-loader": "^2.0.1",
     "vue": "^2.6.10",
-    "vue-loader": "^11.1.4",
+    "vue-loader": "^15.7.0",
     "vue-property-decorator": "^8.2.1",
-    "vue-router": "^3.0.7",
     "vue-template-compiler": "^2.6.10",
-    "webpack": "^2.7.0",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-middleware": "^3.7.0",
     "webpack-hot-middleware": "^2.25.0"
   },
   "jestSonar": {
@@ -40,6 +44,7 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.26",
-    "vue-i18n": "^8.12.0"
+    "vue-i18n": "^8.12.0",
+    "vue-router": "^3.0.7"
   }
 }
