@@ -1,0 +1,16 @@
+## Ignore these 
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Files that might appear in the root of a volume
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+## VSCode including workspaces
+.vscode/
+*.code-workspace
