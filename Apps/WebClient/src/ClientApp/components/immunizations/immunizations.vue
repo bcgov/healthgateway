@@ -34,6 +34,4 @@
         </b-table>
     </div>
 </template>
-
-s
-<script src="./immunizations.ts"></script>
+<script lang="ts" src="./immunizations.ts"></script>
