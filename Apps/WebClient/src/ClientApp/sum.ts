@@ -1,9 +1,9 @@
 export default function sum(f: number, s: number) {
-  if (f === NaN) {
+  if (Number.isNaN(f)) {
     console.log("f is not a number");
   }
 
-  if (s === NaN) {
+  if (Number.isNaN(s)) {
     console.log("s is not a number");
   }
 
