@@ -39,7 +39,7 @@ namespace HealthGateway.WebClient
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefadultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;                
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;                
             })
             .AddCookie( o => {
                 o.ExpireTimeSpan = TimeSpan.FromMinutes(15); 
