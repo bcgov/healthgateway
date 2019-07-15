@@ -39,11 +39,11 @@ namespace HealthGateway.WebClient
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;                
+                options.DefadultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;                
             })
             .AddCookie( o => {
                 o.ExpireTimeSpan = TimeSpan.FromMinutes(15); 
-                })
+            })
             .AddOpenIdConnect(o =>
              {
                  o.Authority = Configuration["OIDC:Authority"];
