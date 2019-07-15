@@ -1,14 +1,14 @@
-<template>
+﻿<template>
     <div id='app-root'>
+        <environment exclude="Production">
+            <div class="fixed-top text-center bg-warning translucent small">Non-production environment: <b>{{host}}</b></div>
+        </environment>
         <menu-component />
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-12">
-                    <router-view></router-view>
-                </div>
-            </div>
+        <div>
+            <router-view></router-view>
         </div>
     </div>
 </template>
 
 <script src="./app.ts"></script>
+<style src="./app.css" />

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 
 using Hl7.Fhir.Rest;
 
@@ -116,6 +117,13 @@ namespace HealthGateway.WebClient
             }
 
             app.UseStaticFiles();
+            
+            // forwarded Header middleware required for apps behind proxies and load balancers
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            });
+
             app.UseAuthentication();
             app.UseCookiePolicy();
 
