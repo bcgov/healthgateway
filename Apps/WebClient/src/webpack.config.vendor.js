@@ -1,11 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
-//const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
-    //const extractCSS = new ExtractTextPlugin('vendor.css');
 
     return [{
         mode: isDevBuild ? 'development' : 'production',
@@ -24,7 +22,6 @@ module.exports = (env) => {
         },
         module: {
             rules: [
-                //{ test: /\.css(\?|$)/, use: extractCSS.extract({ use: isDevBuild ? 'css-loader' : 'css-loader?minimize' }) },
                 {
                     test: /\.css$/,
                     use: [
@@ -44,7 +41,6 @@ module.exports = (env) => {
             library: '[name]_[hash]'
         },
         plugins: [
-            //extractCSS,
             new MiniCssExtractPlugin({ filename: 'vendor.css' }),
             new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery', 'window.jQuery': 'jquery', Popper: ['popper.js', 'default'] }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
             new webpack.DefinePlugin({
