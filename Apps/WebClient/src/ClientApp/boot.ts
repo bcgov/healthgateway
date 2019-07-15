@@ -18,7 +18,7 @@ import App from './components/app/app.vue'
 import home from './components/home/home.vue.html'
 import counter from './components/counter/counter.vue.html'
 import fetchdata from './components/fetchdata/fetchdata.vue.html'
-import immunizations from './components/immunizations/immunizations.vue.html'
+import immunizations from './components/immunizations/immunizations.vue'
 import registration from './components/registration/registration.vue.html'
 import logout from './components/logout/logout.vue.html'
 
