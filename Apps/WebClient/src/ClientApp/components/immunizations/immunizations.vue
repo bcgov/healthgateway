@@ -13,22 +13,22 @@
         <p id="subtext">{{ $t('immz-component.prototype')}}</p>
 
         <b-table striped responsive small :items="items" :fields="fields">
-            <template slot="HEAD_date" slot-scope="data" id="f1">
+            <template slot="HEAD_date" id="f1">
                 {{ $t('immz-component.fields.date') }}
             </template>
-            <template slot="HEAD_vaccine" slot-scope="data" id="f2">
+            <template slot="HEAD_vaccine" id="f2">
                 {{ $t('immz-component.fields.vaccine') }}
             </template>
-            <template slot="HEAD_dose" slot-scope="data" id="f3">
+            <template slot="HEAD_dose" id="f3">
                 {{ $t('immz-component.fields.dose') }}
             </template>
-            <template slot="HEAD_site" slot-scope="data" id="f4">
+            <template slot="HEAD_site" id="f4">
                 {{ $t('immz-component.fields.site') }}
             </template>
-            <template slot="HEAD_lot" slot-scope="data" id="f5">
+            <template slot="HEAD_lot" id="f5">
                 {{ $t('immz-component.fields.lot') }}
             </template>
-            <template slot="HEAD_boost" slot-scope="data" id="f6">
+            <template slot="HEAD_boost" id="f6">
                 {{ $t('immz-component.fields.boost') }}
             </template>
         </b-table>
