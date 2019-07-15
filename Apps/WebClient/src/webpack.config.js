@@ -1,22 +1,42 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 const bundleOutputDir = './wwwroot/dist';
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
 
     return [{
+        mode: isDevBuild ? 'development' : 'production',
         stats: { modules: false },
         context: __dirname,
-        resolve: { extensions: [ '.js', '.ts' ] },
+        resolve: { extensions: ['.js', '.ts'] },
         entry: { 'main': './ClientApp/boot.ts' },
         module: {
             rules: [
+                { test: /\.vue$/, include: /ClientApp/, use: 'vue-loader' },
                 { test: /\.vue\.html$/, include: /ClientApp/, loader: 'vue-loader', options: { loaders: { js: 'awesome-typescript-loader?silent=true' } } },
-                { test: /\.ts$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
-                { test: /\.css$/, use: isDevBuild ? [ 'style-loader', 'css-loader' ] : ExtractTextPlugin.extract({ use: 'css-loader?minimize' }) },
+                {
+                    test: /\.ts$/,
+                    include: /ClientApp/,
+                    loader: "ts-loader",
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/],
+                        transpileOnly: true
+                    }
+                },
+                {
+                    test: /\.css$/,
+                    use: isDevBuild ? ['style-loader', 'css-loader'] : [
+                        'style-loader',
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                        },
+                        'css-loader',
+                    ],
+                },
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
             ]
         },
@@ -26,6 +46,7 @@ module.exports = (env) => {
             publicPath: 'dist/'
         },
         plugins: [
+            new VueLoaderPlugin(),
             new CheckerPlugin(),
             new webpack.DefinePlugin({
                 'process.env': {
@@ -43,9 +64,9 @@ module.exports = (env) => {
                 moduleFilenameTemplate: path.relative(bundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
             })
         ] : [
-            // Plugins that apply in production builds only
-            new webpack.optimize.UglifyJsPlugin(),
-            new ExtractTextPlugin('site.css')
-        ])
+                // Plugins that apply in production builds only
+                //new webpack.optimize.UglifyJsPlugin(),
+                new MiniCssExtractPlugin({ filename: 'site.css' })
+            ])
     }];
 };
