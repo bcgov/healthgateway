@@ -25,6 +25,7 @@
           <router-link class="nav-link" to="/immunizations">
             <span class="fa fa-syringe"></span> Immunizations
           </router-link>
+          <--
           <router-link class="nav-link" to="/counter">
             <span class="fa fa-plus"></span> Counter
           </router-link>
