@@ -1,32 +1,39 @@
-﻿import '@fortawesome/fontawesome-free/js/fontawesome'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import '@fortawesome/fontawesome-free/js/fontawesome'
 import '@fortawesome/fontawesome-free/js/solid'
 import '@fortawesome/fontawesome-free/js/regular'
 import '@fortawesome/fontawesome-free/js/brands'
 import './css/site.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-import BootstrapVue from 'bootstrap-vue';
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import i18n from './i18n';
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import BootstrapVue from 'bootstrap-vue'
+import i18n from './i18n'
 
-Vue.use(VueRouter);
 Vue.use(BootstrapVue);
+Vue.use(VueRouter);
+
+import App from './components/app/app.vue'
+
+// Require does not work correctly, for now use import
+import home from './components/home/home.vue.html'
+import counter from './components/counter/counter.vue.html'
+import fetchdata from './components/fetchdata/fetchdata.vue.html'
+import immunizations from './components/immunizations/immunizations.vue.html'
+import registration from './components/registration/registration.vue.html'
+import logout from './components/logout/logout.vue.html'
 
 const routes = [
-    { path: '/', component: require('./components/home/home.vue.html') },
-    { path: '/counter', component: require('./components/counter/counter.vue.html') },
-    { path: '/fetchdata', component: require('./components/fetchdata/fetchdata.vue.html') },
-    { path: '/immunizations', component: require('./components/immunizations/immunizations.vue.html') },
-    { path: '/registration', component: require('./components/registration/registration.vue.html') },
-    { path: '/logout', component: require('./components/logout/logout.vue.html') },
+    { path: '/', component: home },
+    { path: '/counter', component: counter },
+    { path: '/fetchdata', component: fetchdata },
+    { path: '/immunizations', component: immunizations },
+    { path: '/registration', component: registration },
+    { path: '/logout', component: logout }
 ];
 
-
 new Vue({
-    i18n: i18n,
     el: '#app-root',
+    i18n: i18n,
     router: new VueRouter({ mode: 'history', routes: routes }),
-    render: h => h(require('./components/app/app.vue.html'))
-
+    render: h => h(App)
 });
