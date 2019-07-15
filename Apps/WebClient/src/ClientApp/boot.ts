@@ -15,12 +15,12 @@ Vue.use(VueRouter);
 import App from './components/app/app.vue'
 
 // Require does not work correctly, for now use import
-import home from './components/home/home.vue.html'
-import counter from './components/counter/counter.vue.html'
-import fetchdata from './components/fetchdata/fetchdata.vue.html'
+import home from './components/home/home.vue'
+import counter from './components/counter/counter.vue'
+import fetchdata from './components/fetchdata/fetchdata.vue'
 import immunizations from './components/immunizations/immunizations.vue'
-import registration from './components/registration/registration.vue.html'
-import logout from './components/logout/logout.vue.html'
+import registration from './components/registration/registration.vue'
+import logout from './components/logout/logout.vue'
 
 const routes = [
     { path: '/', component: home },
