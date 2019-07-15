@@ -22,6 +22,7 @@ pr:
    
 steps:
 - task: Npm@1
+  displayName: Install NPM Packages
   inputs:
     command: 'install'
     workingDir: '$(App.Home)/src'
@@ -37,10 +38,10 @@ steps:
 - script: |
    dotnet tool install -g dotnet-reportgenerator-globaltool
    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-  displayName: Create Code coverage report
+  displayName: Create Code Coverage Report
 
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage'
+  displayName: 'Publish Code Coverage'
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
@@ -59,6 +60,7 @@ steps:
 #  workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
 - task: DotNetCoreCLI@2
+  displayName: 'Publish dotnet Code'
   inputs:
     modifyOutputPath: false
     command: 'publish'
