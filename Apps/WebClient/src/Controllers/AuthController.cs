@@ -7,51 +7,54 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using HealthGateway.WebClient.Services;
 
 namespace HealthGateway.WebClient.Controllers
 {
+    /// <summary>
+    /// The Authentication and Authorization controller.
+    /// </summary>
     public class AuthController : Controller
     {
-        private readonly IConfiguration _config;
-        private readonly ILogger _logger;
+        private readonly IAuthService authSvc;
 
-        public AuthController(IConfiguration configuration, ILogger<AuthController> logger)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthController"/> class.
+        /// </summary>
+        /// <param name="authSvc">The injected auth service provider.</param>
+        public AuthController(IAuthService authSvc)
         {
-            _config = configuration;
-            _logger = logger;
+            this.authSvc = authSvc;
         }
 
+        /// <summary>
+        /// The default page for the auth controller.
+        /// </summary>
+        /// <returns>The default view.</returns>
         [Authorize]
         public IActionResult Index()
         {
-            return View();
+            return this.View();
         }
 
+        /// <summary>
+        /// Performs the logon to the application
+        /// </summary>
+        /// <returns>An OkObjectResult with the authenticated data.</returns>
         [Authorize]
         public async Task<IActionResult> Logon()
         {
-            _logger.LogTrace("Getting Bearer token");
-            var user = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var token = await HttpContext.GetTokenAsync("access_token");
-            return new OkObjectResult(new LogonResult { Auth = true, Token = token, User = user });
+            Models.AuthData authData = await this.authSvc.Authenticate().ConfigureAwait(true);
+            return new OkObjectResult(authData);
         }
 
+        /// <summary>
+        /// Performs the logout of the application
+        /// </summary>
+        /// <returns>A SignoutResult containing the redirect uri.</returns>
         public IActionResult Logout()
         {
-            _logger.LogTrace("Logging user out");
-            var props = new AuthenticationProperties() { RedirectUri = _config["OIDC:LogoffURI "] };
-            return new SignOutResult(new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme }, props);
-        }
-    }
-
-    public class LogonResult
-    {
-        public bool Auth { get; set; }
-        public string Token { get; set; }
-        public string User { get; set; }
-
-        public LogonResult()
-        {
+            return this.authSvc.Logout();
         }
     }
 }
