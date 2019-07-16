@@ -18,10 +18,11 @@ objects:
     - type: ConfigChange
       configChange: {}
     source:
-      contextDir: selenium-node-chrome
+      contextDir: tools/selenium/selenium-node-chrome
       type: Git
       git:
-        uri: https://github.com/bcgov/healthgateway/tree/dev/Tools/Selenium
+        ref: dev
+        uri: https://github.com/bcgov/healthgateway
     strategy:
       type: Docker
       DockerStrategy: {}
