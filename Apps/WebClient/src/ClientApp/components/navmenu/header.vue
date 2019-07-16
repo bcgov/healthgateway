@@ -21,22 +21,42 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
     <!-- Navbar links -->
-    <b-collapse id="nav-collapse" is-nav>
-      <b-navbar-nav>
-        <router-link class="nav-link" to="/" :exact="true">
+    <b-collapse id="nav-collapse" is-nav >
+      <b-navbar-nav v-if="userType === 'user'">
+        <router-link class="nav-link" to="/home" :exact="true">
           <span class="fa fa-home"></span> Home
         </router-link>
-        <router-link class="nav-link" to="/immunizations">
+        <router-link class="nav-link" to="/home/immunizations">
           <span class="fa fa-syringe"></span> Immunizations
         </router-link>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item-dropdown text="Hi User..." right>
+        <b-nav-item-dropdown text="Hi User..." v-if="isAuthenticated" right>
           <b-dropdown-item href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
+        <router-link class="nav-link" to="/home" :exact="true" v-else>
+          <span class="fa fa-home"></span> Login
+        </router-link>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
 </template>
+
+
+<script lang="ts">
+import Vue from "vue";
+export default Vue.extend({
+  computed: {
+    isAuthenticated() {
+      //return this.$store.state.areas;
+      return true;
+    },
+    userType() {
+      //return this.$store.state.areas;
+      return 'user';
+    }
+  }
+});
+</script>

@@ -14,22 +14,11 @@ Vue.use(VueRouter);
 
 import App from './components/app/app.vue'
 
-// Require does not work correctly, for now use import
-import home from './components/home/home.vue'
-import immunizations from './components/immunizations/immunizations.vue'
-import registration from './components/registration/registration.vue'
-import logout from './components/logout/logout.vue'
-
-const routes = [
-    { path: '/', component: home },
-    { path: '/immunizations', component: immunizations },
-    { path: '/registration', component: registration },
-    { path: '/logout', component: logout }
-];
+import router from './router'
 
 new Vue({
     el: '#app-root',
     i18n: i18n,
-    router: new VueRouter({ mode: 'history', routes: routes }),
+    router,
     render: h => h(App)
-});
+})
