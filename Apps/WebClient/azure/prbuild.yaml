@@ -1,0 +1,70 @@
+name: PR$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Apps/WebClient
+  App.Name: webclient
+
+pool:
+  name: 'HealthGateway'
+
+trigger: none
+
+pr:
+  branches:
+   include:
+   - dev  
+  paths:
+   include:
+   - Apps/WebClient/src
+   - Apps/WebClient/test
+   - Apps/WebClient/azure/prbuild.yaml
+   
+steps:
+- task: Npm@1
+  displayName: Install NPM Packages
+  inputs:
+    command: 'install'
+    workingDir: '$(App.Home)/src'
+
+- task: DotNetCoreCLI@2
+  displayName: Run dotnet Tests
+  inputs:
+    command: 'test'
+    projects: '$(App.Home)/test'
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    testRunTitle: 'WebClient'
+
+- script: |
+   dotnet tool install -g dotnet-reportgenerator-globaltool
+   reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+  displayName: Create Code Coverage Report
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
+    pathToSources: '$(App.Home)/src'
+    reportDirectory: '$(App.Home)/CodeCoverage'
+
+#- script: |
+#    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+#    npm --prefix src test
+#    dotnet sonarscanner begin /k:"webclient_dev" /v:$(Build.BuildNumber) /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportPaths="jest.out/lcov.info" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.verbose=true
+#    dotnet build    
+#    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+#    echo "$@" >&2
+#  displayName: 'Perform static analisis'
+#  continueOnError: 'false'
+#  workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish dotnet Code'
+  inputs:
+    modifyOutputPath: false
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(App.Home)/src'
+    arguments: '-o $(Build.BinariesDirectory)'
+    zipAfterPublish: false

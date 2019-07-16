@@ -1,0 +1,93 @@
+const path = require('path');
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
+const bundleOutputDir = './wwwroot/dist';
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+
+module.exports = (env) => {
+    const isDevBuild = !(env && env.prod);
+
+    return [{
+        mode: isDevBuild ? 'development' : 'production',
+        stats: { modules: false },
+        context: __dirname,
+        resolve: { extensions: ['.js', '.ts'] },
+        entry: { 'main': './ClientApp/boot.ts' },
+        module: {
+            rules: [
+                { test: /\.vue$/, include: /ClientApp/, use: 'vue-loader' },
+                { test: /\.vue\.html$/, include: /ClientApp/, loader: 'vue-loader', options: { loaders: { js: 'awesome-typescript-loader?silent=true' } } },
+                {
+                    test: /\.ts$/,
+                    include: /ClientApp/,
+                    loader: "ts-loader",
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/],
+                        transpileOnly: true
+                    }
+                },
+                {
+                    test: /\.scss$/,
+                    use: isDevBuild ? [
+                        "style-loader", // creates style nodes from JS strings
+                        "css-loader", // translates CSS into CommonJS
+                        "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                    ] : [
+                            'style-loader',
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                            },
+                            'css-loader',
+                            "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                        ],
+                },
+                {
+                    test: /\.css$/,
+                    use: isDevBuild ? ['style-loader', 'css-loader'] : [
+                        'style-loader',
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                        },
+                        'css-loader',
+                    ],
+                },
+                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
+                {
+                    test: /\.(woff|woff2|eot|ttf|otf)$/,
+                    use: [
+                        'file-loader'
+                    ]
+                }
+            ]
+        },
+        output: {
+            path: path.join(__dirname, bundleOutputDir),
+            filename: '[name].js',
+            publicPath: 'dist/'
+        },
+        plugins: [
+            new VueLoaderPlugin(),
+            new CheckerPlugin(),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify(isDevBuild ? 'development' : 'production')
+                }
+            }),
+            new webpack.DllReferencePlugin({
+                context: __dirname,
+                manifest: require('./wwwroot/dist/vendor-manifest.json')
+            })
+        ].concat(isDevBuild ? [
+            // Plugins that apply in development builds only
+            new webpack.SourceMapDevToolPlugin({
+                filename: '[file].map', // Remove this line if you prefer inline source maps
+                moduleFilenameTemplate: path.relative(bundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
+            })
+        ] : [
+                // Plugins that apply in production builds only
+                //new webpack.optimize.UglifyJsPlugin(),
+                new MiniCssExtractPlugin({ filename: 'site.css' })
+            ])
+    }];
+};

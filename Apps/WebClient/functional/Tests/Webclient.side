@@ -1,0 +1,312 @@
+{
+  "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
+  "version": "2.0",
+  "name": "Webclient",
+  "url": "https://dev-gateway.pathfinder.gov.bc.ca",
+  "tests": [{
+    "id": "6882f45d-be6c-451f-a50c-80d2f1ab64d1",
+    "name": "Subject in FR",
+    "commands": [{
+      "id": "81a8846e-0b6a-467b-8165-6694b93bc714",
+      "comment": "",
+      "command": "open",
+      "target": "/immunizations",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9c49a7a0-853d-4dcb-98b2-962c5ea5c608",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1496x1019",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "57741838-1e96-4f29-ab4d-0b0c2c979fc1",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6019929c-3664-4fa6-8405-bc43357d259b",
+      "comment": "",
+      "command": "select",
+      "target": "css=select",
+      "targets": [],
+      "value": "label=fr"
+    }, {
+      "id": "27a840d1-368e-4016-bb2f-faeff54e533e",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "90ee6ced-cb52-4378-97ef-70d082c16ae8",
+      "comment": "Test for french subject ",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='immz']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,' Immunisation')]", "xpath:innerText"]
+      ],
+      "value": " Immunisations"
+    }]
+  }, {
+    "id": "5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523",
+    "name": "Field.date in FR",
+    "commands": [{
+      "id": "67516874-15d6-436b-b992-171d84a9ba21",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "385941db-c7c1-4527-a9e9-8b4f9388a3d3",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1496x1019",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6f5171f4-93c0-4de2-95df-db11bd8f213e",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Immunizations",
+      "targets": [
+        ["linkText=Immunizations", "linkText"],
+        ["css=.nav-item:nth-child(2) > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
+        ["xpath=//div[@id='collapsibleNavbar']/ul/li[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
+        ["xpath=//li[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "64415d5e-ebdc-422c-8981-029a854984bc",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "17785e3f-45ae-4a54-96d7-c59f100d3aec",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "19d9540d-d0b4-4976-8c95-009c6f5deaa8",
+      "comment": "",
+      "command": "select",
+      "target": "css=select",
+      "targets": [],
+      "value": "label=fr"
+    }, {
+      "id": "4ebda62d-c233-4103-a970-93ebea74bb48",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e1aba803-f5a8-4f37-b8b8-3f6a8b74983e",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(1)",
+      "targets": [
+        ["css=th:nth-child(2)", "css:finder"],
+        ["xpath=//table[@id='__BVID__12']/thead/tr/th[2]", "xpath:idRelative"],
+        ["xpath=//th[2]", "xpath:position"],
+        ["xpath=//th[contains(.,'Vaccine')]", "xpath:innerText"]
+      ],
+      "value": "Date"
+    }]
+  }, {
+    "id": "2d57d1f0-ac1e-4899-b52e-219bbdaba866",
+    "name": "Field Vaccine in FR",
+    "commands": [{
+      "id": "48c14220-489c-4805-a321-693863b58ef7",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ed23ab41-2ee1-401c-aa0e-a0d88b432e46",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1496x1019",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8fc65cd0-b2d7-4f2d-a6f1-592e61dc18a9",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Immunizations",
+      "targets": [
+        ["linkText=Immunizations", "linkText"],
+        ["css=.nav-item:nth-child(2) > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
+        ["xpath=//div[@id='collapsibleNavbar']/ul/li[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
+        ["xpath=//li[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "88784312-0b4a-4eaa-a986-90dab6ff5091",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a75c4bfb-fb14-4024-9a96-743ce97a9b55",
+      "comment": "",
+      "command": "select",
+      "target": "css=select",
+      "targets": [],
+      "value": "label=fr"
+    }, {
+      "id": "7cb9d566-c3de-4c1c-9a5f-f44898c2f786",
+      "comment": "",
+      "command": "click",
+      "target": "css=select",
+      "targets": [
+        ["css=select", "css:finder"],
+        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
+        ["xpath=//select", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4abcb62d-91ec-4539-85e7-4b865371474f",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(2)",
+      "targets": [
+        ["css=th:nth-child(2)", "css:finder"],
+        ["xpath=//table[@id='__BVID__12']/thead/tr/th[2]", "xpath:idRelative"],
+        ["xpath=//th[2]", "xpath:position"],
+        ["xpath=//th[contains(.,'Vaccin')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "65cce90a-9130-452f-961f-35109a37f4a8",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=th:nth-child(2)",
+      "targets": [
+        ["css=th:nth-child(2)", "css:finder"],
+        ["xpath=//table[@id='__BVID__12']/thead/tr/th[2]", "xpath:idRelative"],
+        ["xpath=//th[2]", "xpath:position"],
+        ["xpath=//th[contains(.,'Vaccin')]", "xpath:innerText"]
+      ],
+      "value": "Vaccin"
+    }]
+  }, {
+    "id": "5623a813-676e-42d2-9fc8-4117f3206bf6",
+    "name": "Health Gateway Landing Page",
+    "commands": [{
+      "id": "89692e23-4ba5-4861-9b13-5221e1e45a12",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "baceb196-c09d-4965-83e9-43ee40bd1cfe",
+      "comment": "",
+      "command": "storeTitle",
+      "target": "",
+      "targets": [],
+      "value": "Home - Health Gateway"
+    }]
+  }, {
+    "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
+    "name": "Redirect to registration landing page",
+    "commands": [{
+      "id": "255cc728-fec0-4135-8bb9-9610aa1a5639",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "71c246ef-7e07-4fb0-8b69-5c264dfa8bd3",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Start now", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Start now')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/div[2]/div/div/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registration')]", "xpath:href"],
+        ["xpath=//div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Start now')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "dc5d4516-920a-4660-b429-000ffaba9c82",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=btnCreateAccount",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Create Health Gateway Account", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Create Health Gateway Account')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/div[3]/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[2]", "xpath:href"],
+        ["xpath=//div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Create Health Gateway Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["6882f45d-be6c-451f-a50c-80d2f1ab64d1", "5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523", "2d57d1f0-ac1e-4899-b52e-219bbdaba866"]
+  }],
+  "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/", "https://dev-gateway.pathfinder.gov.bc.ca/"],
+  "plugins": []
+}
