@@ -2,7 +2,8 @@
 
 Creates and deploys the Azure Agent in the OpenShift environment.  The running agent will accept one job and will exit after completion. 
 
-## Pre-requesites
+## ToDo
+After the Azure Agent exits OpenShift will sometimes delay based on Crash Loop Back Off.  This is true regardless of the exit code and a solution still needs to be investigated.
 
 ## Web Hooks
 
