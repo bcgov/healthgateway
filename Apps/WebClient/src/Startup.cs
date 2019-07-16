@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Threading.Tasks;
 
 using Hl7.Fhir.Rest;
 using HealthGateway.WebClient.Services;
@@ -72,6 +73,15 @@ namespace HealthGateway.WebClient
 
                  o.Events = new OpenIdConnectEvents()
                  {
+                     OnRedirectToIdentityProvider = ctx =>
+                     {
+                         if (!String.IsNullOrEmpty(Configuration["OIDC:IDPHint"]))
+                         {
+                             _logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                             ctx.ProtocolMessage.SetParameter(Configuration["OIDC:IDPHintKey"], Configuration["OIDC:IDPHint"]);
+                         }
+                         return Task.FromResult(0);
+                     },
                      OnAuthenticationFailed = c =>
                      {
                          c.HandleResponse();
