@@ -28,6 +28,21 @@ module.exports = (env) => {
                     }
                 },
                 {
+                    test: /\.scss$/,
+                    use: isDevBuild ? [
+                        "style-loader", // creates style nodes from JS strings
+                        "css-loader", // translates CSS into CommonJS
+                        "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                    ] : [
+                            'style-loader',
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                            },
+                            'css-loader',
+                            "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                        ],
+                },
+                {
                     test: /\.css$/,
                     use: isDevBuild ? ['style-loader', 'css-loader'] : [
                         'style-loader',
@@ -37,7 +52,13 @@ module.exports = (env) => {
                         'css-loader',
                     ],
                 },
-                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
+                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
+                {
+                    test: /\.(woff|woff2|eot|ttf|otf)$/,
+                    use: [
+                        'file-loader'
+                    ]
+                }
             ]
         },
         output: {

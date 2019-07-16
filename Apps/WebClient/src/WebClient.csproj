@@ -8,10 +8,11 @@
 
     <!-- SonarQube needs this -->
     <ProjectGuid>{4EF62115-3012-4911-B7AA-3B798231ADC4}</ProjectGuid>
+    <RootNamespace>HealthGateway.WebClient</RootNamespace>
   </PropertyGroup>  
 
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.2.1" />
+    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.3.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
