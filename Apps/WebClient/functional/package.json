@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Functional tests for the webclient application",
   "scripts": {
-    "test": "selenium-side-runner ./Tests/**/*.side --output-directory ."
+    "test": "selenium-side-runner --config-file ./chrome.side.yaml ./Tests/**/*.side --output-directory . --output-format=junit",
+    "testfirefox": "selenium-side-runner --config-file ./firefox.side.yaml ./Tests/**/*.side --output-directory . --output-format=junit"
   },
   "repository": {
     "type": "git",
