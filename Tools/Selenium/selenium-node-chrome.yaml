@@ -18,7 +18,7 @@ objects:
     - type: ConfigChange
       configChange: {}
     source:
-      contextDir: tools/selenium/selenium-node-chrome
+      contextDir: Tools/Selenium/selenium-node-chrome
       type: Git
       git:
         ref: dev

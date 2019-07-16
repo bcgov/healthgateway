@@ -18,11 +18,11 @@ objects:
     - type: ConfigChange
       configChange: {}
     source:
-      contextDir: selenium-node-firefox
+      contextDir: Tools/Selenium/selenium-node-firefox
       type: Git
       git:
-        uri: https://github.com/ddavison/selenium-openshift-templates
-        ref: master
+        uri: https://github.com/bcgov/healthgateway
+        ref: dev
     strategy:
       type: Docker
       DockerStrategy: {}
