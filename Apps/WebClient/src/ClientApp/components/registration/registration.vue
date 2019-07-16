@@ -31,5 +31,3 @@
         </div>
     </div>
 </template>
-
-<style src="./registration.css" />

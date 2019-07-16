@@ -32,7 +32,9 @@
     "webpack-hot-middleware": "^2.25.0",
     "webpack-cli": "^3.3.5",
     "webpack-dev-middleware": "^3.7.0",
-    "ts-loader": "6.0.4"
+    "ts-loader": "6.0.4",
+    "@bcgov/bootstrap-theme": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.0.0/bcgov-bootstrap-theme-1.0.0.tgz",
+    "bootstrap": "~4.3.1"
   },
   "jestSonar": {
     "reportPath": "../src/jest.out",
@@ -41,6 +43,8 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.26",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.1.0",
     "vue-i18n": "^8.12.0",
     "vue-router": "^3.0.7"
   }
