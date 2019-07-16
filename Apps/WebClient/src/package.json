@@ -25,7 +25,6 @@
     "popper.js": "^1.15.0",
     "style-loader": "^0.23.1",
     "ts-jest": "^24.0.2",
-    "ts-loader": "6.0.4",
     "typescript": "^3.5.3",
     "url-loader": "^2.0.1",
     "vue": "^2.6.10",
@@ -35,6 +34,9 @@
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6",
     "webpack-dev-middleware": "^3.7.0",
+    "ts-loader": "6.0.4",
+    "@bcgov/bootstrap-theme": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.0.0/bcgov-bootstrap-theme-1.0.0.tgz",
+    "bootstrap": "~4.3.1",
     "webpack-hot-middleware": "^2.25.0"
   },
   "jestSonar": {
@@ -44,6 +46,8 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.26",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.1.0",
     "vue-i18n": "^8.12.0",
     "vue-router": "^3.0.7"
   }

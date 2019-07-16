@@ -78,5 +78,3 @@
         </div>
     </div>
 </template>
-
-<style src="./home.css" />
