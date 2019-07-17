@@ -139,14 +139,9 @@
     }, {
       "id": "e1aba803-f5a8-4f37-b8b8-3f6a8b74983e",
       "comment": "",
-      "command": "click",
+      "command": "assertText",
       "target": "css=th:nth-child(1)",
-      "targets": [
-        ["css=th:nth-child(2)", "css:finder"],
-        ["xpath=//table[@id='__BVID__12']/thead/tr/th[2]", "xpath:idRelative"],
-        ["xpath=//th[2]", "xpath:position"],
-        ["xpath=//th[contains(.,'Vaccine')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "Date"
     }]
   }, {
@@ -248,10 +243,22 @@
     }, {
       "id": "baceb196-c09d-4965-83e9-43ee40bd1cfe",
       "comment": "",
-      "command": "storeTitle",
-      "target": "",
+      "command": "assertTitle",
+      "target": "Home - Health Gateway",
       "targets": [],
-      "value": "Home - Health Gateway"
+      "value": ""
+    }, {
+      "id": "db8fdb27-b6fe-431f-9dc4-268eccdf1a10",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Gateway')]", "xpath:innerText"]
+      ],
+      "value": "Health Gateway"
     }]
   }, {
     "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
