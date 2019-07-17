@@ -1,39 +1,81 @@
 # Functional Tests
 
-## Setup
+## Tools
+
+### Selenium IDE
+
+Browser extension that records and generate tests in JSON format
+
+[Docs](https://docs.seleniumhq.org/selenium-ide/docs/en/introduction/getting-started/)
+
+#### Setup Tool
+
+Chrome extension [Selenium IDE](https://chrome.google.com/webstore/detail/selenium-ide/mooikfkahbdckldjjndioackbalphokd?hl=en)  
+
+Firefox extension [Selenium IDE](https://addons.mozilla.org/en-US/firefox/addon/selenium-ide/)
+
+
+
+## Setup Test Execution
 
 ```console
 npm install
 ```
 
+### Setup in macOS:
+
+```console
+brew cask install chromedriver
+```
+
+### Setup in WIN:
+
+Download [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) matching the current version of chrome installed in your system.
+
+Extract to a folder of your preference and update the PATH environment variable.
+
+### Setup in Linux:
+
+```console
+sudo npm -g install chromedriver
+ln -sf /usr/lib/node_modules/chromedriver/lib/chromedriver/chromedriver ~/bin/chromedriver
+```
+
 ## Running
 
-### Selenium IDE tests
+### Using chromedriver
 
-Runs tests against localhost:
+LOCALHOST:
 
 ```console	
 npm test
 ```
 
-Runs tests against dev:
+DEV:
+
+```console	
+npm test -- --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
+```
+
+### Using selenium-hub (No chromedriver required)
+
+DEV:
 
 ```console	
 npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
 ```
 
-## Tools
+LOCALHOST:
 
-### Selenium IDE
-Chrome extension that records and generate functional tests  
-[Docs](https://docs.seleniumhq.org/selenium-ide/docs/en/introduction/getting-started/)
+To use selenium-hub against localhost the website needs to be exposed to the internet,
+it can be done by using a tool like [ngrok](https://ngrok.com/)
 
-#### Setup
-[Selenium IDE](https://docs.seleniumhq.org/selenium-ide/docs/en/introduction/getting-started/)  
-or  
-Search and install "Selenium IDE" from chrome://extensions
+```console	
+npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub"
+```
 
-#### Running
-```console
-selenium-side-runner <FILE_PATH>.side --base-url <WEBSITE_URL>
+Selenium-hub also supports tests in other browsers like firefox, to run:
+
+```console	
+npm test -- --config-file ./firefox.side.yml --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
 ```
