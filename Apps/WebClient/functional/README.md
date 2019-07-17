@@ -10,9 +10,13 @@ npm install
 
 ### Selenium IDE tests
 
-Runs tests in localhost:
+Runs tests against localhost:
 
-Runs tests in dev:
+```console	
+npm test
+```
+
+Runs tests against dev:
 
 ```console	
 npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
