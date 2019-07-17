@@ -4,7 +4,7 @@ ENV HOME=/home/seluser
 
 USER root
 
-COPY ./fix-permissions /usr/local/bin/fix-permissions
+COPY ./contrib /usr/local/bin
 
 RUN chown -R 1001:0 /opt/selenium && \
   /usr/local/bin/fix-permissions /opt/selenium && \
