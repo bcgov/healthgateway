@@ -22,19 +22,19 @@ Firefox extension [Selenium IDE](https://addons.mozilla.org/en-US/firefox/addon/
 npm install
 ```
 
-### Setup in macOS:
+#### ChromeDriver Setup in macOS:
 
 ```console
 brew cask install chromedriver
 ```
 
-### Setup in WIN:
+#### ChromeDriver Setup in WIN:
 
 Download [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) matching the current version of chrome installed in your system.
 
 Extract to a folder of your preference and update the PATH environment variable.
 
-### Setup in Linux:
+#### ChromeDriver Setup in Linux:
 
 ```console
 sudo npm -g install chromedriver
@@ -57,7 +57,7 @@ DEV:
 npm test -- --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
 ```
 
-### Using selenium-hub (No chromedriver required)
+### Using selenium-hub server (No chromedriver required)
 
 DEV:
 
