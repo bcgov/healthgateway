@@ -6,8 +6,6 @@ USER root
 
 COPY ./fix-permissions /usr/local/bin/fix-permissions
 
-RUN chown -R 1001:0 /opt/selenium
-
 RUN chown -R 1001:0 /opt/selenium && \
   /usr/local/bin/fix-permissions /opt/selenium && \
   /usr/local/bin/fix-permissions $HOME
