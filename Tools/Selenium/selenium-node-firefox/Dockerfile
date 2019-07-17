@@ -4,9 +4,7 @@ ENV HOME=/home/seluser
 
 USER root
 
-RUN chown -R $(whoami) /usr/local/bin
-
-COPY ./contrib /usr/local/bin
+COPY ./fix-permissions /usr/local/bin/fix-permissions
 
 RUN chown -R 1001:0 /opt/selenium && \
   /usr/local/bin/fix-permissions /opt/selenium && \
