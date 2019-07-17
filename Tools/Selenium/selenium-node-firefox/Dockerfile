@@ -4,13 +4,13 @@ ENV HOME=/home/seluser
 
 USER root
 
+COPY ./fix-permissions /usr/local/bin/fix-permissions
+
 RUN chown -R 1001:0 /opt/selenium
 
-RUN chgrp 0 /opt/selenium && \
-	chmod g+rw,g+x /opt/selenium
-
-RUN chgrp 0 $HOME && \
-	chmod g+rw,g+x $HOME
-
+RUN chown -R 1001:0 /opt/selenium && \
+  /usr/local/bin/fix-permissions /opt/selenium && \
+  /usr/local/bin/fix-permissions $HOME
+	
 USER 1001
 WORKDIR $HOME

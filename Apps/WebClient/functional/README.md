@@ -1,14 +1,21 @@
 # Functional Tests
 
 ## Setup
+
 ```console
 npm install
 ```
 
 ## Running
+
 ### Selenium IDE tests
+
+Runs tests in localhost:
+
+Runs tests in dev:
+
 ```console	
-npm run test -- --base-url https://dev.gateway.health.pathfinder.gov.bc.ca/
+npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
 ```
 
 ## Tools
