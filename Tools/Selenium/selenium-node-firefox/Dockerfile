@@ -4,16 +4,15 @@ ENV HOME=/home/seluser
 
 USER root
 
-
 RUN chown -R 1001:0 /opt/selenium 
 
-RUN find $1 -exec chgrp 0 /opt/selenium \; && \
-    find $1 -exec chmod g+rw /opt/selenium \; && \
-    find $1 -type d -exec chmod g+x /opt/selenium \;
+RUN find /opt/selenium -exec chgrp 0 \; && \
+    find /opt/selenium -exec chmod g+rw \; && \
+    find /opt/selenium -type d -exec chmod g+x \;
 
-RUN find $1 -exec chgrp 0 $HOME \; && \
-    find $1 -exec chmod g+rw $HOME \; && \
-    find $1 -type d -exec chmod g+x $HOME \;
+RUN find $HOME -exec chgrp 0 \; && \
+    find $HOME -exec chmod g+rw \; && \
+    find $HOME -type d -exec chmod g+x \;
 
 USER 1001
 WORKDIR $HOME
