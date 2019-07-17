@@ -4,11 +4,16 @@ ENV HOME=/home/seluser
 
 USER root
 
-COPY ./fix-permissions /usr/local/bin/fix-permissions
 
-RUN chown -R 1001:0 /opt/selenium && \
-  /usr/local/bin/fix-permissions /opt/selenium && \
-  /usr/local/bin/fix-permissions $HOME
+RUN chown -R 1001:0 /opt/selenium 
+
+RUN find $1 -exec chgrp 0 /opt/selenium \; && \
+    find $1 -exec chmod g+rw /opt/selenium \; && \
+    find $1 -type d -exec chmod g+x /opt/selenium \;
+
+RUN find $1 -exec chgrp 0 $HOME \; && \
+    find $1 -exec chmod g+rw $HOME \; && \
+    find $1 -type d -exec chmod g+x $HOME \;
 
 USER 1001
 WORKDIR $HOME
