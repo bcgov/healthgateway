@@ -1,0 +1,14 @@
+#!/bin/bash -e
+#
+# Test the Jenkins image.
+#
+# IMAGE_NAME specifies the name of the candidate image used for testing.
+# The image has to be available before this script is executed.
+#
+IMAGE_NAME=${IMAGE_NAME-jr00n/node-chrome-os-candidate}
+
+docker run ${IMAGE_NAME} id 
+docker run ${IMAGE_NAME} pwd
+#docker run --entrypoint="bash" ${IMAGE_NAME} -e "id && pwd"
+
+echo "SUCCESS!"
