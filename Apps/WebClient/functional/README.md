@@ -71,7 +71,7 @@ To use selenium-hub against localhost the website needs to be exposed to the int
 it can be done by using a tool like [ngrok](https://ngrok.com/)
 
 ```console	
-npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub"
+npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://<URL_ID>.ngrok.io/"
 ```
 
 Selenium-hub also supports tests in other browsers like firefox, to run:
