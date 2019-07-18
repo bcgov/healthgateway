@@ -1,18 +1,33 @@
 {
-  "include": ["./ClientApp/**/*", "vue-shims.d.ts"],
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
+    "target": "es5",
     "module": "esnext",
-    "moduleResolution": "node",
-    "target": "es6",
-    "sourceMap": true,
-    "skipDefaultLibCheck": true,
     "strict": true,
-    "types": ["jest","webpack-env"]
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "ClientApp/*"
+      ]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
   },
+  "include": [
+    "ClientApp/**/*.ts",
+    "ClientApp/**/*.vue",
+  ],
   "exclude": [
-      "bin",
-      "node_modules"
+    "bin",
+    "node_modules"
   ]
 }

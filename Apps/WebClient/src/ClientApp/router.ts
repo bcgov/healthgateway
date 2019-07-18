@@ -36,7 +36,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth) {
         //const auth = store.state.security.auth
-        const auth = '';//store.state.security.auth
+        const auth = { authenticated: false };//store.state.security.auth
         console.log('Requires auth!');
         if (!auth.authenticated) {
             //security.init(next, to.meta.roles)
@@ -45,10 +45,10 @@ router.beforeEach((to, from, next) => {
         else {
             console.log('Authenticated');
             if (to.meta.roles) {
-                if (security.roles(to.meta.roles[0])) {
+                /*if (security.roles(to.meta.roles[0])) {
                     next()
                 }
-                else {
+                else*/ {
                     next({ name: 'unauthorized' })
                 }
             }

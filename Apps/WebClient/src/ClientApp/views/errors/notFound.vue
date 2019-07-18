@@ -15,7 +15,7 @@ import PageErrorComponent, { PageError } from "@/components/error.vue";
   }
 })
 export default class NotFoundError extends Vue {
-  private errorDescription: PageError = new PageError (
+  private errorDescription: PageError = new PageError(
     "404",
     "Page not Found",
     "The page you where looking for does not exist."
