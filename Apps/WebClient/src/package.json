@@ -9,7 +9,6 @@
     "vendor": "webpack --config webpack.config.vendor.js --env.prod=1 --env.min"
   },
   "devDependencies": {
-    "@bcgov/bootstrap-theme": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.0.0/bcgov-bootstrap-theme-1.0.0.tgz",
     "@fortawesome/fontawesome-free": "^5.9.0",
     "@types/jest": "^24.0.15",
     "@types/webpack-env": "^1.14.0",
@@ -26,6 +25,7 @@
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
     "jest-sonar-reporter": "^2.0.0",
+    "jest-transform-stub": "^2.0.0",
     "jquery": "^3.4.1",
     "mini-css-extract-plugin": "^0.7.0",
     "popper.js": "^1.15.0",
@@ -33,10 +33,8 @@
     "ts-jest": "^24.0.2",
     "ts-loader": "6.0.4",
     "typescript": "^3.5.3",
-    "vue": "^2.6.10",
-    "vue-jest": "^3.0.4",
-    "vue-property-decorator": "^8.2.1",
     "url-loader": "^2.1.0",
+    "vue-jest": "^3.0.4",
     "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",
     "webpack": "^4.36.1",

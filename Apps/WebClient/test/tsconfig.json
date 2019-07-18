@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "target": "es6",
-    "types": ["jest", "node"]
-  }
-}

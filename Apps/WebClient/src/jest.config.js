@@ -15,7 +15,8 @@ module.exports = {
   transform: {
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
     '^.+\\.(js|jsx|ts|tsx)$': 'ts-jest',
-    "^.+\\.vue$": "vue-jest"
+    "^.+\\.vue$": "vue-jest",
+    ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
   },
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|my-project|react-native-button)/)',

@@ -1,5 +1,5 @@
 {
-  "name": "WebClient",
+  "name": "web-client",
   "version": "0.0.0",
   "lockfileVersion": 1,
   "requires": true,
@@ -6619,6 +6619,12 @@
       "requires": {
         "xml": "^1.0.1"
       }
+    },
+    "jest-transform-stub": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/jest-transform-stub/-/jest-transform-stub-2.0.0.tgz",
+      "integrity": "sha512-lspHaCRx/mBbnm3h4uMMS3R5aZzMwyNpNIJLXj4cEsV0mIUtS4IjYJLSoyjRCtnxb6RIGJ4NL2quZzfIeNhbkg==",
+      "dev": true
     },
     "jest-util": {
       "version": "24.8.0",
