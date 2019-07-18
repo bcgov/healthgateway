@@ -1,12 +1,6 @@
 using System.Threading.Tasks;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using HealthGateway.WebClient.Services;
 
 namespace HealthGateway.WebClient.Controllers
@@ -14,6 +8,7 @@ namespace HealthGateway.WebClient.Controllers
     /// <summary>
     /// The Authentication and Authorization controller.
     /// </summary>
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly IAuthService authSvc;
