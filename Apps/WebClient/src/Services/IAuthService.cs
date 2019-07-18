@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HealthGateway.WebClient.Services
+﻿namespace HealthGateway.WebClient.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Mvc;
+
+    /// <summary>
+    /// Authentication and Authorization Service.
+    /// </summary>
     public interface IAuthService
     {
         /// <summary>
@@ -19,5 +23,13 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <returns>The signout confirmation followed by the redirect uri.</returns>
         SignOutResult Logout();
+
+        /// <summary>
+        /// Returns the authentication properties with the populated hint and redirect URL.
+        /// </summary>
+        /// <returns> The AuthenticationProperties.</returns>
+        /// <param name="hint">The OIDC IDP Hint.</param>
+        /// <param name="redirectUri">The URI to redirect to after logon.</param>
+        AuthenticationProperties GetAuthenticationProperties(string hint, string redirectUri);
     }
 }

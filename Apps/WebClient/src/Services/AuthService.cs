@@ -1,16 +1,18 @@
-﻿using System.Threading.Tasks;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-
-namespace HealthGateway.WebClient.Services
+﻿namespace HealthGateway.WebClient.Services
 {
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+
+    #pragma warning disable CA1303 // disable literal strings check
+
     /// <summary>
     /// Authentication and Authorization Service.
     /// </summary>
@@ -52,8 +54,29 @@ namespace HealthGateway.WebClient.Services
         public SignOutResult Logout()
         {
             this.logger.LogTrace("Logging user out");
-            AuthenticationProperties props = new AuthenticationProperties() { RedirectUri = this.configuration["OIDC:LogoffURI "] };
+            AuthenticationProperties props = new AuthenticationProperties() { RedirectUri = this.configuration["OIDC:LogoffURI"] };
             return new SignOutResult(new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme }, props);
+        }
+
+        /// <summary>
+        /// Returns the authentication properties with the populated hint and redirect URL
+        /// </summary>
+        /// <returns> The AuthenticationProperties.</returns>
+        /// <param name="hint">The OIDC IDP Hint.</param>
+        /// <param name="redirectUri">The URI to redirect to after logon.</param>
+        public AuthenticationProperties GetAuthenticationProperties(string hint, string redirectUri)
+        {
+            this.logger.LogDebug("Getting Authentication properties with hint={0} and redirectUri={1}", hint, redirectUri);
+            AuthenticationProperties authProps = new AuthenticationProperties()
+            {
+                RedirectUri = redirectUri,
+            };
+            if (!string.IsNullOrEmpty(hint))
+            {
+                authProps.Items.Add(this.configuration["OIDC:IDPHintKey"], hint);
+            }
+
+            return authProps;
         }
     }
 }

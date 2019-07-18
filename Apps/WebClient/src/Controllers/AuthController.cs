@@ -1,16 +1,16 @@
-using System.Threading.Tasks;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using HealthGateway.WebClient.Services;
-
 namespace HealthGateway.WebClient.Controllers
 {
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+
     /// <summary>
     /// The Authentication and Authorization controller.
     /// </summary>
@@ -35,6 +35,12 @@ namespace HealthGateway.WebClient.Controllers
         public IActionResult Index()
         {
             return this.View();
+        }
+
+        public IActionResult Login(string hint, string redirectUri)
+        {
+            return new ChallengeResult(
+                OpenIdConnectDefaults.AuthenticationScheme, this.authSvc.GetAuthenticationProperties(hint, redirectUri));
         }
 
         /// <summary>
