@@ -1,5 +1,5 @@
 {
-  "name": "WebClient",
+  "name": "web-client",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -14,9 +14,10 @@
     "@types/webpack-env": "^1.14.0",
     "aspnet-webpack": "^3.0.0",
     "awesome-typescript-loader": "^5.2.1",
-    "css-loader": "^3.0.0",
+    "bootstrap": "~4.3.1",
+    "css-loader": "^3.1.0",
     "event-source-polyfill": "^1.0.7",
-    "file-loader": "^4.0.0",
+    "file-loader": "^4.1.0",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
     "jest-sonar-reporter": "^2.0.0",
@@ -25,18 +26,14 @@
     "popper.js": "^1.15.0",
     "style-loader": "^0.23.1",
     "ts-jest": "^24.0.2",
+    "ts-loader": "6.0.4",
     "typescript": "^3.5.3",
-    "url-loader": "^2.0.1",
-    "vue": "^2.6.10",
-    "vue-loader": "^15.7.0",
-    "vue-property-decorator": "^8.2.1",
+    "url-loader": "^2.1.0",
+    "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",
-    "webpack": "^4.35.3",
+    "webpack": "^4.36.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-middleware": "^3.7.0",
-    "ts-loader": "6.0.4",
-    "@bcgov/bootstrap-theme": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.0.0/bcgov-bootstrap-theme-1.0.0.tgz",
-    "bootstrap": "~4.3.1",
     "webpack-hot-middleware": "^2.25.0"
   },
   "jestSonar": {
@@ -45,10 +42,14 @@
     "indent": 4
   },
   "dependencies": {
+    "vue": "^2.6.10",
+    "vue-class-component": "^7.0.2",
+    "vue-property-decorator": "^8.2.1",
+    "vue-router": "^3.0.7",
+    "vuex": "^3.0.1",
     "bootstrap-vue": "^2.0.0-rc.26",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
-    "vue-i18n": "^8.12.0",
-    "vue-router": "^3.0.7"
+    "vue-i18n": "^8.12.0"
   }
 }

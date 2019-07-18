@@ -12,12 +12,16 @@ module.exports = (env) => {
         mode: isDevBuild ? 'development' : 'production',
         stats: { modules: false },
         context: __dirname,
-        resolve: { extensions: ['.js', '.ts'] },
+        resolve: {
+            extensions: ['.js', '.ts'],
+            alias: {
+                '@': path.resolve('ClientApp'),
+            }
+        },
         entry: { 'main': './ClientApp/boot.ts' },
         module: {
             rules: [
                 { test: /\.vue$/, include: /ClientApp/, use: 'vue-loader' },
-                { test: /\.vue\.html$/, include: /ClientApp/, loader: 'vue-loader', options: { loaders: { js: 'awesome-typescript-loader?silent=true' } } },
                 {
                     test: /\.ts$/,
                     include: /ClientApp/,
@@ -34,7 +38,6 @@ module.exports = (env) => {
                         "css-loader", // translates CSS into CommonJS
                         "sass-loader" // compiles Sass to CSS, using Node Sass by default
                     ] : [
-                            'style-loader',
                             {
                                 loader: MiniCssExtractPlugin.loader,
                             },
@@ -45,7 +48,6 @@ module.exports = (env) => {
                 {
                     test: /\.css$/,
                     use: isDevBuild ? ['style-loader', 'css-loader'] : [
-                        'style-loader',
                         {
                             loader: MiniCssExtractPlugin.loader,
                         },
