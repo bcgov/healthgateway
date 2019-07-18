@@ -4,7 +4,6 @@ module.exports = {
   displayName: 'Client app',  
   roots: [
     '<rootDir>', 
-    '<rootDir>/../test/ClientApp.Test/', 
   ],
   moduleFileExtensions: [
     'js',
@@ -17,6 +16,9 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': 'ts-jest',
     "^.+\\.vue$": "vue-jest",
     ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+  },
+  moduleNameMapper: {
+    "@/(.*)$": "<rootDir>/ClientApp/$1",
   },
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|my-project|react-native-button)/)',
