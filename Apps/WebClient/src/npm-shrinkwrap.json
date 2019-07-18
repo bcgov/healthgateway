@@ -291,11 +291,6 @@
         }
       }
     },
-    "@bcgov/bootstrap-theme": {
-      "version": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.0.0/bcgov-bootstrap-theme-1.0.0.tgz",
-      "integrity": "sha512-fWiWFWquncQtmiMzEk5/Mcj9YBo2xBeTuxXjwsA+6PTH1CjOxS6s2RhRVX8jG+pIoL9ri3Nt7x998dwkIkq01A==",
-      "dev": true
-    },
     "@cnakazawa/watch": {
       "version": "1.0.3",
       "resolved": "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.3.tgz",

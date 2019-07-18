@@ -4,14 +4,14 @@
     <b-navbar-brand href="https://www2.gov.bc.ca">
       <img
         class="img-fluid d-none d-md-block"
-        src="../../content/images/gov/bcid-logo-rev-en.svg"
+        src="@/assets/images/gov/bcid-logo-rev-en.svg"
         width="181"
         height="44"
         alt="B.C. Government Logo"
       />
       <img
         class="img-fluid d-md-none"
-        src="../../content/images/gov/bcid-symbol-rev.svg"
+        src="@/assets/images/gov/bcid-symbol-rev.svg"
         width="64"
         height="44"
         alt="B.C. Government Logo"
@@ -44,18 +44,17 @@
   </b-navbar>
 </template>
 
-
 <script lang="ts">
 import Vue from "vue";
 export default Vue.extend({
   computed: {
     isAuthenticated() {
       //return this.$store.state.areas;
-      return true;
+      return false;
     },
     userType() {
       //return this.$store.state.areas;
-      return 'user';
+      return null;
     }
   }
 });

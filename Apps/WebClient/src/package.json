@@ -35,7 +35,6 @@
     "webpack-cli": "^3.3.6",
     "webpack-dev-middleware": "^3.7.0",
     "ts-loader": "6.0.4",
-    "@bcgov/bootstrap-theme": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.0.0/bcgov-bootstrap-theme-1.0.0.tgz",
     "bootstrap": "~4.3.1",
     "webpack-hot-middleware": "^2.25.0"
   },

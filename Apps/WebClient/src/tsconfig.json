@@ -3,7 +3,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "es6",
     "sourceMap": true,

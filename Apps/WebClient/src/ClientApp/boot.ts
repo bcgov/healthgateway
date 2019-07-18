@@ -4,15 +4,17 @@ import '@fortawesome/fontawesome-free/js/fontawesome'
 import '@fortawesome/fontawesome-free/js/solid'
 import '@fortawesome/fontawesome-free/js/regular'
 import '@fortawesome/fontawesome-free/js/brands'
-import './scss/bcgov/bootstrap-theme.scss';
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import '@/assets/scss/bcgov/bootstrap-theme.scss'
+
+
 import BootstrapVue from 'bootstrap-vue'
 import i18n from './i18n'
 
-Vue.use(BootstrapVue);
-Vue.use(VueRouter);
+Vue.use(BootstrapVue)
+Vue.use(VueRouter)
 
-import App from './components/app/app.vue'
+import App from './app.vue'
 
 import router from './router'
 

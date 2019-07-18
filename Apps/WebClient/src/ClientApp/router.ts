@@ -3,34 +3,33 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-function load(component) {
+function load(componentPath: string) {
     // '@' is aliased to src/components
-    return () => import(`./components/${component}/${component}.vue`)
+    return () => import(`./views/${componentPath}`)
 }
 
 const routes = [
-    { path: '/', component: load('landing') },
-    { path: '/registration', component: load('registration') },
+    { path: '/', component: load('landing.vue') },
+    { path: '/registration', component: load('registration.vue') },
     {
         path: '/home',
-        component: load('home'),
+        component: load('home/home.vue'),
         meta: { requiresAuth: true, roles: ['user'] },
         children: [
-            { path: 'immunizations', component: load('immunizations'), meta: { requiresAuth: true, roles: ['user'] } }
+            { path: 'immunizations', component: load('immunizations.vue'), meta: { requiresAuth: true, roles: ['user'] } }
         ]
     },
     {
         path: '/logout',
-        component: load('logout'),
+        component: load('logout.vue'),
         meta: { requiresAuth: true, roles: ['user'] }
     },
-    { path: '*', component: load('Error404') }, // Not found
-    { path: '/unauthorized', name: 'Unauthorized', component: load('Unauthorized') } // Unauthorized
+    { path: '/unauthorized', component: load('errors/unauthorized.vue') }, // Unauthorized
+    { path: '*', component: load('errors/notFound.vue') } // Not found; Will catch all other paths not covered previously
 ]
 
 const router = new VueRouter({
     mode: 'history',
-    scrollBehavior: () => ({ y: 0 }),
     routes
 })
 
