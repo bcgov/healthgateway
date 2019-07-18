@@ -1,10 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
-import LandingComponent from '../../src/ClientApp/views/landing.vue'
+import HomeComponent from '@/views/home.vue'
 
-describe('LandingComponent', () => {
+describe('HomeComponent', () => {
   test('is a Vue instance', () => {
     const localVue = createLocalVue()
-    const wrapper = shallowMount(LandingComponent, { localVue });
+    const wrapper = shallowMount(HomeComponent, { localVue })
     expect(wrapper.isVueInstance()).toBeTruthy()
   })
 })

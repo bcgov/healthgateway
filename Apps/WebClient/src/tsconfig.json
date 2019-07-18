@@ -24,7 +24,7 @@
   },
   "include": [
     "ClientApp/**/*.ts",
-    "ClientApp/**/*.vue",
+    "ClientApp/**/*.vue"
   ],
   "exclude": [
     "bin",
