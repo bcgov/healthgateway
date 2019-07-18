@@ -1,14 +1,12 @@
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-
 namespace HealthGateway.WebClient
 {
-    
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     public static class Program
     {
-        private static readonly string EnvironmentPrefix = "HealthGateway_WebClient_";
+        private const string EnvironmentPrefix = "HealthGateway_WebClient_";
 
         public static void Main(string[] args)
         {

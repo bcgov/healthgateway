@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HealthGateway.WebClient.Models
+﻿namespace HealthGateway.WebClient.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Authentication Data Modal.
     /// </summary>
