@@ -14,6 +14,7 @@ namespace HealthGateway.WebClient.Controllers
     /// <summary>
     /// The Authentication and Authorization controller.
     /// </summary>
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly IAuthService authSvc;
