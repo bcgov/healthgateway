@@ -18,19 +18,8 @@
 
 <script lang="ts">
 import Vue from "vue";
+import PageError from "@/models/pageError";
 import { Prop, Component } from "vue-property-decorator";
-
-export class PageError {
-  private code: string;
-  private name: string;
-  private message: string;
-
-  constructor(code: string, name: string, message: string) {
-    this.code = code;
-    this.name = name;
-    this.message = message;
-  }
-}
 
 @Component
 export default class PageErrorComponent extends Vue {
