@@ -1,9 +1,14 @@
 properties:
-  sonar.coverage.exclusions: '**Tests*.cs'
-  sonar.testExecutionReportPaths: src/jest.out/test-report.xml
-  sonar.typescript.lcov.reportPaths: jest.out/lcov.info
+  sonar.coverage.exclusions: '**Tests*.cs, **test*.ts'
+  sonar.testExecutionReportPaths: sonar_reports/jest.out/test-report.xml
+  sonar.typescript.lcov.reportPaths: ../sonar_reports/jest.out/lcov.info
+  sonar.typescript.test.reportPaths: ../sonar_reports/jest.out/lcov.info
   sonar.cs.opencover.reportsPaths: '**/coverage.opencover.xml'
   sonar.cs.xunit.reportsPaths: '**/xUnitResults/results.xml'
+  sonar.test.inclusions: '**/*.test.ts'
+  sonar.scm.disabled: 'true'
 test-runners:
   - xunit
   - jest 
+paths:
+  jest: src/ClientApp

@@ -4,7 +4,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
-
+    var  string;
+    string = path.join(__dirname, '../wwwroot', 'dist', '[name]-manifest.json');
+    console.log(string)
     return [{
         mode: isDevBuild ? 'development' : 'production',
         stats: { modules: false },
@@ -35,7 +37,7 @@ module.exports = (env) => {
             ]
         },
         output: {
-            path: path.join(__dirname, 'wwwroot', 'dist'),
+            path: path.join(__dirname, '../wwwroot', 'dist'),
             publicPath: 'dist/',
             filename: '[name].js',
             library: '[name]_[hash]'
@@ -47,7 +49,7 @@ module.exports = (env) => {
                 'process.env.NODE_ENV': isDevBuild ? '"development"' : '"production"'
             }),
             new webpack.DllPlugin({
-                path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
+                path: path.join(__dirname, '../wwwroot', 'dist', '[name]-manifest.json'),
                 name: '[name]_[hash]'
             })
         ].concat(isDevBuild ? [] : [

@@ -15,7 +15,8 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    
+    using System.IO;
+
     public class Startup
     {
         private readonly ILogger logger;
@@ -144,6 +145,7 @@ namespace HealthGateway.WebClient
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true,
+                    ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp")
                 });
             }
             else
