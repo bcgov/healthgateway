@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "isolatedModules" :true,
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -28,7 +29,6 @@
     "test/**/*.ts"
   ],
   "exclude": [
-    "bin",
     "node_modules"
   ]
 }
