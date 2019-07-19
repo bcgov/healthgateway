@@ -4,9 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
-    var  string;
-    string = path.join(__dirname, '../wwwroot', 'dist', '[name]-manifest.json');
-    console.log(string)
     return [{
         mode: isDevBuild ? 'development' : 'production',
         stats: { modules: false },

@@ -7,7 +7,6 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
-    console.log(__dirname);
     return [{
         mode: isDevBuild ? 'development' : 'production',
         stats: { modules: false },
