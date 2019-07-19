@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "ClientApp/*"
+        "app/*"
       ]
     },
     "lib": [
@@ -23,8 +23,9 @@
     ]
   },
   "include": [
-    "ClientApp/**/*.ts",
-    "ClientApp/**/*.vue"
+    "app/**/*.ts",
+    "app/**/*.vue",
+    "test/**/*.ts"
   ],
   "exclude": [
     "bin",

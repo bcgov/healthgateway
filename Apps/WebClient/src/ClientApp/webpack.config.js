@@ -2,12 +2,12 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
-const bundleOutputDir = './wwwroot/dist';
+const bundleOutputDir = '../wwwroot/dist';
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
-
+    console.log(__dirname);
     return [{
         mode: isDevBuild ? 'development' : 'production',
         stats: { modules: false },
@@ -15,16 +15,16 @@ module.exports = (env) => {
         resolve: {
             extensions: ['.js', '.ts'],
             alias: {
-                '@': path.resolve('ClientApp'),
+                '@': path.resolve('app'),
             }
         },
-        entry: { 'main': './ClientApp/boot.ts' },
+        entry: { 'main': './app/boot.ts' },
         module: {
             rules: [
-                { test: /\.vue$/, include: /ClientApp/, use: 'vue-loader' },
+                { test: /\.vue$/, include: /app/, use: 'vue-loader' },
                 {
                     test: /\.ts$/,
-                    include: /ClientApp/,
+                    include: /app/,
                     loader: "ts-loader",
                     options: {
                         appendTsSuffixTo: [/\.vue$/],
@@ -64,7 +64,7 @@ module.exports = (env) => {
             ]
         },
         output: {
-            path: path.join(__dirname, bundleOutputDir),
+            path: path.resolve(__dirname, bundleOutputDir),
             filename: '[name].js',
             publicPath: 'dist/'
         },
@@ -78,7 +78,7 @@ module.exports = (env) => {
             }),
             new webpack.DllReferencePlugin({
                 context: __dirname,
-                manifest: require('./wwwroot/dist/vendor-manifest.json')
+                manifest: require('../wwwroot/dist/vendor-manifest.json')
             })
         ].concat(isDevBuild ? [
             // Plugins that apply in development builds only

@@ -43,7 +43,7 @@
     "webpack-hot-middleware": "^2.25.0"
   },
   "jestSonar": {
-    "reportPath": "../src/jest.out",
+    "reportPath": "../../sonar_reports/jest.out",
     "reportFile": "test-report.xml",
     "indent": 4
   },

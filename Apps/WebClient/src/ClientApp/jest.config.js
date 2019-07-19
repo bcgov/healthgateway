@@ -1,10 +1,7 @@
 module.exports = {
   verbose: true,
   name: 'Client app',
-  displayName: 'Client app',  
-  roots: [
-    '<rootDir>', 
-  ],
+  displayName: 'Client app',
   moduleFileExtensions: [
     'js',
     'ts',
@@ -18,7 +15,7 @@ module.exports = {
     ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
   },
   moduleNameMapper: {
-    "@/(.*)$": "<rootDir>/ClientApp/$1",
+    "@/(.*)$": "<rootDir>/app/$1",
   },
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|my-project|react-native-button)/)',
@@ -30,6 +27,6 @@ module.exports = {
     '!**/node_modules/**',
     '!**/vendor/**',
   ],
-  coverageDirectory: '<rootDir>/../src/jest.out',
+  coverageDirectory: '<rootDir>/../../sonar_reports/jest.out',
   testMatch: null
 }

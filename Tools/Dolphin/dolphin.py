@@ -16,6 +16,15 @@ SERVICE = 'dolphin'
 PROJECTS_PATH = '/api/projects/'
 PERMISSIONS_PATH = '/api/permissions/'
 
+class SonarConf:
+    prop = []
+    test_runners = []
+    paths = None
+    def __init__(self, prop, test_runners, paths): 
+        self.prop = prop
+        self.test_runners = test_runners   
+        self.paths = paths   
+
 
 @click.group()
 def main():
@@ -69,17 +78,22 @@ def delete(key):
 
 
 @main.command()
+@click.option('--verbose', '-v', help='runs the scanner on verbose mode', is_flag=True)
 @click.argument('key')
-def run(key):
+def run(key, verbose):
     """Executes SonarQube analysis'"""
 
-    login, token, url = _retrieve_credentials()
-    properties_string, test_runners = _load_scanner_config()
+    is_verbose = 'false'
+    if verbose:
+        is_verbose = 'true'
 
-    sonarparams = '/k:"{0}" ' \
+    login, token, url = _retrieve_credentials()
+    sonar_conf = _load_scanner_config()
+
+    sonarparams = '/d:sonar.verbose=' + is_verbose + ' /k:"{0}" ' \
                   '/d:sonar.host.url="{1}" ' \
                   '/d:sonar.login="{2}" ' \
-                  + properties_string
+                  + sonar_conf.prop
 
     params_string = sonarparams.format(key, url, token)
 
@@ -106,7 +120,7 @@ def run(key):
 
     click.echo()
     click.echo('Running tests...')
-    for runner_name in test_runners:
+    for runner_name in sonar_conf.test_runners:
         click.echo('Executing ' + runner_name + ' test')
         if runner_name == 'xunit':
             output = _run_command('dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults ')
@@ -114,7 +128,7 @@ def run(key):
                 click.secho('Error, please check logs', fg='red')
                 exit()
         elif runner_name == 'jest':
-            output = _run_command('npm --prefix src test')
+            output = _run_command('npm --prefix ' + sonar_conf.paths['jest'] + ' test')
             if output != 0:
                 click.secho('Error, please check logs', fg='red')
                 exit()
@@ -248,6 +262,7 @@ def _load_scanner_config():
     click.echo('Loading local sonarqube configuration...')
     parsed_properties = []
     test_runners = []
+    paths = {}
     with open(file_name, 'r') as config:
         try:
             data = yaml.load(config, Loader=yaml.Loader)
@@ -258,11 +273,13 @@ def _load_scanner_config():
             # load the runners
             for runner_name in data['test-runners']:
                 test_runners.append(runner_name)
+            for path_name, value in data['paths'].items():
+                paths[path_name] = value
 
         except yaml.YAMLError as exc:
             print(exc)
 
-    return ' '.join(parsed_properties), test_runners
+    return SonarConf(' '.join(parsed_properties), test_runners, paths)
 
 
 if __name__ == '__main__':
