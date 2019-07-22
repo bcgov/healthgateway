@@ -21,6 +21,7 @@ pool:
 
 steps:
 - script: |
+    set -e
     oc process -f $(App.Home)/build.yaml | oc apply -f -
     oc start-build $(App.Name) --wait --follow 
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
