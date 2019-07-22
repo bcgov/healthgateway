@@ -9,8 +9,8 @@ describe('Home view', () => {
     expect(wrapper.isVueInstance()).toBeTruthy();
   })
 
-  const expectedH1Text = "Health Gateway";
-  test(`has header element with "${expectedH1Text}" text`, () => {
+  test('has header element with static text', () => {
+    const expectedH1Text = "Health Gateway";
     expect(wrapper.find('h1').text()).toBe(expectedH1Text);
   })
 })
