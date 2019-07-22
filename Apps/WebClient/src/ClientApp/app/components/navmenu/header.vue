@@ -21,7 +21,7 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
     <!-- Navbar links -->
-    <b-collapse id="nav-collapse" is-nav >
+    <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav v-if="userType === 'user'">
         <router-link class="nav-link" to="/home" :exact="true">
           <span class="fa fa-home"></span> Home
@@ -39,6 +39,17 @@
         <router-link class="nav-link" to="/home" :exact="true" v-else>
           <span class="fa fa-home"></span> Login
         </router-link>
+        <b-nav-item-dropdown id="languageSelector" :text="currentLanguage.description" right>
+          <b-dropdown-text>Language:</b-dropdown-text>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item
+            v-for="(value, key) in languages"
+            :name="key"
+            :key="key"
+            :active="currentLanguage.code === key"
+            @click="onLanguageSelect(key)"
+          >{{value.description}}</b-dropdown-item>
+        </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -46,16 +57,35 @@
 
 <script lang="ts">
 import Vue from "vue";
-export default Vue.extend({
-  computed: {
-    isAuthenticated() {
-      //return this.$store.state.areas;
-      return false;
-    },
-    userType() {
-      //return this.$store.state.areas;
-      return null;
-    }
+import { Prop, Component } from "vue-property-decorator";
+
+interface ILanguage {
+  code: string;
+  description: string;
+}
+
+@Component
+export default class HeaderComponent extends Vue {
+  isAuthenticated: boolean = false;
+  userType: string = null;
+
+  languages: { [code: string]: ILanguage } = {};
+  currentLanguage: ILanguage = null;
+
+  created() {
+    this.isAuthenticated = false;
+    this.userType = null;
+    this.loadLanguages();
   }
-});
+
+  onLanguageSelect(languageCode:string): void {
+    this.currentLanguage = this.languages[languageCode];
+  }
+
+  loadLanguages(): void {
+    this.languages["en"] = { code: "en", description: "English" };
+    this.languages["fr"] = { code: "fr", description: "French" };
+    this.currentLanguage = this.languages["en"];
+  }
+}
 </script>
