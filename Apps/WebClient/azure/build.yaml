@@ -40,6 +40,7 @@ steps:
     testRunTitle: 'WebClient'
 
 - script: |
+    set -e
     dotnet test test/test.csproj 
     npm --prefix src test
     dotnet sonarscanner begin /k:"webclient_dev" /v:$(Build.BuildNumber) /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.testExecutionReportPaths="src/jest.out/test-report.xml" /d:sonar.typescript.lcov.reportPaths="jest.out/lcov.info" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.verbose=true
@@ -61,6 +62,7 @@ steps:
     zipAfterPublish: false
 
 - script: |
+    set -e
     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
