@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer fixed-bottom">
+  <footer class="footer sticky-bottom">
     <b-navbar toggleable="lg" type="dark">
       <!-- Navbar content -->
       <b-navbar-nav>
