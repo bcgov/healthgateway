@@ -24,7 +24,7 @@
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav v-if="userType === 'user'">
         <router-link class="nav-link" to="/home" :exact="true">
-          <span class="fa fa-home"></span> Home
+          <span class="fa fa-user"></span> Home
         </router-link>
         <router-link class="nav-link" to="/home/immunizations">
           <span class="fa fa-syringe"></span> Immunizations
@@ -37,7 +37,7 @@
           <b-dropdown-item href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link class="nav-link" to="/home" :exact="true" v-else>
-          <span class="fa fa-home"></span> Login
+          <span class="fa fa-user"></span> Login
         </router-link>
         <b-nav-item-dropdown id="languageSelector" :text="currentLanguage.description" right>
           <b-dropdown-text>Language:</b-dropdown-text>
