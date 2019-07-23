@@ -305,6 +305,24 @@
       ],
       "value": ""
     }]
+  }, {
+    "id": "2057d9e0-ebcd-4fc5-b421-8ec04e221c72",
+    "name": "404 Page",
+    "commands": [{
+      "id": "1f68a882-424f-4ad8-8c85-101b8b9971c2",
+      "comment": "",
+      "command": "open",
+      "target": "/nonexistingpage",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8be70103-f8a5-454c-bdf2-817d4f6589c0",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [],
+      "value": "404"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -320,6 +338,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523", "6882f45d-be6c-451f-a50c-80d2f1ab64d1", "2d57d1f0-ac1e-4899-b52e-219bbdaba866"]
+  }, {
+    "id": "a32919fd-84cc-4306-ab79-038d01aa6754",
+    "name": "Error Pages",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["2057d9e0-ebcd-4fc5-b421-8ec04e221c72"]
   }],
   "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/", "https://dev-gateway.pathfinder.gov.bc.ca/"],
   "plugins": []
