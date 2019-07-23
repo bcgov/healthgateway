@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "WebClient"
+			"path": "Immunization"
 		},
 		{
-			"path": "Immunization"
+			"path": "WebClient"
 		}
 	],
 	"settings": {}

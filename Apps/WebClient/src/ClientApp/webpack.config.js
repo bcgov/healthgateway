@@ -12,13 +12,15 @@ module.exports = (env) => {
         stats: { modules: false },
         context: __dirname,
         resolve: {
-            extensions: ['.js', '.ts'],
+            extensions: ['.js', '.ts', 'vue', 'json'],
             alias: {
                 '@': path.resolve('app'),
+                vue$: 'vue/dist/vue.runtime.esm.js'
             }
         },
         entry: { 'main': './app/boot.ts' },
         module: {
+            noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
             rules: [
                 { test: /\.vue$/, include: /app/, use: 'vue-loader' },
                 {
