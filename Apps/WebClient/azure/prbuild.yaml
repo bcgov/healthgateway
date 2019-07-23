@@ -31,7 +31,7 @@ steps:
   displayName: Run dotnet Tests
   inputs:
     command: 'test'
-    projects: '$(App.Home)/test'
+    projects: '$(App.Home)/test/test.csproj'
     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     testRunTitle: 'WebClient'
 
