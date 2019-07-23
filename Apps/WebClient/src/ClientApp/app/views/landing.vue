@@ -48,7 +48,7 @@
           <div class="col d-flex justify-content-center">
             <div class="border border-light rounded-circle shadow-lg p-3 mb-5 bg-white text-center">
               <h3 class="m-5">
-                <span class="fa fa-4x fa-medkit"></span>
+                <span class="fa fa-4x fa-prescription-bottle-alt"></span>
               </h3>
             </div>
           </div>

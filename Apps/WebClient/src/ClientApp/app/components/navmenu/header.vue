@@ -34,7 +34,7 @@
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown text="Hi User..." v-if="isAuthenticated" right>
-          <b-dropdown-item href="/auth/logout">Logout</b-dropdown-item>
+          <b-dropdown-item href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link class="nav-link" to="/home" :exact="true" v-else>
           <span class="fa fa-home"></span> Login
@@ -44,11 +44,11 @@
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item
             v-for="(value, key) in languages"
-            :name="key"
             :key="key"
             :active="currentLanguage.code === key"
-            @click="onLanguageSelect(key)"
-          >{{value.description}}</b-dropdown-item>
+          >
+            <a :id="key" @click="onLanguageSelect(key)">{{value.description}}</a>
+          </b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>

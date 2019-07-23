@@ -1,31 +1,33 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import HomeComponent from './views/home.vue'
+import RegistrationComponent from './views/registration.vue'
+import LandingComponent from './views/landing.vue'
+import ImmunizationsComponent from './views/immunizations.vue'
+import NotFoundComponent from './views/errors/notFound.vue'
+import LogoutComponent from './views/logout.vue'
+import UnauthorizedComponent from './views/errors/unauthorized.vue'
 
 Vue.use(VueRouter)
 
-function load(componentPath: string) {
-    // '@' is aliased to src/components
-    return () => import(`./views/${componentPath}`)
-}
-
 const routes = [
-    { path: '/', component: load('landing.vue') },
-    { path: '/registration', component: load('registration.vue') },
+    { path: '/', component: LandingComponent },
+    { path: '/registration', component: RegistrationComponent },
     {
         path: '/home',
-        component: load('home/home.vue'),
+        component: HomeComponent,
         meta: { requiresAuth: true, roles: ['user'] },
         children: [
-            { path: 'immunizations', component: load('immunizations.vue'), meta: { requiresAuth: true, roles: ['user'] } }
+            { path: '/immunizations', component: ImmunizationsComponent, meta: { requiresAuth: true, roles: ['user'] } }
         ]
     },
     {
         path: '/logout',
-        component: load('logout.vue'),
+        component: LogoutComponent,
         meta: { requiresAuth: true, roles: ['user'] }
     },
-    { path: '/unauthorized', component: load('errors/unauthorized.vue') }, // Unauthorized
-    { path: '*', component: load('errors/notFound.vue') } // Not found; Will catch all other paths not covered previously
+    { path: '/unauthorized', component: UnauthorizedComponent }, // Unauthorized
+    { path: '*', component: NotFoundComponent } // Not found; Will catch all other paths not covered previously
 ]
 
 const router = new VueRouter({
@@ -40,6 +42,7 @@ router.beforeEach((to, from, next) => {
         console.log('Requires auth!');
         if (!auth.authenticated) {
             //security.init(next, to.meta.roles)
+            next({ name: 'unauthenticated' })
             console.log('Not authenticated');
         }
         else {
