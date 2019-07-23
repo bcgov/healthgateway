@@ -45,6 +45,7 @@
           <b-dropdown-item
             v-for="(value, key) in languages"
             :key="key"
+            :active="currentLanguage.code === key"
           >
             <a :id="key" @click="onLanguageSelect(key)">{{value.description}}</a>
           </b-dropdown-item>
