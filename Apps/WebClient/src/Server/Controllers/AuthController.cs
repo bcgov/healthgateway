@@ -63,10 +63,10 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>A JSON object with the authentication data.</returns>
         [Route("/api/GetAuthenticationData")]
-        public async Task<IActionResult> GetAuthenticationData()
+        public async Task<Models.AuthData> GetAuthenticationData()
         {
             Models.AuthData authData = await this.authSvc.GetAuthenticationData().ConfigureAwait(true);
-            return new JsonResult(authData);
+            return authData;
         }
     }
 }
