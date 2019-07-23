@@ -6,7 +6,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Logging;
     public static class Program
     {
-        private const string EnvironmentPrefix = "HealthGateway_WebClient_";
+        private const string EnvironmentPrefix = "HealthGateway_";
 
         public static void Main(string[] args)
         {
