@@ -38,9 +38,15 @@
   <ItemGroup>
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="ClientApp\components\logout\" />
   </ItemGroup>
+
+  <Target Name = "CleanDistFolder" AfterTargets="CoreClean">
+    <RemoveDir Directories="wwwroot\dist" />
+  </Target>
+
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

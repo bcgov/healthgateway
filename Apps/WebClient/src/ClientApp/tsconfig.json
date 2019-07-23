@@ -11,6 +11,8 @@
     "sourceMap": true,
     "isolatedModules" :true,
     "baseUrl": ".",
+    "types": ["reflect-metadata"],
+    "emitDecoratorMetadata": true,
     "paths": {
       "@/*": [
         "app/*"

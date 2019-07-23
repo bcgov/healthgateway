@@ -54,6 +54,13 @@ namespace HealthGateway.WebClient.Controllers
             return new OkObjectResult(authData);
         }
 
+        [Route("api/Something")]
+        public async Task<IActionResult> Something()
+        {
+            Models.AuthData data = new Models.AuthData { IsAuthenticated = false, Token = "some_token_thing", User = "THE_USER" };
+            return new OkObjectResult(data);
+        }
+
         /// <summary>
         /// Performs the logout of the application
         /// </summary>

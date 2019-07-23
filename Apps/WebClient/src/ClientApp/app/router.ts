@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { IAuthenticationService } from '@/services/interfaces'
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import container from "./inversify.config";
 
 Vue.use(VueRouter)
 
@@ -25,7 +28,9 @@ const routes = [
         meta: { requiresAuth: true, roles: ['user'] }
     },
     { path: '/unauthorized', component: load('errors/unauthorized.vue') }, // Unauthorized
-    { path: '*', component: load('errors/notFound.vue') } // Not found; Will catch all other paths not covered previously
+    { path: '/notFound', component: load('errors/notFound.vue') },
+    { path: '/Auth/Login' },
+    { path: '*', redirect: '/notFound' } // Not found; Will catch all other paths not covered previously
 ]
 
 const router = new VueRouter({
@@ -38,24 +43,33 @@ router.beforeEach((to, from, next) => {
         //const auth = store.state.security.auth
         const auth = { authenticated: false };//store.state.security.auth
         console.log('Requires auth!');
-        if (!auth.authenticated) {
-            //security.init(next, to.meta.roles)
-            console.log('Not authenticated');
-        }
-        else {
-            console.log('Authenticated');
-            if (to.meta.roles) {
-                /*if (security.roles(to.meta.roles[0])) {
-                    next()
-                }
-                else*/ {
-                    next({ name: 'unauthorized' })
-                }
+
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService);
+        authService.getBearerToken().then(bearerToken => {
+            console.log(bearerToken.token);
+
+            if (!bearerToken.isAuthenticated) {
+                //security.init(next, to.meta.roles)
+                console.log('Not authenticated');
+                authService.startLoginFlow('aHint', to.path);
             }
             else {
-                next()
+                console.log('Authenticated');
+                if (to.meta.roles) {
+                    /*if (security.roles(to.meta.roles[0])) {
+                        next()
+                    }
+                    else*/ {
+                        next({ name: 'unauthorized' })
+                    }
+                }
+                else {
+                    next()
+                }
             }
-        }
+        }).catch(something => { 
+            console.log('ERROR HERE' + something);
+     });
     }
     else {
         next()

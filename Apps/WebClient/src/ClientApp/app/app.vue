@@ -7,14 +7,14 @@
           <b>{{host}}</b>
         </div>
       </environment>
-      <header-component />
+      <NavHeader />
     </header>
     <main>
       <div class="container">
         <router-view></router-view>
       </div>
     </main>
-    <footer-component />
+    <NavFooter />
   </div>
 </template>
 
@@ -22,13 +22,13 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
-import HeaderMenu from "./components/navmenu/header.vue";
-import FooterMenu from "./components/navmenu/footer.vue";
+import HeaderComponent from "./components/navmenu/navHeader.vue";
+import FooterComponent from "./components/navmenu/navFooter.vue";
 
 @Component({
   components: {
-    HeaderComponent: HeaderMenu,
-    FooterComponent: FooterMenu
+    NavHeader: HeaderComponent,
+    NavFooter: FooterComponent
   }
 })
 export default class AppComponent extends Vue {
