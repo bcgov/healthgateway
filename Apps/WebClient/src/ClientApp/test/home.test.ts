@@ -10,7 +10,7 @@ describe('Home view', () => {
   })
 
   test('has header element with static text', () => {
-    const expectedH1Text = "Health Gateway";
+    const expectedH1Text = "Welcome to Health Gateway!";
     expect(wrapper.find('h1').text()).toBe(expectedH1Text);
   })
 })
