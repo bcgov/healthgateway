@@ -29,4 +29,3 @@ describe('NavBar Header Component', () => {
     expect(wrapper.vm.$data.currentLanguage.code).toBe("fr"); // Checks scope variable
   })  
 })
-
