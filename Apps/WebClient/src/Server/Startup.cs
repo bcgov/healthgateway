@@ -60,10 +60,12 @@ namespace HealthGateway.WebClient
                                     this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
                          }
                          else
-                            if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
                          {
-                             this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                             ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                            if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                            {
+                                this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                            }
                          }
 
                          return Task.FromResult(0);

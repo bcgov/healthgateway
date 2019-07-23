@@ -47,9 +47,12 @@
             if (authData.IsAuthenticated)
             {
                 this.logger.LogDebug("Getting Authentication data");
-                authData.User.Id = user.FindFirstValue("preferred_username");
-                authData.User.Name = user.FindFirstValue("name");
-                authData.User.Email = user.FindFirstValue(ClaimTypes.Email);
+                authData.User = new Models.User
+                {
+                    Id = user.FindFirstValue("preferred_username"),
+                    Name = user.FindFirstValue("name"),
+                    Email = user.FindFirstValue(ClaimTypes.Email),
+                };
                 authData.Token = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
             }
 

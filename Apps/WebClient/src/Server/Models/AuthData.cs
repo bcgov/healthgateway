@@ -11,14 +11,6 @@
     public class AuthData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthData"/> class.
-        /// </summary>
-        public AuthData()
-        {
-            this.User = new User();
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether is the request Authenticated.
         /// </summary>
         public bool IsAuthenticated { get; set; }
