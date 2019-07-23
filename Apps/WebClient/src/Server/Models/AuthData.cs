@@ -6,10 +6,18 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Authentication Data Modal.
+    /// Authentication Data Model.
     /// </summary>
     public class AuthData
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthData"/> class.
+        /// </summary>
+        public AuthData()
+        {
+            this.User = new User();
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether is the request Authenticated.
         /// </summary>
@@ -23,6 +31,6 @@
         /// <summary>
         /// Gets or sets the authenticated user.
         /// </summary>
-        public string User { get; set; }
+        public User User { get; set; }
     }
 }

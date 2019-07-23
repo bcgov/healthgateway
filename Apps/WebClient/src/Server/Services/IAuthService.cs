@@ -16,7 +16,7 @@
         /// Authenticates the request based on the current context.
         /// </summary>
         /// <returns>The AuthData containing the token and user information.</returns>
-        Task<Models.AuthData> Authenticate();
+        Task<Models.AuthData> GetAuthenticationData();
 
         /// <summary>
         /// Clears the authorization data from the context.

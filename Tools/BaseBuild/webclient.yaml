@@ -6,9 +6,7 @@ objects:
 
 - apiVersion: v1
   data:
-    HealthGateway_WebClient_Immunization__URL: ${IMMUNIZATION_URL}
-    HealthGateway_WebClient_Immunization__VERSION: ${IMMUNIZATION_VERSION}
-    HealthGateway_WebClient_Immunization__PATH: ${IMMUNIZATION_PATH}
+    HealthGateway_WebClient_XXX: 'XXX'
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
@@ -54,36 +52,21 @@ objects:
       spec:
         containers:
         - env:
-            - name: HealthGateway_WebClient_OIDC__Authority
+            - name: HealthGateway_OpenIdConnect__Authority
               valueFrom:
                 configMapKeyRef:
-                  key: HealthGateway_Common_OIDC__Authority
+                  key: HealthGateway_OpenIdConnect__Authority
                   name: ${COMMON_CONFIG}-config
-            - name: HealthGateway_WebClient_OIDC__ClientSecret
+            - name: HealthGateway_OpenIdConnect__ClientId
               valueFrom:
                 configMapKeyRef:
-                  key: HealthGateway_Common_OIDC__ClientSecret
+                  key: HealthGateway_OpenIdConnect__ClientId
                   name: ${COMMON_CONFIG}-config
-            - name: HealthGateway_WebClient_OIDC__Audience
+            - name: HealthGateway_OpenIdConnect__ClientSecret
               valueFrom:
                 configMapKeyRef:
-                  key: HealthGateway_Common_OIDC__Audience
+                  key: HealthGateway_OpenIdConnect__ClientSecret
                   name: ${COMMON_CONFIG}-config
-            - name: HealthGateway_WebClient_Immunization__URL
-              valueFrom:
-                configMapKeyRef:
-                  key: HealthGateway_WebClient_Immunization__URL
-                  name: ${NAME}-config
-            - name: HealthGateway_WebClient_Immunization__VERSION
-              valueFrom:
-                configMapKeyRef:
-                  key: HealthGateway_WebClient_Immunization__VERSION
-                  name: ${NAME}-config
-            - name: HealthGateway_WebClient_Immunization__PATH
-              valueFrom:
-                configMapKeyRef:
-                  key: HealthGateway_WebClient_Immunization__PATH
-                  name: ${NAME}-config
           imagePullPolicy: Always
           name: ${NAME}
           ports:
@@ -189,16 +172,4 @@ parameters:
   - name: ENV
     displayName: Enviroment
     description: The environment to be deployed to
-    required: true 
-  - name: IMMUNIZATION_URL
-    displayName: Immunization URL
-    description: The simple JSON Immunization endpoint
-    required: false
-  - name: IMMUNIZATION_VERSION
-    displayName: Immunization Version
-    description: The simple JSON Immunization endpoint version
-    required: false 
-  - name: IMMUNIZATION_PATH
-    displayName: Immunization Path
-    description: The simple JSON Immunization endpoint path
-    required: false     
+    required: true     

@@ -5,9 +5,9 @@ metadata:
 objects:
 - apiVersion: v1
   data:
-    HealthGateway_Common_OIDC__Authority: ${AUTH_OIDC_AUTHORITY}
-    HealthGateway_Common_OIDC__Audience: ${AUTH_OIDC_AUDIENCE}
-    HealthGateway_Common_OIDC__ClientSecret: ${AUTH_OIDC_CLIENTSECRET}
+    HealthGateway_OpenIdConnect__Authority: ${AUTH_OIDC_AUTHORITY}
+    HealthGateway_OpenIdConnect__ClientId: ${AUTH_OIDC_CLIENTID}
+    HealthGateway_OpenIdConnect__ClientSecret: ${AUTH_OIDC_CLIENTSECRET}
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
@@ -22,9 +22,9 @@ parameters:
     displayName: OIDC Authority
     description: The OIDC Authority to use for authentication
     required: false
-  - name: AUTH_OIDC_AUDIENCE
-    displayName: OIDC Audience
-    description: The OIDC Audience to use for authentication
+  - name: AUTH_OIDC_CLIENTID
+    displayName: OIDC Client ID
+    description: The OIDC Client ID to use for authentication
     required: false
   - name: AUTH_OIDC_CLIENTSECRET
     displayName: OIDC Client Secret
