@@ -53,7 +53,8 @@
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
-                authData.Token = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                authData.Token = user.FindFirstValue("access_token");
+                    //await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
             }
 
             return authData;
@@ -84,7 +85,7 @@
             };
             if (!string.IsNullOrEmpty(hint))
             {
-                authProps.Items.Add(this.configuration["OIDC:IDPHintKey"], hint);
+                authProps.Items.Add(this.configuration["KeyCloak:IDPHintKey"], hint);
             }
 
             return authProps;

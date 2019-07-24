@@ -51,25 +51,39 @@ namespace HealthGateway.WebClient
 
                  o.Events = new OpenIdConnectEvents()
                  {
-                     OnRedirectToIdentityProvider = ctx =>
+                     OnTokenValidated = ctx =>
                      {
-                         if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
+                         var accessToken = ctx.SecurityToken as JwtSecurityToken;
+                         if (accessToken != null)
                          {
-                             this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
-                             ctx.ProtocolMessage.SetParameter(
-                                    this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
-                         }
-                         else
-                         {
-                            if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
-                            {
-                                this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
-                            }
+                             ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                             if (identity != null)
+                             {
+                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                             }
                          }
 
-                         return Task.FromResult(0);
+                         return Task.CompletedTask;
                      },
+                     OnRedirectToIdentityProvider = ctx =>
+                 {
+                     if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
+                     {
+                         this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
+                         ctx.ProtocolMessage.SetParameter(
+                                this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
+                     }
+                     else
+                     {
+                         if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                         {
+                             this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                             ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                         }
+                     }
+
+                     return Task.FromResult(0);
+                 },
                      OnAuthenticationFailed = c =>
                      {
                          c.HandleResponse();
