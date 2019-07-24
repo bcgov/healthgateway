@@ -1,6 +1,5 @@
 import { MutationTree } from 'vuex';
 import { AuthState, Authentication } from '@/models/authState';
-import { stat } from 'fs';
 
 export const mutations: MutationTree<AuthState> = {
     authenticationRequest(state: AuthState) {
