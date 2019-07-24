@@ -6,7 +6,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Logging;
     public static class Program
     {
-        private const string EnvironmentPrefix = "HealthGateway_WebClient_";
+        private const string EnvironmentPrefix = "HealthGateway_";
 
         public static void Main(string[] args)
         {
@@ -20,6 +20,16 @@ namespace HealthGateway.WebClient
                     config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
                 })
                 .UseStartup<Startup>()
+                .ConfigureKestrel(options =>
+                {
+                   options.Limits.MaxResponseBufferSize = options.Limits.MaxResponseBufferSize*20;
+                   options.Limits.MaxRequestHeadersTotalSize = options.Limits.MaxRequestHeadersTotalSize*20;
+                   options.Limits.MaxRequestBufferSize = options.Limits.MaxRequestBufferSize*20;
+                   options.ConfigureEndpointDefaults(listenOptions =>
+                    {
+                        listenOptions.UseConnectionLogging();
+                    });
+                })
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

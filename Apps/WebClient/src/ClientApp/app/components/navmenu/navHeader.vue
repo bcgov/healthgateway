@@ -44,11 +44,11 @@
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item
             v-for="(value, key) in languages"
-            :name="key"
             :key="key"
             :active="currentLanguage.code === key"
-            @click="onLanguageSelect(key)"
-          >{{value.description}}</b-dropdown-item>
+          >
+            <a :id="key" @click="onLanguageSelect(key)">{{value.description}}</a>
+          </b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>

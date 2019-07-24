@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Authentication Data Modal.
+    /// Authentication Data Model.
     /// </summary>
     public class AuthData
     {
@@ -23,6 +23,6 @@
         /// <summary>
         /// Gets or sets the authenticated user.
         /// </summary>
-        public string User { get; set; }
+        public User User { get; set; }
     }
 }

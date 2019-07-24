@@ -1,8 +1,5 @@
 ﻿namespace HealthGateway.WebClient.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
@@ -16,7 +13,7 @@
         /// Authenticates the request based on the current context.
         /// </summary>
         /// <returns>The AuthData containing the token and user information.</returns>
-        Task<Models.AuthData> Authenticate();
+        Task<Models.AuthData> GetAuthenticationData();
 
         /// <summary>
         /// Clears the authorization data from the context.

@@ -1,8 +1,8 @@
-import BearerToken from "@/models/bearerToken"
+import AuthenticationData from "@/models/authenticationData"
 
 export interface IAuthenticationService {
     startLoginFlow(idpHint: string, redirectUri: string): void;
-    getBearerToken(): Promise<BearerToken>;
-    refreshToken(): Promise<BearerToken>;
+    getAuthentication(): Promise<AuthenticationData>;
+    refreshToken(): Promise<AuthenticationData>;
     destroyToken(): void;
 }

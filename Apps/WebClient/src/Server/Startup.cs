@@ -2,9 +2,11 @@
 namespace HealthGateway.WebClient
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.IO;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.WebClient.Services;
-    using Hl7.Fhir.Rest;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -15,12 +17,11 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using System.IO;
 
     public class Startup
     {
-        private readonly ILogger logger;
         private readonly IConfiguration configuration;
+        private readonly ILogger logger;
 
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
@@ -28,71 +29,44 @@ namespace HealthGateway.WebClient
             this.logger = logger;
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             this.logger.LogDebug("Starting Service Configuration...");
             services.AddHttpClient();
-            if (string.IsNullOrEmpty(this.configuration["OIDC:Authority"]))
-            {
-                this.logger.LogCritical("OIDC Authority is missing, bad things are going to occur");
-            }
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie(o =>
-            {
-                o.ExpireTimeSpan = TimeSpan.FromMinutes(15);
-            })
+            .AddCookie()
             .AddOpenIdConnect(o =>
              {
-                 o.Authority = this.configuration["OIDC:Authority"];
-                 o.ClientId = this.configuration["OIDC:Audience"];
-                 o.ClientSecret = this.configuration["OIDC:ClientSecret"];
-                 if (bool.TryParse(this.configuration["OIDC:SecureMetadata"], out bool secure))
+                 this.configuration.GetSection("OpenIdConnect").Bind(o);
+                 if (string.IsNullOrEmpty(o.Authority))
                  {
-                     // set HttpsMetadata to whatever configuration says
-                     o.RequireHttpsMetadata = secure;
+                     this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
                  }
-                 else
-                 {
-                     // If config isn't parseable then set HttpsMetadata to true
-                     this.logger.LogWarning("OIDC Require HTTPS Metadata configuration is invalid and will be defaulted to true");
-                     o.RequireHttpsMetadata = true;
-                 }
-
-                 o.SaveTokens = true;
-                 o.GetClaimsFromUserInfoEndpoint = true;
-                 o.ResponseType = "code id_token";
-
-                 o.Scope.Clear();
-                 o.Scope.Add("openid");
-                 o.Scope.Add("email");
-
-                 o.GetClaimsFromUserInfoEndpoint = true;
 
                  o.Events = new OpenIdConnectEvents()
                  {
                      OnRedirectToIdentityProvider = ctx =>
                      {
-                         if (ctx.Properties.Items.ContainsKey(this.configuration["OIDC:IDPHintKey"]))
+                         if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
                          {
                              this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
                              ctx.ProtocolMessage.SetParameter(
-                                    this.configuration["OIDC:IDPHintKey"], ctx.Properties.Items[this.configuration["OIDC:IDPHintKey"]]);
+                                    this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
                          }
                          else
-                            if (!string.IsNullOrEmpty(this.configuration["OIDC:IDPHint"]))
+                         {
+                            if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
                             {
-                                 this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                 ctx.ProtocolMessage.SetParameter(this.configuration["OIDC:IDPHintKey"], this.configuration["OIDC:IDPHint"]);
+                                this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
                             }
+                         }
 
                          return Task.FromResult(0);
                      },
@@ -107,22 +81,7 @@ namespace HealthGateway.WebClient
                  };
              });
 
-            // Test Service
-            services.AddTransient<IPatientService>(serviceProvider =>
-            {
-                this.logger.LogDebug("Configuring Transient Service IPatientService");
-                string url = this.configuration["Immunization:URL"] + this.configuration["Immunization:Version"] + this.configuration["Immunization:Path"];
-                this.logger.LogDebug("Immunization URL=" + url);
-                IFhirClient client = new FhirClient(url)
-                {
-                    Timeout = 60 * 1000,
-                    PreferredFormat = ResourceFormat.Json,
-                };
-
-                return new RestfulPatientService(client);
-            });
-
-            // Test Service
+            // Auth Service
             services.AddTransient<IAuthService>(serviceProvider =>
             {
                 this.logger.LogDebug("Configuring Transient Service IAuthService");
@@ -134,6 +93,9 @@ namespace HealthGateway.WebClient
             });
 
             services.AddMvc();
+
+            // Inject HttpContextAccessor
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -145,7 +107,7 @@ namespace HealthGateway.WebClient
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true,
-                    ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp")
+                    ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"),
                 });
             }
             else

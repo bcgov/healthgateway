@@ -1,15 +1,10 @@
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.WebClient.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Authentication and Authorization controller.
@@ -37,6 +32,12 @@ namespace HealthGateway.WebClient.Controllers
             return this.View();
         }
 
+        /// <summary>
+        /// Performs an OpenIdConnect Challenge.
+        /// </summary>
+        /// <param name="hint">A value to pass to KeyCloak to select the Identity Provider.</param>
+        /// <param name="redirectUri">The redirectUri after successful authentication.</param>
+        /// <returns>An IActionResult which results in a redirect.</returns>
         public IActionResult Login(string hint, string redirectUri)
         {
             return new ChallengeResult(
@@ -44,30 +45,23 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Performs the logon to the application
-        /// </summary>
-        /// <returns>An OkObjectResult with the authenticated data.</returns>
-        [Authorize]
-        public async Task<IActionResult> Logon()
-        {
-            Models.AuthData authData = await this.authSvc.Authenticate().ConfigureAwait(true);
-            return new OkObjectResult(authData);
-        }
-
-        [Route("api/Something")]
-        public async Task<IActionResult> Something()
-        {
-            Models.AuthData data = new Models.AuthData { IsAuthenticated = false, Token = "some_token_thing", User = "THE_USER" };
-            return new OkObjectResult(data);
-        }
-
-        /// <summary>
-        /// Performs the logout of the application
+        /// Performs the logout of the application.
         /// </summary>
         /// <returns>A SignoutResult containing the redirect uri.</returns>
         public IActionResult Logout()
         {
             return this.authSvc.Logout();
+        }
+
+        /// <summary>
+        /// Performs the logon to the application.
+        /// </summary>
+        /// <returns>A JSON object with the authentication data.</returns>
+        [Route("/api/GetAuthenticationData")]
+        public async Task<Models.AuthData> GetAuthenticationData()
+        {
+            Models.AuthData authData = await this.authSvc.GetAuthenticationData().ConfigureAwait(true);
+            return authData;
         }
     }
 }

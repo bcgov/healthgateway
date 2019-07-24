@@ -39,12 +39,24 @@
         /// Authenticates the request based on the current context.
         /// </summary>
         /// <returns>The AuthData containing the token and user information.</returns>
-        public async Task<Models.AuthData> Authenticate()
+        public async Task<Models.AuthData> GetAuthenticationData()
         {
-            this.logger.LogTrace("Getting Bearer token");
-            var user = this.httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var token = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-            return new Models.AuthData { IsAuthenticated = true, Token = token, User = user };
+            Models.AuthData authData = new Models.AuthData();
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            authData.IsAuthenticated = user.Identity.IsAuthenticated;
+            if (authData.IsAuthenticated)
+            {
+                this.logger.LogDebug("Getting Authentication data");
+                authData.User = new Models.User
+                {
+                    Id = user.FindFirstValue("preferred_username"),
+                    Name = user.FindFirstValue("name"),
+                    Email = user.FindFirstValue(ClaimTypes.Email),
+                };
+                authData.Token = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+            }
+
+            return authData;
         }
 
         /// <summary>
@@ -53,13 +65,12 @@
         /// <returns>The signout confirmation followed by the redirect uri.</returns>
         public SignOutResult Logout()
         {
-            this.logger.LogTrace("Logging user out");
-            AuthenticationProperties props = new AuthenticationProperties() { RedirectUri = this.configuration["OIDC:LogoffURI"] };
-            return new SignOutResult(new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme }, props);
+            this.logger.LogTrace("Logging out user");
+            return new SignOutResult(new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme });
         }
 
         /// <summary>
-        /// Returns the authentication properties with the populated hint and redirect URL
+        /// Returns the authentication properties with the populated hint and redirect URL.
         /// </summary>
         /// <returns> The AuthenticationProperties.</returns>
         /// <param name="hint">The OIDC IDP Hint.</param>
