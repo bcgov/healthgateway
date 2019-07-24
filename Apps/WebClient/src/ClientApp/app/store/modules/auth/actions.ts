@@ -9,9 +9,7 @@ const HTTP_HEADER_AUTH = 'Authorization'; // Auth key for ensuring we send the b
 export const actions: ActionTree<AuthState, RootState> = {
         login({ commit }, { idpHint, redirectUri }): any { 
         return new Promise((resolve, reject) => {
-            commit('authenticationRequest')
-            //let idpHint = ''
-            //let redirectUri = ''
+            commit('authenticationRequest', redirectUri)
             // Handle OIDC login by setting a hint that the AuthServer needs to know which IdP to route to
             // The server-side backend keeps the client secret needed to route to KeyCloak AS
             // We get back a JWT signed if the authentication was successful  

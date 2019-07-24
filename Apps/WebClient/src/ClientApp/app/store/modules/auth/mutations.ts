@@ -3,10 +3,10 @@ import { AuthState, Authentication } from '@/models/authState';
 import { stat } from 'fs';
 
 export const mutations: MutationTree<AuthState> = {
-    authenticationRequest(state: AuthState) {
+    authenticationRequest(state: AuthState, to: string) {
         state.error = false;
         state.statusMessage = 'loading';
-        state.requestedRoute = '';
+        state.requestedRoute = to;
     },
     authenticationLoaded(state: AuthState, payload: Authentication) {
         state.error = false;
