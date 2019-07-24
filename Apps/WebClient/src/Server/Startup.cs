@@ -44,7 +44,8 @@ namespace HealthGateway.WebClient
         {
             this.logger.LogDebug("Starting Service Configuration...");
             services.AddHttpClient();
-            services.AddResponseCompression(options => {
+            services.AddResponseCompression(options =>
+            {
                 options.Providers.Add<GzipCompressionProvider>();
                 options.EnableForHttps = true;
             });
@@ -80,24 +81,24 @@ namespace HealthGateway.WebClient
                          return Task.CompletedTask;
                      },
                      OnRedirectToIdentityProvider = ctx =>
-                 {
-                     if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
                      {
-                         this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
-                         ctx.ProtocolMessage.SetParameter(
-                                this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
-                     }
-                     else
-                     {
-                         if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                         if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
                          {
-                             this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                             ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                             this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
+                             ctx.ProtocolMessage.SetParameter(
+                                    this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
                          }
-                     }
+                         else
+                         {
+                             if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                             {
+                                 this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                 ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                             }
+                         }
 
-                     return Task.FromResult(0);
-                 },
+                         return Task.FromResult(0);
+                     },
                      OnAuthenticationFailed = c =>
                      {
                          c.HandleResponse();
@@ -143,8 +144,10 @@ namespace HealthGateway.WebClient
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles(new StaticFileOptions {
-                OnPrepareResponse = (content) => {
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = (content) =>
+                {
                     var headers = content.Context.Response.Headers;
                     var contentType = headers["Content-Type"];
                     if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
