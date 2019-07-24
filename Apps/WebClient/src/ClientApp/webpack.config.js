@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 const bundleOutputDir = '../wwwroot/dist';
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
@@ -80,8 +81,13 @@ module.exports = (env) => {
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require('../wwwroot/dist/vendor-manifest.json')
+            }),
+            new CompressionPlugin({ 
+                algorithm: "gzip",
+                test: /\.js$|\.css$|\.html$/
             })
-        ].concat(isDevBuild ? [
+        ]
+        .concat(isDevBuild ? [
             // Plugins that apply in development builds only
             new webpack.SourceMapDevToolPlugin({
                 filename: '[file].map', // Remove this line if you prefer inline source maps
