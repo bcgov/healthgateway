@@ -67,7 +67,7 @@ module.exports = (env) => {
         output: {
             path: path.resolve(__dirname, bundleOutputDir),
             filename: '[name].js',
-            publicPath: 'dist/'
+            publicPath: '/dist/'
         },
         plugins: [
             new VueLoaderPlugin(),
