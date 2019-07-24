@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
@@ -48,6 +49,10 @@ module.exports = (env) => {
             new webpack.DllPlugin({
                 path: path.join(__dirname, '../wwwroot', 'dist', '[name]-manifest.json'),
                 name: '[name]_[hash]'
+            }),
+            new CompressionPlugin({
+                algorithm: "gzip",
+                test: /\.js$|\.css$|\.html$/
             })
         ].concat(isDevBuild ? [] : [
             //new webpack.optimize.UglifyJsPlugin()

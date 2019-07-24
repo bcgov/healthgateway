@@ -1,7 +1,7 @@
 <template>
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
-    <b-navbar-brand href="https://www2.gov.bc.ca">
+    <b-navbar-brand href="/">
       <img
         class="img-fluid d-none d-md-block"
         src="@/assets/images/gov/bcid-logo-rev-en.svg"
@@ -16,6 +16,9 @@
         height="44"
         alt="B.C. Government Logo"
       />
+    </b-navbar-brand>
+    <b-navbar-brand>
+      <h3>HealthGateway</h3>
     </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -36,8 +39,8 @@
         <b-nav-item-dropdown text="Hi User..." v-if="isAuthenticated" right>
           <b-dropdown-item href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
-        <router-link class="nav-link" to="/home" :exact="true" v-else>
-          <span class="fa fa-home"></span> Login
+        <router-link class="nav-link" to="/login" :exact="true" v-else>
+          <span class="fa fa-user"></span> Login
         </router-link>
         <b-nav-item-dropdown id="languageSelector" :text="currentLanguage.description" right>
           <b-dropdown-text>Language:</b-dropdown-text>
@@ -45,8 +48,7 @@
           <b-dropdown-item
             v-for="(value, key) in languages"
             :key="key"
-            :active="currentLanguage.code === key"
-          >
+            :active="currentLanguage.code === key">
             <a :id="key" @click="onLanguageSelect(key)">{{value.description}}</a>
           </b-dropdown-item>
         </b-nav-item-dropdown>
@@ -54,6 +56,8 @@
     </b-collapse>
   </b-navbar>
 </template>
+
+
 
 <script lang="ts">
 import Vue from "vue";
@@ -78,7 +82,7 @@ export default class HeaderComponent extends Vue {
     this.loadLanguages();
   }
 
-  onLanguageSelect(languageCode:string): void {
+  onLanguageSelect(languageCode: string): void {
     this.currentLanguage = this.languages[languageCode];
   }
 
