@@ -36,7 +36,6 @@ steps:
   inputs:
     command: 'test'
     projects: '$(App.Home)/test/test.csproj'
-    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults'
     testRunTitle: 'WebClient'
 
 - script: |
