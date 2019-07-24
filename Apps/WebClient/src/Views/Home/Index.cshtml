@@ -5,5 +5,10 @@
 <div id='app-root'>Loading...</div>
 
 @section scripts {
-    <script src="~/dist/main.js" asp-append-version="true"></script>
+    <environment include="Development">
+        <script src="~/dist/main.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/dist/main.js.gz" asp-append-version="true"></script>
+    </environment>
 }

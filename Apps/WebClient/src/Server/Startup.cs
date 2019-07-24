@@ -13,7 +13,9 @@ namespace HealthGateway.WebClient
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.AspNetCore.SpaServices.Webpack;
+    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -23,17 +25,29 @@ namespace HealthGateway.WebClient
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="logger">The injected logger provider.</param>
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             this.configuration = configuration;
             this.logger = logger;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services">The injected services provider</param>
         public void ConfigureServices(IServiceCollection services)
         {
             this.logger.LogDebug("Starting Service Configuration...");
             services.AddHttpClient();
+            services.AddResponseCompression(options => {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.EnableForHttps = true;
+            });
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -129,7 +143,24 @@ namespace HealthGateway.WebClient
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions {
+                OnPrepareResponse = (content) => {
+                    var headers = content.Context.Response.Headers;
+                    var contentType = headers["Content-Type"];
+                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return;
+                    }
+
+                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
+                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
+                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
+                    {
+                        headers.Add("Content-Encoding", "gzip");
+                        headers["Content-Type"] = mimeType;
+                    }
+                },
+            });
 
             // forwarded Header middleware required for apps behind proxies and load balancers
             app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -137,6 +168,8 @@ namespace HealthGateway.WebClient
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto,
             });
 
+
+            app.UseResponseCompression();
             app.UseAuthentication();
             app.UseCookiePolicy();
 
