@@ -7,15 +7,13 @@
     <IsPackable>false</IsPackable>
 
     <!-- SonarQube needs this -->
+    <ProjectGuid>{4EF62115-3012-4911-B7AA-3B798231ADC4}</ProjectGuid>
     <RootNamespace>HealthGateway.WebClient</RootNamespace>
   </PropertyGroup>  
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.All">
-      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
-      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
-    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" />
