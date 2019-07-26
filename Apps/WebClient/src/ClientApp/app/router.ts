@@ -31,7 +31,6 @@ const routes = [
         meta: { requiresAuth: false }
     },
     {
-        name: 'home',
         path: '/home',
         component: HomeComponent,
         meta: { requiresAuth: true, roles: ['user'] },
@@ -61,9 +60,8 @@ const routes = [
         component: UnauthorizedComponent,
         meta: { requiresAuth: false }
     }, // Unauthorized
-    { path: '/notFound', NotFoundComponent },
-    { path: '/Auth/Login' }
-    //{ path: '*', redirect: '/notFound' } // Not found; Will catch all other paths not covered previously
+    { path: '/Auth/Login' },
+    { path: '/*', component: NotFoundComponent } // Not found; Will catch all other paths not covered previously
 ]
 
 

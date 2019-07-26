@@ -1,14 +1,17 @@
 import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
-import HeaderComponent from '@/components/navmenu/header.vue'
+import HeaderComponent from '@/components/navmenu/navHeader.vue'
 import boostrapVue from 'bootstrap-vue'
+import Vuex from 'vuex'
+import store from '@/store/store'
 
 describe('NavBar Header Component', () => {
   const localVue = createLocalVue();
   localVue.use(VueRouter);
   localVue.use(boostrapVue);
+  localVue.use(Vuex);
 
-  const wrapper = shallowMount(HeaderComponent, { localVue });
+  const wrapper = shallowMount(HeaderComponent, { localVue, store });
 
   test('is a Vue instance', () => {
     expect(wrapper.isVueInstance()).toBeTruthy()

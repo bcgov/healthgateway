@@ -47,8 +47,8 @@ export const actions: ActionTree<AuthState, RootState> = {
     logout({ commit }): any {
         return new Promise((resolve, reject) => {
             commit('logout')
-            localStorage.removeItem(STORAGE_KEY)
-            delete axios.defaults.headers.common[HTTP_HEADER_AUTH]
+            //localStorage.removeItem(STORAGE_KEY)
+            //delete axios.defaults.headers.common[HTTP_HEADER_AUTH]
             resolve()
         })
     }

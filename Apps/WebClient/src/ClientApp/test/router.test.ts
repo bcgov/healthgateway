@@ -1,12 +1,12 @@
-import router from '../app/router'
-import HomeComponent from '../app/views/home.vue'
-import RegistrationComponent from '../app/views/registration.vue'
-import LandingComponent from '../app/views/landing.vue'
-import ImmunizationsComponent from '../app/views/immunizations.vue'
-import NotFoundComponent from '../app/views/errors/notFound.vue'
-import LoginComponent from '../app/views/login.vue'
-import LogoutComponent from '../app/views/logout.vue'
-import UnauthorizedComponent from '../app/views/errors/unauthorized.vue'
+import router from '@/router'
+import HomeComponent from '@/views/home.vue'
+import RegistrationComponent from '@/views/registration.vue'
+import LandingComponent from '@/views/landing.vue'
+import ImmunizationsComponent from '@/views/immunizations.vue'
+import NotFoundComponent from '@/views/errors/notFound.vue'
+import LoginComponent from '@/views/login.vue'
+import LogoutComponent from '@/views/logout.vue'
+import UnauthorizedComponent from '@/views/errors/unauthorized.vue'
 
 describe('Router', () => {
 
@@ -28,8 +28,7 @@ describe('Router', () => {
 
   test('has immunizations route', () => {
     const actualComponents = router.getMatchedComponents("/immunizations");
-    expect(actualComponents[0].name).toBe(HomeComponent.name);
-    expect(actualComponents[1].name).toBe(ImmunizationsComponent.name);
+    expect(actualComponents[0].name).toBe(ImmunizationsComponent.name);
   });
 
   test('has logout route', () => {
