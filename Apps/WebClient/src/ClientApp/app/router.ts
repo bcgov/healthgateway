@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import VueRouter, { Route, RouteConfig, RawLocation } from 'vue-router'
 import store from './store'
 import HomeComponent from '../app/views/home.vue'
 import RegistrationComponent from '../app/views/registration.vue'
@@ -10,6 +10,7 @@ import LoginComponent from '../app/views/login.vue'
 import LogoutComponent from '../app/views/logout.vue'
 import UnauthorizedComponent from '../app/views/errors/unauthorized.vue'
 import TempAuthComponent from '../app/views/auth.vue'
+import { Function } from '@babel/types';
 
 Vue.use(VueRouter)
 
@@ -18,7 +19,7 @@ function load(componentPath: string) {
     return () => import(`./views/${componentPath}`)
 }
 
-const routes = [
+const routes: RouteConfig[] = [
     {
         path: '/',
         component: LandingComponent,
@@ -71,7 +72,7 @@ const router = new VueRouter({
     routes
 })
 
-router.beforeEach(async (to, from, next) => {
+export async function checkRoute(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void) {
     if (to.meta.requiresAuth) {
         let isAuthenticated = store.getters.isAuthenticated;
         console.log('Requires auth!');
@@ -107,6 +108,8 @@ router.beforeEach(async (to, from, next) => {
     else {
         next()
     }
-})
+}
+
+router.beforeEach(checkRoute);
 
 export default router
