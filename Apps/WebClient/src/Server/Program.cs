@@ -20,16 +20,6 @@ namespace HealthGateway.WebClient
                     config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
                 })
                 .UseStartup<Startup>()
-                .ConfigureKestrel(options =>
-                {
-                   options.Limits.MaxResponseBufferSize = options.Limits.MaxResponseBufferSize*20;
-                   options.Limits.MaxRequestHeadersTotalSize = options.Limits.MaxRequestHeadersTotalSize*20;
-                   options.Limits.MaxRequestBufferSize = options.Limits.MaxRequestBufferSize*20;
-                   options.ConfigureEndpointDefaults(listenOptions =>
-                    {
-                        listenOptions.UseConnectionLogging();
-                    });
-                })
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

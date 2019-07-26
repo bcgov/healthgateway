@@ -4,6 +4,7 @@ import RegistrationComponent from '../app/views/registration.vue'
 import LandingComponent from '../app/views/landing.vue'
 import ImmunizationsComponent from '../app/views/immunizations.vue'
 import NotFoundComponent from '../app/views/errors/notFound.vue'
+import LoginComponent from '../app/views/login.vue'
 import LogoutComponent from '../app/views/logout.vue'
 import UnauthorizedComponent from '../app/views/errors/unauthorized.vue'
 
@@ -34,6 +35,11 @@ describe('Router', () => {
   test('has logout route', () => {
     const actualComponent = router.getMatchedComponents("/logout")[0];
     expect(actualComponent.name).toBe(LogoutComponent.name);
+  });
+
+  test('has login route', () => {
+    const actualComponent = router.getMatchedComponents("/login")[0];
+    expect(actualComponent.name).toBe(LoginComponent.name);
   });
 
   test('has unauthorized route', () => {

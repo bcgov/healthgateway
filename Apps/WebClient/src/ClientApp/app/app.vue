@@ -1,12 +1,18 @@
+<style>
+.container {
+  min-height: 100vh;
+}
+</style>
+
 <template>
   <div id="app-root" class="fill-body">
     <header>
-      <environment exclude="Production">
+      <span v-if="isDevelopment">
         <div class="text-center bg-warning small">
           Non-production environment:
           <b>{{host}}</b>
         </div>
-      </environment>
+      </span>
       <NavHeader />
     </header>
     <main>
@@ -24,6 +30,7 @@ import { Component } from "vue-property-decorator";
 
 import HeaderComponent from "./components/navmenu/navHeader.vue";
 import FooterComponent from "./components/navmenu/navFooter.vue";
+import Process, { EnvironmentType } from "@/constants/process";
 
 @Component({
   components: {
@@ -32,12 +39,7 @@ import FooterComponent from "./components/navmenu/navFooter.vue";
   }
 })
 export default class AppComponent extends Vue {
-  host: string = window.location.hostname.toLocaleUpperCase();
-
-  constructor() {
-    super();
-    console.log(this.host);
-  }
+  private readonly host: string = window.location.hostname.toLocaleUpperCase();
+  private readonly isDevelopment: boolean = Process.NODE_ENV == EnvironmentType.development;
 }
 </script>
-
