@@ -77,12 +77,12 @@ router.beforeEach(async (to, from, next) => {
         console.log('Requires auth!');
         if (!isAuthenticated) {
             //security.init(next, to.meta.roles)
-            next({ name: 'unauthenticated' })
+            next({ path: '/unauthorized' })
             console.log('Not authenticated');
             console.log(to.path);
             // commit the to.path to vuex here
             store.commit('requestedRoute', to.path);
-            next({ name: 'login' });
+            next({ path: '/login' });
         }
         else {
             console.log('Authenticated');
