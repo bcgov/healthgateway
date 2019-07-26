@@ -1,9 +1,5 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-
-import { IAuthenticationService } from '@/services/interfaces'
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "./inversify.config";
+import VueRouter, { Route, RouteConfig, RawLocation } from 'vue-router'
 
 // Routes
 import store from './store/store'
@@ -19,7 +15,7 @@ import TempAuthComponent from '@//views/auth.vue'
 
 Vue.use(VueRouter)
 
-const routes = [
+const routes: RouteConfig[] = [
     {
         path: '/',
         component: LandingComponent,
@@ -70,7 +66,7 @@ const router = new VueRouter({
     routes,
 })
 
-router.beforeEach(async (to, from, next) => {
+export async function checkRoute(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void) {
     if (to.meta.requiresAuth) {
         let isAuthenticated = store.getters['auth/isAuthenticated'];
         if (!isAuthenticated) {
@@ -95,6 +91,8 @@ router.beforeEach(async (to, from, next) => {
     else {
         next()
     }
-})
+}
+
+router.beforeEach(checkRoute);
 
 export default router
