@@ -323,6 +323,24 @@
       "targets": [],
       "value": "404"
     }]
+  }, {
+    "id": "155b3bce-2847-4b59-903e-7e80d7f0c113",
+    "name": "401 Page",
+    "commands": [{
+      "id": "5c911c8a-af3b-41f0-b070-08ca746fb296",
+      "comment": "",
+      "command": "open",
+      "target": "/unauthorized",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9e69f736-3eeb-4af8-aa0f-61ed6c2b6e13",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [],
+      "value": "401"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -344,7 +362,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["2057d9e0-ebcd-4fc5-b421-8ec04e221c72"]
+    "tests": ["2057d9e0-ebcd-4fc5-b421-8ec04e221c72", "155b3bce-2847-4b59-903e-7e80d7f0c113"]
   }],
   "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/", "https://dev-gateway.pathfinder.gov.bc.ca/"],
   "plugins": []
