@@ -1,0 +1,305 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebClient</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.WebClient.Controllers.AuthController">
+            <summary>
+            The Authentication and Authorization controller.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.AuthController.#ctor(HealthGateway.WebClient.Services.IAuthService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.AuthController"/> class.
+            </summary>
+            <param name="authSvc">The injected auth service provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Index">
+            <summary>
+            The default page for the auth controller.
+            </summary>
+            <returns>The default view.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Login(System.String,System.String)">
+            <summary>
+            Performs an OpenIdConnect Challenge.
+            </summary>
+            <param name="hint">A value to pass to KeyCloak to select the Identity Provider.</param>
+            <param name="redirectUri">The redirectUri after successful authentication.</param>
+            <returns>An IActionResult which results in a redirect.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Logout">
+            <summary>
+            Performs the logout of the application.
+            </summary>
+            <returns>A SignoutResult containing the redirect uri.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.AuthController.GetAuthenticationData">
+            <summary>
+            Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
+            </summary>
+            <remarks>
+            The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
+            This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
+            </remarks>
+            <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.AuthData">
+            <summary>
+            The authentication data from the ASP.Net Core Authentication cookie.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AuthData.IsAuthenticated">
+            <summary>
+            Gets or sets a value indicating whether the client has been authenticated or not.
+            Token and User properties should only be accessed if this value is true.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AuthData.Token">
+            <summary>
+            Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AuthData.User">
+            <summary>
+            Gets or sets the authenticated user, <see cref="P:HealthGateway.WebClient.Models.AuthData.User"/>.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.User">
+            <summary>
+            The User object representing the current Authenticated User.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.User.Id">
+            <summary>
+            Gets or sets the ID of the user.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.User.Name">
+            <summary>
+            Gets or sets the common name of the user.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.User.Email">
+            <summary>
+            Gets or sets the users email.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Program.BuildWebHost(System.String[])">
+            <summary>
+            Builds the webhost object with console logging and Configuration prefixing enabled.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.AuthService">
+            <summary>
+            Authentication and Authorization Service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.AuthService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.AuthService},Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.AuthService"/> class.
+            </summary>
+            <param name="httpContextAccessor">Injected HttpContext Provider.</param>
+            <param name="configuration">Injected Configuration Provider.</param>
+            <param name="logger">Injected Logger Provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.AuthService.GetAuthenticationData">
+            <summary>
+            Authenticates the request based on the current context.
+            </summary>
+            <returns>The AuthData containing the token and user information.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.AuthService.Logout">
+            <summary>
+            Clears the authorization data from the context.
+            </summary>
+            <returns>The signout confirmation followed by the redirect uri.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.AuthService.GetAuthenticationProperties(System.String,System.String)">
+            <summary>
+            Returns the authentication properties with the populated hint and redirect URL.
+            </summary>
+            <returns> The AuthenticationProperties.</returns>
+            <param name="hint">The OIDC IDP Hint.</param>
+            <param name="redirectUri">The URI to redirect to after logon.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IAuthService">
+            <summary>
+            Authentication and Authorization Service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IAuthService.GetAuthenticationData">
+            <summary>
+            Authenticates the request based on the current context.
+            </summary>
+            <returns>The AuthData containing the token and user information.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IAuthService.Logout">
+            <summary>
+            Clears the authorization data from the context.
+            </summary>
+            <returns>The signout confirmation followed by the redirect uri.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IAuthService.GetAuthenticationProperties(System.String,System.String)">
+            <summary>
+            Returns the authentication properties with the populated hint and redirect URL.
+            </summary>
+            <returns> The AuthenticationProperties.</returns>
+            <param name="hint">The OIDC IDP Hint.</param>
+            <param name="redirectUri">The URI to redirect to after logon.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Startup"/> class.
+            </summary>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="logger">The injected logger provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+            <param name="env">The hosting environment.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions">
+            <inheritdoc />
+            <summary>
+            Implementation of IConfigureOptions&lt;SwaggerGenOptions&gt;.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions.#ctor(Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Options.IOptions{HealthGateway.WebClient.Swagger.SwaggerSettings})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions"/> class.
+            </summary>
+            <param name="versionDescriptionProvider">IApiVersionDescriptionProvider.</param>
+            <param name="swaggerSettings">App Settings for Swagger.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions.Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions.#ctor(Microsoft.Extensions.Options.IOptions{HealthGateway.WebClient.Swagger.SwaggerSettings})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions"/> class.
+            </summary>
+            <param name="settings">settings.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions.Configure(Swashbuckle.AspNetCore.Swagger.SwaggerOptions)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions">
+            <inheritdoc cref="T:Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions"/>>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions.#ctor(Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Options.IOptions{HealthGateway.WebClient.Swagger.SwaggerSettings})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions"/> class.
+            </summary>
+            <param name="versionDescriptionProvider">versionDescriptionProvider.</param>
+            <param name="settings">settings.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions.Configure(Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions)">
+            <summary>
+            Configure.
+            </summary>
+            <param name="options">options.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.MiddlewareExtensions">
+            <summary>
+            Extending Swagger services.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.MiddlewareExtensions.UseSwaggerDocuments(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Enabling Swagger UI.
+            Excluding from test environment.
+            </summary>
+            <param name="app">IApplicationBuilder.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.ServicesExtensions">
+            <summary>
+            Service Collection(IServiceCollection) Extensions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ServicesExtensions.AddApiVersionWithExplorer(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add AddVersionedApiExplorer and AddApiVersioning middlewares.
+            </summary>
+            <param name="services">services.</param>
+            <returns>IServiceCollection.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.ServicesExtensions.AddSwaggerOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add swagger services.
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>/>.</param>
+            <returns>IServiceCollection.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.SwaggerDefaultValues">
+            <summary>
+            Represents the Swagger/Swashbuckle operation filter used to document the implicit API version parameter.
+            </summary>
+            <remarks>This <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.IOperationFilter"/> is only required due to bugs in the <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator"/>.
+            Once they are fixed and published, this class can be removed.</remarks>
+        </member>
+        <member name="M:HealthGateway.WebClient.Swagger.SwaggerDefaultValues.Apply(Swashbuckle.AspNetCore.Swagger.Operation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <summary>
+            Applies the filter to the specified operation using the given context.
+            </summary>
+            <param name="operation">The operation to apply the filter to.</param>
+            <param name="context">The current operation filter context.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Swagger.SwaggerSettings">
+            <summary>
+            Swagger Configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.Name">
+            <summary>
+            Gets or sets document Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.Info">
+            <summary>
+            Gets or sets swagger Info.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.RoutePrefix">
+            <summary>
+            Gets or sets RoutePrefix.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.RoutePrefixWithSlash">
+            <summary>
+            Gets Route Prefix with tailing slash.
+            </summary>
+        </member>
+    </members>
+</doc>

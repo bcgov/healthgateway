@@ -13,32 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.WebClient.Swagger
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Builder;
 
     /// <summary>
-    /// The authentication data from the ASP.Net Core Authentication cookie.
+    /// Extending Swagger services.
     /// </summary>
-    public class AuthData
+    public static class MiddlewareExtensions
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the client has been authenticated or not.
-        /// Token and User properties should only be accessed if this value is true.
+        /// Enabling Swagger UI.
+        /// Excluding from test environment.
         /// </summary>
-        public bool IsAuthenticated { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
-        /// </summary>
-        public string Token { get; set; }
-
-        /// <summary>
-        /// Gets or sets the authenticated user, <see cref="User"/>.
-        /// </summary>
-        public User User { get; set; }
+        /// <param name="app">IApplicationBuilder.</param>
+        public static void UseSwaggerDocuments(this IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
     }
 }
