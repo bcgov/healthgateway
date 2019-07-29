@@ -1,17 +1,21 @@
 import { MutationTree } from 'vuex';
-import { AuthState, Authentication } from '@/models/authState';
+import { AuthState } from '@/models/authState';
+import AuthenticationData from '@/models/authenticationData';
 
 export const mutations: MutationTree<AuthState> = {
-    authenticationRequest(state: AuthState, to: string) {
+    authenticationInitialized(state: AuthState, authData: AuthenticationData) {
+        state.error = false;
+        state.authentication = authData;
+        state.statusMessage = 'initialized';
+    },
+    authenticationRequest(state: AuthState) {
         state.error = false;
         state.statusMessage = 'loading';
-        state.requestedRoute = to;
     },
-    authenticationLoaded(state: AuthState, payload: Authentication) {
+    authenticationLoaded(state: AuthState, authData: AuthenticationData) {
         state.error = false;
-        state.authentication = payload;
+        state.authentication = authData;
         state.statusMessage = 'success';
-        state.requestedRoute = '';
     },
     authenticationError(state: AuthState, errorMessage: string) {
         state.error = true;
@@ -23,8 +27,4 @@ export const mutations: MutationTree<AuthState> = {
         state.statusMessage = ''
         state.authentication = undefined;
     },
-    requestedRoute(state: AuthState, to: string) {
-        state.requestedRoute = to;
-    }
-
 };

@@ -25,7 +25,7 @@ export default class UserDetail extends Vue {
 
   mounted() {
     // fetching data as soon as the component's been mounted
-  }s
+  }
 
   // computed variable based on user's email
   get token() {

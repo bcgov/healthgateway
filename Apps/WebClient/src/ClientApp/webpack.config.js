@@ -74,29 +74,27 @@ module.exports = (env) => {
             new VueLoaderPlugin(),
             new CheckerPlugin(),
             new webpack.DefinePlugin({
-                'process.env': {
-                    NODE_ENV: JSON.stringify(isDevBuild ? 'development' : 'production')
-                }
+                '_NODE_ENV': JSON.stringify(isDevBuild ? 'development' : 'production')
             }),
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require('../wwwroot/dist/vendor-manifest.json')
             }),
-            new CompressionPlugin({ 
+            new CompressionPlugin({
                 algorithm: "gzip",
                 test: /\.js$|\.css$|\.html$/
             })
         ]
-        .concat(isDevBuild ? [
-            // Plugins that apply in development builds only
-            new webpack.SourceMapDevToolPlugin({
-                filename: '[file].map', // Remove this line if you prefer inline source maps
-                moduleFilenameTemplate: path.relative(bundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
-            })
-        ] : [
-                // Plugins that apply in production builds only
-                //new webpack.optimize.UglifyJsPlugin(),
-                new MiniCssExtractPlugin({ filename: 'site.css' })
-            ])
+            .concat(isDevBuild ? [
+                // Plugins that apply in development builds only
+                new webpack.SourceMapDevToolPlugin({
+                    filename: '[file].map', // Remove this line if you prefer inline source maps
+                    moduleFilenameTemplate: path.relative(bundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
+                })
+            ] : [
+                    // Plugins that apply in production builds only
+                    //new webpack.optimize.UglifyJsPlugin(),
+                    new MiniCssExtractPlugin({ filename: 'site.css' })
+                ])
     }];
 };

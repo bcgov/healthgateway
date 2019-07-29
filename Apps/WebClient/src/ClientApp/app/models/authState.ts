@@ -1,13 +1,11 @@
+import AuthenticationData from '@/models/authenticationData'
+
 export interface RootState {
     version: string;
 }
 
-export interface Authentication {
-    token: string
-}
-
 export interface AuthState {
-    authentication?: Authentication,
+    authentication?: AuthenticationData,
     statusMessage: string,
     error: boolean,
     requestedRoute: string
