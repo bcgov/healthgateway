@@ -9,7 +9,6 @@ import LogoutComponent from '../app/views/logout.vue'
 import UnauthorizedComponent from '../app/views/errors/unauthorized.vue'
 
 describe('Router', () => {
-
   test('has landing route', () => {
     const actualComponent = router.getMatchedComponents("/")[0];
     expect(actualComponent.name).toBe(LandingComponent.name);
@@ -27,9 +26,8 @@ describe('Router', () => {
   });
 
   test('has immunizations route', () => {
-    const actualComponents = router.getMatchedComponents("/immunizations");
-    expect(actualComponents[0].name).toBe(HomeComponent.name);
-    expect(actualComponents[1].name).toBe(ImmunizationsComponent.name);
+    const actualComponent = router.getMatchedComponents("/immunizations")[0];
+    expect(actualComponent.name).toBe(ImmunizationsComponent.name);
   });
 
   test('has logout route', () => {
@@ -51,6 +49,5 @@ describe('Router', () => {
     const actualComponent = router.getMatchedComponents("/paththatdoesnotexist")[0];
     expect(actualComponent.name).toBe(NotFoundComponent.name);
   });
-
 });
 

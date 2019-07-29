@@ -8,4 +8,4 @@ describe('Home view', () => {
   test('is a Vue instance', () => {
     expect(wrapper.isVueInstance()).toBeTruthy();
   })
-})
+});

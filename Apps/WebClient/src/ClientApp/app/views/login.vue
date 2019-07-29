@@ -1,9 +1,9 @@
 <template>
-  <div id="login" align="center">
+  <div class="container" align="center">
     <b-row style="height: 3rem;"></b-row>
     <b-row>
       <b-col>
-        <b-card class="shadow-lg bg-white" tag="login" style="max-width: 25rem;" align="center">
+        <b-card class="shadow-lg bg-white" style="max-width: 25rem;" align="center">
           <h3 slot="header">Log In</h3>
           <p slot="footer">
             Not yet registered?
@@ -37,7 +37,7 @@
                 </b-button>
               </b-col>
             </b-row>
-                        <b-row>
+            <b-row>
               <b-col>or</b-col>
             </b-row>
             <b-row>
@@ -59,26 +59,46 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-const namespace: string = "auth";
 import { State, Action, Getter } from "vuex-class";
-import { AuthState, Authentication, RootState } from "../models/authState";
+import { AuthState, RootState } from "@/models/authState";
+
+const namespace: string = "auth";
 
 @Component
 export default class LoginComponent extends Vue {
   @State("auth") authState: AuthState;
   @Action("login", { namespace }) login: any;
   @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
-  @Getter("requestedRoute", { namespace }) requestedRoute: string;
 
-  oidcLogin(idirHint: string) {
-    const requestedRoute = this.authState && this.authState.requestedRoute;
+  private redirectPath: string;
+  private routeHandler;
 
-    console.log(window.location.hostname + requestedRoute);
-    this.login(idirHint, requestedRoute);
+  mounted() {
+    if (this.$route.query.redirect) {
+      this.redirectPath = this.$route.query.redirect;
+    } else {
+      this.redirectPath = "/home";
+    }
+
+    this.routeHandler = this.$router;
+
+    if (this.isAuthenticated) {
+      this.routeHandler.push({ path: this.redirectPath });
+    }
+  }
+
+  oidcLogin(hint: string) {
+    // if the login action returns it means that the user already had credentials.
+    this.login({ idpHint: hint, redirectPath: this.redirectPath }).then(
+      result => {
+        if (this.isAuthenticated) {
+          this.routeHandler.push({ path: this.redirectPath });
+        }
+      }
+    );
   }
 }
 </script>

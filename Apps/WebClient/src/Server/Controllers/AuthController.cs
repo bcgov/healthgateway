@@ -1,15 +1,10 @@
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.WebClient.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Authentication and Authorization controller.
