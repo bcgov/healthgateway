@@ -1,21 +1,21 @@
 import Vue from 'vue'
-import VueRouter, { Route, RouteConfig, RawLocation } from 'vue-router'
 
 // Routes
+import VueRouter from 'vue-router'
 import store from './store/store'
 import HomeComponent from '@/views/home.vue'
-import RegistrationComponent from '@//views/registration.vue'
-import LandingComponent from '@//views/landing.vue'
-import ImmunizationsComponent from '@//views/immunizations.vue'
-import NotFoundComponent from '@//views/errors/notFound.vue'
+import RegistrationComponent from '@/views/registration.vue'
+import LandingComponent from '@/views/landing.vue'
+import ImmunizationsComponent from '@/views/immunizations.vue'
+import NotFoundComponent from '@/views/errors/notFound.vue'
 import LoginComponent from '@/views/login.vue'
-import LogoutComponent from '@//views/logout.vue'
-import UnauthorizedComponent from '@//views/errors/unauthorized.vue'
-import TempAuthComponent from '@//views/auth.vue'
+import LogoutComponent from '@/views/logout.vue'
+import UnauthorizedComponent from '@/views/errors/unauthorized.vue'
+import TempAuthComponent from '@/views/auth.vue'
 
 Vue.use(VueRouter)
 
-const routes: RouteConfig[] = [
+const routes = [
     {
         path: '/',
         component: LandingComponent,
@@ -66,7 +66,7 @@ const router = new VueRouter({
     routes,
 })
 
-export async function checkRoute(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void) {
+router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresAuth) {
         let isAuthenticated = store.getters['auth/isAuthenticated'];
         if (!isAuthenticated) {
@@ -91,8 +91,6 @@ export async function checkRoute(to: Route, from: Route, next: (to?: RawLocation
     else {
         next()
     }
-}
-
-router.beforeEach(checkRoute);
+})
 
 export default router
