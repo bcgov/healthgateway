@@ -12,7 +12,7 @@
           <b-card-body>
             <b-row>
               <b-col>
-                <b-button v-on:click="oidcLogin('bcsc')" block variant="primary" disabled>
+                <b-button id="bcscBtn" v-on:click="oidcLogin('bcsc')" block variant="primary" disabled>
                   <tr>
                     <td style="width: 3rem;">
                       <span class="fa fa-address-card"></span>
@@ -27,7 +27,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-button v-on:click="oidcLogin('idir')" block variant="primary">
+                <b-button id="idirBtn" v-on:click="oidcLogin('idir')" block variant="primary">
                   <tr>
                     <td style="width: 3rem;">
                       <span class="fa fa-user"></span>
@@ -42,7 +42,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-button href="#" v-on:click="oidcLogin('github')" block variant="primary">
+                <b-button id="gitBtn" v-on:click="oidcLogin('github')" block variant="primary">
                   <tr>
                     <td style="width: 3rem;">
                       <span class="fab fa-github"></span>
