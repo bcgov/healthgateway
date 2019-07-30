@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright ï¿½ 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ namespace HealthGateway.WebClient
                  {
                      OnTokenValidated = ctx =>
                      {
-                         var accessToken = ctx.SecurityToken as JwtSecurityToken;
+                         var accessToken = ctx.SecurityToken; //  JwtSecurityToken
                          if (accessToken != null)
                          {
                              ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;

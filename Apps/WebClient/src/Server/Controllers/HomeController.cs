@@ -19,19 +19,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace HealthGateway.WebClient.Controllers
 {
     /// <summary>
-    /// HomeController for Vue WebClient app
+    /// HomeController for Vue WebClient app.
     /// </summary>
     public class HomeController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => this.View();
 
         public IActionResult Error()
         {
             ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-            return View();
+            return this.View();
         }
     }
 }
