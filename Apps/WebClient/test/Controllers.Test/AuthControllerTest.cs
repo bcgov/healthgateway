@@ -32,15 +32,15 @@ namespace HealthGateway.WebClient.Test.Controllers
         }
 
         [Fact]
-        public async void ShouldLogon()
+        public void ShouldLogon()
         {
             Models.AuthData expectedResult = new Models.AuthData { IsAuthenticated = true, Token = null, User = null };
 
             this.mockService
-                .Setup(e => e.GetAuthenticationData()).Returns(Task.FromResult(expectedResult));
+                .Setup(e => e.GetAuthenticationData()).Returns(expectedResult);
 
             // Call actual Authenticate
-            Models.AuthData actualResult = (Models.AuthData)await this.controller.GetAuthenticationData().ConfigureAwait(true);
+            Models.AuthData actualResult = (Models.AuthData)this.controller.GetAuthenticationData();
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
 

@@ -13,21 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-
 namespace HealthGateway.WebClient.Controllers
 {
+    using System.Diagnostics;
+    using Microsoft.AspNetCore.Mvc;
+
     /// <summary>
     /// HomeController for Vue WebClient app.
     /// </summary>
     public class HomeController : Controller
     {
+        /// <summary>
+        /// The default page for the home controller.
+        /// </summary>
+        /// <returns>The default view.</returns>
         public IActionResult Index() => this.View();
 
+        /// <summary>
+        /// The default page for error.
+        /// </summary>
+        /// <returns>The default view.</returns>
         public IActionResult Error()
         {
-            ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            this.ViewData["RequestId"] = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier;
             return this.View();
         }
     }

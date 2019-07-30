@@ -1,6 +1,6 @@
-import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import HeaderComponent from '@/components/navmenu/navHeader.vue'
+import VueRouter from 'vue-router'
 import boostrapVue from 'bootstrap-vue'
 import Vuex from 'vuex'
 import store from '@/store/store'

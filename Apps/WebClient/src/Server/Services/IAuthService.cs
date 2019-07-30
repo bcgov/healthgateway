@@ -13,7 +13,7 @@
         /// Authenticates the request based on the current context.
         /// </summary>
         /// <returns>The AuthData containing the token and user information.</returns>
-        Task<Models.AuthData> GetAuthenticationData();
+        Models.AuthData GetAuthenticationData();
 
         /// <summary>
         /// Clears the authorization data from the context.
@@ -27,6 +27,6 @@
         /// <returns> The AuthenticationProperties.</returns>
         /// <param name="hint">The OIDC IDP Hint.</param>
         /// <param name="redirectUri">The URI to redirect to after logon.</param>
-        AuthenticationProperties GetAuthenticationProperties(string hint, string redirectUri);
+        AuthenticationProperties GetAuthenticationProperties(string hint, System.Uri redirectUri);
     }
 }

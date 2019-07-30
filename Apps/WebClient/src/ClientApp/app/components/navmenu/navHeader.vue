@@ -1,21 +1,23 @@
 <template>
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
-    <b-navbar-brand href="/">
-      <img
-        class="img-fluid d-none d-md-block"
-        src="@/assets/images/gov/bcid-logo-rev-en.svg"
-        width="181"
-        height="44"
-        alt="B.C. Government Logo"
-      />
-      <img
-        class="img-fluid d-md-none"
-        src="@/assets/images/gov/bcid-symbol-rev.svg"
-        width="64"
-        height="44"
-        alt="B.C. Government Logo"
-      />
+    <b-navbar-brand>
+      <router-link to="/" :exact="true">
+        <img
+          class="img-fluid d-none d-md-block"
+          src="@/assets/images/gov/bcid-logo-rev-en.svg"
+          width="181"
+          height="44"
+          alt="B.C. Government Logo"
+        />
+        <img
+          class="img-fluid d-md-none"
+          src="@/assets/images/gov/bcid-symbol-rev.svg"
+          width="64"
+          height="44"
+          alt="B.C. Government Logo"
+        />
+      </router-link>
     </b-navbar-brand>
     <b-navbar-brand>
       <h3>HealthGateway</h3>
@@ -38,7 +40,11 @@
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown :text="greeting" v-if="isAuthenticated" right>
-          <b-dropdown-item href="#">Logout</b-dropdown-item>
+          <b-dropdown-item>
+            <router-link to="/logout" :exact="true">
+              <span class="fa fa-user"></span> Logout
+            </router-link>
+          </b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link class="nav-link" to="/login" :exact="true" v-else>
           <span class="fa fa-user"></span> Login

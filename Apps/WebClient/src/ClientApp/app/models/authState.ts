@@ -1,12 +1,19 @@
-import AuthenticationData from '@/models/authenticationData'
+import AuthenticationData from '@/models/authenticationData';
+
+export enum StateType {
+    NONE,
+    INITIALIZED,
+    REQUESTED,
+    ERROR
+}
 
 export interface RootState {
     version: string;
 }
 
 export interface AuthState {
-    authentication?: AuthenticationData,
-    statusMessage: string,
-    error: boolean,
-    requestedRoute: string
+    authentication?: AuthenticationData;
+    statusMessage: string;
+    error: boolean;
+    stateType: StateType;
 }

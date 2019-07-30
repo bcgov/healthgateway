@@ -13,7 +13,12 @@
             <strong>New here?</strong>
           </h3>
           <p>Click the button below to register.</p>
-          <b-button to="registration" class="btn btn-secondary" id="btnStart" role="button">Start now</b-button>
+          <b-button
+            to="registration"
+            class="btn btn-secondary"
+            id="btnStart"
+            role="button"
+          >Start now</b-button>
         </div>
       </div>
       <div class="col-lg-6 col-md-6 pt-2">

@@ -35,7 +35,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public async void TestAuthenticated()
+        public void TestAuthenticated()
         {
             Models.AuthData expectedResult = new Models.AuthData()
             {
@@ -49,8 +49,8 @@ namespace HealthGateway.WebClient.Test.Services
                 }
             };
 
-            var mockUser = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] 
-                { 
+            var mockUser = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                {
                   new Claim(ClaimTypes.Email, "client@mail.me"),
                   new Claim("preferred_username", "Username"),
                   new Claim("name","Client Name"),
@@ -75,14 +75,14 @@ namespace HealthGateway.WebClient.Test.Services
                 .Setup(e => e.HttpContext.RequestServices).Returns(serviceProviderMock.Object);
 
             // Call actual Authenticate
-            Models.AuthData actualResult = await service.GetAuthenticationData().ConfigureAwait(true);
+            Models.AuthData actualResult = service.GetAuthenticationData();
             Assert.True(expectedResult.User.IsDeepEqual(actualResult.User));
             Assert.Equal(expectedResult.Token, actualResult.Token);
             Assert.Equal(expectedResult.IsAuthenticated, actualResult.IsAuthenticated);
         }
 
         [Fact]
-        public async void TestUnAuthenticated()
+        public void TestUnAuthenticated()
         {
             Models.AuthData expectedResult = new Models.AuthData()
             {
@@ -115,7 +115,7 @@ namespace HealthGateway.WebClient.Test.Services
                 .Setup(e => e.HttpContext.RequestServices).Returns(serviceProviderMock.Object);
 
             // Call actual Authenticate
-            Models.AuthData actualResult = await service.GetAuthenticationData().ConfigureAwait(true);
+            Models.AuthData actualResult = service.GetAuthenticationData();
             Assert.True(expectedResult.User.IsDeepEqual(actualResult.User));
             Assert.Equal(expectedResult.Token, actualResult.Token);
             Assert.Equal(expectedResult.IsAuthenticated, actualResult.IsAuthenticated);
@@ -125,7 +125,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldLogout()
         {
             SignOutResult expectedResult = new SignOutResult(
-                new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme}
+                new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme }
             );
 
             // Should Logout
