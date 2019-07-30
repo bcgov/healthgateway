@@ -92,7 +92,7 @@ namespace HealthGateway.WebClient
                  {
                      OnTokenValidated = ctx =>
                      {
-                         var accessToken = ctx.SecurityToken; //  JwtSecurityToken
+                         var accessToken = ctx.SecurityToken;
                          if (accessToken != null)
                          {
                              ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
