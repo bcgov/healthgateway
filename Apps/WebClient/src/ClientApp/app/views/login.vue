@@ -3,7 +3,7 @@
     <b-row style="height: 3rem;"></b-row>
     <b-row>
       <b-col>
-        <b-card class="shadow-lg bg-white" style="max-width: 25rem;" align="center">
+        <b-card class="shadow-lg bg-white" style="max-width: 25rem;" align="center" id="loginPicker">
           <h3 slot="header">Log In</h3>
           <p slot="footer">
             Not yet registered?
