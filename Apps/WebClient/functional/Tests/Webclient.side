@@ -380,7 +380,7 @@
       "target": "id=loginPicker",
       "targets": [],
       "value": ""
-      },
+    }]
   }, {
     "id": "c033b379-f96e-48f6-bd75-39e6e4ec1302",
     "name": "Home page gives unauthorized",
