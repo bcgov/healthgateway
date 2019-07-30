@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -9,20 +9,26 @@
     <!-- SonarQube needs this -->
     <ProjectGuid>{4EF62115-3012-4911-B7AA-3B798231ADC4}</ProjectGuid>
     <RootNamespace>HealthGateway.WebClient</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Projects\healthgateway\Apps\WebClient\src\WebClient.xml</DocumentationFile>
   </PropertyGroup>  
 
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.3.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="3.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,16 +37,35 @@
 
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
-      <Value>$(MSBuildProjectFullPath)</Value>
+      <Value>$(MSBuildProjectFullPath)/Server</Value>
     </SonarQubeSetting>
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="stylecop.json" />
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ClientApp\components\logout\" />
   </ItemGroup>
+
+  <Target Name = "CleanDistFolder" AfterTargets="CoreClean">
+    <RemoveDir Directories="wwwroot\dist" />
+  </Target>
+    
+  <Target Name="NPMInstall" BeforeTargets="DebugRunWebpack" Condition=" '$(Configuration)' == 'Debug' And !Exists('ClientApp\node_modules') "> 
+        <Exec Command="npm --version" ContinueOnError="true">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+        </Exec>
+        <Error Condition="'$(ErrorCode)' != '0'" Text="NPM is required to build and run this project. To continue, please install NPM via Node.js at https://nodejs.org/, and then restart your command prompt or IDE." />
+        <Message Importance="high" Text="Performing npm install on first build" />
+        <Exec Command="npm install" workingDirectory="./ClientApp" />
+  </Target>
+
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
@@ -51,20 +76,20 @@
     <!-- In development, the dist files won't exist on the first run or when cloning to
          a different machine, so rebuild them if not already present. -->
     <Message Importance="high" Text="Performing first-run Webpack build..." />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js" workingDirectory="./ClientApp" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js" workingDirectory="./ClientApp" />
   </Target>
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec Command="npm install" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js --env.prod" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" />
+    <Exec Command="npm install" workingDirectory="./ClientApp" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js --env.prod" workingDirectory="./ClientApp" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" workingDirectory="./ClientApp" />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="wwwroot\dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>

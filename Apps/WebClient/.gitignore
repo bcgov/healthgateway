@@ -237,3 +237,8 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+#SonarQube files
+sonar_reports/
+test/coverage.opencover.xml
+test/xUnitResults/
