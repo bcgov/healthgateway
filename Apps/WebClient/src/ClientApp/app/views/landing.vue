@@ -13,7 +13,7 @@
             <strong>New here?</strong>
           </h3>
           <p>Click the button below to register.</p>
-          <a href="/registration" class="btn btn-secondary" id="btnStart" role="button">Start now</a>
+          <b-button to="registration" class="btn btn-secondary" id="btnStart" role="button">Start now</b-button>
         </div>
       </div>
       <div class="col-lg-6 col-md-6 pt-2">
@@ -22,7 +22,7 @@
             <strong>Already registered?</strong>
           </h3>
           <p>Click the button below to login.</p>
-          <a href="#" class="btn btn-primary" id="btnLogin" role="button">Login</a>
+          <b-button to="login" class="btn btn-primary" id="btnLogin">Login</b-button>
         </div>
       </div>
     </div>

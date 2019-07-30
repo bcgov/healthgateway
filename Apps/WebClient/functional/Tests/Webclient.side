@@ -341,6 +341,46 @@
       "targets": [],
       "value": "401"
     }]
+  }, {
+    "id": "7d26e647-6f0a-4ccd-a741-e1bdc477e5e7",
+    "name": "Login from Landing",
+    "commands": [{
+      "id": "93a3db58-12e0-420f-947c-a5fab202406a",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1eaf59dc-a1a8-4d9f-8bf7-6c262a4490bb",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1652x958",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d43f5f1e-d500-499d-9ef3-38278d30e286",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnLogin",
+      "targets": [
+        ["id=btnLogin", "id"],
+        ["css=#btnLogin", "css:finder"],
+        ["xpath=(//a[contains(text(),'Login')])[2]", "xpath:link"],
+        ["xpath=//a[@id='btnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[2]/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[4]", "xpath:href"],
+        ["xpath=//div[2]/div/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a03a5868-1749-4145-b8c4-d9c0ee9b8919",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=loginPicker",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
