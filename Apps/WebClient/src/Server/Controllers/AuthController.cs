@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="hint">A value to pass to KeyCloak to select the Identity Provider.</param>
         /// <param name="redirectUri">The redirectUri after successful authentication.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
-        public IActionResult Login(string hint, string redirectUri)
+        public IActionResult Login(string hint, System.Uri redirectUri)
         {
             return new ChallengeResult(
                 OpenIdConnectDefaults.AuthenticationScheme, this.authSvc.GetAuthenticationProperties(hint, redirectUri));
@@ -58,9 +58,9 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>A JSON object with the authentication data.</returns>
         [Route("/api/GetAuthenticationData")]
-        public async Task<Models.AuthData> GetAuthenticationData()
+        public Models.AuthData GetAuthenticationData()
         {
-            Models.AuthData authData = await this.authSvc.GetAuthenticationData().ConfigureAwait(true);
+            Models.AuthData authData = this.authSvc.GetAuthenticationData();
             return authData;
         }
     }

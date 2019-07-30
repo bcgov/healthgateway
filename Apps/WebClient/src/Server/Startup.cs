@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient
                  {
                      OnTokenValidated = ctx =>
                      {
-                         var accessToken = ctx.SecurityToken as JwtSecurityToken;
+                         JwtSecurityToken accessToken = ctx.SecurityToken;
                          if (accessToken != null)
                          {
                              ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
@@ -170,7 +170,6 @@ namespace HealthGateway.WebClient
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto,
             });
-
 
             app.UseResponseCompression();
             app.UseAuthentication();

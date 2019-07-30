@@ -1,17 +1,15 @@
 ﻿namespace HealthGateway.WebClient.Services
 {
     using System.Security.Claims;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-    #pragma warning disable CA1303 // disable literal strings check
+#pragma warning disable CA1303 // disable literal strings check
 
     /// <summary>
     /// Authentication and Authorization Service.
@@ -39,7 +37,7 @@
         /// Authenticates the request based on the current context.
         /// </summary>
         /// <returns>The AuthData containing the token and user information.</returns>
-        public async Task<Models.AuthData> GetAuthenticationData()
+        public Models.AuthData GetAuthenticationData()
         {
             Models.AuthData authData = new Models.AuthData();
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -54,7 +52,6 @@
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
                 authData.Token = user.FindFirstValue("access_token");
-                    //await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
             }
 
             return authData;
@@ -76,12 +73,12 @@
         /// <returns> The AuthenticationProperties.</returns>
         /// <param name="hint">The OIDC IDP Hint.</param>
         /// <param name="redirectUri">The URI to redirect to after logon.</param>
-        public AuthenticationProperties GetAuthenticationProperties(string hint, string redirectUri)
+        public AuthenticationProperties GetAuthenticationProperties(string hint, System.Uri redirectUri)
         {
             this.logger.LogDebug("Getting Authentication properties with hint={0} and redirectUri={1}", hint, redirectUri);
             AuthenticationProperties authProps = new AuthenticationProperties()
             {
-                RedirectUri = redirectUri,
+                RedirectUri = redirectUri.ToString(),
             };
             if (!string.IsNullOrEmpty(hint))
             {

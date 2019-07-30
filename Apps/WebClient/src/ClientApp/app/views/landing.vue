@@ -13,7 +13,12 @@
             <strong>New here?</strong>
           </h3>
           <p>Click the button below to register.</p>
-          <a href="/registration" class="btn btn-secondary" id="btnStart" role="button">Start now</a>
+          <router-link
+            to="/registration"
+            :exact="true"
+            class="btn btn-secondary"
+            role="button"
+          >Start now</router-link>
         </div>
       </div>
       <div class="col-lg-6 col-md-6 pt-2">
@@ -22,7 +27,13 @@
             <strong>Already registered?</strong>
           </h3>
           <p>Click the button below to login.</p>
-          <a href="#" class="btn btn-primary" id="btnLogin" role="button">Login</a>
+          <router-link
+            id="btnLogin"
+            to="/login"
+            :exact="true"
+            class="btn btn-primary"
+            role="button"
+          >Login</router-link>
         </div>
       </div>
     </div>

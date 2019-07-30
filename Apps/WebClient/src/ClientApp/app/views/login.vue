@@ -42,7 +42,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-button href="#" v-on:click="oidcLogin('github')" block variant="primary">
+                <b-button v-on:click="oidcLogin('github')" block variant="primary">
                   <tr>
                     <td style="width: 3rem;">
                       <span class="fab fa-github"></span>
@@ -63,21 +63,19 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import { AuthState, RootState } from "@/models/authState";
 
 const namespace: string = "auth";
 
 @Component
 export default class LoginComponent extends Vue {
-  @State("auth") authState: AuthState;
   @Action("login", { namespace }) login: any;
   @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
 
-  private redirectPath: string;
-  private routeHandler;
+  private redirectPath: string = "";
+  private routeHandler = undefined;
 
   mounted() {
-    if (this.$route.query.redirect) {
+    if (this.$route.query.redirect && this.$route.query.redirect !== '') {
       this.redirectPath = this.$route.query.redirect;
     } else {
       this.redirectPath = "/home";
