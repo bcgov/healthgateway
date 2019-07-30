@@ -9,8 +9,14 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "isolatedModules" :true,
+    "isolatedModules": true,
     "baseUrl": ".",
+    "types": [
+      "reflect-metadata",
+      "webpack-env",
+      "jest"
+    ],
+    "emitDecoratorMetadata": true,
     "paths": {
       "@/*": [
         "app/*"

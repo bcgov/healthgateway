@@ -13,32 +13,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.WebClient.Swagger
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using Swashbuckle.AspNetCore.Swagger;
 
     /// <summary>
-    /// The authentication data from the ASP.Net Core Authentication cookie.
+    /// Swagger Configuration.
     /// </summary>
-    public class AuthData
+    public class SwaggerSettings
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the client has been authenticated or not.
-        /// Token and User properties should only be accessed if this value is true.
+        /// Gets or sets document Name.
         /// </summary>
-        public bool IsAuthenticated { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
+        /// Gets or sets swagger Info.
         /// </summary>
-        public string Token { get; set; }
+        public Info Info { get; set; }
 
         /// <summary>
-        /// Gets or sets the authenticated user, <see cref="User"/>.
+        /// Gets or sets RoutePrefix.
         /// </summary>
-        public User User { get; set; }
+        public string RoutePrefix { get; set; }
+
+        /// <summary>
+        /// Gets Route Prefix with tailing slash.
+        /// </summary>
+        public string RoutePrefixWithSlash =>
+            string.IsNullOrWhiteSpace(this.RoutePrefix)
+                ? string.Empty
+                : this.RoutePrefix + "/";
     }
 }
