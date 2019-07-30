@@ -1,18 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 import { IAuthenticationService } from '@/services/interfaces';
 
-import { injectable, inject } from 'inversify';
+import { injectable } from 'inversify';
 import 'reflect-metadata';
 
 import AuthenticationData from '@/models/authenticationData';
-import router from '@/router';
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-    private readonly BASE_PATH: string = 'someHardcodedPath';
-    private readonly STORAGE_KEY: string = 'token'; // Key for localStoage for the token
     private readonly GET_AUTH_URI: string = 'api/GetAuthenticationData'; // This app's backend service to perform authentication (keeper of the client secret)
-    private readonly REMOVE_AUTH_URI: string = 'api/RemoveAuthenticationData'; // This app's backend service to perform authentication (keeper of the client secret)
     private readonly HTTP_HEADER_AUTH: string = 'Authorization'; // Auth key for ensuring we send the base64 token
 
     public startLoginFlow(idpHint: string, relativeToPath: string): void {

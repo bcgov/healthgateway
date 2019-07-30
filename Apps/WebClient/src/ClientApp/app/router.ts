@@ -50,7 +50,6 @@ const routes = [
         component: UnauthorizedComponent,
         meta: { requiresAuth: false }
     }, // Unauthorized
-    { path: '/Auth/Login' },
     { path: '/*', component: NotFoundComponent } // Not found; Will catch all other paths not covered previously
 ];
 

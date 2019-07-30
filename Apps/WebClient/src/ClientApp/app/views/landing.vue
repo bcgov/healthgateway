@@ -13,12 +13,12 @@
             <strong>New here?</strong>
           </h3>
           <p>Click the button below to register.</p>
-          <router-link
-            to="/registration"
-            :exact="true"
+          <b-button
+            to="registration"
             class="btn btn-secondary"
+            id="btnStart"
             role="button"
-          >Start now</router-link>
+          >Start now</b-button>
         </div>
       </div>
       <div class="col-lg-6 col-md-6 pt-2">
@@ -27,13 +27,7 @@
             <strong>Already registered?</strong>
           </h3>
           <p>Click the button below to login.</p>
-          <router-link
-            id="btnLogin"
-            to="/login"
-            :exact="true"
-            class="btn btn-primary"
-            role="button"
-          >Login</router-link>
+          <b-button to="login" class="btn btn-primary" id="btnLogin">Login</b-button>
         </div>
       </div>
     </div>
