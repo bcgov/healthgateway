@@ -7,12 +7,12 @@
 <template>
   <div id="app-root" class="fill-body">
     <header>
-      <span v-if="isDevelopment">
+      <div v-if="!(isProduction)">
         <div class="text-center bg-warning small">
           Non-production environment:
           <b>{{host}}</b>
         </div>
-      </span>
+      </div>
       <NavHeader />
     </header>
     <main>
@@ -39,7 +39,7 @@ import Process, { EnvironmentType } from "@/constants/process.ts";
   }
 })
 export default class AppComponent extends Vue {
-  private readonly host: string = window.location.hostname.toLocaleUpperCase();
-  private readonly isDevelopment: boolean = Process.NODE_ENV == EnvironmentType.development;
+    private readonly host: string = window.location.hostname.toLocaleUpperCase();
+    private readonly isProduction: boolean = Process.NODE_ENV == EnvironmentType.production;
 }
 </script>
