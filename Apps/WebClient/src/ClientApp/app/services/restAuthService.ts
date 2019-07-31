@@ -59,6 +59,13 @@ export class RestAuthenticationService implements IAuthenticationService {
             console.log('Starting Logout flow....');
             var authPathUrl = new URL('/Auth/Logout', window.location.href);
             window.location.href = authPathUrl.href;
+            this.expireSiteMinderCookie();
         });
+    }
+
+    public expireSiteMinderCookie() {
+        // This expires the siteminder cookie preventing the app from login in using the cache.
+        var d = new Date();
+        document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
     }
 }
