@@ -39,9 +39,9 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item-dropdown :text="greeting" v-if="isAuthenticated" right>
+        <b-nav-item-dropdown id="menuBtndUser" :text="greeting" v-if="isAuthenticated" right>
           <b-dropdown-item>
-            <router-link to="/logout" :exact="true">
+            <router-link id="menuBtnLogout" to="/logout" :exact="true">
               <span class="fa fa-user"></span> Logout
             </router-link>
           </b-dropdown-item>
