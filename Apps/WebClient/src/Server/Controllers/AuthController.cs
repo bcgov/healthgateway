@@ -56,15 +56,15 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Performs an OpenIdConnect Challenge.
         /// </summary>
-        /// <param name="hint">A value to pass to KeyCloak to select the Identity Provider.</param>
+        /// <param name="idpHint">A value to pass to KeyCloak to select the Identity Provider.</param>
         /// <param name="redirectUri">The redirect uri after successful authentication.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         [Route("/Auth/Login")]
-        public IActionResult Login(string hint, System.Uri redirectUri)
+        public IActionResult Login(string idpHint, System.Uri redirectUri)
         {
             return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, this.authSvc.GetAuthenticationProperties(hint, redirectUri));
+                OpenIdConnectDefaults.AuthenticationScheme, this.authSvc.GetAuthenticationProperties(idpHint, redirectUri));
         }
 
         /// <summary>
