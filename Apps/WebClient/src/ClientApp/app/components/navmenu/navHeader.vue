@@ -46,7 +46,7 @@
             </router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
-        <router-link class="nav-link" to="/login" :exact="true" v-else>
+        <router-link id="menuBtnLogin" class="nav-link" to="/login" :exact="true" v-else>
           <span class="fa fa-user"></span> Login
         </router-link>
         <b-nav-item-dropdown id="languageSelector" :text="currentLanguage.description" right>
