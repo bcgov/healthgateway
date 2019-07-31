@@ -7,12 +7,12 @@
 <template>
   <div id="app-root" class="fill-body">
     <header>
-      <span v-if="!(isProduction)">
+      <div v-if="!(isProduction)">
         <div class="text-center bg-warning small">
           Non-production environment:
           <b>{{host}}</b>
         </div>
-      </span>
+      </div>
       <NavHeader />
     </header>
     <main>
