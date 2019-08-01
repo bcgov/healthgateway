@@ -167,7 +167,7 @@ namespace HealthGateway.WebClient
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            
+            Console.WriteLine(env.EnvironmentName);
             if (env.IsDevelopment())
             {
                 this.logger.LogDebug("Application is running in development mode");

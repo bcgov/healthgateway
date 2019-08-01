@@ -7,10 +7,6 @@
     <title>@ViewData["Title"] - Health Gateway</title>
     <base href="~/" />
 
-    <script type="text/javascript">
-        process.env.VUE_APP_ENV = @Environment.GetEnvironmentVariable("VUE_APP_ENV");
-    </script>
-
     <link rel="stylesheet" href="~/dist/vendor.css.gz" asp-append-version="true" />
     <environment exclude="Development">
         <link rel="stylesheet" href="~/dist/site.css.gz" asp-append-version="true" />
