@@ -74,7 +74,10 @@ module.exports = (env) => {
             new VueLoaderPlugin(),
             new CheckerPlugin(),
             new webpack.DefinePlugin({
-                '_NODE_ENV': JSON.stringify(isDevBuild ? 'development' : 'production')
+                '_NODE_ENV': JSON.stringify(isDevBuild ? 'development' : 'production'),
+                'process.env': { 
+                    'VUE_APP_ENV': JSON.stringify(process.env.VUE_APP_ENV)
+                }
             }),
             new webpack.DllReferencePlugin({
                 context: __dirname,
