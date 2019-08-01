@@ -41,5 +41,11 @@ import Process, { EnvironmentType } from "@/constants/process.ts";
 export default class AppComponent extends Vue {
     private readonly host: string = window.location.hostname.toLocaleUpperCase();
     private readonly isProduction: boolean = Process.NODE_ENV == EnvironmentType.production;
+
+    constructor() {
+        super();
+
+        console.log(process.env);
+    }
 }
 </script>
