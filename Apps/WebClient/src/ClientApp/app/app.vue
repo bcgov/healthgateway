@@ -45,7 +45,6 @@ export default class AppComponent extends Vue {
     constructor() {
         super();
 
-        console.log(process.env);
     }
 }
 </script>

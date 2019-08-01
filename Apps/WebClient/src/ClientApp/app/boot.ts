@@ -17,6 +17,8 @@ import store from '@/store/store'
 Vue.use(BootstrapVue)
 Vue.use(VueRouter)
 
+console.log('env', JSON.stringify(process.env))
+
 // Initialize the store only then start the app
 store.dispatch("auth/initialize").then(result => {
     new Vue({
