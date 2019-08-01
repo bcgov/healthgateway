@@ -406,7 +406,7 @@
       "id": "221a850f-32be-44a3-9779-ccda9704a23e",
       "comment": "",
       "command": "runScript",
-      "target": "localStorage.clear();",
+      "target": "        var d = new Date();         document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;",
       "targets": [],
       "value": ""
     }, {
@@ -506,31 +506,6 @@
       "target": "css=h1",
       "targets": [],
       "value": "Welcome to Health Gateway!"
-    }, {
-      "id": "aa672bc6-a9a3-491c-b76e-09c178a61524",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnUser",
-      "targets": [
-        ["css=#\\__BVID__14__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='__BVID__14__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi null')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "e573e9f9-337b-4cee-a79b-140463b59e09",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["css=li:nth-child(1) > .dropdown-item > a", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//li[@id='__BVID__14']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
-      "value": ""
     }]
   }],
   "suites": [{
