@@ -41,6 +41,13 @@
     <!-- Snowplow stop plowing -->
 </head>
 <body>
+    <environment exclude="Production">
+        <div class="text-center bg-warning small">
+            Non-production environment:
+            <b>@Context.Request.Host</b>
+        </div>
+    </environment>
+
     @RenderBody()
 
     <script src="~/dist/vendor.js.gz" asp-append-version="true"></script>
