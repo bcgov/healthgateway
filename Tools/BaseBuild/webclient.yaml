@@ -52,6 +52,8 @@ objects:
       spec:
         containers:
         - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: ${ASPNETCORE_ENVIRONMENT}
             - name: HealthGateway_OpenIdConnect__Authority
               valueFrom:
                 configMapKeyRef:
@@ -172,4 +174,9 @@ parameters:
   - name: ENV
     displayName: Enviroment
     description: The environment to be deployed to
+    required: true     
+  - name: ASPNETCORE_ENVIRONMENT
+    displayName: AspNet Core Environment
+    description: The aspnet environment to be deployed to
+    value: Production
     required: true     
