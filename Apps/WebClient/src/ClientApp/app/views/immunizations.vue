@@ -7,12 +7,34 @@
     <p id="subtext">{{ $t('immz-component.prototype')}}</p>
 
     <b-table striped responsive small :items="items" :fields="fields">
-      <template slot="HEAD_date" id="f1">{{ $t('immz-component.fields.date') }}</template>
-      <template slot="HEAD_vaccine" id="f2">{{ $t('immz-component.fields.vaccine') }}</template>
-      <template slot="HEAD_dose" id="f3">{{ $t('immz-component.fields.dose') }}</template>
-      <template slot="HEAD_site" id="f4">{{ $t('immz-component.fields.site') }}</template>
-      <template slot="HEAD_lot" id="f5">{{ $t('immz-component.fields.lot') }}</template>
-      <template slot="HEAD_boost" id="f6">{{ $t('immz-component.fields.boost') }}</template>
+      <template slot="show_details" slot-scope="row">
+        <b-button
+          size="sm"
+          variant="outline-info"
+          @click="row.toggleDetails"
+          class="pb-2"
+        >{{ row.detailsShowing ? 'Hide' : 'Show'}} Details</b-button>
+      </template>
+      <template slot="row-details" id="rd" slot-scope="row">
+        <b-card>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.lot') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.lot }}</b-col>
+
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.site') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.site }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.dose') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.dose }}</b-col>
+          </b-row>
+          <b-button size="sm" variant="outline-secondary" @click="row.toggleDetails">Hide Details</b-button>
+        </b-card>
+      </template>
     </b-table>
   </div>
 </template>
@@ -23,7 +45,7 @@ import { Component } from "vue-property-decorator";
 import { IVueI18n } from "vue-i18n";
 
 interface Immunization {
-  date: string;
+  date: Date;
   vaccine: string;
   lot: string;
   dose: string;
@@ -39,10 +61,8 @@ export default class ImmunizationsComponent extends Vue {
   private fields = {
     date: { sortable: true },
     vaccine: { sortable: true },
-    dose: { sortable: false },
-    site: { sortable: true },
-    lot: { sortable: true },
-    boost: { sortable: true }
+    boost: { sortable: true },
+    show_details: { sortable: false }
   };
 
   private items = [
