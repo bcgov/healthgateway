@@ -3,7 +3,7 @@ name: 1.0.0$(Rev:.r) #Build number
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Immunization
-  App.Name: immunization
+  App.Name: immsservice
 
 pr: none
 
@@ -26,12 +26,12 @@ steps:
   inputs:
     command: 'test'
     projects: '$(App.Home)/test/test.csproj'
-    testRunTitle: 'ImmsAPI'
+    testRunTitle: 'ImmsService'
 
 - script: |
     set -e
     dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
-    dotnet sonarscanner begin /d:sonar.verbose=false /k:"immsapi_dev" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet sonarscanner begin /d:sonar.verbose=false /k:"immsservice_dev" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
     echo "$@" >&2
@@ -71,4 +71,3 @@ steps:
   displayName: 'Publish Pipeline Artifact'
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
-

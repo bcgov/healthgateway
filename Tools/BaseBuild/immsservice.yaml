@@ -5,8 +5,6 @@ metadata:
 objects:
 
 - apiVersion: v1
-  data:
-    HealthGateway_WebClient_XXX: 'XXX'
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
@@ -124,7 +122,7 @@ objects:
       app: ${NAME}
     name: ${NAME}
   spec:
-    host: ${ENV}-gateway.pathfinder.gov.bc.ca
+    host: ${ENV}-${APP_NAME}-gateway.pathfinder.gov.bc.ca
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
