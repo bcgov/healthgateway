@@ -14,14 +14,35 @@ trigger:
      - dev
  paths:
    include:
-     - Apps/Immunization
+     - Apps/Immunization/src
+     - Apps/Immunization/test
  
 pool:
   name: 'HealthGateway'
 
 steps:
 - task: DotNetCoreCLI@2
+  displayName: Run dotnet Tests
   inputs:
+    command: 'test'
+    projects: '$(App.Home)/test/test.csproj'
+    testRunTitle: 'ImmsAPI'
+
+- script: |
+    set -e
+    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
+    dotnet sonarscanner begin /d:sonar.verbose=false /k:"immsapi_dev" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Perform Static Code Analysis'
+  continueOnError: 'false'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/Immunization
+
+- task: DotNetCoreCLI@2
+  displayName: Publish dotnet code
+  inputs:
+    modifyOutputPath: false
     command: 'publish'
     publishWebProjects: false
     projects: '$(App.Home)/src'
@@ -38,6 +59,7 @@ steps:
 #  displayName: 'Restore and publish .Net App'
 
 - script: |
+    set -e
     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
