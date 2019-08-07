@@ -1,9 +1,10 @@
 import { ActionTree, Commit } from 'vuex';
-import { AuthState, RootState } from '@/models/authState';
+import { AuthState } from '@/models/authState';
 
 import { IAuthenticationService } from '@/services/interfaces';
 import SERVICE_IDENTIFIER from '@/constants/serviceIdentifiers';
 import container from '@/inversify.config';
+import { RootState } from '@/models/rootState';
 
 function handleError(commit: Commit, error: Error) {
     console.log('ERROR:' + error);

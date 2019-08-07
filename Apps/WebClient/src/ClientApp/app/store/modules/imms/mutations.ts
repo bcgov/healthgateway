@@ -1,30 +1,25 @@
 import { MutationTree } from 'vuex';
 import { AuthState } from '@/models/authState';
-import AuthenticationData from '@/models/authenticationData';
+import { ImmsState } from '@/models/immsState';
 import { StateType } from '@/models/rootState';
+import ImmsData from '@/models/immsData';
 
 export const mutations: MutationTree<AuthState> = {
-    authenticationRequest(state: AuthState) {
+    itemsRequest(state: ImmsState) {
         state.error = false;
         state.statusMessage = 'loading';
         state.stateType = StateType.REQUESTED;
     },
-    authenticationLoaded(state: AuthState, authData: AuthenticationData) {
+    authenticationLoaded(state: ImmsState, data: ImmsData[]) {
         state.error = false;
-        state.authentication = authData;
+        state.items = data;
         state.statusMessage = 'success';
         state.stateType = StateType.INITIALIZED;
     },
-    authenticationError(state: AuthState, errorMessage: string) {
+    immsError(state: ImmsState, errorMessage: string) {
         state.error = true;
-        state.authentication = undefined;
+        state.items = undefined;
         state.statusMessage = errorMessage;
         state.stateType = StateType.ERROR;
     },
-    logout(state: AuthState) {
-        state.error = false;
-        state.statusMessage = '';
-        state.authentication = undefined;
-        state.stateType = StateType.INITIALIZED;
-    }
 };

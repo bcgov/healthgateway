@@ -2,19 +2,19 @@ import { Module } from 'vuex';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { AuthState } from '@/models/authState';
+import { ImmsState } from '@/models/immsState';
 import { RootState, StateType } from '@/models/rootState';
 
-export const state: AuthState = {
+export const state: ImmsState = {
     statusMessage: '',
-    authentication: undefined,
+    items: undefined,
     error: false,
     stateType: StateType.NONE
 };
 
 const namespaced: boolean = true;
 
-export const auth: Module<AuthState, RootState> = {
+export const imms: Module<ImmsState, RootState> = {
     namespaced,
     state,
     getters,

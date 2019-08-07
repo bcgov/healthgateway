@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.IO;
+    using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -133,6 +134,18 @@ namespace HealthGateway.WebClient
                      },
                  };
              });
+
+            // Imms Service
+            services.AddTransient<IImmsService>(serviceProvider =>
+            {
+                this.logger.LogDebug("Configuring Transient Service IImmsService");
+                IImmsService service = new ImmsService(
+                    serviceProvider.GetService<ILogger<AuthService>>(),
+                    serviceProvider.GetService<IHttpContextAccessor>(),
+                    serviceProvider.GetService<IConfiguration>(),
+                    serviceProvider.GetService<IHttpClientFactory>());
+                return service;
+            });
 
             // Auth Service
             services.AddTransient<IAuthService>(serviceProvider =>

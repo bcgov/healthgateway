@@ -6,3 +6,7 @@ export interface IAuthenticationService {
     refreshToken(): Promise<AuthenticationData>;
     destroyToken(): Promise<void>;
 }
+
+export interface IImmsService {
+    getItems(): Promise<any>;
+}

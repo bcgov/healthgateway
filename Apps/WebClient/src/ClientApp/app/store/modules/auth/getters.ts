@@ -1,6 +1,7 @@
 import { GetterTree } from 'vuex';
-import { AuthState, RootState } from '@/models/authState';
+import { AuthState } from '@/models/authState';
 import User from "@/models/user"
+import { RootState } from '@/models/rootState';
 
 export const getters: GetterTree<AuthState, RootState> = {
     isAuthenticated(state: AuthState): boolean {
