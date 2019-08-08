@@ -74,11 +74,11 @@
 
     @Component
     export default class HeaderComponent extends Vue {
-        @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean = false;
-        @Getter("authenticatedUser", { namespace }) authenticatedUser: User | undefined = undefined;
+        @Getter("isAuthenticated", { namespace }) isAuthenticated!: boolean;
+        @Getter("authenticatedUser", { namespace }) authenticatedUser!: User;
 
         languages: { [code: string]: ILanguage } = {};
-        currentLanguage: ILanguage | undefined = undefined;
+        currentLanguage!: ILanguage;
 
         created() {
             this.loadLanguages();
