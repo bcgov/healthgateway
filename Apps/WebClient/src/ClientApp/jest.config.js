@@ -17,6 +17,7 @@ module.exports = {
   },
   moduleNameMapper: {
     "@/(.*)$": "<rootDir>/app/$1",
+    "\\.(css)$": "<rootDir>/test/mocks/styleMock.js"
   },
   transformIgnorePatterns: [
     "/node_modules/"
