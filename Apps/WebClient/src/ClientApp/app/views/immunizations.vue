@@ -1,12 +1,16 @@
 <template>
     <div>
+        <LoadingComponent :isLoading="isLoading"></LoadingComponent>
+        <b-alert :show="hasErrors" dismissible variant="danger">
+            <h4>Error</h4>
+            <span>An unexpected error occured while processing the request.</span>
+        </b-alert>
         <h1 id="subject">
             <span class="fa fa-1x fa-syringe"></span>
             &nbsp;{{ $t('immz-component.immunizations')}}
         </h1>
         <p id="subtext">{{ $t('immz-component.prototype')}}</p>
 
-        <LoadingComponent :isLoading="isLoading"></LoadingComponent>
         <b-table striped responsive small :items="items" :fields="fields">
             <template slot="HEAD_date" id="f1">
                 {{ $t('immz-component.fields.date') }}
@@ -51,6 +55,8 @@
         private items!: ImmsData[];
         @Getter("isLoading", { namespace })
         private isLoading!: boolean;
+        @Getter("hasErrors", { namespace })
+        private hasErrors!: boolean;
 
         private sortyBy: string = "date";
         private sortDesc: boolean = false;

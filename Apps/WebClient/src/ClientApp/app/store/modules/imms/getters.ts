@@ -12,4 +12,8 @@ export const getters: GetterTree<ImmsState, RootState> = {
         const { stateType } = state;
         return stateType == StateType.REQUESTED;
     },
+    hasErrors(state: ImmsState): boolean {
+        const { error } = state;
+        return error;
+    },
 };
