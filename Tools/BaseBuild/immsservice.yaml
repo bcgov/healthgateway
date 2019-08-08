@@ -1,13 +1,15 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: ${NAME}-template
+  name: immsservice-template
 objects:
 
 - apiVersion: v1
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
+    labels:
+      app: ${NAME}
 
 - apiVersion: v1
   kind: DeploymentConfig

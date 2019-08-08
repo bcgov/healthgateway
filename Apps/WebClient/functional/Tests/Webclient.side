@@ -401,16 +401,16 @@
     }]
   }, {
     "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
-    "name": "Github Login",
+    "name": "IDIR Login",
     "commands": [{
-      "id": "221a850f-32be-44a3-9779-ccda9704a23e",
-      "comment": "",
-      "command": "runScript",
-      "target": "        var d = new Date();         document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;",
+      "id": "cd66683a-b06e-4b1a-a9da-64440aa2382e",
+      "comment": "Logout to clear any cached session",
+      "command": "open",
+      "target": "/logout",
       "targets": [],
       "value": ""
     }, {
-      "id": "cd66683a-b06e-4b1a-a9da-64440aa2382e",
+      "id": "94b48685-4b56-4c67-9432-ab725c6cfbb0",
       "comment": "",
       "command": "open",
       "target": "/",
@@ -449,7 +449,7 @@
       "id": "8e966e6c-0e3f-45f6-bc24-4628fa2d1575",
       "comment": "",
       "command": "click",
-      "target": "id=gitBtn",
+      "target": "id=idirBtn",
       "targets": [
         ["css=#gitBtn td:nth-child(2)", "css:finder"],
         ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
