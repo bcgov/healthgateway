@@ -4,7 +4,7 @@
   "description": "Functional tests for the webclient application",
   "scripts": {
     "test": "selenium-side-runner ./Tests/**/*.side --output-directory . --output-format=junit",
-    "replace": "replace-in-files Tests/webclient.side"
+    "replace": "replace-in-files ./Tests/webclient.side"
   },
   "repository": {
     "type": "git",
