@@ -41,6 +41,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClient;
         private readonly string baseUrl;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmsService"/> class.
         /// </summary>
@@ -54,7 +55,8 @@ namespace HealthGateway.WebClient.Services
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
             this.httpClient = httpClient;
-            this.baseUrl = $"{configuration.GetValue<string>("ImmsServiceUrl")}/imms";
+
+            this.baseUrl = $"{this.configuration["ImmsServiceUrl"]}/imms";
         }
 
         /// <summary>
