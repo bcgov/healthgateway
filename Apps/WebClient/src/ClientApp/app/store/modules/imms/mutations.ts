@@ -10,7 +10,7 @@ export const mutations: MutationTree<AuthState> = {
         state.statusMessage = 'loading';
         state.stateType = StateType.REQUESTED;
     },
-    authenticationLoaded(state: ImmsState, data: ImmsData[]) {
+    immsItemsLoaded(state: ImmsState, data: ImmsData[]) {
         state.error = false;
         state.items = data;
         state.statusMessage = 'success';

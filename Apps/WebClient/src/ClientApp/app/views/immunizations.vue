@@ -6,6 +6,7 @@
         </h1>
         <p id="subtext">{{ $t('immz-component.prototype')}}</p>
 
+        <LoadingComponent :isLoading="isLoading"></LoadingComponent>
         <b-table striped responsive small :items="items" :fields="fields">
             <template slot="HEAD_date" id="f1">
                 {{ $t('immz-component.fields.date') }}
@@ -33,15 +34,26 @@
     import Vue from "vue";
     import { Component } from "vue-property-decorator";
     import { State, Action, Getter } from "vuex-class";
+    import ImmsData from '@/models/immsData';
+    import LoadingComponent from '@/components/loading.vue'
+
     const namespace: string = "imms";
 
-    @Component
+    @Component({
+        components: {
+            LoadingComponent
+        }
+    })
     export default class ImmunizationsComponent extends Vue {
-        @Action("getitems", { namespace }) getItems: any;
+        @Action("getitems", { namespace })
+        private getitems!: any;
+        @Getter("items", { namespace })
+        private items!: ImmsData[];
+        @Getter("isLoading", { namespace })
+        private isLoading!: boolean;
 
         private sortyBy: string = "date";
         private sortDesc: boolean = false;
-        private items: boolean = false;
 
         private fields = {
             date: { sortable: true },
@@ -53,6 +65,7 @@
         };
 
         mounted() {
+            this.getitems();
         }
 
     }

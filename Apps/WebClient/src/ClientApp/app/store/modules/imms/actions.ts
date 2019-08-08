@@ -13,7 +13,7 @@ function handleError(commit: Commit, error: Error) {
 
 export const actions: ActionTree<ImmsState, RootState> = {
     getitems({ commit }): any {
-        console.log('Initializing the imms store...');
+        console.log('imms getitems...');
         const immsService: IImmsService = container.get<IImmsService>(
             SERVICE_IDENTIFIER.ImmsService
         );
@@ -30,7 +30,7 @@ export const actions: ActionTree<ImmsState, RootState> = {
                     reject(error);
                 })
                 .finally(() => {
-                    console.log('Finished initialization');
+                    console.log('Finished imms getitems');
                 });
         });
     },
