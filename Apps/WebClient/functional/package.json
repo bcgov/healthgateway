@@ -4,7 +4,7 @@
   "description": "Functional tests for the webclient application",
   "scripts": {
     "test": "selenium-side-runner ./Tests/**/*.side --output-directory . --output-format=junit",
-    "testfirefox": "selenium-side-runner --config-file ./firefox.side.yaml ./Tests/**/*.side --output-directory . --output-format=junit"
+    "replace": "replace-in-files Tests/webclient.side"
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/bcgov/healthgateway#readme",
   "dependencies": {
+    "replace-in-files-cli": "^0.2.0",
     "selenium-side-runner": "^3.11.0",
     "selenium-webdriver": "^4.0.0-alpha.4"
   }
