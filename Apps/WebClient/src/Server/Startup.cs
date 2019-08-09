@@ -143,7 +143,8 @@ namespace HealthGateway.WebClient
                     serviceProvider.GetService<ILogger<AuthService>>(),
                     serviceProvider.GetService<IHttpContextAccessor>(),
                     serviceProvider.GetService<IConfiguration>(),
-                    serviceProvider.GetService<IHttpClientFactory>());
+                    serviceProvider.GetService<IHttpClientFactory>(),
+                    serviceProvider.GetService<IAuthService>());
                 return service;
             });
 

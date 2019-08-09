@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Services
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.WebClient.Models;
@@ -40,6 +41,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClient;
+        private readonly IAuthService authService;
         private readonly string baseUrl;
 
         /// <summary>
@@ -49,13 +51,13 @@ namespace HealthGateway.WebClient.Services
         /// <param name="configuration">Injected Configuration Provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClient">Injected HttpClientFactory Provider.</param>
-        public ImmsService(ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IHttpClientFactory httpClient)
+        public ImmsService(ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IHttpClientFactory httpClient, IAuthService authService)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
             this.httpClient = httpClient;
-
+            this.authService = authService;
             this.baseUrl = $"{this.configuration["ImmsServiceUrl"]}/imms";
         }
 
@@ -66,9 +68,13 @@ namespace HealthGateway.WebClient.Services
         public async Task<IEnumerable<ImmsData>> GetItems()
         {
             using (HttpClient client = this.httpClient.CreateClient())
-            using (HttpResponseMessage response = await client.GetAsync(new Uri($"{this.baseUrl}/items")).ConfigureAwait(true))
             {
-                return await response.Content.ReadAsAsync<IEnumerable<ImmsData>>().ConfigureAwait(true);
+                AuthData authData = this.authService.GetAuthenticationData();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authData.Token);
+                using (HttpResponseMessage response = await client.GetAsync(new Uri($"{this.baseUrl}/items")).ConfigureAwait(true))
+                {
+                    return await response.Content.ReadAsAsync<IEnumerable<ImmsData>>().ConfigureAwait(true);
+                }
             }
         }
     }
