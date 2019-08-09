@@ -410,6 +410,18 @@
       "targets": [],
       "value": ""
     }, {
+      "id": "a8e234c2-2c36-446e-8771-7e33d6ca48b3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [
+        ["css=strong", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": "You signed out of your account"
+    }, {
       "id": "94b48685-4b56-4c67-9432-ab725c6cfbb0",
       "comment": "",
       "command": "open",
