@@ -11,7 +11,12 @@
             "dose" : "Dose",
             "site" : "Site",
             "lot" : "Lot",
-            "boost" : "Renforcer du"
+            "boost" : "Renforcer du",
+            "manufacturer" : "Manufacturer",
+            "route" : "Route",
+            "tradeName" : "Trade Name",
+            "administeredBy" : "Administered By",
+            "administeredAt" : "Administered At"
         }
     }
 }

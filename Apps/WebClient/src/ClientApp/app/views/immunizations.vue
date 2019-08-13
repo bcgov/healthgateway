@@ -4,7 +4,13 @@
       <span class="fa fa-1x fa-syringe"></span>
       &nbsp;{{ $t('immz-component.immunizations')}}
     </h1>
-    <p id="subtext">{{ $t('immz-component.prototype')}}</p>
+    <p id="subtext" align="right">
+      <b>Reference:</b>&nbsp;
+      <a
+        href="https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules"
+        target="_blank"
+      >BC Immunization Schedules</a>
+    </p>
 
     <b-table striped responsive small :items="items" :fields="fields">
       <template slot="show_details" slot-scope="row">
@@ -22,7 +28,6 @@
               <b>{{ $t('immz-component.fields.lot') }}:</b>
             </b-col>
             <b-col sm="3">{{ row.item.lot }}</b-col>
-
             <b-col sm="3" class="text-sm-right">
               <b>{{ $t('immz-component.fields.site') }}:</b>
             </b-col>
@@ -31,6 +36,41 @@
               <b>{{ $t('immz-component.fields.dose') }}:</b>
             </b-col>
             <b-col sm="3">{{ row.item.dose }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.route') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.route }}</b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.manufacturer') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.manufacturer }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.tradeName') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.tradeName }}</b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.administeredBy') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.administeredBy }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t('immz-component.fields.administeredAt') }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.administeredAt }}</b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3" class="text-sm-right">
+              <b>More Infomation on HealthLinkBC:</b>
+            </b-col>
+            <b-col sm="6">
+              <b-link
+                :href="'https://www.healthlinkbc.ca/search/' + row.item.vaccine"
+                target="_blank"
+              >{{ row.item.vaccine}}</b-link>
+            </b-col>
           </b-row>
           <b-button size="sm" variant="outline-secondary" @click="row.toggleDetails">Hide Details</b-button>
         </b-card>
@@ -47,12 +87,12 @@ import { IVueI18n } from "vue-i18n";
 interface Immunization {
   date: Date;
   vaccine: string;
+  dose: string;
+  site: string;
+  lot: string;
+  boost: string;
   tradeName: string;
   manufacturer: string;
-  lot: string;
-  dose: string;
-  booster: string;
-  site: string;
   route: string;
   administeredBy: string;
   administeredAt: string;
@@ -78,7 +118,13 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left vastus lateralis",
       lot: "4792AB",
-      boost: "1999 Aug 10"
+      boost: "1999 Aug 10",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
+
     },
     {
       date: "1999 Aug 14",
@@ -86,7 +132,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left vastus lateralis",
       lot: "8793BC",
-      boost: "1999 Oct 15"
+      boost: "1999 Oct 15",
+      tradeName: "INFANRIX hexa",
+      manufacturer: "GlaxoSmithKline Inc.",
+      route: "Intramuscular injection",
+      administeredAt: "Vancouver Coastal Health Authority",
+      administeredBy: "Paediatric Nurse"
     },
     {
       date: "1999 Oct 28",
@@ -94,7 +145,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left vastus lateralis",
       lot: "93435DD",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2000 Apr 14",
@@ -102,7 +158,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left vastus lateralis",
       lot: "99693AA",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2000 Apr 23",
@@ -110,7 +171,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left vastus lateralis",
       lot: "100330AA",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2000 Oct 30",
@@ -118,7 +184,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "103234AB",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2000 Jul 11",
@@ -126,7 +197,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.25 mL",
       site: "left deltoid",
       lot: "990093FA",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2003 Sep 11",
@@ -134,7 +210,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "880899AA",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2003 Sep 11",
@@ -142,15 +223,25 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "778099DT",
-      boost: "2013 Sep 11 (Td)"
+      boost: "2013 Sep 11 (Td)",
+      tradeName: "ADACEL®-POLIO",
+      manufacturer: "Sanofi Pasteur Limited",
+      route: "Intramuscular injection",
+      administeredAt: "Vancouver Island Health Authority",
+      administeredBy: "Public Health Nurse"
     },
     {
       date: "2011 Sep 22",
-      vaccine: "Human Papilomavirus (HPV)",
+      vaccine: "Human Papillomavirus (HPV)",
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "123450AA",
-      boost: ""
+      boost: "",
+      tradeName: "GARDASIL®9",
+      manufacturer: "Merck & Co., Inc.",
+      route: "Intramuscular injection",
+      administeredAt: "Vancouver Island Health Authority",
+      administeredBy: "Public Health Nurse"
     },
     {
       date: "2013 Nov 2",
@@ -158,7 +249,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "440319DC",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2014 Sep 9",
@@ -166,7 +262,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "909102CZ",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2014 Oct 2",
@@ -174,7 +275,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "239941RA",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2015 Oct 24",
@@ -182,7 +288,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "503459AB",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2016 Jul 1",
@@ -190,7 +301,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "440319DC",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2017 Nov 2",
@@ -198,7 +314,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "right deltoid",
       lot: "100399AC",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     },
     {
       date: "2018 Oct 30",
@@ -206,7 +327,12 @@ export default class ImmunizationsComponent extends Vue {
       dose: "0.5 mL",
       site: "left deltoid",
       lot: "845003BB",
-      boost: ""
+      boost: "",
+      tradeName: "",
+      manufacturer: "",
+      route: "",
+      administeredAt: "",
+      administeredBy: ""
     }
   ];
 }
