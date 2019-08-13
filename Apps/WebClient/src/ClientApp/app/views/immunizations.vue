@@ -47,10 +47,15 @@ import { IVueI18n } from "vue-i18n";
 interface Immunization {
   date: Date;
   vaccine: string;
+  tradeName: string;
+  manufacturer: string;
   lot: string;
   dose: string;
   booster: string;
   site: string;
+  route: string;
+  administeredBy: string;
+  administeredAt: string;
 }
 
 @Component
