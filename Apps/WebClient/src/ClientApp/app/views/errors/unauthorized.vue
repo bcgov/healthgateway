@@ -16,12 +16,10 @@ import PageError from "@/models/pageError";
   }
 })
 export default class UnauthorizedError extends Vue {
-  public errorDescription: PageError = new PageError (
+  public errorDescription: PageError = new PageError(
     "401",
     "Unauthorized",
     "You do not have permission to view this page."
   );
 }
 </script>
-
-
