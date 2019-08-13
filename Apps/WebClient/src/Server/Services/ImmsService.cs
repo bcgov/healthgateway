@@ -13,20 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
 namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.WebClient.Models;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -38,8 +34,6 @@ namespace HealthGateway.WebClient.Services
     public class ImmsService : IImmsService
     {
         private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClient;
         private readonly IAuthService authService;
         private readonly string baseUrl;
@@ -47,18 +41,19 @@ namespace HealthGateway.WebClient.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmsService"/> class.
         /// </summary>
-        /// <param name="httpContextAccessor">Injected HttpContext Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClient">Injected HttpClientFactory Provider.</param>
-        public ImmsService(ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IHttpClientFactory httpClient, IAuthService authService)
+        /// <param name="authService">Injected IAuthService Provider.</param>
+        public ImmsService(ILogger<AuthService> logger, IConfiguration configuration, IHttpClientFactory httpClient, IAuthService authService)
         {
+            // configuration cannot be null since it is used directly on the constructor.
+            Contract.Requires(configuration != null);
+
             this.logger = logger;
-            this.httpContextAccessor = httpContextAccessor;
-            this.configuration = configuration;
             this.httpClient = httpClient;
             this.authService = authService;
-            this.baseUrl = $"{this.configuration["ImmsServiceUrl"]}/imms";
+            this.baseUrl = $"{configuration["ImmsServiceUrl"]}/imms";
         }
 
         /// <summary>
@@ -67,6 +62,8 @@ namespace HealthGateway.WebClient.Services
         /// <returns>A list of immunization records.</returns>
         public async Task<IEnumerable<ImmsData>> GetItems()
         {
+            this.logger.LogDebug("Retrieving Immunization items");
+
             using (HttpClient client = this.httpClient.CreateClient())
             {
                 AuthData authData = this.authService.GetAuthenticationData();
