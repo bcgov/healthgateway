@@ -18,6 +18,28 @@
             <b-row>
               <b-col>
                 <b-button
+                  id="keycloackLoginBtn"
+                  v-on:click="oidcLogin('')"
+                  block
+                  variant="primary"
+                >
+                  <b-row>
+                    <b-col class="col-2">
+                      <span class="fa fa-user"></span>
+                    </b-col>
+                    <b-col class="text-justify">
+                      <span>Keycloak Login</span>
+                    </b-col>
+                  </b-row>
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col>or</b-col>
+            </b-row>
+            <b-row>
+              <b-col>
+                <b-button
                   id="bcscBtn"
                   v-on:click="oidcLogin('bcsc')"
                   block
