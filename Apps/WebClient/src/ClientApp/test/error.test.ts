@@ -5,7 +5,7 @@ import ErrorComponent from "@/components/error.vue";
 import PageError from "@/models/pageError";
 
 describe("ErrorComponent", () => {
-  test("renders properties correctly", () => {
+  test("renders error component properties correctly", () => {
     let error: PageError = new PageError("777", "ERROR_NAME", "ERROR_MESSAGE");
     const wrapper = shallowMount(ErrorComponent, { propsData: { error } });
 
@@ -16,7 +16,7 @@ describe("ErrorComponent", () => {
 });
 
 describe("NotFoundView", () => {
-  test("renders properties correctly", () => {
+  test("renders notfound properties correctly", () => {
     const mountWrapper = mount(NotFoundView);
     let errorDescription = mountWrapper.vm.$data.errorDescription;
     expect(mountWrapper.find("h1").text()).toBe(errorDescription.code);
@@ -26,7 +26,7 @@ describe("NotFoundView", () => {
 });
 
 describe("UnauthorizedView", () => {
-  test("renders properties correctly", () => {
+  test("renders unauthorized properties correctly", () => {
     const mountWrapper = mount(UnauthorizedView);
     let errorDescription = mountWrapper.vm.$data.errorDescription;
     expect(mountWrapper.find("h1").text()).toBe(errorDescription.code);

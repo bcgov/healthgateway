@@ -7,7 +7,6 @@ properties:
   sonar.cs.xunit.reportsPaths: '**/xUnitResults/results.xml'
   sonar.test.inclusions: '**/*.test.ts'
   sonar.scm.disabled: 'true'
-  sonar.typescript.tslint.reportPaths: 'sonar_reports/eslintReport.json'
 test-runners:
   - xunit
   - jest 

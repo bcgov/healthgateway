@@ -7,7 +7,7 @@
     "dev": "webpack --config webpack.config.js --env.prod=0",
     "prod": "webpack --config webpack.config.js --env.prod=1 --env.min",
     "vendor": "webpack --config webpack.config.vendor.js --env.prod=1 --env.min",
-    "lint": "eslint '**/*.ts' '**/*.vue' -f json -o ../../sonar_reports/eslintReport.json; exit 0"
+    "lint": "eslint '**/*.ts' '**/*.vue' "
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.9.0",
