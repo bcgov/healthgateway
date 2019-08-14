@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: ${NAME}-template
+  name: webclient-template
 objects:
 
 - apiVersion: v1
@@ -10,6 +10,8 @@ objects:
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
+    labels:
+      app: ${NAME}
 
 - apiVersion: v1
   kind: DeploymentConfig
@@ -69,6 +71,8 @@ objects:
                 configMapKeyRef:
                   key: HealthGateway_OpenIdConnect__ClientSecret
                   name: ${COMMON_CONFIG}-config
+            - name: HealthGateway_ImmsServiceUrl
+              value: ${IMMS_SERVICE_URL}
           imagePullPolicy: Always
           name: ${NAME}
           ports:
@@ -179,4 +183,9 @@ parameters:
     displayName: AspNet Core Environment
     description: The aspnet environment to be deployed to
     value: Production
+    required: true     
+  - name: IMMS_SERVICE_URL
+    displayName: Immunization Service Url
+    description: The Immunization API service url
+    value: http://immsservice:8080/v1/api
     required: true     

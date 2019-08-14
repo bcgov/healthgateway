@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
@@ -33,12 +33,12 @@ import Process, { EnvironmentType } from "@/constants/process.ts";
   }
 })
 export default class AppComponent extends Vue {
-    private readonly host: string = window.location.hostname.toLocaleUpperCase();
-    private readonly isProduction: boolean = Process.NODE_ENV == EnvironmentType.production;
+  private readonly host: string = window.location.hostname.toLocaleUpperCase();
+  private readonly isProduction: boolean =
+    Process.NODE_ENV == EnvironmentType.production;
 
-    constructor() {
-        super();
-
-    }
+  constructor() {
+    super();
+  }
 }
 </script>

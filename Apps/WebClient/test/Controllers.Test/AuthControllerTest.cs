@@ -1,23 +1,17 @@
-using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using HealthGateway.WebClient.Controllers;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using DeepEqual;
 using DeepEqual.Syntax;
 using HealthGateway.WebClient.Services;
+using System;
 
 namespace HealthGateway.WebClient.Test.Controllers
 {
-    public class AuthControllerTest
+    public sealed class AuthControllerTest : IDisposable
     {
         private AuthController controller;
         private Mock<IAuthService> mockService;
@@ -29,6 +23,12 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             // Creates the controller passing mocked dependencies
             this.controller = new AuthController(mockService.Object);
+        }
+
+        public void Dispose()
+        {
+            this.controller.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         [Fact]

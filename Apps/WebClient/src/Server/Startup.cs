@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright � 2019 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 namespace HealthGateway.WebClient
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.IdentityModel.Tokens.Jwt;
     using System.IO;
+    using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -134,6 +136,18 @@ namespace HealthGateway.WebClient
                  };
              });
 
+            // Imms Service
+            services.AddTransient<IImmsService>(serviceProvider =>
+            {
+                this.logger.LogDebug("Configuring Transient Service IImmsService");
+                IImmsService service = new ImmsService(
+                    serviceProvider.GetService<ILogger<AuthService>>(),
+                    serviceProvider.GetService<IConfiguration>(),
+                    serviceProvider.GetService<IHttpClientFactory>(),
+                    serviceProvider.GetService<IAuthService>());
+                return service;
+            });
+
             // Auth Service
             services.AddTransient<IAuthService>(serviceProvider =>
             {
@@ -167,6 +181,7 @@ namespace HealthGateway.WebClient
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            Contract.Requires(env != null);
             Console.WriteLine(env.EnvironmentName);
             if (env.IsDevelopment())
             {
