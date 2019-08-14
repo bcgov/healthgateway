@@ -52,7 +52,7 @@ steps:
     set -e
     dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
     npm --prefix src/ClientApp test
-    dotnet sonarscanner begin /d:sonar.verbose=false /k:"webclient_" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.typescript.test.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" /d:sonar.testExecutionReportPaths="sonar_reports/jest.out/test-report.xml" /d:sonar.test.inclusions="**/*.test.ts"
+    dotnet sonarscanner begin /d:sonar.verbose=false /k:"webclient_$(System.PullRequest.PullRequestNumber)" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.typescript.test.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" /d:sonar.testExecutionReportPaths="sonar_reports/jest.out/test-report.xml" /d:sonar.test.inclusions="**/*.test.ts"
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
     echo "$@" >&2
