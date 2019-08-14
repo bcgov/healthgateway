@@ -22,15 +22,6 @@
 
     <b-table striped responsive small :items="items" :fields="fields">
       <template slot="show_details" slot-scope="row">
-        <template slot="HEAD_date" id="f1">{{
-          $t("immz-component.fields.date")
-        }}</template>
-        <template slot="HEAD_vaccine" id="f2">{{
-          $t("immz-component.fields.vaccine")
-        }}</template>
-        <template slot="HEAD_boost" id="f3">{{
-          $t("immz-component.fields.boost")
-        }}</template>
         <b-button
           id="btn1"
           size="sm"
@@ -111,6 +102,8 @@ import { State, Action, Getter } from "vuex-class";
 import ImmsData from "@/models/immsData";
 import LoadingComponent from "@/components/loading.vue";
 
+const namespace: string = "imms";
+
 @Component({
   components: {
     LoadingComponent
@@ -132,7 +125,7 @@ export default class ImmunizationsComponent extends Vue {
   private fields = {
     date: { sortable: true },
     vaccine: { sortable: true },
-    boost: { sortable: true },
+    boost_due: { sortable: true },
     show_details: { sortable: false }
   };
 
