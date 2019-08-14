@@ -401,7 +401,7 @@
     }]
   }, {
     "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
-    "name": "Github Login",
+    "name": "Keycloak Login",
     "commands": [{
       "id": "221a850f-32be-44a3-9779-ccda9704a23e",
       "comment": "",
@@ -449,7 +449,7 @@
       "id": "8e966e6c-0e3f-45f6-bc24-4628fa2d1575",
       "comment": "",
       "command": "click",
-      "target": "id=gitBtn",
+      "target": "id=keycloackLoginBtn",
       "targets": [
         ["css=#gitBtn td:nth-child(2)", "css:finder"],
         ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
@@ -461,7 +461,7 @@
       "id": "903e0ad4-ef07-48bb-a69f-65404f39fe5b",
       "comment": "",
       "command": "type",
-      "target": "id=user",
+      "target": "id=username",
       "targets": [
         ["id=user", "id"],
         ["name=user", "name"],
