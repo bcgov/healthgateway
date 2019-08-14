@@ -60,13 +60,13 @@ steps:
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
-- task: PublishCodeCoverageResults@1
-  displayName: 'Publish Code Coverage'
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
-    pathToSources: '$(App.Home)/src'
-    reportDirectory: '$(App.Home)/CodeCoverage'
+# - task: PublishCodeCoverageResults@1
+#   displayName: 'Publish Code Coverage'
+#   inputs:
+#     codeCoverageTool: Cobertura
+#     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
+#     pathToSources: '$(App.Home)/src'
+#     reportDirectory: '$(App.Home)/CodeCoverage'
 
 #- script: |
 #    dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
