@@ -11,22 +11,21 @@
     </h1>
     <p id="subtext" align="right">
       <b>Reference:</b>&nbsp;
-      <a
-        href="https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules"
-        target="_blank"
-        >BC Immunization Schedules</a
-      >
+      <b-link v-bind:href="'https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules'"
+        target="_blank">BC Immunization Schedules</b-link>
     </p>
 
     <b-table striped responsive small :items="items" :fields="fields">
       <template slot="show_details" slot-scope="row">
-        <b-button
+        <template slot="HEAD_date" id="f1">{{ $t("immz-component.fields.date") }}</template>
+        <template slot="HEAD_vaccine" id="f2">{{ $t("immz-component.fields.vaccine") }}</template>
+        <template slot="HEAD_boost" id="f3">{{ $t("immz-component.fields.boost") }}</template>
+        <b-button id="btn1"
           size="sm"
           variant="outline-info"
           @click="row.toggleDetails"
           class="pb-2"
-          >{{ row.detailsShowing ? "Hide" : "Show" }} Details</b-button
-        >
+        >{{ row.detailsShowing ? "Hide" : "Show" }} Details</b-button>
       </template>
       <template slot="row-details" id="rd" slot-scope="row">
         <b-card>
@@ -76,16 +75,10 @@
               <b-link
                 :href="'https://www.healthlinkbc.ca/search/' + row.item.vaccine"
                 target="_blank"
-                >{{ row.item.vaccine }}</b-link
-              >
+              >{{ row.item.vaccine }}</b-link>
             </b-col>
           </b-row>
-          <b-button
-            size="sm"
-            variant="outline-secondary"
-            @click="row.toggleDetails"
-            >Hide Details</b-button
-          >
+          <b-button size="sm" variant="outline-secondary" @click="row.toggleDetails">Hide Details</b-button>
         </b-card>
       </template>
     </b-table>
