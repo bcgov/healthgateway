@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -91,10 +92,13 @@ namespace HealthGateway.WebClient.Services
         public AuthenticationProperties GetAuthenticationProperties(string hint, System.Uri redirectUri)
         {
             this.logger.LogDebug("Getting Authentication properties with hint={0} and redirectUri={1}", hint, redirectUri);
+            Contract.Requires(redirectUri != null);
+
             AuthenticationProperties authProps = new AuthenticationProperties()
             {
                 RedirectUri = redirectUri.ToString(),
             };
+
             if (!string.IsNullOrEmpty(hint))
             {
                 authProps.Items.Add(this.configuration["KeyCloak:IDPHintKey"], hint);

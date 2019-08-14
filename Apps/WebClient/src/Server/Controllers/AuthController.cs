@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright � 2019 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Threading.Tasks;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
@@ -56,15 +56,15 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Performs an OpenIdConnect Challenge.
         /// </summary>
-        /// <param name="hint">A value to pass to KeyCloak to select the Identity Provider.</param>
+        /// <param name="idpHint">A value to pass to KeyCloak to select the Identity Provider.</param>
         /// <param name="redirectUri">The redirect uri after successful authentication.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         [Route("/Auth/Login")]
-        public IActionResult Login(string hint, System.Uri redirectUri)
+        public IActionResult Login(string idpHint, System.Uri redirectUri)
         {
             return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, this.authSvc.GetAuthenticationProperties(hint, redirectUri));
+                OpenIdConnectDefaults.AuthenticationScheme, this.authSvc.GetAuthenticationProperties(idpHint, redirectUri));
         }
 
         /// <summary>

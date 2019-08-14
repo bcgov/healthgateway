@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Swagger
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Reflection;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -44,6 +45,7 @@ namespace HealthGateway.WebClient.Swagger
         {
             Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
             Debug.Assert(swaggerSettings != null, $"{nameof(swaggerSettings)} != null");
+            Contract.Requires(swaggerSettings != null);
 
             this.provider = versionDescriptionProvider;
             this.settings = swaggerSettings.Value ?? new SwaggerSettings();

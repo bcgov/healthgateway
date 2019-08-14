@@ -39,17 +39,32 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item-dropdown :text="greeting" v-if="isAuthenticated" right>
+        <b-nav-item-dropdown
+          id="menuBtndUser"
+          :text="greeting"
+          v-if="isAuthenticated"
+          right
+        >
           <b-dropdown-item>
-            <router-link to="/logout" :exact="true">
+            <router-link id="menuBtnLogout" to="/logout" :exact="true">
               <span class="fa fa-user"></span> Logout
             </router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
-        <router-link id="menuBtnLogin" class="nav-link" to="/login" :exact="true" v-else>
+        <router-link
+          id="menuBtnLogin"
+          class="nav-link"
+          to="/login"
+          :exact="true"
+          v-else
+        >
           <span class="fa fa-user"></span> Login
         </router-link>
-        <b-nav-item-dropdown id="languageSelector" :text="currentLanguage.description" right>
+        <b-nav-item-dropdown
+          id="languageSelector"
+          :text="currentLanguage.description"
+          right
+        >
           <b-dropdown-text>Language:</b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item
@@ -57,7 +72,9 @@
             :key="key"
             :active="currentLanguage.code === key"
           >
-            <a :id="key" @click="onLanguageSelect(key)">{{value.description}}</a>
+            <a :id="key" @click="onLanguageSelect(key)">{{
+              value.description
+            }}</a>
           </b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
