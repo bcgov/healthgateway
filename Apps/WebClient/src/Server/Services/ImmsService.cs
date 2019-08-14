@@ -33,26 +33,20 @@ namespace HealthGateway.WebClient.Services
     /// </summary>
     public class ImmsService : IImmsService
     {
-        private readonly ILogger logger;
         private readonly IHttpClientFactory httpClient;
-        private readonly IAuthService authService;
         private readonly string baseUrl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmsService"/> class.
         /// </summary>
         /// <param name="configuration">Injected Configuration Provider.</param>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClient">Injected HttpClientFactory Provider.</param>
-        /// <param name="authService">Injected IAuthService Provider.</param>
-        public ImmsService(ILogger<AuthService> logger, IConfiguration configuration, IHttpClientFactory httpClient, IAuthService authService)
+        public ImmsService(IConfiguration configuration, IHttpClientFactory httpClient)
         {
             // configuration cannot be null since it is used directly on the constructor.
             Contract.Requires(configuration != null);
 
-            this.logger = logger;
             this.httpClient = httpClient;
-            this.authService = authService;
             this.baseUrl = $"{configuration["ImmsServiceUrl"]}/imms";
         }
 
@@ -62,12 +56,8 @@ namespace HealthGateway.WebClient.Services
         /// <returns>A list of immunization records.</returns>
         public async Task<IEnumerable<ImmsData>> GetItems()
         {
-            this.logger.LogDebug("Retrieving Immunization items");
-
             using (HttpClient client = this.httpClient.CreateClient())
             {
-                AuthData authData = this.authService.GetAuthenticationData();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authData.Token);
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"{this.baseUrl}/items")).ConfigureAwait(true))
                 {
                     return await response.Content.ReadAsAsync<IEnumerable<ImmsData>>().ConfigureAwait(true);
