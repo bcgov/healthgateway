@@ -16,6 +16,7 @@ Vue.use(VueRouter);
 
 console.log('testing something');
 
+console.log('testing something else');
 const routes = [
   {
     path: "/",
