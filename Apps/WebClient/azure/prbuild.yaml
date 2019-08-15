@@ -41,6 +41,23 @@ steps:
    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
   displayName: Create Code Coverage Report
 
+- task: InvokeRESTAPI@1
+  displayName: Comment on Github Pull Request
+  inputs:
+    connectionType: 'connectedServiceName'
+    serviceConnection: 'GitHub'
+    method: 'POST'
+    headers: |
+      {
+      "Content-Type":"application/json", 
+      "Authorization": "Bearer c052a991aafc78a9aa544b01dc394743c3dba5ce"
+      }
+    body: |
+      {
+      "body": "test comment"
+      }
+    urlSuffix: 'repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
+    waitForCompletion: 'false'
 # - task: DotNetCoreCLI@2
 #   displayName: Run dotnet Tests
 #   inputs:
