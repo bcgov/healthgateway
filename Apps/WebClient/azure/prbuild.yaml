@@ -44,7 +44,7 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'inline'
-    script: 'curl -d ''{"body":"PR Build Started"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/68/comments'
+    script: 'curl -d ''{"body":"PR Build Started"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
 
 # - task: DotNetCoreCLI@2
 #   displayName: Run dotnet Tests
