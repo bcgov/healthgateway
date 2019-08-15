@@ -14,6 +14,8 @@ import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 
 Vue.use(VueRouter);
 
+console.log('testing something');
+
 const routes = [
   {
     path: "/",
