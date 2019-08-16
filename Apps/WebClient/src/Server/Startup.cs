@@ -151,10 +151,7 @@ namespace HealthGateway.WebClient
             services
                 .AddApiVersionWithExplorer()
                 .AddSwaggerOptions()
-                .AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Health Gateway", Version = "v1" });
-            });
+                .AddSwaggerGen();
         }
 
         /// <summary>
