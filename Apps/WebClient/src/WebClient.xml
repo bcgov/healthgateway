@@ -4,47 +4,6 @@
         <name>WebClient</name>
     </assembly>
     <members>
-        <member name="T:HealthGateway.WebClient.Controllers.AuthController">
-            <summary>
-            The Authentication and Authorization controller.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.#ctor(HealthGateway.WebClient.Services.IAuthService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.AuthController"/> class.
-            </summary>
-            <param name="authSvc">The injected auth service provider.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Index">
-            <summary>
-            The default page for the auth controller.
-            </summary>
-            <returns>The default view.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Login(System.String,System.Uri)">
-            <summary>
-            Performs an OpenIdConnect Challenge.
-            </summary>
-            <param name="idpHint">A value to pass to KeyCloak to select the Identity Provider.</param>
-            <param name="redirectUri">The redirect uri after successful authentication.</param>
-            <returns>An IActionResult which results in a redirect.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Logout">
-            <summary>
-            Performs the logout of the application.
-            </summary>
-            <returns>A SignoutResult containing the redirect uri.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.GetAuthenticationData">
-            <summary>
-            Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
-            </summary>
-            <remarks>
-            The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
-            This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
-            </remarks>
-            <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
@@ -78,27 +37,6 @@
             Gets a list of Imms records.
             </summary>
             <returns>A list of Immunization recorsd.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AuthData">
-            <summary>
-            The authentication data from the ASP.Net Core Authentication cookie.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AuthData.IsAuthenticated">
-            <summary>
-            Gets or sets a value indicating whether the client has been authenticated or not.
-            Token and User properties should only be accessed if this value is true.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AuthData.Token">
-            <summary>
-            Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AuthData.User">
-            <summary>
-            Gets or sets the authenticated user, <see cref="P:HealthGateway.WebClient.Models.AuthData.User"/>.
-            </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.ImmsData">
             <summary>
@@ -135,26 +73,6 @@
             Gets or Sets the immunization boost due.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.User">
-            <summary>
-            The User object representing the current Authenticated User.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.User.Id">
-            <summary>
-            Gets or sets the ID of the user.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.User.Name">
-            <summary>
-            Gets or sets the common name of the user.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.User.Email">
-            <summary>
-            Gets or sets the users email.
-            </summary>
-        </member>
         <member name="T:HealthGateway.WebClient.Program">
             <summary>
             The entry point for the project.
@@ -173,64 +91,6 @@
             <param name="args">The command line arguments.</param>
             <returns>Returns the configured webhost.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Services.AuthService">
-            <summary>
-            Authentication and Authorization Service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.AuthService},Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.AuthService"/> class.
-            </summary>
-            <param name="httpContextAccessor">Injected HttpContext Provider.</param>
-            <param name="configuration">Injected Configuration Provider.</param>
-            <param name="logger">Injected Logger Provider.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.GetAuthenticationData">
-            <summary>
-            Authenticates the request based on the current context.
-            </summary>
-            <returns>The AuthData containing the token and user information.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.Logout">
-            <summary>
-            Clears the authorization data from the context.
-            </summary>
-            <returns>The signout confirmation followed by the redirect uri.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.GetAuthenticationProperties(System.String,System.Uri)">
-            <summary>
-            Returns the authentication properties with the populated hint and redirect URL.
-            </summary>
-            <returns> The AuthenticationProperties.</returns>
-            <param name="hint">The OIDC IDP Hint.</param>
-            <param name="redirectUri">The URI to redirect to after logon.</param>
-        </member>
-        <member name="T:HealthGateway.WebClient.Services.IAuthService">
-            <summary>
-            Authentication and Authorization Service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IAuthService.GetAuthenticationData">
-            <summary>
-            Authenticates the request based on the current context.
-            </summary>
-            <returns>The AuthData containing the token and user information.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IAuthService.Logout">
-            <summary>
-            Clears the authorization data from the context.
-            </summary>
-            <returns>The signout confirmation followed by the redirect uri.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IAuthService.GetAuthenticationProperties(System.String,System.Uri)">
-            <summary>
-            Returns the authentication properties with the populated hint and redirect URL.
-            </summary>
-            <returns> The AuthenticationProperties.</returns>
-            <param name="hint">The OIDC IDP Hint.</param>
-            <param name="redirectUri">The URI to redirect to after logon.</param>
-        </member>
         <member name="T:HealthGateway.WebClient.Services.IImmsService">
             <summary>
             Immunization Service.
@@ -247,14 +107,12 @@
             Authentication and Authorization Service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.ImmsService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.AuthService},Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.IHttpClientFactory,HealthGateway.WebClient.Services.IAuthService)">
+        <member name="M:HealthGateway.WebClient.Services.ImmsService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.IHttpClientFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ImmsService"/> class.
             </summary>
             <param name="configuration">Injected Configuration Provider.</param>
-            <param name="logger">Injected Logger Provider.</param>
             <param name="httpClient">Injected HttpClientFactory Provider.</param>
-            <param name="authService">Injected IAuthService Provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.ImmsService.GetItems">
             <summary>
