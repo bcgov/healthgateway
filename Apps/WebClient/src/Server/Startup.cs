@@ -40,6 +40,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.SwaggerGen;
     using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -159,12 +160,26 @@ namespace HealthGateway.WebClient
                 return service;
             });
 
+            // Configuration Service
+            services.AddTransient<IConfigurationService>(serviceProvider =>
+            {
+                this.logger.LogDebug("Configuring Transient Service IConfigurationService");
+                IConfigurationService service = new ConfigurationService(
+                    serviceProvider.GetService<ILogger<AuthService>>(),
+                    serviceProvider.GetService<IConfiguration>());
+                return service;
+            });
+
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                });
 
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
 
