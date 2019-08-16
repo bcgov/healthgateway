@@ -4,86 +4,73 @@
         <name>WebClient</name>
     </assembly>
     <members>
-        <member name="T:HealthGateway.WebClient.Controllers.AuthController">
+        <member name="T:HealthGateway.WebClient.Controllers.HomeController">
+            <summary>
+            HomeController for Vue WebClient app.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.HomeController.Index">
+            <summary>
+            The default page for the home controller.
+            </summary>
+            <returns>The default view.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.HomeController.Error">
+            <summary>
+            The default page for error.
+            </summary>
+            <returns>The default view.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.ImmsController">
             <summary>
             The Authentication and Authorization controller.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.#ctor(HealthGateway.WebClient.Services.IAuthService)">
+        <member name="M:HealthGateway.WebClient.Controllers.ImmsController.#ctor(HealthGateway.WebClient.Services.IImmsService)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.AuthController"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.ImmsController"/> class.
             </summary>
-            <param name="authSvc">The injected auth service provider.</param>
+            <param name="immsSvc">The injected imms service provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Index">
+        <member name="M:HealthGateway.WebClient.Controllers.ImmsController.GetItems">
             <summary>
-            The default page for the auth controller.
+            Gets a list of Imms records.
             </summary>
-            <returns>The default view.</returns>
+            <returns>A list of Immunization recorsd.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Login(System.String,System.String)">
+        <member name="T:HealthGateway.WebClient.Models.ImmsData">
             <summary>
-            Performs an OpenIdConnect Challenge.
-            </summary>
-            <param name="hint">A value to pass to KeyCloak to select the Identity Provider.</param>
-            <param name="redirectUri">The redirectUri after successful authentication.</param>
-            <returns>An IActionResult which results in a redirect.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.Logout">
-            <summary>
-            Performs the logout of the application.
-            </summary>
-            <returns>A SignoutResult containing the redirect uri.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.AuthController.GetAuthenticationData">
-            <summary>
-            Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
-            </summary>
-            <remarks>
-            The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
-            This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
-            </remarks>
-            <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AuthData">
-            <summary>
-            The authentication data from the ASP.Net Core Authentication cookie.
+            The immunization data model.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.AuthData.IsAuthenticated">
+        <member name="P:HealthGateway.WebClient.Models.ImmsData.Date">
             <summary>
-            Gets or sets a value indicating whether the client has been authenticated or not.
-            Token and User properties should only be accessed if this value is true.
+            Gets or Sets the immunization date.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.AuthData.Token">
+        <member name="P:HealthGateway.WebClient.Models.ImmsData.Vaccine">
             <summary>
-            Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
+            Gets or Sets the immunization vaccine.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.AuthData.User">
+        <member name="P:HealthGateway.WebClient.Models.ImmsData.Dose">
             <summary>
-            Gets or sets the authenticated user, <see cref="P:HealthGateway.WebClient.Models.AuthData.User"/>.
+            Gets or Sets the immunization dosage.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.User">
+        <member name="P:HealthGateway.WebClient.Models.ImmsData.Site">
             <summary>
-            The User object representing the current Authenticated User.
+            Gets or Sets the immunization site.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.User.Id">
+        <member name="P:HealthGateway.WebClient.Models.ImmsData.Lot">
             <summary>
-            Gets or sets the ID of the user.
+            Gets or Sets the immunization vaccine lot.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.User.Name">
+        <member name="P:HealthGateway.WebClient.Models.ImmsData.Boost">
             <summary>
-            Gets or sets the common name of the user.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.User.Email">
-            <summary>
-            Gets or sets the users email.
+            Gets or Sets the immunization boost due.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Program">
@@ -104,63 +91,34 @@
             <param name="args">The command line arguments.</param>
             <returns>Returns the configured webhost.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Services.AuthService">
+        <member name="T:HealthGateway.WebClient.Services.IImmsService">
+            <summary>
+            Immunization Service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IImmsService.GetItems">
+            <summary>
+            Returns the list of immunization records.
+            </summary>
+            <returns>A list of immunization records.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ImmsService">
             <summary>
             Authentication and Authorization Service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.AuthService},Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.WebClient.Services.ImmsService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.IHttpClientFactory)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.AuthService"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ImmsService"/> class.
             </summary>
-            <param name="httpContextAccessor">Injected HttpContext Provider.</param>
             <param name="configuration">Injected Configuration Provider.</param>
-            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClient">Injected HttpClientFactory Provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.GetAuthenticationData">
+        <member name="M:HealthGateway.WebClient.Services.ImmsService.GetItems">
             <summary>
-            Authenticates the request based on the current context.
+            Returns the list of immunization records.
             </summary>
-            <returns>The AuthData containing the token and user information.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.Logout">
-            <summary>
-            Clears the authorization data from the context.
-            </summary>
-            <returns>The signout confirmation followed by the redirect uri.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.AuthService.GetAuthenticationProperties(System.String,System.String)">
-            <summary>
-            Returns the authentication properties with the populated hint and redirect URL.
-            </summary>
-            <returns> The AuthenticationProperties.</returns>
-            <param name="hint">The OIDC IDP Hint.</param>
-            <param name="redirectUri">The URI to redirect to after logon.</param>
-        </member>
-        <member name="T:HealthGateway.WebClient.Services.IAuthService">
-            <summary>
-            Authentication and Authorization Service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IAuthService.GetAuthenticationData">
-            <summary>
-            Authenticates the request based on the current context.
-            </summary>
-            <returns>The AuthData containing the token and user information.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IAuthService.Logout">
-            <summary>
-            Clears the authorization data from the context.
-            </summary>
-            <returns>The signout confirmation followed by the redirect uri.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IAuthService.GetAuthenticationProperties(System.String,System.String)">
-            <summary>
-            Returns the authentication properties with the populated hint and redirect URL.
-            </summary>
-            <returns> The AuthenticationProperties.</returns>
-            <param name="hint">The OIDC IDP Hint.</param>
-            <param name="redirectUri">The URI to redirect to after logon.</param>
+            <returns>A list of immunization records.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Startup">
             <summary>

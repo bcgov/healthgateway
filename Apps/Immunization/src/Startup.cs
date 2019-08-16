@@ -67,6 +67,9 @@ namespace HealthGateway
             // Http Service. Maybe it should be testeable too
             services.AddHttpClient();
 
+            // Imms Service
+            services.AddSingleton<IImmsService, ImmsService>();
+
             // Test Service
             services.AddSingleton<IFhirService>(serviceProvider =>
             {
