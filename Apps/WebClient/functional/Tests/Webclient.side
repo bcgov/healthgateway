@@ -4,233 +4,6 @@
   "name": "Webclient",
   "url": "https://dev-gateway.pathfinder.gov.bc.ca",
   "tests": [{
-    "id": "6882f45d-be6c-451f-a50c-80d2f1ab64d1",
-    "name": "Subject in FR",
-    "commands": [{
-      "id": "81a8846e-0b6a-467b-8165-6694b93bc714",
-      "comment": "",
-      "command": "open",
-      "target": "/immunizations",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "9c49a7a0-853d-4dcb-98b2-962c5ea5c608",
-      "comment": "",
-      "command": "setWindowSize",
-      "target": "1496x1019",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "57741838-1e96-4f29-ab4d-0b0c2c979fc1",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "6019929c-3664-4fa6-8405-bc43357d259b",
-      "comment": "",
-      "command": "select",
-      "target": "css=select",
-      "targets": [],
-      "value": "label=fr"
-    }, {
-      "id": "27a840d1-368e-4016-bb2f-faeff54e533e",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "90ee6ced-cb52-4378-97ef-70d082c16ae8",
-      "comment": "Test for french subject ",
-      "command": "assertText",
-      "target": "id=subject",
-      "targets": [
-        ["id=subject", "id"],
-        ["css=#subject", "css:finder"],
-        ["xpath=//h1[@id='subject']", "xpath:attributes"],
-        ["xpath=//div[@id='immz']/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,' Immunisation')]", "xpath:innerText"]
-      ],
-      "value": " Immunisations"
-    }]
-  }, {
-    "id": "5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523",
-    "name": "Field.date in FR",
-    "commands": [{
-      "id": "67516874-15d6-436b-b992-171d84a9ba21",
-      "comment": "",
-      "command": "open",
-      "target": "/",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "385941db-c7c1-4527-a9e9-8b4f9388a3d3",
-      "comment": "",
-      "command": "setWindowSize",
-      "target": "1496x1019",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "6f5171f4-93c0-4de2-95df-db11bd8f213e",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Immunizations",
-      "targets": [
-        ["linkText=Immunizations", "linkText"],
-        ["css=.nav-item:nth-child(2) > .nav-link", "css:finder"],
-        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
-        ["xpath=//div[@id='collapsibleNavbar']/ul/li[2]/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
-        ["xpath=//li[2]/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "64415d5e-ebdc-422c-8981-029a854984bc",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "17785e3f-45ae-4a54-96d7-c59f100d3aec",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "19d9540d-d0b4-4976-8c95-009c6f5deaa8",
-      "comment": "",
-      "command": "select",
-      "target": "css=select",
-      "targets": [],
-      "value": "label=fr"
-    }, {
-      "id": "4ebda62d-c233-4103-a970-93ebea74bb48",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "e1aba803-f5a8-4f37-b8b8-3f6a8b74983e",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=th:nth-child(1)",
-      "targets": [],
-      "value": "Date"
-    }]
-  }, {
-    "id": "2d57d1f0-ac1e-4899-b52e-219bbdaba866",
-    "name": "Field Vaccine in FR",
-    "commands": [{
-      "id": "48c14220-489c-4805-a321-693863b58ef7",
-      "comment": "",
-      "command": "open",
-      "target": "/",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "ed23ab41-2ee1-401c-aa0e-a0d88b432e46",
-      "comment": "",
-      "command": "setWindowSize",
-      "target": "1496x1019",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "8fc65cd0-b2d7-4f2d-a6f1-592e61dc18a9",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Immunizations",
-      "targets": [
-        ["linkText=Immunizations", "linkText"],
-        ["css=.nav-item:nth-child(2) > .nav-link", "css:finder"],
-        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
-        ["xpath=//div[@id='collapsibleNavbar']/ul/li[2]/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
-        ["xpath=//li[2]/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "88784312-0b4a-4eaa-a986-90dab6ff5091",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "a75c4bfb-fb14-4024-9a96-743ce97a9b55",
-      "comment": "",
-      "command": "select",
-      "target": "css=select",
-      "targets": [],
-      "value": "label=fr"
-    }, {
-      "id": "7cb9d566-c3de-4c1c-9a5f-f44898c2f786",
-      "comment": "",
-      "command": "click",
-      "target": "css=select",
-      "targets": [
-        ["css=select", "css:finder"],
-        ["xpath=//div[@id='immz']/div/select", "xpath:idRelative"],
-        ["xpath=//select", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "4abcb62d-91ec-4539-85e7-4b865371474f",
-      "comment": "",
-      "command": "click",
-      "target": "css=th:nth-child(2)",
-      "targets": [
-        ["css=th:nth-child(2)", "css:finder"],
-        ["xpath=//table[@id='__BVID__12']/thead/tr/th[2]", "xpath:idRelative"],
-        ["xpath=//th[2]", "xpath:position"],
-        ["xpath=//th[contains(.,'Vaccin')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "65cce90a-9130-452f-961f-35109a37f4a8",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=th:nth-child(2)",
-      "targets": [
-        ["css=th:nth-child(2)", "css:finder"],
-        ["xpath=//table[@id='__BVID__12']/thead/tr/th[2]", "xpath:idRelative"],
-        ["xpath=//th[2]", "xpath:position"],
-        ["xpath=//th[contains(.,'Vaccin')]", "xpath:innerText"]
-      ],
-      "value": "Vaccin"
-    }]
-  }, {
     "id": "5623a813-676e-42d2-9fc8-4117f3206bf6",
     "name": "Health Gateway Landing Page",
     "commands": [{
@@ -401,7 +174,7 @@
     }]
   }, {
     "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
-    "name": "IDIR Login",
+    "name": "Keycloak Login",
     "commands": [{
       "id": "94b48685-4b56-4c67-9432-ab725c6cfbb0",
       "comment": "",
@@ -507,7 +280,7 @@
       "id": "8e966e6c-0e3f-45f6-bc24-4628fa2d1575",
       "comment": "",
       "command": "click",
-      "target": "id=idirBtn",
+      "target": "id=keycloackLoginBtn",
       "targets": [
         ["css=#gitBtn td:nth-child(2)", "css:finder"],
         ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
@@ -519,7 +292,7 @@
       "id": "903e0ad4-ef07-48bb-a69f-65404f39fe5b",
       "comment": "",
       "command": "type",
-      "target": "id=user",
+      "target": "id=username",
       "targets": [
         ["id=user", "id"],
         ["name=user", "name"],
@@ -573,13 +346,6 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["5623a813-676e-42d2-9fc8-4117f3206bf6"]
-  }, {
-    "id": "6d293180-6a34-42f9-a6c7-3fc80609d835",
-    "name": "Language Localization",
-    "persistSession": false,
-    "parallel": false,
-    "timeout": 300,
-    "tests": ["5bc4ddb5-45ea-46fb-9fb7-7c3b9db92523", "6882f45d-be6c-451f-a50c-80d2f1ab64d1", "2d57d1f0-ac1e-4899-b52e-219bbdaba866"]
   }, {
     "id": "a32919fd-84cc-4306-ab79-038d01aa6754",
     "name": "Error Pages",
