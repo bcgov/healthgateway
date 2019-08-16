@@ -26,8 +26,8 @@ namespace HealthGateway.Service
                 'TradeName': '',
                 'Manufacturer': '',
                 'Route': '',
-                'administeredAt': '',
-                'administeredBy': ''
+                'AdministeredAt': '',
+                'AdministeredBy': ''
                 },
                 {
                 'Date': '1999 Aug 14',
