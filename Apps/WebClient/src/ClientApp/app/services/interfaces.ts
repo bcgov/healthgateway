@@ -1,4 +1,5 @@
 import AuthenticationData from "@/models/authenticationData";
+import ImmsData from "@/models/immunizationData";
 
 export interface IAuthenticationService {
   startLoginFlow(idpHint: string, redirectUri: string): void;
@@ -8,5 +9,5 @@ export interface IAuthenticationService {
 }
 
 export interface IImmsService {
-  getItems(): Promise<any>;
+  getItems(): Promise<ImmsData[]>;
 }

@@ -8,12 +8,12 @@ import ImmsData from "@/models/immsData";
 
 @injectable()
 export class RestImmsService implements IImmsService {
-  private readonly GET_AUTH_URI: string = "api/imms/items";
+  private readonly GET_IMMS_URI: string = "api/imms/items";
 
   public getItems(): Promise<ImmsData[]> {
     return new Promise((resolve, reject) => {
       axios
-        .get<ImmsData[]>(this.GET_AUTH_URI)
+        .get<ImmsData[]>(this.GET_IMMS_URI, {headers: {'Content-Type':'application/json'}})
         .then((response: AxiosResponse) => {
           // Verify that the object is correct.
           if (response.data instanceof Object) {

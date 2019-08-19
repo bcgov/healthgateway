@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HealthGateway.Models;
 using Newtonsoft.Json;
+using System;
 
 namespace HealthGateway.Service
 {
@@ -15,231 +16,265 @@ namespace HealthGateway.Service
         /// <returns>A list of ImmsDataModel object</returns>
         public IEnumerable<ImmsDataModel> GetMockData()
         {
-            string json = @"[
-                {
-                'Date': '1999 Jun 10',
-                'Vaccine': 'Diphtheria, Tetanus, Pertussis, Hepatitis B, Polio, Haemophilus Influenzae type b (DTaP-HB-IPV-Hib)',
-                'Dose': '0.5 mL',
-                'Site': 'left vastus lateralis',
-                'Lot': '4792AB',
-                'Boost': '1999 Aug 10',
-                'TradeName': '',
-                'Manufacturer': '',
-                'Route': '',
-                'AdministeredAt': '',
-                'AdministeredBy': ''
-                },
-                {
-                'Date': '1999 Aug 14',
-                'Vaccine': 'DTaP-HB-IPV-Hib',
-                'Dose': '0.5 mL',
-                'Site': 'left vastus lateralis',
-                'Lot': '8793BC',
-                'Boost': '1999 Oct 15',
-                'TradeName': 'INFANRIX hexa',
-                'Manufacturer': 'GlaxoSmithKline Inc.',
-                'Route': 'Intramuscular injection',
-                'AdministeredAt': 'Vancouver Coastal Health Authority',
-                'AdministeredBy': 'Paediatric Nurse'
-                },
-                {
-                'Date': '1999 Oct 28',
-                'Vaccine': 'DTaP-HB-IPV-Hib',
-                'Dose': '0.5 mL',
-                'Site': 'left vastus lateralis',
-                'Lot' :  '93435DD',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2000 Apr 14',
-                'Vaccine' : 'Chickenpox (Varicella)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left vastus lateralis',
-                'Lot' :  '99693AA',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2000 Apr 23',
-                'Vaccine' : 'Measles, Mumps, Rubella (MMR)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left vastus lateralis',
-                'Lot' :  '100330AA',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2000 Oct 30',
-                'Vaccine' : 'DTaP-IPV-Hib',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '103234AB',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2000 Jul 11',
-                'Vaccine' : 'Influenza, inactivated (Flu)',
-                'Dose' : '0.25 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '990093FA',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2003 Sep 11',
-                'Vaccine' : 'Measles, Mumps, Rubella, Varicella  (MMRV)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '880899AA',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2003 Sep 11',
-                'Vaccine' : 'Tetanus, Diphtheria, Pertussis, Polio vaccine (Tdap-IPV)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '778099DT',
-                'Boost' : '2013 Sep 11 (Td)',
-                'TradeName' : 'ADACEL®-POLIO',
-                'Manufacturer' : 'Sanofi Pasteur Limited',
-                'Route' : 'Intramuscular injection',
-                'AdministeredAt' :  'Vancouver Island Health Authority',
-                'AdministeredBy' :  'Public Health Nurse'
-                },
-                {
-                'Date': '2011 Sep 22',
-                'Vaccine' : 'Human Papillomavirus (HPV)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '123450AA',
-                'Boost' : '',
-                'TradeName' : 'GARDASIL®9',
-                'Manufacturer' : 'Merck & Co., Inc.',
-                'Route' : 'Intramuscular injection',
-                'AdministeredAt' :  'Vancouver Island Health Authority',
-                'AdministeredBy' :  'Public Health Nurse'
-                },
-                {
-                'Date': '2013 Nov 2',
-                'Vaccine' : 'Tetanus, Diphtheria (Td)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '440319DC',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2014 Sep 9',
-                'Vaccine' : 'Meningococcal Quadrivalent',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '909102CZ',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2014 Oct 2',
-                'Vaccine' : 'Influenza (Flu)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '239941RA',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2015 Oct 24',
-                'Vaccine' : 'Influenza (Flu)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '503459AB',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2016 Jul 1',
-                'Vaccine' : 'Tetanus, Diphtheria (Td)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '440319DC',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2017 Nov 2',
-                'Vaccine' : 'Influenza (Flu)',
-                'Dose' : '0.5 mL',
-                'Site' : 'right deltoid',
-                'Lot' :  '100399AC',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                },
-                {
-                'Date': '2018 Oct 30',
-                'Vaccine' : 'Influenza (Flu)',
-                'Dose' : '0.5 mL',
-                'Site' : 'left deltoid',
-                'Lot' :  '845003BB',
-                'Boost' : '',
-                'TradeName' : '',
-                'Manufacturer' : '',
-                'Route' : '',
-                'AdministeredAt' :  '',
-                'AdministeredBy' :  ''
-                }
-            ]";
 
-            return JsonConvert.DeserializeObject<ImmsDataModel[]>(json);
+            ImmsDataModel[] immunizations = new ImmsDataModel[10];
+
+            ImmsDataModel imz = new ImmsDataModel();
+            imz.Date = @"1999 Jun 10";
+            imz.Vaccine = @"Diphtheria, Tetanus, Pertussis, Hepatitis B, Polio, Haemophilus Influenzae type b (DTaP-HB-IPV-Hib)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left vastus lateralis";
+            imz.Lot = @"4792AB";
+            imz.Boost = @"1999 Aug 10";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Paedatric Nurse";
+            immunizations[0] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"1999 Aug 14";
+            imz.Vaccine = @"DTaP-HB-IPV-Hib";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left vastus lateralis";
+            imz.Lot = @"8793BC";
+            imz.Boost = @"1999 Oct 15";
+            imz.TradeName = @"INFANRIX hexa";
+            imz.Manufacturer = @"GlaxoSmithKline Inc.";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Paedatric Nurse";
+            immunizations[1] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"1999 Oct 28";
+            imz.Vaccine = @"DTaP-HB-IPV-Hib";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left vastus lateralis";
+            imz.Lot = @"93435DD";
+            imz.Boost = @"1999 Oct 15";
+            imz.TradeName = @"INFANRIX";
+            imz.Manufacturer = @"GlaxoSmithKline Inc.";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Paedatric Nurse";
+            immunizations[2] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"1999 Oct 28";
+            imz.Vaccine = @"DTaP-HB-IPV-Hib";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left vastus lateralis";
+            imz.Lot = @"93435DD";
+            imz.Boost = @"1999 Oct 15";
+            imz.TradeName = @"INFANRIX";
+            imz.Manufacturer = @"GlaxoSmithKline Inc.";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Paedatric Nurse";
+            immunizations[3] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2000 Apr 14";
+            imz.Vaccine = @"Chickenpox (Varicella)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left vastus lateralis";
+            imz.Lot = @"99693AA";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[4] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2000 Apr 23";
+            imz.Vaccine = @"Measles, Mumps, Rubella (MMR)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left vastus lateralis";
+            imz.Lot = @"100330AA";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[5] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2000 Jul 11";
+            imz.Vaccine = @"Influenza, inactivated (Flu)";
+            imz.Dose = @"0.25 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"990093FA";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[6] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2000 Oct 30";
+            imz.Vaccine = @"DTaP-IPV-Hib";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"103234AB";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[7] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2003 Sep 11";
+            imz.Vaccine = @"Measles, Mumps, Rubella, Varicella  (MMRV)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"880899AA";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[8] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2003 Sep 11";
+            imz.Vaccine = @"Tetanus, Diphtheria, Pertussis, Polio vaccine (Tdap-IPV)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"778099DT";
+            imz.Boost = @"2013 Sep 11 (Td)";
+            imz.TradeName = @"ADACEL®-POLIO";
+            imz.Manufacturer = @"Sanofi Pasteur Limited";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[9] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2011 Sep 22";
+            imz.Vaccine = @"Human Papillomavirus (HPV)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"99080956AA";
+            imz.Boost = @"";
+            imz.TradeName = @"GARDASIL®9";
+            imz.Manufacturer = @"Merck & Co., Inc.";
+            imz.Route = @"Intramuscular injection";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[10] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2013 Nov 2";
+            imz.Vaccine = @"Tetanus, Diphtheria (Td)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"440319DC";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[11] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2014 Sep 9";
+            imz.Vaccine = @"Meningococcal Quadrivalent";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"909102CZ";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[12] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2014 Oct 2";
+            imz.Vaccine = @"Influenza (Flu)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"239941RA";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[12] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2015 Oct 24";
+            imz.Vaccine = @"Influenza (Flu)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"503459AB";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[13] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2016 Jul 1";
+            imz.Vaccine = @"Tetanus, Diphtheria (Td)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"440319DC";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Vancouver Island Health Authority";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[14] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2017 Nov 2";
+            imz.Vaccine = @"Influenza (Flu)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"right deltoid";
+            imz.Lot = @"100399AC";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"Patient's Workplace";
+            imz.AdministeredBy = @"Public Health Nurse";
+            immunizations[15] = imz;
+
+            imz = new ImmsDataModel();
+            imz.Date = @"2018 Oct 30";
+            imz.Vaccine = @"Influenza (Flu)";
+            imz.Dose = @"0.5 mL";
+            imz.Site = @"left deltoid";
+            imz.Lot = @"845003BB";
+            imz.Boost = @"";
+            imz.TradeName = @"";
+            imz.Manufacturer = @"";
+            imz.Route = @"";
+            imz.AdministeredAt = @"";
+            imz.AdministeredBy = @"";
+            immunizations[16] = imz;
+
+            string json = JsonConvert.SerializeObject(immunizations);
+            //System.Console.WriteLine(json);
+            return immunizations;
+
         }
     }
 }

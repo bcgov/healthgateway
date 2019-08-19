@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace HealthGateway.Models
 {
     /// <summary>
@@ -18,6 +19,5 @@ namespace HealthGateway.Models
         public string Route { get; set; }
         public string AdministeredAt { get; set; }
         public string AdministeredBy { get; set; }
-
     }
 }

@@ -25,34 +25,16 @@ namespace HealthGateway.WebClient.Models
     /// </summary>
     public class ImmsData
     {
-        /// <summary>
-        /// Gets or Sets the immunization date.
-        /// </summary>
         public string Date { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the immunization vaccine.
-        /// </summary>
         public string Vaccine { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the immunization dosage.
-        /// </summary>
         public string Dose { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the immunization site.
-        /// </summary>
         public string Site { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the immunization vaccine lot.
-        /// </summary>
         public string Lot { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the immunization boost due.
-        /// </summary>
         public string Boost { get; set; }
+        public string TradeName { get; set; }
+        public string Manufacturer { get; set; }
+        public string Route { get; set; }
+        public string AdministeredAt { get; set; }
+        public string AdministeredBy { get; set; }
     }
 }
