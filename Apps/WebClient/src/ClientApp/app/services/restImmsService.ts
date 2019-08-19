@@ -13,7 +13,7 @@ export class RestImmsService implements IImmsService {
   public getItems(): Promise<ImmsData[]> {
     return new Promise((resolve, reject) => {
       axios
-        .get<ImmsData[]>(this.GET_IMMS_URI, {headers: {'Content-Type':'application/json'}})
+        .get<ImmsData[]>(this.GET_IMMS_URI)
         .then((response: AxiosResponse) => {
           // Verify that the object is correct.
           if (response.data instanceof Object) {

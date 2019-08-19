@@ -105,36 +105,6 @@
             The immunization data model.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Date">
-            <summary>
-            Gets or Sets the immunization date.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Vaccine">
-            <summary>
-            Gets or Sets the immunization vaccine.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Dose">
-            <summary>
-            Gets or Sets the immunization dosage.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Site">
-            <summary>
-            Gets or Sets the immunization site.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Lot">
-            <summary>
-            Gets or Sets the immunization vaccine lot.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Boost">
-            <summary>
-            Gets or Sets the immunization boost due.
-            </summary>
-        </member>
         <member name="T:HealthGateway.WebClient.Models.User">
             <summary>
             The User object representing the current Authenticated User.
