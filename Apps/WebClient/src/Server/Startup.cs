@@ -137,29 +137,6 @@ namespace HealthGateway.WebClient
                  };
              });
 
-            // Imms Service
-            services.AddTransient<IImmsService>(serviceProvider =>
-            {
-                this.logger.LogDebug("Configuring Transient Service IImmsService");
-                IImmsService service = new ImmsService(
-                    serviceProvider.GetService<ILogger<AuthService>>(),
-                    serviceProvider.GetService<IConfiguration>(),
-                    serviceProvider.GetService<IHttpClientFactory>(),
-                    serviceProvider.GetService<IAuthService>());
-                return service;
-            });
-
-            // Auth Service
-            services.AddTransient<IAuthService>(serviceProvider =>
-            {
-                this.logger.LogDebug("Configuring Transient Service IAuthService");
-                IAuthService service = new AuthService(
-                    serviceProvider.GetService<ILogger<AuthService>>(),
-                    serviceProvider.GetService<IHttpContextAccessor>(),
-                    serviceProvider.GetService<IConfiguration>());
-                return service;
-            });
-
             // Configuration Service
             services.AddTransient<IConfigurationService>(serviceProvider =>
             {
