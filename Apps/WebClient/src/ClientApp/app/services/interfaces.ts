@@ -1,11 +1,13 @@
-import AuthenticationData from "@/models/authenticationData";
+import { User as OidcUser, UserManagerSettings } from "oidc-client";
 import { ExternalConfiguration } from "@/models/ConfigData";
 
 export interface IAuthenticationService {
-  startLoginFlow(idpHint: string, redirectUri: string): void;
-  getAuthentication(): Promise<AuthenticationData>;
-  refreshToken(): Promise<AuthenticationData>;
-  destroyToken(): Promise<void>;
+  getUser(): Promise<OidcUser | null>;
+  logout(): Promise<void>;
+  signinSilent(): Promise<OidcUser | null>;
+  signinRedirect(idphint: string, redirectPath: string): Promise<void>;
+  signinRedirectCallback(): Promise<OidcUser>;
+  getOidcConfig(): UserManagerSettings;
 }
 
 export interface IImmsService {

@@ -2,13 +2,14 @@ import { Module } from "vuex";
 import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { AuthState } from "@/models/authState";
-import { RootState, StateType } from "@/models/rootState";
+import { RootState, StateType, AuthState } from "@/models/storeState";
+import AuthenticationData from "@/models/authenticationData";
 
 export const state: AuthState = {
   statusMessage: "",
-  authentication: undefined,
+  authentication: new AuthenticationData(),
   error: false,
+  isAuthenticated: false,
   stateType: StateType.NONE
 };
 
