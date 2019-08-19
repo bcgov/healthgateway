@@ -11,6 +11,7 @@ import NotFoundComponent from "@/views/errors/notFound.vue";
 import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
+import LoginCallback from "@/views/loginCallback.vue";
 
 Vue.use(VueRouter);
 
@@ -41,6 +42,11 @@ const routes = [
     meta: { requiresAuth: false, roles: ["user"] }
   },
   {
+    path: "/loginCallback",
+    component: LoginCallback,
+    meta: { requiresAuth: false, roles: ["user"], routeIsOidcCallback: true }
+  },
+  {
     path: "/logout",
     component: LogoutComponent,
     meta: { requiresAuth: false }
@@ -60,11 +66,11 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
-    let isAuthenticated = store.getters["auth/isAuthenticated"];
-    if (!isAuthenticated) {
-      next({ path: "/login", query: { redirect: to.path } });
-    } else {
-      /*if (to.meta.roles) {
+    store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
+      if (!hasAccess) {
+        next({ path: "/login", query: { redirect: to.path } });
+      } else {
+        /*if (to.meta.roles) {
                 /*if (security.roles(to.meta.roles[0])) {
                     next()
                 }
@@ -75,8 +81,9 @@ router.beforeEach(async (to, from, next) => {
             else {
                 next()
             } */
-      next();
-    }
+        next();
+      }
+    });
   } else {
     next();
   }

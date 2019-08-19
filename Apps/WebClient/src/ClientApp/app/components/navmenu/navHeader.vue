@@ -42,7 +42,7 @@
         <b-nav-item-dropdown
           id="menuBtndUser"
           :text="greeting"
-          v-if="isAuthenticated"
+          v-if="oidcIsAuthenticated"
           right
         >
           <b-dropdown-item>
@@ -97,8 +97,8 @@ const namespace: string = "auth";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
-  @Getter("authenticatedUser", { namespace }) authenticatedUser: User;
+  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
+  @Getter("oidcUser", { namespace }) authenticatedUser: User;
 
   languages: { [code: string]: ILanguage } = {};
   currentLanguage: ILanguage = null;
@@ -108,7 +108,11 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
-    if (this.authenticatedUser != undefined && this.$route.path != "/") {
+    if (
+      this.oidcIsAuthenticated &&
+      this.authenticatedUser != undefined &&
+      this.$route.path != "/"
+    ) {
       return true;
     }
 
@@ -116,7 +120,9 @@ export default class HeaderComponent extends Vue {
   }
 
   get greeting(): string {
-    if (this.authenticatedUser) {
+    console.log(this.oidcIsAuthenticated);
+    console.log(this.authenticatedUser);
+    if (this.oidcIsAuthenticated && this.authenticatedUser) {
       return "Hi " + this.authenticatedUser.name;
     } else {
       return "";

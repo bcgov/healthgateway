@@ -117,8 +117,8 @@ const namespace: string = "auth";
 
 @Component
 export default class LoginComponent extends Vue {
-  @Action("login", { namespace }) login: any;
-  @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
+  @Action("authenticateOidc", { namespace }) authenticateOidc: any;
+  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
 
   private redirectPath: string = "";
   private routeHandler = undefined;
@@ -131,21 +131,21 @@ export default class LoginComponent extends Vue {
     }
 
     this.routeHandler = this.$router;
-
-    if (this.isAuthenticated) {
+    if (this.oidcIsAuthenticated) {
       this.routeHandler.push({ path: this.redirectPath });
     }
   }
 
   oidcLogin(hint: string) {
     // if the login action returns it means that the user already had credentials.
-    this.login({ idpHint: hint, redirectPath: this.redirectPath }).then(
-      result => {
-        if (this.isAuthenticated) {
-          this.routeHandler.push({ path: this.redirectPath });
-        }
+    this.authenticateOidc({
+      idpHint: hint,
+      redirectPath: this.redirectPath
+    }).then(result => {
+      if (this.oidcIsAuthenticated) {
+        this.routeHandler.push({ path: this.redirectPath });
       }
-    );
+    });
   }
 }
 </script>

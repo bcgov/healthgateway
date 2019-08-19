@@ -2,8 +2,7 @@ import { Module } from "vuex";
 import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { ImmsState } from "@/models/immsState";
-import { RootState, StateType } from "@/models/rootState";
+import { RootState, StateType, ImmsState } from "@/models/storeState";
 
 export const state: ImmsState = {
   statusMessage: "",

@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import { auth } from "./modules/auth/auth";
 import { imms } from "./modules/imms/imms";
-import { RootState } from "@/models/rootState";
+import { RootState } from "@/models/storeState";
 
 Vue.use(Vuex);
 

@@ -1,10 +1,8 @@
 import { MutationTree } from "vuex";
-import { AuthState } from "@/models/authState";
-import { ImmsState } from "@/models/immsState";
-import { StateType } from "@/models/rootState";
+import { ImmsState, StateType } from "@/models/storeState";
 import ImmsData from "@/models/immsData";
 
-export const mutations: MutationTree<AuthState> = {
+export const mutations: MutationTree<ImmsState> = {
   itemsRequest(state: ImmsState) {
     state.error = false;
     state.statusMessage = "loading";
