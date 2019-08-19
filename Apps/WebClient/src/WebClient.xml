@@ -172,14 +172,9 @@
             Gets or sets the OpenIDConnect Scopes.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogonCallbackURI">
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Callbacks">
             <summary>
-            Gets or sets the OpenIDConnect Callback URI.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogoutCallbackURI">
-            <summary>
-            Gets or sets the OpenIDConnect Logout URI.
+            Gets or sets the Callback URIs.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.TimeOutsConfiguration">

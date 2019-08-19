@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Configuration to be used by external clients for authentication.
     /// </summary>
@@ -41,13 +43,9 @@ namespace HealthGateway.WebClient.Models
         public string Scope { get; set; }
 
         /// <summary>
-        /// Gets or sets the OpenIDConnect Callback URI.
+        /// Gets or sets the Callback URIs.
         /// </summary>
-        public System.Uri LogonCallbackURI { get; set; }
-
-        /// <summary>
-        /// Gets or sets the OpenIDConnect Logout URI.
-        /// </summary>
-        public System.Uri LogoutCallbackURI { get; set; }
+        #pragma warning disable CA2227 //disable read-only Dictionary
+        public Dictionary<string, System.Uri> Callbacks { get; set; }
     }
 }

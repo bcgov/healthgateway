@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// A collection of configuration items for use by Health Gateway and
     /// approved applications.
@@ -40,7 +42,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
-        #pragma warning disable CA1819 //disable should not return arrays
-        public UriConfiguration[] ServiceEndpoints { get; set; }
+        #pragma warning disable CA2227 //disable read-only Dictionary
+        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; }
     }
 }
