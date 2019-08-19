@@ -1,4 +1,5 @@
 import AuthenticationData from "@/models/authenticationData";
+import { ExternalConfiguration } from "@/models/ConfigData";
 
 export interface IAuthenticationService {
   startLoginFlow(idpHint: string, redirectUri: string): void;
@@ -9,4 +10,8 @@ export interface IAuthenticationService {
 
 export interface IImmsService {
   getItems(): Promise<any>;
+}
+
+export interface IConfigService {
+  getConfiguration(): Promise<ExternalConfiguration>;
 }
