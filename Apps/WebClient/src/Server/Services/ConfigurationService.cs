@@ -24,8 +24,7 @@ namespace HealthGateway.WebClient.Services
     public class ConfigurationService : IConfigurationService
     {
         private readonly ILogger logger;
-        private readonly IConfiguration configuration;
-        private Models.ExternalConfiguration config;
+        private readonly Models.ExternalConfiguration config;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
@@ -34,10 +33,9 @@ namespace HealthGateway.WebClient.Services
         /// <param name="configuration">Injected Configuration Provider.</param>
         public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.config = new Models.ExternalConfiguration();
-            this.configuration.Bind("External", this.config);
+            configuration.Bind("External", this.config);
         }
 
         /// <summary>
@@ -46,6 +44,8 @@ namespace HealthGateway.WebClient.Services
         /// <returns>The external configuration data.</returns>
         public Models.ExternalConfiguration GetConfiguration()
         {
+            #pragma warning disable CA1303 //disable should not return arrays
+            this.logger.LogDebug("Returning configuration data");
             return this.config;
         }
     }

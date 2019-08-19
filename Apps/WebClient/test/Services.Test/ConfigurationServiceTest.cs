@@ -70,18 +70,18 @@ namespace HealthGateway.WebClient.Test.Services
                         Idle = "Idle",
                         LogoutRedirect = "LogoutRedirect",
                     },
-                    ExternalURLs = new Models.URIConfiguration[]
+                    ExternalURLs = new Models.UriConfiguration[]
                    {
-                       new Models.URIConfiguration()
+                       new Models.UriConfiguration()
                        {
                            Name = "Name",
                            URI = "URI",
                        }
                    }
                 },
-                ServiceEndpoints = new Models.URIConfiguration[]
+                ServiceEndpoints = new Models.UriConfiguration[]
                 {
-                    new Models.URIConfiguration()
+                    new Models.UriConfiguration()
                     {
                         Name = "Name",
                         URI = "URI",

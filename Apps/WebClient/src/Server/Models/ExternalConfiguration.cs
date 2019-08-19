@@ -41,6 +41,6 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the Service Endpoints.
         /// </summary>
         #pragma warning disable CA1819 //disable should not return arrays
-        public URIConfiguration[] ServiceEndpoints { get; set; }
+        public UriConfiguration[] ServiceEndpoints { get; set; }
     }
 }

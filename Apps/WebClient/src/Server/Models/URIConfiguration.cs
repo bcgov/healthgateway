@@ -18,7 +18,7 @@ namespace HealthGateway.WebClient.Models
     /// <summary>
     /// Model object representing a named URI.
     /// </summary>
-    public class URIConfiguration
+    public class UriConfiguration
     {
         /// <summary>
         /// Gets or sets the name of the URI.

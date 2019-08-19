@@ -199,17 +199,17 @@
             redirected from the logout page back to the home.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.URIConfiguration">
+        <member name="T:HealthGateway.WebClient.Models.UriConfiguration">
             <summary>
             Model object representing a named URI.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.URIConfiguration.Name">
+        <member name="P:HealthGateway.WebClient.Models.UriConfiguration.Name">
             <summary>
             Gets or sets the name of the URI.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.URIConfiguration.URI">
+        <member name="P:HealthGateway.WebClient.Models.UriConfiguration.URI">
             <summary>
             Gets or sets the URI.
             </summary>

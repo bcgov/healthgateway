@@ -34,6 +34,6 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         #pragma warning disable CA1819 //disable properties returning arrays
-        public URIConfiguration[] ExternalURLs { get; set; }
+        public UriConfiguration[] ExternalURLs { get; set; }
     }
 }
