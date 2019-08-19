@@ -234,12 +234,12 @@
             Gets or sets the OpenIDConnect Scopes.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.CallbackURI">
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogonCallbackURI">
             <summary>
             Gets or sets the OpenIDConnect Callback URI.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogoutURI">
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogoutCallbackURI">
             <summary>
             Gets or sets the OpenIDConnect Logout URI.
             </summary>
