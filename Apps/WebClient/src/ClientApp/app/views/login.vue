@@ -131,8 +131,6 @@ export default class LoginComponent extends Vue {
     }
 
     this.routeHandler = this.$router;
-
-    console.log(this.oidcIsAuthenticated);
     if (this.oidcIsAuthenticated) {
       this.routeHandler.push({ path: this.redirectPath });
     }

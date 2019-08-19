@@ -15,7 +15,7 @@ let $route = {
 };
 
 let authGetters = {
-  isAuthenticated: (): boolean => false
+  oidcIsAuthenticated: (): boolean => false
 };
 
 function createWrapper(): Wrapper<LoginComponent> {
@@ -75,7 +75,7 @@ describe("Login view", () => {
 
   test("if authenticated sets router path", () => {
     authGetters = {
-      isAuthenticated: (): boolean => true
+      oidcIsAuthenticated: (): boolean => true
     };
     let wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
@@ -86,7 +86,7 @@ describe("Login view", () => {
 
   test("if not authenticated does not set router path", () => {
     authGetters = {
-      isAuthenticated: (): boolean => false
+      oidcIsAuthenticated: (): boolean => false
     };
     let wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
