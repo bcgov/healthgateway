@@ -4,6 +4,23 @@
         <name>WebClient</name>
     </assembly>
     <members>
+        <member name="T:HealthGateway.WebClient.Controllers.ConfigurationController">
+            <summary>
+            Web API to return Health Gateway configuration to approved clients.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ConfigurationController.#ctor(HealthGateway.WebClient.Services.IConfigurationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.ConfigurationController"/> class.
+            </summary>
+            <param name="service">The injected configuration service provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ConfigurationController.Index">
+            <summary>
+            Returns the external Health Gateway configuration.
+            </summary>
+            <returns>The Health Gatway Configuration.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
@@ -37,6 +54,63 @@
             Gets a list of Imms records.
             </summary>
             <returns>A list of Immunization recorsd.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.ExternalConfiguration">
+            <summary>
+            A collection of configuration items for use by Health Gateway and
+            approved applications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.OpenIdConnect">
+            <summary>
+            Gets or sets the OpenIdConnect configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.IdentityProviders">
+            <summary>
+            Gets or sets the List of Identity providers.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.WebClient">
+            <summary>
+            Gets or sets the Health Gateway Webclient specific configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.ServiceEndpoints">
+            <summary>
+            Gets or sets the Service Endpoints.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.IdentityProviderConfiguration">
+            <summary>
+            An object representing a configured Health Gateway IdentityProvider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Id">
+            <summary>
+            Gets or sets the Id of the Identity Provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Name">
+            <summary>
+            Gets or sets the name of the Identity Provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Icon">
+            <summary>
+            Gets or sets the Font Awesome Icon that we recommend to use.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Hint">
+            <summary>
+            Gets or sets the Identity Provider hint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this identity provider
+            should be used.
+            </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.ImmsData">
             <summary>
@@ -73,6 +147,93 @@
             Gets or Sets the immunization boost due.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
+            <summary>
+            Configuration to be used by external clients for authentication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Authority">
+            <summary>
+            Gets or sets the OpenIDConnect Authority.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.ClientId">
+            <summary>
+            Gets or sets the OpenIdConnect Client ID.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.ResponseType">
+            <summary>
+            Gets or sets the OpenIDConnect Response types.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Scope">
+            <summary>
+            Gets or sets the OpenIDConnect Scopes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogonCallbackURI">
+            <summary>
+            Gets or sets the OpenIDConnect Callback URI.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogoutCallbackURI">
+            <summary>
+            Gets or sets the OpenIDConnect Logout URI.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.TimeOutsConfiguration">
+            <summary>
+            Various timeout values used by the VUE WebClient application.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TimeOutsConfiguration.Idle">
+            <summary>
+            Gets or sets the idle time in seconds that the Webclient will use
+            before it automatically logs the user out.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TimeOutsConfiguration.LogoutRedirect">
+            <summary>
+            Gets or sets the amount of time in seconds after which the user will be
+            redirected from the logout page back to the home.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UriConfiguration">
+            <summary>
+            Model object representing a named URI.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UriConfiguration.Name">
+            <summary>
+            Gets or sets the name of the URI.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UriConfiguration.URI">
+            <summary>
+            Gets or sets the URI.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
+            <summary>
+            Configuration data to be used by the Health Gateway Webclient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.LogLevel">
+            <summary>
+            Gets or sets the logging level used by the Webclient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.Timeouts">
+            <summary>
+            Gets or sets the Webclient timeout values.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.ExternalURLs">
+            <summary>
+            Gets or sets the ExternalURLs used by the Webclient.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Program">
             <summary>
             The entry point for the project.
@@ -90,6 +251,35 @@
             </summary>
             <param name="args">The command line arguments.</param>
             <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
+            <summary>
+            Provides external configuration data.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ConfigurationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.ConfigurationService},Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ConfigurationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="configuration">Injected Configuration Provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ConfigurationService.GetConfiguration">
+            <summary>
+            Reads the external configuration and returns it to the caller.
+            </summary>
+            <returns>The external configuration data.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
+            <summary>
+            Webclient configuration.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IConfigurationService.GetConfiguration">
+            <summary>
+            Creates and returns Configuration data for clients.
+            </summary>
+            <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IImmsService">
             <summary>

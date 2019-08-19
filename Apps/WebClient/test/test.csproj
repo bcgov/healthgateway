@@ -14,6 +14,7 @@
     <Compile Remove="Mock\**" />
     <EmbeddedResource Remove="Mock\**" />
     <None Remove="Mock\**" />
+    <None Remove="UnitTest.json"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -48,5 +49,11 @@
   <ItemGroup>
     <Folder Include="Controllers.Test\" />
     <Folder Include="Services.Test\" />
+  </ItemGroup>
+    <ItemGroup>
+    <Content Include="UnitTest.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
