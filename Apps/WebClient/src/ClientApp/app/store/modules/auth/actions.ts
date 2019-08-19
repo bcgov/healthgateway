@@ -1,77 +1,98 @@
-import { ActionTree, Commit } from "vuex";
-import { AuthState } from "@/models/authState";
+import { ActionTree, Commit, ActionContext } from "vuex";
+import { RootState, AuthState } from "@/models/storeState";
+import { Route } from "vue-router";
 
 import { IAuthenticationService } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
-import { RootState } from "@/models/rootState";
 
-function handleError(commit: Commit, error: Error) {
-  console.log("ERROR:" + error);
-  commit("authenticationError");
+function routeIsOidcCallback(route: Route): boolean {
+  if (route.meta.isOidcCallback) {
+    return true;
+  }
+  return false;
 }
 
+function isAuthenticated(state: AuthState): boolean {
+  if (state.authentication!.idToken) {
+    return true;
+  }
+  return false;
+}
+
+const authService: IAuthenticationService = container.get<
+  IAuthenticationService
+>(SERVICE_IDENTIFIER.AuthenticationService);
+
 export const actions: ActionTree<AuthState, RootState> = {
-  initialize({ commit }): any {
-    console.log("Initializing the auth store...");
-    const authService: IAuthenticationService = container.get<
-      IAuthenticationService
-    >(SERVICE_IDENTIFIER.AuthenticationService);
-    return new Promise((resolve, reject) => {
-      authService
-        .getAuthentication()
-        .then(authData => {
-          commit("authenticationLoaded", authData);
-          resolve();
-        })
-        .catch(error => {
-          handleError(commit, error);
-          reject(error);
-        })
-        .finally(() => {
-          console.log("Finished initialization");
-        });
-    });
-  },
-  login({ commit }, { idpHint, redirectPath }): Promise<void> {
-    const authService: IAuthenticationService = container.get<
-      IAuthenticationService
-    >(SERVICE_IDENTIFIER.AuthenticationService);
-    commit("authenticationRequest");
-    return new Promise((resolve, reject) => {
-      authService
-        .getAuthentication()
-        .then(authData => {
-          if (authData.isAuthenticated) {
-            commit("authenticationLoaded", authData);
-            console.log(authData.token);
-          } else {
-            authService.startLoginFlow(idpHint, redirectPath);
+  oidcCheckAccess(context, route) {
+    return new Promise<boolean>(resolve => {
+      if (routeIsOidcCallback(route)) {
+        resolve(true);
+        return;
+      }
+      let hasAccess: boolean = true;
+      let isAuthenticatedInStore = isAuthenticated(context.state);
+
+      authService.getUser().then(user => {
+        if (!user || user.expired) {
+          context.commit("unsetOidcAuth");
+          hasAccess = false;
+        } else {
+          context.dispatch("oidcWasAuthenticated", user);
+          if (!isAuthenticatedInStore) {
+            // We can add events when the user wasnt authenticated and now it is.
+            console.log("The user was previously unauthenticated, now it is!");
           }
-          resolve();
+        }
+        resolve(hasAccess);
+      });
+    });
+  },
+  authenticateOidc({ commit }, { idpHint, redirectPath }) {
+    authService.signinRedirect(idpHint, redirectPath).catch(err => {
+      commit("setOidcError", err);
+    });
+  },
+  oidcSignInCallback(context) {
+    return new Promise((resolve, reject) => {
+      authService
+        .signinRedirectCallback()
+        .then(user => {
+          context.dispatch("oidcWasAuthenticated", user).then(() => {
+            resolve(sessionStorage.getItem("vuex_oidc_active_route") || "/");
+          });
         })
-        .catch(error => {
-          handleError(commit, error);
-          reject(error);
+        .catch(err => {
+          context.commit("setOidcError", err);
+          context.commit("setOidcAuthIsChecked");
+          reject(err);
         });
     });
   },
-  logout({ commit }): any {
-    const authService: IAuthenticationService = container.get<
-      IAuthenticationService
-    >(SERVICE_IDENTIFIER.AuthenticationService);
-    return new Promise((resolve, reject) => {
-      authService
-        .destroyToken()
-        .then(() => {
-          commit("logout");
-          resolve();
-        })
-        .catch(error => {
-          console.log("ERROR:" + error);
-          commit("authenticationError");
-          reject(error);
-        });
+  authenticateOidcSilent(context) {
+    return authService
+      .signinSilent()
+      .then(user => {
+        context.dispatch("oidcWasAuthenticated", user);
+      })
+      .catch(err => {
+        context.commit("setOidcError", err);
+        context.commit("setOidcAuthIsChecked");
+      });
+  },
+  oidcWasAuthenticated(context, user) {
+    context.commit("setOidcAuth", user);
+    context.commit("setOidcAuthIsChecked");
+  },
+  getOidcUser(context) {
+    authService.getUser().then(user => {
+      context.commit("setOidcUser", user);
+    });
+  },
+  signOutOidc(context) {
+    authService.logout().then(() => {
+      context.commit("unsetOidcAuth");
     });
   }
 };

@@ -1,6 +1,5 @@
 import { GetterTree } from "vuex";
-import { RootState, StateType } from "@/models/rootState";
-import { ImmsState } from "@/models/immsState";
+import { RootState, StateType, ImmsState } from "@/models/storeState";
 import ImmsData from "@/models/immsData";
 
 export const getters: GetterTree<ImmsState, RootState> = {

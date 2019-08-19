@@ -1,10 +1,8 @@
 import { ActionTree, Commit } from "vuex";
-
 import { IImmsService } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
-import { ImmsState } from "@/models/immsState";
-import { RootState } from "@/models/rootState";
+import { RootState, ImmsState } from "@/models/storeState";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
