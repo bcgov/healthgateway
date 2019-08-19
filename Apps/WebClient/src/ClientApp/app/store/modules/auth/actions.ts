@@ -13,13 +13,6 @@ function routeIsOidcCallback(route: Route): boolean {
   return false;
 }
 
-function isAuthenticated(state: AuthState): boolean {
-  if (state.authentication!.idToken) {
-    return true;
-  }
-  return false;
-}
-
 const authService: IAuthenticationService = container.get<
   IAuthenticationService
 >(SERVICE_IDENTIFIER.AuthenticationService);
@@ -32,7 +25,8 @@ export const actions: ActionTree<AuthState, RootState> = {
         return;
       }
       let hasAccess: boolean = true;
-      let isAuthenticatedInStore = isAuthenticated(context.state);
+      let isAuthenticatedInStore =
+        context.state.authentication.idToken !== undefined;
 
       authService.getUser().then(user => {
         if (!user || user.expired) {
