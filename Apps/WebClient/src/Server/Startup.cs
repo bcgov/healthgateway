@@ -135,6 +135,7 @@ namespace HealthGateway.WebClient
                          return c.Response.WriteAsync(c.Exception.ToString());
                      },
                  };
+<<<<<<< HEAD
              });
 
             // Configuration Service
@@ -146,6 +147,12 @@ namespace HealthGateway.WebClient
                     serviceProvider.GetService<IConfiguration>());
                 return service;
             });
+=======
+             });
+
+            // Imms Service
+            services.AddTransient<IImmsService, ImmsService>();
+>>>>>>> 89655e5c7a399a2d1b49a4ce7da064e674dd6f08
 
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

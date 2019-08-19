@@ -4,6 +4,7 @@
         <name>WebClient</name>
     </assembly>
     <members>
+<<<<<<< HEAD
         <member name="T:HealthGateway.WebClient.Controllers.AuthController">
             <summary>
             The Authentication and Authorization controller.
@@ -62,6 +63,8 @@
             </summary>
             <returns>The Health Gatway Configuration.</returns>
         </member>
+=======
+>>>>>>> 89655e5c7a399a2d1b49a4ce7da064e674dd6f08
         <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
@@ -96,6 +99,7 @@
             </summary>
             <returns>A list of Immunization recorsd.</returns>
         </member>
+<<<<<<< HEAD
         <member name="T:HealthGateway.WebClient.Models.AuthData">
             <summary>
             The authentication data from the ASP.Net Core Authentication cookie.
@@ -174,6 +178,8 @@
             should be used.
             </summary>
         </member>
+=======
+>>>>>>> 89655e5c7a399a2d1b49a4ce7da064e674dd6f08
         <member name="T:HealthGateway.WebClient.Models.ImmsData">
             <summary>
             The immunization data model.
@@ -209,6 +215,7 @@
             Gets or Sets the immunization boost due.
             </summary>
         </member>
+<<<<<<< HEAD
         <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
             <summary>
             Configuration to be used by external clients for authentication.
@@ -316,6 +323,8 @@
             Gets or sets the ExternalURLs used by the Webclient.
             </summary>
         </member>
+=======
+>>>>>>> 89655e5c7a399a2d1b49a4ce7da064e674dd6f08
         <member name="T:HealthGateway.WebClient.Program">
             <summary>
             The entry point for the project.
@@ -334,6 +343,7 @@
             <param name="args">The command line arguments.</param>
             <returns>Returns the configured webhost.</returns>
         </member>
+<<<<<<< HEAD
         <member name="T:HealthGateway.WebClient.Services.AuthService">
             <summary>
             Authentication and Authorization Service.
@@ -421,6 +431,8 @@
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
+=======
+>>>>>>> 89655e5c7a399a2d1b49a4ce7da064e674dd6f08
         <member name="T:HealthGateway.WebClient.Services.IImmsService">
             <summary>
             Immunization Service.
@@ -437,14 +449,12 @@
             Authentication and Authorization Service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.ImmsService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.AuthService},Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.IHttpClientFactory,HealthGateway.WebClient.Services.IAuthService)">
+        <member name="M:HealthGateway.WebClient.Services.ImmsService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.IHttpClientFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ImmsService"/> class.
             </summary>
             <param name="configuration">Injected Configuration Provider.</param>
-            <param name="logger">Injected Logger Provider.</param>
             <param name="httpClient">Injected HttpClientFactory Provider.</param>
-            <param name="authService">Injected IAuthService Provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.ImmsService.GetItems">
             <summary>
