@@ -165,7 +165,7 @@ namespace HealthGateway.WebClient
             {
                 this.logger.LogDebug("Configuring Transient Service IConfigurationService");
                 IConfigurationService service = new ConfigurationService(
-                    serviceProvider.GetService<ILogger<AuthService>>(),
+                    serviceProvider.GetService<ILogger<ConfigurationService>>(),
                     serviceProvider.GetService<IConfiguration>());
                 return service;
             });

@@ -32,7 +32,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
-        public ConfigurationService(ILogger<AuthService> logger, IConfiguration configuration)
+        public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
         {
             this.configuration = configuration;
             this.logger = logger;

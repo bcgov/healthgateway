@@ -45,6 +45,23 @@
             </remarks>
             <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.ConfigurationController">
+            <summary>
+            Web API to return Health Gateway configuration to approved clients.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ConfigurationController.#ctor(HealthGateway.WebClient.Services.IConfigurationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.ConfigurationController"/> class.
+            </summary>
+            <param name="service">The injected configuration service provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ConfigurationController.Index">
+            <summary>
+            Returns the external Health Gateway configuration.
+            </summary>
+            <returns>The Health Gatway Configuration.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
@@ -78,23 +95,6 @@
             Gets a list of Imms records.
             </summary>
             <returns>A list of Immunization recorsd.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Server.Controllers.ConfigurationController">
-            <summary>
-            Web API to return Health Gateway configuration to approved clients.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Server.Controllers.ConfigurationController.#ctor(HealthGateway.WebClient.Services.IConfigurationService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Controllers.ConfigurationController"/> class.
-            </summary>
-            <param name="service">The injected configuration service provider.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Server.Controllers.ConfigurationController.Index">
-            <summary>
-            Returns the external Health Gateway configuration.
-            </summary>
-            <returns>The Health Gatway Configuration.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.AuthData">
             <summary>
@@ -372,7 +372,7 @@
             Provides external configuration data.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.ConfigurationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.AuthService},Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.WebClient.Services.ConfigurationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.ConfigurationService},Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ConfigurationService"/> class.
             </summary>

@@ -36,6 +36,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="UnitTest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)/Server</Value>
     </SonarQubeSetting>
