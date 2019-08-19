@@ -5,8 +5,8 @@
       "ClientId": "ClientId",
       "ResponseType": "ResponseType",
       "Scope": "Scope",
-      "LogonCallbackURI": "LogonCallbackURI",
-      "LogoutCallbackURI": "LogoutCallbackURI"
+        "LogonCallbackURI": "https://localhost/logon",
+        "LogoutCallbackURI": "https://localhost/logout"
     },
     "IdentityProviders": [
       {
@@ -26,14 +26,14 @@
       "ExternalURLs": [
         {
           "Name": "Name",
-          "URI": "URI"
+            "URI": "https://localhost/external"
         }
       ]
     },
     "ServiceEndpoints": [
       {
         "Name": "Name",
-        "URI": "URI"
+        "URI": "https://localhost/service"
       }
     ]
   }

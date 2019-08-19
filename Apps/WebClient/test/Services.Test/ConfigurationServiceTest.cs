@@ -48,8 +48,8 @@ namespace HealthGateway.WebClient.Test.Services
                     ClientId = "ClientId",
                     ResponseType = "ResponseType",
                     Scope = "Scope",
-                    LogonCallbackURI = "LogonCallbackURI",
-                    LogoutCallbackURI = "LogoutCallbackURI",
+                    LogonCallbackURI = new System.Uri("https://localhost/logon"),
+                    LogoutCallbackURI = new System.Uri("https://localhost/logout"),
                 },
                 IdentityProviders = new Models.IdentityProviderConfiguration[]
                 {
@@ -75,7 +75,7 @@ namespace HealthGateway.WebClient.Test.Services
                        new Models.UriConfiguration()
                        {
                            Name = "Name",
-                           URI = "URI",
+                           URI = new System.Uri("https://localhost/external"),
                        }
                    }
                 },
@@ -84,7 +84,7 @@ namespace HealthGateway.WebClient.Test.Services
                     new Models.UriConfiguration()
                     {
                         Name = "Name",
-                        URI = "URI",
+                        URI = new System.Uri("https://localhost/service"),
                     }
                 }
             };

@@ -43,13 +43,11 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the OpenIDConnect Callback URI.
         /// </summary>
-        #pragma warning disable CA1056 //disable System.URI warning
-        public string LogonCallbackURI { get; set; }
+        public System.Uri LogonCallbackURI { get; set; }
 
         /// <summary>
         /// Gets or sets the OpenIDConnect Logout URI.
         /// </summary>
-        #pragma warning disable CA1056 //disable System.URI warning
-        public string LogoutCallbackURI { get; set; }
+        public System.Uri LogoutCallbackURI { get; set; }
     }
 }

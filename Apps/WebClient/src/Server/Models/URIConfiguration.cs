@@ -28,7 +28,6 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the URI.
         /// </summary>
-        #pragma warning disable CA1056 //disable URI should be System.URI
-        public string URI { get; set; }
+        public System.Uri URI { get; set; }
     }
 }
