@@ -1,5 +1,5 @@
-import { StateType } from "./rootState";
 import { ExternalConfiguration } from "./ConfigData";
+import { StateType } from './storeState';
 
 export interface ConfigState {
   config: ExternalConfiguration;
