@@ -35,7 +35,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger = logger;
             this.config = new Models.ExternalConfiguration();
-            configuration.Bind("External", this.config);
+            this.config = configuration.Get<Models.ExternalConfiguration>();
         }
 
         /// <summary>

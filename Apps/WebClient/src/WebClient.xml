@@ -197,14 +197,9 @@
             Gets or sets the OpenIDConnect Scopes.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogonCallbackURI">
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Callbacks">
             <summary>
-            Gets or sets the OpenIDConnect Callback URI.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.LogoutCallbackURI">
-            <summary>
-            Gets or sets the OpenIDConnect Logout URI.
+            Gets or sets the Callback URIs.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.TimeOutsConfiguration">
@@ -222,21 +217,6 @@
             <summary>
             Gets or sets the amount of time in seconds after which the user will be
             redirected from the logout page back to the home.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.UriConfiguration">
-            <summary>
-            Model object representing a named URI.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UriConfiguration.Name">
-            <summary>
-            Gets or sets the name of the URI.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UriConfiguration.URI">
-            <summary>
-            Gets or sets the URI.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
