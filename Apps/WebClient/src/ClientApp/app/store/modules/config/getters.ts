@@ -14,6 +14,6 @@ export const getters: GetterTree<ConfigState, RootState> = {
   openIdConnect(state: ConfigState): OpenIdConnectConfiguration {
     const { config } = state;
     const { openIdConnect } = config;
-    return openIdConnect!;
+    return openIdConnect;
   }
 };
