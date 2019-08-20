@@ -21,6 +21,7 @@ export const actions: ActionTree<ConfigState, RootState> = {
       configService
         .getConfiguration()
         .then(value => {
+          console.log('Configuration: ', value);
           commit("configurationLoaded", value);
           resolve();
         })

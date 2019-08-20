@@ -17,11 +17,9 @@ import store from "@/store/store";
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
-console.log("env", JSON.stringify(process.env));
-
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then(() => {
-  store.dispatch("auth/authenticateOidcSilent").then(result => {
+  store.dispatch("auth/authenticateOidcSilent").then(() => {
     new Vue({
       el: "#app-root",
       i18n: i18n,
@@ -30,4 +28,4 @@ store.dispatch("config/initialize").then(() => {
       render: h => h(App)
     });
   });
-})
+});

@@ -41,10 +41,8 @@ export class OpenIdConnectConfiguration {
   public responseType!: string;
   /** Gets or sets the OpenIDConnect Scopes. */
   public scope!: string;
-  /** Gets or sets the OpenIDConnect Callback URI. */
-  public callbackURI!: string;
-  /** Gets or sets the OpenIDConnect Logout URI. */
-  public logoutURI!: string;
+  /** Gets or sets the Callback URIs. */
+  public callbacks!: { [id: string]: string };
 }
 
 /** Configuration data to be used by the Health Gateway Webclient. */
