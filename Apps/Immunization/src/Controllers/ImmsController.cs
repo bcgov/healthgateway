@@ -36,6 +36,7 @@ namespace Immunization.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("items")]
+        [HttpGet, Route("Immunization")]
         public JsonResult GetItems()
         {
             return new JsonResult(this.service.GetMockData());
