@@ -11,7 +11,7 @@ export class RestImmsService implements IImmsService {
   private readonly GET_AUTH_URI: string = "api/imms/items";
 
   constructor() {
-    console.log('Imms Rest Service...');
+    console.log("Imms Rest Service...");
   }
   public getItems(): Promise<ImmsData[]> {
     return new Promise((resolve, reject) => {

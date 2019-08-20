@@ -2,10 +2,14 @@ import "reflect-metadata";
 import { Container } from "inversify";
 
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import { IAuthenticationService, IImmsService, IConfigService } from "@/services/interfaces";
+import {
+  IAuthenticationService,
+  IImmsService,
+  IConfigService
+} from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "./services/restImmsService";
-import { RestConfigService } from './services/restConfigService';
+import { RestConfigService } from "./services/restConfigService";
 
 let container = new Container();
 container

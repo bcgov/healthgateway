@@ -10,13 +10,13 @@ import {
 import { injectable } from "inversify";
 import "reflect-metadata";
 import store from "@/store/store";
-import { OpenIdConnectConfiguration } from '@/models/ConfigData';
+import { OpenIdConnectConfiguration } from "@/models/ConfigData";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
   private _oidcUserManager!: UserManager;
   private oidcUserManager = (): UserManager => {
-    if (!this._oidcUserManager) { 
+    if (!this._oidcUserManager) {
       const config = this.getOidcConfig();
       console.log("oidc configuration: ", config);
       this._oidcUserManager = new UserManager(config);
@@ -24,12 +24,12 @@ export class RestAuthenticationService implements IAuthenticationService {
     return this._oidcUserManager;
   };
 
-  constructor() {
-  }
+  constructor() {}
 
   public getOidcConfig(): UserManagerSettings {
-    console.log('getting oidc config...');
-    const config: OpenIdConnectConfiguration = store.getters['config/openIdConnect'];
+    console.log("getting oidc config...");
+    const config: OpenIdConnectConfiguration =
+      store.getters["config/openIdConnect"];
     console.log(config);
     return {
       userStore: new WebStorageStateStore({ store: window.localStorage }),
