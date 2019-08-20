@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LoadingComponent :isLoading="isLoading"></LoadingComponent>
+    <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-alert :show="hasErrors" dismissible variant="danger">
       <h4>Error</h4>
       <span>An unexpected error occured while processing the request.</span>
@@ -12,22 +12,22 @@
     <p id="subtext">{{ $t("immz-component.prototype") }}</p>
 
     <b-table striped responsive small :items="items" :fields="fields">
-      <template slot="HEAD_date" id="f1">
+      <template id="f1" slot="HEAD_date">
         {{ $t("immz-component.fields.date") }}
       </template>
-      <template slot="HEAD_vaccine" id="f2">
+      <template id="f2" slot="HEAD_vaccine">
         {{ $t("immz-component.fields.vaccine") }}
       </template>
-      <template slot="HEAD_dose" id="f3">
+      <template id="f3" slot="HEAD_dose">
         {{ $t("immz-component.fields.dose") }}
       </template>
-      <template slot="HEAD_site" id="f4">
+      <template id="f4" slot="HEAD_site">
         {{ $t("immz-component.fields.site") }}
       </template>
-      <template slot="HEAD_lot" id="f5">
+      <template id="f5" slot="HEAD_lot">
         {{ $t("immz-component.fields.lot") }}
       </template>
-      <template slot="HEAD_boost" id="f6">
+      <template id="f6" slot="HEAD_boost">
         {{ $t("immz-component.fields.boost") }}
       </template>
     </b-table>

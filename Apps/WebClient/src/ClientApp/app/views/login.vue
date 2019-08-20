@@ -4,10 +4,10 @@
     <b-row>
       <b-col>
         <b-card
+          id="loginPicker"
           class="shadow-lg bg-white"
           style="max-width: 25rem;"
           align="center"
-          id="loginPicker"
         >
           <h3 slot="header">Log In</h3>
           <p slot="footer">
@@ -19,9 +19,9 @@
               <b-col>
                 <b-button
                   id="keycloackLoginBtn"
-                  v-on:click="oidcLogin('')"
                   block
                   variant="primary"
+                  @click="oidcLogin('')"
                 >
                   <b-row>
                     <b-col class="col-2">
@@ -41,10 +41,10 @@
               <b-col>
                 <b-button
                   id="bcscBtn"
-                  v-on:click="oidcLogin('bcsc')"
                   block
                   variant="primary"
                   disabled
+                  @click="oidcLogin('bcsc')"
                 >
                   <b-row>
                     <b-col class="col-2">
@@ -64,9 +64,9 @@
               <b-col>
                 <b-button
                   id="idirBtn"
-                  v-on:click="oidcLogin('idir')"
                   block
                   variant="primary"
+                  @click="oidcLogin('idir')"
                 >
                   <b-row>
                     <b-col class="col-2">
@@ -86,9 +86,9 @@
               <b-col>
                 <b-button
                   id="gitBtn"
-                  v-on:click="oidcLogin('github')"
                   block
                   variant="primary"
+                  @click="oidcLogin('github')"
                 >
                   <b-row>
                     <b-col class="col-2">
