@@ -10,7 +10,7 @@ export class ExternalConfiguration {
   public webClient?: WebClientConfiguration;
 
   /** Gets or sets the Service Endpoints. */
-  public ServiceEndpoints?: URIConfiguration[];
+  public serviceEndpoints?: { [id: string]: string };
 }
 
 /** An object representing a configured Health Gateway IdentityProvider. */
@@ -52,15 +52,7 @@ export class WebClientConfiguration {
   /** Gets or sets the Webclient timeout values. */
   public timeouts?: TimeOutsConfiguration;
   /** Gets or sets the ExternalURLs used by the Webclient. */
-  public externalURLs?: URIConfiguration[];
-}
-
-/** Model object representing a named URI. */
-export class URIConfiguration {
-  /** Gets or sets the name of the URI. */
-  public Name!: string;
-  /** Gets or sets the URI. */
-  public URI!: string;
+  public externalURLs?: { [id: string]: string };
 }
 
 /** Various timeout values used by the VUE WebClient application. */
