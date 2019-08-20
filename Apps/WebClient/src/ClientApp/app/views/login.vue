@@ -18,14 +18,14 @@
             <b-row :key="provider.id" v-for="provider in identityProviders">
               <b-col>
                 <b-button
-                  id="{{provider.id}}Btn"
+                  :id="`${provider.id}Btn`"
                   v-on:click="oidcLogin(provider.hint)"
                   block
                   variant="primary"
                 >
                   <b-row>
                     <b-col class="col-2">
-                      <span class="fa {{provider.icon}}"></span>
+                      <span :class="`fa ${provider.icon}`"></span>
                     </b-col>
                     <b-col class="text-justify">
                       <span>{{ provider.name }}</span>

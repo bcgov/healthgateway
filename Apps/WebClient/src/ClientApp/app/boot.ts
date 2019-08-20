@@ -20,12 +20,14 @@ Vue.use(VueRouter);
 console.log("env", JSON.stringify(process.env));
 
 // Initialize the store only then start the app
-store.dispatch("auth/authenticateOidcSilent").then(result => {
-  new Vue({
-    el: "#app-root",
-    i18n: i18n,
-    store,
-    router,
-    render: h => h(App)
+store.dispatch("config/initialize").then(() => {
+  store.dispatch("auth/authenticateOidcSilent").then(result => {
+    new Vue({
+      el: "#app-root",
+      i18n: i18n,
+      store,
+      router,
+      render: h => h(App)
+    });
   });
-});
+})

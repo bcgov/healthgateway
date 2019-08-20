@@ -3,8 +3,7 @@ import { ActionTree, Commit } from "vuex";
 import { IConfigService } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
-import { RootState } from "@/models/rootState";
-import { ConfigState } from "@/models/configState";
+import { RootState, ConfigState } from "@/models/storeState";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);

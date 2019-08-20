@@ -19,6 +19,7 @@ export class RestConfigService implements IConfigService {
             let config: ExternalConfiguration = response.data;
             return resolve(config);
           } else {
+            console.log(response);
             return reject("invalid request");
           }
         })

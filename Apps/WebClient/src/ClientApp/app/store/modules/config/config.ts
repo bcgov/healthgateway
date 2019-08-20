@@ -2,9 +2,8 @@ import { Module } from "vuex";
 import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { RootState, StateType } from "@/models/rootState";
+import { RootState, StateType, ConfigState } from "@/models/storeState";
 import { ExternalConfiguration } from "@/models/ConfigData";
-import { ConfigState } from "@/models/configState";
 
 export const state: ConfigState = {
   statusMessage: "",
@@ -15,7 +14,7 @@ export const state: ConfigState = {
 
 const namespaced: boolean = true;
 
-export const auth: Module<ConfigState, RootState> = {
+export const config: Module<ConfigState, RootState> = {
   namespaced,
   state,
   getters,
