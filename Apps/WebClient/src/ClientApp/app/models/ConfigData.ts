@@ -1,7 +1,7 @@
 /** A collection of configuration items for use by Health Gateway and approved applications. */
 export class ExternalConfiguration {
   /** Gets or sets the OpenIdConnect configuration. */
-  public openIdConnect?: OpenIdConnectConfiguration;
+  public openIdConnect!: OpenIdConnectConfiguration;
 
   /** Gets or sets the List of Identity providers. */
   public identityProviders?: IdentityProviderConfiguration[];

@@ -4,6 +4,7 @@ import { IConfigService } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { RootState, ConfigState } from "@/models/storeState";
+import { ExternalConfiguration } from '@/models/ConfigData';
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -11,7 +12,7 @@ function handleError(commit: Commit, error: Error) {
 }
 
 export const actions: ActionTree<ConfigState, RootState> = {
-  initialize({ commit }): any {
+  initialize({ commit }): Promise<ExternalConfiguration> {
     console.log("Initializing the config store...");
     const configService: IConfigService = container.get(
       SERVICE_IDENTIFIER.ConfigService
@@ -23,7 +24,7 @@ export const actions: ActionTree<ConfigState, RootState> = {
         .then(value => {
           console.log("Configuration: ", value);
           commit("configurationLoaded", value);
-          resolve();
+          resolve(value);
         })
         .catch(error => {
           handleError(commit, error);

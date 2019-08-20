@@ -1,7 +1,8 @@
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
-import { ExternalConfiguration } from "@/models/ConfigData";
+import { ExternalConfiguration, OpenIdConnectConfiguration } from "@/models/ConfigData";
 
 export interface IAuthenticationService {
+  initialize(config: OpenIdConnectConfiguration): void;
   getUser(): Promise<OidcUser | null>;
   logout(): Promise<void>;
   signinSilent(): Promise<OidcUser | null>;

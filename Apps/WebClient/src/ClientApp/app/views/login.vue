@@ -9,7 +9,7 @@
           align="center"
           id="loginPicker"
         >
-          <h3 slot="header">Log In</h3>
+          <h3 slot="header">Log In With</h3>
           <p slot="footer">
             Not yet registered?
             <b-link to="/registration">Sign up</b-link>
@@ -22,6 +22,7 @@
                     :id="`${provider.id}Btn`"
                     v-on:click="oidcLogin(provider.hint)"
                     block
+                    :disabled="provider.disabled"
                     variant="primary"
                   >
                     <b-row>

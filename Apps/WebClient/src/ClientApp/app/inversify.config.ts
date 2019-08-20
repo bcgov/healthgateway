@@ -17,7 +17,8 @@ container
   .to(RestConfigService);
 container
   .bind<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService)
-  .to(RestAuthenticationService);
+  .to(RestAuthenticationService)
+  .inSingletonScope();
 container
   .bind<IImmsService>(SERVICE_IDENTIFIER.ImmsService)
   .to(RestImmsService);
