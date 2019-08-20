@@ -13,7 +13,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="patient in patients" v-bind:key="patient">
+        <tr v-for="patient in patients" :key="patient">
           <td>{{ patient.id }}</td>
           <td>{{ patient.name }}</td>
           <td v-html="patient.divStruct">{{ test }}</td>

@@ -4,10 +4,10 @@
     <b-row>
       <b-col>
         <b-card
+          id="loginPicker"
           class="shadow-lg bg-white"
           style="max-width: 25rem;"
           align="center"
-          id="loginPicker"
         >
           <h3 slot="header">Log In With</h3>
           <p slot="footer">
@@ -20,7 +20,7 @@
                 <b-col>
                   <b-button
                     :id="`${provider.id}Btn`"
-                    v-on:click="oidcLogin(provider.hint)"
+                    @click="oidcLogin(provider.hint)"
                     block
                     :disabled="provider.disabled"
                     variant="primary"
@@ -44,6 +44,7 @@
                 ><b-col>or</b-col>
               </b-row>
             </div>
+
           </b-card-body>
         </b-card>
       </b-col>
