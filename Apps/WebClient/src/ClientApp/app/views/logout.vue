@@ -34,5 +34,10 @@ export default class LoginComponent extends Vue {
       this.logout();
     }
   }
+
+  created() {
+    //TODO: Use Configuration for the timeout value
+    setTimeout(() => this.$router.push({ path: "/" }), 20000);
+  }
 }
 </script>

@@ -35,7 +35,7 @@
     </div>
     <div class="row">
       <div class="col d-flex justify-content-center">
-        <a href="#" class="btn btn-primary" id="btnCreateAccount" role="button"
+        <a id="btnCreateAccount" href="#" class="btn btn-primary" role="button"
           >Create Health Gateway Account</a
         >
       </div>
