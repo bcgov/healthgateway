@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Configuration data to be used by the Health Gateway Webclient.
     /// </summary>
@@ -33,7 +35,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
-        #pragma warning disable CA1819 //disable properties returning arrays
-        public UriConfiguration[] ExternalURLs { get; set; }
+        #pragma warning disable CA2227 //disable read-only Dictionary
+        public Dictionary<string, System.Uri> ExternalURLs { get; set; }
     }
 }

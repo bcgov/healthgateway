@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
+    using System.Collections.Generic;
     using Xunit;
     using Moq;
     using Microsoft.Extensions.Configuration;
@@ -48,8 +49,11 @@ namespace HealthGateway.WebClient.Test.Services
                     ClientId = "ClientId",
                     ResponseType = "ResponseType",
                     Scope = "Scope",
-                    LogonCallbackURI = new System.Uri("https://localhost/logon"),
-                    LogoutCallbackURI = new System.Uri("https://localhost/logout"),
+                    Callbacks = new Dictionary<string, System.Uri>
+                    {
+                        { "Logon", new System.Uri("https://localhost/logon") },
+                        { "Logout",new System.Uri("https://localhost/logout") },
+                    }
                 },
                 IdentityProviders = new Models.IdentityProviderConfiguration[]
                 {
@@ -70,21 +74,17 @@ namespace HealthGateway.WebClient.Test.Services
                         Idle = "Idle",
                         LogoutRedirect = "LogoutRedirect",
                     },
-                    ExternalURLs = new Models.UriConfiguration[]
+                    ExternalURLs = new Dictionary<string, System.Uri>
                    {
-                       new Models.UriConfiguration()
                        {
-                           Name = "Name",
-                           URI = new System.Uri("https://localhost/external"),
+                           "External", new System.Uri("https://localhost/external")
                        }
                    }
                 },
-                ServiceEndpoints = new Models.UriConfiguration[]
+                ServiceEndpoints = new Dictionary<string, System.Uri>()
                 {
-                    new Models.UriConfiguration()
                     {
-                        Name = "Name",
-                        URI = new System.Uri("https://localhost/service"),
+                        "Service", new System.Uri("https://localhost/service")
                     }
                 }
             };
