@@ -26,8 +26,6 @@ namespace HealthGateway.WebClient
     using System.Threading.Tasks;
     using HealthGateway.WebClient.Services;
     using HealthGateway.WebClient.Swagger;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -40,6 +38,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.SwaggerGen;
     using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -75,66 +74,16 @@ namespace HealthGateway.WebClient
                 options.Providers.Add<GzipCompressionProvider>();
                 options.EnableForHttps = true;
             });
-            services.AddAuthentication(options =>
+
+            // Configuration Service
+            services.AddTransient<IConfigurationService>(serviceProvider =>
             {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie()
-            .AddOpenIdConnect(o =>
-             {
-                 this.configuration.GetSection("OpenIdConnect").Bind(o);
-                 if (string.IsNullOrEmpty(o.Authority))
-                 {
-                     this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
-                 }
-
-                 o.Events = new OpenIdConnectEvents()
-                 {
-                     OnTokenValidated = ctx =>
-                     {
-                         JwtSecurityToken accessToken = ctx.SecurityToken;
-                         if (accessToken != null)
-                         {
-                             ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
-                             if (identity != null)
-                             {
-                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
-                             }
-                         }
-
-                         return Task.CompletedTask;
-                     },
-                     OnRedirectToIdentityProvider = ctx =>
-                     {
-                         if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
-                         {
-                             this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
-                             ctx.ProtocolMessage.SetParameter(
-                                    this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
-                         }
-                         else
-                         {
-                             if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
-                             {
-                                 this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                 ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
-                             }
-                         }
-
-                         return Task.FromResult(0);
-                     },
-                     OnAuthenticationFailed = c =>
-                     {
-                         c.HandleResponse();
-                         c.Response.StatusCode = 500;
-                         c.Response.ContentType = "text/plain";
-                         this.logger.LogError(c.Exception.ToString());
-                         return c.Response.WriteAsync(c.Exception.ToString());
-                     },
-                 };
-             });
+                this.logger.LogDebug("Configuring Transient Service IConfigurationService");
+                IConfigurationService service = new ConfigurationService(
+                    serviceProvider.GetService<ILogger<ConfigurationService>>(),
+                    serviceProvider.GetService<IConfiguration>());
+                return service;
+            });
 
             // Imms Service
             services.AddTransient<IImmsService, ImmsService>();
@@ -144,7 +93,11 @@ namespace HealthGateway.WebClient
 
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                });
 
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
 
@@ -207,8 +160,6 @@ namespace HealthGateway.WebClient
 
             app.UseSwaggerDocuments();
             app.UseResponseCompression();
-            app.UseAuthentication();
-            app.UseCookiePolicy();
 
             app.UseMvc(routes =>
             {
