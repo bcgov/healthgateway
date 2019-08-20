@@ -15,25 +15,27 @@
             <b-link to="/registration">Sign up</b-link>
           </p>
           <b-card-body>
-            <b-row :key="provider.id" v-for="provider in identityProviders">
-              <b-col>
-                <b-button
-                  :id="`${provider.id}Btn`"
-                  v-on:click="oidcLogin(provider.hint)"
-                  block
-                  variant="primary"
-                >
+              <div :key="provider.id" v-for="provider in identityProviders">
                   <b-row>
-                    <b-col class="col-2">
-                      <span :class="`fa ${provider.icon}`"></span>
-                    </b-col>
-                    <b-col class="text-justify">
-                      <span>{{ provider.name }}</span>
-                    </b-col>
+                      <b-col>
+                          <b-button :id="`${provider.id}Btn`"
+                                    v-on:click="oidcLogin(provider.hint)"
+                                    block
+                                    variant="primary">
+                              <b-row>
+                                  <b-col class="col-2">
+                                      <span :class="`fa ${provider.icon}`"></span>
+                                  </b-col>
+                                  <b-col class="text-justify">
+                                      <span>{{ provider.name }}</span>
+                                  </b-col>
+                              </b-row>
+                          </b-button>
+                      </b-col>
                   </b-row>
-                </b-button>
-              </b-col>
-            </b-row>
+                  <b-row v-if="identityProviders.indexOf(provider) < identityProviders.length - 1"><b-col>or</b-col>
+                  </b-row>
+              </div>
           </b-card-body>
         </b-card>
       </b-col>
