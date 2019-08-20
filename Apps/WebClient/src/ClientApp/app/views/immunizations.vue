@@ -9,7 +9,16 @@
       <span class="fa fa-1x fa-syringe"></span>
       &nbsp;{{ $t("immz-component.immunizations") }}
     </h1>
-    <p id="subtext">{{ $t("immz-component.prototype") }}</p>
+    <p id="subtext" align="right">
+      <b>Reference:</b>&nbsp;
+      <b-link
+        v-bind:href="
+          'https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules'
+        "
+        target="_blank"
+        >BC Immunization Schedules</b-link
+      >
+    </p>
 
     <b-table striped responsive small :items="items" :fields="fields">
       <template slot="HEAD_date" id="f1">
@@ -29,6 +38,76 @@
       </template>
       <template slot="HEAD_boost" id="f6">
         {{ $t("immz-component.fields.boost") }}
+      </template>
+      <template slot="show_details" slot-scope="row">
+        <b-button
+          id="btn1"
+          size="sm"
+          variant="outline-info"
+          @click="row.toggleDetails"
+          class="pb-2"
+          >{{ row.detailsShowing ? "Hide" : "Show" }} Details</b-button
+        >
+      </template>
+      <template slot="row-details" id="rd" slot-scope="row">
+        <b-card>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.lot") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.lot }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.site") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.site }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.dose") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.dose }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.route") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.route }}</b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.manufacturer") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.manufacturer }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.tradeName") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.tradeName }}</b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.administeredBy") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.administeredBy }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.administeredAt") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.administeredAt }}</b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3" class="text-sm-right">
+              <b>More Infomation on HealthLinkBC:</b>
+            </b-col>
+            <b-col sm="6">
+              <b-link
+                :href="'https://www.healthlinkbc.ca/search/' + row.item.vaccine"
+                target="_blank"
+                >{{ row.item.vaccine }}</b-link
+              >
+            </b-col>
+          </b-row>
+          <b-button
+            size="sm"
+            variant="outline-secondary"
+            @click="row.toggleDetails"
+            >Hide Details</b-button
+          >
+        </b-card>
       </template>
     </b-table>
   </div>
@@ -64,10 +143,8 @@ export default class ImmunizationsComponent extends Vue {
   private fields = {
     date: { sortable: true },
     vaccine: { sortable: true },
-    dose: { sortable: false },
-    site: { sortable: true },
-    lot: { sortable: true },
-    boost: { sortable: true }
+    boost: { sortable: true },
+    show_details: { sortable: false }
   };
 
   mounted() {
