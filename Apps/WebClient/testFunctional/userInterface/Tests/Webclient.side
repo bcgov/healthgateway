@@ -1,0 +1,366 @@
+{
+  "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
+  "version": "2.0",
+  "name": "Webclient",
+  "url": "https://dev-gateway.pathfinder.gov.bc.ca",
+  "tests": [{
+    "id": "5623a813-676e-42d2-9fc8-4117f3206bf6",
+    "name": "Health Gateway Landing Page",
+    "commands": [{
+      "id": "89692e23-4ba5-4861-9b13-5221e1e45a12",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "baceb196-c09d-4965-83e9-43ee40bd1cfe",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "Home - Health Gateway",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "db8fdb27-b6fe-431f-9dc4-268eccdf1a10",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Gateway')]", "xpath:innerText"]
+      ],
+      "value": "Health Gateway"
+    }]
+  }, {
+    "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
+    "name": "Redirect to registration landing page",
+    "commands": [{
+      "id": "255cc728-fec0-4135-8bb9-9610aa1a5639",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "71c246ef-7e07-4fb0-8b69-5c264dfa8bd3",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Start now", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Start now')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/div[2]/div/div/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registration')]", "xpath:href"],
+        ["xpath=//div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Start now')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "dc5d4516-920a-4660-b429-000ffaba9c82",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=btnCreateAccount",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Create Health Gateway Account", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Create Health Gateway Account')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/div[3]/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[2]", "xpath:href"],
+        ["xpath=//div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Create Health Gateway Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "2057d9e0-ebcd-4fc5-b421-8ec04e221c72",
+    "name": "404 Page",
+    "commands": [{
+      "id": "1f68a882-424f-4ad8-8c85-101b8b9971c2",
+      "comment": "",
+      "command": "open",
+      "target": "/nonexistingpage",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8be70103-f8a5-454c-bdf2-817d4f6589c0",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [],
+      "value": "404"
+    }]
+  }, {
+    "id": "155b3bce-2847-4b59-903e-7e80d7f0c113",
+    "name": "401 Page",
+    "commands": [{
+      "id": "5c911c8a-af3b-41f0-b070-08ca746fb296",
+      "comment": "",
+      "command": "open",
+      "target": "/unauthorized",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9e69f736-3eeb-4af8-aa0f-61ed6c2b6e13",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [],
+      "value": "401"
+    }]
+  }, {
+    "id": "7d26e647-6f0a-4ccd-a741-e1bdc477e5e7",
+    "name": "Login from Landing",
+    "commands": [{
+      "id": "93a3db58-12e0-420f-947c-a5fab202406a",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1eaf59dc-a1a8-4d9f-8bf7-6c262a4490bb",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1652x958",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d43f5f1e-d500-499d-9ef3-38278d30e286",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnLogin",
+      "targets": [
+        ["id=btnLogin", "id"],
+        ["css=#btnLogin", "css:finder"],
+        ["xpath=(//a[contains(text(),'Login')])[2]", "xpath:link"],
+        ["xpath=//a[@id='btnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[2]/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[4]", "xpath:href"],
+        ["xpath=//div[2]/div/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a03a5868-1749-4145-b8c4-d9c0ee9b8919",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=loginPicker",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "c033b379-f96e-48f6-bd75-39e6e4ec1302",
+    "name": "Home page gives unauthorized",
+    "commands": [{
+      "id": "499b33ee-801e-4212-8977-5910d2027386",
+      "comment": "",
+      "command": "open",
+      "target": "/home",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e2759e44-3fea-4578-b0da-045c5cf0f977",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.card-header > h3",
+      "targets": [],
+      "value": "Log In"
+    }]
+  }, {
+    "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
+    "name": "Keycloak Login",
+    "commands": [{
+      "id": "94b48685-4b56-4c67-9432-ab725c6cfbb0",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "60f70152-2e32-4b51-9997-bc7c46fdc005",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//li[@id='menuBtndUser']",
+      "targets": [],
+      "value": "loggedin"
+    }, {
+      "id": "6d621f03-eb86-4196-8770-0496b8b3f3e9",
+      "comment": "",
+      "command": "if",
+      "target": "${loggedin} > 0",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "05fc84e4-1608-449a-9587-fbf4ac72f99d",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtndUser__BV_button_",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "0242d305-6942-454c-a580-36b40b98fd93",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogin", "id"],
+        ["linkText=Login", "linkText"],
+        ["css=#menuBtnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a8e234c2-2c36-446e-8771-7e33d6ca48b3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [
+        ["css=strong", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": "You signed out of your account"
+    }, {
+      "id": "7ead1ced-568d-4168-b7ee-bb4135f77d2d",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "fceaf1f8-b7b8-4bce-882e-6524c75662ae",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "809b7715-60e3-4276-8aeb-56e82ab12a5c",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('USERNAME');",
+      "targets": [],
+      "value": "username"
+    }, {
+      "id": "1705b150-08ce-4f37-a288-b14623aae188",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('PASSWORD');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "8e966e6c-0e3f-45f6-bc24-4628fa2d1575",
+      "comment": "",
+      "command": "click",
+      "target": "id=keycloackLoginBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "903e0ad4-ef07-48bb-a69f-65404f39fe5b",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${username}"
+    }, {
+      "id": "b192b35c-b842-45c2-9732-a08d72879eb2",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "6c196b42-24d2-4370-bbaa-fc5908e69ac6",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "60c12b75-0e44-421e-b4a0-d18b71cd0abd",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [],
+      "value": "Welcome to Health Gateway!"
+    }]
+  }],
+  "suites": [{
+    "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
+    "name": "Landing Page",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["5623a813-676e-42d2-9fc8-4117f3206bf6"]
+  }, {
+    "id": "a32919fd-84cc-4306-ab79-038d01aa6754",
+    "name": "Error Pages",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["2057d9e0-ebcd-4fc5-b421-8ec04e221c72", "155b3bce-2847-4b59-903e-7e80d7f0c113"]
+  }, {
+    "id": "6f1fe3fb-b84a-4ea2-935e-176a91decbb4",
+    "name": "Authorization",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7"]
+  }],
+  "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/", "https://dev-gateway.pathfinder.gov.bc.ca/"],
+  "plugins": []
+}
