@@ -338,6 +338,47 @@
       "targets": [],
       "value": "Welcome to Health Gateway!"
     }]
+  }, {
+    "id": "48f8dc39-c6b4-468a-b8c0-ee82216c2cad",
+    "name": "Redirect on Logout",
+    "commands": [{
+      "id": "c1552c86-1f08-491f-ba51-1c8ddc577c3d",
+      "comment": "",
+      "command": "open",
+      "target": "/logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "65b7c6ba-a526-42d0-b08e-61cea25efe2d",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=strong",
+      "targets": [
+        ["css=strong", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9f49dbc7-a7b8-4bac-915a-d0759145b07f",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.col-lg-12 > p",
+      "targets": [
+        ["css=.col-lg-12 > p", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/p", "xpath:idRelative"],
+        ["xpath=//div/p", "xpath:position"]
+      ],
+      "value": "22000"
+    }, {
+      "id": "82c41738-73e2-4350-ad55-09985bb4eb1c",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "Home - Health Gateway",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
