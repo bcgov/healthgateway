@@ -9,98 +9,41 @@
           style="max-width: 25rem;"
           align="center"
         >
-          <h3 slot="header">Log In</h3>
+          <h3 slot="header">Log In With</h3>
           <p slot="footer">
             Not yet registered?
             <b-link to="/registration">Sign up</b-link>
           </p>
           <b-card-body>
-            <b-row>
-              <b-col>
-                <b-button
-                  id="keycloackLoginBtn"
-                  block
-                  variant="primary"
-                  @click="oidcLogin('')"
-                >
-                  <b-row>
-                    <b-col class="col-2">
-                      <span class="fa fa-user"></span>
-                    </b-col>
-                    <b-col class="text-justify">
-                      <span>Keycloak Login</span>
-                    </b-col>
-                  </b-row>
-                </b-button>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>or</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <b-button
-                  id="bcscBtn"
-                  block
-                  variant="primary"
-                  disabled
-                  @click="oidcLogin('bcsc')"
-                >
-                  <b-row>
-                    <b-col class="col-2">
-                      <span class="fa fa-address-card"></span>
-                    </b-col>
-                    <b-col class="text-justify">
-                      <span>Log in with BC Services Card</span>
-                    </b-col>
-                  </b-row>
-                </b-button>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>or</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <b-button
-                  id="idirBtn"
-                  block
-                  variant="primary"
-                  @click="oidcLogin('idir')"
-                >
-                  <b-row>
-                    <b-col class="col-2">
-                      <span class="fa fa-user"></span>
-                    </b-col>
-                    <b-col class="text-justify">
-                      <span>Log in with IDIR</span>
-                    </b-col>
-                  </b-row>
-                </b-button>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>or</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <b-button
-                  id="gitBtn"
-                  block
-                  variant="primary"
-                  @click="oidcLogin('github')"
-                >
-                  <b-row>
-                    <b-col class="col-2">
-                      <span class="fab fa-github"></span>
-                    </b-col>
-                    <b-col class="text-justify">
-                      <span>Log in with GitHub</span>
-                    </b-col>
-                  </b-row>
-                </b-button>
-              </b-col>
-            </b-row>
+            <div v-for="provider in identityProviders" :key="provider.id">
+              <b-row>
+                <b-col>
+                  <b-button
+                    :id="`${provider.id}Btn`"
+                    block
+                    :disabled="provider.disabled"
+                    variant="primary"
+                    @click="oidcLogin(provider.hint)"
+                  >
+                    <b-row>
+                      <b-col class="col-2">
+                        <span :class="`fa ${provider.icon}`"></span>
+                      </b-col>
+                      <b-col class="text-justify">
+                        <span>{{ provider.name }}</span>
+                      </b-col>
+                    </b-row>
+                  </b-button>
+                </b-col>
+              </b-row>
+              <b-row
+                v-if="
+                  identityProviders.indexOf(provider) <
+                    identityProviders.length - 1
+                "
+                ><b-col>or</b-col>
+              </b-row>
+            </div>
           </b-card-body>
         </b-card>
       </b-col>
@@ -112,6 +55,10 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import {
+  IdentityProviderConfiguration,
+  ExternalConfiguration
+} from "../models/ConfigData";
 
 const namespace: string = "auth";
 
@@ -119,6 +66,8 @@ const namespace: string = "auth";
 export default class LoginComponent extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc: any;
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
+  @Getter("identityProviders", { namespace: "config" })
+  identityProviders: IdentityProviderConfiguration[];
 
   private redirectPath: string = "";
   private routeHandler = undefined;

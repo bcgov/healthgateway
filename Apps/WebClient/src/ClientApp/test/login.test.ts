@@ -1,8 +1,9 @@
-import { shallowMount, createLocalVue, Wrapper } from "@vue/test-utils";
+import { shallowMount, createLocalVue, Wrapper, config } from "@vue/test-utils";
 import Vuex from "vuex";
 import LoginComponent from "@/views/login.vue";
 import { auth as authModule } from "@/store/modules/auth/auth";
 import BootstrapVue from "bootstrap-vue";
+import { IdentityProviderConfiguration } from "@/models/ConfigData";
 
 const pushMethod = jest.fn();
 
@@ -18,6 +19,10 @@ let authGetters = {
   oidcIsAuthenticated: (): boolean => false
 };
 
+let configGetters = {
+  identityProviders: (): IdentityProviderConfiguration[] => []
+};
+
 function createWrapper(): Wrapper<LoginComponent> {
   const localVue = createLocalVue();
   localVue.use(Vuex);
@@ -29,6 +34,10 @@ function createWrapper(): Wrapper<LoginComponent> {
         namespaced: true,
         getters: authGetters,
         actions: authModule.actions
+      },
+      config: {
+        namespaced: true,
+        getters: configGetters
       }
     }
   });
@@ -91,5 +100,56 @@ describe("Login view", () => {
     let wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
     expect(pushMethod).not.toHaveBeenCalledTimes(0);
+  });
+
+  test("has correct identity provider", () => {
+    const bceidProvider: IdentityProviderConfiguration = {
+      name: "BC Services Card",
+      id: "bceid",
+      icon: "bceidicon"
+    };
+    const keycloakProvider: IdentityProviderConfiguration = {
+      name: "keycloak",
+      id: "keyid",
+      icon: "fa-user",
+      disabled: true
+    };
+
+    configGetters = {
+      identityProviders: (): IdentityProviderConfiguration[] => [
+        bceidProvider,
+        keycloakProvider
+      ]
+    };
+    let wrapper = createWrapper();
+    expect(
+      wrapper
+        .find(`#${bceidProvider.id}Btn`)
+        .find(`.${bceidProvider.icon}`)
+        .isVisible()
+    ).toBe(true);
+    expect(wrapper.find(`#${bceidProvider.id}Btn`).text()).toBe(
+      bceidProvider.name
+    );
+    expect(wrapper.find(`#${bceidProvider.id}Btn`).attributes("disabled")).toBe(
+      bceidProvider.disabled
+    );
+
+    expect(
+      wrapper
+        .find(`#${keycloakProvider.id}Btn`)
+        .find(`.${keycloakProvider.icon}`)
+        .isVisible()
+    ).toBe(true);
+    expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(
+      keycloakProvider.name
+    );
+    expect(
+      wrapper.find(`#${keycloakProvider.id}Btn`).attributes("disabled")
+    ).toBe(`${keycloakProvider.disabled}`);
+
+    expect(wrapper.find(`#loginPicker`).findAll("[type=button]").length).toBe(
+      2
+    );
   });
 });

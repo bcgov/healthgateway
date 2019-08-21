@@ -81,7 +81,11 @@ export const actions: ActionTree<AuthState, RootState> = {
   },
   getOidcUser(context) {
     authService.getUser().then(user => {
-      context.commit("setOidcUser", user);
+      if (!user || user.expired) {
+        context.commit("unsetOidcAuth");
+      } else {
+        context.commit("setOidcUser", user);
+      }
     });
   },
   signOutOidc(context) {
