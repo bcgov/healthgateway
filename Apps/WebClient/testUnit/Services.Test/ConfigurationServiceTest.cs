@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient.Test.Services
                     LogLevel = "LogLevel",
                     Timeouts = new Models.TimeOutsConfiguration()
                     {
-                        Idle = "Idle",
+                        Idle = 10000,
                         LogoutRedirect = "LogoutRedirect",
                     },
                     ExternalURLs = new Dictionary<string, System.Uri>
