@@ -4,7 +4,7 @@ name: 1.0.0$(Rev:.r) #Build number
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/WebClient
   App.Name: webclient
-  App.FunctionalTests: $(App.Home)/functional
+  App.FunctionalTests: $(App.Home)/testFunctional
 
 pr: none
 
@@ -19,7 +19,7 @@ trigger:
      - Apps/WebClient/testUnit
      - Apps/WebClient/azure/build.yaml
      - Apps/WebClient/Dockerfile
-     - Apps/WebClient/functional
+     - Apps/WebClient/testFunctional
  
 pool:
   name: 'HealthGateway'
