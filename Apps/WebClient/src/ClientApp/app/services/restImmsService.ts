@@ -5,7 +5,7 @@ import { injectable } from "inversify";
 import "reflect-metadata";
 
 import ImmsData from "@/models/immsData";
-import { ExternalConfiguration } from '@/models/ConfigData';
+import { ExternalConfiguration } from "@/models/ConfigData";
 
 @injectable()
 export class RestImmsService implements IImmsService {

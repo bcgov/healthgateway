@@ -3,7 +3,7 @@ import {
   ExternalConfiguration,
   OpenIdConnectConfiguration
 } from "@/models/ConfigData";
-import ImmsData from '@/models/immsData';
+import ImmsData from "@/models/immsData";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration): void;

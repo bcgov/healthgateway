@@ -23,10 +23,14 @@ Vue.use(VueRouter);
 
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
-    const authService: IAuthenticationService = container.get(SERVICE_IDENTIFIER.AuthenticationService);
-    const immsService: IImmsService = container.get(SERVICE_IDENTIFIER.ImmsService);
+  const authService: IAuthenticationService = container.get(
+    SERVICE_IDENTIFIER.AuthenticationService
+  );
+  const immsService: IImmsService = container.get(
+    SERVICE_IDENTIFIER.ImmsService
+  );
   authService.initialize(config.openIdConnect);
-    immsService.initialize(config);
+  immsService.initialize(config);
 
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({

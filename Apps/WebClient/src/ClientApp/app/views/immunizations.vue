@@ -69,14 +69,19 @@ export default class ImmunizationsComponent extends Vue {
 
   mounted() {
     this.isLoading = true;
-    const immsService: IImmsService = container.get(SERVICE_IDENTIFIER.ImmsService);
-    immsService.getItems().then(results => {
-      this.items = results;
-      this.isLoading = false;
-    }).catch((err) => {
-      this.hasErrors = true;
-      this.isLoading = false;
-    })
+    const immsService: IImmsService = container.get(
+      SERVICE_IDENTIFIER.ImmsService
+    );
+    immsService
+      .getItems()
+      .then(results => {
+        this.items = results;
+        this.isLoading = false;
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        this.isLoading = false;
+      });
   }
 }
 </script>
