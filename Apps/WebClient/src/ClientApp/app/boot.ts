@@ -13,7 +13,7 @@ import i18n from "./i18n";
 import App from "./app.vue";
 import router from "./router";
 import store from "@/store/store";
-import { IAuthenticationService } from "./services/interfaces";
+import { IAuthenticationService, IImmsService } from "./services/interfaces";
 import SERVICE_IDENTIFIER from "./constants/serviceIdentifiers";
 import container from "./inversify.config";
 import { ExternalConfiguration } from "./models/ConfigData";
@@ -23,10 +23,10 @@ Vue.use(VueRouter);
 
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
-  const authService: IAuthenticationService = container.get<
-    IAuthenticationService
-  >(SERVICE_IDENTIFIER.AuthenticationService);
+    const authService: IAuthenticationService = container.get(SERVICE_IDENTIFIER.AuthenticationService);
+    const immsService: IImmsService = container.get(SERVICE_IDENTIFIER.ImmsService);
   authService.initialize(config.openIdConnect);
+    immsService.initialize(config);
 
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({

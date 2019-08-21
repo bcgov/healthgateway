@@ -14,6 +14,8 @@ import { OpenIdConnectConfiguration } from "@/models/ConfigData";
 export class RestAuthenticationService implements IAuthenticationService {
   private oidcUserManager?: UserManager;
 
+  constructor() {}
+
   public initialize(config: OpenIdConnectConfiguration): void {
     const oidcConfig = {
       userStore: new WebStorageStateStore({ store: window.localStorage }),
@@ -29,7 +31,6 @@ export class RestAuthenticationService implements IAuthenticationService {
     console.log("oidc configuration: ", oidcConfig);
     this.oidcUserManager = new UserManager(oidcConfig);
   }
-  constructor() {}
 
   public getOidcConfig(): UserManagerSettings {
     return this.oidcUserManager!.settings;

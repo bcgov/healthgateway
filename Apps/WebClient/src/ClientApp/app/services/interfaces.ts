@@ -3,6 +3,7 @@ import {
   ExternalConfiguration,
   OpenIdConnectConfiguration
 } from "@/models/ConfigData";
+import ImmsData from '@/models/immsData';
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration): void;
@@ -15,7 +16,8 @@ export interface IAuthenticationService {
 }
 
 export interface IImmsService {
-  getItems(): Promise<any>;
+  initialize(config: ExternalConfiguration): void;
+  getItems(): Promise<ImmsData[]>;
 }
 
 export interface IConfigService {

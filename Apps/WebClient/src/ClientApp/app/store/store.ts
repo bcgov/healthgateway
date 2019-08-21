@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import { auth } from "./modules/auth/auth";
-import { imms } from "./modules/imms/imms";
 import { config } from "./modules/config/config";
 import { RootState } from "@/models/storeState";
 
@@ -13,7 +12,6 @@ const storeOptions: StoreOptions<RootState> = {
   },
   modules: {
     auth,
-    imms,
     config
   }
 };

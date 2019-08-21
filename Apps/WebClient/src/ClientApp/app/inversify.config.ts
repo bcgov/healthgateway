@@ -14,13 +14,15 @@ import { RestConfigService } from "./services/restConfigService";
 let container = new Container();
 container
   .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
-  .to(RestConfigService);
+  .to(RestConfigService)
+  .inSingletonScope();
 container
   .bind<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService)
   .to(RestAuthenticationService)
   .inSingletonScope();
 container
   .bind<IImmsService>(SERVICE_IDENTIFIER.ImmsService)
-  .to(RestImmsService);
+  .to(RestImmsService)
+  .inSingletonScope();
 
 export default container;

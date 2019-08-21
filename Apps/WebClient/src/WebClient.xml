@@ -38,23 +38,6 @@
             </summary>
             <returns>The default view.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Controllers.ImmsController">
-            <summary>
-            The Authentication and Authorization controller.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.ImmsController.#ctor(HealthGateway.WebClient.Services.IImmsService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.ImmsController"/> class.
-            </summary>
-            <param name="immsSvc">The injected imms service provider.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.ImmsController.GetItems">
-            <summary>
-            Gets a list of Imms records.
-            </summary>
-            <returns>A list of Immunization recorsd.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Models.ExternalConfiguration">
             <summary>
             A collection of configuration items for use by Health Gateway and
@@ -110,41 +93,6 @@
             <summary>
             Gets or sets a value indicating whether this identity provider
             should be used.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.ImmsData">
-            <summary>
-            The immunization data model.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Date">
-            <summary>
-            Gets or Sets the immunization date.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Vaccine">
-            <summary>
-            Gets or Sets the immunization vaccine.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Dose">
-            <summary>
-            Gets or Sets the immunization dosage.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Site">
-            <summary>
-            Gets or Sets the immunization site.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Lot">
-            <summary>
-            Gets or Sets the immunization vaccine lot.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.ImmsData.Boost">
-            <summary>
-            Gets or Sets the immunization boost due.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
@@ -260,35 +208,6 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Services.IImmsService">
-            <summary>
-            Immunization Service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IImmsService.GetItems">
-            <summary>
-            Returns the list of immunization records.
-            </summary>
-            <returns>A list of immunization records.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Services.ImmsService">
-            <summary>
-            Authentication and Authorization Service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.ImmsService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.IHttpClientFactory)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ImmsService"/> class.
-            </summary>
-            <param name="configuration">Injected Configuration Provider.</param>
-            <param name="httpClient">Injected HttpClientFactory Provider.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.ImmsService.GetItems">
-            <summary>
-            Returns the list of immunization records.
-            </summary>
-            <returns>A list of immunization records.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Startup">
             <summary>

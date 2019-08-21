@@ -12,6 +12,7 @@ using HealthGateway.Util;
 using Hl7.Fhir.Rest;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Logging;
 
 namespace HealthGateway
 {
@@ -29,6 +30,9 @@ namespace HealthGateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Displays sensitive data from the jwt if the environment is development only
+            IdentityModelEventSource.ShowPII = Environment.IsDevelopment();
+
             services.AddHealthChecks();
             services.AddMvc(options =>
             {
@@ -92,6 +96,14 @@ namespace HealthGateway
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // Enable CORS
+            app.UseCors(builder => {
+                builder
+                    .WithOrigins(this.Configuration.GetValue<string>("AllowOrigins"))
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+
             // Enable health endpoint for readiness probe
             app.UseHealthChecks("/health");
 

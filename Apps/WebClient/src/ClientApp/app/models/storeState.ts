@@ -13,13 +13,6 @@ export interface RootState {
   version: string;
 }
 
-export interface ImmsState {
-  items?: ImmsData[];
-  statusMessage: string;
-  error: boolean;
-  stateType: StateType;
-}
-
 export interface AuthState {
   authentication: AuthenticationData;
   isAuthenticated: boolean;

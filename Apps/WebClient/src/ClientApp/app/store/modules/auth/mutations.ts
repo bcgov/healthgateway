@@ -2,6 +2,7 @@ import Vue from "vue";
 import { MutationTree } from "vuex";
 import { AuthState } from "@/models/storeState";
 import { User as OidcUser } from "oidc-client";
+import axios from 'axios';
 
 export const mutations: MutationTree<AuthState> = {
   setOidcAuth(state, user: OidcUser) {
@@ -10,6 +11,7 @@ export const mutations: MutationTree<AuthState> = {
     Vue.set(state.authentication, "scopes", user.scopes);
     Vue.set(state.authentication, "idToken", user.id_token);
     Vue.set(state.authentication, "user", user.profile);
+    axios.defaults.headers.common = { 'Authorization': `Bearer ${user.access_token}` }
     state.isAuthenticated =
       user.id_token === undefined ? false : user.id_token.length > 0;
     state.error = null;
@@ -24,7 +26,7 @@ export const mutations: MutationTree<AuthState> = {
     Vue.set(state.authentication, "scopes", undefined);
     Vue.set(state.authentication, "idToken", undefined);
     Vue.set(state.authentication, "user", undefined);
-
+    axios.defaults.headers.common = { };
     state.isAuthenticated = false;
   },
   setOidcAuthIsChecked(state) {
