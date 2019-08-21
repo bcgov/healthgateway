@@ -280,7 +280,7 @@
       "id": "8e966e6c-0e3f-45f6-bc24-4628fa2d1575",
       "comment": "",
       "command": "click",
-      "target": "id=keycloackLoginBtn",
+      "target": "id=KeyCloakBtn",
       "targets": [
         ["css=#gitBtn td:nth-child(2)", "css:finder"],
         ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
