@@ -13,10 +13,10 @@ import i18n from "./i18n";
 import App from "./app.vue";
 import router from "./router";
 import store from "@/store/store";
-import { IAuthenticationService } from './services/interfaces';
-import SERVICE_IDENTIFIER from './constants/serviceIdentifiers';
-import container from './inversify.config';
-import { ExternalConfiguration } from './models/ConfigData';
+import { IAuthenticationService } from "./services/interfaces";
+import SERVICE_IDENTIFIER from "./constants/serviceIdentifiers";
+import container from "./inversify.config";
+import { ExternalConfiguration } from "./models/ConfigData";
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);

@@ -15,15 +15,15 @@
             <b-link to="/registration">Sign up</b-link>
           </p>
           <b-card-body>
-            <div :key="provider.id" v-for="provider in identityProviders">
+            <div v-for="provider in identityProviders" :key="provider.id">
               <b-row>
                 <b-col>
                   <b-button
                     :id="`${provider.id}Btn`"
-                    @click="oidcLogin(provider.hint)"
                     block
                     :disabled="provider.disabled"
                     variant="primary"
+                    @click="oidcLogin(provider.hint)"
                   >
                     <b-row>
                       <b-col class="col-2">
@@ -44,7 +44,6 @@
                 ><b-col>or</b-col>
               </b-row>
             </div>
-
           </b-card-body>
         </b-card>
       </b-col>

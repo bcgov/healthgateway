@@ -1,5 +1,8 @@
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
-import { ExternalConfiguration, OpenIdConnectConfiguration } from "@/models/ConfigData";
+import {
+  ExternalConfiguration,
+  OpenIdConnectConfiguration
+} from "@/models/ConfigData";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration): void;

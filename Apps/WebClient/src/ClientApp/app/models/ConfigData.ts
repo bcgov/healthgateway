@@ -4,13 +4,13 @@ export class ExternalConfiguration {
   public openIdConnect!: OpenIdConnectConfiguration;
 
   /** Gets or sets the List of Identity providers. */
-  public identityProviders?: IdentityProviderConfiguration[];
+  public identityProviders!: IdentityProviderConfiguration[];
 
   /** Gets or sets the Health Gateway Webclient specific configuration. */
-  public webClient?: WebClientConfiguration;
+  public webClient!: WebClientConfiguration;
 
   /** Gets or sets the Service Endpoints. */
-  public serviceEndpoints?: { [id: string]: string };
+  public serviceEndpoints!: { [id: string]: string };
 }
 
 /** An object representing a configured Health Gateway IdentityProvider. */
@@ -58,7 +58,7 @@ export class WebClientConfiguration {
 /** Various timeout values used by the VUE WebClient application. */
 export class TimeOutsConfiguration {
   /** Gets or sets the idle time in seconds that the Webclient will use before it automatically logs the user out. */
-  public idle!: string;
+  public idle!: number;
   /* Gets or sets the amount of time in seconds after which the user will be redirected from the logout page back to the home. */
   public logoutRedirect?: string;
 }

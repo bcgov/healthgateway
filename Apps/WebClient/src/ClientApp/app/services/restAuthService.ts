@@ -37,8 +37,7 @@ export class RestAuthenticationService implements IAuthenticationService {
 
   public getUser(): Promise<OidcUser | null> {
     return new Promise<OidcUser | null>(resolve => {
-      this.oidcUserManager!
-        .getUser()
+      this.oidcUserManager!.getUser()
         .then(user => {
           resolve(user);
         })
