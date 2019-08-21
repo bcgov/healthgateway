@@ -21,18 +21,23 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-
+import { WebClientConfiguration } from "@/models/ConfigData";
 const namespace = "auth";
 
 @Component
 export default class LoginComponent extends Vue {
   @Action("signOutOidc", { namespace }) logout: any;
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
+  @Getter("config", { namespace: "config" }) config: WebClientConfiguration;
 
   mounted() {
     if (this.oidcIsAuthenticated) {
       this.logout();
     }
+  }
+
+  created() {
+    setTimeout(() => this.$router.push({ path: "/" }), Number(this.config.timeouts!.logoutRedirect));
   }
 }
 </script>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="5" failures="1" time="9.746">
+  <testsuite name="Landing Page" errors="0" failures="0" skipped="0" timestamp="2019-08-20T20:53:13" time="6.261" tests="1">
+    <testcase classname="Landing Page Health Gateway Landing Page" name="Landing Page Health Gateway Landing Page" time="3.39">
+    </testcase>
+  </testsuite>
+  <testsuite name="Error Pages" errors="0" failures="0" skipped="0" timestamp="2019-08-20T20:53:13" time="9.033" tests="2">
+    <testcase classname="Error Pages 404 Page" name="Error Pages 404 Page" time="3.376">
+    </testcase>
+    <testcase classname="Error Pages 401 Page" name="Error Pages 401 Page" time="2.793">
+    </testcase>
+  </testsuite>
+  <testsuite name="Authorization" errors="0" failures="1" skipped="0" timestamp="2019-08-20T20:53:13" time="9.226" tests="2">
+    <testcase classname="Authorization Home page gives unauthorized" name="Authorization Home page gives unauthorized" time="3.368">
+    </testcase>
+    <testcase classname="Authorization Keycloak Login" name="Authorization Keycloak Login" time="2.948">
+      <failure>UnexpectedAlertOpenError: unexpected alert open: {Alert text : USERNAME}
+  (Session info: chrome=76.0.3809.100)
+    at Object.throwDecodedError (/Users/stephen/Projects/Health/healthgateway/Apps/WebClient/functional/node_modules/selenium-webdriver/lib/error.js:550:15)
+    at parseHttpResponse (/Users/stephen/Projects/Health/healthgateway/Apps/WebClient/functional/node_modules/selenium-webdriver/lib/http.js:560:13)
+    at Executor.execute (/Users/stephen/Projects/Health/healthgateway/Apps/WebClient/functional/node_modules/selenium-webdriver/lib/http.js:486:26)
+    at process._tickCallback (internal/process/next_tick.js:68:7)</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

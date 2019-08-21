@@ -40,9 +40,9 @@
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown
+          v-if="oidcIsAuthenticated"
           id="menuBtndUser"
           :text="greeting"
-          v-if="oidcIsAuthenticated"
           right
         >
           <b-dropdown-item>
@@ -52,11 +52,11 @@
           </b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link
+          v-else
           id="menuBtnLogin"
           class="nav-link"
           to="/login"
           :exact="true"
-          v-else
         >
           <span class="fa fa-user"></span> Login
         </router-link>

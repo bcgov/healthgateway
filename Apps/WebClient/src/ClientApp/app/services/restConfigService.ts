@@ -1,28 +1,25 @@
 import axios, { AxiosResponse } from "axios";
-import { IImmsService } from "@/services/interfaces";
-
+import { IConfigService } from "@/services/interfaces";
 import { injectable } from "inversify";
 import "reflect-metadata";
 
-import ImmsData from "@/models/immsData";
+import { ExternalConfiguration } from "@/models/ConfigData";
 
 @injectable()
-export class RestImmsService implements IImmsService {
-  private readonly GET_AUTH_URI: string = "api/imms/items";
+export class RestConfigService implements IConfigService {
+  private readonly CONFIG_BASE_URI: string = "api/configuration";
 
-  constructor() {
-    console.log("Imms Rest Service...");
-  }
-  public getItems(): Promise<ImmsData[]> {
+  public getConfiguration(): Promise<ExternalConfiguration> {
     return new Promise((resolve, reject) => {
       axios
-        .get<ImmsData[]>(this.GET_AUTH_URI)
+        .get<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
         .then((response: AxiosResponse) => {
           // Verify that the object is correct.
           if (response.data instanceof Object) {
-            let items: ImmsData[] = response.data;
-            return resolve(items);
+            let config: ExternalConfiguration = response.data;
+            return resolve(config);
           } else {
+            console.log(response);
             return reject("invalid request");
           }
         })
