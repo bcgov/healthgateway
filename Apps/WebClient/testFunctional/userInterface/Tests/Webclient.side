@@ -170,7 +170,7 @@
       "command": "assertText",
       "target": "css=.card-header > h3",
       "targets": [],
-      "value": "Log In"
+      "value": "Log In With"
     }]
   }, {
     "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
