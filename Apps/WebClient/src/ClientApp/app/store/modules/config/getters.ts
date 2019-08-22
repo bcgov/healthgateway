@@ -3,7 +3,7 @@ import { RootState, ConfigState } from "@/models/storeState";
 import {
   IdentityProviderConfiguration,
   OpenIdConnectConfiguration
-} from "@/models/ConfigData";
+} from "@/models/configData";
 
 export const getters: GetterTree<ConfigState, RootState> = {
   identityProviders(state: ConfigState): IdentityProviderConfiguration[] {

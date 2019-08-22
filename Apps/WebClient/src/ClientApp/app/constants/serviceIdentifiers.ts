@@ -4,4 +4,8 @@ const SERVICE_IDENTIFIER = {
   ImmsService: Symbol.for("ImmsService")
 };
 
+export const DELEGATE_IDENTIFIER = {
+  HttpDelegate: Symbol.for("HttpDelegate")
+};
+
 export default SERVICE_IDENTIFIER;

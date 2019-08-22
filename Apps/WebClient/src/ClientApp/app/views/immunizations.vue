@@ -38,14 +38,12 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import ImmsData from "../models/immsData";
+import ImmsData from "@/models/immsData";
 import LoadingComponent from "@/components/loading.vue";
-import { IImmsService } from "../services/interfaces";
-import container from "../inversify.config";
-import SERVICE_IDENTIFIER from "../constants/serviceIdentifiers";
-import { ExternalConfiguration } from "../models/ConfigData";
-
-const namespace: string = "imms";
+import { IImmsService } from "@/services/interfaces";
+import container from "@/inversify.config";
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { ExternalConfiguration } from "@/models/configData";
 
 @Component({
   components: {

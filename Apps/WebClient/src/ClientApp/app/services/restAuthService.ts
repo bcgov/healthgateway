@@ -8,13 +8,11 @@ import {
 
 import { injectable } from "inversify";
 import "reflect-metadata";
-import { OpenIdConnectConfiguration } from "@/models/ConfigData";
+import { OpenIdConnectConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
   private oidcUserManager?: UserManager;
-
-  constructor() {}
 
   public initialize(config: OpenIdConnectConfiguration): void {
     const oidcConfig = {

@@ -21,7 +21,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { WebClientConfiguration } from "@/models/ConfigData";
+import { WebClientConfiguration } from "@/models/configData";
 const namespace = "auth";
 
 @Component

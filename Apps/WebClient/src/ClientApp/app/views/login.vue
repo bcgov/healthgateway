@@ -58,7 +58,7 @@ import { State, Action, Getter } from "vuex-class";
 import {
   IdentityProviderConfiguration,
   ExternalConfiguration
-} from "../models/ConfigData";
+} from "@/models/configData";
 
 const namespace: string = "auth";
 

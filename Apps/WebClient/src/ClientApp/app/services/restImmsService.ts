@@ -1,42 +1,27 @@
-import axios, { AxiosResponse } from "axios";
 import { IImmsService } from "@/services/interfaces";
 
 import { injectable } from "inversify";
 import "reflect-metadata";
 
 import ImmsData from "@/models/immsData";
-import { ExternalConfiguration } from "@/models/ConfigData";
+import { ExternalConfiguration } from "@/models/configData";
+import HttpDelegate from "@/services/httpDelegate";
 
 @injectable()
 export class RestImmsService implements IImmsService {
+  private readonly IMMS_BASE_URI: string = "v1/api/imms/";
   private baseUri: string = "";
-  private readonly GET_AUTH_URI: string = "v1/api/imms/items";
+  private http!: HttpDelegate;
+  constructor() {}
 
-  constructor() {
-    console.log("Imms Rest Service...");
-  }
-
-  public initialize(config: ExternalConfiguration): void {
+  public initialize(config: ExternalConfiguration, http: HttpDelegate): void {
     this.baseUri = config.serviceEndpoints["Immunization"];
+    this.http = http;
   }
 
   public getItems(): Promise<ImmsData[]> {
-    return new Promise((resolve, reject) => {
-      axios
-        .get<ImmsData[]>(`${this.baseUri}${this.GET_AUTH_URI}`)
-        .then((response: AxiosResponse) => {
-          // Verify that the object is correct.
-          if (response.data instanceof Object) {
-            let items: ImmsData[] = response.data;
-            return resolve(items);
-          } else {
-            return reject("invalid request");
-          }
-        })
-        .catch(err => {
-          console.log("Fetch error:" + err.toString());
-          reject(err);
-        });
-    });
+    return this.http.get<ImmsData[]>(
+      `${this.baseUri}${this.IMMS_BASE_URI}items`
+    );
   }
 }
