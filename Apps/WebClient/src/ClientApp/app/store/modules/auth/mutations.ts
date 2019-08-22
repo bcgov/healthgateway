@@ -20,7 +20,6 @@ export const mutations: MutationTree<AuthState> = {
     Vue.set(state.authentication, "scopes", undefined);
     Vue.set(state.authentication, "idToken", undefined);
     Vue.set(state.authentication, "user", undefined);
-
     state.isAuthenticated = false;
   },
   setOidcAuthIsChecked(state) {

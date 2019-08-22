@@ -40,8 +40,10 @@ import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import ImmsData from "@/models/immsData";
 import LoadingComponent from "@/components/loading.vue";
-
-const namespace: string = "imms";
+import { IImmsService } from "@/services/interfaces";
+import container from "@/inversify.config";
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { ExternalConfiguration } from "@/models/configData";
 
 @Component({
   components: {
@@ -49,18 +51,11 @@ const namespace: string = "imms";
   }
 })
 export default class ImmunizationsComponent extends Vue {
-  @Action("getitems", { namespace })
-  private getitems!: any;
-  @Getter("items", { namespace })
-  private items!: ImmsData[];
-  @Getter("isLoading", { namespace })
-  private isLoading!: boolean;
-  @Getter("hasErrors", { namespace })
-  private hasErrors!: boolean;
-
+  private items: ImmsData[] = [];
+  private isLoading: boolean = false;
+  private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = false;
-
   private fields = {
     date: { sortable: true },
     vaccine: { sortable: true },
@@ -71,7 +66,20 @@ export default class ImmunizationsComponent extends Vue {
   };
 
   mounted() {
-    this.getitems();
+    this.isLoading = true;
+    const immsService: IImmsService = container.get(
+      SERVICE_IDENTIFIER.ImmsService
+    );
+    immsService
+      .getItems()
+      .then(results => {
+        this.items = results;
+        this.isLoading = false;
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        this.isLoading = false;
+      });
   }
 }
 </script>

@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import LoginComponent from "@/views/login.vue";
 import { auth as authModule } from "@/store/modules/auth/auth";
 import BootstrapVue from "bootstrap-vue";
-import { IdentityProviderConfiguration } from "@/models/ConfigData";
+import { IdentityProviderConfiguration } from "@/models/configData";
 
 const pushMethod = jest.fn();
 

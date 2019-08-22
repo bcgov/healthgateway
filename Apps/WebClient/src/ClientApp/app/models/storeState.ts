@@ -1,6 +1,6 @@
 import ImmsData from "@/models/immsData";
 import AuthenticationData from "@/models/authenticationData";
-import { ExternalConfiguration } from "./ConfigData";
+import { ExternalConfiguration } from "@/models/configData";
 
 export enum StateType {
   NONE,
@@ -11,13 +11,6 @@ export enum StateType {
 
 export interface RootState {
   version: string;
-}
-
-export interface ImmsState {
-  items?: ImmsData[];
-  statusMessage: string;
-  error: boolean;
-  stateType: StateType;
 }
 
 export interface AuthState {

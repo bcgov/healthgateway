@@ -1,27 +1,24 @@
-import axios, { AxiosResponse } from "axios";
 import { IConfigService } from "@/services/interfaces";
 import { injectable } from "inversify";
 import "reflect-metadata";
 
-import { ExternalConfiguration } from "@/models/ConfigData";
+import { ExternalConfiguration } from "@/models/configData";
+import HttpDelegate from "@/services/httpDelegate";
 
 @injectable()
 export class RestConfigService implements IConfigService {
   private readonly CONFIG_BASE_URI: string = "api/configuration";
+  private http!: HttpDelegate;
 
+  public initialize(http: HttpDelegate): void {
+    this.http = http;
+  }
   public getConfiguration(): Promise<ExternalConfiguration> {
     return new Promise((resolve, reject) => {
-      axios
+      this.http
         .get<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
-        .then((response: AxiosResponse) => {
-          // Verify that the object is correct.
-          if (response.data instanceof Object) {
-            let config: ExternalConfiguration = response.data;
-            return resolve(config);
-          } else {
-            console.log(response);
-            return reject("invalid request");
-          }
+        .then(result => {
+          return resolve(result);
         })
         .catch(err => {
           console.log("Fetch error:" + err.toString());
