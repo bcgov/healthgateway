@@ -14,10 +14,6 @@ export const mutations: MutationTree<AuthState> = {
       user.id_token === undefined ? false : user.id_token.length > 0;
     state.error = null;
   },
-  setOidcUser(state, user: OidcUser) {
-    console.log("setOidcUser");
-    state.authentication.user = user.profile;
-  },
   unsetOidcAuth(state) {
     console.log("unsetOidcAuth");
     Vue.set(state.authentication, "accessToken", undefined);
@@ -30,10 +26,6 @@ export const mutations: MutationTree<AuthState> = {
   setOidcAuthIsChecked(state) {
     console.log("setOidcAuthIsChecked");
     Vue.set(state.authentication, "isChecked", true);
-  },
-  setOidcEventsAreBound(state) {
-    console.log("setOidcEventsAreBound");
-    Vue.set(state.authentication, "eventsAreBound", true);
   },
   setOidcError(state, error) {
     console.log("setOidcError");

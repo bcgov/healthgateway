@@ -8,7 +8,7 @@ import AuthenticationData from "@/models/authenticationData";
 export const state: AuthState = {
   statusMessage: "",
   authentication: new AuthenticationData(),
-  error: false,
+  error: undefined,
   isAuthenticated: false,
   stateType: StateType.NONE
 };
