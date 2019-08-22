@@ -16,7 +16,8 @@ let $route = {
 };
 
 let authGetters = {
-  oidcIsAuthenticated: (): boolean => false
+  oidcIsAuthenticated: (): boolean => false,
+  userIsRegistered: (): boolean => false
 };
 
 let configGetters = {
@@ -82,9 +83,22 @@ describe("Login view", () => {
     expect(wrapper.vm.$data.redirectPath).toBe("/home");
   });
 
-  test("if authenticated sets router path", () => {
+  test("if authenticated but not registered sets router path to registration", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => true
+      oidcIsAuthenticated: (): boolean => true,
+      userIsRegistered: (): boolean => false
+    };
+    let wrapper = createWrapper();
+    expect(wrapper.vm.$data.redirectPath).toBe("/registration");
+    expect(pushMethod).toHaveBeenCalledWith({
+      path: wrapper.vm.$data.redirectPath
+    });
+  });
+
+  test("if authenticated and registered sets router path", () => {
+    authGetters = {
+      oidcIsAuthenticated: (): boolean => true,
+      userIsRegistered: (): boolean => true
     };
     let wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
@@ -95,7 +109,8 @@ describe("Login view", () => {
 
   test("if not authenticated does not set router path", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => false
+      oidcIsAuthenticated: (): boolean => false,
+      userIsRegistered: (): boolean => false
     };
     let wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);

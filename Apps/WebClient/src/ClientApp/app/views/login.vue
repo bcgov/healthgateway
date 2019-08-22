@@ -66,6 +66,7 @@ const namespace: string = "auth";
 export default class LoginComponent extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc: any;
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
+  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
   @Getter("identityProviders", { namespace: "config" })
   identityProviders: IdentityProviderConfiguration[];
 
@@ -80,7 +81,10 @@ export default class LoginComponent extends Vue {
     }
 
     this.routeHandler = this.$router;
-    if (this.oidcIsAuthenticated) {
+    if (this.oidcIsAuthenticated && this.userIsRegistered) {
+      this.routeHandler.push({ path: this.redirectPath });
+    } else if (this.oidcIsAuthenticated) {
+      this.redirectPath = "/registration";
       this.routeHandler.push({ path: this.redirectPath });
     }
   }

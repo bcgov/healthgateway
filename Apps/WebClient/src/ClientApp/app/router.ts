@@ -4,7 +4,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./store/store";
 import HomeComponent from "@/views/home.vue";
-import RegistrationComponent from "@/views/registration.vue";
+import CardInfoComponent from "@/views/cardInfo.vue";
 import LandingComponent from "@/views/landing.vue";
 import ImmunizationsComponent from "@/views/immunizations.vue";
 import NotFoundComponent from "@/views/errors/notFound.vue";
@@ -12,6 +12,7 @@ import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LoginCallback from "@/views/loginCallback.vue";
+import RegistrationComponent from "@/views/registration.vue";
 
 Vue.use(VueRouter);
 
@@ -24,17 +25,22 @@ const routes = [
   {
     path: "/registration",
     component: RegistrationComponent,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: true }
   },
   {
     path: "/home",
     component: HomeComponent,
-    meta: { requiresAuth: true, roles: ["user"] }
+    meta: { requiresRegistration: true, roles: ["user"] }
+  },
+  {
+    path: "/cardInfo",
+    component: CardInfoComponent,
+    meta: { requiresAuth: false, roles: ["user"] }
   },
   {
     path: "/immunizations",
     component: ImmunizationsComponent,
-    meta: { requiresAuth: true, roles: ["user"] }
+    meta: { requiresRegistration: true, roles: ["user"] }
   },
   {
     path: "/login",
@@ -65,12 +71,20 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.meta.requiresAuth) {
+  console.log(to.path);
+  if (to.meta.requiresAuth || to.meta.requiresRegistration) {
     store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
       if (!hasAccess) {
         next({ path: "/login", query: { redirect: to.path } });
       } else {
-        /*if (to.meta.roles) {
+        let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
+        // If the user is registerd and is attempting to go to registration re-route
+        if (userIsRegistered && to.path === "/registration") {
+          next({ path: "/home" });
+        } else if (to.meta.requiresRegistration && !userIsRegistered) {
+          next({ path: "/unauthorized" });
+        } else {
+          /*if (to.meta.roles) {
                 /*if (security.roles(to.meta.roles[0])) {
                     next()
                 }
@@ -81,7 +95,8 @@ router.beforeEach(async (to, from, next) => {
             else {
                 next()
             } */
-        next();
+          next();
+        }
       }
     });
   } else {
