@@ -2,7 +2,8 @@ import { GetterTree } from "vuex";
 import { RootState, ConfigState } from "@/models/storeState";
 import {
   IdentityProviderConfiguration,
-  OpenIdConnectConfiguration
+  OpenIdConnectConfiguration,
+  WebClientConfiguration
 } from "@/models/ConfigData";
 
 export const getters: GetterTree<ConfigState, RootState> = {
@@ -15,5 +16,10 @@ export const getters: GetterTree<ConfigState, RootState> = {
     const { config } = state;
     const { openIdConnect } = config;
     return openIdConnect;
+  },
+  webClient(state: ConfigState): WebClientConfiguration {
+    const { config } = state;
+    const { webClient } = config;
+    return webClient;
   }
 };
