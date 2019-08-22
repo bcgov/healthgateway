@@ -84,7 +84,7 @@ export const actions: ActionTree<AuthState, RootState> = {
       if (!user || user.expired) {
         context.commit("unsetOidcAuth");
       } else {
-        context.commit("setOidcUser", user);
+        context.commit("setOidcAuth", user);
       }
     });
   },

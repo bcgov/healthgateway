@@ -10,8 +10,9 @@ describe("NavBar Header Component", () => {
   localVue.use(VueRouter);
   localVue.use(boostrapVue);
   localVue.use(Vuex);
+  const router = new VueRouter();
 
-  const wrapper = shallowMount(HeaderComponent, { localVue, store });
+  const wrapper = shallowMount(HeaderComponent, { localVue, store, router });
 
   test("is a Vue instance", () => {
     expect(wrapper.isVueInstance()).toBeTruthy();

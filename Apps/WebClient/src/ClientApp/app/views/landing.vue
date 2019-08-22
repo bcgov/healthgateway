@@ -18,7 +18,7 @@
           <p>Click the button below to register.</p>
           <b-button
             id="btnStart"
-            to="registration"
+            to="cardInfo"
             class="btn btn-secondary"
             role="button"
             >Start now</b-button
