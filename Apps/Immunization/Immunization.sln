@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Immunization", "src\Immunization.csproj", "{1842E377-23AD-4A52-881E-F0B82E7893A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{30741500-8F59-45CF-B753-14EBE6EE275E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "testUnit\test.csproj", "{30741500-8F59-45CF-B753-14EBE6EE275E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
