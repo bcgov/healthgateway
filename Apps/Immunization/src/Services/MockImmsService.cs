@@ -22,13 +22,13 @@ namespace HealthGateway.Service
     /// <summary>
     /// The Immunization data service.
     /// </summary>
-    public class ImmsService : IImmsService
+    public class MockImmsService : IImmsService
     {
         /// <summary>
         /// Gets a list of mock immunization records.
         /// </summary>
         /// <returns>A list of ImmsDataModel object.</returns>
-        public IEnumerable<ImmsDataModel> GetMockData()
+        public IEnumerable<ImmsDataModel> GetImmunizations()
         {
             ImmsDataModel[] immunizations = new ImmsDataModel[10];
 
@@ -39,8 +39,8 @@ namespace HealthGateway.Service
             imz.Site = @"left vastus lateralis";
             imz.Lot = @"4792AB";
             imz.Boost = @"1999 Aug 10";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
             imz.Route = @"Intramuscular injection";
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Paedatric Nurse";
@@ -94,9 +94,9 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
             imz.Lot = @"99693AA";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
             imz.Route = @"Intramuscular injection";
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
@@ -108,10 +108,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
             imz.Lot = @"100330AA";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[5] = imz;
@@ -122,10 +122,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.25 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"990093FA";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[6] = imz;
@@ -136,10 +136,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"103234AB";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[7] = imz;
@@ -150,10 +150,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"880899AA";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[8] = imz;
@@ -178,7 +178,7 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"99080956AA";
-            imz.Boost = @"";
+            imz.Boost = string.Empty;
             imz.TradeName = @"GARDASIL®9";
             imz.Manufacturer = @"Merck & Co., Inc.";
             imz.Route = @"Intramuscular injection";
@@ -192,10 +192,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"440319DC";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[11] = imz;
@@ -206,10 +206,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"909102CZ";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[12] = imz;
@@ -220,10 +220,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"239941RA";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[12] = imz;
@@ -234,10 +234,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"503459AB";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[13] = imz;
@@ -248,10 +248,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"440319DC";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Vancouver Island Health Authority";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[14] = imz;
@@ -262,10 +262,10 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"right deltoid";
             imz.Lot = @"100399AC";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
             imz.AdministeredAt = @"Patient's Workplace";
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[15] = imz;
@@ -276,12 +276,12 @@ namespace HealthGateway.Service
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
             imz.Lot = @"845003BB";
-            imz.Boost = @"";
-            imz.TradeName = @"";
-            imz.Manufacturer = @"";
-            imz.Route = @"";
-            imz.AdministeredAt = @"";
-            imz.AdministeredBy = @"";
+            imz.Boost = string.Empty;
+            imz.TradeName = string.Empty;
+            imz.Manufacturer = string.Empty;
+            imz.Route = string.Empty;
+            imz.AdministeredAt = string.Empty;
+            imz.AdministeredBy = string.Empty;
             immunizations[16] = imz;
 
             return immunizations;

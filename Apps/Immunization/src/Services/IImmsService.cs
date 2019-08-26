@@ -24,9 +24,9 @@ namespace HealthGateway.Service
     public interface IImmsService
     {
         /// <summary>
-        /// Gets a list of mock immunization records.
+        /// Gets a list of immunization records.
         /// </summary>
-        /// <returns>A list of ImmsDataModel object.</returns>
-        IEnumerable<ImmsDataModel> GetMockData();
+        /// <returns>Returns a list of immunizations .</returns>
+        IEnumerable<ImmsDataModel> GetImmunizations();
     }
 }
