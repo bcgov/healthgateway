@@ -23,7 +23,7 @@ namespace Immunization.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-
+    using HealthGateway.Models;
     /// <summary>
     /// The Immunization controller.
     /// </summary>
@@ -52,9 +52,8 @@ namespace Immunization.Controllers
         /// <returns>a list of immunization records.</returns>
         [HttpGet]
         [Route("items")]
-        public JsonResult GetItems()
-        {
-            return new JsonResult(this.service.GetMockData());
+        public IEnumerable<ImmsDataModel> GetItems() {
+            return this.service.GetImmunizations(); // For now.
         }
     }
 }

@@ -92,7 +92,7 @@ namespace HealthGateway
             services.AddHttpClient();
 
             // Imms Service
-            services.AddSingleton<IImmsService, ImmsService>();
+            services.AddSingleton<IImmsService, MockImmsService>();
         }
 
         /// <summary>
