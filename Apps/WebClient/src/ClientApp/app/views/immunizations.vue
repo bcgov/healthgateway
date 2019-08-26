@@ -11,11 +11,7 @@
     </h1>
     <p id="subtext" align="right">
       <b>Reference:</b>&nbsp;
-      <b-link
-        v-bind:href="
-          'https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules'
-        "
-        target="_blank"
+      <b-link :href="healthLinkURL" target="_blank"
         >BC Immunization Schedules</b-link
       >
     </p>
@@ -42,14 +38,14 @@
       <template slot="show_details" slot-scope="row">
         <b-button
           id="btn1"
+          class="pb-2"
           size="sm"
           variant="outline-info"
           @click="row.toggleDetails"
-          class="pb-2"
           >{{ row.detailsShowing ? "Hide" : "Show" }} Details</b-button
         >
       </template>
-      <template slot="row-details" id="rd" slot-scope="row">
+      <template id="rd" slot="row-details" slot-scope="row">
         <b-card>
           <b-row class="mb-2">
             <b-col sm="3" class="text-sm-right">
@@ -95,7 +91,7 @@
             </b-col>
             <b-col sm="6">
               <b-link
-                :href="'https://www.healthlinkbc.ca/search/' + row.item.vaccine"
+                :href="vaccineSearchURL + row.item.vaccine"
                 target="_blank"
                 >{{ row.item.vaccine }}</b-link
               >
@@ -122,7 +118,7 @@ import LoadingComponent from "@/components/loading.vue";
 import { IImmsService } from "@/services/interfaces";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import { ExternalConfiguration } from "@/models/configData";
+import { WebClientConfiguration } from "@/models/configData";
 
 @Component({
   components: {
@@ -130,11 +126,22 @@ import { ExternalConfiguration } from "@/models/configData";
   }
 })
 export default class ImmunizationsComponent extends Vue {
+  @Getter("webClientConfiguration", { namespace: "config" })
+  webClientConfiguration: WebClientConfiguration;
+
   private items: ImmsData[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = false;
+
+  private vaccineSearchURL: string = this.webClientConfiguration.externalURLs[
+    "HealthLinkVaccineSearch"
+  ];
+  private healthLinkURL: string = this.webClientConfiguration.externalURLs[
+    "HealthLinkImmunizationSchedule"
+  ];
+
   private fields = {
     date: { sortable: true },
     vaccine: { sortable: true },

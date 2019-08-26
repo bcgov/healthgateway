@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { IHttpDelegate } from "./interfaces";
-import { injectable } from 'inversify';
+import { injectable } from "inversify";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {
