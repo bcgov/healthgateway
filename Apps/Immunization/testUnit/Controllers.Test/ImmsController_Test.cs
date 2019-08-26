@@ -1,17 +1,14 @@
-using Xunit;
-using HealthGateway.Service;
-using HealthGateway.Engine.Core;
-using Moq;
-using HealthGateway.Models;
-using System.Collections.Generic;
-using System.Linq;
-using Immunization.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using DeepEqual.Syntax;
-
 namespace HealthGateway.Immunization.Test.Controller
 {
+    using System.Collections.Generic;
+    using Xunit;
+    using HealthGateway.Service;
+    using Moq;
+    using HealthGateway.Models;
+    using Microsoft.AspNetCore.Mvc;
+    using DeepEqual.Syntax;
+    using global::Immunization.Controllers;
+
     public class ImmsController_Test
     {
         [Fact]
