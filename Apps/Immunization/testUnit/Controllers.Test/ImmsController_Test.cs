@@ -21,13 +21,13 @@ namespace HealthGateway.Immunization.Test.Controller
             {
                 Vaccine = "test"
             });
-            mockSvc.Setup(m => m.GetMockData()).Returns(expected);
+            mockSvc.Setup(m => m.GetImmunizations()).Returns(expected);
 
             // Create Controller
             ImmsController controller = new ImmsController(mockSvc.Object);
-            JsonResult actualResult = controller.GetItems();
+            IEnumerable<ImmsDataModel> actualResult = controller.GetItems();
             // Verify the result
-            Assert.True(actualResult.Value.IsDeepEqual(expected));
+            Assert.True(actualResult.IsDeepEqual(expected));
         }
     }
 }

@@ -15,15 +15,12 @@
 //-------------------------------------------------------------------------
 namespace Immunization.Controllers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using HealthGateway.Models;
     using HealthGateway.Service;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using HealthGateway.Models;
+
     /// <summary>
     /// The Immunization controller.
     /// </summary>
@@ -32,6 +29,11 @@ namespace Immunization.Controllers
     [ApiController]
     public class ImmsController : ControllerBase
     {
+        /// <summary>
+        /// Gets or sets the immunization data service.
+        /// </summary>
+        private readonly IImmsService service;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmsController"/> class.
         /// </summary>
@@ -42,17 +44,13 @@ namespace Immunization.Controllers
         }
 
         /// <summary>
-        /// Gets or sets the immunization data service.
-        /// </summary>
-        private IImmsService service { get; set; }
-
-        /// <summary>
         /// Gets a json list of immunization records.
         /// </summary>
         /// <returns>a list of immunization records.</returns>
         [HttpGet]
         [Route("items")]
-        public IEnumerable<ImmsDataModel> GetItems() {
+        public IEnumerable<ImmsDataModel> GetItems()
+        {
             return this.service.GetImmunizations(); // For now.
         }
     }

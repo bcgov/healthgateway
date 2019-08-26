@@ -30,7 +30,7 @@ namespace HealthGateway.Service
         /// <returns>A list of ImmsDataModel object.</returns>
         public IEnumerable<ImmsDataModel> GetImmunizations()
         {
-            ImmsDataModel[] immunizations = new ImmsDataModel[10];
+            ImmsDataModel[] immunizations = new ImmsDataModel[17];
 
             ImmsDataModel imz = new ImmsDataModel();
             imz.Date = @"1999 Jun 10";

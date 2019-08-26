@@ -11,13 +11,13 @@ namespace HealthGateway.Immunization.Test.Controller
         [Fact]
         public void Should_GetMockData()
         {
-            const byte expectedCount = 17;
+            const int expectedCount = 17;
             // Create service to test
-            IImmsService service = new ImmsService();
-            List<ImmsDataModel> actualResult = service.GetMockData().ToList();
+            IImmsService service = new MockImmsService();
+            IEnumerable<ImmsDataModel> actualResult = service.GetImmunizations().ToList();
 
             // Verify the result
-            Assert.Equal(expectedCount, actualResult.Count);
+            Assert.Equal(expectedCount, actualResult.Count());
         }
     }
 }
