@@ -19,7 +19,7 @@ describe("Router", () => {
     expect(result.resolved.matched[0].components.default.name).toBe(
       HomeComponent.name
     );
-    expect(result.route.meta.requiresAuth).toBe(true);
+    expect(result.route.meta.requiresRegistration).toBe(true);
   });
 
   test("has registration route", () => {

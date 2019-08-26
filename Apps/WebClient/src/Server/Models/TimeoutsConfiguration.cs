@@ -24,7 +24,7 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the idle time in seconds that the Webclient will use
         /// before it automatically logs the user out.
         /// </summary>
-        public string Idle { get; set; }
+        public int Idle { get; set; }
 
         /// <summary>
         /// Gets or sets the amount of time in seconds after which the user will be

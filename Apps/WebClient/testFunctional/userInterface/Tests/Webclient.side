@@ -2,7 +2,7 @@
   "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
   "version": "2.0",
   "name": "Webclient",
-  "url": "https://dev-gateway.pathfinder.gov.bc.ca",
+  "url": "http://localhost:5000",
   "tests": [{
     "id": "5623a813-676e-42d2-9fc8-4117f3206bf6",
     "name": "Health Gateway Landing Page",
@@ -170,7 +170,7 @@
       "command": "assertText",
       "target": "css=.card-header > h3",
       "targets": [],
-      "value": "Log In"
+      "value": "Log In With"
     }]
   }, {
     "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
@@ -280,7 +280,7 @@
       "id": "8e966e6c-0e3f-45f6-bc24-4628fa2d1575",
       "comment": "",
       "command": "click",
-      "target": "id=keycloackLoginBtn",
+      "target": "id=KeyCloakBtn",
       "targets": [
         ["css=#gitBtn td:nth-child(2)", "css:finder"],
         ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
@@ -338,6 +338,241 @@
       "targets": [],
       "value": "Welcome to Health Gateway!"
     }]
+  }, {
+    "id": "429ebd39-0f63-48f6-886b-e24d135a63d1",
+    "name": "Verify Logout with Redirect",
+    "commands": [{
+      "id": "7fe2408a-9e18-4560-9447-693c64f98cba",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9eb254d7-571e-4ef3-a077-827d908264fd",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//li[@id='menuBtndUser']",
+      "targets": [],
+      "value": "loggedin"
+    }, {
+      "id": "cf38d082-c017-4ccc-b9c2-5459390850fa",
+      "comment": "",
+      "command": "if",
+      "target": "${loggedin} > 0",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a9756bf3-8d6d-497d-b4dd-cd3e2c66b857",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtndUser__BV_button_",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "21699def-3134-4777-9e62-d6740beb0acb",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogin", "id"],
+        ["linkText=Login", "linkText"],
+        ["css=#menuBtnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c28cd87c-9dcc-4a50-a4a3-a3b2e4453f89",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [
+        ["css=strong", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": "You signed out of your account"
+    }, {
+      "id": "9c2c2ee3-3bd1-45ad-a1a2-b01714502e72",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "779a00c9-b479-4188-aaa6-ba575afd99c2",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e35b55b0-1376-4d26-bb3b-a63f15b55991",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('USERNAME');",
+      "targets": [],
+      "value": "username"
+    }, {
+      "id": "0a0b4e77-7a5d-436a-bf1c-b74ed4e28507",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('PASSWORD');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "2a9cc7f1-a45e-48fb-a78f-e68a0f1c1337",
+      "comment": "",
+      "command": "click",
+      "target": "id=KeyCloakBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9933e1a9-c489-4717-bcdc-6245f32d46e0",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${username}"
+    }, {
+      "id": "61480770-d300-4b98-a15d-dd6cac97a237",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "c9aeb429-d108-4632-9513-09b853192595",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "0897ef7d-a650-4ef8-a9c9-9e8236f7152c",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [],
+      "value": "Welcome to Health Gateway!"
+    }, {
+      "id": "034b552f-1bb2-46e7-a889-6788de4de49e",
+      "comment": "",
+      "command": "click",
+      "target": "css=#menuBtndUser__BV_button_ > span",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi undefined')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "bd2f4801-bf0f-4f15-9d9e-787b25ecb80b",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "30d69335-02f7-454c-a195-00864693cf9a",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.shadow-lg > h3",
+      "targets": [
+        ["css=.shadow-lg > h3", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3", "xpath:idRelative"],
+        ["xpath=//div/div/h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": "You signed out of your account"
+    }, {
+      "id": "a5742cf0-7cee-4f46-a22d-da03666a278c",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.col-lg-12",
+      "targets": [
+        ["css=.col-lg-12", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div", "xpath:idRelative"],
+        ["xpath=//div/div/div/div", "xpath:position"]
+      ],
+      "value": "20000"
+    }, {
+      "id": "bc70a0bd-12dc-4fc5-bdeb-f0088695825d",
+      "comment": "",
+      "command": "open",
+      "target": "/immunizations",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "35c1f3bd-7551-4046-8b65-84e4779d8e93",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.card-header > h3",
+      "targets": [
+        ["css=.card-header > h3", "css:finder"],
+        ["xpath=//div[@id='loginPicker']/div/h3", "xpath:idRelative"],
+        ["xpath=//div/div/h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'Log In With')]", "xpath:innerText"]
+      ],
+      "value": "Log In With"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -361,6 +596,6 @@
     "timeout": 300,
     "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7"]
   }],
-  "urls": ["http://webclientdemo-q6qfzk-test.pathfinder.gov.bc.ca/", "https://dev-gateway.pathfinder.gov.bc.ca/"],
+  "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []
 }

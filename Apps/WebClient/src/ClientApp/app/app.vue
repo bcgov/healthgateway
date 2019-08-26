@@ -22,8 +22,8 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
-import HeaderComponent from "./components/navmenu/navHeader.vue";
-import FooterComponent from "./components/navmenu/navFooter.vue";
+import HeaderComponent from "@/components/navmenu/navHeader.vue";
+import FooterComponent from "@/components/navmenu/navFooter.vue";
 import Process, { EnvironmentType } from "@/constants/process.ts";
 
 @Component({

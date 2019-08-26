@@ -85,9 +85,6 @@ namespace HealthGateway.WebClient
                 return service;
             });
 
-            // Imms Service
-            services.AddTransient<IImmsService, ImmsService>();
-
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

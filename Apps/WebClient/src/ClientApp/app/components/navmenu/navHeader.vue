@@ -36,13 +36,18 @@
           <span class="fa fa-syringe"></span> Immunizations
         </router-link>
       </b-navbar-nav>
+      <b-navbar-nav v-if="displayRegistration">
+        <router-link class="nav-link" to="/registration">
+          <span class="fa fa-key"></span> Register
+        </router-link>
+      </b-navbar-nav>
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown
+          v-if="oidcIsAuthenticated"
           id="menuBtndUser"
           :text="greeting"
-          v-if="oidcIsAuthenticated"
           right
         >
           <b-dropdown-item>
@@ -52,11 +57,11 @@
           </b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link
+          v-else
           id="menuBtnLogin"
           class="nav-link"
           to="/login"
           :exact="true"
-          v-else
         >
           <span class="fa fa-user"></span> Login
         </router-link>
@@ -99,6 +104,7 @@ const namespace: string = "auth";
 export default class HeaderComponent extends Vue {
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
   @Getter("oidcUser", { namespace }) authenticatedUser: User;
+  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
 
   languages: { [code: string]: ILanguage } = {};
   currentLanguage: ILanguage = null;
@@ -108,10 +114,13 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
+    let isLandingPage = this.$route.path === "/";
     if (
       this.oidcIsAuthenticated &&
       this.authenticatedUser != undefined &&
-      this.$route.path != "/"
+      this.authenticatedUser != undefined &&
+      this.userIsRegistered &&
+      !isLandingPage
     ) {
       return true;
     }
@@ -119,9 +128,14 @@ export default class HeaderComponent extends Vue {
     return false;
   }
 
+  get displayRegistration(): boolean {
+    if (this.oidcIsAuthenticated && !this.userIsRegistered) {
+      return true;
+    }
+    return false;
+  }
+
   get greeting(): string {
-    console.log(this.oidcIsAuthenticated);
-    console.log(this.authenticatedUser);
     if (this.oidcIsAuthenticated && this.authenticatedUser) {
       return "Hi " + this.authenticatedUser.name;
     } else {

@@ -1,9 +1,9 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
-import RegistrationComponent from "@/views/registration.vue";
+import CardInfoComponent from "@/views/cardInfo.vue";
 
 describe("Registration view", () => {
   const localVue = createLocalVue();
-  const wrapper = shallowMount(RegistrationComponent, { localVue });
+  const wrapper = shallowMount(CardInfoComponent, { localVue });
 
   test("is a Vue instance", () => {
     expect(wrapper.isVueInstance()).toBeTruthy();

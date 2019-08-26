@@ -21,7 +21,7 @@
     "WebClient": {
         "LogLevel": "LogLevel",
         "TimeOuts": {
-            "Idle": "Idle",
+            "Idle": "10000",
             "LogoutRedirect": "LogoutRedirect"
         },
         "ExternalURLs": {

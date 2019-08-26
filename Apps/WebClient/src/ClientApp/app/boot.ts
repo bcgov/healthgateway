@@ -8,24 +8,52 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 
 import BootstrapVue from "bootstrap-vue";
-import i18n from "./i18n";
+import i18n from "@/i18n";
 
-import App from "./app.vue";
-import router from "./router";
+import App from "@/app.vue";
+import router from "@/router";
 import store from "@/store/store";
+import {
+  IAuthenticationService,
+  IImmsService,
+  IHttpDelegate,
+  IConfigService
+} from "@/services/interfaces";
+import SERVICE_IDENTIFIER, {
+  DELEGATE_IDENTIFIER
+} from "@/constants/serviceIdentifiers";
+import container from "@/inversify.config";
+import { ExternalConfiguration } from "@/models/configData";
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
-console.log("env", JSON.stringify(process.env));
+const httpDelegate: IHttpDelegate = container.get(
+  DELEGATE_IDENTIFIER.HttpDelegate
+);
+const configService: IConfigService = container.get(
+  SERVICE_IDENTIFIER.ConfigService
+);
 
+configService.initialize(httpDelegate);
 // Initialize the store only then start the app
-store.dispatch("auth/authenticateOidcSilent").then(result => {
-  new Vue({
-    el: "#app-root",
-    i18n: i18n,
-    store,
-    router,
-    render: h => h(App)
+store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
+  const authService: IAuthenticationService = container.get(
+    SERVICE_IDENTIFIER.AuthenticationService
+  );
+  const immsService: IImmsService = container.get(
+    SERVICE_IDENTIFIER.ImmsService
+  );
+  authService.initialize(config.openIdConnect);
+  immsService.initialize(config, httpDelegate);
+
+  store.dispatch("auth/getOidcUser").then(() => {
+    new Vue({
+      el: "#app-root",
+      i18n: i18n,
+      store,
+      router,
+      render: h => h(App)
+    });
   });
 });

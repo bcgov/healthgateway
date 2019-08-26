@@ -2,18 +2,19 @@ import { Module } from "vuex";
 import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { RootState, StateType, ImmsState } from "@/models/storeState";
+import { RootState, StateType, ConfigState } from "@/models/storeState";
+import { ExternalConfiguration } from "@/models/configData";
 
-export const state: ImmsState = {
+export const state: ConfigState = {
   statusMessage: "",
-  items: undefined,
+  config: new ExternalConfiguration(),
   error: false,
   stateType: StateType.NONE
 };
 
 const namespaced: boolean = true;
 
-export const imms: Module<ImmsState, RootState> = {
+export const config: Module<ConfigState, RootState> = {
   namespaced,
   state,
   getters,

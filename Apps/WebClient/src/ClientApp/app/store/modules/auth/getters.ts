@@ -12,12 +12,12 @@ export const parseJwt = (token: string) => {
   }
 };
 
-function tokenExp(token: string | undefined) {
+function tokenExp(token: string | undefined): number | undefined {
   if (token) {
     const parsed = parseJwt(token);
-    return parsed.exp ? parsed.exp * 1000 : null;
+    return parsed.exp ? parsed.exp * 1000 : undefined;
   }
-  return null;
+  return undefined;
 }
 
 function tokenIsExpired(token: string | undefined) {
@@ -36,33 +36,36 @@ export const getters: GetterTree<AuthState, RootState> = {
     return state.isAuthenticated;
   },
   oidcUser(state: AuthState): User | undefined {
-    console.log("oidcUser");
     const { authentication } = state;
     return authentication.user;
   },
-  oidcAccessToken: state => {
+  oidcAccessToken(state: AuthState): string | undefined {
     return tokenIsExpired(state.authentication.accessToken)
-      ? null
+      ? undefined
       : state.authentication.accessToken;
   },
-  oidcAccessTokenExp: state => {
+  oidcAccessTokenExp(state: AuthState): number | undefined {
     return tokenExp(state.authentication.accessToken);
   },
-  oidcScopes: state => {
+  oidcScopes(state: AuthState): string[] | undefined {
     return state.authentication.scopes;
   },
-  oidcIdToken: state => {
+  oidcIdToken(state: AuthState): string | undefined {
     return tokenIsExpired(state.authentication.idToken)
-      ? null
+      ? undefined
       : state.authentication.idToken;
   },
-  oidcIdTokenExp: state => {
+  oidcIdTokenExp(state: AuthState): number | undefined {
     return tokenExp(state.authentication.idToken);
   },
-  oidcAuthenticationIsChecked: state => {
+  oidcAuthenticationIsChecked(state: AuthState): boolean {
     return state.authentication.isChecked;
   },
-  oidcError: state => {
+  oidcError(state: AuthState): any {
     return state.error;
+  },
+  userIsRegistered(state: AuthState): boolean {
+    let user = state.authentication.user;
+    return user === undefined ? false : user.acceptedTermsOfService;
   }
 };

@@ -17,9 +17,9 @@
           </h3>
           <p>Click the button below to register.</p>
           <b-button
-            to="registration"
-            class="btn btn-secondary"
             id="btnStart"
+            to="cardInfo"
+            class="btn btn-secondary"
             role="button"
             >Start now</b-button
           >
@@ -31,7 +31,7 @@
             <strong>Already registered?</strong>
           </h3>
           <p>Click the button below to login.</p>
-          <b-button to="login" class="btn btn-primary" id="btnLogin"
+          <b-button id="btnLogin" to="login" class="btn btn-primary"
             >Login</b-button
           >
         </div>

@@ -2,8 +2,10 @@ import { ActionTree, Commit, ActionContext } from "vuex";
 import { RootState, AuthState } from "@/models/storeState";
 import { Route } from "vue-router";
 
-import { IAuthenticationService } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
+import SERVICE_IDENTIFIER, {
+  DELEGATE_IDENTIFIER
+} from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 
 function routeIsOidcCallback(route: Route): boolean {
@@ -16,6 +18,9 @@ function routeIsOidcCallback(route: Route): boolean {
 const authService: IAuthenticationService = container.get<
   IAuthenticationService
 >(SERVICE_IDENTIFIER.AuthenticationService);
+const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
+  DELEGATE_IDENTIFIER.HttpDelegate
+);
 
 export const actions: ActionTree<AuthState, RootState> = {
   oidcCheckAccess(context, route) {
@@ -78,15 +83,27 @@ export const actions: ActionTree<AuthState, RootState> = {
   oidcWasAuthenticated(context, user) {
     context.commit("setOidcAuth", user);
     context.commit("setOidcAuthIsChecked");
+    context.dispatch("setHttpToken", user.access_token);
   },
   getOidcUser(context) {
     authService.getUser().then(user => {
-      context.commit("setOidcUser", user);
+      if (!user || user.expired) {
+        context.commit("unsetOidcAuth");
+      } else {
+        context.commit("setOidcAuth", user);
+      }
     });
   },
   signOutOidc(context) {
     authService.logout().then(() => {
       context.commit("unsetOidcAuth");
+      context.dispatch("unsetHttpToken");
     });
+  },
+  unsetHttpToken(context) {
+    httpDelegate.unsetAuthorizationHeader();
+  },
+  setHttpToken(context, token) {
+    httpDelegate.setAuthorizationHeader(token);
   }
 };

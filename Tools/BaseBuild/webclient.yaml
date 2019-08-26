@@ -66,10 +66,15 @@ objects:
                 configMapKeyRef:
                   key: HealthGateway_OpenIdConnect__ClientId
                   name: ${COMMON_CONFIG}-config
-            - name: HealthGateway_OpenIdConnect__ClientSecret
+            - name: HealthGateway_OpenIdConnect__Callbacks__Logon
               valueFrom:
                 configMapKeyRef:
-                  key: HealthGateway_OpenIdConnect__ClientSecret
+                  key: HealthGateway_OpenIdConnect__Callbacks__Logon
+                  name: ${COMMON_CONFIG}-config
+            - name: HealthGateway_OpenIdConnect__Callbacks__Logout
+              valueFrom:
+                configMapKeyRef:
+                  key: HealthGateway_OpenIdConnect__Callbacks__Logout
                   name: ${COMMON_CONFIG}-config
             - name: HealthGateway_ImmsServiceUrl
               value: ${IMMS_SERVICE_URL}

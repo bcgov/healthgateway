@@ -1,4 +1,4 @@
-import { IAuthenticationService } from "@/services/interfaces";
+import { IAuthenticationService, IConfigService } from "@/services/interfaces";
 import {
   UserManager,
   WebStorageStateStore,
@@ -8,35 +8,35 @@ import {
 
 import { injectable } from "inversify";
 import "reflect-metadata";
+import { OpenIdConnectConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-  private readonly oidcUserManager: UserManager;
+  private oidcUserManager?: UserManager;
 
-  constructor() {
-    this.oidcUserManager = new UserManager(this.getOidcConfig());
-  }
-
-  public getOidcConfig(): UserManagerSettings {
-    // TODO: This should retrieve the configuration from the configuration store or from the service itself
-
-    return {
+  public initialize(config: OpenIdConnectConfiguration): void {
+    const oidcConfig = {
       userStore: new WebStorageStateStore({ store: window.localStorage }),
-      authority: "http://localhost:8080/auth/realms/Health",
-      client_id: "gateway",
-      redirect_uri: "http://localhost:5000/loginCallback",
-      response_type: "code",
-      scope: "openid profile",
-      post_logout_redirect_uri: "http://localhost:5000/logout",
+      authority: config.authority,
+      client_id: config.clientId,
+      redirect_uri: config.callbacks["Logon"],
+      response_type: config.responseType,
+      scope: config.scope,
+      post_logout_redirect_uri: config.callbacks["Logout"],
       filterProtocolClaims: true,
       loadUserInfo: false
     };
+    console.log("oidc configuration: ", oidcConfig);
+    this.oidcUserManager = new UserManager(oidcConfig);
+  }
+
+  public getOidcConfig(): UserManagerSettings {
+    return this.oidcUserManager!.settings;
   }
 
   public getUser(): Promise<OidcUser | null> {
     return new Promise<OidcUser | null>(resolve => {
-      this.oidcUserManager
-        .getUser()
+      this.oidcUserManager!.getUser()
         .then(user => {
           resolve(user);
         })
@@ -47,11 +47,11 @@ export class RestAuthenticationService implements IAuthenticationService {
   }
 
   public logout(): Promise<void> {
-    return this.oidcUserManager.signoutRedirect();
+    return this.oidcUserManager!.signoutRedirect();
   }
 
   public signinSilent(): Promise<OidcUser> {
-    return this.oidcUserManager.signinSilent();
+    return this.oidcUserManager!.signinSilent();
   }
 
   public signinRedirect(idpHint: string, redirectPath: string): Promise<void> {
@@ -59,14 +59,14 @@ export class RestAuthenticationService implements IAuthenticationService {
     console.log(fullRedirectUrl);
     console.log(redirectPath);
     sessionStorage.setItem("vuex_oidc_active_route", redirectPath);
-    return this.oidcUserManager.signinRedirect({
+    return this.oidcUserManager!.signinRedirect({
       extraQueryParams: {
         kc_idp_hint: idpHint
       }
     });
   }
   public signinRedirectCallback(): Promise<OidcUser> {
-    return this.oidcUserManager.signinRedirectCallback();
+    return this.oidcUserManager!.signinRedirectCallback();
   }
 
   //TODO: Do we still need this?

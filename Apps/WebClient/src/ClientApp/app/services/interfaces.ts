@@ -1,6 +1,13 @@
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
+import {
+  ExternalConfiguration,
+  OpenIdConnectConfiguration
+} from "@/models/configData";
+import ImmsData from "@/models/immsData";
+import HttpDelegate from "./httpDelegate";
 
 export interface IAuthenticationService {
+  initialize(config: OpenIdConnectConfiguration): void;
   getUser(): Promise<OidcUser | null>;
   logout(): Promise<void>;
   signinSilent(): Promise<OidcUser | null>;
@@ -10,5 +17,17 @@ export interface IAuthenticationService {
 }
 
 export interface IImmsService {
-  getItems(): Promise<any>;
+  initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+  getItems(): Promise<ImmsData[]>;
+}
+
+export interface IConfigService {
+  initialize(http: HttpDelegate): void;
+  getConfiguration(): Promise<ExternalConfiguration>;
+}
+
+export interface IHttpDelegate {
+  unsetAuthorizationHeader(): void;
+  setAuthorizationHeader(accessToken: string): void;
+  get<T>(url: string): Promise<T>;
 }
