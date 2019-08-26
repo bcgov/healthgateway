@@ -49,9 +49,11 @@ namespace Immunization.Controllers
         /// <summary>
         /// Gets a json list of immunization records.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>a list of immunization records.</returns>
         [HttpGet]
         [Route("items")]
-        public JsonResult GetItems() => new JsonResult(this.service.GetMockData());
+        public ImmsDataModel GetItems() {
+            return this.service.GetMockData(); // For now.
+        }
     }
 }
