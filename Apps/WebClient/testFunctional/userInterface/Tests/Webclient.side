@@ -573,6 +573,171 @@
       ],
       "value": "Log In With"
     }]
+  }, {
+    "id": "1c8da969-a155-4b3c-95e2-3c75aa5c4533",
+    "name": "Immunizations - Date sorting",
+    "commands": [{
+      "id": "c71a5b4c-8f0f-4076-b854-dd5222b89f3a",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d56f7392-19ee-42d4-8871-17bfbdd0ed60",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Immunizations",
+      "targets": [
+        ["linkText=Immunizations", "linkText"],
+        ["css=#nav-collapse .nav-link:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a[2]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6e398a09-b40a-4159-afb4-728e8a868878",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'  Immunizations')]", "xpath:innerText"]
+      ],
+      "value": "Immunizations"
+    }, {
+      "id": "575cf040-5269-4c98-9b05-8f6c8ffb72e4",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(1)",
+      "targets": [
+        ["css=th:nth-child(1)", "css:finder"],
+        ["xpath=//table[@id='__BVID__42']/thead/tr/th", "xpath:idRelative"],
+        ["xpath=//th", "xpath:position"],
+        ["xpath=//th[contains(.,'Date')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e5970daa-127e-423f-bde2-ff7df9506ffe",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=tr:nth-child(1) > td:nth-child(1)",
+      "targets": [
+        ["css=tr:nth-child(1) > td:nth-child(1)", "css:finder"],
+        ["xpath=//table[@id='__BVID__42']/tbody/tr/td", "xpath:idRelative"],
+        ["xpath=//td", "xpath:position"],
+        ["xpath=//td[contains(.,'1999 Jun 10')]", "xpath:innerText"]
+      ],
+      "value": "firstDate"
+    }, {
+      "id": "152fda0a-24b2-4577-b9d7-31cd135c9ba7",
+      "comment": "",
+      "command": "click",
+      "target": "css=th:nth-child(1)",
+      "targets": [
+        ["css=tr:nth-child(1) > td:nth-child(1)", "css:finder"],
+        ["xpath=//table[@id='__BVID__42']/tbody/tr/td", "xpath:idRelative"],
+        ["xpath=//td", "xpath:position"],
+        ["xpath=//td[contains(.,'1999 Aug 14')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6dff3b88-01f1-4e66-b235-b501a7b51815",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=tr:nth-child(1) > td:nth-child(1)",
+      "targets": [],
+      "value": "lastDate"
+    }, {
+      "id": "f783a4f3-32cd-4df0-ab70-24a213037058",
+      "comment": "",
+      "command": "echo",
+      "target": "${firstDate}  -- ${lastDate} ",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5535f3f8-3096-429f-aef3-6045ae9c4f8c",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return new Date(${firstDate}) < new Date(${lastDate})",
+      "targets": [],
+      "value": "isSorted"
+    }, {
+      "id": "4224cea5-efb3-419c-bd57-7ebf98543e3c",
+      "comment": "",
+      "command": "assert",
+      "target": "isSorted",
+      "targets": [],
+      "value": "true"
+    }]
+  }, {
+    "id": "9a66f6f0-d151-41fd-a2d1-5f20d89f3348",
+    "name": "Immunizations - Retrieved data",
+    "commands": [{
+      "id": "d48ec725-fac7-491d-8e72-88c36af8fe62",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5e57640a-938c-4df4-8b8e-e14668c94d13",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Immunizations",
+      "targets": [
+        ["linkText=Immunizations", "linkText"],
+        ["css=#nav-collapse .nav-link:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a[2]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "57747c28-6ca8-467e-911f-74b262b43a5a",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'  Immunizations')]", "xpath:innerText"]
+      ],
+      "value": "Immunizations"
+    }, {
+      "id": "2cb6f6af-40d0-4dcb-9ec5-136b3c208644",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//table/tbody/tr",
+      "targets": [],
+      "value": "tableLength"
+    }, {
+      "id": "72e04e0b-519d-408c-a0ad-80da359a83a8",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return ${tableLength} > 1",
+      "targets": [],
+      "value": "hasData"
+    }, {
+      "id": "d903c4fc-4d29-4049-82d4-191127317bef",
+      "comment": "",
+      "command": "assert",
+      "target": "hasData",
+      "targets": [],
+      "value": "true"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -595,6 +760,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7"]
+  }, {
+    "id": "2501a20a-fc5f-4ce8-b21e-2345f4fab928",
+    "name": "Immunizations View",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["9a66f6f0-d151-41fd-a2d1-5f20d89f3348", "1c8da969-a155-4b3c-95e2-3c75aa5c4533"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []
