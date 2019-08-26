@@ -762,7 +762,7 @@
     "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7"]
   }, {
     "id": "2501a20a-fc5f-4ce8-b21e-2345f4fab928",
-    "name": "Immunizations View",
+    "name": "Immunizations Page",
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
