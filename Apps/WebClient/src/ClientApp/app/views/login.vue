@@ -9,7 +9,7 @@
           style="max-width: 25rem;"
           align="center"
         >
-          <h3 slot="header">Log In With</h3>
+          <h3 slot="header">Log In</h3>
           <p slot="footer">
             Not yet registered?
             <b-link to="/registration">Sign up</b-link>
@@ -27,10 +27,10 @@
                   >
                     <b-row>
                       <b-col class="col-2">
-                        <span :class="`fa ${provider.icon}`"></span>
+                        <span :class="`${provider.icon}`"></span>
                       </b-col>
                       <b-col class="text-justify">
-                        <span>{{ provider.name }}</span>
+                        <span>Login with {{ provider.name }}</span>
                       </b-col>
                     </b-row>
                   </b-button>
@@ -72,7 +72,7 @@ export default class LoginComponent extends Vue {
 
   private redirectPath: string = "";
   private routeHandler = undefined;
-
+  
   mounted() {
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
       this.redirectPath = this.$route.query.redirect;
