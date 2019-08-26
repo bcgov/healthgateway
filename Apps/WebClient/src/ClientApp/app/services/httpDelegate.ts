@@ -1,6 +1,6 @@
-import Axios from "axios";
+import Axios, { AxiosRequestConfig } from "axios";
 import { IHttpDelegate } from "./interfaces";
-import { injectable } from 'inversify';
+import { injectable } from "inversify";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {
@@ -14,7 +14,10 @@ export default class HttpDelegate implements IHttpDelegate {
   }
   public get<T>(url: string): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      Axios.get(url)
+      let config: AxiosRequestConfig = {
+        headers: { "Access-Control-Allow-Origin": "*" }
+      };
+      Axios.get(url, config)
         .then(response => {
           if (response.data instanceof Object) {
             return resolve(response.data);
