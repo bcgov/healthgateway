@@ -30,7 +30,7 @@
                         <span :class="`${provider.icon}`"></span>
                       </b-col>
                       <b-col class="text-justify">
-                        <span>Login with {{ provider.name }}</span>
+                        <span>{{ provider.name }}</span>
                       </b-col>
                     </b-row>
                   </b-button>
