@@ -23,15 +23,6 @@
       <template id="f2" slot="HEAD_vaccine">
         {{ $t("immz-component.fields.vaccine") }}
       </template>
-      <template id="f3" slot="HEAD_dose">
-        {{ $t("immz-component.fields.dose") }}
-      </template>
-      <template id="f4" slot="HEAD_site">
-        {{ $t("immz-component.fields.site") }}
-      </template>
-      <template id="f5" slot="HEAD_lot">
-        {{ $t("immz-component.fields.lot") }}
-      </template>
       <template id="f6" slot="HEAD_boost">
         {{ $t("immz-component.fields.boost") }}
       </template>
@@ -126,7 +117,7 @@ import { WebClientConfiguration } from "@/models/configData";
   }
 })
 export default class ImmunizationsComponent extends Vue {
-  @Getter("webClientConfiguration", { namespace: "config" })
+  @Getter("webClient", { namespace: "config" })
   webClientConfiguration: WebClientConfiguration;
 
   private items: ImmsData[] = [];
@@ -135,12 +126,8 @@ export default class ImmunizationsComponent extends Vue {
   private sortyBy: string = "date";
   private sortDesc: boolean = false;
 
-  private vaccineSearchURL: string = this.webClientConfiguration.externalURLs[
-    "HealthLinkVaccineSearch"
-  ];
-  private healthLinkURL: string = this.webClientConfiguration.externalURLs[
-    "HealthLinkImmunizationSchedule"
-  ];
+  private vaccineSearchURL: string = "";
+  private healthLinkURL: string = "";
 
   private fields = {
     date: { sortable: true },
@@ -154,6 +141,14 @@ export default class ImmunizationsComponent extends Vue {
     const immsService: IImmsService = container.get(
       SERVICE_IDENTIFIER.ImmsService
     );
+
+  this.vaccineSearchURL = this.webClientConfiguration.externalURLs[
+    "HealthLinkVaccineSearch"
+  ];
+  this.healthLinkURL = this.webClientConfiguration.externalURLs[
+    "HealthLinkImmunizationSchedule"
+  ];
+
     immsService
       .getItems()
       .then(results => {
