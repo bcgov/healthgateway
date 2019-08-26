@@ -25,7 +25,7 @@ steps:
   displayName: Run dotnet Tests
   inputs:
     command: 'test'
-    projects: '$(App.Home)/test/test.csproj'
+    projects: '$(App.Home)/testUnit/test.csproj'
     testRunTitle: 'ImmsService'
 
 - script: |
