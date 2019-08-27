@@ -17,7 +17,8 @@ trigger:
    include:
      - Apps/Immunization/src
      - Apps/Immunization/test
- 
+     - Apps/WebClient/testFunctional
+
 pool:
   name: 'HealthGateway'
 
