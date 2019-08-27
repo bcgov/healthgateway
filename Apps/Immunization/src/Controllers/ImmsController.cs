@@ -49,10 +49,10 @@ namespace Immunization.Controllers
         /// </summary>
         /// <returns>a list of immunization records.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
-        /// <response code="401">The client is not authorzied to retrieve the list.</response>  
+        /// <response code="401">The client is not authorzied to retrieve the list.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("items")] 
+        [Route("items")]
         public IEnumerable<ImmsDataModel> GetItems()
         {
             return this.service.GetImmunizations(); // For now.
