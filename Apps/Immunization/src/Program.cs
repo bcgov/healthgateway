@@ -18,12 +18,15 @@ namespace HealthGateway
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The entry point for the project.
     /// </summary>
     public static class Program
     {
+        private const string EnvironmentPrefix = "HealthGateway_";
+
         /// <summary>.
         /// The entry point for the class.
         /// </summary>
@@ -40,6 +43,10 @@ namespace HealthGateway
         /// <returns>Returns the configured webhost.</returns>
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+                })
                 .UseStartup<Startup>()
                 .ConfigureLogging(logging =>
                 {
