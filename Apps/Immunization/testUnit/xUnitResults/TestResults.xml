@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<assemblies timestamp="08/26/2019 13:56:09">
-  <assembly name="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/testUnit/bin/Debug/netcoreapp2.2/test.dll" run-date="2019-08-26" run-time="13:56:09" total="2" passed="2" failed="0" skipped="0" time="0.152" errors="0">
+<assemblies timestamp="08/26/2019 17:18:28">
+  <assembly name="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/testUnit/bin/Debug/netcoreapp2.2/test.dll" run-date="2019-08-26" run-time="17:18:28" total="2" passed="2" failed="0" skipped="0" time="0.167" errors="0">
     <errors />
-    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Immunization.Test.Controller.ImmsController_Test" time="0.135">
-      <test name="HealthGateway.Immunization.Test.Controller.ImmsController_Test.Should_GetItems" type="HealthGateway.Immunization.Test.Controller.ImmsController_Test" method="Should_GetItems" time="0.1350000" result="Pass">
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Immunization.Test.Controller.ImmsController_Test" time="0.145">
+      <test name="HealthGateway.Immunization.Test.Controller.ImmsController_Test.Should_GetItems" type="HealthGateway.Immunization.Test.Controller.ImmsController_Test" method="Should_GetItems" time="0.1450000" result="Pass">
         <traits />
       </test>
     </collection>
-    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Immunization.Test.Controller.ImmsService_Test" time="0.017">
-      <test name="HealthGateway.Immunization.Test.Controller.ImmsService_Test.Should_GetMockData" type="HealthGateway.Immunization.Test.Controller.ImmsService_Test" method="Should_GetMockData" time="0.0170000" result="Pass">
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Immunization.Test.Controller.ImmsService_Test" time="0.022">
+      <test name="HealthGateway.Immunization.Test.Controller.ImmsService_Test.Should_GetMockData" type="HealthGateway.Immunization.Test.Controller.ImmsService_Test" method="Should_GetMockData" time="0.0220000" result="Pass">
         <traits />
       </test>
     </collection>

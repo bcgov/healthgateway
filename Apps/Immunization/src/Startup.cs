@@ -16,6 +16,7 @@
 namespace HealthGateway
 {
     using HealthGateway.Service;
+    using HealthGateway.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -82,11 +83,12 @@ namespace HealthGateway
                 };
             });
 
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Health Gateway", Version = "v1" });
-            });
+            services.Configure<SwaggerSettings>(this.Configuration.GetSection(nameof(SwaggerSettings)));
+
+            services
+                .AddApiVersionWithExplorer()
+                .AddSwaggerOptions()
+                .AddSwaggerGen();
 
             // Http Service. Maybe it should be testeable too
             services.AddHttpClient();
@@ -114,18 +116,11 @@ namespace HealthGateway
             // Enable health endpoint for readiness probe
             app.UseHealthChecks("/health");
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
             // Enable jwt authentication
             app.UseAuthentication();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Health Gateway API V1");
-            });
+            app.UseSwaggerDocuments();
 
             if (env.IsDevelopment())
             {
