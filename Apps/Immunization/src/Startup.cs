@@ -58,6 +58,27 @@ namespace HealthGateway
         {
             this.logger.LogDebug("Starting Service Configuration...");
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
+            //this.logger.LogDebug(this.configuration.ToString());
+
+            var enumerator1 = this.configuration.GetChildren().GetEnumerator();
+            while (enumerator1.MoveNext())
+            {
+                this.logger.LogDebug($"{enumerator1.Current.Key,5}:{enumerator1.Current.Value,3}");
+
+                var enumerator2 = enumerator1.Current.GetChildren().GetEnumerator();
+                while (enumerator2.MoveNext())
+                {
+                    this.logger.LogDebug($"\t{enumerator2.Current.Key,5}:{enumerator2.Current.Value,3}");
+
+                    var enumerator3 = enumerator2.Current.GetChildren().GetEnumerator();
+                    while (enumerator3.MoveNext())
+                    {
+                        this.logger.LogDebug($"\t\t{enumerator3.Current.Key,5}:{enumerator3.Current.Value,3}");
+                    }
+                }
+            }
+
+
             if (debugEnabled)
             {
                 this.logger.LogDebug("Debug configuration is ENABLED");
