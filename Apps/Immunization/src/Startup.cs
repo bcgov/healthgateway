@@ -22,31 +22,33 @@ namespace HealthGateway
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Versioning;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
     public class Startup
     {
+        private readonly ILogger logger;
+        private readonly IConfiguration configuration;
+        private readonly IHostingEnvironment environment;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration)
+        /// <param name="logger">The injected logger provider.</param>
+        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
-            this.Configuration = configuration;
-            this.Environment = env;
+            this.configuration = configuration;
+            this.environment = env;
+            this.logger = logger;
         }
-
-        private IConfiguration Configuration { get; }
-
-        private IHostingEnvironment Environment { get; }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the container.
@@ -54,8 +56,19 @@ namespace HealthGateway
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            this.logger.LogDebug("Starting Service Configuration...");
+            bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("Environment:EnableDebug", false);
+            if (debugEnabled)
+            {
+                this.logger.LogDebug("Debug configuration is ENABLED");
+            }
+            else
+            {
+                this.logger.LogDebug("Debug configuration is DISABLED");
+            }
+
             // Displays sensitive data from the jwt if the environment is development only
-            IdentityModelEventSource.ShowPII = this.Environment.IsDevelopment();
+            IdentityModelEventSource.ShowPII = this.environment.IsDevelopment();
 
             services.AddHealthChecks();
             services.AddMvc()
@@ -67,7 +80,7 @@ namespace HealthGateway
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>
             {
-                this.Configuration.GetSection("OpenIdConnect").Bind(o);
+                this.configuration.GetSection("OpenIdConnect").Bind(o);
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>
@@ -83,7 +96,7 @@ namespace HealthGateway
                 };
             });
 
-            services.Configure<SwaggerSettings>(this.Configuration.GetSection(nameof(SwaggerSettings)));
+            services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
 
             services
                 .AddApiVersionWithExplorer()
@@ -108,7 +121,7 @@ namespace HealthGateway
             app.UseCors(builder =>
             {
                 builder
-                    .WithOrigins(this.Configuration.GetValue<string>("AllowOrigins"))
+                    .WithOrigins(this.configuration.GetValue<string>("AllowOrigins"))
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
