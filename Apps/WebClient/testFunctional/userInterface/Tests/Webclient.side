@@ -738,6 +738,118 @@
       "targets": [],
       "value": "true"
     }]
+  }, {
+    "id": "66c85c6d-f3d1-4e31-aca8-802cc4e9fe55",
+    "name": "Immunizations - Details",
+    "commands": [{
+      "id": "a6bf553f-b141-4a76-815e-4c1b0213936a",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d0711f6f-8548-40ba-9288-950f0b623e68",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Immunizations",
+      "targets": [
+        ["linkText=Immunizations", "linkText"],
+        ["css=#nav-collapse .nav-link:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a[2]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d6cf440d-0acb-4abc-a8d9-d5c6eea802c8",
+      "comment": "",
+      "command": "click",
+      "target": "id=btn1",
+      "targets": [
+        ["id=btn1", "id"],
+        ["css=tr:nth-child(1) #btn1", "css:finder"],
+        ["xpath=//button[@id='btn1']", "xpath:attributes"],
+        ["xpath=//table[@id='__BVID__43']/tbody/tr/td[4]/button", "xpath:idRelative"],
+        ["xpath=//td[4]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Show Details')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "014730ab-6ff4-4cc9-a370-7ce7f9a36f41",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.b-table-has-details > td:nth-child(2)",
+      "targets": [
+        ["css=.b-table-has-details > td:nth-child(2)", "css:finder"],
+        ["xpath=//table[@id='__BVID__43']/tbody/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Diphtheria, Tetanus, Pertussis, Hepatitis B, Polio, Haemophilus Influenzae type b (DTaP-HB-IPV-Hib)')]", "xpath:innerText"]
+      ],
+      "value": "vaccineDesc"
+    }, {
+      "id": "7444a233-370f-457b-aadd-b185d4f857ac",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) > .text-sm-right:nth-child(1) > b",
+      "targets": [
+        ["css=.row:nth-child(1) > .text-sm-right:nth-child(1) > b", "css:finder"],
+        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/div/div/b", "xpath:idRelative"],
+        ["xpath=//div/div/b", "xpath:position"],
+        ["xpath=//b[contains(.,'Lot:')]", "xpath:innerText"]
+      ],
+      "value": "Lot:"
+    }, {
+      "id": "15aaae1a-d1fb-4222-a853-4707091ed2ff",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.col-sm-6",
+      "targets": [
+        ["css=.col-sm-6", "css:finder"],
+        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/div[4]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[4]/div[2]", "xpath:position"]
+      ],
+      "value": "vaccineDetailDesc"
+    }, {
+      "id": "ce48ad83-60f1-4602-8bcf-5561abb9a8f2",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return ${vaccineDesc} === ${vaccineDetailDesc}",
+      "targets": [],
+      "value": "validDetails"
+    }, {
+      "id": "b2bfc8c8-4f97-40ed-adca-20efc2f9e4ef",
+      "comment": "",
+      "command": "assert",
+      "target": "validDetails",
+      "targets": [],
+      "value": "true"
+    }, {
+      "id": "9e3dc237-fd6b-45ef-bd73-df5311a6d44b",
+      "comment": "",
+      "command": "click",
+      "target": "css=#\\__BVID__43__details_0_ .btn",
+      "targets": [
+        ["css=#\\__BVID__43__details_0_ .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "92c872fa-f3e7-4fe2-b79c-64fffa2d843e",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=#\\__BVID__43__details_0_ .row:nth-child(4) > .text-sm-right",
+      "targets": [
+        ["css=#\\__BVID__43__details_0_ .row:nth-child(4) > .text-sm-right", "css:finder"],
+        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/div[4]/div", "xpath:idRelative"],
+        ["xpath=//div/div[4]/div", "xpath:position"]
+      ],
+      "value": "300"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -766,7 +878,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["9a66f6f0-d151-41fd-a2d1-5f20d89f3348", "1c8da969-a155-4b3c-95e2-3c75aa5c4533"]
+    "tests": ["9a66f6f0-d151-41fd-a2d1-5f20d89f3348", "1c8da969-a155-4b3c-95e2-3c75aa5c4533", "66c85c6d-f3d1-4e31-aca8-802cc4e9fe55"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []
