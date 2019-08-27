@@ -57,7 +57,7 @@ namespace HealthGateway
         public void ConfigureServices(IServiceCollection services)
         {
             this.logger.LogDebug("Starting Service Configuration...");
-            bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("Environment:EnableDebug", false);
+            bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", false);
             if (debugEnabled)
             {
                 this.logger.LogDebug("Debug configuration is ENABLED");
