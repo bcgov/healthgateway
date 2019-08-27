@@ -4,10 +4,10 @@
     <b-row>
       <b-col>
         <b-card
+          id="loginPicker"
           class="shadow-lg bg-white"
           style="max-width: 25rem;"
           align="center"
-          id="loginPicker"
         >
           <h3 slot="header">Log In</h3>
           <p slot="footer">
@@ -15,54 +15,35 @@
             <b-link to="/registration">Sign up</b-link>
           </p>
           <b-card-body>
-            <b-row>
-              <b-col>
-                <b-button
-                  id="bcscBtn"
-                  v-on:click="oidcLogin('bcsc')"
-                  block
-                  variant="primary"
-                  disabled
-                >
-                  <tr>
-                    <td style="width: 3rem;">
-                      <span class="fa fa-address-card"></span>
-                    </td>
-                    <td>Log in with BC Services Card</td>
-                  </tr>
-                </b-button>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>or</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <b-button id="idirBtn" v-on:click="oidcLogin('idir')" block variant="primary">
-                  <tr>
-                    <td style="width: 3rem;">
-                      <span class="fa fa-user"></span>
-                    </td>
-                    <td>Log in with IDIR</td>
-                  </tr>
-                </b-button>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>or</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <b-button id="gitBtn" v-on:click="oidcLogin('github')" block variant="primary">
-                  <tr>
-                    <td style="width: 3rem;">
-                      <span class="fab fa-github"></span>
-                    </td>
-                    <td>Log in with GitHub</td>
-                  </tr>
-                </b-button>
-              </b-col>
-            </b-row>
+            <div v-for="provider in identityProviders" :key="provider.id">
+              <b-row>
+                <b-col>
+                  <b-button
+                    :id="`${provider.id}Btn`"
+                    block
+                    :disabled="provider.disabled"
+                    variant="primary"
+                    @click="oidcLogin(provider.hint)"
+                  >
+                    <b-row>
+                      <b-col class="col-2">
+                        <span :class="`${provider.icon}`"></span>
+                      </b-col>
+                      <b-col class="text-justify">
+                        <span>{{ provider.name }}</span>
+                      </b-col>
+                    </b-row>
+                  </b-button>
+                </b-col>
+              </b-row>
+              <b-row
+                v-if="
+                  identityProviders.indexOf(provider) <
+                    identityProviders.length - 1
+                "
+                ><b-col>or</b-col>
+              </b-row>
+            </div>
           </b-card-body>
         </b-card>
       </b-col>
@@ -74,17 +55,24 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import {
+  IdentityProviderConfiguration,
+  ExternalConfiguration
+} from "@/models/configData";
 
 const namespace: string = "auth";
 
 @Component
 export default class LoginComponent extends Vue {
-  @Action("login", { namespace }) login: any;
-  @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
+  @Action("authenticateOidc", { namespace }) authenticateOidc: any;
+  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
+  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
+  @Getter("identityProviders", { namespace: "config" })
+  identityProviders: IdentityProviderConfiguration[];
 
   private redirectPath: string = "";
   private routeHandler = undefined;
-
+  
   mounted() {
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
       this.redirectPath = this.$route.query.redirect;
@@ -93,22 +81,24 @@ export default class LoginComponent extends Vue {
     }
 
     this.routeHandler = this.$router;
-
-    if (this.isAuthenticated) {
+    if (this.oidcIsAuthenticated && this.userIsRegistered) {
+      this.routeHandler.push({ path: this.redirectPath });
+    } else if (this.oidcIsAuthenticated) {
+      this.redirectPath = "/registration";
       this.routeHandler.push({ path: this.redirectPath });
     }
   }
 
   oidcLogin(hint: string) {
     // if the login action returns it means that the user already had credentials.
-    this.login({ idpHint: hint, redirectPath: this.redirectPath }).then(
-      result => {
-        if (this.isAuthenticated) {
-          this.routeHandler.push({ path: this.redirectPath });
-        }
+    this.authenticateOidc({
+      idpHint: hint,
+      redirectPath: this.redirectPath
+    }).then(result => {
+      if (this.oidcIsAuthenticated) {
+        this.routeHandler.push({ path: this.redirectPath });
       }
-    );
+    });
   }
 }
 </script>
-      

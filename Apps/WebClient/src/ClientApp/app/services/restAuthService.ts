@@ -1,64 +1,78 @@
-import axios, { AxiosResponse } from 'axios';
-import { IAuthenticationService } from '@/services/interfaces';
+import { IAuthenticationService, IConfigService } from "@/services/interfaces";
+import {
+  UserManager,
+  WebStorageStateStore,
+  User as OidcUser,
+  UserManagerSettings
+} from "oidc-client";
 
-import { injectable } from 'inversify';
-import 'reflect-metadata';
-
-import AuthenticationData from '@/models/authenticationData';
+import { injectable } from "inversify";
+import "reflect-metadata";
+import { OpenIdConnectConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-    private readonly GET_AUTH_URI: string = 'api/GetAuthenticationData'; // This app's backend service to perform authentication (keeper of the client secret)
-    private readonly HTTP_HEADER_AUTH: string = 'Authorization'; // Auth key for ensuring we send the base64 token
+  private oidcUserManager?: UserManager;
 
-    public startLoginFlow(idpHint: string, relativeToPath: string): void {
-        // Handle OIDC login by setting a hint that the AuthServer needs to know which IdP to route to
-        // The server-side backend keeps the client secret needed to route to KeyCloak AS
-        // We get back a JWT signed if the authentication was successful
-        console.log('Starting login flow....');
+  public initialize(config: OpenIdConnectConfiguration): void {
+    const oidcConfig = {
+      userStore: new WebStorageStateStore({ store: window.localStorage }),
+      authority: config.authority,
+      client_id: config.clientId,
+      redirect_uri: config.callbacks["Logon"],
+      response_type: config.responseType,
+      scope: config.scope,
+      post_logout_redirect_uri: config.callbacks["Logout"],
+      filterProtocolClaims: true,
+      loadUserInfo: false
+    };
+    console.log("oidc configuration: ", oidcConfig);
+    this.oidcUserManager = new UserManager(oidcConfig);
+  }
 
-        var fullRedirectUrl = new URL(relativeToPath, window.location.href);
+  public getOidcConfig(): UserManagerSettings {
+    return this.oidcUserManager!.settings;
+  }
 
-        let queryParams = `?idpHint=${idpHint}&redirectUri=${fullRedirectUrl.href}`;
-
-        var authPathUrl = new URL('/Auth/Login', window.location.href);
-        let fullPath = authPathUrl + queryParams;
-        console.log(fullPath);
-        window.location.href = fullPath;
-    }
-
-    public getAuthentication(): Promise<AuthenticationData> {
-        return new Promise((resolve, reject) => {
-            axios
-                .get<AuthenticationData>(this.GET_AUTH_URI)
-                .then((response: AxiosResponse) => {
-                    // Verify that the object is correct.
-                    if (response.data instanceof Object) {
-                        let credentials: AuthenticationData = response.data;
-                        return resolve(credentials);
-                    } else {
-                        return reject('invalid authentication data');
-                    }
-                })
-                .catch(err => {
-                    console.log('Fetch error:' + err.toString());
-                    reject(err);
-                });
+  public getUser(): Promise<OidcUser | null> {
+    return new Promise<OidcUser | null>(resolve => {
+      this.oidcUserManager!.getUser()
+        .then(user => {
+          resolve(user);
+        })
+        .catch(() => {
+          resolve(null);
         });
-    }
+    });
+  }
 
-    public refreshToken(): Promise<AuthenticationData> {
-        return new Promise((resolve, reject) => {
-            // NOT IMPLEMENTED
-            resolve();
-        });
-    }
+  public logout(): Promise<void> {
+    return this.oidcUserManager!.signoutRedirect();
+  }
 
-    public destroyToken(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            console.log('Starting Logout flow....');
-            var authPathUrl = new URL('/Auth/Logout', window.location.href);
-            window.location.href = authPathUrl.href;
-        });
-    }
+  public signinSilent(): Promise<OidcUser> {
+    return this.oidcUserManager!.signinSilent();
+  }
+
+  public signinRedirect(idpHint: string, redirectPath: string): Promise<void> {
+    var fullRedirectUrl = new URL(redirectPath, window.location.href);
+    console.log(fullRedirectUrl);
+    console.log(redirectPath);
+    sessionStorage.setItem("vuex_oidc_active_route", redirectPath);
+    return this.oidcUserManager!.signinRedirect({
+      extraQueryParams: {
+        kc_idp_hint: idpHint
+      }
+    });
+  }
+  public signinRedirectCallback(): Promise<OidcUser> {
+    return this.oidcUserManager!.signinRedirectCallback();
+  }
+
+  //TODO: Do we still need this?
+  public expireSiteMinderCookie() {
+    // This expires the siteminder cookie preventing the app from login in using the cache.
+    var d = new Date();
+    document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
+  }
 }

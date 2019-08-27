@@ -1,18 +1,101 @@
 <template>
   <div>
+    <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    <b-alert :show="hasErrors" dismissible variant="danger">
+      <h4>Error</h4>
+      <span>An unexpected error occured while processing the request.</span>
+    </b-alert>
     <h1 id="subject">
       <span class="fa fa-1x fa-syringe"></span>
-      &nbsp;{{ $t('immz-component.immunizations')}}
+      &nbsp;{{ $t("immz-component.immunizations") }}
     </h1>
-    <p id="subtext">{{ $t('immz-component.prototype')}}</p>
+    <p id="subtext" align="right">
+      <b>Reference:</b>&nbsp;
+      <b-link :href="healthLinkURL" target="_blank"
+        >BC Immunization Schedules</b-link
+      >
+    </p>
 
     <b-table striped responsive small :items="items" :fields="fields">
-      <template slot="HEAD_date" id="f1">{{ $t('immz-component.fields.date') }}</template>
-      <template slot="HEAD_vaccine" id="f2">{{ $t('immz-component.fields.vaccine') }}</template>
-      <template slot="HEAD_dose" id="f3">{{ $t('immz-component.fields.dose') }}</template>
-      <template slot="HEAD_site" id="f4">{{ $t('immz-component.fields.site') }}</template>
-      <template slot="HEAD_lot" id="f5">{{ $t('immz-component.fields.lot') }}</template>
-      <template slot="HEAD_boost" id="f6">{{ $t('immz-component.fields.boost') }}</template>
+      <template id="f1" slot="HEAD_date">
+        {{ $t("immz-component.fields.date") }}
+      </template>
+      <template id="f2" slot="HEAD_vaccine">
+        {{ $t("immz-component.fields.vaccine") }}
+      </template>
+      <template id="f6" slot="HEAD_boost">
+        {{ $t("immz-component.fields.boost") }}
+      </template>
+      <template slot="show_details" slot-scope="row">
+        <b-button
+          id="btn1"
+          class="pb-2"
+          size="sm"
+          variant="outline-info"
+          @click="row.toggleDetails"
+          >{{ row.detailsShowing ? "Hide" : "Show" }} Details</b-button
+        >
+      </template>
+      <template id="rd" slot="row-details" slot-scope="row">
+        <b-card>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.lot") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.lot }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.site") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.site }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.dose") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.dose }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.route") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.route }}</b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.manufacturer") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.manufacturer }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.tradeName") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.tradeName }}</b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.administeredBy") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.administeredBy }}</b-col>
+            <b-col sm="3" class="text-sm-right">
+              <b>{{ $t("immz-component.fields.administeredAt") }}:</b>
+            </b-col>
+            <b-col sm="3">{{ row.item.administeredAt }}</b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3" class="text-sm-right">
+              <b>More Infomation on HealthLinkBC:</b>
+            </b-col>
+            <b-col sm="6">
+              <b-link
+                :href="vaccineSearchURL + row.item.vaccine"
+                target="_blank"
+                >{{ row.item.vaccine }}</b-link
+              >
+            </b-col>
+          </b-row>
+          <b-button
+            size="sm"
+            variant="outline-secondary"
+            @click="row.toggleDetails"
+            >Hide Details</b-button
+          >
+        </b-card>
+      </template>
     </b-table>
   </div>
 </template>
@@ -20,169 +103,62 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { IVueI18n } from "vue-i18n";
+import { State, Action, Getter } from "vuex-class";
+import ImmsData from "@/models/immsData";
+import LoadingComponent from "@/components/loading.vue";
+import { IImmsService } from "@/services/interfaces";
+import container from "@/inversify.config";
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { WebClientConfiguration } from "@/models/configData";
 
-interface Immunization {
-  date: string;
-  vaccine: string;
-  lot: string;
-  dose: string;
-  booster: string;
-  site: string;
-}
-
-@Component
+@Component({
+  components: {
+    LoadingComponent
+  }
+})
 export default class ImmunizationsComponent extends Vue {
+  @Getter("webClient", { namespace: "config" })
+  webClientConfiguration: WebClientConfiguration;
+
+  private items: ImmsData[] = [];
+  private isLoading: boolean = false;
+  private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = false;
+
+  private vaccineSearchURL: string = "";
+  private healthLinkURL: string = "";
 
   private fields = {
     date: { sortable: true },
     vaccine: { sortable: true },
-    dose: { sortable: false },
-    site: { sortable: true },
-    lot: { sortable: true },
-    boost: { sortable: true }
+    boost: { sortable: true },
+    show_details: { sortable: false }
   };
 
-  private items = [
-    {
-      date: "1999 Jun 10",
-      vaccine:
-        "Diphtheria, Tetanus, Pertussis, Hepatitis B, Polio, Haemophilus Influenzae type b (DTaP-HB-IPV-Hib)",
-      dose: "0.5 mL",
-      site: "left vastus lateralis",
-      lot: "4792AB",
-      boost: "1999 Aug 10"
-    },
-    {
-      date: "1999 Aug 14",
-      vaccine: "DTaP-HB-IPV-Hib",
-      dose: "0.5 mL",
-      site: "left vastus lateralis",
-      lot: "8793BC",
-      boost: "1999 Oct 15"
-    },
-    {
-      date: "1999 Oct 28",
-      vaccine: "DTaP-HB-IPV-Hib",
-      dose: "0.5 mL",
-      site: "left vastus lateralis",
-      lot: "93435DD",
-      boost: ""
-    },
-    {
-      date: "2000 Apr 14",
-      vaccine: "Chickenpox (Varicella)",
-      dose: "0.5 mL",
-      site: "left vastus lateralis",
-      lot: "99693AA",
-      boost: ""
-    },
-    {
-      date: "2000 Apr 23",
-      vaccine: "Measles, Mumps, Rubella (MMR)",
-      dose: "0.5 mL",
-      site: "left vastus lateralis",
-      lot: "100330AA",
-      boost: ""
-    },
-    {
-      date: "2000 Oct 30",
-      vaccine: "DTaP-IPV-Hib",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "103234AB",
-      boost: ""
-    },
-    {
-      date: "2000 Jul 11",
-      vaccine: "Influenza, inactivated (Flu)",
-      dose: "0.25 mL",
-      site: "left deltoid",
-      lot: "990093FA",
-      boost: ""
-    },
-    {
-      date: "2003 Sep 11",
-      vaccine: "Measles, Mumps, Rubella, Varicella  (MMRV)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "880899AA",
-      boost: ""
-    },
-    {
-      date: "2003 Sep 11",
-      vaccine: "Tetanus, Diphtheria, Pertussis, Polio vaccine (Tdap-IPV)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "778099DT",
-      boost: "2013 Sep 11 (Td)"
-    },
-    {
-      date: "2011 Sep 22",
-      vaccine: "Human Papilomavirus (HPV)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "123450AA",
-      boost: ""
-    },
-    {
-      date: "2013 Nov 2",
-      vaccine: "Tetanus, Diphtheria (Td)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "440319DC",
-      boost: ""
-    },
-    {
-      date: "2014 Sep 9",
-      vaccine: "Meningococcal Quadrivalent",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "909102CZ",
-      boost: ""
-    },
-    {
-      date: "2014 Oct 2",
-      vaccine: "Influenza (Flu)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "239941RA",
-      boost: ""
-    },
-    {
-      date: "2015 Oct 24",
-      vaccine: "Influenza (Flu)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "503459AB",
-      boost: ""
-    },
-    {
-      date: "2016 Jul 1",
-      vaccine: "Tetanus, Diphtheria (Td)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "440319DC",
-      boost: ""
-    },
-    {
-      date: "2017 Nov 2",
-      vaccine: "Influenza (Flu)",
-      dose: "0.5 mL",
-      site: "right deltoid",
-      lot: "100399AC",
-      boost: ""
-    },
-    {
-      date: "2018 Oct 30",
-      vaccine: "Influenza (Flu)",
-      dose: "0.5 mL",
-      site: "left deltoid",
-      lot: "845003BB",
-      boost: ""
-    }
+  mounted() {
+    this.isLoading = true;
+    const immsService: IImmsService = container.get(
+      SERVICE_IDENTIFIER.ImmsService
+    );
+
+  this.vaccineSearchURL = this.webClientConfiguration.externalURLs[
+    "HealthLinkVaccineSearch"
   ];
+  this.healthLinkURL = this.webClientConfiguration.externalURLs[
+    "HealthLinkImmunizationSchedule"
+  ];
+
+    immsService
+      .getItems()
+      .then(results => {
+        this.items = results;
+        this.isLoading = false;
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        this.isLoading = false;
+      });
+  }
 }
 </script>

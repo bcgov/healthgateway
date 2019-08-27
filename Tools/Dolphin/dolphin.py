@@ -123,7 +123,7 @@ def run(key, verbose):
     for runner_name in sonar_conf.test_runners:
         click.echo('Executing ' + runner_name + ' test')
         if runner_name == 'xunit':
-            output = _run_command('dotnet test test/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults ')
+            output = _run_command('dotnet test testUnit/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults ')
             if output != 0:
                 click.secho('Error, please check logs', fg='red')
                 exit()
@@ -242,12 +242,13 @@ def _run_command(command):
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, shell=is_shell)
     while True:
         output = process.stdout.readline()
-        if output.decode() == '' and process.poll() is not None:
+        decoded_out = output.decode("utf-8", "strict")  
+        if decoded_out == '' and process.poll() is not None:
             break
         if process.poll() is None or process.poll() == 0:
-            click.secho('|   ' + output.strip().decode(), fg='green')
+            click.secho('|   ' + decoded_out.strip(), fg='green')
         else:
-            click.secho('|   ' + output.strip().decode(), fg='red')
+            click.secho('|   ' + decoded_out.strip(), fg='red')
 
     rc = process.poll()
     return rc

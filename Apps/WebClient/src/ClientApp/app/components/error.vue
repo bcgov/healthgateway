@@ -8,9 +8,9 @@
   <div class="row">
     <div class="col d-flex justify-content-center">
       <div class="error-template">
-        <h1>{{error.code}}</h1>
-        <h2>{{error.name}}</h2>
-        <p>{{error.message}}</p>
+        <h1>{{ error.code }}</h1>
+        <h2>{{ error.name }}</h2>
+        <p>{{ error.message }}</p>
       </div>
     </div>
   </div>
@@ -26,4 +26,3 @@ export default class PageErrorComponent extends Vue {
   @Prop(PageError) error!: PageError;
 }
 </script>
-

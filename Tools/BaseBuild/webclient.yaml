@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: ${NAME}-template
+  name: webclient-template
 objects:
 
 - apiVersion: v1
@@ -10,6 +10,8 @@ objects:
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
+    labels:
+      app: ${NAME}
 
 - apiVersion: v1
   kind: DeploymentConfig
@@ -52,6 +54,8 @@ objects:
       spec:
         containers:
         - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: ${ASPNETCORE_ENVIRONMENT}
             - name: HealthGateway_OpenIdConnect__Authority
               valueFrom:
                 configMapKeyRef:
@@ -62,11 +66,18 @@ objects:
                 configMapKeyRef:
                   key: HealthGateway_OpenIdConnect__ClientId
                   name: ${COMMON_CONFIG}-config
-            - name: HealthGateway_OpenIdConnect__ClientSecret
+            - name: HealthGateway_OpenIdConnect__Callbacks__Logon
               valueFrom:
                 configMapKeyRef:
-                  key: HealthGateway_OpenIdConnect__ClientSecret
+                  key: HealthGateway_OpenIdConnect__Callbacks__Logon
                   name: ${COMMON_CONFIG}-config
+            - name: HealthGateway_OpenIdConnect__Callbacks__Logout
+              valueFrom:
+                configMapKeyRef:
+                  key: HealthGateway_OpenIdConnect__Callbacks__Logout
+                  name: ${COMMON_CONFIG}-config
+            - name: HealthGateway_ImmsServiceUrl
+              value: ${IMMS_SERVICE_URL}
           imagePullPolicy: Always
           name: ${NAME}
           ports:
@@ -172,4 +183,14 @@ parameters:
   - name: ENV
     displayName: Enviroment
     description: The environment to be deployed to
+    required: true     
+  - name: ASPNETCORE_ENVIRONMENT
+    displayName: AspNet Core Environment
+    description: The aspnet environment to be deployed to
+    value: Production
+    required: true     
+  - name: IMMS_SERVICE_URL
+    displayName: Immunization Service Url
+    description: The Immunization API service url
+    value: http://immsservice:8080/v1/api
     required: true     
