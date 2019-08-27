@@ -25,7 +25,8 @@ namespace Immunization.Controllers
     /// The Immunization controller.
     /// </summary>
     [Authorize]
-    [Route("v1/api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     public class ImmsController : ControllerBase
     {
@@ -47,8 +48,11 @@ namespace Immunization.Controllers
         /// Gets a json list of immunization records.
         /// </summary>
         /// <returns>a list of immunization records.</returns>
+        /// <response code="200">Returns the List of Immunization records.</response>
+        /// <response code="401">The client is not authorzied to retrieve the list.</response>  
         [HttpGet]
-        [Route("items")]
+        [Produces("application/json")]
+        [Route("items")] 
         public IEnumerable<ImmsDataModel> GetItems()
         {
             return this.service.GetImmunizations(); // For now.
