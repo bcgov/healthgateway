@@ -57,7 +57,7 @@ namespace HealthGateway
         public void ConfigureServices(IServiceCollection services)
         {
             this.logger.LogDebug("Starting Service Configuration...");
-            bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", false);
+            bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
             if (debugEnabled)
             {
                 this.logger.LogDebug("Debug configuration is ENABLED");
@@ -68,7 +68,7 @@ namespace HealthGateway
             }
 
             // Displays sensitive data from the jwt if the environment is development only
-            IdentityModelEventSource.ShowPII = this.environment.IsDevelopment();
+            IdentityModelEventSource.ShowPII = debugEnabled;
 
             services.AddHealthChecks();
             services.AddMvc()
