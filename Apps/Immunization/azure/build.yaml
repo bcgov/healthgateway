@@ -4,6 +4,7 @@ name: 1.0.0$(Rev:.r) #Build number
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Immunization
   App.Name: immsservice
+  App.FunctionalTests: $(App.Home)/testFunctional
 
 pr: none
 
@@ -16,7 +17,8 @@ trigger:
    include:
      - Apps/Immunization/src
      - Apps/Immunization/test
- 
+     - Apps/WebClient/testFunctional
+
 pool:
   name: 'HealthGateway'
 
@@ -66,6 +68,13 @@ steps:
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
   displayName: 'Build OpenShift Image and push to Image Stream'
+
+- task: CopyFiles@2
+  displayName: Copy Functional Tests to Staging
+  inputs:
+    SourceFolder: '$(App.FunctionalTests)'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
