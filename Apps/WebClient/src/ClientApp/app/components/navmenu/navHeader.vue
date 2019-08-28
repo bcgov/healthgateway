@@ -36,20 +36,40 @@
           <span class="fa fa-syringe"></span> Immunizations
         </router-link>
       </b-navbar-nav>
+      <b-navbar-nav v-if="displayRegistration">
+        <router-link class="nav-link" to="/registration">
+          <span class="fa fa-key"></span> Register
+        </router-link>
+      </b-navbar-nav>
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item-dropdown :text="greeting" v-if="isAuthenticated" right>
+        <b-nav-item-dropdown
+          v-if="oidcIsAuthenticated"
+          id="menuBtndUser"
+          :text="greeting"
+          right
+        >
           <b-dropdown-item>
-            <router-link to="/logout" :exact="true">
+            <router-link id="menuBtnLogout" to="/logout" :exact="true">
               <span class="fa fa-user"></span> Logout
             </router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
-        <router-link class="nav-link" to="/login" :exact="true" v-else>
+        <router-link
+          v-else
+          id="menuBtnLogin"
+          class="nav-link"
+          to="/login"
+          :exact="true"
+        >
           <span class="fa fa-user"></span> Login
         </router-link>
-        <b-nav-item-dropdown id="languageSelector" :text="currentLanguage.description" right>
+        <b-nav-item-dropdown
+          id="languageSelector"
+          :text="currentLanguage.description"
+          right
+        >
           <b-dropdown-text>Language:</b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item
@@ -57,7 +77,9 @@
             :key="key"
             :active="currentLanguage.code === key"
           >
-            <a :id="key" @click="onLanguageSelect(key)">{{value.description}}</a>
+            <a :id="key" @click="onLanguageSelect(key)">{{
+              value.description
+            }}</a>
           </b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -80,8 +102,9 @@ const namespace: string = "auth";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
-  @Getter("authenticatedUser", { namespace }) authenticatedUser: User;
+  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
+  @Getter("oidcUser", { namespace }) authenticatedUser: User;
+  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
 
   languages: { [code: string]: ILanguage } = {};
   currentLanguage: ILanguage = null;
@@ -91,15 +114,29 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
-    if (this.authenticatedUser != undefined && this.$route.path != "/") {
+    let isLandingPage = this.$route.path === "/";
+    if (
+      this.oidcIsAuthenticated &&
+      this.authenticatedUser != undefined &&
+      this.authenticatedUser != undefined &&
+      this.userIsRegistered &&
+      !isLandingPage
+    ) {
       return true;
     }
 
     return false;
   }
 
+  get displayRegistration(): boolean {
+    if (this.oidcIsAuthenticated && !this.userIsRegistered) {
+      return true;
+    }
+    return false;
+  }
+
   get greeting(): string {
-    if (this.authenticatedUser) {
+    if (this.oidcIsAuthenticated && this.authenticatedUser) {
       return "Hi " + this.authenticatedUser.name;
     } else {
       return "";

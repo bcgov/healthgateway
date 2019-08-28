@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "WebClient"
+		},
+		{
+			"path": "WebClient/functional/api"
 		}
 	],
 	"settings": {}

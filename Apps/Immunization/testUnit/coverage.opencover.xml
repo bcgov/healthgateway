@@ -1,0 +1,920 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CoverageSession>
+  <Summary numSequencePoints="396" visitedSequencePoints="251" numBranchPoints="46" visitedBranchPoints="0" sequenceCoverage="63.38" branchCoverage="0" maxCyclomaticComplexity="72" minCyclomaticComplexity="72" visitedClasses="3" numClasses="12" visitedMethods="14" numMethods="37" />
+  <Modules>
+    <Module hash="41CBD2B4-295F-4328-9E74-C9901A49FBEF">
+      <ModulePath>Immunization.dll</ModulePath>
+      <ModuleTime>2019-08-27T12:18:31</ModuleTime>
+      <ModuleName>Immunization</ModuleName>
+      <Files>
+        <File uid="1" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Program.cs" />
+        <File uid="2" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Startup.cs" />
+        <File uid="3" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/ConfigureSwaggerGenOptions.cs" />
+        <File uid="4" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/ConfigureSwaggerOptions.cs" />
+        <File uid="5" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/ConfigureSwaggerUiOptions.cs" />
+        <File uid="6" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/MiddlewareExtensions.cs" />
+        <File uid="7" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/ServicesExtensions.cs" />
+        <File uid="8" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/SwaggerDefaultValues.cs" />
+        <File uid="9" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Swagger/SwaggerSettings.cs" />
+        <File uid="10" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Services/MockImmsService.cs" />
+        <File uid="11" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Models/ImmsDataModel.cs" />
+        <File uid="12" fullPath="/Users/stephen/Projects/Health/healthgateway/Apps/Immunization/src/Controllers/ImmsController.cs" />
+      </Files>
+      <Classes>
+        <Class>
+          <Summary numSequencePoints="4" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="2" />
+          <FullName>HealthGateway.Program</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Program::Main(System.String[])</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="32" ordinal="0" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="0" uspid="33" ordinal="1" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="1" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="32" ec="1" el="33" bec="0" bev="0" fileid="1" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>Microsoft.AspNetCore.Hosting.IWebHostBuilder HealthGateway.Program::CreateWebHostBuilder(System.String[])</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="41" ordinal="0" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="0" uspid="42" ordinal="1" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="1" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="41" ec="1" el="42" bec="0" bev="0" fileid="1" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="56" visitedSequencePoints="0" numBranchPoints="6" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="5" />
+          <FullName>HealthGateway.Startup</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>Microsoft.Extensions.Configuration.IConfiguration HealthGateway.Startup::get_Configuration()</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="47" ordinal="0" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="47" ec="1" el="47" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>Microsoft.AspNetCore.Hosting.IHostingEnvironment HealthGateway.Startup::get_Environment()</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="49" ordinal="0" sl="49" sc="1" el="49" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="49" ec="1" el="49" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="33" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Startup::ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="58" ordinal="0" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="60" ordinal="1" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="61" ordinal="2" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="62" ordinal="3" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="64" ordinal="4" sl="64" sc="1" el="64" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="65" ordinal="5" sl="65" sc="1" el="65" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="66" ordinal="6" sl="66" sc="1" el="66" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="67" ordinal="7" sl="67" sc="1" el="67" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="68" ordinal="8" sl="68" sc="1" el="68" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="69" ordinal="9" sl="69" sc="1" el="69" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="70" ordinal="10" sl="70" sc="1" el="70" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="71" ordinal="11" sl="71" sc="1" el="71" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="72" ordinal="12" sl="72" sc="1" el="72" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="73" ordinal="13" sl="73" sc="1" el="73" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="74" ordinal="14" sl="74" sc="1" el="74" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="75" ordinal="15" sl="75" sc="1" el="75" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="76" ordinal="16" sl="76" sc="1" el="76" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="77" ordinal="17" sl="77" sc="1" el="77" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="78" ordinal="18" sl="78" sc="1" el="78" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="79" ordinal="19" sl="79" sc="1" el="79" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="80" ordinal="20" sl="80" sc="1" el="80" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="81" ordinal="21" sl="81" sc="1" el="81" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="82" ordinal="22" sl="82" sc="1" el="82" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="83" ordinal="23" sl="83" sc="1" el="83" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="84" ordinal="24" sl="84" sc="1" el="84" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="86" ordinal="25" sl="86" sc="1" el="86" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="88" ordinal="26" sl="88" sc="1" el="88" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="89" ordinal="27" sl="89" sc="1" el="89" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="90" ordinal="28" sl="90" sc="1" el="90" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="91" ordinal="29" sl="91" sc="1" el="91" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="94" ordinal="30" sl="94" sc="1" el="94" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="97" ordinal="31" sl="97" sc="1" el="97" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="98" ordinal="32" sl="98" sc="1" el="98" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="64" ordinal="0" path="0" offset="43" offsetend="45" sl="64" fileid="2" />
+                <BranchPoint vc="0" uspid="64" ordinal="1" path="1" offset="43" offsetend="68" sl="64" fileid="2" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="58" ec="1" el="98" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="17" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Startup::Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="108" ordinal="0" sl="108" sc="1" el="108" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="109" ordinal="1" sl="109" sc="1" el="109" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="110" ordinal="2" sl="110" sc="1" el="110" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="111" ordinal="3" sl="111" sc="1" el="111" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="112" ordinal="4" sl="112" sc="1" el="112" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="113" ordinal="5" sl="113" sc="1" el="113" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="114" ordinal="6" sl="114" sc="1" el="114" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="117" ordinal="7" sl="117" sc="1" el="117" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="120" ordinal="8" sl="120" sc="1" el="120" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="123" ordinal="9" sl="123" sc="1" el="123" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="125" ordinal="10" sl="125" sc="1" el="125" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="127" ordinal="11" sl="127" sc="1" el="127" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="128" ordinal="12" sl="128" sc="1" el="128" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="132" ordinal="13" sl="132" sc="1" el="132" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="135" ordinal="14" sl="135" sc="1" el="135" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="136" ordinal="15" sl="136" sc="1" el="136" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="137" ordinal="16" sl="137" sc="1" el="137" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="125" ordinal="0" path="0" offset="55" offsetend="57" sl="125" fileid="2" />
+                <BranchPoint vc="0" uspid="125" ordinal="1" path="1" offset="55" offsetend="66" sl="125" fileid="2" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="108" ec="1" el="137" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Startup::.ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Configuration.IConfiguration)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="41" ordinal="0" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="43" ordinal="1" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="44" ordinal="2" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="0" uspid="45" ordinal="3" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="4" offset="4" sc="0" sl="41" ec="1" el="45" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="24" visitedSequencePoints="0" numBranchPoints="6" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="4" />
+          <FullName>HealthGateway.Swagger.ConfigureSwaggerGenOptions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerGenOptions::Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)</Name>
+              <FileRef uid="3" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="57" ordinal="0" sl="57" sc="1" el="57" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="58" ordinal="1" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="59" ordinal="2" sl="59" sc="1" el="59" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="60" ordinal="3" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="62" ordinal="4" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="63" ordinal="5" sl="63" sc="1" el="63" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="64" ordinal="6" sl="64" sc="1" el="64" ec="2" bec="0" bev="0" fileid="3" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="57" ec="1" el="64" bec="0" bev="0" fileid="3" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerGenOptions::SetCommentsPathForSwaggerJsonAndUi(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)</Name>
+              <FileRef uid="3" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="68" ordinal="0" sl="68" sc="1" el="68" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="69" ordinal="1" sl="69" sc="1" el="69" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="70" ordinal="2" sl="70" sc="1" el="70" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="71" ordinal="3" sl="71" sc="1" el="71" ec="2" bec="0" bev="0" fileid="3" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="68" ec="1" el="71" bec="0" bev="0" fileid="3" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="0" numBranchPoints="4" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerGenOptions::AddSwaggerDocumentForEachDiscoveredApiVersion(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)</Name>
+              <FileRef uid="3" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="75" ordinal="0" sl="75" sc="1" el="75" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="77" ordinal="1" sl="77" sc="1" el="77" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="79" ordinal="2" sl="79" sc="1" el="79" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="81" ordinal="3" sl="81" sc="1" el="81" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="84" ordinal="4" sl="84" sc="1" el="84" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="86" ordinal="5" sl="86" sc="1" el="86" ec="2" bec="0" bev="0" fileid="3" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="75" ordinal="3" path="1" offset="122" offsetend="19" sl="75" fileid="3" />
+                <BranchPoint vc="0" uspid="79" ordinal="0" path="0" offset="59" offsetend="61" sl="79" fileid="3" />
+                <BranchPoint vc="0" uspid="79" ordinal="1" path="1" offset="59" offsetend="93" sl="79" fileid="3" />
+                <BranchPoint vc="0" uspid="75" ordinal="2" path="0" offset="122" offsetend="124" sl="75" fileid="3" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="75" ec="1" el="86" bec="0" bev="0" fileid="3" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerGenOptions::.ctor(Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Options.IOptions`1&lt;HealthGateway.Swagger.SwaggerSettings&gt;)</Name>
+              <FileRef uid="3" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="43" ordinal="0" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="44" ordinal="1" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="46" ordinal="2" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="47" ordinal="3" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="50" ordinal="4" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="51" ordinal="5" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="0" uspid="52" ordinal="6" sl="52" sc="1" el="52" ec="2" bec="0" bev="0" fileid="3" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="51" ordinal="0" path="0" offset="49" offsetend="51" sl="51" fileid="3" />
+                <BranchPoint vc="0" uspid="51" ordinal="1" path="1" offset="49" offsetend="57" sl="51" fileid="3" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="43" ec="1" el="52" bec="0" bev="0" fileid="3" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="6" visitedSequencePoints="0" numBranchPoints="6" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="2" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="2" />
+          <FullName>HealthGateway.Swagger.ConfigureSwaggerOptions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerOptions::Configure(Swashbuckle.AspNetCore.Swagger.SwaggerOptions)</Name>
+              <FileRef uid="4" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="38" ordinal="0" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="0" uspid="40" ordinal="1" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="0" uspid="42" ordinal="2" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="4" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="38" ordinal="0" path="0" offset="1" offsetend="3" sl="38" fileid="4" />
+                <BranchPoint vc="0" uspid="38" ordinal="1" path="1" offset="1" offsetend="30" sl="38" fileid="4" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="38" ec="1" el="42" bec="0" bev="0" fileid="4" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="4" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerOptions::.ctor(Microsoft.Extensions.Options.IOptions`1&lt;HealthGateway.Swagger.SwaggerSettings&gt;)</Name>
+              <FileRef uid="4" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="30" ordinal="0" sl="30" sc="1" el="30" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="0" uspid="32" ordinal="1" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="0" uspid="33" ordinal="2" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="4" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="32" ordinal="0" path="0" offset="8" offsetend="10" sl="32" fileid="4" />
+                <BranchPoint vc="0" uspid="32" ordinal="1" path="1" offset="8" offsetend="13" sl="32" fileid="4" />
+                <BranchPoint vc="0" uspid="32" ordinal="2" path="0" offset="20" offsetend="22" sl="32" fileid="4" />
+                <BranchPoint vc="0" uspid="32" ordinal="3" path="1" offset="20" offsetend="28" sl="32" fileid="4" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="30" ec="1" el="33" bec="0" bev="0" fileid="4" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="19" visitedSequencePoints="0" numBranchPoints="6" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="2" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="2" />
+          <FullName>HealthGateway.Swagger.ConfigureSwaggerUiOptions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="13" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerUiOptions::Configure(Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="51" ordinal="0" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="53" ordinal="1" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="54" ordinal="2" sl="54" sc="1" el="54" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="55" ordinal="3" sl="55" sc="1" el="55" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="56" ordinal="4" sl="56" sc="1" el="56" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="57" ordinal="5" sl="57" sc="1" el="57" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="58" ordinal="6" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="59" ordinal="7" sl="59" sc="1" el="59" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="60" ordinal="8" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="61" ordinal="9" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="62" ordinal="10" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="63" ordinal="11" sl="63" sc="1" el="63" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="65" ordinal="12" sl="65" sc="1" el="65" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="51" ordinal="0" path="0" offset="26" offsetend="28" sl="51" fileid="5" />
+                <BranchPoint vc="0" uspid="51" ordinal="1" path="1" offset="26" offsetend="61" sl="51" fileid="5" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="51" ec="1" el="65" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="0" numBranchPoints="4" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.ConfigureSwaggerUiOptions::.ctor(Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Options.IOptions`1&lt;HealthGateway.Swagger.SwaggerSettings&gt;)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="36" ordinal="0" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="38" ordinal="1" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="39" ordinal="2" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="41" ordinal="3" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="42" ordinal="4" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="0" uspid="43" ordinal="5" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="42" ordinal="0" path="0" offset="43" offsetend="45" sl="42" fileid="5" />
+                <BranchPoint vc="0" uspid="42" ordinal="1" path="1" offset="43" offsetend="48" sl="42" fileid="5" />
+                <BranchPoint vc="0" uspid="42" ordinal="2" path="0" offset="55" offsetend="57" sl="42" fileid="5" />
+                <BranchPoint vc="0" uspid="42" ordinal="3" path="1" offset="55" offsetend="63" sl="42" fileid="5" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="36" ec="1" el="43" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="1" />
+          <FullName>HealthGateway.Swagger.MiddlewareExtensions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.MiddlewareExtensions::UseSwaggerDocuments(Microsoft.AspNetCore.Builder.IApplicationBuilder)</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="33" ordinal="0" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="0" uspid="34" ordinal="1" sl="34" sc="1" el="34" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="0" uspid="35" ordinal="2" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="33" ec="1" el="35" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="16" visitedSequencePoints="0" numBranchPoints="4" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="2" />
+          <FullName>HealthGateway.Swagger.ServicesExtensions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="12" visitedSequencePoints="0" numBranchPoints="4" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>Microsoft.Extensions.DependencyInjection.IServiceCollection HealthGateway.Swagger.ServicesExtensions::AddApiVersionWithExplorer(Microsoft.Extensions.DependencyInjection.IServiceCollection)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="37" ordinal="0" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="38" ordinal="1" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="39" ordinal="2" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="40" ordinal="3" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="41" ordinal="4" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="42" ordinal="5" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="43" ordinal="6" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="44" ordinal="7" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="45" ordinal="8" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="46" ordinal="9" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="47" ordinal="10" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="48" ordinal="11" sl="48" sc="1" el="48" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="37" ordinal="0" path="0" offset="7" offsetend="9" sl="37" fileid="7" />
+                <BranchPoint vc="0" uspid="37" ordinal="1" path="1" offset="7" offsetend="32" sl="37" fileid="7" />
+                <BranchPoint vc="0" uspid="37" ordinal="2" path="0" offset="43" offsetend="45" sl="37" fileid="7" />
+                <BranchPoint vc="0" uspid="37" ordinal="3" path="1" offset="43" offsetend="68" sl="37" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="37" ec="1" el="48" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>Microsoft.Extensions.DependencyInjection.IServiceCollection HealthGateway.Swagger.ServicesExtensions::AddSwaggerOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="58" ordinal="0" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="59" ordinal="1" sl="59" sc="1" el="59" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="60" ordinal="2" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="61" ordinal="3" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="58" ec="1" el="61" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="11" visitedSequencePoints="0" numBranchPoints="16" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="16" minCyclomaticComplexity="16" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="1" />
+          <FullName>HealthGateway.Swagger.SwaggerDefaultValues</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="16" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="11" visitedSequencePoints="0" numBranchPoints="16" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="16" minCyclomaticComplexity="16" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void HealthGateway.Swagger.SwaggerDefaultValues::Apply(Swashbuckle.AspNetCore.Swagger.Operation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)</Name>
+              <FileRef uid="8" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="36" ordinal="0" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="38" ordinal="1" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="40" ordinal="2" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="41" ordinal="3" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="43" ordinal="4" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="45" ordinal="5" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="48" ordinal="6" sl="48" sc="1" el="48" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="53" ordinal="7" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="55" ordinal="8" sl="55" sc="1" el="55" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="58" ordinal="9" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="0" uspid="61" ordinal="10" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="8" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="36" ordinal="0" path="0" offset="1" offsetend="6" sl="36" fileid="8" />
+                <BranchPoint vc="0" uspid="36" ordinal="2" path="0" offset="7" offsetend="12" sl="36" fileid="8" />
+                <BranchPoint vc="0" uspid="36" ordinal="4" path="0" offset="18" offsetend="23" sl="36" fileid="8" />
+                <BranchPoint vc="0" uspid="38" ordinal="15" path="1" offset="207" offsetend="45" sl="38" fileid="8" />
+                <BranchPoint vc="0" uspid="43" ordinal="6" path="0" offset="110" offsetend="112" sl="43" fileid="8" />
+                <BranchPoint vc="0" uspid="45" ordinal="8" path="0" offset="125" offsetend="127" sl="45" fileid="8" />
+                <BranchPoint vc="0" uspid="45" ordinal="9" path="1" offset="125" offsetend="131" sl="45" fileid="8" />
+                <BranchPoint vc="0" uspid="43" ordinal="7" path="1" offset="110" offsetend="141" sl="43" fileid="8" />
+                <BranchPoint vc="0" uspid="48" ordinal="10" path="0" offset="142" offsetend="144" sl="48" fileid="8" />
+                <BranchPoint vc="0" uspid="53" ordinal="12" path="0" offset="155" offsetend="157" sl="53" fileid="8" />
+                <BranchPoint vc="0" uspid="53" ordinal="13" path="1" offset="155" offsetend="174" sl="53" fileid="8" />
+                <BranchPoint vc="0" uspid="48" ordinal="11" path="1" offset="142" offsetend="201" sl="48" fileid="8" />
+                <BranchPoint vc="0" uspid="38" ordinal="14" path="0" offset="207" offsetend="212" sl="38" fileid="8" />
+                <BranchPoint vc="0" uspid="36" ordinal="1" path="1" offset="1" offsetend="224" sl="36" fileid="8" />
+                <BranchPoint vc="0" uspid="36" ordinal="3" path="1" offset="7" offsetend="224" sl="36" fileid="8" />
+                <BranchPoint vc="0" uspid="36" ordinal="5" path="1" offset="18" offsetend="224" sl="36" fileid="8" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="36" ec="1" el="61" bec="0" bev="0" fileid="8" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="6" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="4" />
+          <FullName>HealthGateway.Swagger.SwaggerSettings</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Swagger.SwaggerSettings::get_Name()</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="28" ordinal="0" sl="28" sc="1" el="28" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="28" ec="1" el="28" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>Swashbuckle.AspNetCore.Swagger.Info HealthGateway.Swagger.SwaggerSettings::get_Info()</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="33" ordinal="0" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="33" ec="1" el="33" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Swagger.SwaggerSettings::get_RoutePrefix()</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="38" ordinal="0" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="38" ec="1" el="38" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="2" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Swagger.SwaggerSettings::get_RoutePrefixWithSlash()</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="44" ordinal="0" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="9" />
+                <SequencePoint vc="0" uspid="45" ordinal="1" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="9" />
+                <SequencePoint vc="0" uspid="46" ordinal="2" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="44" ordinal="0" path="0" offset="11" offsetend="13" sl="44" fileid="9" />
+                <BranchPoint vc="0" uspid="44" ordinal="1" path="1" offset="11" offsetend="30" sl="44" fileid="9" />
+              </BranchPoints>
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="44" ec="1" el="46" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="236" visitedSequencePoints="236" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>HealthGateway.Service.MockImmsService</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="236" visitedSequencePoints="236" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Collections.Generic.IEnumerable`1&lt;HealthGateway.Models.ImmsDataModel&gt; HealthGateway.Service.MockImmsService::GetImmunizations()</Name>
+              <FileRef uid="10" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="33" ordinal="0" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="35" ordinal="1" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="36" ordinal="2" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="37" ordinal="3" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="38" ordinal="4" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="39" ordinal="5" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="40" ordinal="6" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="41" ordinal="7" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="42" ordinal="8" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="43" ordinal="9" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="44" ordinal="10" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="45" ordinal="11" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="46" ordinal="12" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="47" ordinal="13" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="49" ordinal="14" sl="49" sc="1" el="49" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="50" ordinal="15" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="51" ordinal="16" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="52" ordinal="17" sl="52" sc="1" el="52" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="53" ordinal="18" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="54" ordinal="19" sl="54" sc="1" el="54" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="55" ordinal="20" sl="55" sc="1" el="55" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="56" ordinal="21" sl="56" sc="1" el="56" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="57" ordinal="22" sl="57" sc="1" el="57" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="58" ordinal="23" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="59" ordinal="24" sl="59" sc="1" el="59" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="60" ordinal="25" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="61" ordinal="26" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="63" ordinal="27" sl="63" sc="1" el="63" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="64" ordinal="28" sl="64" sc="1" el="64" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="65" ordinal="29" sl="65" sc="1" el="65" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="66" ordinal="30" sl="66" sc="1" el="66" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="67" ordinal="31" sl="67" sc="1" el="67" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="68" ordinal="32" sl="68" sc="1" el="68" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="69" ordinal="33" sl="69" sc="1" el="69" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="70" ordinal="34" sl="70" sc="1" el="70" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="71" ordinal="35" sl="71" sc="1" el="71" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="72" ordinal="36" sl="72" sc="1" el="72" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="73" ordinal="37" sl="73" sc="1" el="73" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="74" ordinal="38" sl="74" sc="1" el="74" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="75" ordinal="39" sl="75" sc="1" el="75" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="77" ordinal="40" sl="77" sc="1" el="77" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="78" ordinal="41" sl="78" sc="1" el="78" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="79" ordinal="42" sl="79" sc="1" el="79" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="80" ordinal="43" sl="80" sc="1" el="80" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="81" ordinal="44" sl="81" sc="1" el="81" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="82" ordinal="45" sl="82" sc="1" el="82" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="83" ordinal="46" sl="83" sc="1" el="83" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="84" ordinal="47" sl="84" sc="1" el="84" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="85" ordinal="48" sl="85" sc="1" el="85" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="86" ordinal="49" sl="86" sc="1" el="86" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="87" ordinal="50" sl="87" sc="1" el="87" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="88" ordinal="51" sl="88" sc="1" el="88" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="89" ordinal="52" sl="89" sc="1" el="89" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="91" ordinal="53" sl="91" sc="1" el="91" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="92" ordinal="54" sl="92" sc="1" el="92" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="93" ordinal="55" sl="93" sc="1" el="93" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="94" ordinal="56" sl="94" sc="1" el="94" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="95" ordinal="57" sl="95" sc="1" el="95" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="96" ordinal="58" sl="96" sc="1" el="96" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="97" ordinal="59" sl="97" sc="1" el="97" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="98" ordinal="60" sl="98" sc="1" el="98" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="99" ordinal="61" sl="99" sc="1" el="99" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="100" ordinal="62" sl="100" sc="1" el="100" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="101" ordinal="63" sl="101" sc="1" el="101" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="102" ordinal="64" sl="102" sc="1" el="102" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="103" ordinal="65" sl="103" sc="1" el="103" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="105" ordinal="66" sl="105" sc="1" el="105" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="106" ordinal="67" sl="106" sc="1" el="106" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="107" ordinal="68" sl="107" sc="1" el="107" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="108" ordinal="69" sl="108" sc="1" el="108" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="109" ordinal="70" sl="109" sc="1" el="109" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="110" ordinal="71" sl="110" sc="1" el="110" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="111" ordinal="72" sl="111" sc="1" el="111" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="112" ordinal="73" sl="112" sc="1" el="112" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="113" ordinal="74" sl="113" sc="1" el="113" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="114" ordinal="75" sl="114" sc="1" el="114" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="115" ordinal="76" sl="115" sc="1" el="115" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="116" ordinal="77" sl="116" sc="1" el="116" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="117" ordinal="78" sl="117" sc="1" el="117" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="119" ordinal="79" sl="119" sc="1" el="119" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="120" ordinal="80" sl="120" sc="1" el="120" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="121" ordinal="81" sl="121" sc="1" el="121" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="122" ordinal="82" sl="122" sc="1" el="122" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="123" ordinal="83" sl="123" sc="1" el="123" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="124" ordinal="84" sl="124" sc="1" el="124" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="125" ordinal="85" sl="125" sc="1" el="125" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="126" ordinal="86" sl="126" sc="1" el="126" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="127" ordinal="87" sl="127" sc="1" el="127" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="128" ordinal="88" sl="128" sc="1" el="128" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="129" ordinal="89" sl="129" sc="1" el="129" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="130" ordinal="90" sl="130" sc="1" el="130" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="131" ordinal="91" sl="131" sc="1" el="131" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="133" ordinal="92" sl="133" sc="1" el="133" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="134" ordinal="93" sl="134" sc="1" el="134" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="135" ordinal="94" sl="135" sc="1" el="135" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="136" ordinal="95" sl="136" sc="1" el="136" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="137" ordinal="96" sl="137" sc="1" el="137" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="138" ordinal="97" sl="138" sc="1" el="138" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="139" ordinal="98" sl="139" sc="1" el="139" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="140" ordinal="99" sl="140" sc="1" el="140" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="141" ordinal="100" sl="141" sc="1" el="141" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="142" ordinal="101" sl="142" sc="1" el="142" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="143" ordinal="102" sl="143" sc="1" el="143" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="144" ordinal="103" sl="144" sc="1" el="144" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="145" ordinal="104" sl="145" sc="1" el="145" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="147" ordinal="105" sl="147" sc="1" el="147" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="148" ordinal="106" sl="148" sc="1" el="148" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="149" ordinal="107" sl="149" sc="1" el="149" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="150" ordinal="108" sl="150" sc="1" el="150" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="151" ordinal="109" sl="151" sc="1" el="151" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="152" ordinal="110" sl="152" sc="1" el="152" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="153" ordinal="111" sl="153" sc="1" el="153" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="154" ordinal="112" sl="154" sc="1" el="154" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="155" ordinal="113" sl="155" sc="1" el="155" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="156" ordinal="114" sl="156" sc="1" el="156" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="157" ordinal="115" sl="157" sc="1" el="157" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="158" ordinal="116" sl="158" sc="1" el="158" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="159" ordinal="117" sl="159" sc="1" el="159" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="161" ordinal="118" sl="161" sc="1" el="161" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="162" ordinal="119" sl="162" sc="1" el="162" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="163" ordinal="120" sl="163" sc="1" el="163" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="164" ordinal="121" sl="164" sc="1" el="164" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="165" ordinal="122" sl="165" sc="1" el="165" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="166" ordinal="123" sl="166" sc="1" el="166" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="167" ordinal="124" sl="167" sc="1" el="167" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="168" ordinal="125" sl="168" sc="1" el="168" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="169" ordinal="126" sl="169" sc="1" el="169" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="170" ordinal="127" sl="170" sc="1" el="170" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="171" ordinal="128" sl="171" sc="1" el="171" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="172" ordinal="129" sl="172" sc="1" el="172" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="173" ordinal="130" sl="173" sc="1" el="173" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="175" ordinal="131" sl="175" sc="1" el="175" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="176" ordinal="132" sl="176" sc="1" el="176" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="177" ordinal="133" sl="177" sc="1" el="177" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="178" ordinal="134" sl="178" sc="1" el="178" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="179" ordinal="135" sl="179" sc="1" el="179" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="180" ordinal="136" sl="180" sc="1" el="180" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="181" ordinal="137" sl="181" sc="1" el="181" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="182" ordinal="138" sl="182" sc="1" el="182" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="183" ordinal="139" sl="183" sc="1" el="183" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="184" ordinal="140" sl="184" sc="1" el="184" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="185" ordinal="141" sl="185" sc="1" el="185" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="186" ordinal="142" sl="186" sc="1" el="186" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="187" ordinal="143" sl="187" sc="1" el="187" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="189" ordinal="144" sl="189" sc="1" el="189" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="190" ordinal="145" sl="190" sc="1" el="190" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="191" ordinal="146" sl="191" sc="1" el="191" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="192" ordinal="147" sl="192" sc="1" el="192" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="193" ordinal="148" sl="193" sc="1" el="193" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="194" ordinal="149" sl="194" sc="1" el="194" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="195" ordinal="150" sl="195" sc="1" el="195" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="196" ordinal="151" sl="196" sc="1" el="196" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="197" ordinal="152" sl="197" sc="1" el="197" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="198" ordinal="153" sl="198" sc="1" el="198" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="199" ordinal="154" sl="199" sc="1" el="199" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="200" ordinal="155" sl="200" sc="1" el="200" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="201" ordinal="156" sl="201" sc="1" el="201" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="203" ordinal="157" sl="203" sc="1" el="203" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="204" ordinal="158" sl="204" sc="1" el="204" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="205" ordinal="159" sl="205" sc="1" el="205" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="206" ordinal="160" sl="206" sc="1" el="206" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="207" ordinal="161" sl="207" sc="1" el="207" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="208" ordinal="162" sl="208" sc="1" el="208" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="209" ordinal="163" sl="209" sc="1" el="209" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="210" ordinal="164" sl="210" sc="1" el="210" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="211" ordinal="165" sl="211" sc="1" el="211" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="212" ordinal="166" sl="212" sc="1" el="212" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="213" ordinal="167" sl="213" sc="1" el="213" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="214" ordinal="168" sl="214" sc="1" el="214" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="215" ordinal="169" sl="215" sc="1" el="215" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="217" ordinal="170" sl="217" sc="1" el="217" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="218" ordinal="171" sl="218" sc="1" el="218" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="219" ordinal="172" sl="219" sc="1" el="219" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="220" ordinal="173" sl="220" sc="1" el="220" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="221" ordinal="174" sl="221" sc="1" el="221" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="222" ordinal="175" sl="222" sc="1" el="222" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="223" ordinal="176" sl="223" sc="1" el="223" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="224" ordinal="177" sl="224" sc="1" el="224" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="225" ordinal="178" sl="225" sc="1" el="225" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="226" ordinal="179" sl="226" sc="1" el="226" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="227" ordinal="180" sl="227" sc="1" el="227" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="228" ordinal="181" sl="228" sc="1" el="228" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="229" ordinal="182" sl="229" sc="1" el="229" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="231" ordinal="183" sl="231" sc="1" el="231" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="232" ordinal="184" sl="232" sc="1" el="232" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="233" ordinal="185" sl="233" sc="1" el="233" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="234" ordinal="186" sl="234" sc="1" el="234" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="235" ordinal="187" sl="235" sc="1" el="235" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="236" ordinal="188" sl="236" sc="1" el="236" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="237" ordinal="189" sl="237" sc="1" el="237" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="238" ordinal="190" sl="238" sc="1" el="238" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="239" ordinal="191" sl="239" sc="1" el="239" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="240" ordinal="192" sl="240" sc="1" el="240" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="241" ordinal="193" sl="241" sc="1" el="241" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="242" ordinal="194" sl="242" sc="1" el="242" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="243" ordinal="195" sl="243" sc="1" el="243" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="245" ordinal="196" sl="245" sc="1" el="245" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="246" ordinal="197" sl="246" sc="1" el="246" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="247" ordinal="198" sl="247" sc="1" el="247" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="248" ordinal="199" sl="248" sc="1" el="248" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="249" ordinal="200" sl="249" sc="1" el="249" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="250" ordinal="201" sl="250" sc="1" el="250" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="251" ordinal="202" sl="251" sc="1" el="251" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="252" ordinal="203" sl="252" sc="1" el="252" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="253" ordinal="204" sl="253" sc="1" el="253" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="254" ordinal="205" sl="254" sc="1" el="254" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="255" ordinal="206" sl="255" sc="1" el="255" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="256" ordinal="207" sl="256" sc="1" el="256" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="257" ordinal="208" sl="257" sc="1" el="257" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="259" ordinal="209" sl="259" sc="1" el="259" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="260" ordinal="210" sl="260" sc="1" el="260" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="261" ordinal="211" sl="261" sc="1" el="261" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="262" ordinal="212" sl="262" sc="1" el="262" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="263" ordinal="213" sl="263" sc="1" el="263" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="264" ordinal="214" sl="264" sc="1" el="264" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="265" ordinal="215" sl="265" sc="1" el="265" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="266" ordinal="216" sl="266" sc="1" el="266" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="267" ordinal="217" sl="267" sc="1" el="267" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="268" ordinal="218" sl="268" sc="1" el="268" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="269" ordinal="219" sl="269" sc="1" el="269" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="270" ordinal="220" sl="270" sc="1" el="270" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="271" ordinal="221" sl="271" sc="1" el="271" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="273" ordinal="222" sl="273" sc="1" el="273" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="274" ordinal="223" sl="274" sc="1" el="274" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="275" ordinal="224" sl="275" sc="1" el="275" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="276" ordinal="225" sl="276" sc="1" el="276" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="277" ordinal="226" sl="277" sc="1" el="277" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="278" ordinal="227" sl="278" sc="1" el="278" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="279" ordinal="228" sl="279" sc="1" el="279" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="280" ordinal="229" sl="280" sc="1" el="280" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="281" ordinal="230" sl="281" sc="1" el="281" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="282" ordinal="231" sl="282" sc="1" el="282" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="283" ordinal="232" sl="283" sc="1" el="283" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="284" ordinal="233" sl="284" sc="1" el="284" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="285" ordinal="234" sl="285" sc="1" el="285" ec="2" bec="0" bev="0" fileid="10" />
+                <SequencePoint vc="1" uspid="287" ordinal="235" sl="287" sc="1" el="287" ec="2" bec="0" bev="0" fileid="10" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="236" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="33" ec="1" el="287" bec="0" bev="0" fileid="10" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="11" visitedSequencePoints="11" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="11" numMethods="11" />
+          <FullName>HealthGateway.Models.ImmsDataModel</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Date()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="26" ordinal="0" sl="26" sc="1" el="26" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="26" ec="1" el="26" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Vaccine()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="19" uspid="31" ordinal="0" sl="31" sc="1" el="31" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="31" ec="1" el="31" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Dose()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="36" ordinal="0" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="36" ec="1" el="36" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Site()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="41" ordinal="0" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="41" ec="1" el="41" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Lot()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="46" ordinal="0" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="4" offset="4" sc="0" sl="46" ec="1" el="46" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Boost()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="51" ordinal="0" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="5" offset="5" sc="0" sl="51" ec="1" el="51" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_TradeName()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="56" ordinal="0" sl="56" sc="1" el="56" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="6" offset="6" sc="0" sl="56" ec="1" el="56" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Manufacturer()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="61" ordinal="0" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="7" offset="7" sc="0" sl="61" ec="1" el="61" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_Route()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="66" ordinal="0" sl="66" sc="1" el="66" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="8" offset="8" sc="0" sl="66" ec="1" el="66" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_AdministeredAt()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="71" ordinal="0" sl="71" sc="1" el="71" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="9" offset="9" sc="0" sl="71" ec="1" el="71" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.String HealthGateway.Models.ImmsDataModel::get_AdministeredBy()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="18" uspid="76" ordinal="0" sl="76" sc="1" el="76" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="10" offset="10" sc="0" sl="76" ec="1" el="76" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>Immunization.Controllers.ImmsController</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Collections.Generic.IEnumerable`1&lt;HealthGateway.Models.ImmsDataModel&gt; Immunization.Controllers.ImmsController::GetItems()</Name>
+              <FileRef uid="12" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="58" ordinal="0" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="12" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="58" ec="1" el="58" bec="0" bev="0" fileid="12" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void Immunization.Controllers.ImmsController::.ctor(HealthGateway.Service.IImmsService)</Name>
+              <FileRef uid="12" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="42" ordinal="0" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="44" ordinal="1" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="45" ordinal="2" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="12" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="3" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="42" ec="1" el="45" bec="0" bev="0" fileid="12" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+      </Classes>
+    </Module>
+  </Modules>
+</CoverageSession>

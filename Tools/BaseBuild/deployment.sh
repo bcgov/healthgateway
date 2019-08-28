@@ -4,21 +4,21 @@
 echo "DEV started"
 oc project q6qfzk-dev
 oc delete route webclient
-oc process -f ./webclient.yaml -p ENV=dev | oc apply -f -
+oc process -f ./webclient.yaml -p ENV=dev -p ASPNETCORE_ENVIRONMENT=Test | oc apply -f -
 echo "DEV ended"
 
 # TEST
 echo "TEST started"
 oc project q6qfzk-test
 oc delete route webclient
-oc process -f ./webclient.yaml -p ENV=test | oc apply -f -
+oc process -f ./webclient.yaml -p ENV=test -p ASPNETCORE_ENVIRONMENT=Test | oc apply -f -
 echo "TEST ended"
 
 # DEMO
 echo "DEMO started"
 oc project q6qfzk-test
 oc delete route webclient-demo
-oc process -f ./webclient.yaml -p NAME=webclient-demo -p COMMON_CONFIG=common-demo -p ENV=demo  | oc apply -f -
+oc process -f ./webclient.yaml -p NAME=webclient-demo -p ASPNETCORE_ENVIRONMENT=Test -p COMMON_CONFIG=common-demo -p ENV=demo  | oc apply -f -
 echo "DEMO ended"
 
 # TRAINING

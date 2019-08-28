@@ -1,0 +1,30 @@
+{
+  "name": "webclient",
+  "version": "1.0.0",
+  "description": "Functional tests for the webclient application",
+  "scripts": {
+    "test": "selenium-side-runner ./Tests/**/*.side --output-directory . --output-format=junit",
+    "replace": "replace-in-files ./Tests/Webclient.side"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/healthgateway.git"
+  },
+  "keywords": [
+    "Selenium",
+    "Xunit",
+    "Functional",
+    "Test"
+  ],
+  "author": "Tiago Graf <tiago.graf@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bcgov/healthgateway/issues"
+  },
+  "homepage": "https://github.com/bcgov/healthgateway#readme",
+  "dependencies": {
+    "replace-in-files-cli": "^0.2.0",
+    "selenium-side-runner": "^3.11.0",
+    "selenium-webdriver": "^4.0.0-alpha.4"
+  }
+}
