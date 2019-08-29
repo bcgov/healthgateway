@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Controllers
 {
-    using System.Collections.Generic;
     using HealthGateway.Models;
     using HealthGateway.Service;
     using Microsoft.AspNetCore.Authorization;
@@ -31,17 +30,32 @@ namespace HealthGateway.Controllers
     public class PatientController : ControllerBase
     {
         /// <summary>
-        /// Gets or sets the immunization data service.
+        /// Gets or sets the patient data service.
         /// </summary>
         private readonly IPatientService service;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
-        /// <param name="svc">The immunization data service.</param>
+        /// <param name="svc">The patient data service.</param>
         public PatientController(IPatientService svc)
         {
             this.service = svc;
+        }
+
+        /// <summary>
+        /// Gets a json of patient record.
+        /// </summary>
+        /// <returns>The patient record.</returns>
+        /// <response code="200">Returns the patient record.</response>
+        /// <response code="401">The client is not authorzied to retrieve the record.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Route("{id}")]
+        public PatientModel GetPatient(string id)
+        {
+            // return this.service.GetPatient();
+            return new PatientModel() { PersonalHealthNumber = "123" };
         }
     }
 }

@@ -16,9 +16,10 @@
 namespace HealthGateway.Models
 {
     /// <summary>
-    /// The Immunization record data model.
+    /// The patient record data model.
     /// </summary>
-    public class Patient
+    public class PatientModel
     {
+        public string PersonalHealthNumber { get; set; }
     }
 }
