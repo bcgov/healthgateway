@@ -18,6 +18,7 @@ trigger:
    include:
      - Apps/Patient/src
      - Apps/Patient/test
+      - Apps/WebClient/azure/build.yml
 
 pool:
   name: 'HealthGateway'
