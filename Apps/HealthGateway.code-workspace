@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "WebClient/functional/api"
+		},
+		{
+			"path": "Patient"
 		}
 	],
 	"settings": {}
