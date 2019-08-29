@@ -13,25 +13,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Swagger
+namespace HealthGateway.Common.Swagger
 {
-    using System;
-    using Microsoft.AspNetCore.Builder;
+    using Swashbuckle.AspNetCore.Swagger;
 
     /// <summary>
-    /// Extending Swagger services.
+    /// Swagger Configuration.
     /// </summary>
-    public static class MiddlewareExtensions
+    public class SwaggerSettings
     {
         /// <summary>
-        /// Enabling Swagger UI.
-        /// Excluding from test environment.
+        /// Gets or sets document Name.
         /// </summary>
-        /// <param name="app">IApplicationBuilder.</param>
-        public static void UseSwaggerDocuments(this IApplicationBuilder app)
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets swagger Info.
+        /// </summary>
+        public Info Info { get; set; }
+
+        /// <summary>
+        /// Gets or sets RoutePrefix.
+        /// </summary>
+        public string RoutePrefix { get; set; }
+
+        /// <summary>
+        /// Gets Route Prefix with tailing slash.
+        /// </summary>
+        public string RoutePrefixWithSlash =>
+            string.IsNullOrWhiteSpace(this.RoutePrefix)
+                ? string.Empty
+                : this.RoutePrefix + "/";
     }
 }

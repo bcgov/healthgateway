@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Swagger
+namespace HealthGateway.Common.Swagger
 {
     using System;
     using System.Diagnostics;
@@ -65,7 +65,7 @@ namespace HealthGateway.Swagger
 
         private static void SetCommentsPathForSwaggerJsonAndUi(SwaggerGenOptions options)
         {
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlFile = $"{System.Reflection.Assembly.GetEntryAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         }

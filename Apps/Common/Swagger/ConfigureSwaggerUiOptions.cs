@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Swagger
+namespace HealthGateway.Common.Swagger
 {
     using System.Diagnostics;
     using System.Linq;
