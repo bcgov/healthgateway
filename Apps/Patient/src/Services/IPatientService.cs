@@ -28,6 +28,6 @@ namespace HealthGateway.Service
         /// </summary>
         /// <param name="id">The patient id.</param>
         /// <returns>The patient model.</returns>
-        PatientModel GetPatient(string id);
+        Patient GetPatient(string id);
     }
 }

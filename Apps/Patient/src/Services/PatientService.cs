@@ -26,11 +26,11 @@ namespace HealthGateway.Service
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="id">The patient id.</param>
+        /// <param name="hdid">The patient id.</param>
         /// <returns>The patient model.</returns>
-        public PatientModel GetPatient(string id)
+        public Patient GetPatient(string hdid)
         {
-            return new PatientModel() { PersonalHealthNumber = id };
+            return new Patient(hdid, string.Empty, string.Empty, string.Empty);
         }
     }
 }

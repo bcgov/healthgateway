@@ -48,14 +48,15 @@ namespace HealthGateway.Controllers
         /// Gets a json of patient record.
         /// </summary>
         /// <returns>The patient record.</returns>
+        /// <param name="hdid">The patient hdid.</param>
         /// <response code="200">Returns the patient record.</response>
         /// <response code="401">The client is not authorzied to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("{id}")]
-        public PatientModel GetPatient(string id)
+        [Route("{hdid}")]
+        public Patient GetPatient(string hdid)
         {
-            return this.service.GetPatient(id);
+            return this.service.GetPatient(hdid);
         }
     }
 }
