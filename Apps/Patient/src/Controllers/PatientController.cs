@@ -15,13 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Controllers
 {
+    using System.Collections.Generic;
     using HealthGateway.Models;
     using HealthGateway.Service;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// The Immunization controller.
+    /// The Patient controller.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]

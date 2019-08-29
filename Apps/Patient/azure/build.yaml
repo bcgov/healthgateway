@@ -28,7 +28,7 @@ steps:
   inputs:
     command: 'test'
     projects: '$(App.Home)/testUnit/test.csproj'
-    testRunTitle: 'ImmsService'
+    testRunTitle: 'PatientService'
 
 - script: |
     set -e
