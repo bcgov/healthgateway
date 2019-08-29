@@ -20,5 +20,39 @@ namespace HealthGateway.Models
     /// </summary>
     public class Patient
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Patient"/> class.
+        /// </summary>
+        /// <param name="hdid">The patient health directed identifier.</param>
+        /// <param name="phn">The patient personal health number.</param>
+        /// <param name="firstName">The patient first name.</param>
+        /// <param name="lastName">The patient last name.</param>
+        public Patient(string hdid, string phn, string firstName, string lastName)
+        {
+            this.HdId = hdid;
+            this.PersonalHealthNumber = phn;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+        }
+
+        /// <summary>
+        /// Gets the health directed identifier.
+        /// </summary>
+        public string HdId { get; }
+
+        /// <summary>
+        /// Gets the patient PHN.
+        /// </summary>
+        public string PersonalHealthNumber { get; }
+
+        /// <summary>
+        /// Gets the patient first name.
+        /// </summary>
+        public string FirstName { get; }
+
+        /// <summary>
+        /// Gets the patient last name.
+        /// </summary>
+        public string LastName { get; }
     }
 }

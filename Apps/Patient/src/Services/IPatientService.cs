@@ -23,5 +23,11 @@ namespace HealthGateway.Service
     /// </summary>
     public interface IPatientService
     {
+        /// <summary>
+        /// Gets the patient record.
+        /// </summary>
+        /// <param name="id">The patient id.</param>
+        /// <returns>The patient model.</returns>
+        Patient GetPatient(string id);
     }
 }
