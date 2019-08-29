@@ -3,7 +3,7 @@ name: 1.0.0$(Rev:.r) #Build number
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Patient
-  App.Name: Patient
+  App.Name: patient
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
 
@@ -17,8 +17,7 @@ trigger:
  paths:
    include:
      - Apps/Patient/src
-     - Apps/Patient/test/unit
-     - Apps/Patient/test/functional
+     - Apps/Patient/test
 
 pool:
   name: 'HealthGateway'
@@ -41,6 +40,7 @@ steps:
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/Patient
+  enabled: 'false'
 
 - task: DotNetCoreCLI@2
   displayName: Publish dotnet code
