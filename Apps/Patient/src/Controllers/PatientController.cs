@@ -31,7 +31,7 @@ namespace HealthGateway.Controllers
     public class PatientController : ControllerBase
     {
         /// <summary>
-        /// Gets or sets the Patient data service.
+        /// Gets or sets the patient data service.
         /// </summary>
         private readonly IPatientService service;
 
@@ -42,6 +42,21 @@ namespace HealthGateway.Controllers
         public PatientController(IPatientService svc)
         {
             this.service = svc;
+        }
+
+        /// <summary>
+        /// Gets a json of patient record.
+        /// </summary>
+        /// <returns>The patient record.</returns>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <response code="200">Returns the patient record.</response>
+        /// <response code="401">The client is not authorzied to retrieve the record.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Route("{hdid}")]
+        public Patient GetPatient(string hdid)
+        {
+            return this.service.GetPatient(hdid);
         }
     }
 }
