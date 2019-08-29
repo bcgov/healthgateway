@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <!-- SonarQube needs this -->
+    <ProjectGuid>{8660083F-F582-47C6-BC98-6DCF0F4AC851}</ProjectGuid>
     <RootNamespace>HealthGateway.Common</RootNamespace>
   </PropertyGroup>
 
