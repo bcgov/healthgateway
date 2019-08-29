@@ -40,7 +40,7 @@ steps:
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/Patient
-  enabled: 'false'
+  enabled: 'true'
 
 - task: DotNetCoreCLI@2
   displayName: Publish dotnet code
