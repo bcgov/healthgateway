@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assemblies timestamp="08/29/2019 14:57:53">
+  <assembly name="/Users/stephen/Projects/Health/healthgateway/Apps/Patient/test/unit/bin/Debug/netcoreapp2.2/PatientTests.dll" run-date="2019-08-29" run-time="14:57:53" total="1" passed="1" failed="0" skipped="0" time="0.007" errors="0">
+    <errors />
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Patient.Test.Service.PatientService_Test" time="0.007">
+      <test name="HealthGateway.Patient.Test.Service.PatientService_Test.Should_true" type="HealthGateway.Patient.Test.Service.PatientService_Test" method="Should_true" time="0.0070000" result="Pass">
+        <traits />
+      </test>
+    </collection>
+  </assembly>
+</assemblies>
