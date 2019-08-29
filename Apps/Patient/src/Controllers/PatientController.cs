@@ -55,8 +55,7 @@ namespace HealthGateway.Controllers
         [Route("{id}")]
         public PatientModel GetPatient(string id)
         {
-            // return this.service.GetPatient();
-            return new PatientModel() { PersonalHealthNumber = "123" };
+            return this.service.GetPatient(id);
         }
     }
 }

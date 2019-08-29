@@ -23,5 +23,14 @@ namespace HealthGateway.Service
     /// </summary>
     public class PatientService : IPatientService
     {
+        /// <summary>
+        /// Gets the patient record.
+        /// </summary>
+        /// <param name="id">The patient id.</param>
+        /// <returns>The patient model.</returns>
+        public PatientModel GetPatient(string id)
+        {
+            return new PatientModel() { PersonalHealthNumber = id };
+        }
     }
 }
