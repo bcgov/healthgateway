@@ -3,8 +3,9 @@ name: 1.0.0$(Rev:.r) #Build number
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Patient
-  App.Name: Patient
-  App.FunctionalTests: $(App.Home)/testFunctional
+  App.Name: patient
+  App.UnitTests: $(App.Home)/test/unit
+  App.FunctionalTests: $(App.Home)/test/functional
 
 pr: none
 
@@ -16,8 +17,7 @@ trigger:
  paths:
    include:
      - Apps/Patient/src
-     - Apps/Patient/testUnit
-     - Apps/Patient/testFunctional
+     - Apps/Patient/test
 
 pool:
   name: 'HealthGateway'
@@ -27,19 +27,20 @@ steps:
   displayName: Run dotnet Tests
   inputs:
     command: 'test'
-    projects: '$(App.Home)/testUnit/test.csproj'
-    testRunTitle: 'PatientService'
+    projects: '$(App.UnitTests)/PatientTests.csproj'
+    testRunTitle: 'Patient Service Tests'
 
 - script: |
     set -e
-    dotnet test testUnit/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
-    dotnet sonarscanner begin /d:sonar.verbose=false /k:"immsservice_dev" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet test test/unit/PatientTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
+    dotnet sonarscanner begin /d:sonar.verbose=false /k:"patientservice_dev" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
     echo "$@" >&2
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/Patient
+  enabled: 'true'
 
 - task: DotNetCoreCLI@2
   displayName: Publish dotnet code
