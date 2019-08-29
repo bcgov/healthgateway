@@ -3,7 +3,7 @@ name: 1.0.0$(Rev:.r) #Build number
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Patient
-  App.Name: Patient
+  App.Name: patient
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
 
