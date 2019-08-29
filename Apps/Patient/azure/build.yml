@@ -17,8 +17,7 @@ trigger:
  paths:
    include:
      - Apps/Patient/src
-     - Apps/Patient/test/unit
-     - Apps/Patient/test/functional
+     - Apps/Patient/test
 
 pool:
   name: 'HealthGateway'
