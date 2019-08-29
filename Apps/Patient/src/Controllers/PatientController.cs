@@ -22,7 +22,7 @@ namespace HealthGateway.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// The Immunization controller.
+    /// The Patient controller.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
@@ -31,14 +31,14 @@ namespace HealthGateway.Controllers
     public class PatientController : ControllerBase
     {
         /// <summary>
-        /// Gets or sets the immunization data service.
+        /// Gets or sets the Patient data service.
         /// </summary>
         private readonly IPatientService service;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
-        /// <param name="svc">The immunization data service.</param>
+        /// <param name="svc">The patient data service.</param>
         public PatientController(IPatientService svc)
         {
             this.service = svc;

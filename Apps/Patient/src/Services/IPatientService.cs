@@ -19,7 +19,7 @@ namespace HealthGateway.Service
     using HealthGateway.Models;
 
     /// <summary>
-    /// The Immunization data service.
+    /// The Patient data service.
     /// </summary>
     public interface IPatientService
     {
