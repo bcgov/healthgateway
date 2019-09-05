@@ -120,7 +120,6 @@ objects:
     name: ${NAME}
   spec:
     host: ${ENV}-${NAME}-${WEB_HOST}.pathfinder.gov.bc.ca
-    path: /api/${NAME}
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
