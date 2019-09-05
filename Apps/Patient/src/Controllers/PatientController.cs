@@ -13,18 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Controllers
+namespace HealthGateway.Service.Patient.Controllers
 {
-    using System.Collections.Generic;
     using HealthGateway.Models;
-    using HealthGateway.Service;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// The Patient controller.
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
@@ -54,9 +52,9 @@ namespace HealthGateway.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public Patient GetPatient(string hdid)
+        public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
-            return this.service.GetPatient(hdid);
+            return await this.service.GetPatient(hdid);
         }
     }
 }

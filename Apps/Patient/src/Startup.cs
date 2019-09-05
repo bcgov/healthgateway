@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway
+namespace HealthGateway.Service.Patient
 {
     using HealthGateway.Service;
     using HealthGateway.Swagger;
@@ -28,6 +28,8 @@ namespace HealthGateway
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
+    using System.ServiceModel.Description;
+    using System.ServiceModel.Dispatcher;
 
     /// <summary>
     /// Configures the application during startup.
@@ -109,6 +111,8 @@ namespace HealthGateway
 
             // Patient Service
             services.AddSingleton<IPatientService, PatientService>();
+            services.AddSingleton<IEndpointBehavior, LoggingEndpointBehaviour>();
+            services.AddSingleton<IClientMessageInspector, LoggingMessageInspector>();
         }
 
         /// <summary>

@@ -7,62 +7,61 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+#pragma warning disable CS1591 //disable XML comment
 namespace ServiceReference
 {
-    
-    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:hl7-org:v3", ConfigurationName="ServiceReference.QUPA_AR101102_PortType")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace = "urn:hl7-org:v3", ConfigurationName = "ServiceReference.QUPA_AR101102_PortType")]
     public interface QUPA_AR101102_PortType
     {
-        
-        [System.ServiceModel.OperationContractAttribute(Action="urn:hl7-org:v3/QUPA_IN101101", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+
+        [System.ServiceModel.OperationContractAttribute(Action = "urn:hl7-org:v3/QUPA_IN101101", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults = true)]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ANYmixed))]
         System.Threading.Tasks.Task<ServiceReference.HCIM_IN_GetDemographicsResponse1> HCIM_IN_GetDemographicsAsync(ServiceReference.HCIM_IN_GetDemographicsRequest request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="urn:hl7-org:v3/QUPA_IN101103", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+
+        [System.ServiceModel.OperationContractAttribute(Action = "urn:hl7-org:v3/QUPA_IN101103", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults = true)]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ANYmixed))]
         System.Threading.Tasks.Task<ServiceReference.HCIM_IN_FindCandidatesResponse1> HCIM_IN_FindCandidatesAsync(ServiceReference.HCIM_IN_FindCandidatesRequest request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="urn:hl7-org:v3/QUPA_IN101105", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+
+        [System.ServiceModel.OperationContractAttribute(Action = "urn:hl7-org:v3/QUPA_IN101105", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults = true)]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ANYmixed))]
         System.Threading.Tasks.Task<ServiceReference.HCIM_IN_GetRelatedIdentifiersResponse1> HCIM_IN_GetRelatedIdentifiersAsync(ServiceReference.HCIM_IN_GetRelatedIdentifiersRequest request);
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographics
     {
-        
+
         private II idField;
-        
+
         private TS creationTimeField;
-        
+
         private CS versionCodeField;
-        
+
         private II interactionIdField;
-        
+
         private CS processingCodeField;
-        
+
         private CS processingModeCodeField;
-        
+
         private CS acceptAckCodeField;
-        
+
         private MCCI_MT000100Receiver receiverField;
-        
+
         private MCCI_MT000100Sender senderField;
-        
+
         private HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess controlActProcessField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -74,9 +73,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public TS creationTime
         {
             get
@@ -88,9 +87,9 @@ namespace ServiceReference
                 this.creationTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public CS versionCode
         {
             get
@@ -102,9 +101,9 @@ namespace ServiceReference
                 this.versionCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II interactionId
         {
             get
@@ -116,9 +115,9 @@ namespace ServiceReference
                 this.interactionIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CS processingCode
         {
             get
@@ -130,9 +129,9 @@ namespace ServiceReference
                 this.processingCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public CS processingModeCode
         {
             get
@@ -144,9 +143,9 @@ namespace ServiceReference
                 this.processingModeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public CS acceptAckCode
         {
             get
@@ -158,9 +157,9 @@ namespace ServiceReference
                 this.acceptAckCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public MCCI_MT000100Receiver receiver
         {
             get
@@ -172,9 +171,9 @@ namespace ServiceReference
                 this.receiverField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 8)]
         public MCCI_MT000100Sender sender
         {
             get
@@ -186,9 +185,9 @@ namespace ServiceReference
                 this.senderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=9)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 9)]
         public HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess controlActProcess
         {
             get
@@ -200,9 +199,9 @@ namespace ServiceReference
                 this.controlActProcessField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -215,24 +214,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class II : ANY
     {
-        
+
         private string rootField;
-        
+
         private string extensionField;
-        
+
         private string assigningAuthorityNameField;
-        
+
         private bool displayableField;
-        
+
         private bool displayableFieldSpecified;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string root
@@ -246,7 +245,7 @@ namespace ServiceReference
                 this.rootField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string extension
@@ -260,7 +259,7 @@ namespace ServiceReference
                 this.extensionField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string assigningAuthorityName
@@ -274,7 +273,7 @@ namespace ServiceReference
                 this.assigningAuthorityNameField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool displayable
@@ -288,7 +287,7 @@ namespace ServiceReference
                 this.displayableField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool displayableSpecified
@@ -303,7 +302,7 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(GLIST_PQ))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(GLIST_TS))]
@@ -380,14 +379,14 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(BL))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public abstract partial class ANY
     {
-        
+
         private cs_NullFlavor nullFlavorField;
-        
+
         private bool nullFlavorFieldSpecified;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_NullFlavor nullFlavor
@@ -401,7 +400,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool nullFlavorSpecified
@@ -416,65 +415,65 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_NullFlavor
     {
-        
+
         /// <remarks/>
         NI,
-        
+
         /// <remarks/>
         NA,
-        
+
         /// <remarks/>
         UNK,
-        
+
         /// <remarks/>
         NASK,
-        
+
         /// <remarks/>
         ASKU,
-        
+
         /// <remarks/>
         NAV,
-        
+
         /// <remarks/>
         OTH,
-        
+
         /// <remarks/>
         PINF,
-        
+
         /// <remarks/>
         NINF,
-        
+
         /// <remarks/>
         TRC,
-        
+
         /// <remarks/>
         MSK,
-        
+
         /// <remarks/>
         NP,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.OtherIDs", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.OtherIDs", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersOtherIDs
     {
-        
+
         private II[] idField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 0)]
         public II[] id
         {
             get
@@ -486,9 +485,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -500,7 +499,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -515,26 +514,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.Person", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.Person", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersPerson
     {
-        
+
         private II[] idField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersOtherIDs[] playedOtherIDsField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 0)]
         public II[] id
         {
             get
@@ -546,9 +545,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("playedOtherIDs", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("playedOtherIDs", IsNullable = true, Order = 1)]
         public HCIM_IN_GetRelatedIdentifiersOtherIDs[] playedOtherIDs
         {
             get
@@ -560,9 +559,9 @@ namespace ServiceReference
                 this.playedOtherIDsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -574,7 +573,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -588,7 +587,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -603,24 +602,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.IdentifiedPerson", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.IdentifiedPerson", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersIdentifiedPerson
     {
-        
+
         private II[] idField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersPerson identifiedPersonField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 0)]
         public II[] id
         {
             get
@@ -632,9 +631,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public HCIM_IN_GetRelatedIdentifiersPerson identifiedPerson
         {
             get
@@ -646,9 +645,9 @@ namespace ServiceReference
                 this.identifiedPersonField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -660,7 +659,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -675,29 +674,29 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiersResponse.QUQI_MT120001.Subject2", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiersResponse.QUQI_MT120001.Subject2", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001Subject2
     {
-        
+
         private HCIM_IN_GetRelatedIdentifiersIdentifiedPerson targetField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         private bool contextConductionIndField;
-        
+
         public HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001Subject2()
         {
             this.contextConductionIndField = false;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_GetRelatedIdentifiersIdentifiedPerson target
         {
             get
@@ -709,9 +708,9 @@ namespace ServiceReference
                 this.targetField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -723,7 +722,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string typeCode
@@ -737,7 +736,7 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
@@ -753,29 +752,29 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_MT_QueryResponse.DataEnterer", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_MT_QueryResponse.DataEnterer", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_MT_QueryResponseDataEnterer
     {
-        
+
         private COCT_MT090100AssignedPerson assignedPersonField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         private string contextControlCodeField;
-        
+
         public HCIM_MT_QueryResponseDataEnterer()
         {
             this.contextControlCodeField = "AP";
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public COCT_MT090100AssignedPerson assignedPerson
         {
             get
@@ -787,9 +786,9 @@ namespace ServiceReference
                 this.assignedPersonField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -801,7 +800,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string typeCode
@@ -815,7 +814,7 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute("AP")]
@@ -831,22 +830,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="COCT_MT090100.AssignedPerson", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "COCT_MT090100.AssignedPerson", Namespace = "urn:hl7-org:v3")]
     public partial class COCT_MT090100AssignedPerson
     {
-        
+
         private II idField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -858,9 +857,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -872,7 +871,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -887,30 +886,30 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiersResponse.QUQI_MT120001.ControlActProcess", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiersResponse.QUQI_MT120001.ControlActProcess", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001ControlActProcess
     {
-        
+
         private HCIM_MT_QueryResponseDataEnterer[] dataEntererField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001Subject2[] subjectField;
-        
+
         private HCIM_MT_QueryResponseQueryAck queryAckField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersQueryByParameterPayload queryByParameterPayloadField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("dataEnterer", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("dataEnterer", IsNullable = true, Order = 0)]
         public HCIM_MT_QueryResponseDataEnterer[] dataEnterer
         {
             get
@@ -922,9 +921,9 @@ namespace ServiceReference
                 this.dataEntererField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("subject", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("subject", IsNullable = true, Order = 1)]
         public HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001Subject2[] subject
         {
             get
@@ -936,9 +935,9 @@ namespace ServiceReference
                 this.subjectField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public HCIM_MT_QueryResponseQueryAck queryAck
         {
             get
@@ -950,9 +949,9 @@ namespace ServiceReference
                 this.queryAckField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public HCIM_IN_GetRelatedIdentifiersQueryByParameterPayload queryByParameterPayload
         {
             get
@@ -964,9 +963,9 @@ namespace ServiceReference
                 this.queryByParameterPayloadField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -978,7 +977,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -992,9 +991,9 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string moodCode
         {
             get
@@ -1007,22 +1006,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_MT_QueryResponse.QueryAck", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_MT_QueryResponse.QueryAck", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_MT_QueryResponseQueryAck
     {
-        
+
         private CS queryResponseCodeField;
-        
+
         private INT resultTotalQuantityField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public CS queryResponseCode
         {
             get
@@ -1034,9 +1033,9 @@ namespace ServiceReference
                 this.queryResponseCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public INT resultTotalQuantity
         {
             get
@@ -1048,9 +1047,9 @@ namespace ServiceReference
                 this.resultTotalQuantityField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -1063,26 +1062,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class CS : CV
     {
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PQR))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(CO))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(CS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class CV : CE
     {
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HXIT_CE))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(CV))]
@@ -1091,11 +1090,11 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(CS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class CE : CD
     {
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(BXIT_CD))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXCM_CD))]
@@ -1108,28 +1107,28 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(CR))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class CD : ANY
     {
-        
+
         private ED originalTextField;
-        
+
         private CR[] qualifierField;
-        
+
         private CD[] translationField;
-        
+
         private string codeField;
-        
+
         private string codeSystemField;
-        
+
         private string codeSystemNameField;
-        
+
         private string codeSystemVersionField;
-        
+
         private string displayNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public ED originalText
         {
             get
@@ -1141,9 +1140,9 @@ namespace ServiceReference
                 this.originalTextField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("qualifier", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("qualifier", Order = 1)]
         public CR[] qualifier
         {
             get
@@ -1155,9 +1154,9 @@ namespace ServiceReference
                 this.qualifierField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("translation", Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("translation", Order = 2)]
         public CD[] translation
         {
             get
@@ -1169,9 +1168,9 @@ namespace ServiceReference
                 this.translationField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string code
         {
             get
@@ -1183,7 +1182,7 @@ namespace ServiceReference
                 this.codeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string codeSystem
@@ -1197,7 +1196,7 @@ namespace ServiceReference
                 this.codeSystemField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string codeSystemName
@@ -1211,7 +1210,7 @@ namespace ServiceReference
                 this.codeSystemNameField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string codeSystemVersion
@@ -1225,7 +1224,7 @@ namespace ServiceReference
                 this.codeSystemVersionField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string displayName
@@ -1240,7 +1239,7 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ST))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ENXP))]
@@ -1254,34 +1253,34 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(thumbnail))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class ED : BIN
     {
-        
+
         private TEL referenceField;
-        
+
         private thumbnail thumbnailField;
-        
+
         private string mediaTypeField;
-        
+
         private string languageField;
-        
+
         private cs_CompressionAlgorithm compressionField;
-        
+
         private bool compressionFieldSpecified;
-        
+
         private byte[] integrityCheckField;
-        
+
         private cs_IntegrityCheckAlgorithm integrityCheckAlgorithmField;
-        
+
         public ED()
         {
             this.mediaTypeField = "text/plain";
             this.integrityCheckAlgorithmField = cs_IntegrityCheckAlgorithm.SHA1;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public TEL reference
         {
             get
@@ -1293,9 +1292,9 @@ namespace ServiceReference
                 this.referenceField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public thumbnail thumbnail
         {
             get
@@ -1307,9 +1306,9 @@ namespace ServiceReference
                 this.thumbnailField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         [System.ComponentModel.DefaultValueAttribute("text/plain")]
         public string mediaType
         {
@@ -1322,9 +1321,9 @@ namespace ServiceReference
                 this.mediaTypeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string language
         {
             get
@@ -1336,7 +1335,7 @@ namespace ServiceReference
                 this.languageField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_CompressionAlgorithm compression
@@ -1350,7 +1349,7 @@ namespace ServiceReference
                 this.compressionField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool compressionSpecified
@@ -1364,9 +1363,9 @@ namespace ServiceReference
                 this.compressionFieldSpecified = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="base64Binary")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "base64Binary")]
         public byte[] integrityCheck
         {
             get
@@ -1378,7 +1377,7 @@ namespace ServiceReference
                 this.integrityCheckField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_IntegrityCheckAlgorithm.SHA1)]
@@ -1394,20 +1393,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class TEL : URL
     {
-        
+
         private SXCM_TS[] useablePeriodField;
-        
+
         private cs_TelecommunicationAddressUse[] useField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("useablePeriod", Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("useablePeriod", Order = 0)]
         public SXCM_TS[] useablePeriod
         {
             get
@@ -1419,7 +1418,7 @@ namespace ServiceReference
                 this.useablePeriodField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_TelecommunicationAddressUse[] use
@@ -1434,7 +1433,7 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXPR_TS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EIVL_TS))]
@@ -1442,17 +1441,17 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_TS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_TS : TS
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_TS()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -1468,29 +1467,29 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_SetOperator
     {
-        
+
         /// <remarks/>
         I,
-        
+
         /// <remarks/>
         E,
-        
+
         /// <remarks/>
         A,
-        
+
         /// <remarks/>
         H,
-        
+
         /// <remarks/>
         P,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PPD_TS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVXB_PPD_TS))]
@@ -1506,12 +1505,12 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_TS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class TS : QTY
     {
-        
+
         private string valueField;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
@@ -1526,7 +1525,7 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RTO_MO_PQ))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RTO_PQ_PQ))]
@@ -1571,24 +1570,24 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_TS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public abstract partial class QTY : ANY
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class RTO_MO_PQ : QTY
     {
-        
+
         private MO numeratorField;
-        
+
         private PQ denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public MO numerator
         {
             get
@@ -1600,9 +1599,9 @@ namespace ServiceReference
                 this.numeratorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ denominator
         {
             get
@@ -1615,21 +1614,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVXB_MO))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXCM_MO))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_MO))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class MO : QTY
     {
-        
+
         private string valueField;
-        
+
         private string currencyField;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
@@ -1643,9 +1642,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string currency
         {
             get
@@ -1658,21 +1657,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_MO : MO
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_MO()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -1688,22 +1687,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_MO))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_MO : MO
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_MO()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -1719,23 +1718,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_MO : SXCM_MO
     {
-        
+
         private MO[] itemsField;
-        
+
         private ItemsChoiceType6[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(MO), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_MO), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_MO), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(MO), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(MO), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_MO), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_MO), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(MO), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public MO[] Items
         {
@@ -1748,9 +1747,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType6[] ItemsElementName
         {
@@ -1764,26 +1763,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType6
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HXIT_PQ))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PPD_PQ))]
@@ -1796,23 +1795,23 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(BXIT_IVL_PQ))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PQ : QTY
     {
-        
+
         private PQR[] translationField;
-        
+
         private string valueField;
-        
+
         private string unitField;
-        
+
         public PQ()
         {
             this.unitField = "1";
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("translation", Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("translation", Order = 0)]
         public PQR[] translation
         {
             get
@@ -1824,7 +1823,7 @@ namespace ServiceReference
                 this.translationField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
@@ -1838,9 +1837,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         [System.ComponentModel.DefaultValueAttribute("1")]
         public string unit
         {
@@ -1854,16 +1853,16 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PQR : CV
     {
-        
+
         private string valueField;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
@@ -1878,18 +1877,18 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HXIT_PQ : PQ
     {
-        
+
         private IVL_TS validTimeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public IVL_TS validTime
         {
             get
@@ -1902,23 +1901,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_TS : SXCM_TS
     {
-        
+
         private QTY[] itemsField;
-        
+
         private ItemsChoiceType2[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(TS), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_TS), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_TS), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PQ), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(TS), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_TS), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_TS), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PQ), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public QTY[] Items
         {
@@ -1931,9 +1930,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType2[] ItemsElementName
         {
@@ -1947,21 +1946,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_TS : TS
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_TS()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -1977,44 +1976,44 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType2
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVXB_PPD_PQ))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXCM_PPD_PQ))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_PPD_PQ))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PPD_PQ : PQ
     {
-        
+
         private PQ standardDeviationField;
-        
+
         private cs_ProbabilityDistributionType distributionTypeField;
-        
+
         private bool distributionTypeFieldSpecified;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public PQ standardDeviation
         {
             get
@@ -2026,7 +2025,7 @@ namespace ServiceReference
                 this.standardDeviationField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_ProbabilityDistributionType distributionType
@@ -2040,7 +2039,7 @@ namespace ServiceReference
                 this.distributionTypeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool distributionTypeSpecified
@@ -2055,55 +2054,55 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_ProbabilityDistributionType
     {
-        
+
         /// <remarks/>
         U,
-        
+
         /// <remarks/>
         N,
-        
+
         /// <remarks/>
         LN,
-        
+
         /// <remarks/>
         G,
-        
+
         /// <remarks/>
         E,
-        
+
         /// <remarks/>
         X2,
-        
+
         /// <remarks/>
         T,
-        
+
         /// <remarks/>
         F,
-        
+
         /// <remarks/>
         B,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_PPD_PQ : PPD_PQ
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_PPD_PQ()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -2119,22 +2118,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_PPD_PQ))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_PPD_PQ : PPD_PQ
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_PPD_PQ()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -2150,23 +2149,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_PPD_PQ : SXCM_PPD_PQ
     {
-        
+
         private PPD_PQ[] itemsField;
-        
+
         private ItemsChoiceType1[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(PPD_PQ), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_PPD_PQ), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_PPD_PQ), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PPD_PQ), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(PPD_PQ), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_PPD_PQ), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_PPD_PQ), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PPD_PQ), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public PPD_PQ[] Items
         {
@@ -2179,9 +2178,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType1[] ItemsElementName
         {
@@ -2195,40 +2194,40 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType1
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_PQ : PQ
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_PQ()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -2244,23 +2243,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_PQ))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(BXIT_IVL_PQ))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_PQ : PQ
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_PQ()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -2276,24 +2275,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(BXIT_IVL_PQ))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_PQ : SXCM_PQ
     {
-        
+
         private PQ[] itemsField;
-        
+
         private ItemsChoiceType[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(PQ), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_PQ), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_PQ), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PQ), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(PQ), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_PQ), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_PQ), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PQ), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public PQ[] Items
         {
@@ -2306,9 +2305,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType[] ItemsElementName
         {
@@ -2322,42 +2321,42 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class BXIT_IVL_PQ : IVL_PQ
     {
-        
+
         private string qtyField;
-        
+
         public BXIT_IVL_PQ()
         {
             this.qtyField = "1";
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         [System.ComponentModel.DefaultValueAttribute("1")]
         public string qty
         {
@@ -2371,20 +2370,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class RTO_PQ_PQ : QTY
     {
-        
+
         private PQ numeratorField;
-        
+
         private PQ denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public PQ numerator
         {
             get
@@ -2396,9 +2395,9 @@ namespace ServiceReference
                 this.numeratorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ denominator
         {
             get
@@ -2411,21 +2410,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RTO))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class RTO_QTY_QTY : QTY
     {
-        
+
         private QTY numeratorField;
-        
+
         private QTY denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public QTY numerator
         {
             get
@@ -2437,9 +2436,9 @@ namespace ServiceReference
                 this.numeratorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public QTY denominator
         {
             get
@@ -2452,27 +2451,27 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class RTO : RTO_QTY_QTY
     {
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVXB_REAL))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXCM_REAL))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_REAL))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class REAL : QTY
     {
-        
+
         private string valueField;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
@@ -2487,21 +2486,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_REAL : REAL
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_REAL()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -2517,22 +2516,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_REAL))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_REAL : REAL
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_REAL()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -2548,23 +2547,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_REAL : SXCM_REAL
     {
-        
+
         private REAL[] itemsField;
-        
+
         private ItemsChoiceType5[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(REAL), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_REAL), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_REAL), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(REAL), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(REAL), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_REAL), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_REAL), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(REAL), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public REAL[] Items
         {
@@ -2577,9 +2576,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType5[] ItemsElementName
         {
@@ -2593,39 +2592,39 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType5
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class RTO_INT_PPD_PQ : QTY
     {
-        
+
         private INT numeratorField;
-        
+
         private PPD_PQ denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public INT numerator
         {
             get
@@ -2637,9 +2636,9 @@ namespace ServiceReference
                 this.numeratorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PPD_PQ denominator
         {
             get
@@ -2652,21 +2651,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVXB_INT))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXCM_INT))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_INT))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class INT : QTY
     {
-        
+
         private string valueField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         public string value
         {
             get
@@ -2679,21 +2678,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_INT : INT
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_INT()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -2709,22 +2708,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_INT))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_INT : INT
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_INT()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -2740,23 +2739,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_INT : SXCM_INT
     {
-        
+
         private INT[] itemsField;
-        
+
         private ItemsChoiceType3[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(INT), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_INT), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_INT), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(INT), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(INT), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_INT), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_INT), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(INT), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public INT[] Items
         {
@@ -2769,9 +2768,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType3[] ItemsElementName
         {
@@ -2785,39 +2784,39 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType3
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class RTO_INT_PQ : QTY
     {
-        
+
         private INT numeratorField;
-        
+
         private PQ denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public INT numerator
         {
             get
@@ -2829,9 +2828,9 @@ namespace ServiceReference
                 this.numeratorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ denominator
         {
             get
@@ -2844,7 +2843,7 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVXB_PPD_TS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SXCM_PPD_TS))]
@@ -2853,18 +2852,18 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PIVL_PPD_TS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PPD_TS : TS
     {
-        
+
         private PQ standardDeviationField;
-        
+
         private cs_ProbabilityDistributionType distributionTypeField;
-        
+
         private bool distributionTypeFieldSpecified;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public PQ standardDeviation
         {
             get
@@ -2876,7 +2875,7 @@ namespace ServiceReference
                 this.standardDeviationField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_ProbabilityDistributionType distributionType
@@ -2890,7 +2889,7 @@ namespace ServiceReference
                 this.distributionTypeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool distributionTypeSpecified
@@ -2905,21 +2904,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVXB_PPD_TS : PPD_TS
     {
-        
+
         private bool inclusiveField;
-        
+
         public IVXB_PPD_TS()
         {
             this.inclusiveField = true;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(true)]
@@ -2935,24 +2934,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EIVL_PPD_TS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IVL_PPD_TS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PIVL_PPD_TS))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_PPD_TS : PPD_TS
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_PPD_TS()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -2968,20 +2967,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class EIVL_PPD_TS : SXCM_PPD_TS
     {
-        
+
         private CE eventField;
-        
+
         private IVL_PPD_PQ offsetField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public CE @event
         {
             get
@@ -2993,9 +2992,9 @@ namespace ServiceReference
                 this.eventField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public IVL_PPD_PQ offset
         {
             get
@@ -3008,23 +3007,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class IVL_PPD_TS : SXCM_PPD_TS
     {
-        
+
         private QTY[] itemsField;
-        
+
         private ItemsChoiceType4[] itemsElementNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("center", typeof(PPD_TS), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_PPD_TS), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_PPD_TS), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PPD_PQ), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("center", typeof(PPD_TS), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("high", typeof(IVXB_PPD_TS), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("low", typeof(IVXB_PPD_TS), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("width", typeof(PPD_PQ), Order = 0)]
         [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemsElementName")]
         public QTY[] Items
         {
@@ -3037,9 +3036,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("ItemsElementName", Order = 1)]
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ItemsChoiceType4[] ItemsElementName
         {
@@ -3053,52 +3052,52 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3", IncludeInSchema=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3", IncludeInSchema = false)]
     public enum ItemsChoiceType4
     {
-        
+
         /// <remarks/>
         center,
-        
+
         /// <remarks/>
         high,
-        
+
         /// <remarks/>
         low,
-        
+
         /// <remarks/>
         width,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PIVL_PPD_TS : SXCM_PPD_TS
     {
-        
+
         private IVL_PPD_TS phaseField;
-        
+
         private PPD_PQ periodField;
-        
+
         private RTO_INT_PPD_PQ frequencyField;
-        
+
         private cs_CalendarCycle alignmentField;
-        
+
         private bool alignmentFieldSpecified;
-        
+
         private bool institutionSpecified1Field;
-        
+
         public PIVL_PPD_TS()
         {
             this.institutionSpecified1Field = false;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public IVL_PPD_TS phase
         {
             get
@@ -3110,9 +3109,9 @@ namespace ServiceReference
                 this.phaseField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PPD_PQ period
         {
             get
@@ -3124,9 +3123,9 @@ namespace ServiceReference
                 this.periodField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 2)]
         public RTO_INT_PPD_PQ frequency
         {
             get
@@ -3138,7 +3137,7 @@ namespace ServiceReference
                 this.frequencyField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_CalendarCycle alignment
@@ -3152,7 +3151,7 @@ namespace ServiceReference
                 this.alignmentField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool alignmentSpecified
@@ -3166,7 +3165,7 @@ namespace ServiceReference
                 this.alignmentFieldSpecified = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("institutionSpecified")]
         [System.ComponentModel.DefaultValueAttribute(false)]
@@ -3182,70 +3181,70 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_CalendarCycle
     {
-        
+
         /// <remarks/>
         CY,
-        
+
         /// <remarks/>
         MY,
-        
+
         /// <remarks/>
         CM,
-        
+
         /// <remarks/>
         CW,
-        
+
         /// <remarks/>
         WY,
-        
+
         /// <remarks/>
         DM,
-        
+
         /// <remarks/>
         CD,
-        
+
         /// <remarks/>
         DY,
-        
+
         /// <remarks/>
         DW,
-        
+
         /// <remarks/>
         HD,
-        
+
         /// <remarks/>
         CH,
-        
+
         /// <remarks/>
         NH,
-        
+
         /// <remarks/>
         CN,
-        
+
         /// <remarks/>
         SN,
-        
+
         /// <remarks/>
         CS,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXPR_TS : SXCM_TS
     {
-        
+
         private SXCM_TS[] compField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("comp", Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("comp", Order = 0)]
         public SXCM_TS[] comp
         {
             get
@@ -3258,20 +3257,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class EIVL_TS : SXCM_TS
     {
-        
+
         private CE eventField;
-        
+
         private IVL_PQ offsetField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public CE @event
         {
             get
@@ -3283,9 +3282,9 @@ namespace ServiceReference
                 this.eventField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public IVL_PQ offset
         {
             get
@@ -3298,33 +3297,33 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PIVL_TS : SXCM_TS
     {
-        
+
         private IVL_TS phaseField;
-        
+
         private PQ periodField;
-        
+
         private RTO_INT_PQ frequencyField;
-        
+
         private cs_CalendarCycle alignmentField;
-        
+
         private bool alignmentFieldSpecified;
-        
+
         private bool institutionSpecified1Field;
-        
+
         public PIVL_TS()
         {
             this.institutionSpecified1Field = false;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public IVL_TS phase
         {
             get
@@ -3336,9 +3335,9 @@ namespace ServiceReference
                 this.phaseField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ period
         {
             get
@@ -3350,9 +3349,9 @@ namespace ServiceReference
                 this.periodField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 2)]
         public RTO_INT_PQ frequency
         {
             get
@@ -3364,7 +3363,7 @@ namespace ServiceReference
                 this.frequencyField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_CalendarCycle alignment
@@ -3378,7 +3377,7 @@ namespace ServiceReference
                 this.alignmentField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool alignmentSpecified
@@ -3392,7 +3391,7 @@ namespace ServiceReference
                 this.alignmentFieldSpecified = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("institutionSpecified")]
         [System.ComponentModel.DefaultValueAttribute(false)]
@@ -3408,35 +3407,35 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_TelecommunicationAddressUse
     {
-        
+
         /// <remarks/>
         H,
-        
+
         /// <remarks/>
         WP,
-        
+
         /// <remarks/>
         MC,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TEL))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class URL : ANY
     {
-        
+
         private string valueField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="anyURI")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "anyURI")]
         public string value
         {
             get
@@ -3449,49 +3448,49 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class thumbnail : ED
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_CompressionAlgorithm
     {
-        
+
         /// <remarks/>
         DF,
-        
+
         /// <remarks/>
         GZ,
-        
+
         /// <remarks/>
         ZL,
-        
+
         /// <remarks/>
         Z,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_IntegrityCheckAlgorithm
     {
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("SHA-1")]
         SHA1,
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("SHA-256")]
         SHA256,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ED))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ST))]
@@ -3506,19 +3505,19 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(thumbnail))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public abstract partial class BIN : ANY
     {
-        
+
         private cs_BinaryDataEncoding representationField;
-        
+
         private string[] textField;
-        
+
         public BIN()
         {
             this.representationField = cs_BinaryDataEncoding.TXT;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_BinaryDataEncoding.TXT)]
@@ -3533,7 +3532,7 @@ namespace ServiceReference
                 this.representationField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text
@@ -3548,20 +3547,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_BinaryDataEncoding
     {
-        
+
         /// <remarks/>
         B64,
-        
+
         /// <remarks/>
         TXT,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ENXP))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ensuffix))]
@@ -3573,11 +3572,11 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SC))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class ST : ED
     {
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ensuffix))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(enprefix))]
@@ -3586,16 +3585,16 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(endelimiter))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class ENXP : ST
     {
-        
+
         private cs_EntityNamePartType partTypeField;
-        
+
         private bool partTypeFieldSpecified;
-        
+
         private cs_EntityNamePartQualifier[] qualifierField;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_EntityNamePartType partType
@@ -3609,7 +3608,7 @@ namespace ServiceReference
                 this.partTypeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool partTypeSpecified
@@ -3623,7 +3622,7 @@ namespace ServiceReference
                 this.partTypeFieldSpecified = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_EntityNamePartQualifier[] qualifier
@@ -3638,114 +3637,114 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_EntityNamePartType
     {
-        
+
         /// <remarks/>
         FAM,
-        
+
         /// <remarks/>
         GIV,
-        
+
         /// <remarks/>
         PFX,
-        
+
         /// <remarks/>
         SFX,
-        
+
         /// <remarks/>
         DEL,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_EntityNamePartQualifier
     {
-        
+
         /// <remarks/>
         BR,
-        
+
         /// <remarks/>
         SP,
-        
+
         /// <remarks/>
         VV,
-        
+
         /// <remarks/>
         AC,
-        
+
         /// <remarks/>
         PR,
-        
+
         /// <remarks/>
         NB,
-        
+
         /// <remarks/>
         LS,
-        
+
         /// <remarks/>
         CL,
-        
+
         /// <remarks/>
         IN,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="en.suffix", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "en.suffix", Namespace = "urn:hl7-org:v3")]
     public partial class ensuffix : ENXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="en.prefix", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "en.prefix", Namespace = "urn:hl7-org:v3")]
     public partial class enprefix : ENXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="en.given", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "en.given", Namespace = "urn:hl7-org:v3")]
     public partial class engiven : ENXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="en.family", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "en.family", Namespace = "urn:hl7-org:v3")]
     public partial class enfamily : ENXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="en.delimiter", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "en.delimiter", Namespace = "urn:hl7-org:v3")]
     public partial class endelimiter : ENXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class ADXP : ST
     {
-        
+
         private cs_AddressPartType partTypeField;
-        
+
         private bool partTypeFieldSpecified;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_AddressPartType partType
@@ -3759,7 +3758,7 @@ namespace ServiceReference
                 this.partTypeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool partTypeSpecified
@@ -3774,87 +3773,87 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_AddressPartType
     {
-        
+
         /// <remarks/>
         DEL,
-        
+
         /// <remarks/>
         CNT,
-        
+
         /// <remarks/>
         STA,
-        
+
         /// <remarks/>
         CPA,
-        
+
         /// <remarks/>
         CTY,
-        
+
         /// <remarks/>
         ZIP,
-        
+
         /// <remarks/>
         SAL,
-        
+
         /// <remarks/>
         BNR,
-        
+
         /// <remarks/>
         BNN,
-        
+
         /// <remarks/>
         DIR,
-        
+
         /// <remarks/>
         STR,
-        
+
         /// <remarks/>
         STB,
-        
+
         /// <remarks/>
         STTYP,
-        
+
         /// <remarks/>
         ADL,
-        
+
         /// <remarks/>
         UNID,
-        
+
         /// <remarks/>
         UNIT,
-        
+
         /// <remarks/>
         CAR,
-        
+
         /// <remarks/>
         CEN,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SC : ST
     {
-        
+
         private string codeField;
-        
+
         private string codeSystemField;
-        
+
         private string codeSystemNameField;
-        
+
         private string codeSystemVersionField;
-        
+
         private string displayNameField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string code
         {
             get
@@ -3866,7 +3865,7 @@ namespace ServiceReference
                 this.codeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string codeSystem
@@ -3880,7 +3879,7 @@ namespace ServiceReference
                 this.codeSystemField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string codeSystemName
@@ -3894,7 +3893,7 @@ namespace ServiceReference
                 this.codeSystemNameField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string codeSystemVersion
@@ -3908,7 +3907,7 @@ namespace ServiceReference
                 this.codeSystemVersionField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string displayName
@@ -3923,27 +3922,27 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class CR : CD
     {
-        
+
         private CV nameField;
-        
+
         private CD valueField;
-        
+
         private bool invertedField;
-        
+
         public CR()
         {
             this.invertedField = false;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public CV name
         {
             get
@@ -3955,9 +3954,9 @@ namespace ServiceReference
                 this.nameField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public CD value
         {
             get
@@ -3969,7 +3968,7 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
@@ -3985,23 +3984,23 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class BXIT_CD : CD
     {
-        
+
         private string qtyField;
-        
+
         public BXIT_CD()
         {
             this.qtyField = "1";
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         [System.ComponentModel.DefaultValueAttribute("1")]
         public string qty
         {
@@ -4015,21 +4014,21 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SXCM_CD : CD
     {
-        
+
         private cs_SetOperator operatorField;
-        
+
         public SXCM_CD()
         {
             this.operatorField = cs_SetOperator.I;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(cs_SetOperator.I)]
@@ -4045,18 +4044,18 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HXIT_CE : CE
     {
-        
+
         private IVL_TS validTimeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public IVL_TS validTime
         {
             get
@@ -4069,28 +4068,28 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class CO : CV
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.QueryByParameterPayload", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.QueryByParameterPayload", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersQueryByParameterPayload
     {
-        
+
         private HCIM_IN_GetRelatedIdentifiersPersonid personidField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("person.id", IsNullable = true, Order = 0)]
         public HCIM_IN_GetRelatedIdentifiersPersonid personid
         {
             get
@@ -4102,9 +4101,9 @@ namespace ServiceReference
                 this.personidField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4117,20 +4116,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.Person.id", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.Person.id", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersPersonid
     {
-        
+
         private II valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II value
         {
             get
@@ -4142,9 +4141,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4157,32 +4156,32 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.AcknowledgementDetail", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.AcknowledgementDetail", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300AcknowledgementDetail
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private CS typeCodeField;
-        
+
         private CE codeField;
-        
+
         private ED textField;
-        
+
         private ST[] locationField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -4194,9 +4193,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -4208,9 +4207,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -4222,9 +4221,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public CS typeCode
         {
             get
@@ -4236,9 +4235,9 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CE code
         {
             get
@@ -4250,9 +4249,9 @@ namespace ServiceReference
                 this.codeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public ED text
         {
             get
@@ -4264,9 +4263,9 @@ namespace ServiceReference
                 this.textField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("location", IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute("location", IsNullable = true, Order = 6)]
         public ST[] location
         {
             get
@@ -4278,9 +4277,9 @@ namespace ServiceReference
                 this.locationField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4293,26 +4292,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.TargetMessage", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.TargetMessage", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300TargetMessage
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private II idField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -4324,9 +4323,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -4338,9 +4337,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -4352,9 +4351,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II id
         {
             get
@@ -4366,9 +4365,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4381,34 +4380,34 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.Acknowledgement", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.Acknowledgement", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300Acknowledgement
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private CS typeCodeField;
-        
+
         private INT messageWaitingNumberField;
-        
+
         private CE messageWaitingPriorityCodeField;
-        
+
         private MCCI_MT000300TargetMessage targetMessageField;
-        
+
         private MCCI_MT000300AcknowledgementDetail[] acknowledgementDetailField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -4420,9 +4419,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -4434,9 +4433,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -4448,9 +4447,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public CS typeCode
         {
             get
@@ -4462,9 +4461,9 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public INT messageWaitingNumber
         {
             get
@@ -4476,9 +4475,9 @@ namespace ServiceReference
                 this.messageWaitingNumberField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public CE messageWaitingPriorityCode
         {
             get
@@ -4490,9 +4489,9 @@ namespace ServiceReference
                 this.messageWaitingPriorityCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public MCCI_MT000300TargetMessage targetMessage
         {
             get
@@ -4504,9 +4503,9 @@ namespace ServiceReference
                 this.targetMessageField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("acknowledgementDetail", IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute("acknowledgementDetail", IsNullable = true, Order = 7)]
         public MCCI_MT000300AcknowledgementDetail[] acknowledgementDetail
         {
             get
@@ -4518,9 +4517,9 @@ namespace ServiceReference
                 this.acknowledgementDetailField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4533,28 +4532,28 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.AttentionLine", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.AttentionLine", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300AttentionLine
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private SC keyWordTextField;
-        
+
         private ANY valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -4566,9 +4565,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -4580,9 +4579,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -4594,9 +4593,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public SC keyWordText
         {
             get
@@ -4608,9 +4607,9 @@ namespace ServiceReference
                 this.keyWordTextField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public ANY value
         {
             get
@@ -4622,9 +4621,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4637,26 +4636,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.EntityRsp", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.EntityRsp", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300EntityRsp
     {
-        
+
         private II idField;
-        
+
         private TEL[] telecomField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -4668,9 +4667,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("telecom", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("telecom", IsNullable = true, Order = 1)]
         public TEL[] telecom
         {
             get
@@ -4682,9 +4681,9 @@ namespace ServiceReference
                 this.telecomField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4696,7 +4695,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -4710,7 +4709,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -4725,22 +4724,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.RespondTo", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.RespondTo", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300RespondTo
     {
-        
+
         private MCCI_MT000300EntityRsp[] entityRspField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("entityRsp", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("entityRsp", IsNullable = true, Order = 0)]
         public MCCI_MT000300EntityRsp[] entityRsp
         {
             get
@@ -4752,9 +4751,9 @@ namespace ServiceReference
                 this.entityRspField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -4766,9 +4765,9 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string typeCode
         {
             get
@@ -4781,56 +4780,56 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersResponse
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private II idField;
-        
+
         private ED[] attachmentTextField;
-        
+
         private TS creationTimeField;
-        
+
         private ST securityTextField;
-        
+
         private CS versionCodeField;
-        
+
         private II interactionIdField;
-        
+
         private II[] profileIdField;
-        
+
         private CS processingCodeField;
-        
+
         private CS processingModeCodeField;
-        
+
         private CS acceptAckCodeField;
-        
+
         private MCCI_MT000300Receiver[] receiverField;
-        
+
         private MCCI_MT000300RespondTo[] respondToField;
-        
+
         private MCCI_MT000300Sender senderField;
-        
+
         private MCCI_MT000300AttentionLine[] attentionLineField;
-        
+
         private MCCI_MT000300Acknowledgement[] acknowledgementField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001ControlActProcess controlActProcessField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -4842,9 +4841,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -4856,9 +4855,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -4870,9 +4869,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II id
         {
             get
@@ -4884,9 +4883,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("attachmentText", IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute("attachmentText", IsNullable = true, Order = 4)]
         public ED[] attachmentText
         {
             get
@@ -4898,9 +4897,9 @@ namespace ServiceReference
                 this.attachmentTextField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public TS creationTime
         {
             get
@@ -4912,9 +4911,9 @@ namespace ServiceReference
                 this.creationTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public ST securityText
         {
             get
@@ -4926,9 +4925,9 @@ namespace ServiceReference
                 this.securityTextField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public CS versionCode
         {
             get
@@ -4940,9 +4939,9 @@ namespace ServiceReference
                 this.versionCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 8)]
         public II interactionId
         {
             get
@@ -4954,9 +4953,9 @@ namespace ServiceReference
                 this.interactionIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("profileId", IsNullable=true, Order=9)]
+        [System.Xml.Serialization.XmlElementAttribute("profileId", IsNullable = true, Order = 9)]
         public II[] profileId
         {
             get
@@ -4968,9 +4967,9 @@ namespace ServiceReference
                 this.profileIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=10)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 10)]
         public CS processingCode
         {
             get
@@ -4982,9 +4981,9 @@ namespace ServiceReference
                 this.processingCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=11)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 11)]
         public CS processingModeCode
         {
             get
@@ -4996,9 +4995,9 @@ namespace ServiceReference
                 this.processingModeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=12)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 12)]
         public CS acceptAckCode
         {
             get
@@ -5010,9 +5009,9 @@ namespace ServiceReference
                 this.acceptAckCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("receiver", IsNullable=true, Order=13)]
+        [System.Xml.Serialization.XmlElementAttribute("receiver", IsNullable = true, Order = 13)]
         public MCCI_MT000300Receiver[] receiver
         {
             get
@@ -5024,9 +5023,9 @@ namespace ServiceReference
                 this.receiverField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("respondTo", IsNullable=true, Order=14)]
+        [System.Xml.Serialization.XmlElementAttribute("respondTo", IsNullable = true, Order = 14)]
         public MCCI_MT000300RespondTo[] respondTo
         {
             get
@@ -5038,9 +5037,9 @@ namespace ServiceReference
                 this.respondToField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=15)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 15)]
         public MCCI_MT000300Sender sender
         {
             get
@@ -5052,9 +5051,9 @@ namespace ServiceReference
                 this.senderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("attentionLine", IsNullable=true, Order=16)]
+        [System.Xml.Serialization.XmlElementAttribute("attentionLine", IsNullable = true, Order = 16)]
         public MCCI_MT000300AttentionLine[] attentionLine
         {
             get
@@ -5066,9 +5065,9 @@ namespace ServiceReference
                 this.attentionLineField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("acknowledgement", IsNullable=true, Order=17)]
+        [System.Xml.Serialization.XmlElementAttribute("acknowledgement", IsNullable = true, Order = 17)]
         public MCCI_MT000300Acknowledgement[] acknowledgement
         {
             get
@@ -5080,9 +5079,9 @@ namespace ServiceReference
                 this.acknowledgementField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=18)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 18)]
         public HCIM_IN_GetRelatedIdentifiersResponseQUQI_MT120001ControlActProcess controlActProcess
         {
             get
@@ -5094,9 +5093,9 @@ namespace ServiceReference
                 this.controlActProcessField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5109,22 +5108,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.Receiver", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.Receiver", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300Receiver
     {
-        
+
         private MCCI_MT000300Device deviceField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public MCCI_MT000300Device device
         {
             get
@@ -5136,9 +5135,9 @@ namespace ServiceReference
                 this.deviceField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5150,9 +5149,9 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string typeCode
         {
             get
@@ -5165,26 +5164,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.Device", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.Device", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300Device
     {
-        
+
         private II idField;
-        
+
         private MCCI_MT000300Agent asAgentField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -5196,9 +5195,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public MCCI_MT000300Agent asAgent
         {
             get
@@ -5210,9 +5209,9 @@ namespace ServiceReference
                 this.asAgentField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5224,7 +5223,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -5238,7 +5237,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -5253,22 +5252,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.Agent", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.Agent", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300Agent
     {
-        
+
         private MCCI_MT000300Organization representedOrganizationField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public MCCI_MT000300Organization representedOrganization
         {
             get
@@ -5280,9 +5279,9 @@ namespace ServiceReference
                 this.representedOrganizationField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5294,7 +5293,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -5309,24 +5308,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.Organization", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.Organization", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300Organization
     {
-        
+
         private II idField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -5338,9 +5337,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5352,7 +5351,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -5366,7 +5365,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -5381,22 +5380,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000300.Sender", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000300.Sender", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000300Sender
     {
-        
+
         private MCCI_MT000300Device deviceField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public MCCI_MT000300Device device
         {
             get
@@ -5408,9 +5407,9 @@ namespace ServiceReference
                 this.deviceField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5422,9 +5421,9 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string typeCode
         {
             get
@@ -5437,20 +5436,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.QUQI_MT020001.QueryByParameter", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.QUQI_MT020001.QueryByParameter", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersQUQI_MT020001QueryByParameter
     {
-        
+
         private HCIM_IN_GetRelatedIdentifiersQueryByParameterPayload queryByParameterPayloadField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_GetRelatedIdentifiersQueryByParameterPayload queryByParameterPayload
         {
             get
@@ -5462,9 +5461,9 @@ namespace ServiceReference
                 this.queryByParameterPayloadField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5477,28 +5476,28 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetRelatedIdentifiers.QUQI_MT020001.ControlActProcess", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetRelatedIdentifiers.QUQI_MT020001.ControlActProcess", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiersQUQI_MT020001ControlActProcess
     {
-        
+
         private IVL_TS effectiveTimeField;
-        
+
         private QUQI_MT020001DataEnterer dataEntererField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersQUQI_MT020001QueryByParameter queryByParameterField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS effectiveTime
         {
             get
@@ -5510,9 +5509,9 @@ namespace ServiceReference
                 this.effectiveTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public QUQI_MT020001DataEnterer dataEnterer
         {
             get
@@ -5524,9 +5523,9 @@ namespace ServiceReference
                 this.dataEntererField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public HCIM_IN_GetRelatedIdentifiersQUQI_MT020001QueryByParameter queryByParameter
         {
             get
@@ -5538,9 +5537,9 @@ namespace ServiceReference
                 this.queryByParameterField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5552,7 +5551,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -5566,9 +5565,9 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string moodCode
         {
             get
@@ -5581,37 +5580,37 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="QUQI_MT020001.DataEnterer", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "QUQI_MT020001.DataEnterer", Namespace = "urn:hl7-org:v3")]
     public partial class QUQI_MT020001DataEnterer
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private IVL_TS timeField;
-        
+
         private COCT_MT090100AssignedPerson assignedPersonField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         private string contextControlCodeField;
-        
+
         public QUQI_MT020001DataEnterer()
         {
             this.contextControlCodeField = "AP";
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -5623,9 +5622,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -5637,9 +5636,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -5651,9 +5650,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public IVL_TS time
         {
             get
@@ -5665,9 +5664,9 @@ namespace ServiceReference
                 this.timeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public COCT_MT090100AssignedPerson assignedPerson
         {
             get
@@ -5679,9 +5678,9 @@ namespace ServiceReference
                 this.assignedPersonField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5693,7 +5692,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string typeCode
@@ -5707,7 +5706,7 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute("AP")]
@@ -5723,38 +5722,38 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetRelatedIdentifiers
     {
-        
+
         private II idField;
-        
+
         private TS creationTimeField;
-        
+
         private CS versionCodeField;
-        
+
         private II interactionIdField;
-        
+
         private CS processingCodeField;
-        
+
         private CS processingModeCodeField;
-        
+
         private CS acceptAckCodeField;
-        
+
         private MCCI_MT000100Receiver receiverField;
-        
+
         private MCCI_MT000100Sender senderField;
-        
+
         private HCIM_IN_GetRelatedIdentifiersQUQI_MT020001ControlActProcess controlActProcessField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -5766,9 +5765,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public TS creationTime
         {
             get
@@ -5780,9 +5779,9 @@ namespace ServiceReference
                 this.creationTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public CS versionCode
         {
             get
@@ -5794,9 +5793,9 @@ namespace ServiceReference
                 this.versionCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II interactionId
         {
             get
@@ -5808,9 +5807,9 @@ namespace ServiceReference
                 this.interactionIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CS processingCode
         {
             get
@@ -5822,9 +5821,9 @@ namespace ServiceReference
                 this.processingCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public CS processingModeCode
         {
             get
@@ -5836,9 +5835,9 @@ namespace ServiceReference
                 this.processingModeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public CS acceptAckCode
         {
             get
@@ -5850,9 +5849,9 @@ namespace ServiceReference
                 this.acceptAckCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public MCCI_MT000100Receiver receiver
         {
             get
@@ -5864,9 +5863,9 @@ namespace ServiceReference
                 this.receiverField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 8)]
         public MCCI_MT000100Sender sender
         {
             get
@@ -5878,9 +5877,9 @@ namespace ServiceReference
                 this.senderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=9)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 9)]
         public HCIM_IN_GetRelatedIdentifiersQUQI_MT020001ControlActProcess controlActProcess
         {
             get
@@ -5892,9 +5891,9 @@ namespace ServiceReference
                 this.controlActProcessField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5907,22 +5906,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000100.Receiver", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000100.Receiver", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000100Receiver
     {
-        
+
         private MCCI_MT000100Device deviceField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public MCCI_MT000100Device device
         {
             get
@@ -5934,9 +5933,9 @@ namespace ServiceReference
                 this.deviceField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -5948,9 +5947,9 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string typeCode
         {
             get
@@ -5963,26 +5962,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000100.Device", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000100.Device", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000100Device
     {
-        
+
         private II idField;
-        
+
         private MCCI_MT000100Agent asAgentField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -5994,9 +5993,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public MCCI_MT000100Agent asAgent
         {
             get
@@ -6008,9 +6007,9 @@ namespace ServiceReference
                 this.asAgentField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6022,7 +6021,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6036,7 +6035,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -6051,22 +6050,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000100.Agent", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000100.Agent", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000100Agent
     {
-        
+
         private MCCI_MT000100Organization representedOrganizationField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public MCCI_MT000100Organization representedOrganization
         {
             get
@@ -6078,9 +6077,9 @@ namespace ServiceReference
                 this.representedOrganizationField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6092,7 +6091,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6107,24 +6106,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000100.Organization", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000100.Organization", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000100Organization
     {
-        
+
         private II idField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -6136,9 +6135,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6150,7 +6149,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6164,7 +6163,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -6179,22 +6178,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="MCCI_MT000100.Sender", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "MCCI_MT000100.Sender", Namespace = "urn:hl7-org:v3")]
     public partial class MCCI_MT000100Sender
     {
-        
+
         private MCCI_MT000100Device deviceField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public MCCI_MT000100Device device
         {
             get
@@ -6206,9 +6205,9 @@ namespace ServiceReference
                 this.deviceField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6220,9 +6219,9 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string typeCode
         {
             get
@@ -6235,26 +6234,26 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.ObservationEvent", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.ObservationEvent", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponseObservationEvent
     {
-        
+
         private CD codeField;
-        
+
         private REAL valueField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public CD code
         {
             get
@@ -6266,9 +6265,9 @@ namespace ServiceReference
                 this.codeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public REAL value
         {
             get
@@ -6280,9 +6279,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6294,7 +6293,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6308,7 +6307,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string moodCode
@@ -6323,22 +6322,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.Subject", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.Subject", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponseSubject
     {
-        
+
         private HCIM_IN_FindCandidatesResponseObservationEvent observationEventField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_FindCandidatesResponseObservationEvent observationEvent
         {
             get
@@ -6350,9 +6349,9 @@ namespace ServiceReference
                 this.observationEventField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6364,7 +6363,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string typeCode
@@ -6379,30 +6378,30 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.OtherIDs", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.OtherIDs", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponseOtherIDs
     {
-        
+
         private CS[] realmCodeField;
-        
+
         private II typeIdField;
-        
+
         private II[] templateIdField;
-        
+
         private II[] idField;
-        
+
         private COCT_MT150002Organization scopingOrganizationField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("realmCode", IsNullable = true, Order = 0)]
         public CS[] realmCode
         {
             get
@@ -6414,9 +6413,9 @@ namespace ServiceReference
                 this.realmCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public II typeId
         {
             get
@@ -6428,9 +6427,9 @@ namespace ServiceReference
                 this.typeIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("templateId", IsNullable = true, Order = 2)]
         public II[] templateId
         {
             get
@@ -6442,9 +6441,9 @@ namespace ServiceReference
                 this.templateIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 3)]
         public II[] id
         {
             get
@@ -6456,9 +6455,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public COCT_MT150002Organization scopingOrganization
         {
             get
@@ -6470,9 +6469,9 @@ namespace ServiceReference
                 this.scopingOrganizationField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6484,7 +6483,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6499,24 +6498,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="COCT_MT150002.Organization", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "COCT_MT150002.Organization", Namespace = "urn:hl7-org:v3")]
     public partial class COCT_MT150002Organization
     {
-        
+
         private II idField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -6528,9 +6527,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6542,7 +6541,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6556,7 +6555,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -6571,40 +6570,40 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.Person", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.Person", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponsePerson
     {
-        
+
         private BL multipleBirthIndField;
-        
+
         private INT multipleBirthOrderNumberField;
-        
+
         private II idField;
-        
+
         private PN[] nameField;
-        
+
         private CE administrativeGenderCodeField;
-        
+
         private TS birthTimeField;
-        
+
         private BL deceasedIndField;
-        
+
         private TS deceasedTimeField;
-        
+
         private HCIM_IN_FindCandidatesResponseOtherIDs[] playedOtherIDsField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public BL multipleBirthInd
         {
             get
@@ -6616,9 +6615,9 @@ namespace ServiceReference
                 this.multipleBirthIndField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public INT multipleBirthOrderNumber
         {
             get
@@ -6630,9 +6629,9 @@ namespace ServiceReference
                 this.multipleBirthOrderNumberField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public II id
         {
             get
@@ -6644,9 +6643,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("name", IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute("name", IsNullable = true, Order = 3)]
         public PN[] name
         {
             get
@@ -6658,9 +6657,9 @@ namespace ServiceReference
                 this.nameField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CE administrativeGenderCode
         {
             get
@@ -6672,9 +6671,9 @@ namespace ServiceReference
                 this.administrativeGenderCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public TS birthTime
         {
             get
@@ -6686,9 +6685,9 @@ namespace ServiceReference
                 this.birthTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public BL deceasedInd
         {
             get
@@ -6700,9 +6699,9 @@ namespace ServiceReference
                 this.deceasedIndField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public TS deceasedTime
         {
             get
@@ -6714,9 +6713,9 @@ namespace ServiceReference
                 this.deceasedTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("playedOtherIDs", IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute("playedOtherIDs", IsNullable = true, Order = 8)]
         public HCIM_IN_FindCandidatesResponseOtherIDs[] playedOtherIDs
         {
             get
@@ -6728,9 +6727,9 @@ namespace ServiceReference
                 this.playedOtherIDsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -6742,7 +6741,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -6756,7 +6755,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -6771,18 +6770,18 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class BL : ANY
     {
-        
+
         private bool valueField;
-        
+
         private bool valueFieldSpecified;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool value
@@ -6796,7 +6795,7 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool valueSpecified
@@ -6811,37 +6810,37 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class PN : EN
     {
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TN))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ON))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PN))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class EN : ANYmixed
     {
-        
+
         private ENXP[] itemsField;
-        
+
         private IVL_TS validTimeField;
-        
+
         private cs_EntityNameUse[] useField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("delimiter", typeof(endelimiter), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("family", typeof(enfamily), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("given", typeof(engiven), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("prefix", typeof(enprefix), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("suffix", typeof(ensuffix), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("delimiter", typeof(endelimiter), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("family", typeof(enfamily), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("given", typeof(engiven), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("prefix", typeof(enprefix), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("suffix", typeof(ensuffix), Order = 0)]
         public ENXP[] Items
         {
             get
@@ -6853,9 +6852,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public IVL_TS validTime
         {
             get
@@ -6867,7 +6866,7 @@ namespace ServiceReference
                 this.validTimeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_EntityNameUse[] use
@@ -6882,20 +6881,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_EntityNameUse
     {
-        
+
         /// <remarks/>
         L,
-        
+
         /// <remarks/>
         C,
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EN))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TN))]
@@ -6903,16 +6902,16 @@ namespace ServiceReference
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PN))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="ANY.mixed", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "ANY.mixed", Namespace = "urn:hl7-org:v3")]
     public abstract partial class ANYmixed
     {
-        
+
         private cs_NullFlavor nullFlavorField;
-        
+
         private bool nullFlavorFieldSpecified;
-        
+
         private string[] textField;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_NullFlavor nullFlavor
@@ -6926,7 +6925,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool nullFlavorSpecified
@@ -6940,7 +6939,7 @@ namespace ServiceReference
                 this.nullFlavorFieldSpecified = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text
@@ -6955,46 +6954,46 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class TN : EN
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class ON : EN
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.IdentifiedPerson", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.IdentifiedPerson", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponseIdentifiedPerson
     {
-        
+
         private II[] idField;
-        
+
         private AD[] addrField;
-        
+
         private TEL[] telecomField;
-        
+
         private HCIM_IN_FindCandidatesResponsePerson identifiedPersonField;
-        
+
         private HCIM_IN_FindCandidatesResponseSubject[] subjectOfField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 0)]
         public II[] id
         {
             get
@@ -7006,9 +7005,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("addr", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("addr", IsNullable = true, Order = 1)]
         public AD[] addr
         {
             get
@@ -7020,9 +7019,9 @@ namespace ServiceReference
                 this.addrField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("telecom", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("telecom", IsNullable = true, Order = 2)]
         public TEL[] telecom
         {
             get
@@ -7034,9 +7033,9 @@ namespace ServiceReference
                 this.telecomField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public HCIM_IN_FindCandidatesResponsePerson identifiedPerson
         {
             get
@@ -7048,9 +7047,9 @@ namespace ServiceReference
                 this.identifiedPersonField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("subjectOf", IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute("subjectOf", IsNullable = true, Order = 4)]
         public HCIM_IN_FindCandidatesResponseSubject[] subjectOf
         {
             get
@@ -7062,9 +7061,9 @@ namespace ServiceReference
                 this.subjectOfField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7076,7 +7075,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -7091,32 +7090,32 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class AD : ANY
     {
-        
+
         private ADXP[] itemsField;
-        
+
         private SXCM_TS[] useablePeriodField;
-        
+
         private string[] textField;
-        
+
         private cs_PostalAddressUse[] useField;
-        
+
         private bool isNotOrderedField;
-        
+
         private bool isNotOrderedFieldSpecified;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("city", typeof(ADCity), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("country", typeof(ADCountry), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("postalCode", typeof(ADPostalCode), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("state", typeof(ADState), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("streetAddressLine", typeof(ADStreetAddressLine), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("city", typeof(ADCity), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("country", typeof(ADCountry), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("postalCode", typeof(ADPostalCode), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("state", typeof(ADState), Order = 0)]
+        [System.Xml.Serialization.XmlElementAttribute("streetAddressLine", typeof(ADStreetAddressLine), Order = 0)]
         public ADXP[] Items
         {
             get
@@ -7128,9 +7127,9 @@ namespace ServiceReference
                 this.itemsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("useablePeriod", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("useablePeriod", Order = 1)]
         public SXCM_TS[] useablePeriod
         {
             get
@@ -7142,7 +7141,7 @@ namespace ServiceReference
                 this.useablePeriodField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text
@@ -7156,7 +7155,7 @@ namespace ServiceReference
                 this.textField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public cs_PostalAddressUse[] use
@@ -7170,7 +7169,7 @@ namespace ServiceReference
                 this.useField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool isNotOrdered
@@ -7184,7 +7183,7 @@ namespace ServiceReference
                 this.isNotOrderedField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool isNotOrderedSpecified
@@ -7199,85 +7198,85 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:hl7-org:v3")]
     public partial class ADCity : ADXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:hl7-org:v3")]
     public partial class ADCountry : ADXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:hl7-org:v3")]
     public partial class ADPostalCode : ADXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:hl7-org:v3")]
     public partial class ADState : ADXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:hl7-org:v3")]
     public partial class ADStreetAddressLine : ADXP
     {
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public enum cs_PostalAddressUse
     {
-        
+
         /// <remarks/>
         PHYS,
-        
+
         /// <remarks/>
         PST,
-        
+
         /// <remarks/>
         VER,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.QUQI_MT120001.Subject2", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.QUQI_MT120001.Subject2", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponseQUQI_MT120001Subject2
     {
-        
+
         private HCIM_IN_FindCandidatesResponseIdentifiedPerson targetField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         private bool contextConductionIndField;
-        
+
         public HCIM_IN_FindCandidatesResponseQUQI_MT120001Subject2()
         {
             this.contextConductionIndField = false;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_FindCandidatesResponseIdentifiedPerson target
         {
             get
@@ -7289,9 +7288,9 @@ namespace ServiceReference
                 this.targetField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7303,7 +7302,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string typeCode
@@ -7317,7 +7316,7 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
@@ -7333,30 +7332,30 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidatesResponse.QUQI_MT120001.ControlActProcess", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidatesResponse.QUQI_MT120001.ControlActProcess", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponseQUQI_MT120001ControlActProcess
     {
-        
+
         private IVL_TS effectiveTimeField;
-        
+
         private HCIM_IN_FindCandidatesResponseQUQI_MT120001Subject2[] subjectField;
-        
+
         private HCIM_MT_QueryResponseQueryAck queryAckField;
-        
+
         private HCIM_IN_FindCandidatesQueryByParameterPayload queryByParameterPayloadField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS effectiveTime
         {
             get
@@ -7368,9 +7367,9 @@ namespace ServiceReference
                 this.effectiveTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("subject", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("subject", IsNullable = true, Order = 1)]
         public HCIM_IN_FindCandidatesResponseQUQI_MT120001Subject2[] subject
         {
             get
@@ -7382,9 +7381,9 @@ namespace ServiceReference
                 this.subjectField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public HCIM_MT_QueryResponseQueryAck queryAck
         {
             get
@@ -7396,9 +7395,9 @@ namespace ServiceReference
                 this.queryAckField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public HCIM_IN_FindCandidatesQueryByParameterPayload queryByParameterPayload
         {
             get
@@ -7410,9 +7409,9 @@ namespace ServiceReference
                 this.queryByParameterPayloadField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7424,7 +7423,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -7438,9 +7437,9 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string moodCode
         {
             get
@@ -7453,32 +7452,32 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.QueryByParameterPayload", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.QueryByParameterPayload", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesQueryByParameterPayload
     {
-        
+
         private HCIM_IN_FindCandidatesPersonaddr personaddrField;
-        
+
         private HCIM_IN_FindCandidatesPersonadministrativeGender personadministrativeGenderField;
-        
+
         private HCIM_IN_FindCandidatesPersonbirthTime personbirthTimeField;
-        
+
         private HCIM_IN_FindCandidatesPersondeceasedTime persondeceasedTimeField;
-        
+
         private HCIM_IN_FindCandidatesPersonid personidField;
-        
+
         private HCIM_IN_FindCandidatesPersonname personnameField;
-        
+
         private HCIM_IN_FindCandidatesPersontelecom persontelecomField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.addr", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("person.addr", IsNullable = true, Order = 0)]
         public HCIM_IN_FindCandidatesPersonaddr personaddr
         {
             get
@@ -7490,9 +7489,9 @@ namespace ServiceReference
                 this.personaddrField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.administrativeGender", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("person.administrativeGender", IsNullable = true, Order = 1)]
         public HCIM_IN_FindCandidatesPersonadministrativeGender personadministrativeGender
         {
             get
@@ -7504,9 +7503,9 @@ namespace ServiceReference
                 this.personadministrativeGenderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.birthTime", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("person.birthTime", IsNullable = true, Order = 2)]
         public HCIM_IN_FindCandidatesPersonbirthTime personbirthTime
         {
             get
@@ -7518,9 +7517,9 @@ namespace ServiceReference
                 this.personbirthTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.deceasedTime", IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute("person.deceasedTime", IsNullable = true, Order = 3)]
         public HCIM_IN_FindCandidatesPersondeceasedTime persondeceasedTime
         {
             get
@@ -7532,9 +7531,9 @@ namespace ServiceReference
                 this.persondeceasedTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.id", IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute("person.id", IsNullable = true, Order = 4)]
         public HCIM_IN_FindCandidatesPersonid personid
         {
             get
@@ -7546,9 +7545,9 @@ namespace ServiceReference
                 this.personidField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.name", IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute("person.name", IsNullable = true, Order = 5)]
         public HCIM_IN_FindCandidatesPersonname personname
         {
             get
@@ -7560,9 +7559,9 @@ namespace ServiceReference
                 this.personnameField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.telecom", IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute("person.telecom", IsNullable = true, Order = 6)]
         public HCIM_IN_FindCandidatesPersontelecom persontelecom
         {
             get
@@ -7574,9 +7573,9 @@ namespace ServiceReference
                 this.persontelecomField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7589,20 +7588,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.addr", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.addr", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersonaddr
     {
-        
+
         private AD valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public AD value
         {
             get
@@ -7614,9 +7613,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7629,20 +7628,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.administrativeGender", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.administrativeGender", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersonadministrativeGender
     {
-        
+
         private CE valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public CE value
         {
             get
@@ -7654,9 +7653,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7669,20 +7668,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.birthTime", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.birthTime", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersonbirthTime
     {
-        
+
         private IVL_TS valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS value
         {
             get
@@ -7694,9 +7693,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7709,20 +7708,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.deceasedTime", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.deceasedTime", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersondeceasedTime
     {
-        
+
         private IVL_TS valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS value
         {
             get
@@ -7734,9 +7733,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7749,20 +7748,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.id", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.id", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersonid
     {
-        
+
         private II valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II value
         {
             get
@@ -7774,9 +7773,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7789,20 +7788,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.name", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.name", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersonname
     {
-        
+
         private PN valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public PN value
         {
             get
@@ -7814,9 +7813,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7829,20 +7828,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.Person.telecom", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.Person.telecom", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesPersontelecom
     {
-        
+
         private TEL valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public TEL value
         {
             get
@@ -7854,9 +7853,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -7869,38 +7868,38 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesResponse
     {
-        
+
         private II idField;
-        
+
         private TS creationTimeField;
-        
+
         private CS versionCodeField;
-        
+
         private II interactionIdField;
-        
+
         private CS processingCodeField;
-        
+
         private CS processingModeCodeField;
-        
+
         private CS acceptAckCodeField;
-        
+
         private MCCI_MT000300Receiver receiverField;
-        
+
         private MCCI_MT000300Sender senderField;
-        
+
         private HCIM_IN_FindCandidatesResponseQUQI_MT120001ControlActProcess controlActProcessField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -7912,9 +7911,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public TS creationTime
         {
             get
@@ -7926,9 +7925,9 @@ namespace ServiceReference
                 this.creationTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public CS versionCode
         {
             get
@@ -7940,9 +7939,9 @@ namespace ServiceReference
                 this.versionCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II interactionId
         {
             get
@@ -7954,9 +7953,9 @@ namespace ServiceReference
                 this.interactionIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CS processingCode
         {
             get
@@ -7968,9 +7967,9 @@ namespace ServiceReference
                 this.processingCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public CS processingModeCode
         {
             get
@@ -7982,9 +7981,9 @@ namespace ServiceReference
                 this.processingModeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public CS acceptAckCode
         {
             get
@@ -7996,9 +7995,9 @@ namespace ServiceReference
                 this.acceptAckCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public MCCI_MT000300Receiver receiver
         {
             get
@@ -8010,9 +8009,9 @@ namespace ServiceReference
                 this.receiverField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 8)]
         public MCCI_MT000300Sender sender
         {
             get
@@ -8024,9 +8023,9 @@ namespace ServiceReference
                 this.senderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=9)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 9)]
         public HCIM_IN_FindCandidatesResponseQUQI_MT120001ControlActProcess controlActProcess
         {
             get
@@ -8038,9 +8037,9 @@ namespace ServiceReference
                 this.controlActProcessField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8053,20 +8052,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.QUQI_MT020001.QueryByParameter", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.QUQI_MT020001.QueryByParameter", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesQUQI_MT020001QueryByParameter
     {
-        
+
         private HCIM_IN_FindCandidatesQueryByParameterPayload queryByParameterPayloadField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_FindCandidatesQueryByParameterPayload queryByParameterPayload
         {
             get
@@ -8078,9 +8077,9 @@ namespace ServiceReference
                 this.queryByParameterPayloadField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8093,28 +8092,28 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_FindCandidates.QUQI_MT020001.ControlActProcess", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_FindCandidates.QUQI_MT020001.ControlActProcess", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidatesQUQI_MT020001ControlActProcess
     {
-        
+
         private IVL_TS effectiveTimeField;
-        
+
         private QUQI_MT020001DataEnterer dataEntererField;
-        
+
         private HCIM_IN_FindCandidatesQUQI_MT020001QueryByParameter queryByParameterField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS effectiveTime
         {
             get
@@ -8126,9 +8125,9 @@ namespace ServiceReference
                 this.effectiveTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public QUQI_MT020001DataEnterer dataEnterer
         {
             get
@@ -8140,9 +8139,9 @@ namespace ServiceReference
                 this.dataEntererField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public HCIM_IN_FindCandidatesQUQI_MT020001QueryByParameter queryByParameter
         {
             get
@@ -8154,9 +8153,9 @@ namespace ServiceReference
                 this.queryByParameterField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8168,7 +8167,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -8182,9 +8181,9 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string moodCode
         {
             get
@@ -8197,38 +8196,38 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_FindCandidates
     {
-        
+
         private II idField;
-        
+
         private TS creationTimeField;
-        
+
         private CS versionCodeField;
-        
+
         private II interactionIdField;
-        
+
         private CS processingCodeField;
-        
+
         private CS processingModeCodeField;
-        
+
         private CS acceptAckCodeField;
-        
+
         private MCCI_MT000100Receiver receiverField;
-        
+
         private MCCI_MT000100Sender senderField;
-        
+
         private HCIM_IN_FindCandidatesQUQI_MT020001ControlActProcess controlActProcessField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -8240,9 +8239,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public TS creationTime
         {
             get
@@ -8254,9 +8253,9 @@ namespace ServiceReference
                 this.creationTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public CS versionCode
         {
             get
@@ -8268,9 +8267,9 @@ namespace ServiceReference
                 this.versionCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II interactionId
         {
             get
@@ -8282,9 +8281,9 @@ namespace ServiceReference
                 this.interactionIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CS processingCode
         {
             get
@@ -8296,9 +8295,9 @@ namespace ServiceReference
                 this.processingCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public CS processingModeCode
         {
             get
@@ -8310,9 +8309,9 @@ namespace ServiceReference
                 this.processingModeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public CS acceptAckCode
         {
             get
@@ -8324,9 +8323,9 @@ namespace ServiceReference
                 this.acceptAckCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public MCCI_MT000100Receiver receiver
         {
             get
@@ -8338,9 +8337,9 @@ namespace ServiceReference
                 this.receiverField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 8)]
         public MCCI_MT000100Sender sender
         {
             get
@@ -8352,9 +8351,9 @@ namespace ServiceReference
                 this.senderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=9)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 9)]
         public HCIM_IN_FindCandidatesQUQI_MT020001ControlActProcess controlActProcess
         {
             get
@@ -8366,9 +8365,9 @@ namespace ServiceReference
                 this.controlActProcessField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8381,24 +8380,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographicsResponse.OtherIDs", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographicsResponse.OtherIDs", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsResponseOtherIDs
     {
-        
+
         private II[] idField;
-        
+
         private COCT_MT150002Organization scopingOrganizationField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 0)]
         public II[] id
         {
             get
@@ -8410,9 +8409,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public COCT_MT150002Organization scopingOrganization
         {
             get
@@ -8424,9 +8423,9 @@ namespace ServiceReference
                 this.scopingOrganizationField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8438,7 +8437,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -8453,40 +8452,40 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographicsResponse.Person", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographicsResponse.Person", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsResponsePerson
     {
-        
+
         private BL multipleBirthIndField;
-        
+
         private INT multipleBirthOrderNumberField;
-        
+
         private II[] idField;
-        
+
         private PN[] nameField;
-        
+
         private CE administrativeGenderCodeField;
-        
+
         private TS birthTimeField;
-        
+
         private BL deceasedIndField;
-        
+
         private TS deceasedTimeField;
-        
+
         private HCIM_IN_GetDemographicsResponseOtherIDs[] playedOtherIDsField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string determinerCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public BL multipleBirthInd
         {
             get
@@ -8498,9 +8497,9 @@ namespace ServiceReference
                 this.multipleBirthIndField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public INT multipleBirthOrderNumber
         {
             get
@@ -8512,9 +8511,9 @@ namespace ServiceReference
                 this.multipleBirthOrderNumberField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 2)]
         public II[] id
         {
             get
@@ -8526,9 +8525,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("name", IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute("name", IsNullable = true, Order = 3)]
         public PN[] name
         {
             get
@@ -8540,9 +8539,9 @@ namespace ServiceReference
                 this.nameField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CE administrativeGenderCode
         {
             get
@@ -8554,9 +8553,9 @@ namespace ServiceReference
                 this.administrativeGenderCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public TS birthTime
         {
             get
@@ -8568,9 +8567,9 @@ namespace ServiceReference
                 this.birthTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public BL deceasedInd
         {
             get
@@ -8582,9 +8581,9 @@ namespace ServiceReference
                 this.deceasedIndField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public TS deceasedTime
         {
             get
@@ -8596,9 +8595,9 @@ namespace ServiceReference
                 this.deceasedTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("playedOtherIDs", IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute("playedOtherIDs", IsNullable = true, Order = 8)]
         public HCIM_IN_GetDemographicsResponseOtherIDs[] playedOtherIDs
         {
             get
@@ -8610,9 +8609,9 @@ namespace ServiceReference
                 this.playedOtherIDsField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8624,7 +8623,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -8638,7 +8637,7 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string determinerCode
@@ -8653,28 +8652,28 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographicsResponse.IdentifiedPerson", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographicsResponse.IdentifiedPerson", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsResponseIdentifiedPerson
     {
-        
+
         private II[] idField;
-        
+
         private AD[] addrField;
-        
+
         private TEL[] telecomField;
-        
+
         private HCIM_IN_GetDemographicsResponsePerson identifiedPersonField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("id", IsNullable = true, Order = 0)]
         public II[] id
         {
             get
@@ -8686,9 +8685,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("addr", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("addr", IsNullable = true, Order = 1)]
         public AD[] addr
         {
             get
@@ -8700,9 +8699,9 @@ namespace ServiceReference
                 this.addrField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("telecom", IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("telecom", IsNullable = true, Order = 2)]
         public TEL[] telecom
         {
             get
@@ -8714,9 +8713,9 @@ namespace ServiceReference
                 this.telecomField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public HCIM_IN_GetDemographicsResponsePerson identifiedPerson
         {
             get
@@ -8728,9 +8727,9 @@ namespace ServiceReference
                 this.identifiedPersonField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8742,7 +8741,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -8757,29 +8756,29 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographicsResponse.QUQI_MT120001.Subject2", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographicsResponse.QUQI_MT120001.Subject2", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
     {
-        
+
         private HCIM_IN_GetDemographicsResponseIdentifiedPerson targetField;
-        
+
         private string nullFlavorField;
-        
+
         private string typeCodeField;
-        
+
         private bool contextConductionIndField;
-        
+
         public HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
         {
             this.contextConductionIndField = false;
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_GetDemographicsResponseIdentifiedPerson target
         {
             get
@@ -8791,9 +8790,9 @@ namespace ServiceReference
                 this.targetField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8805,7 +8804,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string typeCode
@@ -8819,7 +8818,7 @@ namespace ServiceReference
                 this.typeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
@@ -8835,30 +8834,30 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographicsResponse.QUQI_MT120001.ControlActProcess", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographicsResponse.QUQI_MT120001.ControlActProcess", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
     {
-        
+
         private IVL_TS effectiveTimeField;
-        
+
         private HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2[] subjectField;
-        
+
         private HCIM_MT_QueryResponseQueryAck queryAckField;
-        
+
         private HCIM_IN_GetDemographicsQueryByParameterPayload queryByParameterPayloadField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS effectiveTime
         {
             get
@@ -8870,9 +8869,9 @@ namespace ServiceReference
                 this.effectiveTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("subject", IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("subject", IsNullable = true, Order = 1)]
         public HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2[] subject
         {
             get
@@ -8884,9 +8883,9 @@ namespace ServiceReference
                 this.subjectField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public HCIM_MT_QueryResponseQueryAck queryAck
         {
             get
@@ -8898,9 +8897,9 @@ namespace ServiceReference
                 this.queryAckField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public HCIM_IN_GetDemographicsQueryByParameterPayload queryByParameterPayload
         {
             get
@@ -8912,9 +8911,9 @@ namespace ServiceReference
                 this.queryByParameterPayloadField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8926,7 +8925,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -8940,9 +8939,9 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string moodCode
         {
             get
@@ -8955,20 +8954,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographics.QueryByParameterPayload", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographics.QueryByParameterPayload", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsQueryByParameterPayload
     {
-        
+
         private HCIM_IN_GetDemographicsPersonid personidField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("person.id", IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("person.id", IsNullable = true, Order = 0)]
         public HCIM_IN_GetDemographicsPersonid personid
         {
             get
@@ -8980,9 +8979,9 @@ namespace ServiceReference
                 this.personidField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -8995,20 +8994,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographics.Person.id", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographics.Person.id", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsPersonid
     {
-        
+
         private II valueField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II value
         {
             get
@@ -9020,9 +9019,9 @@ namespace ServiceReference
                 this.valueField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -9035,38 +9034,38 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsResponse
     {
-        
+
         private II idField;
-        
+
         private TS creationTimeField;
-        
+
         private CS versionCodeField;
-        
+
         private II interactionIdField;
-        
+
         private CS processingCodeField;
-        
+
         private CS processingModeCodeField;
-        
+
         private CS acceptAckCodeField;
-        
+
         private MCCI_MT000300Receiver receiverField;
-        
+
         private MCCI_MT000300Sender senderField;
-        
+
         private HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess controlActProcessField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public II id
         {
             get
@@ -9078,9 +9077,9 @@ namespace ServiceReference
                 this.idField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public TS creationTime
         {
             get
@@ -9092,9 +9091,9 @@ namespace ServiceReference
                 this.creationTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public CS versionCode
         {
             get
@@ -9106,9 +9105,9 @@ namespace ServiceReference
                 this.versionCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
         public II interactionId
         {
             get
@@ -9120,9 +9119,9 @@ namespace ServiceReference
                 this.interactionIdField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=4)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 4)]
         public CS processingCode
         {
             get
@@ -9134,9 +9133,9 @@ namespace ServiceReference
                 this.processingCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 5)]
         public CS processingModeCode
         {
             get
@@ -9148,9 +9147,9 @@ namespace ServiceReference
                 this.processingModeCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 6)]
         public CS acceptAckCode
         {
             get
@@ -9162,9 +9161,9 @@ namespace ServiceReference
                 this.acceptAckCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=7)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 7)]
         public MCCI_MT000300Receiver receiver
         {
             get
@@ -9176,9 +9175,9 @@ namespace ServiceReference
                 this.receiverField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 8)]
         public MCCI_MT000300Sender sender
         {
             get
@@ -9190,9 +9189,9 @@ namespace ServiceReference
                 this.senderField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=9)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 9)]
         public HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess controlActProcess
         {
             get
@@ -9204,9 +9203,9 @@ namespace ServiceReference
                 this.controlActProcessField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -9219,20 +9218,20 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographics.QUQI_MT020001.QueryByParameter", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographics.QUQI_MT020001.QueryByParameter", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter
     {
-        
+
         private HCIM_IN_GetDemographicsQueryByParameterPayload queryByParameterPayloadField;
-        
+
         private string nullFlavorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public HCIM_IN_GetDemographicsQueryByParameterPayload queryByParameterPayload
         {
             get
@@ -9244,9 +9243,9 @@ namespace ServiceReference
                 this.queryByParameterPayloadField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -9259,28 +9258,28 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(TypeName="HCIM_IN_GetDemographics.QUQI_MT020001.ControlActProcess", Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(TypeName = "HCIM_IN_GetDemographics.QUQI_MT020001.ControlActProcess", Namespace = "urn:hl7-org:v3")]
     public partial class HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess
     {
-        
+
         private IVL_TS effectiveTimeField;
-        
+
         private QUQI_MT020001DataEnterer dataEntererField;
-        
+
         private HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter queryByParameterField;
-        
+
         private string nullFlavorField;
-        
+
         private string classCodeField;
-        
+
         private string moodCodeField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 0)]
         public IVL_TS effectiveTime
         {
             get
@@ -9292,9 +9291,9 @@ namespace ServiceReference
                 this.effectiveTimeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
         public QUQI_MT020001DataEnterer dataEnterer
         {
             get
@@ -9306,9 +9305,9 @@ namespace ServiceReference
                 this.dataEntererField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 2)]
         public HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter queryByParameter
         {
             get
@@ -9320,9 +9319,9 @@ namespace ServiceReference
                 this.queryByParameterField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string nullFlavor
         {
             get
@@ -9334,7 +9333,7 @@ namespace ServiceReference
                 this.nullFlavorField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string classCode
@@ -9348,9 +9347,9 @@ namespace ServiceReference
                 this.classCodeField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "token")]
         public string moodCode
         {
             get
@@ -9363,24 +9362,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class GLIST_PQ : ANY
     {
-        
+
         private PQ headField;
-        
+
         private PQ incrementField;
-        
+
         private string periodField;
-        
+
         private string denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public PQ head
         {
             get
@@ -9392,9 +9391,9 @@ namespace ServiceReference
                 this.headField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ increment
         {
             get
@@ -9406,9 +9405,9 @@ namespace ServiceReference
                 this.incrementField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         public string period
         {
             get
@@ -9420,9 +9419,9 @@ namespace ServiceReference
                 this.periodField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         public string denominator
         {
             get
@@ -9435,24 +9434,24 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class GLIST_TS : ANY
     {
-        
+
         private TS headField;
-        
+
         private PQ incrementField;
-        
+
         private string periodField;
-        
+
         private string denominatorField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public TS head
         {
             get
@@ -9464,9 +9463,9 @@ namespace ServiceReference
                 this.headField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ increment
         {
             get
@@ -9478,9 +9477,9 @@ namespace ServiceReference
                 this.incrementField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         public string period
         {
             get
@@ -9492,9 +9491,9 @@ namespace ServiceReference
                 this.periodField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
         public string denominator
         {
             get
@@ -9507,22 +9506,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SLIST_TS : ANY
     {
-        
+
         private TS originField;
-        
+
         private PQ scaleField;
-        
+
         private string digitsField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public TS origin
         {
             get
@@ -9534,9 +9533,9 @@ namespace ServiceReference
                 this.originField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ scale
         {
             get
@@ -9548,9 +9547,9 @@ namespace ServiceReference
                 this.scaleField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 2)]
         public string digits
         {
             get
@@ -9563,22 +9562,22 @@ namespace ServiceReference
             }
         }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:hl7-org:v3")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:hl7-org:v3")]
     public partial class SLIST_PQ : ANY
     {
-        
+
         private PQ originField;
-        
+
         private PQ scaleField;
-        
+
         private string digitsField;
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public PQ origin
         {
             get
@@ -9590,9 +9589,9 @@ namespace ServiceReference
                 this.originField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public PQ scale
         {
             get
@@ -9604,9 +9603,9 @@ namespace ServiceReference
                 this.scaleField = value;
             }
         }
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 2)]
         public string digits
         {
             get
@@ -9619,226 +9618,226 @@ namespace ServiceReference
             }
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped = false)]
     public partial class HCIM_IN_GetDemographicsRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:hl7-org:v3", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "urn:hl7-org:v3", Order = 0)]
         public ServiceReference.HCIM_IN_GetDemographics HCIM_IN_GetDemographics;
-        
+
         public HCIM_IN_GetDemographicsRequest()
         {
         }
-        
+
         public HCIM_IN_GetDemographicsRequest(ServiceReference.HCIM_IN_GetDemographics HCIM_IN_GetDemographics)
         {
             this.HCIM_IN_GetDemographics = HCIM_IN_GetDemographics;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped = false)]
     public partial class HCIM_IN_GetDemographicsResponse1
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:hl7-org:v3", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "urn:hl7-org:v3", Order = 0)]
         public ServiceReference.HCIM_IN_GetDemographicsResponse HCIM_IN_GetDemographicsResponse;
-        
+
         public HCIM_IN_GetDemographicsResponse1()
         {
         }
-        
+
         public HCIM_IN_GetDemographicsResponse1(ServiceReference.HCIM_IN_GetDemographicsResponse HCIM_IN_GetDemographicsResponse)
         {
             this.HCIM_IN_GetDemographicsResponse = HCIM_IN_GetDemographicsResponse;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped = false)]
     public partial class HCIM_IN_FindCandidatesRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:hl7-org:v3", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "urn:hl7-org:v3", Order = 0)]
         public ServiceReference.HCIM_IN_FindCandidates HCIM_IN_FindCandidates;
-        
+
         public HCIM_IN_FindCandidatesRequest()
         {
         }
-        
+
         public HCIM_IN_FindCandidatesRequest(ServiceReference.HCIM_IN_FindCandidates HCIM_IN_FindCandidates)
         {
             this.HCIM_IN_FindCandidates = HCIM_IN_FindCandidates;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped = false)]
     public partial class HCIM_IN_FindCandidatesResponse1
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:hl7-org:v3", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "urn:hl7-org:v3", Order = 0)]
         public ServiceReference.HCIM_IN_FindCandidatesResponse HCIM_IN_FindCandidatesResponse;
-        
+
         public HCIM_IN_FindCandidatesResponse1()
         {
         }
-        
+
         public HCIM_IN_FindCandidatesResponse1(ServiceReference.HCIM_IN_FindCandidatesResponse HCIM_IN_FindCandidatesResponse)
         {
             this.HCIM_IN_FindCandidatesResponse = HCIM_IN_FindCandidatesResponse;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped = false)]
     public partial class HCIM_IN_GetRelatedIdentifiersRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:hl7-org:v3", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "urn:hl7-org:v3", Order = 0)]
         public ServiceReference.HCIM_IN_GetRelatedIdentifiers HCIM_IN_GetRelatedIdentifiers;
-        
+
         public HCIM_IN_GetRelatedIdentifiersRequest()
         {
         }
-        
+
         public HCIM_IN_GetRelatedIdentifiersRequest(ServiceReference.HCIM_IN_GetRelatedIdentifiers HCIM_IN_GetRelatedIdentifiers)
         {
             this.HCIM_IN_GetRelatedIdentifiers = HCIM_IN_GetRelatedIdentifiers;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped = false)]
     public partial class HCIM_IN_GetRelatedIdentifiersResponse1
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:hl7-org:v3", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "urn:hl7-org:v3", Order = 0)]
         public ServiceReference.HCIM_IN_GetRelatedIdentifiersResponse HCIM_IN_GetRelatedIdentifiersResponse;
-        
+
         public HCIM_IN_GetRelatedIdentifiersResponse1()
         {
         }
-        
+
         public HCIM_IN_GetRelatedIdentifiersResponse1(ServiceReference.HCIM_IN_GetRelatedIdentifiersResponse HCIM_IN_GetRelatedIdentifiersResponse)
         {
             this.HCIM_IN_GetRelatedIdentifiersResponse = HCIM_IN_GetRelatedIdentifiersResponse;
         }
     }
-    
+
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     public interface QUPA_AR101102_PortTypeChannel : ServiceReference.QUPA_AR101102_PortType, System.ServiceModel.IClientChannel
     {
     }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
+
+    //[System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     public partial class QUPA_AR101102_PortTypeClient : System.ServiceModel.ClientBase<ServiceReference.QUPA_AR101102_PortType>, ServiceReference.QUPA_AR101102_PortType
     {
-        
+
         /// <summary>
         /// Implement this partial method to configure the service endpoint.
         /// </summary>
         /// <param name="serviceEndpoint">The endpoint to configure</param>
         /// <param name="clientCredentials">The client credentials</param>
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials);
-        
-        public QUPA_AR101102_PortTypeClient() : 
+
+        public QUPA_AR101102_PortTypeClient() :
                 base(QUPA_AR101102_PortTypeClient.GetDefaultBinding(), QUPA_AR101102_PortTypeClient.GetDefaultEndpointAddress())
         {
             this.Endpoint.Name = EndpointConfiguration.QUPA_AR101102_Port.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public QUPA_AR101102_PortTypeClient(EndpointConfiguration endpointConfiguration) : 
+
+        public QUPA_AR101102_PortTypeClient(EndpointConfiguration endpointConfiguration) :
                 base(QUPA_AR101102_PortTypeClient.GetBindingForEndpoint(endpointConfiguration), QUPA_AR101102_PortTypeClient.GetEndpointAddress(endpointConfiguration))
         {
             this.Endpoint.Name = endpointConfiguration.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public QUPA_AR101102_PortTypeClient(EndpointConfiguration endpointConfiguration, string remoteAddress) : 
+
+        public QUPA_AR101102_PortTypeClient(EndpointConfiguration endpointConfiguration, string remoteAddress) :
                 base(QUPA_AR101102_PortTypeClient.GetBindingForEndpoint(endpointConfiguration), new System.ServiceModel.EndpointAddress(remoteAddress))
         {
             this.Endpoint.Name = endpointConfiguration.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public QUPA_AR101102_PortTypeClient(EndpointConfiguration endpointConfiguration, System.ServiceModel.EndpointAddress remoteAddress) : 
+
+        public QUPA_AR101102_PortTypeClient(EndpointConfiguration endpointConfiguration, System.ServiceModel.EndpointAddress remoteAddress) :
                 base(QUPA_AR101102_PortTypeClient.GetBindingForEndpoint(endpointConfiguration), remoteAddress)
         {
             this.Endpoint.Name = endpointConfiguration.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public QUPA_AR101102_PortTypeClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+
+        public QUPA_AR101102_PortTypeClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) :
                 base(binding, remoteAddress)
         {
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<ServiceReference.HCIM_IN_GetDemographicsResponse1> ServiceReference.QUPA_AR101102_PortType.HCIM_IN_GetDemographicsAsync(ServiceReference.HCIM_IN_GetDemographicsRequest request)
         {
             return base.Channel.HCIM_IN_GetDemographicsAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<ServiceReference.HCIM_IN_GetDemographicsResponse1> HCIM_IN_GetDemographicsAsync(ServiceReference.HCIM_IN_GetDemographics HCIM_IN_GetDemographics)
         {
             ServiceReference.HCIM_IN_GetDemographicsRequest inValue = new ServiceReference.HCIM_IN_GetDemographicsRequest();
             inValue.HCIM_IN_GetDemographics = HCIM_IN_GetDemographics;
             return ((ServiceReference.QUPA_AR101102_PortType)(this)).HCIM_IN_GetDemographicsAsync(inValue);
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<ServiceReference.HCIM_IN_FindCandidatesResponse1> ServiceReference.QUPA_AR101102_PortType.HCIM_IN_FindCandidatesAsync(ServiceReference.HCIM_IN_FindCandidatesRequest request)
         {
             return base.Channel.HCIM_IN_FindCandidatesAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<ServiceReference.HCIM_IN_FindCandidatesResponse1> HCIM_IN_FindCandidatesAsync(ServiceReference.HCIM_IN_FindCandidates HCIM_IN_FindCandidates)
         {
             ServiceReference.HCIM_IN_FindCandidatesRequest inValue = new ServiceReference.HCIM_IN_FindCandidatesRequest();
             inValue.HCIM_IN_FindCandidates = HCIM_IN_FindCandidates;
             return ((ServiceReference.QUPA_AR101102_PortType)(this)).HCIM_IN_FindCandidatesAsync(inValue);
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<ServiceReference.HCIM_IN_GetRelatedIdentifiersResponse1> ServiceReference.QUPA_AR101102_PortType.HCIM_IN_GetRelatedIdentifiersAsync(ServiceReference.HCIM_IN_GetRelatedIdentifiersRequest request)
         {
             return base.Channel.HCIM_IN_GetRelatedIdentifiersAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<ServiceReference.HCIM_IN_GetRelatedIdentifiersResponse1> HCIM_IN_GetRelatedIdentifiersAsync(ServiceReference.HCIM_IN_GetRelatedIdentifiers HCIM_IN_GetRelatedIdentifiers)
         {
             ServiceReference.HCIM_IN_GetRelatedIdentifiersRequest inValue = new ServiceReference.HCIM_IN_GetRelatedIdentifiersRequest();
             inValue.HCIM_IN_GetRelatedIdentifiers = HCIM_IN_GetRelatedIdentifiers;
             return ((ServiceReference.QUPA_AR101102_PortType)(this)).HCIM_IN_GetRelatedIdentifiersAsync(inValue);
         }
-        
+
         public virtual System.Threading.Tasks.Task OpenAsync()
         {
             return System.Threading.Tasks.Task.Factory.FromAsync(((System.ServiceModel.ICommunicationObject)(this)).BeginOpen(null, null), new System.Action<System.IAsyncResult>(((System.ServiceModel.ICommunicationObject)(this)).EndOpen));
         }
-        
+
         public virtual System.Threading.Tasks.Task CloseAsync()
         {
             return System.Threading.Tasks.Task.Factory.FromAsync(((System.ServiceModel.ICommunicationObject)(this)).BeginClose(null, null), new System.Action<System.IAsyncResult>(((System.ServiceModel.ICommunicationObject)(this)).EndClose));
         }
-        
+
         private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(EndpointConfiguration endpointConfiguration)
         {
             if ((endpointConfiguration == EndpointConfiguration.QUPA_AR101102_Port))
@@ -9852,7 +9851,7 @@ namespace ServiceReference
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }
-        
+
         private static System.ServiceModel.EndpointAddress GetEndpointAddress(EndpointConfiguration endpointConfiguration)
         {
             if ((endpointConfiguration == EndpointConfiguration.QUPA_AR101102_Port))
@@ -9861,20 +9860,20 @@ namespace ServiceReference
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }
-        
+
         private static System.ServiceModel.Channels.Binding GetDefaultBinding()
         {
             return QUPA_AR101102_PortTypeClient.GetBindingForEndpoint(EndpointConfiguration.QUPA_AR101102_Port);
         }
-        
+
         private static System.ServiceModel.EndpointAddress GetDefaultEndpointAddress()
         {
             return QUPA_AR101102_PortTypeClient.GetEndpointAddress(EndpointConfiguration.QUPA_AR101102_Port);
         }
-        
+
         public enum EndpointConfiguration
         {
-            
+
             QUPA_AR101102_Port,
         }
     }
