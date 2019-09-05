@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: immsservice-template
+  name: ${NAME}-template
 objects:
 
 - apiVersion: v1
@@ -39,7 +39,7 @@ objects:
               - '-H'
               - 'Content-Type: application/json'
               - '--data'
-              - '{"icon_emoji":":cloud:","text":"[Updated Health Gateway App ${NAME} Deployed](https://${ENV}-gateway.pathfinder.gov.bc.ca)  to **${ENV}**"}'
+              - '{"icon_emoji":":cloud:","text":"[Updated Health Gateway App ${NAME} Deployed](https://${ENV}-${WEB_HOST}.pathfinder.gov.bc.ca/api/${NAME})  to **${ENV}**"}'
               - https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
             containerName: ${NAME}
           failurePolicy: Ignore
@@ -63,11 +63,6 @@ objects:
               valueFrom:
                 configMapKeyRef:
                   key: HealthGateway_OpenIdConnect__ClientId
-                  name: ${COMMON_CONFIG}-config
-            - name: HealthGateway_OpenIdConnect__ClientSecret
-              valueFrom:
-                configMapKeyRef:
-                  key: HealthGateway_OpenIdConnect__ClientSecret
                   name: ${COMMON_CONFIG}-config
           imagePullPolicy: Always
           name: ${NAME}
@@ -99,7 +94,7 @@ objects:
         - ${NAME}
         from:
           kind: ImageStreamTag
-          name: ${APP_NAME}:${ENV}
+          name: ${NAME}:${ENV}
           namespace: ${TOOLS_NAMESPACE}
       type: ImageChange
     - type: ConfigChange
@@ -124,7 +119,7 @@ objects:
       app: ${NAME}
     name: ${NAME}
   spec:
-    host: ${ENV}-${APP_NAME}-gateway.pathfinder.gov.bc.ca
+    host: ${ENV}-${NAME}-${WEB_HOST}.pathfinder.gov.bc.ca
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
@@ -155,13 +150,12 @@ parameters:
   - name: NAME
     displayName: Template Name
     description: The name of the template and all related entities (override for multiple deployments in the same namespace)
-    value: immsservice
-    required: true 
-  - name: APP_NAME
-    displayName: Application Name
-    description: The name of the application which matches to the image stream
-    value: immsservice
-    required: true 
+    required: true
+  - name: WEB_HOST
+    displayName: Web host name used in the built URI
+    description: This value defaults to gateway and likely shouldn't be changed
+    value: gateway
+    required: true
   - name: COMMON_CONFIG
     displayName: Common ConfigMap
     description: The name used for the common config for the environment
