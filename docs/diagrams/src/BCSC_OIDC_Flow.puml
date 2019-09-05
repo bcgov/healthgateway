@@ -2,10 +2,10 @@
 autonumber
     actor Citizen
     Citizen -> Browser
-    Browser -> HealthGateway
+    Browser <-> HealthGateway : Load HealthGateway App
     Citizen -> Browser : Select Login With BCSC
-    Browser -> KeyCloak : Authentication Request (idp_hint=bcsc)
-    KeyCloak -> IAS : Authenticate User
+    Browser -> KeyCloak : Authentication Request (idp_hint=bcsc, client_id)
+    KeyCloak -> IAS : Authenticate User  (client_id, client_secret)
     Browser <-> IAS : Authenticate User
     IAS -> KeyCloak : Return ID_Token
     KeyCloak -> Browser : Returns code token
