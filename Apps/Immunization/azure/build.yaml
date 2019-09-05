@@ -3,7 +3,7 @@ name: 1.0.0$(Rev:.r) #Build number
 #Build variables
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Immunization
-  App.Name: immsservice
+  App.Name: immunization
   App.FunctionalTests: $(App.Home)/testFunctional
 
 pr: none
