@@ -21,6 +21,7 @@ namespace HealthGateway.Service.Patient.Test
     using Microsoft.Extensions.Configuration;
     using Moq;
 
+
     public class PatientService_Test
     {
         private Mock<ILogger<SoapPatientService>> serviceLogger;
@@ -29,17 +30,26 @@ namespace HealthGateway.Service.Patient.Test
 
         public PatientService_Test()
         {
-            var configuration = new Mock<IConfiguration>();
+            /*
+            var certificateSection = new Mock<IConfigurationSection>();
+            certificateSection.SetupGet(x => x[It.IsAny<string>()]).Returns("testvalue");
 
             var configurationSection = new Mock<IConfigurationSection>();
-            configurationSection.Setup(a => a.Value).Returns("testvalue");
+            configurationSection.Setup(a => a.GetSection("ClientCertificate")).Returns(certificateSection.Object);
+
+            var configuration = new Mock<IConfiguration>();
+            configuration.Setup(a => a.GetSection("ClientRegistries")).Returns(configurationSection.Object);*/
+
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("UnitTest.json").Build();
+        
 
             // Mock dependency injection of controller
             this.serviceLogger = new Mock<ILogger<SoapPatientService>>();
             this.messageLogger = new Mock<ILogger<LoggingMessageInspector>>();
 
             // Creates the controller passing mocked dependencies
-            this.service = new SoapPatientService(serviceLogger.Object, configuration.Object, new LoggingEndpointBehaviour(new LoggingMessageInspector(messageLogger.Object)));
+            this.service = new SoapPatientService(serviceLogger.Object, config, new LoggingEndpointBehaviour(new LoggingMessageInspector(messageLogger.Object)));
         }
 
         [Fact]
