@@ -77,10 +77,10 @@ namespace HealthGateway.Service.Patient
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
             // Create request
-            HCIM_IN_GetDemographics demo = this.createRequest(hdid);
+            HCIM_IN_GetDemographics request = this.createRequest(hdid);
 
             // Perform the request
-            HCIM_IN_GetDemographicsResponse1 resp = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(demo).ConfigureAwait(true);
+            HCIM_IN_GetDemographicsResponse1 resply = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
 
             // resp.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
             return new Patient(hdid, string.Empty, string.Empty, string.Empty);
@@ -88,43 +88,43 @@ namespace HealthGateway.Service.Patient
 
         private HCIM_IN_GetDemographics createRequest(string hdid)
         {
-            HCIM_IN_GetDemographics demo = new HCIM_IN_GetDemographics();
-            demo.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = "6789012BE_0" };
-            demo.creationTime = new TS() { value = "20110907000000" };
-            demo.versionCode = new CS() { code = "V3PR1" };
-            demo.interactionId = new II() { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
-            demo.processingCode = new CS() { code = "P" };
-            demo.processingModeCode = new CS() { code = "T" };
-            demo.acceptAckCode = new CS() { code = "NE" };
+            HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
+            request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = "6789012BE_0" };
+            request.creationTime = new TS() { value = "20110907000000" };
+            request.versionCode = new CS() { code = "V3PR1" };
+            request.interactionId = new II() { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
+            request.processingCode = new CS() { code = "P" };
+            request.processingModeCode = new CS() { code = "T" };
+            request.acceptAckCode = new CS() { code = "NE" };
 
-            demo.receiver = new MCCI_MT000100Receiver() { typeCode = "RCV" };
-            demo.receiver.device = new MCCI_MT000100Device() { determinerCode = "INSTANCE", classCode = "DEV" };
-            demo.receiver.device.id = new II() { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" };
-            demo.receiver.device.asAgent = new MCCI_MT000100Agent() { classCode = "AGNT" };
-            demo.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
-            demo.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
-            demo.receiver.device.asAgent.representedOrganization.id = new II() { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
+            request.receiver = new MCCI_MT000100Receiver() { typeCode = "RCV" };
+            request.receiver.device = new MCCI_MT000100Device() { determinerCode = "INSTANCE", classCode = "DEV" };
+            request.receiver.device.id = new II() { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" };
+            request.receiver.device.asAgent = new MCCI_MT000100Agent() { classCode = "AGNT" };
+            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
+            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
+            request.receiver.device.asAgent.representedOrganization.id = new II() { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
 
-            demo.sender = new MCCI_MT000100Sender() { typeCode = "SND" };
-            demo.sender.device = new MCCI_MT000100Device() { determinerCode = "INSTANCE", classCode = "DEV" };
-            demo.sender.device.id = new II() { root = "2.16.840.1.113883.3.51.1.1.5", extension = "HGWAY_HI1" };
-            demo.sender.device.asAgent = new MCCI_MT000100Agent() { classCode = "AGNT" };
-            demo.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
-            demo.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
-            demo.sender.device.asAgent.representedOrganization.id = new II() { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
+            request.sender = new MCCI_MT000100Sender() { typeCode = "SND" };
+            request.sender.device = new MCCI_MT000100Device() { determinerCode = "INSTANCE", classCode = "DEV" };
+            request.sender.device.id = new II() { root = "2.16.840.1.113883.3.51.1.1.5", extension = "HGWAY_HI1" };
+            request.sender.device.asAgent = new MCCI_MT000100Agent() { classCode = "AGNT" };
+            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
+            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
+            request.sender.device.asAgent.representedOrganization.id = new II() { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
 
-            demo.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess() { classCode = "ACCM", moodCode = "EVN" };
-            demo.controlActProcess.effectiveTime = new IVL_TS() { value = "20110907000000" };
-            demo.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer() { typeCode = "CST", time = null, typeId = null };
-            demo.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson() { classCode = "ENT" };
-            demo.controlActProcess.dataEnterer.assignedPerson.id = new II() { root = "2.16.840.1.113883.3.51.1.1.7", extension = "userid123" };
+            request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess() { classCode = "ACCM", moodCode = "EVN" };
+            request.controlActProcess.effectiveTime = new IVL_TS() { value = "20110907000000" };
+            request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer() { typeCode = "CST", time = null, typeId = null };
+            request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson() { classCode = "ENT" };
+            request.controlActProcess.dataEnterer.assignedPerson.id = new II() { root = "2.16.840.1.113883.3.51.1.1.7", extension = "userid123" };
 
-            demo.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
-            demo.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
-            demo.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-            demo.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6.1", extension = hdid };
+            request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
+            request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6.1", extension = hdid };
 
-            return demo;
+            return request;
         }
     }
 }

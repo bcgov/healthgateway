@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Service.Patient
 {
-    using System.Collections.Generic;
     using HealthGateway.Models;
 
     /// <summary>

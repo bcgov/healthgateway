@@ -22,19 +22,27 @@ namespace HealthGateway.Service.Patient
     using System.Xml;
     using System.IO;
 
-    ///
+    /// <summary>
+    /// Implementation of IClientMessageInspector for loging purposes
+    /// </summary>
     public class LoggingMessageInspector : IClientMessageInspector
     {
         private ILogger<LoggingMessageInspector> logger;
 
-        ///
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public LoggingMessageInspector(ILogger<LoggingMessageInspector> logger)
         {
             this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
         }
 
-        ///
+        /// <summary>
+        /// Implementation of IClientMessageInspector
+        /// Gets called AFTER receiving a reply from the Soap Call
+        /// </summary>
+        /// <param name="reply">The reply message.</param>
+        /// <param name="correlationState">Correlation State.</param>
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
             using (var buffer = reply.CreateBufferedCopy(int.MaxValue))
@@ -46,7 +54,13 @@ namespace HealthGateway.Service.Patient
             }
         }
 
-        ///
+        /// <summary>
+        /// Implementation of IClientMessageInspector
+        /// Gets called BEFORE receiving a reply from the Soap Call
+        /// </summary>
+        /// <param name="request">The request message to be send.</param>
+        /// <param name="channel">The request message to be send.</param>
+        /// <returns>The object that is returned as the correlationState argument of the AfterReceiveReply(Message, Object) method.</returns>
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
