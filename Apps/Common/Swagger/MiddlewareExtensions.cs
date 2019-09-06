@@ -13,32 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Swagger
+namespace HealthGateway.Common.Swagger
 {
-    using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Swagger;
+    using System;
+    using Microsoft.AspNetCore.Builder;
 
-    /// <inheritdoc />
-    public sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerOptions>
+    /// <summary>
+    /// Extending Swagger services.
+    /// </summary>
+    public static class MiddlewareExtensions
     {
-        private readonly SwaggerSettings settings;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
+        /// Enabling Swagger UI.
+        /// Excluding from test environment.
         /// </summary>
-        /// <param name="settings">settings.</param>
-        public ConfigureSwaggerOptions(IOptions<SwaggerSettings> settings)
+        /// <param name="app">IApplicationBuilder.</param>
+        public static void UseSwaggerDocuments(this IApplicationBuilder app)
         {
-            this.settings = settings?.Value ?? new SwaggerSettings();
-        }
-
-        /// <inheritdoc />
-        public void Configure(SwaggerOptions options)
-        {
-            if (options != null)
-            {
-                options.RouteTemplate = this.settings.RoutePrefixWithSlash + "{documentName}/swagger.json";
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
     }
 }

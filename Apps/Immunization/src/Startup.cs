@@ -16,7 +16,6 @@
 namespace HealthGateway
 {
     using HealthGateway.Service;
-    using HealthGateway.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -29,6 +28,7 @@ namespace HealthGateway
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using System.Linq;
+    using HealthGateway.Common.Swagger;
 
     /// <summary>
     /// Configures the application during startup.
@@ -140,12 +140,7 @@ namespace HealthGateway
                 };
             });
 
-            services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-
-            services
-                .AddApiVersionWithExplorer()
-                .AddSwaggerOptions()
-                .AddSwaggerGen();
+            SwaggerConfiguration.ConfigureServices(services, this.configuration);
 
             // Http Service. Maybe it should be testeable too
             services.AddHttpClient();
@@ -176,8 +171,7 @@ namespace HealthGateway
             // Enable jwt authentication
             app.UseAuthentication();
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            app.UseSwaggerDocuments();
+            SwaggerConfiguration.Configure(app);
 
             if (env.IsDevelopment())
             {
