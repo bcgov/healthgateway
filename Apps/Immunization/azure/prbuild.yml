@@ -40,7 +40,7 @@ steps:
     echo "$@" >&2
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
-  workingDirectory: $(Build.SourcesDirectory)/Apps/Immunization
+  workingDirectory: $(App.Home)
   enabled: 'true'
   
 - task: Bash@3
