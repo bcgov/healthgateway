@@ -1,0 +1,15 @@
+@startuml BCSC_OIDC_Flow
+autonumber
+    actor Citizen
+    Citizen -> Browser
+    Browser <-> HealthGateway : Load HealthGateway App
+    Citizen -> Browser : Select Login With BCSC
+    Browser -> KeyCloak : Authentication Request (idp_hint=bcsc, client_id)
+    KeyCloak -> IAS : Authenticate User  (client_id, client_secret)
+    Browser <-> IAS : Authenticate User
+    IAS -> KeyCloak : Return ID_Token
+    KeyCloak -> Browser : Returns code token
+    Browser <-> KeyCloak : Exchange Code for access (bearer) Token
+    Browser <-> KeyCloak : Retrieve user info
+    Browser --> Browser : Store token in LocalStorage (session)
+@enduml

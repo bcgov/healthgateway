@@ -16,8 +16,8 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Service.Patient
 {
+    using HealthGateway.Common.Swagger;
     using HealthGateway.Service;
-    using HealthGateway.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -99,12 +99,7 @@ namespace HealthGateway.Service.Patient
                 };
             });
 
-            services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-
-            services
-                .AddApiVersionWithExplorer()
-                .AddSwaggerOptions()
-                .AddSwaggerGen();
+            SwaggerConfiguration.ConfigureServices(services, this.configuration);
 
             // Http Service. Maybe it should be testeable too
             services.AddHttpClient();
@@ -138,7 +133,7 @@ namespace HealthGateway.Service.Patient
             app.UseAuthentication();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            app.UseSwaggerDocuments();
+            SwaggerConfiguration.Configure(app);
 
             if (env.IsDevelopment())
             {

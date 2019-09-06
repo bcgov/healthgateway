@@ -7,7 +7,6 @@ objects:
   data:
     HealthGateway_OpenIdConnect__Authority: ${AUTH_OIDC_AUTHORITY}
     HealthGateway_OpenIdConnect__ClientId: ${AUTH_OIDC_CLIENTID}
-    HealthGateway_OpenIdConnect__ClientSecret: ${AUTH_OIDC_CLIENTSECRET}
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
@@ -26,7 +25,3 @@ parameters:
     displayName: OIDC Client ID
     description: The OIDC Client ID to use for authentication
     required: false
-  - name: AUTH_OIDC_CLIENTSECRET
-    displayName: OIDC Client Secret
-    description: The OIDC Client Secret
-    required: false  
