@@ -58,7 +58,7 @@ steps:
     echo "$@" >&2
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
-  workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+  workingDirectory: $(App.Home)
   
 - task: Bash@3
   displayName: 'Add SonarQube Report to GitHub Pull Request'
