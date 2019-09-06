@@ -1,4 +1,4 @@
-# High-Level Health Gateway Architecture
+# High-Level HealthGateway Architecture
 
 ## Citizen Authentication using OAuth2 OpenID Connect (OIDC) Flow
 
@@ -26,11 +26,18 @@ The Health Gateway is composed of publicly accessible but protected service APIs
      alt="OIDC Flow"
      style="float: left; margin-right: 10px;" />
 
+ **Step 1** Begins the flow by loading the HealthGateway app into the Citizen's browser.   **Step 2** we repeat the login flow as described above.  The citizen then selects to view their Medications in **Step 3**.  The first thing we need is a subject identiifer as known to our provincial health records, namely the PHN.  A protected API call to GetPHN() is called in **Step 4**.  In **Step 5** the PatientAPI checks that the Bearer token supplied is valid before proceeding to exchange the HDID (UserInfo.sub) for a PHN. Obtaining the PHN is done via a SOAP call to HCIM using the HL7v3 HCIM_IN_GetDemographics query in **Step 6**.  The PHN is returned to the HealthGateway Single Page App in the Browser in **Step 7**. 
+
+ The application now has the Citizen's PHN patient identifier to be used to get Medications, and in **Step 8** Medications are requested.  In **Step 8** the MedicationsAPI service first checks Bearer token and then connects to PharmaNet over HNI to fetch medications history using an HL7v2 message structure (**Step 10**).   The Medications are returned and displayed on the browser in **Step 11**.
+
+ In **Step 12** the Citizen logs out of the HealthGateway.  The HealthGateway relays that logout to KeyCloak to shut down authentication context for the user (**Step 13**), and the HealthGateway session token is deleted from the Browser (**Step 14**).
+
+ In **Step 15** if the user then attempts a call to the MedicationsAPI, passing the old token or no token, the API will reject the request after checking the token (**Step 16**) and returns an HTTP Error: '401 Not Authorised' in **Step 17**.
 
 ## Citizen as Patient
 
 By default, citizens will have access to their own health data and other Health Gateway user related information. The authorization is managed by user identity attribute from the BC Services Card to resolve to the user's Personal Health Number, or PHN. The PHN is not persisted anywhere within the Health Gateway application and that is by design.
 
-## 
-
 ## User Managed Access  (Using UMA 2.0)
+
+Future editions of the HealthGateway will introduce the use of OAuth User Managed Access 2.0 for managing access to protected resources, with the Citizen as resource owner.
