@@ -2,7 +2,7 @@ name: PR$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/immunization
+  App.Home: $(Build.SourcesDirectory)/Apps/Immunization
   App.Name: immunization
   App.UnitTests: $(App.Home)/testUnit
   App.FunctionalTests: $(App.Home)/testFunctional
