@@ -142,12 +142,12 @@ export default class ImmunizationsComponent extends Vue {
       SERVICE_IDENTIFIER.ImmsService
     );
 
-  this.vaccineSearchURL = this.webClientConfiguration.externalURLs[
-    "HealthLinkVaccineSearch"
-  ];
-  this.healthLinkURL = this.webClientConfiguration.externalURLs[
-    "HealthLinkImmunizationSchedule"
-  ];
+    this.vaccineSearchURL = this.webClientConfiguration.externalURLs[
+      "HealthLinkVaccineSearch"
+    ];
+    this.healthLinkURL = this.webClientConfiguration.externalURLs[
+      "HealthLinkImmunizationSchedule"
+    ];
 
     immsService
       .getItems()

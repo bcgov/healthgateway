@@ -18,14 +18,9 @@ namespace HealthGateway.WebClient
 {
     using System;
     using System.Diagnostics.Contracts;
-    using System.IdentityModel.Tokens.Jwt;
     using System.IO;
-    using System.Net.Http;
-    using System.Reflection;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
+    using HealthGateway.Common.Swagger;
     using HealthGateway.WebClient.Services;
-    using HealthGateway.WebClient.Swagger;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -37,10 +32,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
-    using Swashbuckle.AspNetCore.SwaggerGen;
-    using Swashbuckle.AspNetCore.SwaggerUI;
 
     /// <summary>
     /// Configures the application during startup.
@@ -96,12 +88,7 @@ namespace HealthGateway.WebClient
                     options.SerializerSettings.Formatting = Formatting.Indented;
                 });
 
-            services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-
-            services
-                .AddApiVersionWithExplorer()
-                .AddSwaggerOptions()
-                .AddSwaggerGen();
+            SwaggerConfiguration.ConfigureServices(services, this.configuration);
         }
 
         /// <summary>
@@ -155,7 +142,7 @@ namespace HealthGateway.WebClient
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto,
             });
 
-            app.UseSwaggerDocuments();
+            SwaggerConfiguration.Configure(app);
             app.UseResponseCompression();
 
             app.UseMvc(routes =>
