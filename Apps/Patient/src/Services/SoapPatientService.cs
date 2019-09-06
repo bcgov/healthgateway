@@ -80,10 +80,10 @@ namespace HealthGateway.Service.Patient
             HCIM_IN_GetDemographics request = this.createRequest(hdid);
 
             // Perform the request
-            HCIM_IN_GetDemographicsResponse1 resply = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+            HCIM_IN_GetDemographicsResponse1 reply = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
 
-            // resp.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
-            return new Patient(hdid, string.Empty, string.Empty, string.Empty);
+            // For now, add the return message to the reply
+            return new Patient(hdid, string.Empty, reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code, string.Empty);
         }
 
         private HCIM_IN_GetDemographics createRequest(string hdid)
