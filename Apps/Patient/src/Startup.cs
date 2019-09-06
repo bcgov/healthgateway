@@ -110,7 +110,7 @@ namespace HealthGateway.Service.Patient
             services.AddHttpClient();
 
             // Patient Service
-            services.AddSingleton<IPatientService, PatientService>();
+            services.AddSingleton<IPatientService, SoapPatientService>();
             services.AddSingleton<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddSingleton<IClientMessageInspector, LoggingMessageInspector>();
         }

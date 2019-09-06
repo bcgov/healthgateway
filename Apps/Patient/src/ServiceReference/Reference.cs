@@ -10,6 +10,7 @@
 #pragma warning disable CS1591 //disable XML comment
 namespace ServiceReference
 {
+    using System.Runtime.Serialization;
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ServiceModel.ServiceContractAttribute(Namespace = "urn:hl7-org:v3", ConfigurationName = "ServiceReference.QUPA_AR101102_PortType")]
     public interface QUPA_AR101102_PortType
@@ -5590,10 +5591,12 @@ namespace ServiceReference
 
         private CS[] realmCodeField;
 
+        [DataMember(EmitDefaultValue = false)]
         private II typeIdField;
 
         private II[] templateIdField;
 
+        [DataMember(EmitDefaultValue = false)]
         private IVL_TS timeField;
 
         private COCT_MT090100AssignedPerson assignedPersonField;
@@ -5624,7 +5627,7 @@ namespace ServiceReference
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 1)]
+        [System.Xml.Serialization.XmlElementAttribute(Order = 1)]
         public II typeId
         {
             get
@@ -5652,7 +5655,7 @@ namespace ServiceReference
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true, Order = 3)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
         public IVL_TS time
         {
             get

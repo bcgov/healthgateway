@@ -15,31 +15,18 @@
 //-------------------------------------------------------------------------
 namespace ServiceReference
 {
-    using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
-    using System.ServiceModel.Security;
 
     public partial class QUPA_AR101102_PortTypeClient
     {
+        /// <summary>
+        /// Configures the GetDemographics client.
+        /// </summary>
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials)
         {
-            clientCredentials.ServiceCertificate.SslCertificateAuthentication =
-                new X509ServiceCertificateAuthentication()
-                {
-                    CertificateValidationMode = X509CertificateValidationMode.None,
-                    RevocationMode = X509RevocationMode.NoCheck,
-                };
-
-            string clientCertificatePath = "/home/dev/Development/tmp_folder/cert/HGWAY_HI1.pfx";
-            string certificatePassword = "******";
-            X509Certificate2 clientCertificate = new X509Certificate2(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
-            clientCredentials.ClientCertificate.Certificate = clientCertificate;
-
             BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
             serviceEndpoint.Binding = binding;
-
-            var a = 3;
         }
     }
 }
