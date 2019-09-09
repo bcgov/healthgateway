@@ -9,7 +9,7 @@ namespace HealthGateway.Patient.Test.Service
         [Fact]
         public void Should_true()
         {
-            // dummy change
+            // dummy change 2
             Assert.True(true);
         }
     }
