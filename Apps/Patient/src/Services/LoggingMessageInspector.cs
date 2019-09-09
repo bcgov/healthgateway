@@ -15,23 +15,25 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.PatientService
 {
+    using System;
+    using System.IO;
     using System.ServiceModel;
     using System.ServiceModel.Channels;
     using System.ServiceModel.Dispatcher;
-    using Microsoft.Extensions.Logging;
     using System.Xml;
-    using System.IO;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Implementation of IClientMessageInspector for loging purposes
+    /// Implementation of IClientMessageInspector for loging purposes.
     /// </summary>
     public class LoggingMessageInspector : IClientMessageInspector
     {
         private ILogger<LoggingMessageInspector> logger;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="LoggingMessageInspector"/> class.
         /// </summary>
+        /// <param name="logger">The logger provider.</param>
         public LoggingMessageInspector(ILogger<LoggingMessageInspector> logger)
         {
             this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
@@ -39,15 +41,20 @@ namespace HealthGateway.PatientService
 
         /// <summary>
         /// Implementation of IClientMessageInspector
-        /// Gets called AFTER receiving a reply from the Soap Call
+        /// Gets called AFTER receiving a reply from the Soap Call.
         /// </summary>
         /// <param name="reply">The reply message.</param>
         /// <param name="correlationState">Correlation State.</param>
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
+            if (reply is null)
+            {
+                throw new ArgumentNullException(nameof(reply));
+            }
+
             using (var buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
-                var document = GetDocument(buffer.CreateMessage());
+                var document = this.GetDocument(buffer.CreateMessage());
                 this.logger.LogTrace(document.OuterXml);
 
                 reply = buffer.CreateMessage();
@@ -56,16 +63,21 @@ namespace HealthGateway.PatientService
 
         /// <summary>
         /// Implementation of IClientMessageInspector
-        /// Gets called BEFORE receiving a reply from the Soap Call
+        /// Gets called BEFORE receiving a reply from the Soap Call.
         /// </summary>
         /// <param name="request">The request message to be send.</param>
-        /// <param name="channel">The request message to be send.</param>
+        /// <param name="channel">The client channel.</param>
         /// <returns>The object that is returned as the correlationState argument of the AfterReceiveReply(Message, Object) method.</returns>
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
             {
-                var document = GetDocument(buffer.CreateMessage());
+                var document = this.GetDocument(buffer.CreateMessage());
                 this.logger.LogTrace(document.OuterXml);
 
                 request = buffer.CreateMessage();
@@ -79,9 +91,12 @@ namespace HealthGateway.PatientService
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 // write request to memory stream
-                XmlWriter writer = XmlWriter.Create(memoryStream);
-                request.WriteMessage(writer);
-                writer.Flush();
+                using (XmlWriter writer = XmlWriter.Create(memoryStream))
+                {
+                    request.WriteMessage(writer);
+                    writer.Flush();
+                }
+
                 memoryStream.Position = 0;
 
                 // load memory stream into a document

@@ -15,11 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.PatientService
 {
+    using System;
     using System.Security.Cryptography.X509Certificates;
+    using System.ServiceModel;
     using System.ServiceModel.Description;
     using System.ServiceModel.Security;
-    using System.ServiceModel;
-    using System;
     using HealthGateway.PatientService.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -35,6 +35,7 @@ namespace HealthGateway.PatientService
         private readonly QUPA_AR101102_PortTypeClient getDemographicsClient;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SoapPatientService"/> class.
         /// Constructor that requires an IEndpointBehavior for dependency injection.
         /// </summary>
         /// <param name="logger">The service Logger.</param>
@@ -42,6 +43,11 @@ namespace HealthGateway.PatientService
         /// <param name="loggingEndpointBehaviour">Endpoint behaviour for logging purposes.</param>
         public SoapPatientService(ILogger<SoapPatientService> logger, IConfiguration configuration, IEndpointBehavior loggingEndpointBehaviour)
         {
+            if (configuration is null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             this.loggingEndpointBehaviour = loggingEndpointBehaviour;
             this.logger = logger;
 
@@ -77,7 +83,7 @@ namespace HealthGateway.PatientService
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
             // Create request
-            HCIM_IN_GetDemographics request = this.createRequest(hdid);
+            HCIM_IN_GetDemographics request = this.CreateRequest(hdid);
 
             // Perform the request
             HCIM_IN_GetDemographicsResponse1 reply = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
@@ -86,7 +92,7 @@ namespace HealthGateway.PatientService
             return new Patient(hdid, string.Empty, reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code, string.Empty);
         }
 
-        private HCIM_IN_GetDemographics createRequest(string hdid)
+        private HCIM_IN_GetDemographics CreateRequest(string hdid)
         {
             HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
             request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = "6789012BE_0" };

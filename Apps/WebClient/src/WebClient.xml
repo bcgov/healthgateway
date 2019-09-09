@@ -214,10 +214,11 @@
             Configures the application during startup.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
+        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Startup"/> class.
             </summary>
+            <param name="env">The environment variables provider.</param>
             <param name="configuration">The injected configuration provider.</param>
             <param name="logger">The injected logger provider.</param>
         </member>
