@@ -1,16 +1,4 @@
 {
-    "Logging": {
-        "LogLevel": {
-            "Default": "Debug",
-            "System": "Debug",
-            "Microsoft": "Information"
-        }
-    },
-    "OpenIdConnect": {
-        "Authority": "http://localhost:8080/auth/realms/Health",
-        "ClientId": "gateway",
-        "RequireHttpsMetadata": "false"
-    },
     "ClientRegistries": {
         "ServiceUrl": "https://wembley.hlth.gov.bc.ca/HI3/HCIM.HIALServices.Portal/QUPA_AR101102.asmx",
         "ClientCertificate": {
