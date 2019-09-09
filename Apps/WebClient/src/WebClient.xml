@@ -173,13 +173,6 @@
             </summary>
             <param name="args">The command line arguments to be passed in.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Program.BuildWebHost(System.String[])">
-            <summary>
-            Builds the webhost object with console logging and Configuration prefixing enabled.
-            </summary>
-            <param name="args">The command line arguments.</param>
-            <returns>Returns the configured webhost.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
