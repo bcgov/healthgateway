@@ -4,6 +4,7 @@ import {
   OpenIdConnectConfiguration
 } from "@/models/configData";
 import ImmsData from "@/models/immsData";
+import PatientData from "@/models/patientData";
 import HttpDelegate from "./httpDelegate";
 
 export interface IAuthenticationService {
@@ -19,6 +20,11 @@ export interface IAuthenticationService {
 export interface IImmsService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
   getItems(): Promise<ImmsData[]>;
+}
+
+export interface IPatientService {
+  initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+  getPatientData(hdid: string): Promise<PatientData>;
 }
 
 export interface IConfigService {
