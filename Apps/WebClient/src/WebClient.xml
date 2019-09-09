@@ -173,13 +173,6 @@
             </summary>
             <param name="args">The command line arguments to be passed in.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Program.BuildWebHost(System.String[])">
-            <summary>
-            Builds the webhost object with console logging and Configuration prefixing enabled.
-            </summary>
-            <param name="args">The command line arguments.</param>
-            <returns>Returns the configured webhost.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -214,10 +207,11 @@
             Configures the application during startup.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
+        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Startup"/> class.
             </summary>
+            <param name="env">The environment variables provider.</param>
             <param name="configuration">The injected configuration provider.</param>
             <param name="logger">The injected logger provider.</param>
         </member>

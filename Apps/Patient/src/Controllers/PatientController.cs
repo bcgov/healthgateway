@@ -22,7 +22,7 @@ namespace HealthGateway.PatientService.Controllers
     /// <summary>
     /// The Patient controller.
     /// </summary>
-    //[Authorize]
+    // [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
@@ -54,7 +54,7 @@ namespace HealthGateway.PatientService.Controllers
         [Route("{hdid}")]
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
-            return await this.service.GetPatient(hdid);
+            return await this.service.GetPatient(hdid).ConfigureAwait(true);
         }
     }
 }

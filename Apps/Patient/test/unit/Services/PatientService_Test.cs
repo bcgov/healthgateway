@@ -26,7 +26,7 @@ namespace HealthGateway.PatientService.Test
     {
         private Mock<ILogger<SoapPatientService>> serviceLogger;
         private Mock<ILogger<LoggingMessageInspector>> messageLogger;
-        private SoapPatientService service;
+        //private SoapPatientService service;
 
         public PatientService_Test()
         {
@@ -53,7 +53,7 @@ namespace HealthGateway.PatientService.Test
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task Should_true()
+        public void Should_true()
         {
             //Patient pat = await service.GetPatient("qeqwe");
             Assert.True(true);

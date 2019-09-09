@@ -38,4 +38,18 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
+      <Value>$(MSBuildProjectFullPath)/src</Value>
+    </SonarQubeSetting>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="stylecop.json" />
+    <Content Remove="wwwroot\dist\vendor-manifest.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
 </Project>

@@ -16,13 +16,21 @@
 namespace ServiceReference
 {
     using System.ServiceModel;
+    using System.ServiceModel.Description;
 
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+                              /// <summary>
+                              /// Port type client.
+                              /// </summary>
     public partial class QUPA_AR101102_PortTypeClient
+#pragma warning restore CA1707 // Identifiers should not contain underscores
     {
         /// <summary>
         /// Configures the GetDemographics client.
         /// </summary>
-        static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials)
+        /// <param name="serviceEndpoint">the service endpoint.</param>
+        /// <param name="clientCredentials">the client credentials.</param>
+        static partial void ConfigureEndpoint(ServiceEndpoint serviceEndpoint, ClientCredentials clientCredentials)
         {
             BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;

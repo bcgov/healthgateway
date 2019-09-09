@@ -19,14 +19,10 @@ namespace HealthGateway.WebClient
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using HealthGateway.Common.Swagger;
+    using HealthGateway.Common.Startup;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.AspNetCore.SpaServices.Webpack;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
@@ -39,18 +35,17 @@ namespace HealthGateway.WebClient
     /// </summary>
     public class Startup
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger logger;
+        private readonly StartupConfiguration startupConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
+        /// <param name="env">The environment variables provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="logger">The injected logger provider.</param>
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
-            this.configuration = configuration;
-            this.logger = logger;
+            this.startupConfig = new StartupConfiguration(configuration, env, logger);
         }
 
         /// <summary>
@@ -59,36 +54,18 @@ namespace HealthGateway.WebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            this.logger.LogDebug("Starting Service Configuration...");
-            services.AddHttpClient();
-            services.AddResponseCompression(options =>
-            {
-                options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = true;
-            });
+            this.startupConfig.ConfigureHttpServices(services);
 
             // Configuration Service
             services.AddTransient<IConfigurationService>(serviceProvider =>
             {
-                this.logger.LogDebug("Configuring Transient Service IConfigurationService");
                 IConfigurationService service = new ConfigurationService(
                     serviceProvider.GetService<ILogger<ConfigurationService>>(),
                     serviceProvider.GetService<IConfiguration>());
                 return service;
             });
 
-            // Inject HttpContextAccessor
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(options =>
-                {
-                    options.SerializerSettings.Formatting = Formatting.Indented;
-                });
-
-            SwaggerConfiguration.ConfigureServices(services, this.configuration);
+            this.startupConfig.ConfigureSwaggerServices(services);
         }
 
         /// <summary>
@@ -99,62 +76,10 @@ namespace HealthGateway.WebClient
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Contract.Requires(env != null);
-            Console.WriteLine(env.EnvironmentName);
-            if (env.IsDevelopment())
-            {
-                this.logger.LogDebug("Application is running in development mode");
-                app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                {
-                    HotModuleReplacement = true,
-                    ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"),
-                });
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = (content) =>
-                {
-                    var headers = content.Context.Response.Headers;
-                    var contentType = headers["Content-Type"];
-                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        return;
-                    }
-
-                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
-                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
-                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
-                    {
-                        headers.Add("Content-Encoding", "gzip");
-                        headers["Content-Type"] = mimeType;
-                    }
-                },
-            });
-
-            // forwarded Header middleware required for apps behind proxies and load balancers
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto,
-            });
-
-            SwaggerConfiguration.Configure(app);
-            app.UseResponseCompression();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
-            });
+            this.startupConfig.UseSwagger(app);
+            this.startupConfig.UseHttp(app);
+            this.startupConfig.UseWebClient(app);
         }
     }
 }

@@ -16,44 +16,21 @@
 
 namespace HealthGateway.WebClient
 {
-    using Microsoft.AspNetCore;
+    using HealthGateway.Common.Startup;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The entry point for the project.
     /// </summary>
     public static class Program
     {
-        private const string EnvironmentPrefix = "HealthGateway_";
-
         /// <summary>.
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            ProgramConfiguration.BuildWebHost<Startup>(args).Run();
         }
-
-        /// <summary>
-        /// Builds the webhost object with console logging and Configuration prefixing enabled.
-        /// </summary>
-        /// <param name="args">The command line arguments.</param>
-        /// <returns>Returns the configured webhost.</returns>
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((builderContext, config) =>
-                {
-                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                })
-                .UseStartup<Startup>()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
-                .Build();
     }
 }
