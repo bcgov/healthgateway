@@ -57,8 +57,7 @@ namespace HealthGateway.HNClient
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
