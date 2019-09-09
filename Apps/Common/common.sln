@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTests", "test\unit\CommonTests.csproj", "{D55428F4-B07E-46AF-AB09-0F526701173F}"
 EndProject
