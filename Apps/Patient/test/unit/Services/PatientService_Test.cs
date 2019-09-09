@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service.Patient.Test
+namespace HealthGateway.PatientService.Test
 {
     using Xunit;
     using Models;

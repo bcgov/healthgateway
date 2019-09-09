@@ -14,10 +14,9 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.Service.Patient
+namespace HealthGateway.PatientService
 {
     using HealthGateway.Common.Swagger;
-    using HealthGateway.Service;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;

@@ -13,14 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service.Patient
+namespace HealthGateway.PatientService
 {
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel.Description;
     using System.ServiceModel.Security;
     using System.ServiceModel;
     using System;
-    using HealthGateway.Models;
+    using HealthGateway.PatientService.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;

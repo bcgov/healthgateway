@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service.Patient
+namespace HealthGateway.PatientService
 {
-    using HealthGateway.Models;
+    using HealthGateway.PatientService.Models;
 
     /// <summary>
     /// The Patient data service.

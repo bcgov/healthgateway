@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service.Patient.Controllers
+namespace HealthGateway.PatientService.Controllers
 {
-    using HealthGateway.Models;
+    using HealthGateway.PatientService.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
