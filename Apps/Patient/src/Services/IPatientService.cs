@@ -13,10 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service
+namespace HealthGateway.PatientService
 {
-    using System.Collections.Generic;
-    using HealthGateway.Models;
+    using HealthGateway.PatientService.Models;
 
     /// <summary>
     /// The Patient data service.
@@ -28,6 +27,6 @@ namespace HealthGateway.Service
         /// </summary>
         /// <param name="id">The patient id.</param>
         /// <returns>The patient model.</returns>
-        Patient GetPatient(string id);
+        System.Threading.Tasks.Task<Patient> GetPatient(string id);
     }
 }

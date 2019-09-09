@@ -13,24 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service
+namespace ServiceReference
 {
-    using System.Collections.Generic;
-    using HealthGateway.Models;
+    using System.ServiceModel;
 
-    /// <summary>
-    /// The Patient data service.
-    /// </summary>
-    public class PatientService : IPatientService
+    public partial class QUPA_AR101102_PortTypeClient
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Configures the GetDemographics client.
         /// </summary>
-        /// <param name="hdid">The patient id.</param>
-        /// <returns>The patient model.</returns>
-        public Patient GetPatient(string hdid)
+        static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials)
         {
-            return new Patient(hdid, string.Empty, string.Empty, string.Empty);
+            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
+            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
+            serviceEndpoint.Binding = binding;
         }
     }
 }
