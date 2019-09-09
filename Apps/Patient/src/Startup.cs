@@ -27,6 +27,8 @@ namespace HealthGateway.PatientService
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System.Linq;
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
 
@@ -60,6 +62,46 @@ namespace HealthGateway.PatientService
         {
             this.logger.LogDebug("Starting Service Configuration...");
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
+            //this.logger.LogDebug(this.configuration.ToString());
+
+            var enumerator1 = this.configuration.GetChildren().GetEnumerator();
+
+            var jsonObject = new JObject();
+            while (enumerator1.MoveNext())
+            {
+                //this.logger.LogDebug($"{enumerator1.Current.Key,5}:{enumerator1.Current.Value,3}");
+                if (enumerator1.Current.GetChildren() != null && enumerator1.Current.GetChildren().Any())
+                {
+                    var sub1 = new JObject();
+                    var enumerator2 = enumerator1.Current.GetChildren().GetEnumerator();
+                    while (enumerator2.MoveNext())
+                    {
+                        if (enumerator2.Current.GetChildren() != null && enumerator2.Current.GetChildren().Any())
+                        {
+                            var sub2 = new JObject();
+                            var enumerator3 = enumerator2.Current.GetChildren().GetEnumerator();
+                            while (enumerator3.MoveNext())
+                            {
+                                sub2[enumerator3.Current.Key] = enumerator3.Current.Value;
+                            }
+                            sub1[enumerator2.Current.Key] = sub2;
+                        }
+                        else
+                        {
+                            sub1[enumerator2.Current.Key] = enumerator2.Current.Value;
+                        }
+                    }
+
+                    jsonObject[enumerator1.Current.Key] = sub1;
+                }
+                else
+                {
+                    jsonObject[enumerator1.Current.Key] = enumerator1.Current.Value;
+                }
+            }
+
+            this.logger.LogDebug(JsonConvert.SerializeObject(jsonObject));
+            
             if (debugEnabled)
             {
                 this.logger.LogDebug("Debug configuration is ENABLED");
