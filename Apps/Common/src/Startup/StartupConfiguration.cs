@@ -61,6 +61,10 @@ namespace HealthGateway.Common.Startup
         /// <param name="services">The service collection provider.</param>
         public void ConfigureHttpServices(IServiceCollection services)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("Configure Http Services...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
             services.AddHttpClient();
             services.AddResponseCompression(options =>
             {
@@ -137,6 +141,10 @@ namespace HealthGateway.Common.Startup
         /// <param name="app">The application builder provider.</param>
         public void UseAuth(IApplicationBuilder app)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("Use Auth...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
             // Enable jwt authentication
             app.UseAuthentication();
         }
@@ -233,14 +241,16 @@ namespace HealthGateway.Common.Startup
             app.UseMvc();
         }
 
-#pragma warning disable CA1822 // Mark members as static
-                              /// <summary>
-                              /// Configures the app to use swagger.
-                              /// </summary>
-                              /// <param name="app">The application builder provider.</param>
+        /// <summary>
+        /// Configures the app to use swagger.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
         public void UseSwagger(IApplicationBuilder app)
-#pragma warning restore CA1822 // Mark members as static
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("Use Swagger...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
         }
