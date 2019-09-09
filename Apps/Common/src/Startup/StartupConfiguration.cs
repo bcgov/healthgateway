@@ -16,7 +16,9 @@
 namespace HealthGateway.Common.Startup
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -32,6 +34,7 @@ namespace HealthGateway.Common.Startup
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// The startup configuration class.
@@ -53,6 +56,7 @@ namespace HealthGateway.Common.Startup
             this.environment = env;
             this.configuration = config;
             this.logger = logger;
+            this.LogEnvironmentVariables();
         }
 
         /// <summary>
@@ -253,6 +257,51 @@ namespace HealthGateway.Common.Startup
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+        }
+
+        /// <summary>
+        /// Logs the configuration values.
+        /// </summary>
+        private void LogEnvironmentVariables()
+        {
+            var enumerator1 = this.configuration.GetChildren().GetEnumerator();
+
+            var jsonObject = new JObject();
+            while (enumerator1.MoveNext())
+            {
+                if (enumerator1.Current.GetChildren() != null && enumerator1.Current.GetChildren().Any())
+                {
+                    var sub1 = new JObject();
+                    var enumerator2 = enumerator1.Current.GetChildren().GetEnumerator();
+                    while (enumerator2.MoveNext())
+                    {
+                        if (enumerator2.Current.GetChildren() != null && enumerator2.Current.GetChildren().Any())
+                        {
+                            var sub2 = new JObject();
+                            var enumerator3 = enumerator2.Current.GetChildren().GetEnumerator();
+                            while (enumerator3.MoveNext())
+                            {
+                                sub2[enumerator3.Current.Key] = enumerator3.Current.Value;
+                            }
+
+                            sub1[enumerator2.Current.Key] = sub2;
+                        }
+                        else
+                        {
+                            sub1[enumerator2.Current.Key] = enumerator2.Current.Value;
+                        }
+                    }
+
+                    jsonObject[enumerator1.Current.Key] = sub1;
+                }
+                else
+                {
+                    jsonObject[enumerator1.Current.Key] = enumerator1.Current.Value;
+                }
+            }
+
+            this.logger.LogDebug($"Configuration: {JsonConvert.SerializeObject(jsonObject)}");
+            this.logger.LogDebug($"Environment: {JsonConvert.SerializeObject(this.environment)}");
         }
     }
 }
