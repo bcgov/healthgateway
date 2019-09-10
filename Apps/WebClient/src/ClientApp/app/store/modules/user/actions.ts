@@ -21,7 +21,6 @@ const patientService: IPatientService = container.get<IPatientService>(
 
 export const actions: ActionTree<UserState, RootState> = {
   getPatientData({ commit }, { hdid }): Promise<PatientData> {
-    console.log(patientService);
     return new Promise((resolve, reject) => {
       patientService
         .getPatientData(hdid)

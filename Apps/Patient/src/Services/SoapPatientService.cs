@@ -24,6 +24,8 @@ namespace HealthGateway.PatientService
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// The Patient data service.
@@ -88,8 +90,41 @@ namespace HealthGateway.PatientService
             // Perform the request
             HCIM_IN_GetDemographicsResponse1 reply = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
 
-            // For now, add the return message to the reply
-            return new Patient(hdid, string.Empty, reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code, string.Empty);
+            // Verify that the reply contains a result
+            string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
+            if (responseCode.Contains("BCHCIM.GD.0.0013", System.StringComparison.InvariantCulture))
+            {
+                HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
+
+                // Extract the subject names
+                List<string> givenNameList = new List<string>();
+                List<string> lastNameList = new List<string>();
+                for (int i = 0; i < retrievedPerson.identifiedPerson.name[0].Items.Length; i++)
+                {
+                    ENXP name = retrievedPerson.identifiedPerson.name[0].Items[i];
+
+                    if (name.GetType() == typeof(engiven))
+                    {
+                        givenNameList.Add(name.Text[0]);
+                    }
+                    else if (name.GetType() == typeof(enfamily))
+                    {
+                        lastNameList.Add(name.Text[0]);
+                    }
+                }
+
+                string delimiter = " ";
+                string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
+                string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
+
+                // For now, add the return message to the reply
+                return new Patient(hdid, string.Empty, givenNames, lastNames);
+            }
+            else
+            {
+                this.logger.LogInformation("Client Registry did not return a person. Returned message code: " + responseCode);
+                return new Patient();
+            }
         }
 
         private HCIM_IN_GetDemographics CreateRequest(string hdid)
@@ -113,7 +148,7 @@ namespace HealthGateway.PatientService
 
             request.sender = new MCCI_MT000100Sender() { typeCode = "SND" };
             request.sender.device = new MCCI_MT000100Device() { determinerCode = "INSTANCE", classCode = "DEV" };
-            request.sender.device.id = new II() { root = "2.16.840.1.113883.3.51.1.1.5", extension = "HGWAY_HI1" };
+            request.sender.device.id = new II() { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" };
             request.sender.device.asAgent = new MCCI_MT000100Agent() { classCode = "AGNT" };
             request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
             request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization() { determinerCode = "INSTANCE", classCode = "ORG" };
@@ -128,7 +163,7 @@ namespace HealthGateway.PatientService
             request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
             request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
             request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6.1", extension = hdid };
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6", extension = hdid };
 
             return request;
         }
