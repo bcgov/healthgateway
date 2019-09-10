@@ -4,15 +4,31 @@
      alt="High-Leve HealthGateway Architecture"
      style="float: left; margin-right: 10px;" />
 
+## Accessing Existing Health Services
+
+* HealthGateway connects to the Healthcare Client Identity Management System (HCIM), an implementation of IBM/Initiate's Enterprise Master Patient Index to support resolving the subject's Personal Health Number given a Healthcare Domain ID supplied by the BCSC Identity Assurance Service (IAS).
+
+* PLIS (Provincial Laboratory Information System) is accessed over an API (currently HL7v3) to access laboratory results.
+
+* PharmaNet is accessed over Health Network Interface, a secure encrypted interface to the PharmaNet network allowing the HealthGateway to access a role-based set of HL7v2 Medications queries for medications history and contraindications and drug monographs.
+
+* Panorama is the public health databank managing immunizations for British Columbians. Access to Panorama to return a patient's immunizaiton record is an important capability of the HealthGateway.  The API is HL7 FHIR with OAuth 2 authentication to access the APIs.  
+
 ## Notable Features
+
 * Standards-based Authentication and Authorization using OAuth 2 specifications, including OIDC, UMA 2.0
+
 * User-Managed Access Protected APIs (microservices running in scalable OpenShift)
   * Users manage who can access their data using UMA 2.0 permission ticket issuance/revocation,including fine-grained access to their protected resources such as for masking lab result records, etc, without needing to recall pass phrases.
+
 * APIs are self-documented using OpenAPI documentation specification (aka Swagger)
+
 * APIs facade existing Health Services, but oriented towards HL7 FHIR RESTful API specificatioins, and are citizen-protected, and require citizen permission granted to third-party client applications and persons, which can also be revoked by the citizen at any time.
+
 * Baseline Level-3 Identity Assured authentication is done with BC Services Card and OIDC.
 
 ## Target Deployment Architecture
+
 * Targeted to container-based deployment using Kubernetes, OpenShift
 * Stateless, and auto-scaling
 * Rolling-deployment capable for zero planned downtime
