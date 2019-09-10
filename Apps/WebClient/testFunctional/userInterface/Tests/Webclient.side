@@ -1030,6 +1030,43 @@
       "targets": [],
       "value": "Hi GATEWAY Larisa ONE"
     }]
+  }, {
+    "id": "1ac3c249-0fb3-4609-afa9-24208fd6b2f9",
+    "name": "Home page - Shows PHN not found",
+    "commands": [{
+      "id": "864d1ef9-0a5e-440c-bb39-bc02023fdc63",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7f492a60-1b0d-4ee2-9f3f-d9affd694f3c",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "Home - Health Gateway",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7e4fec3d-3bc8-43c9-9685-7a7ad67ccc8b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='app-root']/div/div/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Gateway')]", "xpath:innerText"]
+      ],
+      "value": "Welcome to Health Gateway!"
+    }, {
+      "id": "8a721487-5b1c-4a05-9c24-3562f8cfe5ea",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h2",
+      "targets": [],
+      "value": "PHN: Not Found"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -1051,7 +1088,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7", "ab14080b-7682-4505-9050-9e178beaccfe"]
+    "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7", "ab14080b-7682-4505-9050-9e178beaccfe", "1ac3c249-0fb3-4609-afa9-24208fd6b2f9"]
   }, {
     "id": "2501a20a-fc5f-4ce8-b21e-2345f4fab928",
     "name": "Immunizations Page",

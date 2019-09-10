@@ -45,8 +45,13 @@ export default class HomeComponent extends Vue {
 
         console.log(this.phn);
       })
+      .catch(error => {
+        console.log("Could not retrieve patient data");
+        this.phn = "Error contacting server";
+      })
       .finally(() => {
         this.isLoading = false;
+        console.log(this.user);
       });
   }
 }
