@@ -14,29 +14,23 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway
+namespace HealthGateway.PatientService
 {
-    using HealthGateway.Common.Swagger;
-    using HealthGateway.Service;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using System.ServiceModel.Description;
+    using System.ServiceModel.Dispatcher;
+    using HealthGateway.Common.Startup;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
     public class Startup
     {
-        private readonly ILogger logger;
-        private readonly IConfiguration configuration;
-        private readonly IHostingEnvironment environment;
+        private readonly StartupConfiguration startupConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -46,9 +40,7 @@ namespace HealthGateway
         /// <param name="logger">The injected logger provider.</param>
         public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
-            this.configuration = configuration;
-            this.environment = env;
-            this.logger = logger;
+            this.startupConfig = new StartupConfiguration(configuration, env, logger);
         }
 
         /// <summary>
@@ -57,53 +49,14 @@ namespace HealthGateway
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            this.logger.LogDebug("Starting Service Configuration...");
-            bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
-            if (debugEnabled)
-            {
-                this.logger.LogDebug("Debug configuration is ENABLED");
-            }
-            else
-            {
-                this.logger.LogDebug("Debug configuration is DISABLED");
-            }
-
-            // Displays sensitive data from the jwt if the environment is development only
-            IdentityModelEventSource.ShowPII = debugEnabled;
-
-            services.AddHealthChecks();
-            services.AddMvc()
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
-            {
-                this.configuration.GetSection("OpenIdConnect").Bind(o);
-                o.Events = new JwtBearerEvents()
-                {
-                    OnAuthenticationFailed = c =>
-                    {
-                        c.Response.StatusCode = 401;
-                        c.Response.ContentType = "application/json";
-                        return c.Response.WriteAsync(JsonConvert.SerializeObject(new
-                        {
-                            State = "AuthenticationFailed",
-                            Message = c.Exception.ToString(),
-                        }));
-                    },
-                };
-            });
-
-            SwaggerConfiguration.ConfigureServices(services, this.configuration);
-
-            // Http Service. Maybe it should be testeable too
-            services.AddHttpClient();
+            this.startupConfig.ConfigureHttpServices(services);
+            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureSwaggerServices(services);
 
             // Patient Service
-            services.AddSingleton<IPatientService, PatientService>();
+            services.AddSingleton<IPatientService, SoapPatientService>();
+            services.AddSingleton<IEndpointBehavior, LoggingEndpointBehaviour>();
+            services.AddSingleton<IClientMessageInspector, LoggingMessageInspector>();
         }
 
         /// <summary>
@@ -113,36 +66,9 @@ namespace HealthGateway
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // Enable CORS
-            app.UseCors(builder =>
-            {
-                builder
-                    .WithOrigins(this.configuration.GetValue<string>("AllowOrigins"))
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            });
-
-            // Enable health endpoint for readiness probe
-            app.UseHealthChecks("/health");
-
-            // Enable jwt authentication
-            app.UseAuthentication();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            SwaggerConfiguration.Configure(app);
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseSwagger(app);
+            this.startupConfig.UseHttp(app);
         }
     }
 }

@@ -1,6 +1,9 @@
 {
 	"folders": [
 		{
+			"path": "Common"
+		},
+		{
 			"path": "Immunization"
 		},
 		{
@@ -8,6 +11,9 @@
 		},
 		{
 			"path": "WebClient/functional/api"
+		},
+		{
+			"path": "Patient"
 		}
 	],
 	"settings": {}

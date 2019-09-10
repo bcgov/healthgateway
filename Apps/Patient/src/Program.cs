@@ -13,45 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway
+namespace HealthGateway.PatientService
 {
-    using Microsoft.AspNetCore;
+    using HealthGateway.Common.Startup;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The entry point for the project.
     /// </summary>
     public static class Program
     {
-        private const string EnvironmentPrefix = "HealthGateway_";
-
         /// <summary>.
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            ProgramConfiguration.BuildWebHost<Startup>(args).Run();
         }
-
-        /// <summary>
-        /// Builds the webhost object with console logging and Configuration prefixing enabled.
-        /// </summary>
-        /// <param name="args">The command line arguments.</param>
-        /// <returns>Returns the configured webhost.</returns>
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((builderContext, config) =>
-                {
-                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                })
-                .UseStartup<Startup>()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                });
     }
 }

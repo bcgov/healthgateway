@@ -10,8 +10,19 @@ export const mutations: MutationTree<AuthState> = {
     Vue.set(state.authentication, "scopes", user.scopes);
     Vue.set(state.authentication, "idToken", user.id_token);
     Vue.set(state.authentication, "user", user.profile);
+
     state.isAuthenticated =
       user.id_token === undefined ? false : user.id_token.length > 0;
+
+    if (user.profile === undefined) {
+      Vue.set(state.authentication, "acceptedTermsOfService", false);
+    } else {
+      Vue.set(
+        state.authentication,
+        "acceptedTermsOfService",
+        user.profile.acceptedTermsOfService
+      );
+    }
     state.error = null;
   },
   unsetOidcAuth(state) {
@@ -20,6 +31,7 @@ export const mutations: MutationTree<AuthState> = {
     Vue.set(state.authentication, "scopes", undefined);
     Vue.set(state.authentication, "idToken", undefined);
     Vue.set(state.authentication, "user", undefined);
+    Vue.set(state.authentication, "acceptedTermsOfService", false);
     state.isAuthenticated = false;
   },
   setOidcAuthIsChecked(state) {

@@ -13,24 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service
+namespace HealthGateway.HNClient.Test
 {
-    using System.Collections.Generic;
-    using HealthGateway.Models;
+    using Xunit;
 
-    /// <summary>
-    /// The Patient data service.
-    /// </summary>
-    public class PatientService : IPatientService
+
+    public class PatientService_Test
     {
-        /// <summary>
-        /// Gets the patient record.
-        /// </summary>
-        /// <param name="hdid">The patient id.</param>
-        /// <returns>The patient model.</returns>
-        public Patient GetPatient(string hdid)
+        [Fact]
+        public void Should_true()
         {
-            return new Patient(hdid, string.Empty, string.Empty, string.Empty);
+            //Patient pat = await service.GetPatient("qeqwe");
+            Assert.True(true);
         }
     }
 }
