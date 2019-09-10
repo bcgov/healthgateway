@@ -1,5 +1,22 @@
 # High-Level HealthGateway Architecture
 
+<img src="diagrams/out/2019-09-10-HealthGatewayArchitecture.png"
+     alt="High-Leve HealthGateway Architecture"
+     style="float: left; margin-right: 10px;" />
+
+## Notable Features
+* Standards-based Authentication and Authorization using OAuth 2 specifications, including OIDC, UMA 2.0
+* User-Managed Access Protected APIs (microservices running in scalable OpenShift)
+  * Users manage who can access their data using UMA 2.0 permission ticket issuance/revocation,including fine-grained access to their protected resources such as for masking lab result records, etc, without needing to recall pass phrases.
+* APIs are self-documented using OpenAPI documentation specification (aka Swagger)
+* APIs facade existing Health Services, but oriented towards HL7 FHIR RESTful API specificatioins, and are citizen-protected, and require citizen permission granted to third-party client applications and persons, which can also be revoked by the citizen at any time.
+* Baseline Level-3 Identity Assured authentication is done with BC Services Card and OIDC.
+
+## Target Deployment Architecture
+* Targeted to container-based deployment using Kubernetes, OpenShift
+* Stateless, and auto-scaling
+* Rolling-deployment capable for zero planned downtime
+
 ## Citizen Authentication using OAuth2 OpenID Connect (OIDC) Flow
 
 The Health Gateway is designed to use external identity providers (IdPs) integrated through KeyCloak (RedHat SSO). The principle and initial IdP for authenticating citizens is IAS using the BC Services Card. IAS is the Identity Assurance Service offered by the BC Ministry of Citizens' Services.
@@ -12,7 +29,7 @@ In **Step 1**, the user navigates to the Health Gateway on their browser.  The b
 
 In **Step 6**, the BC Services Card authentication flow takes over. The user follows a standard interaction for authenticating with their BC Services Card, most commonly executed using the BC Services Card mobile app. The user experience and flow is the same as experienced connecting to https://id.gov.bc.ca/account.
 
-In **Step 7**, upon a successful login by the Citizen with their BCSC, IAS returns the id_token, a JSON Web Token for the authenticated user. In **Step 8**, KeyCloak returns an authorization code back to the client application (HealthGateway running in the Citizen's browser).  Followin normal Oauth code flow, the client app exchanges the authorization code for the bearer token of the authenticated user in **Step 9**.  
+In **Step 7**, upon a successful login by the Citizen with their BCSC, IAS returns the id_token, a JSON Web Token for the authenticated user. In **Step 8**, KeyCloak returns an authorization code back to the client application (HealthGateway running in the Citizen's browser).  Following normal Oauth code flow, the client app exchanges the authorization code for the bearer token of the authenticated user in **Step 9**.  
 
 Optionally, in **Step 10**, the client app retrieves userInfo by making an explicit call to the KeyCloak server. This retrieves any additional user detail collected as part of the registration flow but not provided from the basic auth flow to BCSC.  
 
