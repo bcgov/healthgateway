@@ -16,6 +16,7 @@ import store from "@/store/store";
 import {
   IAuthenticationService,
   IImmsService,
+  IPatientService,
   IHttpDelegate,
   IConfigService
 } from "@/services/interfaces";
@@ -38,14 +39,22 @@ const configService: IConfigService = container.get(
 configService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
+  
+  // Retrieve service interfaces
   const authService: IAuthenticationService = container.get(
     SERVICE_IDENTIFIER.AuthenticationService
   );
   const immsService: IImmsService = container.get(
     SERVICE_IDENTIFIER.ImmsService
   );
+  const patientService: IPatientService = container.get(
+    SERVICE_IDENTIFIER.PatientService
+  );
+
+  // Initialize services
   authService.initialize(config.openIdConnect);
   immsService.initialize(config, httpDelegate);
+  patientService.initialize(config, httpDelegate);
 
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({
