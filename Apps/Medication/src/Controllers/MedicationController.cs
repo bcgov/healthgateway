@@ -18,6 +18,8 @@ namespace HealthGateway.MedicationService.Controllers
     using HealthGateway.MedicationService.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
+
 
     /// <summary>
     /// The Medication controller.
@@ -37,7 +39,7 @@ namespace HealthGateway.MedicationService.Controllers
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="svc">The medication data service.</param>
-        public MedicationController(IPatientService svc)
+        public MedicationController(IMedicationService svc)
         {
             this.service = svc;
         }
@@ -47,12 +49,12 @@ namespace HealthGateway.MedicationService.Controllers
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="hdid">The patient hdid.</param>
-        /// <response code="200">Returns the medication record.</response>
-        /// <response code="401">The client is not authorzied to retrieve the record.</response>
+        /// <response code="200">Returns the medication statement bundle.</response>
+        /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async System.Threading.Tasks.Task<Patient> GetMedicationStatements(string hdid)
+        public async System.Threading.Tasks.Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
         {
             return await this.service.GetMedicationStatements(hdid).ConfigureAwait(true);
         }

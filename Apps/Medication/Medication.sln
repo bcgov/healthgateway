@@ -1,11 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\unit\MedicationTests.csproj", "{8B029E4C-0356-4AA1-8C7C-F14868431D72}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3DEB1A43-6D33-4F3F-95D6-91BA2F613185} = {3DEB1A43-6D33-4F3F-95D6-91BA2F613185}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medication", "src\Medication.csproj", "{3DEB1A43-6D33-4F3F-95D6-91BA2F613185}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8BE4E9AE-164C-495A-A9B5-A07135053998} = {8BE4E9AE-164C-495A-A9B5-A07135053998}

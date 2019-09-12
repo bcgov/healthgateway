@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Models
+namespace HealthGateway.MedicationService
 {
+    using HealthGateway.MedicationService.Models;
+    using System.Collections.Generic;
+
+    
     /// <summary>
-    /// The patient data model.
+    /// The Medication data service.
     /// </summary>
-    public class MedicationStatement
+    public interface IMedicationService
     {
         /// <summary>
-        /// Default constructor.
+        /// Gets the patient record.
         /// </summary>
-        public MedicationStatement()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationStatement"/> class.
-        /// </summary>
-        /// <param name="phn">The patient's personal health number to scope the medication statement.</param>
-        public MedicationStatement(string phn)
-        {
-        }
-
+        /// <param name="id">The patient id.</param>
+        /// <returns>The MedicationStatement model.</returns>
+        System.Threading.Tasks.Task <List<MedicationStatement>> GetMedicationStatements(string id);
     }
 }
