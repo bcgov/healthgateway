@@ -20,7 +20,6 @@ namespace HealthGateway.MedicationService.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
 
-
     /// <summary>
     /// The Medication controller.
     /// </summary>
