@@ -217,7 +217,7 @@ namespace HealthGateway.HNClient
         private string insertHeader(string message)
         {
             string lengthOfMessage = message.Length.ToString();
-            message = "DT" + this.TEN_ZEROS.Substring(0, this.TEN_ZEROS.Length - lengthOfMessage.Length) + lengthOfMessage + aMessage;
+            message = "DT" + this.TEN_ZEROS.Substring(0, this.TEN_ZEROS.Length - lengthOfMessage.Length) + lengthOfMessage + message;
             return message;
         }
 
