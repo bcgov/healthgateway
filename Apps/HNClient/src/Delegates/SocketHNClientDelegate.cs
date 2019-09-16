@@ -31,11 +31,11 @@ namespace HealthGateway.HNClient
     public class SocketHNClientDelegate :IHNClientDelegate
     {
         private readonly string DATA_INDICATOR = "DT";
-        //data indicator length
+        // data indicator length
         private readonly int DATA_INDICATOR_LENGTH = 2;
-        //length indicator length
+        // length indicator length
         private readonly int LENGTH_INDICATOR_LENGTH = 12;
-        //message header indicator
+        // message header indicator
         private readonly string HEADER_INDICATOR = "MSH";
         private readonly int SOCKET_READ_SLEEP_TIME = 100;  // milliseconds
         private readonly int MAX_SOCKET_READ_TRIES = 100;
@@ -43,25 +43,25 @@ namespace HealthGateway.HNClient
 
         private readonly int port;
 
-        private readonly ILogger logger;
+        private readonly ILogger<SocketHNClientDelegate> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SocketHNClientDelegate"/> class.
         /// </summary>
         /// <param name="config">The configuration provider.</param>
         /// <param name="logger">The logger provider.</param>
-        public SocketHNClientDelegate(IConfiguration config, ILogger logger)
+        public SocketHNClientDelegate(IConfiguration config, ILogger<SocketHNClientDelegate> logger)
         {
-            this.port =  config.GetSection("HNClient").GetValue<int>("Port");
+            this.port = config.GetSection("HNClient").GetValue<int>("Port");
             this.logger = logger;
         }
 
         /// <summary>
-        /// <see cref="IHNClientDelegate.SendReceive(string)"/>
+        /// <see cref="IHNClientDelegate.SendReceive(string)"/>.
         /// </summary>
         public string SendReceive(string message)
         {
-            string receivedMessage = "";
+            string receivedMessage = string.Empty;
 
             using (Socket socket = this.createSocket())
             {
