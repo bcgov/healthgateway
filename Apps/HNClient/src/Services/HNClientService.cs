@@ -34,16 +34,7 @@ namespace HealthGateway.HNClient.Services
         public TimeMessage GetTime()
         {
             Message msg = this.SendMessage("MSH");
-            TimeMessage retMessage = new TimeMessage
-            {
-                IsErr = msg.IsErr,
-                Error = msg.Error,
-                Reply = msg.Reply,
-            };
-            retMessage.DateTime = System.DateTime.Now;
-
-            // TODO extract the datetime instead of defaulting.
-            return retMessage;
+            return new TimeMessage(msg);
         }
 
         public Message SendMessage(string msg)

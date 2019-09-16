@@ -23,6 +23,30 @@ namespace HealthGateway.HNClient.Models
     public class TimeMessage : Message
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="TimeMessage"/> class.
+        /// </summary>
+        /// <param name="baseMsg">The base message object.</param>
+        public TimeMessage(Message baseMsg)
+        {
+            if (baseMsg is null)
+            {
+                throw new ArgumentNullException(nameof(baseMsg));
+            }
+
+            this.IsErr = baseMsg.IsErr;
+            this.Error = baseMsg.Error;
+            this.Reply = baseMsg.Reply;
+
+            // Sample message: MSH|^~\\&|HNETDTTN|BC00001000|HNTIMEAP|BC01001239|20190916133152-0800|GATEWAY|NMR||D|2.3||||\rMSA|AA|||||\rNCK|20190916133152-0800\r\r\r
+            if (!this.IsErr)
+            {
+                // Parses the response message
+                string[] cols = this.Reply.Split("|");
+                this.DateTime = DateTime.ParseExact(cols[6], "yyyyMMddHHmmssK", System.Globalization.CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the Date and Time from the HNServer.
         /// </summary>
         public DateTime DateTime { get; set; }
