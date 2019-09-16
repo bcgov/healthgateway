@@ -19,6 +19,7 @@ namespace HealthGateway.HNClient
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
     using HealthGateway.Common.Startup;
+    using HealthGateway.HNClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -51,6 +52,10 @@ namespace HealthGateway.HNClient
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+
+            // HNClient Service and delegate
+            services.AddTransient<IHNClientDelegate, SocketHNClientDelegate>();
+            services.AddSingleton<IHNClientService, HNClientService>();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HNClient
+
+namespace HealthGateway.HNClient.Services
 {
+    using System;
+    using HealthGateway.HNClient.Models;
+
     /// <summary>
-    /// Delegate that handles sendnig and receiving messages to HNClient.
+    /// Interface for the HNClient Service proxy.
     /// </summary>
-    public interface IHNClientDelegate
+    public interface IHNClientService
     {
         /// <summary>
-        /// Sends the message to the HNClient. If successful returns a string with the reply.
+        /// 
         /// </summary>
-        /// <param name="message">The HL7 v2.3 message to send.</param>
-        /// <returns>The received message from HNClient.</returns>
-        string SendReceive(string message);
+        /// <returns></returns>
+        TimeMessage GetTime();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        Message SendMessage(string msg);
     }
 }
