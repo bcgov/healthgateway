@@ -26,7 +26,7 @@ namespace HealthGateway.HNClient.Models
         public string Reply { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating if an error occurred.
+        /// Gets or sets a value indicating whether an error occurred.
         /// </summary>
         public bool IsErr { get; set; }
 

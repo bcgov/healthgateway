@@ -28,21 +28,47 @@ namespace HealthGateway.HNClient.Services
     {
         private readonly IHNClientDelegate hnclient;
         private readonly IConfiguration configuration;
-        private readonly string TimeRequest;
+        private readonly string timeRequest;
 
-        public HNClientService(IConfiguration configuration,IHNClientDelegate hnclient)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HNClientService"/> class.
+        /// </summary>
+        /// <param name="configuration">The injected IConfiguration object.</param>
+        /// <param name="hnclient">The injected HNClient delegate.</param>
+        public HNClientService(IConfiguration configuration, IHNClientDelegate hnclient)
         {
+            if (configuration is null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             this.hnclient = hnclient;
             this.configuration = configuration;
-            this.TimeRequest = configuration.GetSection("HNClient").GetValue<string>("TimeMessage");
+            this.timeRequest = configuration.GetSection("HNClient").GetValue<string>("TimeMessage");
         }
 
+        /// <summary>
+        /// Requests the time from the HNSecure infrastructure.
+        /// </summary>
+        /// <remarks>
+        /// Equivalent to Posting message: <![CDATA[MSH|^~\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3]]>.
+        /// to SendMessage.
+        /// </remarks>
+        /// <returns>A TimeMessage object containing the HNSecure time along with the raw data.</returns>
         public TimeMessage GetTime()
         {
-            Message msg = this.SendMessage(this.TimeRequest);
+            Message msg = this.SendMessage(this.timeRequest);
             return new TimeMessage(msg);
         }
 
+        /// <summary>
+        /// Sends an arbitrary HL7 2.3 message to HNSecure.
+        /// </summary>
+        /// <remarks>
+        /// Sample message: <![CDATA[MSH|^~\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3]]>.
+        /// </remarks>
+        /// <param name="msg">The HL7 V2.3 message to send.</param>
+        /// <returns>A message with the embedded response or error message.</returns>
         public Message SendMessage(string msg)
         {
             Message retMessage = new Message();
