@@ -17,23 +17,29 @@ namespace HealthGateway.HNClient.Services
 {
     using System;
     using System.IO;
+    using System.Net.Sockets;
     using HealthGateway.HNClient.Models;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// A simple proxy service to HNClient.
     /// </summary>
     public class HNClientService : IHNClientService
     {
-        private IHNClientDelegate hnclient;
+        private readonly IHNClientDelegate hnclient;
+        private readonly IConfiguration configuration;
+        private readonly string TimeRequest;
 
-        public HNClientService(IHNClientDelegate hnclient)
+        public HNClientService(IConfiguration configuration,IHNClientDelegate hnclient)
         {
             this.hnclient = hnclient;
+            this.configuration = configuration;
+            this.TimeRequest = configuration.GetSection("HNClient").GetValue<string>("TimeMessage");
         }
 
         public TimeMessage GetTime()
         {
-            Message msg = this.SendMessage("MSH");
+            Message msg = this.SendMessage(TimeRequest);
             TimeMessage retMessage = new TimeMessage
             {
                 IsErr = msg.IsErr,
@@ -53,10 +59,19 @@ namespace HealthGateway.HNClient.Services
             {
                 retMessage.Reply = this.hnclient.SendReceive(msg);
             }
-            catch (InvalidDataException e)
+            catch (Exception e)
             {
-                retMessage.IsErr = true;
-                retMessage.Error = e.Message;
+                if (e is InvalidDataException ||
+                    e is InvalidOperationException ||
+                    e is SocketException)
+                {
+                    retMessage.IsErr = true;
+                    retMessage.Error = e.Message;
+                }
+                else
+                {
+                    throw e;
+                }
             }
 
             return retMessage;
