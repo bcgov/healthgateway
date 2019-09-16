@@ -19,7 +19,7 @@ namespace HealthGateway.WebClient
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using HealthGateway.Common.Startup;
+    using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;

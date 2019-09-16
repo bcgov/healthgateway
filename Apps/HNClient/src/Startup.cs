@@ -18,7 +18,7 @@ namespace HealthGateway.HNClient
 {
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
-    using HealthGateway.Common.Startup;
+    using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.HNClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;

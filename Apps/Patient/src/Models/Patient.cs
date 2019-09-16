@@ -21,7 +21,7 @@ namespace HealthGateway.PatientService.Models
     public class Patient
     {
         /// <summary>
-        /// Default constructor.
+        /// Initializes a new instance of the <see cref="Patient"/> class.
         /// </summary>
         public Patient()
         {

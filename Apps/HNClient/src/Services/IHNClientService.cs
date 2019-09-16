@@ -25,16 +25,16 @@ namespace HealthGateway.HNClient.Services
     public interface IHNClientService
     {
         /// <summary>
-        /// 
+        /// Gets the current time from HNClient.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A time message.</returns>
         TimeMessage GetTime();
 
         /// <summary>
-        /// 
+        /// Sends a message to HNClient.
         /// </summary>
-        /// <param name="msg"></param>
-        /// <returns></returns>
+        /// <param name="msg">The string message.</param>
+        /// <returns>A HNClient message.</returns>
         Message SendMessage(string msg);
     }
 }
