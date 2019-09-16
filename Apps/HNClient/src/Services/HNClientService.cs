@@ -33,8 +33,8 @@ namespace HealthGateway.HNClient.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="HNClientService"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration provider.</param>
-        /// <param name="hnclient">The HNClient provider.</param>
+        /// <param name="configuration">The injected IConfiguration object.</param>
+        /// <param name="hnclient">The injected HNClient delegate.</param>
         public HNClientService(IConfiguration configuration, IHNClientDelegate hnclient)
         {
             if (configuration is null)

@@ -25,16 +25,23 @@ namespace HealthGateway.HNClient.Services
     public interface IHNClientService
     {
         /// <summary>
-        /// Gets the current time from HNClient.
+        /// Requests the time from the HNSecure infrastructure.
         /// </summary>
-        /// <returns>A time message.</returns>
+        /// <remarks>
+        /// Equivalent to Posting message: <![CDATA[MSH|^~\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3]]>.
+        /// to SendMessage.
+        /// </remarks>
+        /// <returns>A TimeMessage object containing the HNSecure time along with the raw data.</returns>
         TimeMessage GetTime();
 
         /// <summary>
-        /// Sends a message to HNClient.
+        /// Sends an arbitrary HL7 2.3 message to HNSecure.
         /// </summary>
-        /// <param name="msg">The string message.</param>
-        /// <returns>A HNClient message.</returns>
+        /// <remarks>
+        /// Sample message: <![CDATA[MSH|^~\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3]]>.
+        /// </remarks>
+        /// <param name="msg">The HL7 V2.3 message to send.</param>
+        /// <returns>A message with the embedded response or error message.</returns>
         Message SendMessage(string msg);
     }
 }
