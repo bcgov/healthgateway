@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HNClient
+namespace HealthGateway.HNClient.Models
 {
     /// <summary>
-    /// Delegate that handles sendnig and receiving messages to HNClient.
+    /// A simple model object representing a response and error state from HNSecure.
     /// </summary>
-    public interface IHNClientDelegate
+    public class Message
     {
         /// <summary>
-        /// Sends the message to the HNClient. If successful returns a string with the reply.
+        /// Gets or sets the HL7 2.3 response message.
         /// </summary>
-        /// <param name="message">The HL7 v2.3 message to send.</param>
-        /// <returns>The received message from HNClient.</returns>
-        string SendReceive(string message);
+        public string Reply { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether an error occurred.
+        /// </summary>
+        public bool IsErr { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error message associated to this Message.
+        /// </summary>
+        public string Error { get; set; }
     }
 }

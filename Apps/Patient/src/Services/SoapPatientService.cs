@@ -16,6 +16,8 @@
 namespace HealthGateway.PatientService
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
@@ -24,8 +26,6 @@ namespace HealthGateway.PatientService
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
-    using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// The Patient data service.

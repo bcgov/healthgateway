@@ -15,55 +15,56 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.HNClient
 {
-    using System.Text;
     using System;
+    using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Sockets;
-    using System.IO;
+    using System.Text;
     using System.Threading;
-    using System.Linq;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Class iimplementatiion of <see cref="IHNClientDelegate"/> that uses sockets to connect to HNClient.
     /// </summary>
-    public class SocketHNClientDelegate :IHNClientDelegate
+    public class SocketHNClientDelegate : IHNClientDelegate
     {
-        private readonly string DATA_INDICATOR = "DT";
-        //data indicator length
-        private readonly int DATA_INDICATOR_LENGTH = 2;
-        //length indicator length
-        private readonly int LENGTH_INDICATOR_LENGTH = 12;
-        //message header indicator
-        private readonly string HEADER_INDICATOR = "MSH";
-        private readonly int SOCKET_READ_SLEEP_TIME = 100;  // milliseconds
-        private readonly int MAX_SOCKET_READ_TRIES = 100;
-        private readonly string TEN_ZEROS = "0000000000";
+#pragma warning disable SA1310 // Field names should not contain underscore
+        private const string TEN_ZEROS = "0000000000";
+        private const string HEADER_INDICATOR = "MSH"; // message header indicator
+        private const int LENGTH_INDICATOR_LENGTH = 12; // length indicator length
+        private const int DATA_INDICATOR_LENGTH = 2; // data indicator length
+        private const int SOCKET_READ_SLEEP_TIME = 100;  // milliseconds
+        private const int MAX_SOCKET_READ_TRIES = 100;
+#pragma warning restore SA1310 // Field names should not contain underscore
 
         private readonly int port;
 
-        private readonly ILogger logger;
+        private readonly ILogger<SocketHNClientDelegate> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SocketHNClientDelegate"/> class.
         /// </summary>
         /// <param name="config">The configuration provider.</param>
         /// <param name="logger">The logger provider.</param>
-        public SocketHNClientDelegate(IConfiguration config, ILogger logger)
+        public SocketHNClientDelegate(IConfiguration config, ILogger<SocketHNClientDelegate> logger)
         {
-            this.port =  config.GetSection("HNClient").GetValue<int>("Port");
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            this.port = config.GetSection("HNClient").GetValue<int>("Port");
             this.logger = logger;
         }
 
-        /// <summary>
-        /// <see cref="IHNClientDelegate.SendReceive(string)"/>
-        /// </summary>
+        /// <inheritdoc/>
         public string SendReceive(string message)
         {
-            string receivedMessage = "";
+            string receivedMessage = string.Empty;
 
-            using (Socket socket = this.createSocket())
+            using (Socket socket = this.CreateSocket())
             {
                 int numSocketReadTries = 0;
                 while (socket.Available < 1 && numSocketReadTries < MAX_SOCKET_READ_TRIES)
@@ -84,12 +85,13 @@ namespace HealthGateway.HNClient
                     bytes = socket.Receive(handShakeData, 0, 8, 0);
 
                     byte initialSeed = 0;
-                    byte[] encodedHandshake = encodeData(handShakeData, initialSeed);
+                    byte[] encodedHandshake = this.EncodeData(handShakeData, initialSeed);
                     byte seed = encodedHandshake[7];
-                    MemoryStream encodedMessage = createEncodedMessage(encodedHandshake, message, seed);
-
-                    // send message to HNClient
-                    socket.Send(encodedMessage.ToArray(), (int)encodedMessage.Length, 0);
+                    using (MemoryStream encodedMessage = this.CreateEncodedMessage(encodedHandshake, message, seed))
+                    {
+                        // send message to HNClient
+                        socket.Send(encodedMessage.ToArray(), (int)encodedMessage.Length, 0);
+                    }
 
                     numSocketReadTries = 0;
                     while (socket.Available < 1 && numSocketReadTries < MAX_SOCKET_READ_TRIES)
@@ -103,12 +105,14 @@ namespace HealthGateway.HNClient
                     bytes = socket.Receive(bytesReceived, 0, 12, 0);
                     if (bytesReceived.Length <= 0)
                     {
-                        throw new InvalidDataException("No response message");
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+                        throw new InvalidDataException("Could not find entire message.");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
                     }
 
                     // Read the message payload and attempt to load the message;
-                    string headerIn = decodeData(bytesReceived, seed);
-                    int messageLength = int.Parse(headerIn.Substring(DATA_INDICATOR_LENGTH, LENGTH_INDICATOR_LENGTH - DATA_INDICATOR_LENGTH));
+                    string headerIn = this.DecodeData(bytesReceived, seed);
+                    int messageLength = int.Parse(headerIn.Substring(DATA_INDICATOR_LENGTH, LENGTH_INDICATOR_LENGTH - DATA_INDICATOR_LENGTH), System.Globalization.CultureInfo.InvariantCulture);
                     numSocketReadTries = 0;
                     while (socket.Available < messageLength)
                     {
@@ -119,17 +123,19 @@ namespace HealthGateway.HNClient
                         }
                         else
                         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
                             throw new InvalidDataException("Could not find entire message.");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
                         }
                     }
 
                     // Receive the HL7 Data
                     byte[] dataHL7in = new byte[messageLength];
                     socket.Receive(dataHL7in, 0, messageLength, 0);
-                    string hl7Message = decodeData(dataHL7in, seed);
+                    string hl7Message = this.DecodeData(dataHL7in, seed);
 
                     // Validate the hl7 message
-                    int indexOfMSG = hl7Message.IndexOf(HEADER_INDICATOR);
+                    int indexOfMSG = hl7Message.IndexOf(HEADER_INDICATOR, StringComparison.InvariantCulture);
                     if (indexOfMSG != -1)
                     {
                         // Read after the MSH segment.
@@ -137,7 +143,9 @@ namespace HealthGateway.HNClient
                     }
                     else
                     {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
                         throw new InvalidDataException("Could not find MSG header");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
                     }
                 }
             }
@@ -145,7 +153,7 @@ namespace HealthGateway.HNClient
             return receivedMessage;
         }
 
-        private MemoryStream createEncodedMessage(byte[] encodedHandShakeData, string message, byte encodingByte)
+        private MemoryStream CreateEncodedMessage(byte[] encodedHandShakeData, string message, byte encodingByte)
         {
             MemoryStream memStream = new MemoryStream();
 
@@ -156,25 +164,25 @@ namespace HealthGateway.HNClient
             // write 8 bytes of scrambled HandShake data to BufferedOutputStream
             memStream.Write(encodedHandShakeData);
 
-            string siHeader = getHostName();
+            string siHeader = this.GetHostName();
             byte[] siHeaderByte = Encoding.ASCII.GetBytes(siHeader.Substring(0, 12));
             byte[] siHostName = Encoding.ASCII.GetBytes(siHeader.Substring(12));
 
-            string dtSegment = insertHeader(message);
+            string dtSegment = this.InsertHeader(message);
 
             // separate DT Segment from HL7 message (aMessage)
             byte[] dataSegmentout = Encoding.ASCII.GetBytes(dtSegment.Substring(0, 12));
             byte[] dataHL7out = Encoding.ASCII.GetBytes(dtSegment.Substring(12));
 
             // Encode the segments and add them to the byte steam
-            memStream.Write(encodeData(siHeaderByte, encodingByte));
-            memStream.Write(encodeData(siHostName, encodingByte));
-            memStream.Write(encodeData(dataSegmentout, encodingByte));
-            memStream.Write(encodeData(dataHL7out, encodingByte));
+            memStream.Write(this.EncodeData(siHeaderByte, encodingByte));
+            memStream.Write(this.EncodeData(siHostName, encodingByte));
+            memStream.Write(this.EncodeData(dataSegmentout, encodingByte));
+            memStream.Write(this.EncodeData(dataHL7out, encodingByte));
             return memStream;
         }
 
-        private Socket createSocket()
+        private Socket CreateSocket()
         {
             // Get host related information.
             IPAddress address = IPAddress.Loopback;
@@ -185,17 +193,20 @@ namespace HealthGateway.HNClient
 
             if (!socket.Connected)
             {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
                 throw new InvalidOperationException("Could not connect to the socket");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
             }
+
             return socket;
         }
 
-        private string getHostName()
+        private string GetHostName()
         {
             IPAddress address = IPAddress.Loopback;
             string localIP = address.ToString();
 
-            StringBuilder ipAddress = new StringBuilder("");
+            StringBuilder ipAddress = new StringBuilder(string.Empty);
             ipAddress.Append("SI0000000032A");
 
             string machineName = System.Net.Dns.GetHostName();
@@ -207,6 +218,7 @@ namespace HealthGateway.HNClient
             {
                 ipAddress.Append(machineName.PadRight(16));
             }
+
             ipAddress.Append(localIP.PadRight(15));
 
             // This guarantees that the hostname will have a length of 44 characters
@@ -214,14 +226,14 @@ namespace HealthGateway.HNClient
             return hostname;
         }
 
-        private string insertHeader(string message)
+        private string InsertHeader(string message)
         {
-            string lengthOfMessage = message.Length.ToString();
-            message = "DT" + this.TEN_ZEROS.Substring(0, this.TEN_ZEROS.Length - lengthOfMessage.Length) + lengthOfMessage + message;
+            string lengthOfMessage = message.Length.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            message = "DT" + TEN_ZEROS.Substring(0, TEN_ZEROS.Length - lengthOfMessage.Length) + lengthOfMessage + message;
             return message;
         }
 
-        private byte[] encodeData(byte[] data, byte encodingSeed)
+        private byte[] EncodeData(byte[] data, byte encodingSeed)
         {
             byte[] byteData = data.ToArray();
             byteData[0] ^= encodingSeed;
@@ -229,10 +241,11 @@ namespace HealthGateway.HNClient
             {
                 byteData[x] ^= byteData[x - 1];
             }
+
             return byteData;
         }
 
-        private string decodeData(byte[] data, byte encodingSeed)
+        private string DecodeData(byte[] data, byte encodingSeed)
         {
             byte[] encodedBytes = data.ToArray();
             byte prevByte = encodedBytes[0];
@@ -243,6 +256,7 @@ namespace HealthGateway.HNClient
                 encodedBytes[x] ^= prevByte;
                 prevByte = currByte;
             }
+
             return Encoding.UTF8.GetString(encodedBytes, 0, encodedBytes.Length);
         }
     }
