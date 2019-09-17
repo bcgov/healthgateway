@@ -18,6 +18,7 @@ namespace HealthGateway.HNClient.Services
     using System;
     using System.IO;
     using System.Net.Sockets;
+    using HealthGateway.HNClient.Delegates;
     using HealthGateway.HNClient.Models;
     using Microsoft.Extensions.Configuration;
 

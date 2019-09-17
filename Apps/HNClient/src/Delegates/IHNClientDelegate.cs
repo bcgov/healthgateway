@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HNClient
+namespace HealthGateway.HNClient.Delegates
 {
     /// <summary>
     /// Delegate that handles sendnig and receiving messages to HNClient.
