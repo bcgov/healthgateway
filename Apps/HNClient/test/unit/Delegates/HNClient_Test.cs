@@ -37,7 +37,20 @@ namespace HealthGateway.HNClient.Test
         }
 
         [Fact]
-        public void SendReceive_Test()
+        public void SendReceive_NotAvailable_Test()
+        {
+            Mock<ISocketProxy> proxyMock = new Mock<ISocketProxy>();
+            proxyMock.Setup(s => s.IsConnected).Returns(true);
+            proxyMock.Setup(s => s.Available).Returns(0);
+            SocketHNClientDelegateMock dlg = new SocketHNClientDelegateMock(proxyMock, this.configuration, this.delegateLogger.Object);
+
+            string messageReceived = dlg.SendReceive(string.Empty);
+
+            Assert.Equal(string.Empty, string.Empty);
+        }
+
+        [Fact]
+        public void SendReceive_Happy_Test()
         {
             string message = "MSH|^~\\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3";
             string expectedMessage = "MSH|^~\\&|HNETDTTN|BC00001000|HNTIMEAP|BC01001239|20190917152606-0800|GATEWAY|NMR||D|2.3�||||\rMSA|AA|||||\rNCK|20190917152606-0800\r\r\r";
