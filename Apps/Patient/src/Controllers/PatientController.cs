@@ -22,10 +22,10 @@ namespace HealthGateway.PatientService.Controllers
     /// <summary>
     /// The Patient controller.
     /// </summary>
-    // [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PatientController : ControllerBase
     {
         /// <summary>
