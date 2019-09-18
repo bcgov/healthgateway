@@ -116,10 +116,9 @@ namespace HealthGateway.PatientService
                 string delimiter = " ";
                 string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
                 string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-                string PHN = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
-                
+                string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
                 // For now, add the return message to the reply
-                return new Patient(hdid, PHN, givenNames, lastNames);
+                return new Patient(hdid, phn, givenNames, lastNames);
             }
             else
             {

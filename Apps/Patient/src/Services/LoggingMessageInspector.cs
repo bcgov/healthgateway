@@ -55,7 +55,7 @@ namespace HealthGateway.PatientService
             using (var buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
                 var document = this.GetDocument(buffer.CreateMessage());
-                this.logger.LogDebug("Response receieved");
+                this.logger.LogDebug("Response received");
                 this.logger.LogDebug(document.OuterXml);
 
                 reply = buffer.CreateMessage();
