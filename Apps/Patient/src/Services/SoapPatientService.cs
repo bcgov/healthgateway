@@ -16,6 +16,8 @@
 namespace HealthGateway.PatientService
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
@@ -24,8 +26,6 @@ namespace HealthGateway.PatientService
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
-    using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// The Patient data service.
@@ -116,9 +116,9 @@ namespace HealthGateway.PatientService
                 string delimiter = " ";
                 string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
                 string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-
+                string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
                 // For now, add the return message to the reply
-                return new Patient(hdid, string.Empty, givenNames, lastNames);
+                return new Patient(hdid, phn, givenNames, lastNames);
             }
             else
             {
@@ -130,8 +130,8 @@ namespace HealthGateway.PatientService
         private HCIM_IN_GetDemographics CreateRequest(string hdid)
         {
             HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
-            request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = "6789012BE_0" };
-            request.creationTime = new TS() { value = "20110907000000" };
+            request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() };
+            request.creationTime = new TS() { value = System.DateTime.Now.ToString("yyyyMMddHHmmss") };
             request.versionCode = new CS() { code = "V3PR1" };
             request.interactionId = new II() { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
             request.processingCode = new CS() { code = "P" };
@@ -155,15 +155,16 @@ namespace HealthGateway.PatientService
             request.sender.device.asAgent.representedOrganization.id = new II() { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
 
             request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess() { classCode = "ACCM", moodCode = "EVN" };
-            request.controlActProcess.effectiveTime = new IVL_TS() { value = "20110907000000" };
+            request.controlActProcess.effectiveTime = new IVL_TS() { value = System.DateTime.Now.ToString("yyyyMMddHHmmss") };
             request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer() { typeCode = "CST", time = null, typeId = null };
             request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson() { classCode = "ENT" };
-            request.controlActProcess.dataEnterer.assignedPerson.id = new II() { root = "2.16.840.1.113883.3.51.1.1.7", extension = "userid123" };
+            // TODO: We should likely send the actual username instead of HLTHGTWAY
+            request.controlActProcess.dataEnterer.assignedPerson.id = new II() { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" };
 
             request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
             request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
             request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6", extension = hdid };
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6", extension = hdid, assigningAuthorityName="LCTZ_IAS" };
 
             return request;
         }

@@ -13,23 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.PatientService
+namespace HealthGateway.HNClient
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore.Hosting;
-
     /// <summary>
-    /// The entry point for the project.
+    /// Delegate that handles sendnig and receiving messages to HNClient.
     /// </summary>
-    public static class Program
+    public interface IHNClientDelegate
     {
-        /// <summary>.
-        /// The entry point for the class.
+        /// <summary>
+        /// Sends the message to the HNClient. If successful returns a string with the reply.
         /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
-        {
-            ProgramConfiguration.BuildWebHost<Startup>(args).Run();
-        }
+        /// <param name="message">The HL7 v2.3 message to send.</param>
+        /// <returns>The received message from HNClient.</returns>
+        string SendReceive(string message);
     }
 }

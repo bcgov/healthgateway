@@ -18,7 +18,7 @@ namespace HealthGateway.PatientService
 {
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
-    using HealthGateway.Common.Startup;
+    using HealthGateway.Common.AspNetConfiguration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -63,8 +63,7 @@ namespace HealthGateway.PatientService
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);

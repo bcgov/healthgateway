@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.PatientService
+namespace HealthGateway.HNClient.Models
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore.Hosting;
-
     /// <summary>
-    /// The entry point for the project.
+    /// A simple model object representing a response and error state from HNSecure.
     /// </summary>
-    public static class Program
+    public class Message
     {
-        /// <summary>.
-        /// The entry point for the class.
+        /// <summary>
+        /// Gets or sets the HL7 2.3 response message.
         /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
-        {
-            ProgramConfiguration.BuildWebHost<Startup>(args).Run();
-        }
+        public string Reply { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether an error occurred.
+        /// </summary>
+        public bool IsErr { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error message associated to this Message.
+        /// </summary>
+        public string Error { get; set; }
     }
 }
