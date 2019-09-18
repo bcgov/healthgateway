@@ -13,25 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Linq;
-using System.Web;
-using System.Text;
-using HealthGateway.MedicationService.Models;
-using Newtonsoft.Json;
-
 namespace HealthGateway.MedicationService
 {
+    using System;
+    using System.Net.Http;
+    using System.Net.Mime;
+    using System.Text;
+    using System.Threading.Tasks;
+    using HealthGateway.MedicationService.Models;
+    using Newtonsoft.Json;
+
+    /// <summary>
+    /// The Authorization service.
+    /// </summary>
     public class AuthService : IAuthService
     {
-        public async Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, string tokenUri, string grantType = @"client_credentials")
+        /// <inheritdoc/>
+        public async Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, Uri tokenUri, string grantType = @"client_credentials")
         {
-
             var content = new StringContent(
                 JsonConvert.SerializeObject(
                 new
@@ -39,13 +38,21 @@ namespace HealthGateway.MedicationService
                     client_id = clientId,
                     client_secret = clientSecret,
                     grant_type = grantType,
-                }), Encoding.UTF8, "application/json");
-            var response = await new HttpClient().PostAsync(tokenUri, content);
-            response.EnsureSuccessStatusCode();
-            var jwtTokenResponse = await response.Content.ReadAsStringAsync();
-            var authModel = new JWTModel();
+                }),
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json);
 
+            using (HttpClient client = new HttpClient())
+            using (HttpResponseMessage response = await client.PostAsync(tokenUri, content).ConfigureAwait(true))
+            {
+                response.EnsureSuccessStatusCode();
+                var jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            }
+
+            var authModel = new JWTModel();
+            content.Dispose();
             return authModel;
+
             // Now build the AuthModel from the reponse
         }
     }

@@ -15,10 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.MedicationService
 {
-    using HealthGateway.MedicationService.Models;
     using System.Collections.Generic;
+    using HealthGateway.MedicationService.Models;
 
-    
     /// <summary>
     /// The Medication data service.
     /// </summary>
@@ -29,6 +28,6 @@ namespace HealthGateway.MedicationService
         /// </summary>
         /// <param name="id">The patient id.</param>
         /// <returns>The MedicationStatement model.</returns>
-        System.Threading.Tasks.Task <List<MedicationStatement>> GetMedicationStatements(string id);
+        System.Threading.Tasks.Task<List<MedicationStatement>> GetMedicationStatements(string id);
     }
 }

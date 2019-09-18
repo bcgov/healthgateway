@@ -21,7 +21,7 @@ namespace HealthGateway.MedicationService.Models
     public class MedicationStatement
     {
         /// <summary>
-        /// Default constructor.
+        /// Initializes a new instance of the <see cref="MedicationStatement"/> class.
         /// </summary>
         public MedicationStatement()
         {
@@ -34,6 +34,5 @@ namespace HealthGateway.MedicationService.Models
         public MedicationStatement(string phn)
         {
         }
-
     }
 }

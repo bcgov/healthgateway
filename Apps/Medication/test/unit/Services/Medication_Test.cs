@@ -13,23 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService
+namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using System;
+    using System.Text;
+    using Xunit;
 
-    /// <summary>
-    /// The entry point for the project.
-    /// </summary>
-    public static class Program
+
+    public class Medication_Test
     {
-        /// <summary>.
-        /// The entry point for the class.
-        /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
+
+        public Medication_Test()
         {
-            ProgramConfiguration.BuildWebHost<Startup>(args).Run();
+        }
+
+        [Fact]
+        public void Should()
+        {
+            Assert.True(true);
         }
     }
 }

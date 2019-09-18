@@ -13,22 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System.Threading.Tasks;
-
 namespace HealthGateway.MedicationService
 {
+    using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
+
+    /// <summary>
+    /// The authorization service interface.
+    /// </summary>
     public interface IAuthService
     {
         /// <summary>
         /// Gets the OAuth Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
         /// </summary>
         /// <param name="clientId">The OIDC client_id.</param>
-        /// <param name="cientSecret">The OIDC client_secret</param>
-        /// <param name="authTokenURI">The OIDC endpoint to retrieve the Token from</param>
-        /// <param name="grantType">Optional grantType for OIDC credentials grant, the default is 'client_credentials'</param> 
+        /// <param name="clientSecret">The OIDC client_secret.</param>
+        /// <param name="tokenURI">The OIDC endpoint to retrieve the Token from.</param>
+        /// <param name="grantType">Optional grantType for OIDC credentials grant, the default is 'client_credentials'.</param>
         /// <returns>The instance of an IAuthModel.</returns>
-        Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, string tokenURI,  string grantType = @"client_credentials");
+        Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, System.Uri tokenURI, string grantType = @"client_credentials");
     }
-
 }
