@@ -57,6 +57,7 @@ namespace HealthGateway.PatientService
            // services.AddSingleton<IMedicationService, PharmaNetMedicationServices>();  // @todo
             services.AddSingleton<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddSingleton<IClientMessageInspector, LoggingMessageInspector>();
+            services.AddSingleton<IPatientService, SoapPatientService>();
         }
 
         /// <summary>
