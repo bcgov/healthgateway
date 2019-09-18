@@ -1,0 +1,9 @@
+properties:
+  sonar.coverage.exclusions: '**Tests*.cs'
+  sonar.cs.opencover.reportsPaths: '**/coverage.opencover.xml'
+  sonar.cs.xunit.reportsPaths: '**/xUnitResults/results.xml'
+  sonar.scm.disabled: 'true'
+test-runners:
+  - xunit
+paths:
+  jest: src/ClientApp

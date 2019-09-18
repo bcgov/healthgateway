@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HNClientTests.Mocks
+namespace HealthGateway.HNClient.Mocks
 {
     internal class SocketHNClientDelegateMock : SocketHNClientDelegate
     {
