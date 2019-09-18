@@ -53,8 +53,8 @@ namespace HealthGateway.PatientService
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            // Patient Service
-            services.AddSingleton<IPatientService, SoapPatientService>();
+            // Medication Service
+           // services.AddSingleton<IMedicationService, PharmaNetMedicationServices>();  // @todo
             services.AddSingleton<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddSingleton<IClientMessageInspector, LoggingMessageInspector>();
         }

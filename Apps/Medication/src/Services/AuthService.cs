@@ -13,7 +13,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Linq;
+using System.Web;
+using System.Text;
+using HealthGateway.MedicationService.Models;
+using Newtonsoft.Json;
+
 namespace HealthGateway.MedicationService
 {
-    
+    public class AuthService : IAuthService
+    {
+        public async Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, string tokenUri, string grantType = @"client_credentials")
+        {
+
+            var content = new StringContent(
+                JsonConvert.SerializeObject(
+                new
+                {
+                    client_id = clientId,
+                    client_secret = clientSecret,
+                    grant_type = grantType,
+                }), Encoding.UTF8, "application/json");
+            var response = await new HttpClient().PostAsync(tokenUri, content);
+            response.EnsureSuccessStatusCode();
+            var jwtTokenResponse = await response.Content.ReadAsStringAsync();
+            var authModel = new JWTModel();
+
+            return authModel;
+            // Now build the AuthModel from the reponse
+        }
+    }
 }

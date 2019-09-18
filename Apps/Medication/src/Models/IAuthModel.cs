@@ -1,7 +1,10 @@
 
-namespace AuthenticationService.Models
+using System.Security.Claims;
+
+namespace HealthGateway.MedicationService.Models
 {
-    public interface IAuthContainerModel
+
+    public interface IAuthModel
     {
         #region Members
         int expiresInMinutes { get; set; }

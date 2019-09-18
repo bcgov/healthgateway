@@ -13,8 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+using System.Threading.Tasks;
+
 namespace HealthGateway.MedicationService
 {
+    using HealthGateway.MedicationService.Models;
     public interface IAuthService
     {
         /// <summary>
@@ -24,7 +27,8 @@ namespace HealthGateway.MedicationService
         /// <param name="cientSecret">The OIDC client_secret</param>
         /// <param name="authTokenURI">The OIDC endpoint to retrieve the Token from</param>
         /// <param name="grantType">Optional grantType for OIDC credentials grant, the default is 'client_credentials'</param> 
-        /// <returns>The AccessToken.</returns>
-        static async Task<AuthContainer> GetAuthTokens(string clientId, string clientSecret, string tokenURI,  string grantType = @"client_credentials");
+        /// <returns>The instance of an IAuthModel.</returns>
+        Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, string tokenURI,  string grantType = @"client_credentials");
     }
+
 }
