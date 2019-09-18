@@ -37,7 +37,6 @@ namespace HealthGateway.HNClient.Models
             this.Error = baseMsg.Error;
             this.Reply = baseMsg.Reply;
 
-            // Sample message: MSH|^~\\&|HNETDTTN|BC00001000|HNTIMEAP|BC01001239|20190916133152-0800|GATEWAY|NMR||D|2.3||||\rMSA|AA|||||\rNCK|20190916133152-0800\r\r\r
             if (!this.IsErr)
             {
                 // Parses the response message

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HNClient
+namespace HealthGateway.HNClient.Delegates
 {
     using System;
     using System.IO;
@@ -64,7 +64,7 @@ namespace HealthGateway.HNClient
         {
             string receivedMessage = string.Empty;
 
-            using (Socket socket = this.CreateSocket())
+            using (ISocketProxy socket = this.CreateSocket())
             {
                 int numSocketReadTries = 0;
                 while (socket.Available < 1 && numSocketReadTries < MAX_SOCKET_READ_TRIES)
@@ -81,8 +81,8 @@ namespace HealthGateway.HNClient
                     byte[] handShakeData = new byte[8];
 
                     // read 12 bytes of HandShake Segment and 8 bytes of HandShake data
-                    bytes = socket.Receive(handShakeSegment, 0, 12, 0);
-                    bytes = socket.Receive(handShakeData, 0, 8, 0);
+                    bytes = socket.Receive(handShakeSegment, 0, 12);
+                    bytes = socket.Receive(handShakeData, 0, 8);
 
                     byte initialSeed = 0;
                     byte[] encodedHandshake = this.EncodeData(handShakeData, initialSeed);
@@ -90,7 +90,7 @@ namespace HealthGateway.HNClient
                     using (MemoryStream encodedMessage = this.CreateEncodedMessage(encodedHandshake, message, seed))
                     {
                         // send message to HNClient
-                        socket.Send(encodedMessage.ToArray(), (int)encodedMessage.Length, 0);
+                        socket.Send(encodedMessage.ToArray(), (int)encodedMessage.Length);
                     }
 
                     numSocketReadTries = 0;
@@ -102,7 +102,7 @@ namespace HealthGateway.HNClient
 
                     // Receive the data
                     byte[] bytesReceived = new byte[12];
-                    bytes = socket.Receive(bytesReceived, 0, 12, 0);
+                    bytes = socket.Receive(bytesReceived, 0, 12);
                     if (bytesReceived.Length <= 0)
                     {
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
@@ -131,7 +131,7 @@ namespace HealthGateway.HNClient
 
                     // Receive the HL7 Data
                     byte[] dataHL7in = new byte[messageLength];
-                    socket.Receive(dataHL7in, 0, messageLength, 0);
+                    socket.Receive(dataHL7in, 0, messageLength);
                     string hl7Message = this.DecodeData(dataHL7in, seed);
 
                     // Validate the hl7 message
@@ -151,6 +151,27 @@ namespace HealthGateway.HNClient
             }
 
             return receivedMessage;
+        }
+
+        /// <summary>
+        /// Creates a socket proxy object.
+        /// </summary>
+        /// <returns>The socket proxy.</returns>
+        protected virtual ISocketProxy CreateSocket()
+        {
+            // Get host related information.
+            IPAddress address = IPAddress.Loopback;
+            IPEndPoint endpoint = new IPEndPoint(address, this.port);
+
+            ISocketProxy socket = new SocketProxy(endpoint);
+            if (!socket.IsConnected)
+            {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+                throw new InvalidOperationException("Could not connect to the socket");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+            }
+
+            return socket;
         }
 
         private MemoryStream CreateEncodedMessage(byte[] encodedHandShakeData, string message, byte encodingByte)
@@ -180,25 +201,6 @@ namespace HealthGateway.HNClient
             memStream.Write(this.EncodeData(dataSegmentout, encodingByte));
             memStream.Write(this.EncodeData(dataHL7out, encodingByte));
             return memStream;
-        }
-
-        private Socket CreateSocket()
-        {
-            // Get host related information.
-            IPAddress address = IPAddress.Loopback;
-            IPEndPoint endpoint = new IPEndPoint(address, this.port);
-
-            Socket socket = new Socket(endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(endpoint);
-
-            if (!socket.Connected)
-            {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                throw new InvalidOperationException("Could not connect to the socket");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-            }
-
-            return socket;
         }
 
         private string GetHostName()
