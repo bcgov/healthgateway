@@ -94,7 +94,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures the auth services for json web token bearer.
         /// </summary>
         /// <param name="services">The injected services provider.</param>
-        public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
+        public void ConfigureAuthServicesForJwtBearer(IServiceCollection services, string authorizedParty = null)
         {
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
             this.logger.LogDebug($"Debug configuration is ${debugEnabled}");
@@ -106,11 +106,23 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
+            
+            }).AddJwtBearer(opts =>
             {
-                this.configuration.GetSection("OpenIdConnect").Bind(o);
-                o.Events = new JwtBearerEvents()
+                this.configuration.GetSection("OpenIdConnect").Bind(opts);
+
+                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters() 
                 {
+                    RequireExpirationTime = true,
+                    RequireSignedTokens = true,
+                    ValidAudience = opts.Audience,
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidIssuer = opts.ClaimsIssuer
+                };
+                opts.Events = new JwtBearerEvents()
+                {
+                    
                     OnAuthenticationFailed = c =>
                     {
                         c.Response.StatusCode = 401;
