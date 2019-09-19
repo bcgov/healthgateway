@@ -103,6 +103,9 @@ namespace HealthGateway.Common.AspNetConfiguration
                 // 2. compare what is in the JWT access_token to what is in the configuration.
                 // 3. only mark the requirement as successful if it matches.
 
+                string accessToken = context.User.FindFirst("access_token")?.Value;
+
+        
                return Task.CompletedTask; 
             }
 
