@@ -11,6 +11,5 @@
 ## Patient
 
 ## WebClient
-
-The Health Gateway web application ...
+The Health Gateway VUE application which will ultimately provide Immunization, Medication, and Prescription data to BC residents using BC Services card for authentication.
 
