@@ -16,8 +16,6 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.HNClient
 {
-    using System.ServiceModel.Description;
-    using System.ServiceModel.Dispatcher;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.HNClient.Delegates;
     using HealthGateway.HNClient.Services;

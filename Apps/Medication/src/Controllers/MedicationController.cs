@@ -16,8 +16,9 @@
 namespace HealthGateway.MedicationService.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
-    using Microsoft.AspNetCore.Authorization;
+    using HealthGateway.MedicationService.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -53,9 +54,9 @@ namespace HealthGateway.MedicationService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async System.Threading.Tasks.Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
+        public async Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
         {
-            return await this.service.GetMedicationStatements(hdid).ConfigureAwait(true);
+            return await this.service.GetMedicationStatementsAsync(hdid).ConfigureAwait(true);
         }
     }
 }

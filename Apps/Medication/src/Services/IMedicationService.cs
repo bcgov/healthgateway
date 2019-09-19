@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService
+namespace HealthGateway.MedicationService.Services
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
 
     /// <summary>
@@ -28,6 +29,6 @@ namespace HealthGateway.MedicationService
         /// </summary>
         /// <param name="id">The patient id.</param>
         /// <returns>The MedicationStatement model.</returns>
-        System.Threading.Tasks.Task<List<MedicationStatement>> GetMedicationStatements(string id);
+        Task<List<MedicationStatement>> GetMedicationStatementsAsync(string id);
     }
 }

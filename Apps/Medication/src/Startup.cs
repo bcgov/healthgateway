@@ -17,6 +17,7 @@
 namespace HealthGateway.MedicationService
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.MedicationService.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -50,6 +51,8 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+
+            services.AddSingleton<IMedicationService, MedicationService>();
         }
 
         /// <summary>
