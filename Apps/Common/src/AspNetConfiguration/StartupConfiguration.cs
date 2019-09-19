@@ -19,8 +19,10 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -91,6 +93,33 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// An Internal class to check that the azp declared in the access_token matches expected value
+        /// </summary>
+        internal class AuthorizedPartyHandler : AuthorizationHandler<AuthorizedPartyRequirement>
+        {
+            protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizedPartyRequirement requirement) 
+            {
+                // 1. get the configured azp we are looking for. The default is we aren't.
+                // 2. compare what is in the JWT access_token to what is in the configuration.
+                // 3. only mark the requirement as successful if it matches.
+
+               return Task.CompletedTask; 
+            }
+
+        }
+
+        internal class AuthorizedPartyRequirement : IAuthorizationRequirement
+        {
+            public AuthorizedPartyRequirement(string authorizedParty)
+            {
+                    AuthorizedParty = authorizedParty;
+            }
+
+            public string AuthorizedParty { get; private set; }
+
+        }
+
+        /// <summary>
         /// Configures the auth services for json web token bearer.
         /// </summary>
         /// <param name="services">The injected services provider.</param>
@@ -106,12 +135,12 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            
+
             }).AddJwtBearer(opts =>
             {
                 this.configuration.GetSection("OpenIdConnect").Bind(opts);
 
-                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters() 
+                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
                 {
                     RequireExpirationTime = true,
                     RequireSignedTokens = true,
@@ -122,7 +151,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 opts.Events = new JwtBearerEvents()
                 {
-                    
+
                     OnAuthenticationFailed = c =>
                     {
                         c.Response.StatusCode = 401;
