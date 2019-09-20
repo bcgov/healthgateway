@@ -43,6 +43,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// </summary>
     public class StartupConfiguration
     {
+        private const bool V = true;
         private readonly IHostingEnvironment environment;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
@@ -92,35 +93,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 });
         }
 
-        /// <summary>
-        /// An Internal class to check that the azp declared in the access_token matches expected value
-        /// </summary>
-        internal class AuthorizedPartyHandler : AuthorizationHandler<AuthorizedPartyRequirement>
-        {
-            protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizedPartyRequirement requirement) 
-            {
-                // 1. get the configured azp we are looking for. The default is we aren't.
-                // 2. compare what is in the JWT access_token to what is in the configuration.
-                // 3. only mark the requirement as successful if it matches.
-
-                string accessToken = context.User.FindFirst("access_token")?.Value;
-
-        
-               return Task.CompletedTask; 
-            }
-
-        }
-
-        internal class AuthorizedPartyRequirement : IAuthorizationRequirement
-        {
-            public AuthorizedPartyRequirement(string authorizedParty)
-            {
-                    AuthorizedParty = authorizedParty;
-            }
-
-            public string AuthorizedParty { get; private set; }
-
-        }
 
         /// <summary>
         /// Configures the auth services for json web token bearer.
@@ -143,14 +115,12 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 this.configuration.GetSection("OpenIdConnect").Bind(opts);
 
-                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters 
                 {
                     RequireExpirationTime = true,
                     RequireSignedTokens = true,
                     ValidAudience = opts.Audience,
                     ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidIssuer = opts.ClaimsIssuer
                 };
                 opts.Events = new JwtBearerEvents()
                 {
