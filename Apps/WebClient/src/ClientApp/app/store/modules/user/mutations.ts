@@ -10,7 +10,7 @@ export const mutations: MutationTree<UserState> = {
     Vue.set(state.user, "firstName", oidcUser.profile.given_name);
     Vue.set(state.user, "lastName", oidcUser.profile.family_name);
     Vue.set(state.user, "email", oidcUser.profile.email);
-    Vue.set(state.user, "hdid", oidcUser.profile.sub);
+    Vue.set(state.user, "hdid", oidcUser.profile.hdid);
     state.error = false;
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;
