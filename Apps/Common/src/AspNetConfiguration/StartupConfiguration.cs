@@ -43,7 +43,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// </summary>
     public class StartupConfiguration
     {
-        private const bool V = true;
         private readonly IHostingEnvironment environment;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
@@ -93,12 +92,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                 });
         }
 
-
         /// <summary>
         /// Configures the auth services for json web token bearer.
         /// </summary>
         /// <param name="services">The injected services provider.</param>
-        public void ConfigureAuthServicesForJwtBearer(IServiceCollection services, string authorizedParty = null)
+        public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
             this.logger.LogDebug($"Debug configuration is ${debugEnabled}");
@@ -115,7 +113,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 this.configuration.GetSection("OpenIdConnect").Bind(opts);
 
-                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters 
+                opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
                 {
                     RequireExpirationTime = true,
                     RequireSignedTokens = true,
@@ -124,7 +122,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 opts.Events = new JwtBearerEvents()
                 {
-
                     OnAuthenticationFailed = c =>
                     {
                         c.Response.StatusCode = 401;
