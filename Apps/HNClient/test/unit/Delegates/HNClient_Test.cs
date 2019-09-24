@@ -16,7 +16,7 @@
 namespace HealthGateway.HNClient.Test
 {
     using HealthGateway.HNClient.Delegates;
-    using HNClientTests.Mocks;
+    using HealthGateway.HNClient.Mocks;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

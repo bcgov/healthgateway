@@ -14,11 +14,10 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.HNClient
+namespace HealthGateway.MedicationService
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.HNClient.Delegates;
-    using HealthGateway.HNClient.Services;
+    using HealthGateway.MedicationService.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -53,16 +52,15 @@ namespace HealthGateway.HNClient
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            // HNClient Service and delegate
-            services.AddTransient<IHNClientDelegate, SocketHNClientDelegate>();
-            services.AddSingleton<IHNClientService, HNClientService>();
+            services.AddSingleton<IMedicationService, MedicationService>();
         }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        public void Configure(IApplicationBuilder app)
+        /// <param name="env">The hosting environment.</param>
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);

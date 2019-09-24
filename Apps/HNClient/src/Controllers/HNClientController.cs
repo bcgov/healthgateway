@@ -15,13 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.HNClient.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using HealthGateway.HNClient.Models;
     using HealthGateway.HNClient.Services;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
