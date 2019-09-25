@@ -56,7 +56,11 @@ namespace HealthGateway.MedicationService.Controllers
         [Route("{hdid}")]
         public async Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
         {
-            return await this.service.GetMedicationStatementsAsync(hdid).ConfigureAwait(true);
+            // Uses hardcoded phn until we have the token setup.
+            // string phn = this.GetPatientPHN(hdid);
+            string phn = "0009735353315";
+
+            return await this.service.GetMedicationStatementsAsync(phn).ConfigureAwait(true);
         }
     }
 }

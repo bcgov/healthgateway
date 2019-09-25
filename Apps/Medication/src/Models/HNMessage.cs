@@ -13,17 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HNClient.Models
+namespace HealthGateway.MedicationService.Models
 {
     /// <summary>
-    /// A simple model object representing a response and error state from HNSecure.
+    /// The HN Client message.
     /// </summary>
-    public class Message
+    public class HNMessage
     {
         /// <summary>
         /// Gets or sets the HL7 2.3 response message.
         /// </summary>
-        public string Reply { get; set; }
+        public string Message { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether an error occurred.

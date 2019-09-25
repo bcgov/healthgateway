@@ -23,7 +23,10 @@ namespace HealthGateway.MedicationService.Services
     using System.Runtime.Serialization.Json;
     using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
+    using HealthGateway.MedicationService.Parsers;
+    using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -41,31 +44,65 @@ namespace HealthGateway.MedicationService.Services
             this.configService = config;
         }
 
-        /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string id)
+        /// <summary>
+        /// Gets the patient phn.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <returns>The patient phn.</returns>
+        public async Task<string> GetPatientPHN(string hdid)
         {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
+                // Inject JWT
                 // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
-                string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
-
-                var response = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(true);
-                List<MedicationStatement> medications;
+                string hnClientUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
+                HttpResponseMessage response = await client.GetAsync(new Uri($"{hnClientUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
+                Patient responseMessage;
                 if (response.IsSuccessStatusCode)
                 {
-                    medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                }
+                else
+                {
+                    throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                }
+
+                return responseMessage.PersonalHealthNumber;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+
+                // Inject JWT
+                // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
+                string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
+                HNMessage responseMessage;
+
+                HNMessage requestMessage = TPRParser.CreateRequestMessage(phn);
+                HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
+                if (response.IsSuccessStatusCode)
+                {
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
                 }
                 else
                 {
                     throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
                 }
 
-                return medications;
+                return TPRParser.ParseResponseMessage(responseMessage.Message);
             }
         }
     }
