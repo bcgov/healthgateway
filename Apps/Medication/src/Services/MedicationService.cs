@@ -20,11 +20,9 @@ namespace HealthGateway.MedicationService.Services
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
-    using System.Runtime.Serialization.Json;
     using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
     using HealthGateway.MedicationService.Parsers;
-    using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -90,7 +88,7 @@ namespace HealthGateway.MedicationService.Services
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
                 HNMessage responseMessage;
 
-                HNMessage requestMessage = TPRParser.CreateRequestMessage(phn);
+                HNMessage requestMessage = TRPParser.CreateRequestMessage(phn);
                 HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
@@ -102,7 +100,7 @@ namespace HealthGateway.MedicationService.Services
                     throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
                 }
 
-                return TPRParser.ParseResponseMessage(responseMessage.Message);
+                return TRPParser.ParseResponseMessage(responseMessage.Message);
             }
         }
     }

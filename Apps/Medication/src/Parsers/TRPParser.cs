@@ -22,12 +22,12 @@ namespace HealthGateway.MedicationService.Parsers
     using HL7.Dotnetcore;
 
     /// <summary>
-    /// Parser of TPR (Patient Profile) messages.
+    /// Parser of TRP (Patient Profile) messages.
     /// </summary>
-    public static class TPRParser
+    public static class TRPParser
     {
         /// <summary>
-        /// Creates a TPR request message to HNClient.
+        /// Creates a TRP request message to HNClient.
         /// </summary>
         /// <param name="phn">The patient phn.</param>
         /// <returns>The HL7 message.</returns>
@@ -100,7 +100,7 @@ namespace HealthGateway.MedicationService.Parsers
         }
 
         /// <summary>
-        /// Parses a TPR response message from HNClient.
+        /// Parses a TRP response message from HNClient.
         /// </summary>
         /// <param name="hl7Message">The raw hl7 message.</param>
         /// <returns>The medication model list.</returns>
