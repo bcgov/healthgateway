@@ -88,7 +88,7 @@ namespace HealthGateway.MedicationService.Services
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
                 HNMessage responseMessage;
 
-                HNMessage requestMessage = TRPParser.CreateRequestMessage(phn);
+                HNMessage requestMessage = TrpParser.CreateRequestMessage(phn);
                 HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
@@ -100,7 +100,7 @@ namespace HealthGateway.MedicationService.Services
                     throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
                 }
 
-                return TRPParser.ParseResponseMessage(responseMessage.Message);
+                return TrpParser.ParseResponseMessage(responseMessage.Message);
             }
         }
     }

@@ -24,7 +24,7 @@ namespace HealthGateway.MedicationService.Parsers
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
     /// </summary>
-    public static class TRPParser
+    public static class TrpParser
     {
         /// <summary>
         /// Creates a TRP request message to HNClient.
