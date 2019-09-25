@@ -78,7 +78,7 @@ namespace HealthGateway.Common.Swagger
 
                 if (description.IsDeprecated)
                 {
-                    this.settings.Info.Description += " - DEPRECATED";
+                    this.settings.Info.Description = $"{this.settings.Info.Description} - DEPRECATED";
                 }
 
                 options.SwaggerDoc(description.GroupName, this.settings.Info);
