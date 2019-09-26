@@ -39,12 +39,13 @@ namespace HealthGateway.MedicationService.Controllers
         /// <summary>
         /// The http context provider.
         /// </summary>
-        private IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
-        /// <param name="svc">The medication data service.</param>
+        /// <param name="svc">The injected medication data service.</param>
+        /// <param name="httpAccessor">The injected http context accessor provider.</param>
         public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor)
         {
             this.service = svc;
@@ -66,6 +67,7 @@ namespace HealthGateway.MedicationService.Controllers
             // Uses hardcoded phn until we have the token setup.
             // string phn = this.GetPatientPHN(hdid);
             string phn = "0009735353315";
+
             // Uses hardcoded userId until we have the token setup.
             // string phn = this.GetPatientPHN(hdid);
             string userId = "1001";
