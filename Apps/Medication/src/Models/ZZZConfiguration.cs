@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.MedicationService.Models
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-
     /// <summary>
-    /// The Medication data service.
+    /// The HNClient provider information configuration.
     /// </summary>
-    public interface IMedicationService
+    public class ZZZConfiguration
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Gets or sets practitioner id.
         /// </summary>
-        /// <param name="phn">The patient phn.</param>
-        /// <param name="userId">The user id of the request.</param>
-        /// <param name="ipAddress">The ip address of the request.</param>
-        /// <returns>The MedicationStatement model.</returns>
-        Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
+        public string PractitionerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets practitioner id reference.
+        /// </summary>
+        public string PractitionerIdRef { get; set; }
     }
 }

@@ -75,7 +75,7 @@ namespace HealthGateway.MedicationService.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn)
+        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -88,7 +88,7 @@ namespace HealthGateway.MedicationService.Services
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
                 HNMessage responseMessage;
 
-                HNMessage requestMessage = TrpParser.CreateRequestMessage(phn);
+                HNMessage requestMessage = TrpParser.CreateRequestMessage(phn, userId, ipAddress, this.configService);
                 HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {

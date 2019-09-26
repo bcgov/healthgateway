@@ -19,6 +19,7 @@ namespace HealthGateway.MedicationService.Controllers
     using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
     using HealthGateway.MedicationService.Services;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -36,12 +37,18 @@ namespace HealthGateway.MedicationService.Controllers
         private readonly IMedicationService service;
 
         /// <summary>
+        /// The http context provider.
+        /// </summary>
+        private IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="svc">The medication data service.</param>
-        public MedicationController(IMedicationService svc)
+        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor)
         {
             this.service = svc;
+            this.httpContextAccessor = httpAccessor;
         }
 
         /// <summary>
@@ -59,8 +66,11 @@ namespace HealthGateway.MedicationService.Controllers
             // Uses hardcoded phn until we have the token setup.
             // string phn = this.GetPatientPHN(hdid);
             string phn = "0009735353315";
-
-            return await this.service.GetMedicationStatementsAsync(phn).ConfigureAwait(true);
+            // Uses hardcoded userId until we have the token setup.
+            // string phn = this.GetPatientPHN(hdid);
+            string userId = "1001";
+            string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            return await this.service.GetMedicationStatementsAsync(phn, userId, ipAddress).ConfigureAwait(true);
         }
     }
 }
