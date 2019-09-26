@@ -18,7 +18,7 @@ namespace HealthGateway.MedicationService.Models
     /// <summary>
     /// The HNClient claims standard message header configuration.
     /// </summary>
-    public class ZCAConfiguration
+    public class ZcaConfiguration
     {
         /// <summary>
         /// Gets or sets the software id.

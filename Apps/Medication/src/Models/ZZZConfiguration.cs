@@ -18,7 +18,7 @@ namespace HealthGateway.MedicationService.Models
     /// <summary>
     /// The HNClient provider information configuration.
     /// </summary>
-    public class ZZZConfiguration
+    public class ZzzConfiguration
     {
         /// <summary>
         /// Gets or sets practitioner id.

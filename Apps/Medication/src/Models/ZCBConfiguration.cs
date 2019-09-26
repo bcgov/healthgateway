@@ -18,7 +18,7 @@ namespace HealthGateway.MedicationService.Models
     /// <summary>
     /// The HNClient provider information configuration.
     /// </summary>
-    public class ZCBConfiguration
+    public class ZcbConfiguration
     {
         /// <summary>
         /// Gets or sets pharmacy id.
