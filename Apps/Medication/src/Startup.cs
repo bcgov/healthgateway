@@ -52,7 +52,7 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddSingleton<IMedicationService, MedicationService>();
+            services.AddSingleton<IMedicationService, RestMedicationService>();
         }
 
         /// <summary>

@@ -29,15 +29,15 @@ namespace HealthGateway.MedicationService.Services
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public class MedicationService : IMedicationService
+    public class RestMedicationService : IMedicationService
     {
         private readonly IConfiguration configService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationService"/> class.
+        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
-        public MedicationService(IConfiguration config)
+        public RestMedicationService(IConfiguration config)
         {
             this.configService = config;
         }
