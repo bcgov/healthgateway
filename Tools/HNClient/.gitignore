@@ -1,0 +1,5 @@
+#HNClient config
+HNCLIENT.id
+*.log
+*.cli
+*.trc
