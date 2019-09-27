@@ -13,47 +13,61 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Common.AuthService
 {
     using System;
     using System.Net.Http;
     using System.Net.Mime;
     using System.Text;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
+
     using Newtonsoft.Json;
+    using HealthGateway.Common.AuthService.Models;
 
     /// <summary>
     /// The Authorization service.
     /// </summary>
     public class AuthService : IAuthService
     {
+        public AuthService(string clientId, string clientSecret, Uri tokenUri, string grantType = @"client_credentials")
+        {
+            ClientId = clientId;
+            ClientSecret = clientSecret;
+            GrantType = grantType;
+            TokenUri = tokenUri;
+        }
+
         /// <inheritdoc/>
-        public async Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, Uri tokenUri, string grantType = @"client_credentials")
+        public string ClientId { get; }
+        /// <inheritdoc/>
+        public string ClientSecret { get; }
+        /// <inheritdoc/>
+        public Uri TokenUri { get; }
+        /// <inheritdoc/>
+        public string GrantType { get; }
+        /// <inheritdoc/>
+        public async Task<IAuthModel> GetAuthTokens()
         {
             var content = new StringContent(
                 JsonConvert.SerializeObject(
                 new
                 {
-                    client_id = clientId,
-                    client_secret = clientSecret,
-                    grant_type = grantType,
+                    client_id = this.ClientId,
+                    client_secret = this.ClientSecret,
+                    grant_type = this.GrantType
                 }),
                 Encoding.UTF8,
                 MediaTypeNames.Application.Json);
 
+            IAuthModel authModel;
             using (HttpClient client = new HttpClient())
-            using (HttpResponseMessage response = await client.PostAsync(tokenUri, content).ConfigureAwait(true))
+            using (HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
             {
                 response.EnsureSuccessStatusCode();
                 var jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
             }
-
-            var authModel = new JWTModel();
-            content.Dispose();
             return authModel;
-
-            // Now build the AuthModel from the reponse
         }
     }
 }

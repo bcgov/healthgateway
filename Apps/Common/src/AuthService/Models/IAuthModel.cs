@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright ï¿½ 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Models
+namespace HealthGateway.Common.AuthService.Models
 {
     /// <summary>
     /// The authorization model.
@@ -21,14 +21,19 @@ namespace HealthGateway.MedicationService.Models
     public interface IAuthModel
     {
         /// <summary>
+        /// Gets or sets the access token.
+        /// </summary>
+        string AccessToken { get; set; }
+
+        /// <summary>
         /// Gets or sets the token expiration in minutes.
         /// </summary>
-        int ExpiresInMinutes { get; set; }
+        int ExpiresIn { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token expiration in minutes.
         /// </summary>
-        int RefreshExpiresInMinutes { get; set; }
+        int RefreshExpiresIn { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -36,18 +41,23 @@ namespace HealthGateway.MedicationService.Models
         string RefreshToken { get; set; }
 
         /// <summary>
-        /// Gets or sets the access token.
-        /// </summary>
-        string AccessToken { get; set; }
-
-        /// <summary>
         /// Gets or sets the token type.
         /// </summary>
         string TokenType { get; set; }
 
         /// <summary>
+        /// Gets or sets the not-before-policy.
+        /// </summary>
+        int NotBeforePolicy { get; set; }
+
+        /// <summary>
         /// Gets or sets the session state.
         /// </summary>
         string SessionState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scope.
+        /// </summary>
+        string Scope { get; set; }
     }
 }

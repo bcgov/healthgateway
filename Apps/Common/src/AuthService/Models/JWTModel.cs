@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright ï¿½ 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,29 +13,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Models
+namespace HealthGateway.Common.AuthService.Models
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     /// The json web token model.
     /// </summary>
+
+    [JsonObject("")]
     public class JWTModel : IAuthModel
     {
         /// <inheritdoc/>
-        public int ExpiresInMinutes { get; set; }
+        [JsonProperty("access_token")]
+        public string AccessToken { get; set; }
+        /// <inheritdoc/>
+        [JsonProperty("expires_in")]
+        public int ExpiresIn { get; set; }
 
         /// <inheritdoc/>
-        public int RefreshExpiresInMinutes { get; set; }
+        [JsonProperty("refresh_expires_in")]
+        public int RefreshExpiresIn { get; set; }
 
         /// <inheritdoc/>
+        [JsonProperty("refresh_token")]
         public string RefreshToken { get; set; }
 
         /// <inheritdoc/>
-        public string AccessToken { get; set; }
-
-        /// <inheritdoc/>
+        [JsonProperty("token_type")]
         public string TokenType { get; set; }
 
+        [JsonProperty("not-before-policy")]
+        public int NotBeforePolicy { get; set; }
+
         /// <inheritdoc/>
+        [JsonProperty("session_state")]
         public string SessionState { get; set; }
+        /// <inheritdoc/>
+        [JsonProperty("scope")]
+        public string Scope { get; set; }
     }
 }

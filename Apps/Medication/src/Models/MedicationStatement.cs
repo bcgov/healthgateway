@@ -16,7 +16,7 @@
 namespace HealthGateway.MedicationService.Models
 {
     /// <summary>
-    /// The patient data model.
+    /// The medications statement data model.
     /// </summary>
     public class MedicationStatement
     {
