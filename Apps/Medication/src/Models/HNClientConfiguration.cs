@@ -57,17 +57,17 @@ namespace HealthGateway.MedicationService.Models
         /// <summary>
         /// Gets or sets the provider information configuration.
         /// </summary>
-        public ZcbConfiguration ZCB { get; set; }
+        public ZCBConfiguration ZCB { get; set; }
 
         /// <summary>
         /// Gets or sets the claims standard message header configuration.
         /// </summary>
-        public ZcaConfiguration ZCA { get; set; }
+        public ZCAConfiguration ZCA { get; set; }
 
         /// <summary>
         /// Gets or sets the transaction control configuration.
         /// </summary>
-        public ZzzConfiguration ZZZ { get; set; }
+        public ZZZConfiguration ZZZ { get; set; }
 
         /// <summary>
         /// Gets or sets the message version.
