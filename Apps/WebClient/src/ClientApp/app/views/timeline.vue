@@ -48,7 +48,7 @@ export default class TimelineComponent extends Vue {
         this.hasErrors = true;
         this.isLoading = false;
       });*/
-      this.isLoading = false;
+    this.isLoading = false;
   }
 }
 </script>
