@@ -13,6 +13,7 @@ import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
+import TimelineComponent from "@/views/timeline.vue";
 
 Vue.use(VueRouter);
 
@@ -40,6 +41,11 @@ const routes = [
   {
     path: "/immunizations",
     component: ImmunizationsComponent,
+    meta: { requiresRegistration: true, roles: ["user"] }
+  },
+  {
+    path: "/timeline",
+    component: TimelineComponent,
     meta: { requiresRegistration: true, roles: ["user"] }
   },
   {
