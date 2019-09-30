@@ -38,12 +38,12 @@ namespace HealthGateway.MedicationService.Models
         /// <summary>
         /// Gets or sets the quantity for the prescribed prescription.
         /// </summary>
-        public decimal Quantity { get; set; }
+        public float Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the prescribed medication dosage.
         /// </summary>
-        public decimal Dosage { get; set; }
+        public float Dosage { get; set; }
 
         /// <summary>
         /// Gets or sets the Prescription status.

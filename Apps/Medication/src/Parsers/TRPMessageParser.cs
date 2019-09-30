@@ -163,8 +163,8 @@ namespace HealthGateway.MedicationService.Parsers
                 prescription.GenericName = fields[2]; // Generic Name
 
                 // fields[3]; // Same Store Indicator
-                prescription.Quantity = decimal.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
-                prescription.Dosage = decimal.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
+                prescription.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
+                prescription.Dosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
 
                 // fields[6]; // Ingredient Code
                 // fields[7]; // Ingredient Name
