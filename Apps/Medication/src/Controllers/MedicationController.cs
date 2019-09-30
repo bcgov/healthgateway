@@ -54,9 +54,9 @@ namespace HealthGateway.MedicationService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
+        public async Task<List<Prescription>> GetMedicationStatements(string hdid)
         {
-            return await this.service.GetMedicationStatementsAsync(hdid).ConfigureAwait(true);
+            return await this.service.GetPrescriptionsAsync(hdid).ConfigureAwait(true);
         }
     }
 }

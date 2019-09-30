@@ -42,9 +42,9 @@ namespace HealthGateway.MedicationService.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string id)
+        public async Task<List<Prescription>> GetPrescriptionsAsync(string id)
         {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<Prescription>));
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -55,10 +55,10 @@ namespace HealthGateway.MedicationService.Services
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
 
                 var response = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(true);
-                List<MedicationStatement> medications;
+                List<Prescription> medications;
                 if (response.IsSuccessStatusCode)
                 {
-                    medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
+                    medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<Prescription>;
                 }
                 else
                 {

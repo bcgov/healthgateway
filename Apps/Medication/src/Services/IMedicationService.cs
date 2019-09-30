@@ -28,7 +28,7 @@ namespace HealthGateway.MedicationService.Services
         /// Gets the patient record.
         /// </summary>
         /// <param name="id">The patient id.</param>
-        /// <returns>The MedicationStatement model.</returns>
-        Task<List<MedicationStatement>> GetMedicationStatementsAsync(string id);
+        /// <returns>The List of Prescription for the client.</returns>
+        Task<List<Prescription>> GetPrescriptionsAsync(string id);
     }
 }
