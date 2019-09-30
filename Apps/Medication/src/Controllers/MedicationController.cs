@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ namespace HealthGateway.MedicationService.Controllers
     using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
     using HealthGateway.MedicationService.Services;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -36,12 +37,19 @@ namespace HealthGateway.MedicationService.Controllers
         private readonly IMedicationService service;
 
         /// <summary>
+        /// The http context provider.
+        /// </summary>
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
-        /// <param name="svc">The medication data service.</param>
-        public MedicationController(IMedicationService svc)
+        /// <param name="svc">The injected medication data service.</param>
+        /// <param name="httpAccessor">The injected http context accessor provider.</param>
+        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor)
         {
             this.service = svc;
+            this.httpContextAccessor = httpAccessor;
         }
 
         /// <summary>
@@ -54,9 +62,17 @@ namespace HealthGateway.MedicationService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<List<Prescription>> GetMedicationStatements(string hdid)
+        public async Task<List<Prescription>> GetPrescriptions(string hdid)
         {
-            return await this.service.GetPrescriptionsAsync(hdid).ConfigureAwait(true);
+            // Uses hardcoded phn until we have the token setup.
+            // string phn = this.GetPatientPHN(hdid);
+            string phn = "0009735353315";
+
+            // Uses hardcoded userId until we have the token setup.
+            // string phn = this.GetPatientPHN(hdid);
+            string userId = "1001";
+            string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            return await this.service.GetPrescriptionsAsync(phn, userId, ipAddress).ConfigureAwait(true);
         }
     }
 }

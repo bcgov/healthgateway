@@ -47,7 +47,7 @@ namespace HealthGateway.HNClient.Controllers
         /// <response code="401">The client is not authorized to call SendMessage.</response>
         [HttpPost]
         [Produces("application/json")]
-        public Message SendMessage(string msg)
+        public HNMessage SendMessage(HNMessage msg)
         {
             return this.service.SendMessage(msg);
         }
@@ -59,7 +59,7 @@ namespace HealthGateway.HNClient.Controllers
         /// <response code="200">Returns a message containing the DateTime from HNSecure.</response>
         [HttpGet]
         [Produces("application/json")]
-        public TimeMessage GetTime()
+        public HNMessage GetTime()
         {
             return this.service.GetTime();
         }

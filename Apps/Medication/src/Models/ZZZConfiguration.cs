@@ -13,26 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HNClient.Models
+namespace HealthGateway.MedicationService.Models
 {
     /// <summary>
-    /// A simple model object representing a response and error state from HNSecure.
+    /// The HNClient provider information configuration.
     /// </summary>
-    public class Message
+    public class ZZZConfiguration
     {
         /// <summary>
-        /// Gets or sets the HL7 2.3 response message.
+        /// Gets or sets practitioner id.
         /// </summary>
-        public string Reply { get; set; }
+        public string PractitionerId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether an error occurred.
+        /// Gets or sets practitioner id reference.
         /// </summary>
-        public bool IsErr { get; set; }
-
-        /// <summary>
-        /// Gets or sets the error message associated to this Message.
-        /// </summary>
-        public string Error { get; set; }
+        public string PractitionerIdRef { get; set; }
     }
 }

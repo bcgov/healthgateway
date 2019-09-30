@@ -17,6 +17,8 @@
 namespace HealthGateway.MedicationService
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.MedicationService.Models;
+    using HealthGateway.MedicationService.Parsers;
     using HealthGateway.MedicationService.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -52,15 +54,15 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddSingleton<IMedicationService, MedicationService>();
+            services.AddSingleton<IMedicationService, RestMedicationService>();
+            services.AddSingleton<IHNMessageParser<Prescription>, TRPMessageParser>();
         }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);

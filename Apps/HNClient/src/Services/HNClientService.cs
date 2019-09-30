@@ -49,19 +49,24 @@ namespace HealthGateway.HNClient.Services
         }
 
         /// <inheritdoc/>
-        public TimeMessage GetTime()
+        public HNMessage GetTime()
         {
-            Message msg = this.SendMessage(this.timeRequest);
-            return new TimeMessage(msg);
+            HNMessage request = new HNMessage(this.timeRequest);
+            return this.SendMessage(request);
         }
 
         /// <inheritdoc/>
-        public Message SendMessage(string msg)
+        public HNMessage SendMessage(HNMessage msg)
         {
-            Message retMessage = new Message();
+            if (msg is null)
+            {
+                throw new ArgumentNullException(nameof(msg));
+            }
+
+            HNMessage retMessage = new HNMessage();
             try
             {
-                retMessage.Reply = this.hnclient.SendReceive(msg);
+                retMessage.Message = this.hnclient.SendReceive(msg.Message);
             }
             catch (Exception e)
             {
