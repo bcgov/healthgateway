@@ -18,6 +18,7 @@ namespace HealthGateway.MedicationService.Parsers
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using HealthGateway.MedicationService.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -117,7 +118,86 @@ namespace HealthGateway.MedicationService.Parsers
         /// <inheritdoc/>
         public List<MedicationStatement> ParseResponseMessage(string hl7Message)
         {
+            List<MedicationStatement> ret = new List<MedicationStatement>();
+            if (string.IsNullOrEmpty(hl7Message))
+            {
+                return ret;
+            }
+
+            // Replaces the message type with message type + event so it can correcly parse the message.
+            hl7Message = hl7Message.Replace(
+                $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}|",
+                $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00|",
+                StringComparison.CurrentCulture);
             Message m = new Message(hl7Message);
+            m.ParseMessage();
+
+            // Checks the response status
+            Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
+            Field status = zzz.Fields(2); // Status code
+            Field statusMessage = zzz.Fields(7); // Status message
+
+            if (status.Value != "0")
+            {
+                throw new Exception($"Failed to process the TRP request: {statusMessage}", new Exception(hl7Message));
+            }
+
+            // ZPB patient history response
+            Segment zpb = m.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
+
+            // ZPB sub segments (fields)
+            // ZPB1 clinical information block (clinical condition)
+            // ZPB2 reaction information block
+            // ZPB3 RX information block
+
+            // Fields index start from 1 not 0.
+            Field zpb3 = zpb.Fields(3);
+
+            // Split value into multiple records
+            string[] records = zpb3.Value.Split('~');
+            foreach (string record in records)
+            {
+                string[] fields = record.Split('^');
+                fields[1].ToString(); // DIN
+                fields[2].ToString(); // Generic Name
+                fields[3].ToString(); // Same Store Indicator
+                fields[4].ToString(); // Quantity
+                fields[5].ToString(); // Max Daily Dosage
+                fields[6].ToString(); // Ingredient Code
+                fields[7].ToString(); // Ingredient Name
+                fields[8].ToString(); // RX Status
+                fields[9].ToString(); // Date Dispensed
+                fields[10].ToString(); // Intervention Code
+                fields[11].ToString(); // Practitioner ID Reference
+                fields[12].ToString(); // Practitioner ID
+                fields[13].ToString(); // Practitioner Family Name
+                fields[14].ToString(); // Drug Discontinued Date
+                fields[15].ToString(); // Drug Discontinued Source
+                fields[16].ToString(); // Directions
+                fields[17].ToString(); // Comment Text
+
+                fields[18].ToString(); // Practitioner ID Reference (Duplicated ?)
+                fields[19].ToString(); // Practitioner ID (Duplicated ?)
+
+                fields[20].ToString(); // Date Entered
+                fields[21].ToString(); // Pharmacy ID
+                fields[22].ToString(); // Adaptation Indicator
+                if (fields.Length > 23)
+                {
+                    fields[23].ToString(); // PharmaNet Prescription Identifier
+                }
+
+                if (fields.Length > 24)
+                {
+                    fields[24].ToString(); // MMI Codes
+                }
+
+                if (fields.Length > 25)
+                {
+                    fields[25].ToString(); // Clinical Service Codes
+                }
+            }
+
             return new List<MedicationStatement>();
         }
     }
