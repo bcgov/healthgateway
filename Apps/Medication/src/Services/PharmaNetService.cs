@@ -22,50 +22,36 @@ namespace HealthGateway.MedicationService.Services
     using System.Net.Mime;
     using System.Runtime.Serialization.Json;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Configuration;
-
-    using HealthGateway.Common.AuthService;
-    using HealthGateway.Common.AuthService.Models;
+    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Authentication.Models;
     using HealthGateway.MedicationService.Models;
-
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public class MedicationService : IMedicationService
+    public class PharmaNetService : IMedicationService
     {
+        private static HttpClient client = new HttpClient();
         private readonly IConfiguration configService;
         private readonly IAuthService authService;
 
-        private static HttpClient client = new HttpClient();
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationService"/> class.
+        /// Initializes a new instance of the <see cref="PharmaNetService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="auth">The injected IAuthService provider authenticating this service as client.</param>
-
-        public MedicationService(IConfiguration config, IAuthService auth)
+        public PharmaNetService(IConfiguration config, IAuthService auth)
         {
             this.configService = config;
             this.authService = auth;
         }
 
-        private async Task<IAuthModel> Authenticate()
-        {
-            JWTModel jWTModel;
-
-            var reply = await this.authService.GetAuthTokens();  // @todo maybe cache this in future for efficiency
-            // process the response
-
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(JWTModel));
-            return jWTModel;
-        }
-
         /// <inheritdoc/>
         public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string id)
         {
-            IAuthModel jwtModel = this.Authenticate();
+            Task<IAuthModel> authenticating = this.authService.GetAuthTokens();  // @todo maybe cache this in future for efficiency
+            IAuthModel jwtModel = authenticating.Result;
 
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(

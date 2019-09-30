@@ -13,23 +13,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AuthService
+namespace HealthGateway.Common.Authentication
 {
     using System;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AuthService.Models;
+    using HealthGateway.Common.Authentication.Models;
 
     /// <summary>
     /// The authorization service interface.
     /// </summary>
     public interface IAuthService
     {
-        string ClientId { get; }
-        string ClientSecret { get; }
-        Uri TokenUri { get; }
-        string GrantType { get; }
         /// <summary>
-        /// Gets the OAuth Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
+        /// Gets the OAuth2 OIDC ClientID.
+        /// </summary>
+        string ClientId { get; }
+
+        /// <summary>
+        /// Gets the OAuth2 OIDC ClientSecret.
+        /// </summary>
+        string ClientSecret { get; }
+
+        /// <summary>
+        /// Gets the OAuth2 Auth Token URI.
+        /// </summary>
+        Uri TokenUri { get; }
+
+        /// <summary>
+        /// Gets the OAuth2 OIDC Grant Type (defaulted to 'client_credentials').
+        /// </summary>
+        string GrantType { get; }
+
+        /// <summary>
+        /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
         /// </summary>
         /// <returns>The instance of an IAuthModel.</returns>
         Task<IAuthModel> GetAuthTokens();

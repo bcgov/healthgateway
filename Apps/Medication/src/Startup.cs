@@ -52,15 +52,14 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddSingleton<IMedicationService, MedicationService>();
+            services.AddSingleton<IMedicationService, PharmaNetService>();
         }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);

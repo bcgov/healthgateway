@@ -33,6 +33,7 @@ namespace HealthGateway.MedicationService.Models
         /// <param name="phn">The patient's personal health number to scope the medication statement.</param>
         public MedicationStatement(string phn)
         {
+                System.Console.WriteLine($"MedicationStatement for ${phn}");
         }
     }
 }
