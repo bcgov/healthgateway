@@ -35,6 +35,9 @@
         <router-link class="nav-link" to="/immunizations">
           <span class="fa fa-syringe"></span> Immunizations
         </router-link>
+        <router-link class="nav-link" to="/timeLine">
+          <span class="fa fa-stream"></span> Timeline
+        </router-link>
       </b-navbar-nav>
       <b-navbar-nav v-if="displayRegistration">
         <router-link class="nav-link" to="/registration">
