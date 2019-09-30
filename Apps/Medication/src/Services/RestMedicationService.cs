@@ -20,31 +20,61 @@ namespace HealthGateway.MedicationService.Services
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
-    using System.Runtime.Serialization.Json;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
     using HealthGateway.MedicationService.Models;
+    using HealthGateway.MedicationService.Parsers;
     using Microsoft.Extensions.Configuration;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public class PharmaNetService : IMedicationService
+    public class RestMedicationService : IMedicationService
     {
-        private static HttpClient client = new HttpClient();
         private readonly IConfiguration configService;
-        private readonly IAuthService authService;
+        private readonly IHNMessageParser<MedicationStatement> medicationParser;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PharmaNetService"/> class.
+        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
-        /// <param name="auth">The injected IAuthService provider authenticating this service as client.</param>
-        public PharmaNetService(IConfiguration config, IAuthService auth)
+        /// <param name="parser">The injected hn parser.</param>
+        public RestMedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser)
         {
             this.configService = config;
-            this.authService = auth;
+            this.medicationParser = parser;
+        }
+
+        /// <summary>
+        /// Gets the patient phn.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <returns>The patient phn.</returns>
+        public async Task<string> GetPatientPHN(string hdid)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+
+                // Inject JWT
+                // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
+                string hnClientUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
+                HttpResponseMessage response = await client.GetAsync(new Uri($"{hnClientUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
+                Patient responseMessage;
+                if (response.IsSuccessStatusCode)
+                {
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                }
+                else
+                {
+                    throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                }
+
+                return responseMessage.PersonalHealthNumber;
+            }
         }
 
         /// <inheritdoc/>

@@ -57,6 +57,5 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Services\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 </Project>
