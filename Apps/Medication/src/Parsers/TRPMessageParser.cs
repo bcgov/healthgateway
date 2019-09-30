@@ -118,10 +118,10 @@ namespace HealthGateway.MedicationService.Parsers
         /// <inheritdoc/>
         public List<Prescription> ParseResponseMessage(string hl7Message)
         {
-            List<Prescription> ret = new List<Prescription>();
+            List<Prescription> prescriptions = new List<Prescription>();
             if (string.IsNullOrEmpty(hl7Message))
             {
-                return ret;
+                return prescriptions;
             }
 
             // Replaces the message type with message type + event so it can correcly parse the message.
@@ -194,10 +194,10 @@ namespace HealthGateway.MedicationService.Parsers
                 // fields[23].ToString(); // PharmaNet Prescription Identifier
                 // fields[24].ToString(); // MMI Codes
                 // fields[25].ToString(); // Clinical Service Codes
-                ret.Add(prescription);
+                prescriptions.Add(prescription);
             }
 
-            return ret;
+            return prescriptions;
         }
     }
 }
