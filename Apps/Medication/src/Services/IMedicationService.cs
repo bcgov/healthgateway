@@ -30,7 +30,7 @@ namespace HealthGateway.MedicationService.Services
         /// <param name="phn">The patient phn.</param>
         /// <param name="userId">The user id of the request.</param>
         /// <param name="ipAddress">The ip address of the request.</param>
-        /// <returns>The MedicationStatement model.</returns>
-        Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
+        /// <returns>The Prescriptions model.</returns>
+        Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress);
     }
 }

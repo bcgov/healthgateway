@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@ namespace HealthGateway.MedicationService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
+        public async Task<List<Prescription>> GetPrescriptions(string hdid)
         {
             // Uses hardcoded phn until we have the token setup.
             // string phn = this.GetPatientPHN(hdid);
@@ -72,7 +72,7 @@ namespace HealthGateway.MedicationService.Controllers
             // string phn = this.GetPatientPHN(hdid);
             string userId = "1001";
             string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            return await this.service.GetMedicationStatementsAsync(phn, userId, ipAddress).ConfigureAwait(true);
+            return await this.service.GetPrescriptionsAsync(phn, userId, ipAddress).ConfigureAwait(true);
         }
     }
 }

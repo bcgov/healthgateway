@@ -32,14 +32,14 @@ namespace HealthGateway.MedicationService.Services
     public class RestMedicationService : IMedicationService
     {
         private readonly IConfiguration configService;
-        private readonly IHNMessageParser<MedicationStatement> medicationParser;
+        private readonly IHNMessageParser<Prescription> medicationParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
-        public RestMedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser)
+        public RestMedicationService(IConfiguration config, IHNMessageParser<Prescription> parser)
         {
             this.configService = config;
             this.medicationParser = parser;
@@ -78,7 +78,7 @@ namespace HealthGateway.MedicationService.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
+        public async Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress)
         {
             using (HttpClient client = new HttpClient())
             {

@@ -25,7 +25,7 @@ namespace HealthGateway.MedicationService.Parsers
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
     /// </summary>
-    public class TRPMessageParser : IHNMessageParser<MedicationStatement>
+    public class TRPMessageParser : IHNMessageParser<Prescription>
     {
         private const string TRACE = "101010";
         private readonly IConfiguration configuration;
@@ -115,10 +115,10 @@ namespace HealthGateway.MedicationService.Parsers
         }
 
         /// <inheritdoc/>
-        public List<MedicationStatement> ParseResponseMessage(string hl7Message)
+        public List<Prescription> ParseResponseMessage(string hl7Message)
         {
             Message m = new Message(hl7Message);
-            return new List<MedicationStatement>();
+            return new List<Prescription>();
         }
     }
 }
