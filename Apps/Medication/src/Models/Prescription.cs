@@ -16,47 +16,32 @@
 namespace HealthGateway.MedicationService.Models
 {
     /// <summary>
-    /// The patient data model.
+    /// The Prescription data model.
     /// </summary>
     public class Prescription
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Prescription"/> class.
-        /// </summary>
-        public Prescription()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Prescription"/> class.
-        /// </summary>
-        /// <param name="phn">The patient's personal health number to scope the medication statement.</param>
-        public Prescription(string phn)
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the Drug Identification Number for the Medication.
+        /// Gets or sets the Drug Identification Number for the prescribed medication.
         /// </summary>
         public string DIN { get; set; }
 
         /// <summary>
-        /// Gets or sets the brand name of the medication.
+        /// Gets or sets the brand name of the prescribed medication.
         /// </summary>
         public string BrandName { get; set; }
 
         /// <summary>
-        /// Gets or sets the common or generic name of the medication.
+        /// Gets or sets the common or generic name of the prescribed medication.
         /// </summary>
         public string GenericName { get; set; }
 
         /// <summary>
-        /// Gets or sets the quantity for the prescription.
+        /// Gets or sets the quantity for the prescribed prescription.
         /// </summary>
         public int Quantity { get; set; }
 
         /// <summary>
-        /// Gets or sets the medication dosage.
+        /// Gets or sets the prescribed medication dosage.
         /// </summary>
         public int Dosage { get; set; }
 
