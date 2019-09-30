@@ -55,7 +55,7 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureSwaggerServices(services);
 
             services.AddSingleton<IMedicationService, RestMedicationService>();
-            services.AddSingleton<IHnParser<MedicationStatement>, TrpParser>();
+            services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
         }
 
         /// <summary>

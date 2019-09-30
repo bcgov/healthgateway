@@ -32,14 +32,14 @@ namespace HealthGateway.MedicationService.Services
     public class RestMedicationService : IMedicationService
     {
         private readonly IConfiguration configService;
-        private readonly IHnParser<MedicationStatement> medicationParser;
+        private readonly IHNMessageParser<MedicationStatement> medicationParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
-        public RestMedicationService(IConfiguration config, IHnParser<MedicationStatement> parser)
+        public RestMedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser)
         {
             this.configService = config;
             this.medicationParser = parser;

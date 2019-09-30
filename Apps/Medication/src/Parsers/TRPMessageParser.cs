@@ -25,22 +25,22 @@ namespace HealthGateway.MedicationService.Parsers
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
     /// </summary>
-    public class TrpParser : IHnParser<MedicationStatement>
+    public class TRPMessageParser : IHNMessageParser<MedicationStatement>
     {
         private const string TRACE = "101010";
         private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TrpParser"/> class.
+        /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
-        public TrpParser(IConfiguration config)
+        public TRPMessageParser(IConfiguration config)
         {
             this.configuration = config;
         }
 
         /// <inheritdoc/>
-        public HNMessage CreateRequestMessage(string id, string userId, string ipAddress)
+        public HNMessage CreateRequestMessage(string phn, string userId, string ipAddress)
         {
             HNClientConfiguration hnClientConfig = new HNClientConfiguration();
             this.configuration.GetSection("HNClient").Bind(hnClientConfig);
@@ -105,7 +105,7 @@ namespace HealthGateway.MedicationService.Parsers
             zcc.AddNewField(string.Empty); // Relationship
             zcc.AddNewField(string.Empty); // Patient First Name
             zcc.AddNewField(string.Empty); // Patient Last Name
-            zcc.AddNewField(id); // Provincial Health Care ID
+            zcc.AddNewField(phn); // Provincial Health Care ID
             zcc.AddNewField(string.Empty); // Patient Gender
             m.AddNewSegment(zcc);
 
