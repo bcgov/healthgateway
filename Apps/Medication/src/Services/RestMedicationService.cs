@@ -32,14 +32,17 @@ namespace HealthGateway.MedicationService.Services
     public class RestMedicationService : IMedicationService
     {
         private readonly IConfiguration configService;
+        private readonly IHnParser<MedicationStatement> medicationParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
-        public RestMedicationService(IConfiguration config)
+        /// <param name="parser">The injected hn parser.</param>
+        public RestMedicationService(IConfiguration config, IHnParser<MedicationStatement> parser)
         {
             this.configService = config;
+            this.medicationParser = parser;
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace HealthGateway.MedicationService.Services
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
                 HNMessage responseMessage;
 
-                HNMessage requestMessage = TrpParser.CreateRequestMessage(phn, userId, ipAddress, this.configService);
+                HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
                 HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
@@ -100,7 +103,7 @@ namespace HealthGateway.MedicationService.Services
                     throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
                 }
 
-                return TrpParser.ParseResponseMessage(responseMessage.Message);
+                return this.medicationParser.ParseResponseMessage(responseMessage.Message);
             }
         }
     }

@@ -17,6 +17,8 @@
 namespace HealthGateway.MedicationService
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.MedicationService.Models;
+    using HealthGateway.MedicationService.Parsers;
     using HealthGateway.MedicationService.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -53,6 +55,7 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureSwaggerServices(services);
 
             services.AddSingleton<IMedicationService, RestMedicationService>();
+            services.AddSingleton<IHnParser<MedicationStatement>, TrpParser>();
         }
 
         /// <summary>

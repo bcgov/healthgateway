@@ -25,27 +25,25 @@ namespace HealthGateway.MedicationService.Parsers
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
     /// </summary>
-    public static class TrpParser
+    public class TrpParser : IHnParser<MedicationStatement>
     {
         private const string TRACE = "101010";
+        private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Creates a TRP request message to HNClient.
+        /// Initializes a new instance of the <see cref="TrpParser"/> class.
         /// </summary>
-        /// <param name="phn">The patient phn.</param>
-        /// <param name="userId">The requester user id.</param>
-        /// <param name="ipAddress">The requester ip address phn.</param>
-        /// <param name="config">The configuration provider.</param>
-        /// <returns>The HL7 message.</returns>
-        public static HNMessage CreateRequestMessage(string phn, string userId, string ipAddress, IConfiguration config)
+        /// <param name="config">The injected configuration provider.</param>
+        public TrpParser(IConfiguration config)
         {
-            if (config is null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            this.configuration = config;
+        }
 
+        /// <inheritdoc/>
+        public HNMessage CreateRequestMessage(string id, string userId, string ipAddress)
+        {
             HNClientConfiguration hnClientConfig = new HNClientConfiguration();
-            config.GetSection("HNClient").Bind(hnClientConfig);
+            this.configuration.GetSection("HNClient").Bind(hnClientConfig);
 
             // OUR FACILITY 'BC01001239'
             // Raw HL7 sample message.
@@ -107,7 +105,7 @@ namespace HealthGateway.MedicationService.Parsers
             zcc.AddNewField(string.Empty); // Relationship
             zcc.AddNewField(string.Empty); // Patient First Name
             zcc.AddNewField(string.Empty); // Patient Last Name
-            zcc.AddNewField(phn); // Provincial Health Care ID
+            zcc.AddNewField(id); // Provincial Health Care ID
             zcc.AddNewField(string.Empty); // Patient Gender
             m.AddNewSegment(zcc);
 
@@ -116,12 +114,8 @@ namespace HealthGateway.MedicationService.Parsers
             return retMessage;
         }
 
-        /// <summary>
-        /// Parses a TRP response message from HNClient.
-        /// </summary>
-        /// <param name="hl7Message">The raw hl7 message.</param>
-        /// <returns>The medication model list.</returns>
-        public static List<MedicationStatement> ParseResponseMessage(string hl7Message)
+        /// <inheritdoc/>
+        public List<MedicationStatement> ParseResponseMessage(string hl7Message)
         {
             Message m = new Message(hl7Message);
             return new List<MedicationStatement>();
