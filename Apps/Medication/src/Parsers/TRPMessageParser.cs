@@ -118,7 +118,7 @@ namespace HealthGateway.MedicationService.Parsers
         /// <inheritdoc/>
         public List<Prescription> ParseResponseMessage(string hl7Message)
         {
-            List<MedicationStatement> ret = new List<MedicationStatement>();
+            List<Prescription> ret = new List<Prescription>();
             if (string.IsNullOrEmpty(hl7Message))
             {
                 return ret;
@@ -157,49 +157,47 @@ namespace HealthGateway.MedicationService.Parsers
             string[] records = zpb3.Value.Split('~');
             foreach (string record in records)
             {
+                Prescription prescription = new Prescription();
                 string[] fields = record.Split('^');
-                fields[1].ToString(); // DIN
-                fields[2].ToString(); // Generic Name
-                fields[3].ToString(); // Same Store Indicator
-                fields[4].ToString(); // Quantity
-                fields[5].ToString(); // Max Daily Dosage
-                fields[6].ToString(); // Ingredient Code
-                fields[7].ToString(); // Ingredient Name
-                fields[8].ToString(); // RX Status
-                fields[9].ToString(); // Date Dispensed
-                fields[10].ToString(); // Intervention Code
-                fields[11].ToString(); // Practitioner ID Reference
-                fields[12].ToString(); // Practitioner ID
-                fields[13].ToString(); // Practitioner Family Name
-                fields[14].ToString(); // Drug Discontinued Date
-                fields[15].ToString(); // Drug Discontinued Source
-                fields[16].ToString(); // Directions
-                fields[17].ToString(); // Comment Text
+                prescription.DIN = fields[1]; // DIN
+                prescription.GenericName = fields[2]; // Generic Name
 
-                fields[18].ToString(); // Practitioner ID Reference (Duplicated ?)
-                fields[19].ToString(); // Practitioner ID (Duplicated ?)
+                // fields[3]; // Same Store Indicator
+                prescription.Quantity = decimal.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
+                prescription.Dosage = decimal.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
 
-                fields[20].ToString(); // Date Entered
-                fields[21].ToString(); // Pharmacy ID
-                fields[22].ToString(); // Adaptation Indicator
-                if (fields.Length > 23)
-                {
-                    fields[23].ToString(); // PharmaNet Prescription Identifier
-                }
+                // fields[6]; // Ingredient Code
+                // fields[7]; // Ingredient Name
+                prescription.PrescriptionStatus = fields[8].ToCharArray()[0]; // RX Status
+                prescription.DispensedDate = DateTime.ParseExact(fields[9], "yyyyMMdd", CultureInfo.CurrentCulture); // Date Dispensed
 
-                if (fields.Length > 24)
-                {
-                    fields[24].ToString(); // MMI Codes
-                }
+                // fields[10]; // Intervention Code
+                // fields[11]; // Practitioner ID Reference
+                // fields[12]; // Practitioner ID
+                prescription.PractitionerSurname = fields[13]; // Practitioner Family Name
+                prescription.DrugDiscontinuedDate = string.IsNullOrEmpty(fields[14]) ?
+                    (DateTime?)null : DateTime.ParseExact(fields[14], "yyyyMMdd", CultureInfo.CurrentCulture); // Drug Discontinued Date
 
-                if (fields.Length > 25)
-                {
-                    fields[25].ToString(); // Clinical Service Codes
-                }
+                // fields[15]; // Drug Discontinued Source
+                prescription.Directions = fields[16]; // Directions
+
+                // fields[17]; // Comment Text
+                // fields[18]; // Practitioner ID Reference (Duplicated ?)
+                // fields[19]; // Practitioner ID (Duplicated ?)
+                prescription.DateEntered = string.IsNullOrEmpty(fields[20]) ?
+                    (DateTime?)null : DateTime.ParseExact(fields[20], "yyyyMMdd", CultureInfo.CurrentCulture); // Date Entered
+
+                prescription.PharmacyId = fields[21]; // Pharmacy ID
+
+                // fields[22].ToString(); // Adaptation Indicator
+
+                // fields[23].ToString(); // PharmaNet Prescription Identifier
+                // fields[24].ToString(); // MMI Codes
+                // fields[25].ToString(); // Clinical Service Codes
+                ret.Add(prescription);
             }
 
-            return new List<MedicationStatement>();
-
+            return ret;
         }
     }
 }
