@@ -32,7 +32,7 @@ namespace HealthGateway.HNClient.Services
         /// to SendMessage.
         /// </remarks>
         /// <returns>A TimeMessage object containing the HNSecure time along with the raw data.</returns>
-        TimeMessage GetTime();
+        HNMessage GetTime();
 
         /// <summary>
         /// Sends an arbitrary HL7 2.3 message to HNSecure.
@@ -42,6 +42,6 @@ namespace HealthGateway.HNClient.Services
         /// </remarks>
         /// <param name="msg">The HL7 V2.3 message to send.</param>
         /// <returns>A message with the embedded response or error message.</returns>
-        Message SendMessage(string msg);
+        HNMessage SendMessage(HNMessage msg);
     }
 }

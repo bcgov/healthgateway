@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.MedicationService.Models
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-
     /// <summary>
-    /// The Medication data service.
+    /// The HN Client message.
     /// </summary>
-    public interface IMedicationService
+    public class HNMessage
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Gets or sets the HL7 2.3 response message.
         /// </summary>
-        /// <param name="phn">The patient phn.</param>
-        /// <param name="userId">The user id of the request.</param>
-        /// <param name="ipAddress">The ip address of the request.</param>
-        /// <returns>The MedicationStatement model.</returns>
-        Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
+        public string Message { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether an error occurred.
+        /// </summary>
+        public bool IsErr { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error message associated to this Message.
+        /// </summary>
+        public string Error { get; set; }
     }
 }
