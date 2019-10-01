@@ -50,7 +50,7 @@ steps:
     command: 'publish'
     publishWebProjects: true
     projects: '$(App.Home)/src'
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
 
 - script: |
