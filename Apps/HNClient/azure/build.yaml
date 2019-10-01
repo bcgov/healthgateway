@@ -52,14 +52,14 @@ steps:
     projects: '$(App.Home)/src'
     versioningScheme: byEnvVar
     versionEnvVar: $(Build.BuildNumber)
-    arguments: '--output $(Build.ArtifactStagingDirectory)'
+    arguments: '--output $(Build.ArtifactStagingDirectory)/$(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      mv $(Build.ArtifactStagingDirectory)/a.zip $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip
+#- task: Bash@3
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      mv $(Build.ArtifactStagingDirectory)/a.zip $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip
     
 - script: |
     set -e
