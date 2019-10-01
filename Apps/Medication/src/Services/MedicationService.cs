@@ -13,36 +13,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Runtime.Serialization.Json;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
+    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public class RestMedicationService : IMedicationService
+    public class MedicationService : IMedicationService
     {
         private readonly IConfiguration configService;
+        private readonly IAuthService authService;
         private readonly IHNMessageParser<MedicationStatement> medicationParser;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
+        /// Initializes a new instance of the <see cref="MedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
-        public RestMedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser)
+        /// <param name="authService">The injected authService for client credentials grant (system account).</param>
+        public MedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser, IAuthService authService)
         {
             this.configService = config;
             this.medicationParser = parser;
+            this.authService = authService;
         }
 
         /// <summary>
@@ -60,8 +66,8 @@ namespace HealthGateway.MedicationService.Services
 
                 // Inject JWT
                 // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
-                string hnClientUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
-                HttpResponseMessage response = await client.GetAsync(new Uri($"{hnClientUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
+                string patienServiceUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
+                HttpResponseMessage response = await client.GetAsync(new Uri($"{patienServiceUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
                 Patient responseMessage;
                 if (response.IsSuccessStatusCode)
                 {
@@ -78,17 +84,21 @@ namespace HealthGateway.MedicationService.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string id)
+        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
-            Task<IAuthModel> authenticating = this.authService.GetAuthTokens();  // @todo maybe cache this in future for efficiency
-            IAuthModel jwtModel = authenticating.Result;
+            HttpClient client = new HttpClient();
 
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            using (Task<IAuthModel> authenticating = this.authService.GetAuthTokens()) // @todo: maybe cache this in future for efficiency
+            {
+                IAuthModel jwtModel = authenticating.Result;
 
-            // Add the JWT that this service obtained through authenticating with KeyCloak
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+
+                // Add the JWT that this service obtained through authenticating with KeyCloak
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+            }
 
             string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
 
@@ -105,7 +115,6 @@ namespace HealthGateway.MedicationService.Services
             {
                 medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
             }
-
             return medications;
         }
     }

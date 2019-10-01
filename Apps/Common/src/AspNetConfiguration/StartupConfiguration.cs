@@ -16,9 +16,7 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -34,7 +32,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// The startup configuration class.

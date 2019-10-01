@@ -13,22 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Controllers
+namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// The Medication controller.
     /// </summary>
-    // [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MedicationController : ControllerBase
     {
         /// <summary>
@@ -64,7 +65,9 @@ namespace HealthGateway.MedicationService.Controllers
         [Route("{hdid}")]
         public async Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
         {
-            // Uses hardcoded phn until we have the token setup.
+            // @todo: Extract hdid from the access token and compare to the hdid parameter
+            // when there is no UMA permission ticket
+            // @temp: Uses hardcoded phn until we have the token setup.
             // string phn = this.GetPatientPHN(hdid);
             string phn = "0009735353315";
 

@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Parsers
+namespace HealthGateway.Medication.Parsers
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using HealthGateway.MedicationService.Models;
+    using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
 

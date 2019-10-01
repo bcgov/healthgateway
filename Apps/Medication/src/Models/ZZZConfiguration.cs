@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Models
+namespace HealthGateway.Medication.Models
 {
     /// <summary>
     /// The HNClient provider information configuration.

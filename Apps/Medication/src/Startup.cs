@@ -14,12 +14,12 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.MedicationService
+namespace HealthGateway.Medication
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
+    using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -54,7 +54,7 @@ namespace HealthGateway.MedicationService
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddSingleton<IMedicationService, RestMedicationService>();
+            services.AddSingleton<IMedicationService, MedicationService>();
             services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
         }
 
