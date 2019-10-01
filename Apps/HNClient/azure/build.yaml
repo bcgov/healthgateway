@@ -52,7 +52,7 @@ steps:
     projects: '$(App.Home)/src'
     versioningScheme: byEnvVar
     versionEnvVar: $(Build.BuildNumber)
-    arguments: '--output $(Build.ArtifactStagingDirectory)/$(Build.ArtifactStagingDirectory)'
+    arguments: '--output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber)'
     zipAfterPublish: true
 
 #- task: Bash@3
