@@ -86,36 +86,37 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
-            HttpClient client = new HttpClient();
-
-            using (Task<IAuthModel> authenticating = this.authService.GetAuthTokens()) // @todo: maybe cache this in future for efficiency
+            using (HttpClient client = new HttpClient())
             {
-                IAuthModel jwtModel = authenticating.Result;
+                using (Task<IAuthModel> authenticating = this.authService.GetAuthTokens()) // @todo: maybe cache this in future for efficiency
+                {
+                    IAuthModel jwtModel = authenticating.Result;
 
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
-                // Add the JWT that this service obtained through authenticating with KeyCloak
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+                    // Add the JWT that this service obtained through authenticating with KeyCloak
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+                }
+
+                string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
+
+                var response = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(true);
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
+
+                List<MedicationStatement> medications;
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                }
+                else
+                {
+                    medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
+                }
+
+                return medications;
             }
-
-            string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
-
-            var response = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(true);
-
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
-
-            List<MedicationStatement> medications;
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
-            }
-            else
-            {
-                medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
-            }
-            return medications;
         }
     }
 }
