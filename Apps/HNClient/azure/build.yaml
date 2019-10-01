@@ -52,16 +52,14 @@ steps:
     projects: '$(App.Home)/src'
     versioningScheme: byEnvVar
     versionEnvVar: $(Build.BuildNumber)
-    arguments: '--output $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+    arguments: '--output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
 
-- task: ArchiveFiles@2
+- task: Bash@3
   inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip'
-    replaceExistingArchive: true
+    targetType: 'inline'
+    script: |
+      mv $(Build.ArtifactStagingDirectory)/a.zip $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip
     
 - script: |
     set -e
