@@ -16,10 +16,10 @@
 			"path": "Patient"
 		},
 		{
-			"path": "Medication"
+			"path": "HNClient"
 		},
 		{
-			"path": "HNClient"
+			"path": "Medication"
 		}
 	],
 	"settings": {}

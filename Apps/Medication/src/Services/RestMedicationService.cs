@@ -81,8 +81,11 @@ namespace HealthGateway.MedicationService.Services
         /// <inheritdoc/>
         public async Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress)
         {
-            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            using (HttpClient client = new HttpClient())
+            //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+            using (HttpClient client = new HttpClient(clientHandler))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
