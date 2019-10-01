@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "Medication"
+		},
+		{
+			"path": "HNClient"
 		}
 	],
 	"settings": {}

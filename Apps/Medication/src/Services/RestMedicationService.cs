@@ -25,6 +25,7 @@ namespace HealthGateway.MedicationService.Services
     using HealthGateway.MedicationService.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
+    using System.Net;
 
     /// <summary>
     /// The Medication data service.
@@ -80,6 +81,7 @@ namespace HealthGateway.MedicationService.Services
         /// <inheritdoc/>
         public async Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();

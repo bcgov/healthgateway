@@ -16,19 +16,14 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.WebClient
 {
-    using System;
     using System.Diagnostics.Contracts;
-    using System.IO;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.SpaServices.Webpack;
-    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Configures the application during startup.
