@@ -9,12 +9,14 @@ import {
   IImmsService,
   IConfigService,
   IHttpDelegate,
-  IPatientService
+  IPatientService,
+  IMedicationService
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "@/services/restImmsService";
 import { RestConfigService } from "@/services/restConfigService";
-import { RestPatientService } from './services/restPatientService';
+import { RestPatientService } from "./services/restPatientService";
+import { RestMedicationService } from "./services/restMedicationService";
 import HttpDelegate from "@/services/httpDelegate";
 
 let container = new Container();
@@ -33,6 +35,10 @@ container
 container
   .bind<IPatientService>(SERVICE_IDENTIFIER.PatientService)
   .to(RestPatientService)
+  .inSingletonScope();
+container
+  .bind<IMedicationService>(SERVICE_IDENTIFIER.MedicationService)
+  .to(RestMedicationService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

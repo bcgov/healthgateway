@@ -1,13 +1,9 @@
 import { ActionTree, Commit } from "vuex";
 
-import { IPatientService, IHttpDelegate } from "@/services/interfaces";
-import SERVICE_IDENTIFIER, {
-  DELEGATE_IDENTIFIER
-} from "@/constants/serviceIdentifiers";
+import { IPatientService } from "@/services/interfaces";
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
-import { RootState, ConfigState, UserState } from "@/models/storeState";
-import { ExternalConfiguration } from "@/models/configData";
-import User from "@/models/user";
+import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 
 function handleError(commit: Commit, error: Error) {

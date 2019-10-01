@@ -17,6 +17,7 @@ import {
   IAuthenticationService,
   IImmsService,
   IPatientService,
+  IMedicationService,
   IHttpDelegate,
   IConfigService
 } from "@/services/interfaces";
@@ -50,11 +51,15 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const patientService: IPatientService = container.get(
     SERVICE_IDENTIFIER.PatientService
   );
+  const medicationService: IMedicationService = container.get(
+    SERVICE_IDENTIFIER.MedicationService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect);
   immsService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
+  medicationService.initialize(config, httpDelegate);
 
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({

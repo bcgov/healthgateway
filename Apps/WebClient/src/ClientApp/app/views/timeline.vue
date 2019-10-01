@@ -15,9 +15,14 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import { IMedicationService } from "@/services/interfaces";
 import LoadingComponent from "@/components/loading.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import User from "@/models/user";
+import Prescription from "@/models/prescription";
+
+const namespace: string = "user";
 
 @Component({
   components: {
@@ -25,7 +30,8 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
   }
 })
 export default class TimelineComponent extends Vue {
-  //private items: ImmsData[] = [];
+  @Getter("user", { namespace }) user: User;
+  private prescriptions: Prescription[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
@@ -33,22 +39,21 @@ export default class TimelineComponent extends Vue {
 
   mounted() {
     this.isLoading = true;
-    // TODO: add the medication service
-    /*const immsService: IImmsService = container.get(
-      SERVICE_IDENTIFIER.ImmsService
-    );*/
+    const medicationService: IMedicationService = container.get(
+      SERVICE_IDENTIFIER.MedicationService
+    );
 
-    /*immsService
-      .getItems()
+    medicationService
+      .getPatientPrescriptions(this.user.hdid)
       .then(results => {
-        this.items = results;
-        this.isLoading = false;
+        this.prescriptions = results;
       })
       .catch(err => {
         this.hasErrors = true;
+      })
+      .finally(() => {
         this.isLoading = false;
-      });*/
-    this.isLoading = false;
+      });
   }
 }
 </script>
