@@ -40,7 +40,7 @@ steps:
     echo "$@" >&2
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
-  workingDirectory: $(Build.SourcesDirectory)/Apps/HNClient
+  workingDirectory: $(App.Home)
   enabled: 'true'
 
 - task: DotNetCoreCLI@2
@@ -50,9 +50,17 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+    versioningScheme: byEnvVar
+    versionEnvVar: $(Build.BuildNumber)
+    arguments: '--output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
 
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      mv $(Build.ArtifactStagingDirectory)/a.zip $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip
+    
 - script: |
     set -e
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt

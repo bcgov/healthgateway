@@ -43,6 +43,11 @@ namespace HealthGateway.MedicationService.Models
         public const string SEGMENT_ZZZ = "ZZZ";
 
         /// <summary>
+        /// The patient history response segment.
+        /// </summary>
+        public const string SEGMENT_ZPB = "ZPB";
+
+        /// <summary>
         /// The patient profile transaction id.
         /// </summary>
         public const string PATIENT_PROFILE_TRANSACTION_ID = "TRP";
