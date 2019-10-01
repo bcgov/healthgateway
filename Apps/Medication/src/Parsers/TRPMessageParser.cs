@@ -46,9 +46,9 @@ namespace HealthGateway.MedicationService.Parsers
             HNClientConfiguration hnClientConfig = new HNClientConfiguration();
             this.configuration.GetSection("HNClient").Bind(hnClientConfig);
 
-            // OUR FACILITY 'BC01001239'
+            // OUR FACILITY 'BC01001249'
             // Raw HL7 sample message.
-            // MSH|^~\\&|GATEWAY|BC01001239|PNP|CPA|2019/09/24 13:49:29|1001:127.0.0.1|ZPN|248875|D|2.1||
+            // MSH|^~\\&|GATEWAY|BC01001249|PNP|CPA|2019/09/24 13:49:29|1001:127.0.0.1|ZPN|248875|D|2.1||
             // \r
             // ZZZ|TRP||248876|91|XXAPZ
             // \r

@@ -8,6 +8,11 @@
     <h1 id="subject">
       Health Care Timeline: TODO
     </h1>
+    <ul id="example-1">
+      <li v-for="medication in prescriptions">
+        Generic Name: {{ medication.genericName }}
+      </li>
+    </ul>
   </div>
 </template>
 
