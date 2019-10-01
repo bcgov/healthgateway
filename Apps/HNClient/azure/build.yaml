@@ -48,7 +48,7 @@ steps:
   inputs:
     modifyOutputPath: false
     command: 'publish'
-    publishWebProjects: true
+    publishWebProjects: false
     projects: '$(App.Home)/src'
     arguments: '--output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
