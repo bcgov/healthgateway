@@ -50,9 +50,19 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '$(App.Home)/src'
-    arguments: '--output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: true
+    versioningScheme: byEnvVar
+    versionEnvVar: $(Build.BuildNumber)
+    arguments: '--output $(Build.BinariesDirectory)'
+    zipAfterPublish: false
 
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip'
+    replaceExistingArchive: true
+    
 - script: |
     set -e
     echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
