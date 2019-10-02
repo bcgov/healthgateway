@@ -18,6 +18,7 @@ namespace HealthGateway.Medication.Parsers
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
