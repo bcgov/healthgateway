@@ -37,14 +37,16 @@ namespace HealthGateway.Medication.Test
         private readonly string ipAddress = "127.0.0.1";
         private readonly string traceNumber = "101010";
         private readonly CultureInfo culture;
+        private readonly HNClientConfiguration hnClientConfig = new HNClientConfiguration();
 
         public TRPMessageParser_Test()
         {
-            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
-            this.parser = new TRPMessageParser(configuration);
-
             this.culture = CultureInfo.CreateSpecificCulture("en-CA");
             this.culture.DateTimeFormat.DateSeparator = "/";
+
+            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
+            configuration.GetSection("HNClient").Bind(hnClientConfig);
+            this.parser = new TRPMessageParser(configuration);
         }
 
         [Fact]
@@ -56,10 +58,10 @@ namespace HealthGateway.Medication.Test
             HNMessage request = this.parser.CreateRequestMessage(phn, userId, ipAddress);
 
             Assert.False(request.IsErr);
-            Assert.StartsWith($"MSH|^~\\&|GATEWAY|BC0X00XXXX|PNP|CPA|{date}|{userId}:{ipAddress}|ZPN|{traceNumber}|D|2.1", request.Message);
-            Assert.Contains("ZCA|1|70|00|HG|01", request.Message);
-            Assert.Contains($"ZZZ|TRP||{traceNumber}|91|XXAPZ", request.Message);
-            Assert.Contains($"ZCB|BCXXZZZYYY|{date}|{traceNumber}", request.Message);
+            Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
+            Assert.Contains($"ZCA|{hnClientConfig.ZCA.BIN}|{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
+            Assert.Contains($"ZZZ|TRP||{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}", request.Message);
+            Assert.Contains($"ZCB|{hnClientConfig.ZCB.PharmacyId}|{date}|{traceNumber}", request.Message);
             Assert.EndsWith($"ZCC||||||||||{phn}|\r", request.Message);
         }
 
@@ -85,9 +87,9 @@ namespace HealthGateway.Medication.Test
             string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = DateTime.Now.ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
-            sb.Append($"MSH|^~\\&|GATEWAY|BC0X00XXXX|GATEWAY|BC0X00XXXX|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|D|2.1\r");
+            sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
             sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
-            sb.Append($"ZZZ|TRP|0|{traceNumber}|91|XXAPZ||0 Operation successful\r");
+            sb.Append($"ZZZ|TRP|0|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||0 Operation successful\r");
             sb.Append($"ZCC||||||||||{phn}\r");
             sb.Append("ZPB");
             
