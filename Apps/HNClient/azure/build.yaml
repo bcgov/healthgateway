@@ -19,6 +19,7 @@ trigger:
      - Apps/HNClient/src
      - Apps/HNClient/test
      - Apps/HNClient/azure/build.yml
+     - Apps/HNClient/azure/deploy.ps1
 
 pool:
   name: 'HealthGateway'
@@ -59,12 +60,10 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
+      echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       mv $(Build.ArtifactStagingDirectory)/a.zip $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip
-    
-- script: |
-    set -e
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-  displayName: 'Build OpenShift Image and push to Image Stream'
+      cp $(App.Home)/azure/deploy.ps1 $(Build.ArtifactStagingDirectory)
+  displayName: 'Stage Artifacts'
 
 - task: CopyFiles@2
   displayName: Copy Functional Tests to Staging
