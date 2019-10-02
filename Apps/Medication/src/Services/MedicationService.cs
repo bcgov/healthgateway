@@ -61,25 +61,24 @@ namespace HealthGateway.Medication.Services
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-
-                // Inject JWT
-                // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
-                string patienServiceUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
-                HttpResponseMessage response = await client.GetAsync(new Uri($"{patienServiceUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
-                Patient responseMessage;
-                if (response.IsSuccessStatusCode)
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                try
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                }
-                else
-                {
-                    throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
-                }
+                    string patienServiceUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
+                    using (HttpResponseMessage response = await client.GetAsync(new Uri($"{patienServiceUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
-                return responseMessage.PersonalHealthNumber;
+                        Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                        return responseMessage.PersonalHealthNumber;
+                    }
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine($"Message :{0} ", e.Message);
+                    return null;
+                }
             }
         }
 
@@ -102,24 +101,12 @@ namespace HealthGateway.Medication.Services
 
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
 
-                // @todo: Need to build the TRP request message and pass to HNClient proxy
-                // @todo: May need to continue to fetch to build if paginated result set.. i.e. lots of medications 
-                // returned over multiple queries.
-
-                var response = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(true);
-                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
-
-                List<MedicationStatement> medications;
-                if (!response.IsSuccessStatusCode)
+                using (var httpResponse = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(false))
                 {
-                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
-                }
-                else
-                {
-                    medications = serializer.ReadObject(await response.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
-                }
+                    DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
 
-                return medications;
+                    return serializer.ReadObject(await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(true)) as List<MedicationStatement>;
+                }
             }
         }
     }

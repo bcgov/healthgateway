@@ -1,36 +1,39 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-
+//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
 namespace HealthGateway.Common.Authorization
 {
-    public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, System.String>
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+
+    public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, string>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                    UserIsPatientRequirement requirement,
-                                    System.String hDid)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hDid)
         {
-
-            //var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            //using (JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler())
-            //{
-             //   var tokens = handler.ReadJwtToken(accessToken);
-             //   var subId = tokens.Claims.First(claim => claim.Type == "sub").Value;
-
-
-            if (System.String.Equals(context.User.Identity?.Name, hDid ))
+            // var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+            // using (JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler())
+            // {
+            //   var tokens = handler.ReadJwtToken(accessToken);
+            //   var subId = tokens.Claims.First(claim => claim.Type == "sub").Value;
+            // @todo check that this below Name is the same as the JWT sub value...
+            if (string.Equals(context?.User.Identity?.Name, hDid, System.StringComparison.Ordinal))
             {
                 context.Succeed(requirement);
             }
+
             return Task.CompletedTask;
         }
-    }
-
-    public class UserIsPatientRequirement : IAuthorizationRequirement { }
-
-    public static class Operations
-    {
-        public static OperationAuthorizationRequirement Read = 
-            new OperationAuthorizationRequirement { Name = nameof(Read) };
     }
 }

@@ -47,7 +47,7 @@ namespace HealthGateway.Medication.Controllers
 
         /// <summary>
         /// The authorization service provider.
-        /// </summary> 
+        /// </summary>
         private readonly IAuthorizationService authorizationService;
 
         /// <summary>
@@ -76,7 +76,13 @@ namespace HealthGateway.Medication.Controllers
         [Authorize]
         public async Task<List<MedicationStatement>> GetMedications(string hdid)
         {
-            if ((await this.authorizationService.AuthorizeAsync(User, hdid, Operations.Read)).Succeeded)
+            AuthorizationResult result = await this.authorizationService.AuthorizeAsync(this.User, hdid, ResourceOperations.Read).ConfigureAwait(true);
+
+            if (!result.Succeeded)
+            {
+                return null; // @todo... verify this is ok.
+            }
+            else
             {
                 ClaimsPrincipal principal = this.User as ClaimsPrincipal;
                 foreach (Claim claim in principal.Claims)
@@ -86,15 +92,12 @@ namespace HealthGateway.Medication.Controllers
 
                 // string phn = this.GetPatientPHN(hdid);
                 string phn = "0009735353315";
+
                 // Uses hardcoded userId until we have the token setup.
                 string userId = "1001";
                 string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
                 return await this.service.GetMedicationsAsync(phn, userId, ipAddress).ConfigureAwait(true);
-            }
-            else
-            {
-                return null; // @todo... verify this is ok.
             }
         }
     }
