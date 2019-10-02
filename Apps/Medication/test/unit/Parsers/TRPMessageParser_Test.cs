@@ -66,6 +66,25 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
+        public void ShouldParseInvalidMessage()
+        {
+            string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
+            string date = DateTime.Now.ToString("yyMMdd", this.culture);
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
+            sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
+            sb.Append($"ZZZ|TRP|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||1 SOME ERROR\r");
+            sb.Append($"ZCC||||||||||{phn}\r");
+            Exception ex = Assert.Throws<Exception>(() => this.parser.ParseResponseMessage(sb.ToString()));            
+        }
+
+        [Fact]
+        public void ShouldParseEmptyMessage()
+        {
+            Exception ex = Assert.Throws<ArgumentNullException>(() => this.parser.ParseResponseMessage(""));
+        }
+
+        [Fact]
         public void ShouldParseResponseMessage()
         {
             Prescription expectedPrescription = new Prescription()
