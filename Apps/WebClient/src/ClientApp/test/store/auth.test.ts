@@ -30,7 +30,9 @@ describe("Auth mutations", () => {
     expect(state.authentication.idToken).toBe(settings.id_token);
     expect(state.authentication.accessToken).toBe(settings.access_token);
     expect(state.authentication.oidcUser).not.toBe(undefined);
-    expect(state.authentication.oidcUser!.profile.name).toBe(settings.profile.name);
+    expect(state.authentication.oidcUser!.profile.name).toBe(
+      settings.profile.name
+    );
   });
 
   test("Sets oidcAuth not authenticated", () => {
@@ -57,7 +59,9 @@ describe("Auth mutations", () => {
     expect(state.authentication.idToken).toBe(settings.id_token);
     expect(state.authentication.accessToken).toBe(settings.access_token);
     expect(state.authentication.oidcUser).not.toBe(undefined);
-    expect(state.authentication.oidcUser!.profile.name).toBe(settings.profile.name);
+    expect(state.authentication.oidcUser!.profile.name).toBe(
+      settings.profile.name
+    );
   });
 
   test("Unsets oidc data", () => {
@@ -84,7 +88,9 @@ describe("Auth mutations", () => {
     expect(state.authentication.idToken).toBe(settings.id_token);
     expect(state.authentication.accessToken).toBe(settings.access_token);
     expect(state.authentication.oidcUser).not.toBe(undefined);
-    expect(state.authentication.oidcUser!.profile.name).toBe(settings.profile.name);
+    expect(state.authentication.oidcUser!.profile.name).toBe(
+      settings.profile.name
+    );
 
     mutations.unsetOidcAuth(state);
 

@@ -38,12 +38,12 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the quantity for the  medication prescribed.
         /// </summary>
-        public int Quantity { get; set; }
+        public float Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the  medication dosage.
         /// </summary>
-        public int Dosage { get; set; }
+        public float Dosage { get; set; }
 
         /// <summary>
         /// Gets or sets the Prescription status.
@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the date the Drug was discontinued if applicable.
         /// </summary>
-        public System.DateTime DrugDiscontinuedDate { get; set; }
+        public System.DateTime? DrugDiscontinuedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the directions as prescribed.
@@ -73,6 +73,11 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the date the medication was entered.
         /// </summary>
-        public System.DateTime DateEntered { get; set; }
+        public System.DateTime? DateEntered { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pharmacy id.
+        /// </summary>
+        public string PharmacyId { get; set; }
     }
 }

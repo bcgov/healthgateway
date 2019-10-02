@@ -53,7 +53,7 @@ namespace HealthGateway.HNClient.Test
         public void SendReceive_Happy_Test()
         {
             string message = "MSH|^~\\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3";
-            string expectedMessage = "MSH|^~\\&|HNETDTTN|BC00001000|HNTIMEAP|BC01001239|20190917152606-0800|GATEWAY|NMR||D|2.3||||\rMSA|AA|||||\rNCK|20190917152606-0800\r\r\r";
+            string expectedMessage = "MSH|^~\\&|HNETDTTN|BC00001000|HNTIMEAP|BC01001249|20190917152606-0800|GATEWAY|NMR||D|2.3||||\rMSA|AA|||||\rNCK|20190917152606-0800\r\r\r";
             byte[] handShakeData = {136, 197, 197, 125, 225, 69, 137, 77};
             byte[] dataReceived = {209, 133, 181, 133, 181, 133, 181, 133, 181, 132, 183, 135};
             byte[] hl7Message = { 216 ,139,195,191,225,159,195,229,153,209, 159, 218, 142, 202, 158, 202, 132, 248, 186,
