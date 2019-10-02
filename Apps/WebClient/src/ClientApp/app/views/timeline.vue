@@ -9,8 +9,9 @@
       Health Care Timeline: TODO
     </h1>
     <ul id="example-1">
-      <li v-for="medication in prescriptions">
-        Generic Name: {{ medication.genericName }}
+      <!--TODO: The DIN might not be unique. Instead we need to pass the ID of this statement-->
+      <li v-for="statement in medicationStatements" :key="statement.DIN">
+        Generic Name: {{ statement.genericName }}
       </li>
     </ul>
   </div>
@@ -25,7 +26,7 @@ import LoadingComponent from "@/components/loading.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
-import Prescription from "@/models/prescription";
+import MedicationStatement from "@/models/medicationStatement";
 
 const namespace: string = "user";
 
@@ -36,7 +37,7 @@ const namespace: string = "user";
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
-  private prescriptions: Prescription[] = [];
+  private medicationStatements: MedicationStatement[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
@@ -49,9 +50,9 @@ export default class TimelineComponent extends Vue {
     );
 
     medicationService
-      .getPatientPrescriptions(this.user.hdid)
+      .getPatientMedicationStatemens(this.user.hdid)
       .then(results => {
-        this.prescriptions = results;
+        this.medicationStatements = results;
       })
       .catch(err => {
         this.hasErrors = true;

@@ -5,7 +5,8 @@ import "reflect-metadata";
 
 import { ExternalConfiguration } from "@/models/configData";
 import HttpDelegate from "@/services/httpDelegate";
-import Prescription from '@/models/prescription';
+import Prescription from "@/models/medicationStatement";
+import MedicationStatement from "@/models/medicationStatement";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -19,7 +20,9 @@ export class RestMedicationService implements IMedicationService {
     this.http = http;
   }
 
-  public getPatientPrescriptions(hdid: string): Promise<Prescription> {
+  public getPatientMedicationStatemens(
+    hdid: string
+  ): Promise<MedicationStatement> {
     return this.http.get<Prescription>(
       `${this.baseUri}${this.MEDICATION_BASE_URI}${hdid}`
     );

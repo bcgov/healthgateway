@@ -40,7 +40,6 @@ const configService: IConfigService = container.get(
 configService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
-  
   // Retrieve service interfaces
   const authService: IAuthenticationService = container.get(
     SERVICE_IDENTIFIER.AuthenticationService

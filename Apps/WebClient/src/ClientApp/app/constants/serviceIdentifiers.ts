@@ -3,7 +3,7 @@ const SERVICE_IDENTIFIER = {
   AuthenticationService: Symbol.for("AuthService"),
   ImmsService: Symbol.for("ImmsService"),
   PatientService: Symbol.for("PatientService"),
-  MedicationService: Symbol.for("MedicationService")  
+  MedicationService: Symbol.for("MedicationService")
 };
 
 export const DELEGATE_IDENTIFIER = {
