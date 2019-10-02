@@ -1,6 +1,6 @@
 ##environment and application are injected from the pipeline
-$applicationPoolName = "hnc-$(environment)"
-$baseFolder = "E:\Applications\$(application)"
+$applicationPoolName = "hnc-$env:environment"
+$baseFolder = "E:\Applications\$env:application"
 
 import-module WebAdministration
 function Stop-AppPool ($webAppPoolName, [int]$secs) {
