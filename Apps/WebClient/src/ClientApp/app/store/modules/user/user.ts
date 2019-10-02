@@ -3,7 +3,7 @@ import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
 import { RootState, StateType, UserState } from "@/models/storeState";
-import User from '@/models/user';
+import User from "@/models/user";
 
 export const state: UserState = {
   statusMessage: "",

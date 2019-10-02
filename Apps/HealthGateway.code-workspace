@@ -16,6 +16,9 @@
 			"path": "Patient"
 		},
 		{
+			"path": "HNClient"
+		},
+		{
 			"path": "Medication"
 		}
 	],

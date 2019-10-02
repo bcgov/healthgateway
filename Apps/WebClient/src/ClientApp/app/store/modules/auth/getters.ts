@@ -66,6 +66,8 @@ export const getters: GetterTree<AuthState, RootState> = {
   },
   userIsRegistered(state: AuthState): boolean {
     let authentication = state.authentication;
-    return authentication === undefined ? false : authentication.acceptedTermsOfService;
+    return authentication === undefined
+      ? false
+      : authentication.acceptedTermsOfService;
   }
 };

@@ -99,7 +99,7 @@ export const actions: ActionTree<AuthState, RootState> = {
     authService.logout().then(() => {
       context.commit("unsetOidcAuth");
       context.commit("user/clearUserData", { root: true });
-      context.dispatch("unsetHttpToken");      
+      context.dispatch("unsetHttpToken");
     });
   },
   unsetHttpToken(context) {

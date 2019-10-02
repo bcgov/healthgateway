@@ -3,7 +3,7 @@ import { MutationTree } from "vuex";
 import { StateType, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import { User as OidcUser } from "oidc-client";
-import User from '@/models/user';
+import User from "@/models/user";
 
 export const mutations: MutationTree<UserState> = {
   setOidcUserData(state: UserState, oidcUser: OidcUser) {
