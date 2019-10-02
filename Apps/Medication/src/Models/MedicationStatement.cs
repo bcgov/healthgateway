@@ -21,19 +21,58 @@ namespace HealthGateway.Medication.Models
     public class MedicationStatement
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationStatement"/> class.
+        /// Gets or sets the Drug Identification Number for the prescribed medication.
         /// </summary>
-        public MedicationStatement()
-        {
-        }
+        public string DIN { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationStatement"/> class.
+        /// Gets or sets the brand name of the  medication.
         /// </summary>
-        /// <param name="phn">The patient's personal health number to scope the medication statement.</param>
-        public MedicationStatement(string phn)
-        {
-                System.Console.WriteLine($"MedicationStatement for ${phn}");
-        }
+        public string BrandName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the common or generic name of the  medication.
+        /// </summary>
+        public string GenericName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quantity for the  medication prescribed.
+        /// </summary>
+        public int Quantity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the  medication dosage.
+        /// </summary>
+        public int Dosage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Prescription status.
+        /// </summary>
+        public char PrescriptionStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the medication was dispensed.
+        /// </summary>
+        public System.DateTime DispensedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Surname of the Practitioner who prescribed the medication.
+        /// </summary>
+        public string PractitionerSurname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the Drug was discontinued if applicable.
+        /// </summary>
+        public System.DateTime DrugDiscontinuedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the directions as prescribed.
+        /// </summary>
+        public string Directions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the medication was entered.
+        /// </summary>
+        public System.DateTime DateEntered { get; set; }
     }
 }

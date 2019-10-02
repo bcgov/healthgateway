@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,12 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Authorization;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -43,14 +46,21 @@ namespace HealthGateway.Medication.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
+        /// The authorization service provider.
+        /// </summary> 
+        private readonly IAuthorizationService authorizationService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="svc">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor)
+        /// <param name="authZService">The injected authService authorization provider.</param>
+        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, IAuthorizationService authZService)
         {
             this.service = svc;
             this.httpContextAccessor = httpAccessor;
+            this.authorizationService = authZService;
         }
 
         /// <summary>
@@ -63,19 +73,29 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<List<MedicationStatement>> GetMedicationStatements(string hdid)
+        [Authorize]
+        public async Task<List<MedicationStatement>> GetMedications(string hdid)
         {
-            // @todo: Extract hdid from the access token and compare to the hdid parameter
-            // when there is no UMA permission ticket
-            // @temp: Uses hardcoded phn until we have the token setup.
-            // string phn = this.GetPatientPHN(hdid);
-            string phn = "0009735353315";
+            if ((await this.authorizationService.AuthorizeAsync(User, hdid, Operations.Read)).Succeeded)
+            {
+                ClaimsPrincipal principal = this.User as ClaimsPrincipal;
+                foreach (Claim claim in principal.Claims)
+                {
+                    System.Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
+                }
 
-            // Uses hardcoded userId until we have the token setup.
-            // string phn = this.GetPatientPHN(hdid);
-            string userId = "1001";
-            string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            return await this.service.GetMedicationStatementsAsync(phn, userId, ipAddress).ConfigureAwait(true);
+                // string phn = this.GetPatientPHN(hdid);
+                string phn = "0009735353315";
+                // Uses hardcoded userId until we have the token setup.
+                string userId = "1001";
+                string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                return await this.service.GetMedicationsAsync(phn, userId, ipAddress).ConfigureAwait(true);
+            }
+            else
+            {
+                return null; // @todo... verify this is ok.
+            }
         }
     }
 }

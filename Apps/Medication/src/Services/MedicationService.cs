@@ -84,7 +84,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
+        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -101,6 +101,10 @@ namespace HealthGateway.Medication.Services
                 }
 
                 string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
+
+                // @todo: Need to build the TRP request message and pass to HNClient proxy
+                // @todo: May need to continue to fetch to build if paginated result set.. i.e. lots of medications 
+                // returned over multiple queries.
 
                 var response = await client.GetAsync(new Uri(hnClientUrl)).ConfigureAwait(true);
                 DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<MedicationStatement>));
