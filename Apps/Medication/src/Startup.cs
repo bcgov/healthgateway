@@ -16,6 +16,10 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
+    using System;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Net.Mime;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Medication.Models;
@@ -34,6 +38,7 @@ namespace HealthGateway.Medication
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -44,6 +49,7 @@ namespace HealthGateway.Medication
         public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -57,8 +63,18 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
+            services.AddHttpClient("medicationService").ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                };
+            });
+
             services.AddSingleton<IMedicationService, RestMedicationService>();
+            services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
+            services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Test
+namespace HealthGateway.Medication.Services
 {
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using System;
-    using System.Text;
-    using Xunit;
+    using System.Threading.Tasks;
 
-    public class Medication_Test
+    /// <summary>
+    /// The patient service.
+    /// </summary>
+    public interface IPatientService
     {
-
-        public Medication_Test()
-        {
-        }
-
-        [Fact]
-        public void Should()
-        {
-            Assert.True(true);
-        }
+        /// <summary>
+        /// Gets the patient phn.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <returns>The patient phn.</returns>
+        Task<string> GetPatientPHNAsync(string hdid);
     }
 }
