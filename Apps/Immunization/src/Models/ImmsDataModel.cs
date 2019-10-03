@@ -26,7 +26,7 @@ namespace HealthGateway.Models
         public string Date { get; set; }
 
         /// <summary>
-        /// Gets or sets the Vaccine given for the immunization.
+        /// Gets or sets the vaccine of immunization.
         /// </summary>
         public string Vaccine { get; set; }
 

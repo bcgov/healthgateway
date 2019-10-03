@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Parsers
+namespace HealthGateway.Medication.Parsers
 {
     using System.Collections.Generic;
-    using HealthGateway.MedicationService.Models;
+    using HealthGateway.Medication.Models;
 
     /// <summary>
     /// The HNClient parser interface.

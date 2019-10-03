@@ -13,10 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Common.Authentication
 {
+    using System;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
+    using HealthGateway.Common.Authentication.Models;
 
     /// <summary>
     /// The authorization service interface.
@@ -24,13 +25,29 @@ namespace HealthGateway.MedicationService.Services
     public interface IAuthService
     {
         /// <summary>
-        /// Gets the OAuth Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
+        /// Gets the OAuth2 OIDC ClientID.
         /// </summary>
-        /// <param name="clientId">The OIDC client_id.</param>
-        /// <param name="clientSecret">The OIDC client_secret.</param>
-        /// <param name="tokenURI">The OIDC endpoint to retrieve the Token from.</param>
-        /// <param name="grantType">Optional grantType for OIDC credentials grant, the default is 'client_credentials'.</param>
+        string ClientId { get; }
+
+        /// <summary>
+        /// Gets the OAuth2 OIDC ClientSecret.
+        /// </summary>
+        string ClientSecret { get; }
+
+        /// <summary>
+        /// Gets the OAuth2 Auth Token URI.
+        /// </summary>
+        Uri TokenUri { get; }
+
+        /// <summary>
+        /// Gets the OAuth2 OIDC Grant Type (defaulted to 'client_credentials').
+        /// </summary>
+        string GrantType { get; }
+
+        /// <summary>
+        /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
+        /// </summary>
         /// <returns>The instance of an IAuthModel.</returns>
-        Task<IAuthModel> GetAuthTokens(string clientId, string clientSecret, System.Uri tokenURI, string grantType = @"client_credentials");
+        Task<IAuthModel> GetAuthTokens();
     }
 }
