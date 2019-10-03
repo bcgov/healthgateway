@@ -15,9 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
+    using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -42,14 +45,18 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
-        public async Task ShouldGetPrescriptions()
+        public async Task ShouldGetMedications()
         {
             HNMessage expected = new HNMessage() {
                 Message = "Test",
                 IsErr = false,
             };
-            Mock<IHNMessageParser<Prescription>> parserMock = new Mock<IHNMessageParser<Prescription>>();
-            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new List<Prescription>());
+
+            Mock<IAuthService> authMock = new Mock<IAuthService>();
+            authMock.Setup(s => s.GetAuthTokens()).ReturnsAsync(new JWTModel());
+
+            Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
+            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new List<MedicationStatement>());
 
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
@@ -60,16 +67,19 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration);            
-            List<Prescription> prescriptions = await service.GetPrescriptionsAsync("123456789", "test", "10.0.0.1");
+            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
+            List<MedicationStatement> medications = await service.GetMedicationsAsync("123456789", "test", "10.0.0.1");
 
-            Assert.True(prescriptions.Count == 0);
+            Assert.True(medications.Count == 0);
         }
 
         [Fact]
         public async Task ShouldCatchBadRequest()
         {
-            Mock<IHNMessageParser<Prescription>> parserMock = new Mock<IHNMessageParser<Prescription>>();
+            Mock<IAuthService> authMock = new Mock<IAuthService>();
+            authMock.Setup(s => s.GetAuthTokens()).ReturnsAsync(new JWTModel());
+
+            Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
                 request.SetConfiguration(new HttpConfiguration());
@@ -78,8 +88,8 @@ namespace HealthGateway.Medication.Test
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration);            
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPrescriptionsAsync("", "", ""));            
+            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetMedicationsAsync("", "", ""));            
         }
     }
 }

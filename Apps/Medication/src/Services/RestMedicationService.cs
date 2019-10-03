@@ -45,11 +45,11 @@ namespace HealthGateway.Medication.Services
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationService(IHNMessageParser<Prescription> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
+        public RestMedicationService(IHNMessageParser<MedicationStatement> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
         {
             this.medicationParser = parser;
             this.httpClientFactory = httpClientFactory;
-            this.configuration = configuration;
+            this.configService = configuration;
             this.authService = authService;
         }
 
@@ -62,7 +62,7 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configuration.GetSection("HNClient")?.GetValue<string>("Url"));
+                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
                 HNMessage responseMessage;
 

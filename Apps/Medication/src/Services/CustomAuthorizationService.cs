@@ -15,18 +15,31 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Authorization.Infrastructure;
 
     /// <summary>
-    /// The patient service.
+    /// The custom authorization service class.
     /// </summary>
-    public interface IPatientService
+    public class CustomAuthorizationService : ICustomAuthorizationService
     {
+        private readonly IAuthorizationService service;
+
         /// <summary>
-        /// Gets the patient phn.
+        /// Initializes a new instance of the <see cref="CustomAuthorizationService"/> class.
         /// </summary>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <returns>The patient phn.</returns>
-        Task<string> GetPatientPHNAsync(string hdid);
+        /// <param name="service">The microsoft aspnet core authorization service.</param>
+        public CustomAuthorizationService(IAuthorizationService service)
+        {
+            this.service = service;
+        }
+
+        /// <inheritdoc/>
+        public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, string resource, OperationAuthorizationRequirement operation)
+        {
+            return this.service.AuthorizeAsync(user, resource, operation);
+        }
     }
 }

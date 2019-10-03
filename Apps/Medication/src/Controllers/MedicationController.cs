@@ -48,7 +48,7 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// The authorization service provider.
         /// </summary>
-        private readonly IAuthorizationService authorizationService;
+        private readonly ICustomAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
@@ -56,7 +56,7 @@ namespace HealthGateway.Medication.Controllers
         /// <param name="svc">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="authZService">The injected authService authorization provider.</param>
-        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, IAuthorizationService authZService)
+        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService)
         {
             this.service = svc;
             this.httpContextAccessor = httpAccessor;
@@ -84,12 +84,6 @@ namespace HealthGateway.Medication.Controllers
             }
             else
             {
-                ClaimsPrincipal principal = this.User as ClaimsPrincipal;
-                foreach (Claim claim in principal.Claims)
-                {
-                    System.Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
-                }
-
                 // string phn = this.GetPatientPHN(hdid);
                 string phn = "0009735353315";
 

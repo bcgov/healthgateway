@@ -47,22 +47,22 @@ namespace HealthGateway.Medication.Models
         }
 
         /// <summary>
-        /// Gets the health directed identifier.
+        /// Gets or sets the health directed identifier.
         /// </summary>
         public string HdId { get; set; }
 
         /// <summary>
-        /// Gets the patient PHN.
+        /// Gets or sets the patient PHN.
         /// </summary>
         public string PersonalHealthNumber { get; set; }
 
         /// <summary>
-        /// Gets the patient first name.
+        /// Gets or sets the patient first name.
         /// </summary>
         public string FirstName { get; set; }
 
         /// <summary>
-        /// Gets the patient last name.
+        /// Gets or sets the patient last name.
         /// </summary>
         public string LastName { get; set; }
     }

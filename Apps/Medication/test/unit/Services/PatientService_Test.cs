@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
+    using HealthGateway.Medication.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

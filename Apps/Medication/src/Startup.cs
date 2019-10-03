@@ -67,13 +67,14 @@ namespace HealthGateway.Medication
             {
                 return new HttpClientHandler
                 {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
                 };
             });
 
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
+            services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
         }
 
         /// <summary>

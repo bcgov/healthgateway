@@ -15,18 +15,23 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Authorization.Infrastructure;
 
     /// <summary>
-    /// The patient service.
+    /// The custom authorization service interface.
     /// </summary>
-    public interface IPatientService
+    public interface ICustomAuthorizationService
     {
         /// <summary>
-        /// Gets the patient phn.
+        /// Checks if a user meets a specific requirement for the specified resource.
         /// </summary>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <returns>The patient phn.</returns>
-        Task<string> GetPatientPHNAsync(string hdid);
+        /// <param name="user">The user to evaluate the policy against.</param>
+        /// <param name="resource">The resource to evaluate the policy against.</param>
+        /// <param name="operation">The requirement to evaluate the policy against.</param>
+        /// <returns>A flag indicating whether requirement evaluation has succeeded or failed.</returns>
+        Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, string resource, OperationAuthorizationRequirement operation);
     }
 }
