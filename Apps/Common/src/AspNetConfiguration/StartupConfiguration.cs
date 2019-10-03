@@ -88,6 +88,10 @@ namespace HealthGateway.Common.AspNetConfiguration
                 });
         }
 
+        /// <summary>
+        /// Configures the authorization services.
+        /// </summary>
+        /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
 #pragma warning disable CA1303 // Do not pass literals as localized parameters

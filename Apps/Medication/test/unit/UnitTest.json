@@ -1,4 +1,7 @@
 {
+    "PatientService": {
+        "Url": "http://localhost:3001/v1/api/"
+    },
     "HNClient": {
         "SendingApplication": "GATEWAY",
         "SendingFacility": "BC0X00XXXX",
@@ -19,6 +22,7 @@
         "ZZZ": {
             "PractitionerId": "XXAPZ",
             "PractitionerIdRef": "91"
-        }
+        },
+        "Url": "http://localhost/"
     }
 }

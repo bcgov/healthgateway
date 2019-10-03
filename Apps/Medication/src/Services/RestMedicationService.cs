@@ -33,6 +33,7 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class RestMedicationService : IMedicationService
     {
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configService;
         private readonly IHNMessageParser<MedicationStatement> medicationParser;
         private readonly IAuthService authService;
@@ -40,80 +41,44 @@ namespace HealthGateway.Medication.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
-        /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
+        /// <param name="httpClientFactory">The injected http client factory.</param>
+        /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser, IAuthService authService)
+        public RestMedicationService(IHNMessageParser<MedicationStatement> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
         {
-            this.configService = config;
             this.medicationParser = parser;
+            this.httpClientFactory = httpClientFactory;
+            this.configService = configuration;
             this.authService = authService;
-        }
-
-        /// <summary>
-        /// Gets the patient phn.
-        /// </summary>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <returns>The patient phn.</returns>
-        public async Task<string> GetPatientPHN(string hdid)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-
-                // Inject JWT
-                // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
-                string hnClientUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
-                HttpResponseMessage response = await client.GetAsync(new Uri($"{hnClientUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
-                Patient responseMessage;
-                if (response.IsSuccessStatusCode)
-                {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                }
-                else
-                {
-                    throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
-                }
-
-                return responseMessage.PersonalHealthNumber;
-            }
         }
 
         /// <inheritdoc/>
         public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
             JWTModel jwtModel = this.AuthenticateService();
-            using (HttpClientHandler clientHandler = new HttpClientHandler())
+            using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+                HNMessage responseMessage;
 
-                using (HttpClient client = new HttpClient(clientHandler))
+                HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
+                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                if (response.IsSuccessStatusCode)
                 {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
-
-                    string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
-                    HNMessage responseMessage;
-
-                    HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
-                    HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
-                    }
-                    else
-                    {
-                        throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
-                    }
-
-                    return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
                 }
+                else
+                {
+                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                }
+
+                return this.medicationParser.ParseResponseMessage(responseMessage.Message);
             }
         }
 

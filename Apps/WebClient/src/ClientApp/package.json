@@ -74,6 +74,7 @@
     "vue-property-decorator": "^8.2.1",
     "vue-router": "^3.0.7",
     "vuex": "^3.0.1",
-    "oidc-client": "^1.8.2"
+    "oidc-client": "^1.8.2",
+    "moment": "2.24.0"
   }
 }
