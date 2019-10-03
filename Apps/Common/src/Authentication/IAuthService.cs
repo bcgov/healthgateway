@@ -25,14 +25,9 @@ namespace HealthGateway.Common.Authentication
     public interface IAuthService
     {
         /// <summary>
-        /// Gets the OAuth2 OIDC ClientID.
+        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard)
         /// </summary>
-        string ClientId { get; }
-
-        /// <summary>
-        /// Gets the OAuth2 OIDC ClientSecret.
-        /// </summary>
-        string ClientSecret { get; }
+        ClientCredentialsTokenRequest TokenRequest { get; set; }
 
         /// <summary>
         /// Gets the OAuth2 Auth Token URI.
@@ -40,14 +35,9 @@ namespace HealthGateway.Common.Authentication
         Uri TokenUri { get; }
 
         /// <summary>
-        /// Gets the OAuth2 OIDC Grant Type (defaulted to 'client_credentials').
-        /// </summary>
-        string GrantType { get; }
-
-        /// <summary>
         /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
         /// </summary>
         /// <returns>The instance of an IAuthModel.</returns>
-        Task<IAuthModel> GetAuthTokens();
+        Task<IAuthModel> ClientCredentialsAuth();
     }
 }

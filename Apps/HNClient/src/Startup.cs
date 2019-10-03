@@ -55,6 +55,7 @@ namespace HealthGateway.HNClient
             // HNClient Service and delegate
             services.AddTransient<IHNClientDelegate, SocketHNClientDelegate>();
             services.AddSingleton<IHNClientService, HNClientService>();
+            services.AddSingleton<IAuthService, AuthService>();
         }
 
         /// <summary>

@@ -124,7 +124,7 @@ namespace HealthGateway.Medication.Services
         {
             JWTModel jwtModel;
 
-            Task<IAuthModel> authenticating = this.authService.GetAuthTokens(); // @todo: maybe cache this in future for efficiency
+            Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
             jwtModel = authenticating.Result as JWTModel;
             return jwtModel;
