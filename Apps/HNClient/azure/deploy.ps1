@@ -1,6 +1,6 @@
 ##environment and application are injected from the pipeline
-$applicationPoolName = "hnc-$env:environment"
-$baseFolder = "E:\Applications\$env:application"
+$applicationPoolName = "hnc-$env:ENVIRONMENT"
+$baseFolder = "E:\Applications\$env:APPLICATION"
 
 import-module WebAdministration
 function Stop-AppPool ($webAppPoolName, [int]$secs) {
@@ -20,7 +20,7 @@ function Stop-AppPool ($webAppPoolName, [int]$secs) {
     return $retvalue
 }
 
-$version = "$(Release.Artifacts._HNClient.BuildNumber)"
+$version = "$env:RELEASE_ARTIFACTS__HNCLIENT_BUILDNUMBER"
 Write-Host "Starting deployment of release $version"
 
 $releaseFolder = "$baseFolder\Release\$version"
