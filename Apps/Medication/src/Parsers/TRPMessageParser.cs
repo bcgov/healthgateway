@@ -121,7 +121,7 @@ namespace HealthGateway.MedicationService.Parsers
             List<Prescription> prescriptions = new List<Prescription>();
             if (string.IsNullOrEmpty(hl7Message))
             {
-                return prescriptions;
+                throw new ArgumentNullException(nameof(hl7Message));
             }
 
             // Replaces the message type with message type + event so it can correcly parse the message.

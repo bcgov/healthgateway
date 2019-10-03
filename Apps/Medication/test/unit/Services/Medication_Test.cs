@@ -22,7 +22,6 @@ namespace HealthGateway.Medication.Test
     using System.Text;
     using Xunit;
 
-
     public class Medication_Test
     {
 
