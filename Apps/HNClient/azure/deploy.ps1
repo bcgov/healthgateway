@@ -2,6 +2,10 @@
 $applicationPoolName = "hnc-$env:ENVIRONMENT"
 $baseFolder = "E:\Applications\$env:APPLICATION"
 
+#The variable below is based on the Azure DevOps drop artifact _HNClient 
+$version = "$env:RELEASE_ARTIFACTS__HNCLIENT_BUILDNUMBER"
+Write-Host "Starting deployment of release $version"
+
 import-module WebAdministration
 function Stop-AppPool ($webAppPoolName, [int]$secs) {
     $retvalue = $false
@@ -20,9 +24,6 @@ function Stop-AppPool ($webAppPoolName, [int]$secs) {
     return $retvalue
 }
 
-$version = "$env:RELEASE_ARTIFACTS__HNCLIENT_BUILDNUMBER"
-Write-Host "Starting deployment of release $version"
-
 $releaseFolder = "$baseFolder\Release\$version"
 Write-Host "Release will be deployed to $releaseFolder"
 
@@ -37,7 +38,7 @@ else {
 Set-Location -Path $baseFolder\Environment\$applicationPoolName
 $deployedFolder = Get-Item .\App | Select-Object -ExpandProperty Target
 Write-Host "Release Folder = $releaseFolder\"
-Write-Host "Deploy Folder = $deployFolder"
+Write-Host "Deploy Folder = $deployedFolder"
 if ($releaseFolder + "\" -ne $deployedFolder) {
     if ((Get-WebAppPoolState -Name $applicationPoolName).Value -ne 'Stopped') {
         Write-Host ('Stopping Application Pool: {0}' -f $applicationPoolName)
