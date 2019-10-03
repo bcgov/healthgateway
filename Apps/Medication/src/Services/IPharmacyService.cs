@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Medication.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
+    using HealthGateway.Medication.Models;
 
     /// <summary>
     /// The Medication data service.

@@ -17,8 +17,8 @@ namespace HealthGateway.MedicationService.Controllers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 

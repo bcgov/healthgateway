@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
@@ -22,8 +22,8 @@ namespace HealthGateway.MedicationService.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
