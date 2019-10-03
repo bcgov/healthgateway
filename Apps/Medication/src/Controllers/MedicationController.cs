@@ -13,22 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Controllers
+namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Common.Authorization;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// The Medication controller.
     /// </summary>
-    // [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MedicationController : ControllerBase
     {
         /// <summary>
@@ -42,14 +46,21 @@ namespace HealthGateway.MedicationService.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
+        /// The authorization service provider.
+        /// </summary>
+        private readonly IAuthorizationService authorizationService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="svc">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor)
+        /// <param name="authZService">The injected authService authorization provider.</param>
+        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, IAuthorizationService authZService)
         {
             this.service = svc;
             this.httpContextAccessor = httpAccessor;
+            this.authorizationService = authZService;
         }
 
         /// <summary>
@@ -62,17 +73,32 @@ namespace HealthGateway.MedicationService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<List<Prescription>> GetPrescriptions(string hdid)
+        [Authorize]
+        public async Task<List<MedicationStatement>> GetMedications(string hdid)
         {
-            // Uses hardcoded phn until we have the token setup.
-            // string phn = this.GetPatientPHN(hdid);
-            string phn = "0009735353315";
+            AuthorizationResult result = await this.authorizationService.AuthorizeAsync(this.User, hdid, ResourceOperations.Read).ConfigureAwait(true);
 
-            // Uses hardcoded userId until we have the token setup.
-            // string phn = this.GetPatientPHN(hdid);
-            string userId = "1001";
-            string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            return await this.service.GetPrescriptionsAsync(phn, userId, ipAddress).ConfigureAwait(true);
+            if (!result.Succeeded)
+            {
+                return null; // @todo... verify this is ok.
+            }
+            else
+            {
+                ClaimsPrincipal principal = this.User as ClaimsPrincipal;
+                foreach (Claim claim in principal.Claims)
+                {
+                    System.Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
+                }
+
+                // string phn = this.GetPatientPHN(hdid);
+                string phn = "0009735353315";
+
+                // Uses hardcoded userId until we have the token setup.
+                string userId = "1001";
+                string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                return await this.service.GetMedicationsAsync(phn, userId, ipAddress).ConfigureAwait(true);
+            }
         }
     }
 }

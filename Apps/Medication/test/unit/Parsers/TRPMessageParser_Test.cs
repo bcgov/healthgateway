@@ -16,8 +16,8 @@
 namespace HealthGateway.Medication.Test
 {
     using DeepEqual.Syntax;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -31,7 +31,7 @@ namespace HealthGateway.Medication.Test
 
     public class TRPMessageParser_Test
     {
-        private readonly IHNMessageParser<Prescription> parser;
+        private readonly IHNMessageParser<MedicationStatement> parser;
         private readonly string phn = "123456789";
         private readonly string userId = "test";
         private readonly string ipAddress = "127.0.0.1";
@@ -87,7 +87,7 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldParseResponseMessage()
         {
-            Prescription expectedPrescription = new Prescription()
+            MedicationStatement expectedMedicationStatement = new MedicationStatement()
             {
                 BrandName = null,
                 DateEntered = DateTime.Today,
@@ -121,26 +121,26 @@ namespace HealthGateway.Medication.Test
             // ZPB3 prescriptions
             sb.Append("|ZPB3^");
 
-            sb.Append($"{expectedPrescription.DIN}^");
-            sb.Append($"{expectedPrescription.GenericName}^N^");
-            sb.Append($"{expectedPrescription.Quantity.ToString("F1").Replace(".", string.Empty)}^");
-            sb.Append($"{expectedPrescription.Dosage.ToString("F3").Replace(".", string.Empty)}^^^");
-            sb.Append($"{expectedPrescription.PrescriptionStatus}^");
-            sb.Append($"{expectedPrescription.DispensedDate.ToString("yyyyMMdd")}^CACI^P1^XXALE^");
-            sb.Append($"{expectedPrescription.PractitionerSurname}^");
-            sb.Append($"{expectedPrescription.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
-            sb.Append($"{expectedPrescription.Directions}^^^^");
-            sb.Append($"{expectedPrescription.DateEntered?.ToString("yyyyMMdd")}^");
-            sb.Append($"{expectedPrescription.PharmacyId}^Y^5790");
+            sb.Append($"{expectedMedicationStatement.DIN}^");
+            sb.Append($"{expectedMedicationStatement.GenericName}^N^");
+            sb.Append($"{expectedMedicationStatement.Quantity.ToString("F1").Replace(".", string.Empty)}^");
+            sb.Append($"{expectedMedicationStatement.Dosage.ToString("F3").Replace(".", string.Empty)}^^^");
+            sb.Append($"{expectedMedicationStatement.PrescriptionStatus}^");
+            sb.Append($"{expectedMedicationStatement.DispensedDate.ToString("yyyyMMdd")}^CACI^P1^XXALE^");
+            sb.Append($"{expectedMedicationStatement.PractitionerSurname}^");
+            sb.Append($"{expectedMedicationStatement.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
+            sb.Append($"{expectedMedicationStatement.Directions}^^^^");
+            sb.Append($"{expectedMedicationStatement.DateEntered?.ToString("yyyyMMdd")}^");
+            sb.Append($"{expectedMedicationStatement.PharmacyId}^Y^5790");
 
             // Other prescriptions
             sb.Append("~ZPB3^572349^COLCHICINE                    ODAN LABS      0.6 MG    TABLET^N^70^1000^^^D^20190129^NI^P1^XXALE^PHARMACISTWITHLONGCHARACTERNAME#035^20190129^PR^ADAPTED RX AND DISCONTINUED^REASON FOR DISCONTINUATION^P1^XXALE^20190129^QAERXPP^Y^5788^HIGH^CHGD");
             sb.Append("~ZPB3^294322^ALLOPURINOL                   APOTEX INC     300 MG    TABLET^N^1200^4000^^^D^20190116^^91^XXALT^ABLEBODIED^20190116^PH^PRESCRIPTION # 16^REASON FOR DISCONTINUATION^P1^XXAKZ^20190116^BC000000QA^N");
 
-            List<Prescription> prescriptions = this.parser.ParseResponseMessage(sb.ToString());
+            List<MedicationStatement> medicationStatements = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.Equal(3, prescriptions.Count);
-            Assert.True(expectedPrescription.IsDeepEqual(prescriptions.First()));
+            Assert.Equal(3, medicationStatements.Count);
+            Assert.True(expectedMedicationStatement.IsDeepEqual(medicationStatements.First()));
         }
     }
 }

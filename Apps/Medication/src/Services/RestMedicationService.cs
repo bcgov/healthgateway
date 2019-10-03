@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
@@ -21,8 +21,10 @@ namespace HealthGateway.MedicationService.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
+    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -32,17 +34,20 @@ namespace HealthGateway.MedicationService.Services
     public class RestMedicationService : IMedicationService
     {
         private readonly IConfiguration configService;
-        private readonly IHNMessageParser<Prescription> medicationParser;
+        private readonly IHNMessageParser<MedicationStatement> medicationParser;
+        private readonly IAuthService authService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
-        public RestMedicationService(IConfiguration config, IHNMessageParser<Prescription> parser)
+        /// <param name="authService">The injected authService for client credentials grant (system account).</param>
+        public RestMedicationService(IConfiguration config, IHNMessageParser<MedicationStatement> parser, IAuthService authService)
         {
             this.configService = config;
             this.medicationParser = parser;
+            this.authService = authService;
         }
 
         /// <summary>
@@ -78,37 +83,51 @@ namespace HealthGateway.MedicationService.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress)
+        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
-            //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-
-            using (HttpClient client = new HttpClient(clientHandler))
+            JWTModel jwtModel = this.AuthenticateService();
+            using (HttpClientHandler clientHandler = new HttpClientHandler())
             {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-                // Inject JWT
-                // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
-                string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
-                HNMessage responseMessage;
-
-                HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
-                HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
+                using (HttpClient client = new HttpClient(clientHandler))
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
-                }
-                else
-                {
-                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
-                }
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
-                return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    string hnClientUrl = this.configService.GetSection("HNClient").GetValue<string>("Url");
+                    HNMessage responseMessage;
+
+                    HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
+                    HttpResponseMessage response = await client.PostAsJsonAsync(new Uri($"{hnClientUrl}v1/api/HNClient"), requestMessage).ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                        responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
+                    }
+                    else
+                    {
+                        throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                    }
+
+                    return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                }
             }
+        }
+
+        /// <summary>
+        /// Authenticates this service, using Client Credentials Grant.
+        /// </summary>
+        private JWTModel AuthenticateService()
+        {
+            JWTModel jwtModel;
+
+            Task<IAuthModel> authenticating = this.authService.GetAuthTokens(); // @todo: maybe cache this in future for efficiency
+
+            jwtModel = authenticating.Result as JWTModel;
+            return jwtModel;
         }
     }
 }

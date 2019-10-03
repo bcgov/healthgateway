@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Models
+namespace HealthGateway.Medication.Models
 {
     /// <summary>
-    /// The Prescription data model.
+    /// The medications statement data model.
     /// </summary>
-    public class Prescription
+    public class MedicationStatement
     {
         /// <summary>
         /// Gets or sets the Drug Identification Number for the prescribed medication.
@@ -26,22 +26,22 @@ namespace HealthGateway.MedicationService.Models
         public string DIN { get; set; }
 
         /// <summary>
-        /// Gets or sets the brand name of the prescribed medication.
+        /// Gets or sets the brand name of the  medication.
         /// </summary>
         public string BrandName { get; set; }
 
         /// <summary>
-        /// Gets or sets the common or generic name of the prescribed medication.
+        /// Gets or sets the common or generic name of the  medication.
         /// </summary>
         public string GenericName { get; set; }
 
         /// <summary>
-        /// Gets or sets the quantity for the prescribed prescription.
+        /// Gets or sets the quantity for the  medication prescribed.
         /// </summary>
         public float Quantity { get; set; }
 
         /// <summary>
-        /// Gets or sets the prescribed medication dosage.
+        /// Gets or sets the  medication dosage.
         /// </summary>
         public float Dosage { get; set; }
 
@@ -51,17 +51,17 @@ namespace HealthGateway.MedicationService.Models
         public char PrescriptionStatus { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the prescription was dispensed.
+        /// Gets or sets the date the medication was dispensed.
         /// </summary>
         public System.DateTime DispensedDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the Surname of the Practitioner who issued the prescription.
+        /// Gets or sets the Surname of the Practitioner who prescribed the medication.
         /// </summary>
         public string PractitionerSurname { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the drug was discontinued if applicable.
+        /// Gets or sets the date the Drug was discontinued if applicable.
         /// </summary>
         public System.DateTime? DrugDiscontinuedDate { get; set; }
 
@@ -71,7 +71,7 @@ namespace HealthGateway.MedicationService.Models
         public string Directions { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the prescription was entered.
+        /// Gets or sets the date the medication was entered.
         /// </summary>
         public System.DateTime? DateEntered { get; set; }
 

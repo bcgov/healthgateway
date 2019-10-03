@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.MedicationService.Services
+namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.MedicationService.Models;
+    using HealthGateway.Medication.Models;
 
     /// <summary>
     /// The Medication data service.
@@ -30,7 +30,7 @@ namespace HealthGateway.MedicationService.Services
         /// <param name="phn">The patient phn.</param>
         /// <param name="userId">The user id of the request.</param>
         /// <param name="ipAddress">The ip address of the request.</param>
-        /// <returns>The Prescriptions model.</returns>
-        Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress);
+        /// <returns>A List of MedicationStatement models.</returns>
+        Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress);
     }
 }
