@@ -2,6 +2,9 @@
 {
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// The patient service.
+    /// </summary>
     public interface IPatientService
     {
         /// <summary>

@@ -49,21 +49,21 @@ namespace HealthGateway.MedicationService.Models
         /// <summary>
         /// Gets the health directed identifier.
         /// </summary>
-        public string HdId { get; }
+        public string HdId { get; set; }
 
         /// <summary>
         /// Gets the patient PHN.
         /// </summary>
-        public string PersonalHealthNumber { get; }
+        public string PersonalHealthNumber { get; set; }
 
         /// <summary>
         /// Gets the patient first name.
         /// </summary>
-        public string FirstName { get; }
+        public string FirstName { get; set; }
 
         /// <summary>
         /// Gets the patient last name.
         /// </summary>
-        public string LastName { get; }
+        public string LastName { get; set; }
     }
 }
