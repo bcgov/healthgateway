@@ -38,6 +38,11 @@ namespace HealthGateway.MedicationService.Models
         public const string SEGMENT_ZCC = "ZCC";
 
         /// <summary>
+        /// The location information segment.
+        /// </summary>
+        public const string SEGMENT_ZPL = "ZPL";
+
+        /// <summary>
         /// The transaction control segment.
         /// </summary>
         public const string SEGMENT_ZZZ = "ZZZ";
@@ -51,6 +56,11 @@ namespace HealthGateway.MedicationService.Models
         /// The patient profile transaction id.
         /// </summary>
         public const string PATIENT_PROFILE_TRANSACTION_ID = "TRP";
+
+        /// <summary>
+        /// The pharmacy profile transaction id.
+        /// </summary>
+        public const string PHARMACY_PROFILE_TRANSACTION_ID = "TIL";
 
         /// <summary>
         /// The patient profile message type.
@@ -73,6 +83,11 @@ namespace HealthGateway.MedicationService.Models
         /// Gets or sets the transaction control configuration.
         /// </summary>
         public ZZZConfiguration ZZZ { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location information configuration.
+        /// </summary>
+        public ZPLConfiguration ZPL { get; set; }
 
         /// <summary>
         /// Gets or sets the message version.

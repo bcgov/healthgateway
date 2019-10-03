@@ -56,6 +56,9 @@ namespace HealthGateway.MedicationService
 
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IHNMessageParser<Prescription>, TRPMessageParser>();
+
+            services.AddSingleton<IPharmacyService, RestPharmacyService>();
+            services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
         }
 
         /// <summary>
