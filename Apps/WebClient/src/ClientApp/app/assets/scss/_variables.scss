@@ -1,0 +1,21 @@
+//---------------------------------------------------------------------------------------
+// Variables from Bootstrap are change here, only CHANGED variables are here,
+// so if your looking for something, check out the varibles.scss file in bootstrap
+//---------------------------------------------------------------------------------------
+// Reference: http://www2.gov.bc.ca/gov/content/governments/services-for-government/policies-procedures/web-content-development-guides/developers-guide/css-elements
+
+// Change theme-colors
+$theme-colors: (
+  primary: #38598a,
+  success: #43893e,
+  info: #96c0e6,
+  warning: #f9ca54,
+  danger: #d93e45,
+  // new entries
+  primary-nav: #036,
+  secondary-nav: #5475a7,
+  bcgold: #fcba19
+);
+
+$primary: #036;
+$soft_background :#F7F7F7
