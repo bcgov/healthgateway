@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models
+namespace HealthGateway.Common.Authorization
 {
-    /// <summary>
-    /// The HNClient provider information configuration.
-    /// </summary>
-    public class ZZZConfiguration
-    {
-        /// <summary>
-        /// Gets or sets practitioner id.
-        /// </summary>
-        public string PractitionerId { get; set; }
+    using Microsoft.AspNetCore.Authorization;
 
-        /// <summary>
-        /// Gets or sets practitioner id reference.
-        /// </summary>
-        public string PractitionerIdRef { get; set; }
+    public class UserIsPatientRequirement : IAuthorizationRequirement
+    {
+        // blank on purpose
     }
 }

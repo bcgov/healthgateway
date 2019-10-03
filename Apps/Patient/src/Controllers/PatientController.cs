@@ -54,6 +54,9 @@ namespace HealthGateway.PatientService.Controllers
         [Route("{hdid}")]
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
+            // @todo: check for UMA permission ticket, if none found, then assumed hdid in query must
+            // match what was found as 'sub' in the Json Web Token passed into this service call.
+
             return await this.service.GetPatient(hdid).ConfigureAwait(true);
         }
     }

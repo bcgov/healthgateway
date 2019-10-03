@@ -17,8 +17,10 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.IO;
+    using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -84,6 +86,20 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.SerializerSettings.Formatting = Formatting.Indented;
                 });
+        }
+
+        public void ConfigureAuthorizationServices(IServiceCollection services)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("ConfigureAuthoirzationServices...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("ReadPolicy", policy =>
+                        policy.Requirements.Add(new UserIsPatientRequirement()));
+                });
+            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>

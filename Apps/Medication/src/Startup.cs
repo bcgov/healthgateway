@@ -14,16 +14,18 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.MedicationService
+namespace HealthGateway.Medication
 {
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
-    using HealthGateway.MedicationService.Services;
+    using HealthGateway.Common.Authorization;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;
+    using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -58,9 +60,9 @@ namespace HealthGateway.MedicationService
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddHttpClient("medicationService").ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new HttpClientHandler
@@ -69,8 +71,9 @@ namespace HealthGateway.MedicationService
                 };
             });
 
+            services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
-            services.AddSingleton<IHNMessageParser<Prescription>, TRPMessageParser>();
+            services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
         }
 
         /// <summary>
