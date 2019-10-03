@@ -19,6 +19,7 @@
         "ZZZ": {
             "PractitionerId": "XXAPZ",
             "PractitionerIdRef": "91"
-        }
+        },
+        "Url": "http://localhost/"
     }
 }

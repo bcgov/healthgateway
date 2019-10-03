@@ -21,35 +21,65 @@ namespace HealthGateway.Medication.Test
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using System.Net;
     using System.Net.Http;
+    using System.Net.Mime;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Web.Http;
     using Xunit;
 
 
     public class MedicationService_Test
     {
-        private readonly IMedicationService service;
-
+        private readonly IConfiguration configuration;
         public MedicationService_Test()
         {
-            Mock<IHNMessageParser<Prescription>> parserMock = new Mock<IHNMessageParser<Prescription>>();
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub();
-            var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
-            this.service = new RestMedicationService(parserMock.Object, httpMock.Object, configMock.Object);            
+            this.configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
         }
 
         [Fact]
         public async Task ShouldGetPrescriptions()
         {
-            List<Prescription> prescriptions = await this.service.GetPrescriptionsAsync("123456789", "test", "10.0.0.1");
+            HNMessage expected = new HNMessage() {
+                Message = "Test",
+                IsErr = false,
+            };
+            Mock<IHNMessageParser<Prescription>> parserMock = new Mock<IHNMessageParser<Prescription>>();
+            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new List<Prescription>());
+
+            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
+                request.SetConfiguration(new HttpConfiguration());
+                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.OK, expected, MediaTypeNames.Application.Json);
+                return Task.FromResult(response);
+            });
+            var client = new HttpClient(clientHandlerStub);
+            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration);            
+            List<Prescription> prescriptions = await service.GetPrescriptionsAsync("123456789", "test", "10.0.0.1");
 
             Assert.True(prescriptions.Count == 0);
+        }
+
+        [Fact]
+        public async Task ShouldCatchBadRequest()
+        {
+            Mock<IHNMessageParser<Prescription>> parserMock = new Mock<IHNMessageParser<Prescription>>();
+            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
+                request.SetConfiguration(new HttpConfiguration());
+                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.BadRequest);
+                return Task.FromResult(response);
+            });
+            var client = new HttpClient(clientHandlerStub);
+            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration);            
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPrescriptionsAsync("", "", ""));            
         }
     }
 }
