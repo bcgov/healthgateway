@@ -1,5 +1,3 @@
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-
 // Medication statement model
 export default class MedicationStatement {
   // Drug Identification Number for the medication statement.
