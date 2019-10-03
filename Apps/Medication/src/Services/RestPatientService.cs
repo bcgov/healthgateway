@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,63 +16,53 @@
 namespace HealthGateway.MedicationService.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
     using HealthGateway.MedicationService.Models;
-    using HealthGateway.MedicationService.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
-    using System.Net;
 
-    /// <summary>
-    /// The Medication data service.
-    /// </summary>
-    public class RestMedicationService : IMedicationService
+    public class RestPatientService : IPatientService
     {
-        private readonly IHNMessageParser<Prescription> medicationParser;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
+        /// Initializes a new instance of the <see cref="RestPatientService"/> class.
         /// </summary>
-        /// <param name="parser">The injected hn parser.</param>
-        /// <param name="httpClientFactory">The injected http client factory.</param>
+        /// <param name="clientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public RestMedicationService(IHNMessageParser<Prescription> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public RestPatientService(IHttpClientFactory clientFactory, IConfiguration configuration)
         {
-            this.medicationParser = parser;
-            this.httpClientFactory = httpClientFactory;
+            this.httpClientFactory = clientFactory;
             this.configuration = configuration;
         }
 
         /// <inheritdoc/>
-        public async Task<List<Prescription>> GetPrescriptionsAsync(string phn, string userId, string ipAddress)
+        public async Task<string> GetPatientPHNAsync(string hdid)
         {
-            using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
+            using (HttpClient client = this.httpClientFactory.CreateClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configuration.GetSection("HNClient")?.GetValue<string>("Url"));
-                HNMessage responseMessage;
+                client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
 
-                HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
-                HttpResponseMessage response = await client.PostAsJsonAsync("HNClient", requestMessage).ConfigureAwait(true);
+                HttpResponseMessage response = await client.GetAsync($"Patient/{hdid}").ConfigureAwait(true);
+                Patient responseMessage;
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
+                    responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
                 }
                 else
                 {
-                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                    throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                 }
 
-                return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                return responseMessage.PersonalHealthNumber;
             }
         }
     }
