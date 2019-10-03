@@ -37,8 +37,8 @@ else {
 
 Set-Location -Path $baseFolder\Environment\$applicationPoolName
 $deployedFolder = Get-Item .\App | Select-Object -ExpandProperty Target
-Write-Host "Release Folder = $releaseFolder\"
-Write-Host "Deploy Folder = $deployedFolder"
+Write-Debug "Release Folder = $releaseFolder\"
+Write-Debug "Deploy Folder = $deployedFolder"
 if ($releaseFolder + "\" -ne $deployedFolder) {
     if ((Get-WebAppPoolState -Name $applicationPoolName).Value -ne 'Stopped') {
         Write-Host ('Stopping Application Pool: {0}' -f $applicationPoolName)
