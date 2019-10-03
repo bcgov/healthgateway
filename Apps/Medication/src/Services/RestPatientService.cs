@@ -24,6 +24,9 @@ namespace HealthGateway.MedicationService.Services
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// The patient service.
+    /// </summary>
     public class RestPatientService : IPatientService
     {
         private readonly IHttpClientFactory httpClientFactory;
@@ -50,7 +53,7 @@ namespace HealthGateway.MedicationService.Services
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
 
-                HttpResponseMessage response = await client.GetAsync($"Patient/{hdid}").ConfigureAwait(true);
+                HttpResponseMessage response = await client.GetAsync($"v1/api/Patient/{hdid}").ConfigureAwait(true);
                 Patient responseMessage;
                 if (response.IsSuccessStatusCode)
                 {

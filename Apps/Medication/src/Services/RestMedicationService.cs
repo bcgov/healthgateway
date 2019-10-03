@@ -60,7 +60,7 @@ namespace HealthGateway.MedicationService.Services
                 HNMessage responseMessage;
 
                 HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
-                HttpResponseMessage response = await client.PostAsJsonAsync("HNClient", requestMessage).ConfigureAwait(true);
+                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
