@@ -21,6 +21,7 @@ namespace HealthGateway.Common.Authentication
     using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
+    using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -28,10 +29,12 @@ namespace HealthGateway.Common.Authentication
     /// </summary>
     public class AuthService : IAuthService
     {
-        public AuthService(ClientCredentialsTokenRequest tokenRequest, Uri tokenUri)
+        public AuthService(IConfiguration config)
         {
-            this.TokenRequest = tokenRequest;
-            this.TokenUri = tokenUri;
+            //@todo:
+            //this.TokenRequest = config.GetSection("HNClient").GetSection("OpenIdConnect").Bind();
+            //this.TokenRequest = tokenRequest;
+            //this.TokenUri = tokenUri;
         }
 
         /// <inheritdoc/>

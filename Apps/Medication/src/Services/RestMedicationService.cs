@@ -65,8 +65,8 @@ namespace HealthGateway.Medication.Services
 
                 // Inject JWT
                 // client.DefaultRequestHeaders.Add("Authorization", "Bearer ${TOKEN}")
-                string hnClientUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
-                HttpResponseMessage response = await client.GetAsync(new Uri($"{hnClientUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
+                string patientServiceUrl = this.configService.GetSection("PatientService").GetValue<string>("Url");
+                HttpResponseMessage response = await client.GetAsync(new Uri($"{patientServiceUrl}v1/api/Patient/{hdid}")).ConfigureAwait(true);
                 Patient responseMessage;
                 if (response.IsSuccessStatusCode)
                 {

@@ -18,6 +18,7 @@ namespace HealthGateway.Medication
 {
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
@@ -57,6 +58,7 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
+            services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
         }
