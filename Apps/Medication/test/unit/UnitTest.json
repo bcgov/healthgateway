@@ -1,0 +1,24 @@
+{
+    "HNClient": {
+        "SendingApplication": "GATEWAY",
+        "SendingFacility": "BC0X00XXXX",
+        "ReceivingApplication": "PNP",
+        "ReceivingFacility": "CPA",
+        "MessageVersion": "2.1",
+        "ProcessingID": "D",
+        "ZCA": {
+            "BIN": "1",
+            "CPHAVersionNumber": "70",
+            "TransactionCode": "00",
+            "SoftwareId": "HG",
+            "SoftwareVersion": "01"
+        },
+        "ZCB": {
+            "PharmacyId": "BCXXZZZYYY"
+        },
+        "ZZZ": {
+            "PractitionerId": "XXAPZ",
+            "PractitionerIdRef": "91"
+        }
+    }
+}

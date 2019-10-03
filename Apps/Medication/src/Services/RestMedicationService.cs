@@ -25,7 +25,6 @@ namespace HealthGateway.MedicationService.Services
     using HealthGateway.MedicationService.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
-    using System.Net;
 
     /// <summary>
     /// The Medication data service.
