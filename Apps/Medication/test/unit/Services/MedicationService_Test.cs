@@ -53,7 +53,7 @@ namespace HealthGateway.Medication.Test
             };
 
             Mock<IAuthService> authMock = new Mock<IAuthService>();
-            authMock.Setup(s => s.GetAuthTokens()).ReturnsAsync(new JWTModel());
+            authMock.Setup(s => s.ClientCredentialsAuth()).ReturnsAsync(new JWTModel());
 
             Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
             parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new List<MedicationStatement>());
@@ -77,7 +77,7 @@ namespace HealthGateway.Medication.Test
         public async Task ShouldCatchBadRequest()
         {
             Mock<IAuthService> authMock = new Mock<IAuthService>();
-            authMock.Setup(s => s.GetAuthTokens()).ReturnsAsync(new JWTModel());
+            authMock.Setup(s => s.ClientCredentialsAuth()).ReturnsAsync(new JWTModel());
 
             Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
