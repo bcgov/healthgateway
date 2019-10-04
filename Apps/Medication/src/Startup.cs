@@ -74,6 +74,8 @@ namespace HealthGateway.Medication
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
+            services.AddSingleton<IPharmacyService, RestPharmacyService>();
+            services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
             services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
         }
 
