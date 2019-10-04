@@ -31,10 +31,8 @@ namespace HealthGateway.Common.Authentication
     {
         public AuthService(IConfiguration config)
         {
-            //@todo:
-            //this.TokenRequest = config.GetSection("HNClient").GetSection("OpenIdConnect").Bind();
-            //this.TokenRequest = tokenRequest;
-            //this.TokenUri = tokenUri;
+            config?.GetSection("AuthService").Bind(this.TokenUri);
+            this.TokenUri = new Uri(config?.GetSection("AuthService").GetValue<string>("TokenUri"));
         }
 
         /// <inheritdoc/>
