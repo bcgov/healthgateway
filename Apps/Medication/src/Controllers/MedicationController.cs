@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using System.Net;
 
     /// <summary>
     /// The Medication controller.
@@ -90,9 +91,10 @@ namespace HealthGateway.Medication.Controllers
 
                 // Uses hardcoded userId until we have the token setup.
                 string userId = "1001";
-                string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+                string ipv4Address = address.MapToIPv4().ToString();
 
-                return await this.service.GetMedicationsAsync(phn, userId, ipAddress).ConfigureAwait(true);
+                return await this.service.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
             }
         }
     }
