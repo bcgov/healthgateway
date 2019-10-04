@@ -8,10 +8,10 @@ export enum EntryType {
 
 // Timeline entry model
 export default class TimelineEntry {
-  public readonly date: Date;
-  public readonly id: string;
-  public readonly title: string;
-  public readonly description: string;
+  public readonly date?: Date;
+  public readonly id?: string;
+  public readonly title?: string;
+  public readonly description?: string;
   public readonly type: EntryType;
 
   public constructor(other: MedicationStatement) {
