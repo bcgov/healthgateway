@@ -21,11 +21,10 @@ namespace HealthGateway.Medication
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -71,6 +70,7 @@ namespace HealthGateway.Medication
                 };
             });
 
+            services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();

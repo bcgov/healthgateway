@@ -13,31 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication
+namespace HealthGateway.Common.Authentication.Models
 {
-    using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication.Models;
+    using Newtonsoft.Json;
 
-    /// <summary>
-    /// The authorization service interface.
-    /// </summary>
-    public interface IAuthService
+    public class ClientCredentialsTokenRequest
     {
         /// <summary>
-        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard)
+        /// The unique identifier of the traget API you want to access
         /// </summary>
-        ClientCredentialsTokenRequest TokenRequest { get; set; }
+        [JsonProperty("audience")]
+        public string Audience { get; set; }
 
         /// <summary>
-        /// Gets the OAuth2 Auth Token URI.
+        /// Your application's Client ID
         /// </summary>
-        Uri TokenUri { get; }
+        [JsonProperty("client_id")]
+        public string ClientId { get; set; }
 
         /// <summary>
-        /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
+        /// Your application's Client Secret
         /// </summary>
-        /// <returns>The instance of an IAuthModel.</returns>
-        Task<IAuthModel> ClientCredentialsAuth();
+        [JsonProperty("client_secret")]
+        public string ClientSecret { get; set; }
     }
 }

@@ -21,6 +21,7 @@ namespace HealthGateway.Common.Authentication
     using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
+    using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -28,56 +29,46 @@ namespace HealthGateway.Common.Authentication
     /// </summary>
     public class AuthService : IAuthService
     {
-        /// <summary>
-        /// The HttpClient used to connect to the Auth Service.
-        /// </summary>
-        private static readonly HttpClient Client = new HttpClient();
-
-        public AuthService(string clientId, string clientSecret, Uri tokenUri, string grantType = @"client_credentials")
+        public AuthService(IConfiguration config)
         {
-            this.ClientId = clientId;
-            this.ClientSecret = clientSecret;
-            this.GrantType = grantType;
-            this.TokenUri = tokenUri;
+            config?.GetSection("AuthService").Bind(this.TokenUri);
+            this.TokenUri = new Uri(config?.GetSection("AuthService").GetValue<string>("TokenUri"));
         }
 
         /// <inheritdoc/>
-        public string ClientId { get; }
-
-        /// <inheritdoc/>
-        public string ClientSecret { get; }
+        public ClientCredentialsTokenRequest TokenRequest { get; set; }
 
         /// <inheritdoc/>
         public Uri TokenUri { get; }
 
         /// <inheritdoc/>
-        public string GrantType { get; }
-
-        /// <inheritdoc/>
-        public async Task<IAuthModel> GetAuthTokens()
+        public async Task<IAuthModel> ClientCredentialsAuth()
         {
-            IAuthModel authModel = null;
-
+            JWTModel authModel = new JWTModel();
             try
             {
-                var content = new StringContent(
+                using (var content = new StringContent(
                     JsonConvert.SerializeObject(
                     new
                     {
-                        client_id = this.ClientId,
-                        client_secret = this.ClientSecret,
-                        grant_type = this.GrantType,
+                        client_id = this.TokenRequest.ClientId,
+                        client_secret = this.TokenRequest.ClientSecret,
+                        audience = this.TokenRequest.Audience,
+                        grant_type = @"client_credentials",
                     }),
                     Encoding.UTF8,
-                    mediaType: MediaTypeNames.Application.Json);
-                using (HttpResponseMessage response = await Client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
+                    mediaType: MediaTypeNames.Application.Json))
                 {
-                    response.EnsureSuccessStatusCode();
-                    var jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
+                    using (HttpClient client = new HttpClient())
+                    {
+                        using (HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
+                        {
+                            response.EnsureSuccessStatusCode();
+                            var jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                            authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
+                        }
+                    }
                 }
-
-                content.Dispose();
             }
             catch (HttpRequestException e)
             {

@@ -28,11 +28,12 @@ namespace HealthGateway.Common.Authorization
             //   var tokens = handler.ReadJwtToken(accessToken);
             //   var subId = tokens.Claims.First(claim => claim.Type == "sub").Value;
             // @todo check that this below Name is the same as the JWT sub value...
-            if (string.Equals(context?.User.Identity?.Name, hDid, System.StringComparison.Ordinal))
+            if (!string.Equals(context?.User.Identity?.Name, hDid, System.StringComparison.Ordinal))
             {
-                context.Succeed(requirement);
+                return Task.CompletedTask;
             }
 
+            context.Succeed(requirement);
             return Task.CompletedTask;
         }
     }
