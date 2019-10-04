@@ -17,12 +17,11 @@ namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
@@ -31,42 +30,37 @@ namespace HealthGateway.Medication.Services
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public class RestMedicationService : IMedicationService
+    public class RestPharmacyService : IPharmacyService
     {
-        private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configService;
-        private readonly IHNMessageParser<MedicationStatement> medicationParser;
-        private readonly IAuthService authService;
+        private readonly IHNMessageParser<Pharmacy> pharmacyParser;
+        private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
+        /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
         /// </summary>
+        /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationService(IHNMessageParser<MedicationStatement> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
+        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory)
         {
-            this.medicationParser = parser;
+            this.configService = config;
+            this.pharmacyParser = parser;
             this.httpClientFactory = httpClientFactory;
-            this.configService = configuration;
-            this.authService = authService;
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public async Task<Pharmacy> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
         {
-            JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
                 HNMessage responseMessage;
 
-                HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
+                HNMessage requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
@@ -78,21 +72,8 @@ namespace HealthGateway.Medication.Services
                     throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
                 }
 
-                return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                return this.pharmacyParser.ParseResponseMessage(responseMessage.Message).FirstOrDefault();
             }
-        }
-
-        /// <summary>
-        /// Authenticates this service, using Client Credentials Grant.
-        /// </summary>
-        private JWTModel AuthenticateService()
-        {
-            JWTModel jwtModel;
-
-            Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
-
-            jwtModel = authenticating.Result as JWTModel;
-            return jwtModel;
         }
     }
 }
