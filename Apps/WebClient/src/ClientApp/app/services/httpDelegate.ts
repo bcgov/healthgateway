@@ -23,6 +23,7 @@ export default class HttpDelegate implements IHttpDelegate {
             return resolve(response.data);
           } else {
             return reject("invalid request");
+            console.log(response);
           }
         })
         .catch(err => {
