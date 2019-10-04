@@ -22,8 +22,8 @@ export default class HttpDelegate implements IHttpDelegate {
           if (response.data instanceof Object) {
             return resolve(response.data);
           } else {
-            return reject("invalid request");
             console.log(response);
+            return reject("invalid request");
           }
         })
         .catch(err => {
