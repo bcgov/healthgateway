@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Services
 
     /// <summary>
     /// The TEST Medication data service.
+    /// IMPORTANT TODO: Service only to be used for development.
     /// </summary>
     public class TestMedicationService : IMedicationService
     {
