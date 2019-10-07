@@ -267,15 +267,14 @@ export default class TimelineComponent extends Vue {
   }
 
   private sortGroup(groupArrays) {
+    groupArrays.sort(
+      (a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0) * -1
+    );
+
     if (this.sortDesc) {
-      groupArrays.sort((a, b) =>
-        a.date < b.date ? -1 : a.date > b.date ? 1 : 0
-      );
-    } else {
-      groupArrays.sort((a, b) =>
-        a.date > b.date ? -1 : a.date < b.date ? 1 : 0
-      );
+      groupArrays.reverse();
     }
+
     return groupArrays;
   }
 
