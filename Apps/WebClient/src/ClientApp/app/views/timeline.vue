@@ -10,8 +10,8 @@ $radius: 15px;
   border-top: 2px solid $primary;
 }
 
-.dateEntry {
-  padding: 20px;
+.sortContainer {
+  text-align: right;
 }
 
 .dateBreakLine {
@@ -28,8 +28,9 @@ $radius: 15px;
 }
 
 .entryCard {
-  padding-left: 70px;
+  padding-left: 50px;
   padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .entryTitle {
@@ -73,61 +74,88 @@ $radius: 15px;
       </h1>
       <hr />
     </div>
-    <b-container id="example-1">
-      <!--TODO: The DIN might not be unique. Instead we need to pass the ID of this statement-->
-      <b-row v-for="(entry, index) in timelineEntries" :key="entry.id">
-        <b-col class="dateEntry">
+    <div id="listControlls">
+      <b-row>
+        <b-col>
+          Displaying {{ getVisibleCount() }} out of
+          {{ getTotalCount() }} records
+        </b-col>
+        <b-col cols="auto">
+          <b-row
+            :class="{ descending: sortDesc, ascending: !sortDesc }"
+            class="text-right sortContainer"
+          >
+            <b-btn variant="link" @click="toggleSort()">
+              Date
+              <span v-show="sortDesc">
+                (Oldest)
+                <i class="fa fa-chevron-down" aria-hidden="true"></i
+              ></span>
+              <span v-show="!sortDesc">
+                (Newest)
+                <i class="fa fa-chevron-up" aria-hidden="true"></i
+              ></span>
+            </b-btn>
+          </b-row>
+        </b-col>
+      </b-row>
+    </div>
+    <b-container id="timeline">
+      <b-row v-for="dateGroup in dateGroups" :key="dateGroup.date">
+        <b-col>
           <b-row>
             <b-col cols="auto">
               <div class="date">
-                {{ getHeadingDate(entry.date) }}
+                {{ getHeadingDate(dateGroup.date) }}
               </div>
             </b-col>
             <b-col>
               <hr class="dateBreakLine" />
             </b-col>
           </b-row>
-          <b-row class="entryCard">
-            <b-col>
-              <b-row class="entryHeading">
-                <b-col class="icon leftPane" cols="0">
-                  <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
-                </b-col>
-                <b-col class="entryTitle">
-                  {{ entry.title }}
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col class="leftPane" cols="0"> </b-col>
-                <b-col>
-                  <b-row>
-                    <b-col>
-                      {{ entry.description }}
-                    </b-col>
-                  </b-row>
-                  <b-row>
-                    <b-col>
-                      <b-btn
-                        v-b-toggle="'entryDetails-' + index"
-                        variant="link"
-                        class="detailsButton"
-                      >
-                        <span class="when-opened">
-                          <i class="fa fa-chevron-down" aria-hidden="true"></i
-                        ></span>
-                        <span class="when-closed">
-                          <i class="fa fa-chevron-up" aria-hidden="true"></i
-                        ></span>
-                        View Details
-                      </b-btn>
-                      <b-collapse :id="'entryDetails-' + index">
-                        The details of the Entry go here
-                      </b-collapse>
-                    </b-col>
-                  </b-row>
-                </b-col>
-              </b-row>
-            </b-col>
+          <b-row v-for="(entry, index) in dateGroup.entries" :key="entry.id">
+            <b-row class="entryCard">
+              <b-col>
+                <b-row class="entryHeading">
+                  <b-col class="icon leftPane" cols="0">
+                    <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
+                  </b-col>
+                  <b-col class="entryTitle">
+                    {{ entry.title }}
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col class="leftPane" cols="0"> </b-col>
+                  <b-col>
+                    <b-row>
+                      <b-col>
+                        {{ entry.description }}
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col>
+                        <b-btn
+                          v-b-toggle="'entryDetails-' + index"
+                          variant="link"
+                          class="detailsButton"
+                        >
+                          <span class="when-opened">
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i
+                          ></span>
+                          <span class="when-closed">
+                            <i class="fa fa-chevron-up" aria-hidden="true"></i
+                          ></span>
+                          View Details
+                        </b-btn>
+                        <b-collapse :id="'entryDetails-' + index">
+                          The details of the Entry go here
+                        </b-collapse>
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
           </b-row>
         </b-col>
       </b-row>
@@ -150,6 +178,11 @@ import * as moment from "moment";
 
 const namespace: string = "user";
 
+interface DateGroup {
+  date: string;
+  entries: any;
+}
+
 @Component({
   components: {
     LoadingComponent
@@ -162,8 +195,6 @@ export default class TimelineComponent extends Vue {
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = false;
-
-  private types = EntryType;
 
   mounted() {
     this.isLoading = true;
@@ -191,6 +222,10 @@ export default class TimelineComponent extends Vue {
       });
   }
 
+  private toggleSort(): void {
+    this.sortDesc = !this.sortDesc;
+  }
+
   private getHeadingDate(date: Date): string {
     return moment(date).format("ll");
   }
@@ -206,6 +241,50 @@ export default class TimelineComponent extends Vue {
         break;
     }
     return iconClass;
+  }
+
+  private get dateGroups(): DateGroup[] {
+    let groups = this.timelineEntries.reduce((groups, entry) => {
+      const date = entry.date.split("T")[0];
+
+      // Create a new group if it the date doesnt exist in the map
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+
+      groups[date].push(entry);
+      return groups;
+    }, {});
+
+    let groupArrays = Object.keys(groups).map(date => {
+      return {
+        date: date,
+        entries: groups[date]
+      };
+    });
+
+    return this.sortGroup(groupArrays);
+  }
+
+  private sortGroup(groupArrays) {
+    groupArrays.sort((a, b) =>
+      a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+    );
+
+    if (this.sortDesc) {
+      groupArrays.reverse();
+    }
+
+    return groupArrays;
+  }
+
+  private getVisibleCount(): number {
+    return this.timelineEntries.length;
+  }
+
+  private getTotalCount(): number {
+    // TODO: The model needs to have pagination
+    return this.timelineEntries.length;
   }
 }
 </script>
