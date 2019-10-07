@@ -25,14 +25,12 @@ namespace HealthGateway.Common.Authorization
             string hdidClaim = context?.User.FindFirst(c => c.Type == "hdid").Value;
 
             // We custom map the subject id to a custom hdid claim inside the JWT, so we need to check that it
-            // matches what is being used for the target subject 
-
+            // matches what is being used for the target subject
             if (!string.Equals(hdidClaim, hDid, System.StringComparison.Ordinal))
             {
-                System.Console.WriteLine("hdid matches JWT");
+                System.Console.WriteLine(@"hdid matches JWT");
                 return Task.CompletedTask;
             }
-
             context.Succeed(requirement);
             return Task.CompletedTask;
         }
