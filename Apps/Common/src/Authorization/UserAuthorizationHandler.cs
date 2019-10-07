@@ -22,14 +22,14 @@ namespace HealthGateway.Common.Authorization
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hDid)
         {
-            // var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            // using (JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler())
-            // {
-            //   var tokens = handler.ReadJwtToken(accessToken);
-            //   var subId = tokens.Claims.First(claim => claim.Type == "sub").Value;
-            // @todo check that this below Name is the same as the JWT sub value...
-            if (!string.Equals(context?.User.Identity?.Name, hDid, System.StringComparison.Ordinal))
+            string hdidClaim = context?.User.FindFirst(c => c.Type == "hdid").Value;
+
+            // We custom map the subject id to a custom hdid claim inside the JWT, so we need to check that it
+            // matches what is being used for the target subject 
+
+            if (!string.Equals(hdidClaim, hDid, System.StringComparison.Ordinal))
             {
+                System.Console.WriteLine("hdid matches JWT");
                 return Task.CompletedTask;
             }
 
