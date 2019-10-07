@@ -77,14 +77,15 @@ $radius: 15px;
     <div id="listControlls">
       <b-row>
         <b-col>
-          Displaying {{getVisibleCount()}} out of {{getTotalCount()}} records
+          Displaying {{ getVisibleCount() }} out of
+          {{ getTotalCount() }} records
         </b-col>
-        <b-col cols=auto >
-          <b-row v-bind:class="{'descending': sortDesc, 'ascending': !sortDesc}" class="text-right sortContainer" >
-            <b-btn
-              variant="link"
-              @click="toggleSort()"
-            >
+        <b-col cols="auto">
+          <b-row
+            :class="{ descending: sortDesc, ascending: !sortDesc }"
+            class="text-right sortContainer"
+          >
+            <b-btn variant="link" @click="toggleSort()">
               Date
               <span v-show="sortDesc">
                 (Oldest)
@@ -95,12 +96,12 @@ $radius: 15px;
                 <i class="fa fa-chevron-up" aria-hidden="true"></i
               ></span>
             </b-btn>
-          </b-row>          
+          </b-row>
         </b-col>
       </b-row>
     </div>
     <b-container id="timeline">
-      <b-row v-for="(dateGroup) in dateGroups" :key="dateGroup.date">
+      <b-row v-for="dateGroup in dateGroups" :key="dateGroup.date">
         <b-col>
           <b-row>
             <b-col cols="auto">
@@ -178,8 +179,8 @@ import * as moment from "moment";
 const namespace: string = "user";
 
 interface DateGroup {
-  date:string;
-  entries:any;
+  date: string;
+  entries: any;
 }
 
 @Component({
@@ -242,10 +243,10 @@ export default class TimelineComponent extends Vue {
     return iconClass;
   }
 
-  private get dateGroups():DateGroup[] {
+  private get dateGroups(): DateGroup[] {
     let groups = this.timelineEntries.reduce((groups, entry) => {
-      const date = entry.date.split('T')[0];
-      
+      const date = entry.date.split("T")[0];
+
       // Create a new group if it the date doesnt exist in the map
       if (!groups[date]) {
         groups[date] = [];
@@ -255,28 +256,34 @@ export default class TimelineComponent extends Vue {
       return groups;
     }, {});
 
-    let groupArrays = Object.keys(groups).map((date) => {
+    let groupArrays = Object.keys(groups).map(date => {
       return {
         date: date,
         entries: groups[date]
-      }
+      };
     });
 
-  if(this.sortDesc)
-  {
-    groupArrays.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+    return this.sortGroup(groupArrays);
   }
-  else{
-    groupArrays.sort((a, b) => a.date > b.date ? -1 : a.date < b.date ? 1 : 0);
-  }
+
+  private sortGroup(groupArrays) {
+    if (this.sortDesc) {
+      groupArrays.sort((a, b) =>
+        a.date < b.date ? -1 : a.date > b.date ? 1 : 0
+      );
+    } else {
+      groupArrays.sort((a, b) =>
+        a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+      );
+    }
     return groupArrays;
   }
 
-  private getVisibleCount():number {
+  private getVisibleCount(): number {
     return this.timelineEntries.length;
   }
 
-  private getTotalCount():number {
+  private getTotalCount(): number {
     // TODO: The model needs to have pagination
     return this.timelineEntries.length;
   }
