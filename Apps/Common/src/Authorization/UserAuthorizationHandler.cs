@@ -28,10 +28,15 @@ namespace HealthGateway.Common.Authorization
             // matches what is being used for the target subject
             if (!string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal))
             {
+                #pragma warning disable CA1303 // Do not pass literals as localized parameters
                 System.Console.WriteLine(@"hdid matches JWT");
+                #pragma warning restore CA1303 // Do not pass literals as localized parameters
+
                 return Task.CompletedTask;
             }
+ 
             context.Succeed(requirement);
+
             return Task.CompletedTask;
         }
     }
