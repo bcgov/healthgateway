@@ -20,18 +20,23 @@ namespace HealthGateway.Common.Authorization
 
     public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, string>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hDid)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hdid)
         {
             string hdidClaim = context?.User.FindFirst(c => c.Type == "hdid").Value;
 
             // We custom map the subject id to a custom hdid claim inside the JWT, so we need to check that it
             // matches what is being used for the target subject
-            if (!string.Equals(hdidClaim, hDid, System.StringComparison.Ordinal))
+            if (!string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal))
             {
+                #pragma warning disable CA1303 // Do not pass literals as localized parameters
                 System.Console.WriteLine(@"hdid matches JWT");
+                #pragma warning restore CA1303 // Do not pass literals as localized parameters
+
                 return Task.CompletedTask;
             }
+ 
             context.Succeed(requirement);
+
             return Task.CompletedTask;
         }
     }
