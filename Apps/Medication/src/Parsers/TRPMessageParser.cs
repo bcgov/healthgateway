@@ -79,7 +79,7 @@ namespace HealthGateway.Medication.Parsers
             // MSH - Message Header
             DateTime utc = DateTime.UtcNow;
             TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById(this.timeZoneId);
-            DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
+            DateTime localDateTime = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
             m.AddSegmentMSH(
                 this.hnClientConfig.SendingApplication,
                 this.hnClientConfig.SendingFacility,
@@ -90,7 +90,7 @@ namespace HealthGateway.Medication.Parsers
                 TRACE,
                 this.hnClientConfig.ProcessingID,
                 this.hnClientConfig.MessageVersion);
-            m.SetValue("MSH.7", string.Format(culture, "{0:yyyy/MM/dd HH:mm:ss}", local)); // HNClient specific date format
+            m.SetValue("MSH.7", string.Format(culture, "{0:yyyy/MM/dd HH:mm:ss}", localDateTime)); // HNClient specific date format
             m.SetValue("MSH.9", HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE); // HNClient doesn't recognize event types (removes ^00 from message type)
 
             // ZZZ - Transaction Control
@@ -114,7 +114,7 @@ namespace HealthGateway.Medication.Parsers
             // ZCB - Provider Information
             Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, encoding);
             zcb.AddNewField(this.hnClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
-            zcb.AddNewField(DateTime.Now.ToString("yyMMdd", culture)); // Provider Transaction Date
+            zcb.AddNewField(localDateTime.ToString("yyMMdd", culture)); // Provider Transaction Date
             zcb.AddNewField(TRACE); // Trace Number
             m.AddNewSegment(zcb);
 
