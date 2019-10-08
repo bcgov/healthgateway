@@ -87,11 +87,11 @@ $radius: 15px;
           >
             <b-btn variant="link" @click="toggleSort()">
               Date
-              <span v-show="sortDesc">
+              <span v-show="sortDesc" name="descending">
                 (Oldest)
                 <i class="fa fa-chevron-down" aria-hidden="true"></i
               ></span>
-              <span v-show="!sortDesc">
+              <span v-show="!sortDesc" name="ascending">
                 (Newest)
                 <i class="fa fa-chevron-up" aria-hidden="true"></i
               ></span>
@@ -101,7 +101,7 @@ $radius: 15px;
       </b-row>
     </div>
     <b-container id="timeline">
-      <b-row v-for="dateGroup in dateGroups" :key="dateGroup.date">
+      <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
         <b-col>
           <b-row>
             <b-col cols="auto">
@@ -174,7 +174,7 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
-import * as moment from "moment";
+import moment from "moment";
 
 const namespace: string = "user";
 
@@ -201,17 +201,13 @@ export default class TimelineComponent extends Vue {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
-    console.log(this.timelineEntries);
     medicationService
       .getPatientMedicationStatemens(this.user.hdid)
       .then(results => {
+        // Add the medication entries to the timeline list
         for (let result of results) {
           this.timelineEntries.push(new TimelineEntry(result));
         }
-
-        //this.timelineEntries = results;
-        console.log(this.timelineEntries);
-        console.log(this.timelineEntries[0].date);
       })
       .catch(err => {
         this.hasErrors = true;
@@ -244,8 +240,14 @@ export default class TimelineComponent extends Vue {
   }
 
   private get dateGroups(): DateGroup[] {
+    if (this.timelineEntries.length === 0) {
+      return [];
+    }
+
     let groups = this.timelineEntries.reduce((groups, entry) => {
-      const date = entry.date.split("T")[0];
+      // Get the string version of the date and get the date
+      //const date = (entry.date).split("T")[0];
+      const date = new Date(entry.date).setHours(0, 0, 0, 0);
 
       // Create a new group if it the date doesnt exist in the map
       if (!groups[date]) {
@@ -256,13 +258,13 @@ export default class TimelineComponent extends Vue {
       return groups;
     }, {});
 
-    let groupArrays = Object.keys(groups).map(date => {
+    let groupArrays = Object.keys(groups).map(dateKey => {
       return {
-        date: date,
-        entries: groups[date]
+        key: dateKey,
+        date: groups[dateKey][0].date,
+        entries: groups[dateKey]
       };
     });
-
     return this.sortGroup(groupArrays);
   }
 
