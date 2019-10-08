@@ -36,7 +36,7 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Gets or sets the medication data service.
         /// </summary>
-        private readonly IMedicationService service;
+        private readonly IMedicationService medicationService;
 
         /// <summary>
         /// The http context provider.
@@ -56,13 +56,13 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
-        /// <param name="svc">The injected medication data service.</param>
+        /// <param name="medicationService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="authZService">The injected authService authorization provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.true</param>
-        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
+        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
         {
-            this.service = svc;
+            this.medicationService = medicationService;
             this.httpContextAccessor = httpAccessor;
             this.authorizationService = authZService;
             this.patientService = patientService;
@@ -81,17 +81,12 @@ namespace HealthGateway.Medication.Controllers
         [Authorize]
         public async Task<List<MedicationStatement>> GetMedications(string hdid)
         {
-            string phn = await this.GetPatientPHN(hdid);
+            string phn = await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
             string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await this.service.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
-        }
-
-        private async Task<string> GetPatientPHN(string hdid)
-        {
-            return await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
+            return await this.medicationService.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
         }
     }
 }

@@ -23,6 +23,9 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
+    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Authentication.Models;
+    using System.Net;
 
     /// <summary>
     /// The patient service.
@@ -31,42 +34,62 @@ namespace HealthGateway.Medication.Services
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
+        private readonly IAuthService authService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPatientService"/> class.
         /// </summary>
-        /// <param name="clientFactory">The injected http client factory.</param>
+        /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public RestPatientService(IHttpClientFactory clientFactory, IConfiguration configuration)
+        /// <param name="authService">The injected authService for client credentials grant (system account).</param>
+        public RestPatientService(IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
         {
-            this.httpClientFactory = clientFactory;
+            this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
+            this.authService = authService;
         }
 
         /// <inheritdoc/>
         public async Task<string> GetPatientPHNAsync(string hdid)
         {
-            using (HttpClient client = this.httpClientFactory.CreateClient())
+            JWTModel jwtModel = this.AuthenticateService();
+            using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
+                
+                // TODO: This does not work since it gets the audience for the medication call "medication-service" instead of the general one.
+                // Otherwise the audience needs to be null. At this point that is not possible on the AuthenticationService
+                //client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 HttpResponseMessage response = await client.GetAsync($"v1/api/Patient/{hdid}").ConfigureAwait(true);
-                Patient responseMessage;
+                
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                    Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                    return responseMessage.PersonalHealthNumber;
                 }
                 else
                 {
                     throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                 }
-
-                return responseMessage.PersonalHealthNumber;
             }
+        }
+
+        /// <summary>
+        /// Authenticates this service, using Client Credentials Grant.
+        /// </summary>
+        private JWTModel AuthenticateService()
+        {
+            JWTModel jwtModel;
+
+            Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
+
+            jwtModel = authenticating.Result as JWTModel;
+            return jwtModel;
         }
     }
 }

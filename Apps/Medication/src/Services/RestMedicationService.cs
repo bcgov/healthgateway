@@ -64,21 +64,19 @@ namespace HealthGateway.Medication.Services
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
-                HNMessage responseMessage;
 
                 HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
+                    HNMessage responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
+                    return this.medicationParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {
                     throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
                 }
-
-                return this.medicationParser.ParseResponseMessage(responseMessage.Message);
             }
         }
 
