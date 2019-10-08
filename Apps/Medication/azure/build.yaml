@@ -30,6 +30,7 @@ steps:
     command: 'test'
     projects: '$(App.UnitTests)/MedicationTests.csproj'
     testRunTitle: 'Medication Service Tests'
+  enabled: 'false'
 
 - script: |
     set -e
@@ -41,7 +42,13 @@ steps:
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
   workingDirectory: $(Build.SourcesDirectory)/Apps/Medication
-  enabled: 'true'
+  enabled: 'false'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '$(App.UnitTests)/MedicationTests.csproj'
+    testRunTitle: 'Build Medication Service'
 
 - task: DotNetCoreCLI@2
   displayName: Publish dotnet code
