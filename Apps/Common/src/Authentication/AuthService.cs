@@ -23,6 +23,7 @@ namespace HealthGateway.Common.Authentication
     using HealthGateway.Common.Authentication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The Authorization service
@@ -32,15 +33,16 @@ namespace HealthGateway.Common.Authentication
         public AuthService(IConfiguration config)
         {
             //config?.GetSection("AuthService").Bind(this.TokenUri);
-            
+
             IConfigurationSection configSection = config?.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
-            this.TokenRequest = new ClientCredentialsTokenRequest() {
-                Audience = configSection.GetValue<string>("Audience"), 
-                ClientId = configSection.GetValue<string>("ClientId"), 
+            this.TokenRequest = new ClientCredentialsTokenRequest()
+            {
+                Audience = configSection.GetValue<string>("Audience"),
+                ClientId = configSection.GetValue<string>("ClientId"),
                 ClientSecret = configSection.GetValue<string>("ClientSecret")
-                };
+            };
         }
 
         /// <inheritdoc/>
@@ -55,20 +57,21 @@ namespace HealthGateway.Common.Authentication
             JWTModel authModel = new JWTModel();
             try
             {
-                using (var content = new StringContent(
-                    JsonConvert.SerializeObject(
-                    new
-                    {
-                        client_id = this.TokenRequest.ClientId,
-                        client_secret = this.TokenRequest.ClientSecret,
-                        audience = this.TokenRequest.Audience,
-                        grant_type = @"client_credentials",
-                    }),
-                    Encoding.UTF8,
-                    mediaType: MediaTypeNames.Application.Json))
+                using (HttpClient client = new HttpClient())
                 {
-                    using (HttpClient client = new HttpClient())
+                    // Create content for keycloak
+                    IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
                     {
+                        new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId),
+                        new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret),
+                        new KeyValuePair<string, string>("audience", this.TokenRequest.Audience),
+                        new KeyValuePair<string, string>("grant_type", @"client_credentials"),
+                    };
+                    using (var content = new FormUrlEncodedContent(keycloakParams))
+                    {
+                        content.Headers.Clear();
+                        content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+
                         using (HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
                         {
                             response.EnsureSuccessStatusCode();

@@ -153,48 +153,51 @@ namespace HealthGateway.Medication.Parsers
             // Fields index start from 1 not 0.
             Field zpb3 = zpb.Fields(3);
 
-            // Split value into multiple records
-            string[] records = zpb3.Value.Split('~');
-            foreach (string record in records)
+            if (zpb3 != null)
             {
-                MedicationStatement medicationStatement = new MedicationStatement();
-                string[] fields = record.Split('^');
-                medicationStatement.DIN = fields[1]; // DIN
-                medicationStatement.GenericName = fields[2]; // Generic Name
+                // Split value into multiple records
+                string[] records = zpb3.Value.Split('~');
+                foreach (string record in records)
+                {
+                    MedicationStatement medicationStatement = new MedicationStatement();
+                    string[] fields = record.Split('^');
+                    medicationStatement.DIN = fields[1]; // DIN
+                    medicationStatement.GenericName = fields[2]; // Generic Name
 
-                // fields[3]; // Same Store Indicator
-                medicationStatement.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
-                medicationStatement.Dosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
+                    // fields[3]; // Same Store Indicator
+                    medicationStatement.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
+                    medicationStatement.Dosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
 
-                // fields[6]; // Ingredient Code
-                // fields[7]; // Ingredient Name
-                medicationStatement.PrescriptionStatus = fields[8].ToCharArray()[0]; // RX Status
-                medicationStatement.DispensedDate = DateTime.ParseExact(fields[9], "yyyyMMdd", CultureInfo.CurrentCulture); // Date Dispensed
+                    // fields[6]; // Ingredient Code
+                    // fields[7]; // Ingredient Name
+                    medicationStatement.PrescriptionStatus = fields[8].ToCharArray()[0]; // RX Status
+                    medicationStatement.DispensedDate = DateTime.ParseExact(fields[9], "yyyyMMdd", CultureInfo.CurrentCulture); // Date Dispensed
 
-                // fields[10]; // Intervention Code
-                // fields[11]; // Practitioner ID Reference
-                // fields[12]; // Practitioner ID
-                medicationStatement.PractitionerSurname = fields[13]; // Practitioner Family Name
-                medicationStatement.DrugDiscontinuedDate = string.IsNullOrEmpty(fields[14]) ?
-                    (DateTime?)null : DateTime.ParseExact(fields[14], "yyyyMMdd", CultureInfo.CurrentCulture); // Drug Discontinued Date
+                    // fields[10]; // Intervention Code
+                    // fields[11]; // Practitioner ID Reference
+                    // fields[12]; // Practitioner ID
+                    medicationStatement.PractitionerSurname = fields[13]; // Practitioner Family Name
+                    medicationStatement.DrugDiscontinuedDate = string.IsNullOrEmpty(fields[14]) ?
+                        (DateTime?)null : DateTime.ParseExact(fields[14], "yyyyMMdd", CultureInfo.CurrentCulture); // Drug Discontinued Date
 
-                // fields[15]; // Drug Discontinued Source
-                medicationStatement.Directions = fields[16]; // Directions
+                    // fields[15]; // Drug Discontinued Source
+                    medicationStatement.Directions = fields[16]; // Directions
 
-                // fields[17]; // Comment Text
-                // fields[18]; // Practitioner ID Reference (Duplicated ?)
-                // fields[19]; // Practitioner ID (Duplicated ?)
-                medicationStatement.DateEntered = string.IsNullOrEmpty(fields[20]) ?
-                    (DateTime?)null : DateTime.ParseExact(fields[20], "yyyyMMdd", CultureInfo.CurrentCulture); // Date Entered
+                    // fields[17]; // Comment Text
+                    // fields[18]; // Practitioner ID Reference (Duplicated ?)
+                    // fields[19]; // Practitioner ID (Duplicated ?)
+                    medicationStatement.DateEntered = string.IsNullOrEmpty(fields[20]) ?
+                        (DateTime?)null : DateTime.ParseExact(fields[20], "yyyyMMdd", CultureInfo.CurrentCulture); // Date Entered
 
-                medicationStatement.PharmacyId = fields[21]; // Pharmacy ID
+                    medicationStatement.PharmacyId = fields[21]; // Pharmacy ID
 
-                // fields[22].ToString(); // Adaptation Indicator
+                    // fields[22].ToString(); // Adaptation Indicator
 
-                // fields[23].ToString(); // PharmaNet Prescription Identifier
-                // fields[24].ToString(); // MMI Codes
-                // fields[25].ToString(); // Clinical Service Codes
-                medicationStatements.Add(medicationStatement);
+                    // fields[23].ToString(); // PharmaNet Prescription Identifier
+                    // fields[24].ToString(); // MMI Codes
+                    // fields[25].ToString(); // Clinical Service Codes
+                    medicationStatements.Add(medicationStatement);
+                }
             }
 
             return medicationStatements;
