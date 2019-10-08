@@ -32,8 +32,6 @@ namespace HealthGateway.Common.Authentication
     {
         public AuthService(IConfiguration config)
         {
-            //config?.GetSection("AuthService").Bind(this.TokenUri);
-
             IConfigurationSection configSection = config?.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
@@ -41,7 +39,6 @@ namespace HealthGateway.Common.Authentication
             {
                 Audience = configSection.GetValue<string>("Audience"),
                 ClientId = configSection.GetValue<string>("ClientId"),
-                ClientSecret = configSection.GetValue<string>("ClientSecret")
             };
         }
 

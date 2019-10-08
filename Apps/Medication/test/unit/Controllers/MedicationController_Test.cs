@@ -54,7 +54,10 @@ namespace HealthGateway.Medication.Test
             Mock<ICustomAuthorizationService> authMock = new Mock<ICustomAuthorizationService>();
             authMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>(), It.IsAny<OperationAuthorizationRequirement>())).ReturnsAsync(AuthorizationResult.Success());
 
-            MedicationController controller = new MedicationController(svcMock.Object, httpContextAccessorMock.Object, authMock.Object);
+            Mock<IPatientService> patientMock = new Mock<IPatientService>();
+            patientMock.Setup(s => s.GetPatientPHNAsync(hdid));
+
+            MedicationController controller = new MedicationController(svcMock.Object, httpContextAccessorMock.Object, authMock.Object, patientMock.Object);
 
             List<MedicationStatement> medications = await controller.GetMedications(hdid);
 

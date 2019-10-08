@@ -16,12 +16,9 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authorization;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -52,16 +49,23 @@ namespace HealthGateway.Medication.Controllers
         private readonly ICustomAuthorizationService authorizationService;
 
         /// <summary>
+        /// The patient service provider used to retrieve Personal Health Number for subject
+        /// </summary>        
+        private readonly IPatientService patientService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="svc">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="authZService">The injected authService authorization provider.</param>
-        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService)
+        /// <param name="patientService">The injected patientService patient registry provider.true</param>
+        public MedicationController(IMedicationService svc, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
         {
             this.service = svc;
             this.httpContextAccessor = httpAccessor;
             this.authorizationService = authZService;
+            this.patientService = patientService;
         }
 
         /// <summary>
@@ -77,25 +81,17 @@ namespace HealthGateway.Medication.Controllers
         [Authorize]
         public async Task<List<MedicationStatement>> GetMedications(string hdid)
         {
-            //AuthorizationResult result = await this.authorizationService.AuthorizeAsync(this.User, hdid, ResourceOperations.Read).ConfigureAwait(true);
+            string phn = await this.GetPatientPHN(hdid);
+            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
+            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+            string ipv4Address = address.MapToIPv4().ToString();
 
-            //if (!result.Succeeded)
-            if (false)
-            {
-                return null; // @todo... verify this is ok.
-            }
-            else
-            {
-                // string phn = this.GetPatientPHN(hdid);
-                string phn = "0009735353315";
+            return await this.service.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
+        }
 
-                // Uses hardcoded userId until we have the token setup.
-                string userId = "1001";
-                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                string ipv4Address = address.MapToIPv4().ToString();
-
-                return await this.service.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
-            }
+        private async Task<string> GetPatientPHN(string hdid)
+        {
+            return await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
         }
     }
 }
