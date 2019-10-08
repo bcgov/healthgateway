@@ -43,6 +43,11 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public HNMessage CreateRequestMessage(string phn, string userId, string ipAddress)
         {
+            if (phn.Length < 13)
+            {
+                phn = phn.PadLeft(13, '0');
+            }
+
             HNClientConfiguration hnClientConfig = new HNClientConfiguration();
             this.configuration.GetSection("HNClient").Bind(hnClientConfig);
 
