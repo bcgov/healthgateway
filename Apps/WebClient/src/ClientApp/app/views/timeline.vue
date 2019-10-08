@@ -230,7 +230,8 @@ export default class TimelineComponent extends Vue {
     let iconClass = "fa-times";
     switch (entry.type) {
       case EntryType.Medication:
-        iconClass = "fa-prescription";
+        //iconClass = "fa-prescription-bottle-alt";
+        iconClass = "fa-pills";
         break;
       case EntryType.Laboratory:
         iconClass = "fa-flask";
