@@ -36,7 +36,6 @@ export default class HomeComponent extends Vue {
     this.isLoading = true;
     this.getPatientData({ hdid: this.user.hdid })
       .then(() => {
-        console.log("WHAA");
         if (this.user.phn.length === 0) {
           this.phn = "Not Found";
         } else {
