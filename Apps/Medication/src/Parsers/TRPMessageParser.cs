@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Parsers
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace HealthGateway.Medication.Parsers
     {
         private const string TRACE = "101010";
         private readonly IConfiguration configuration;
+        private readonly string TimeZoneId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
@@ -38,6 +40,8 @@ namespace HealthGateway.Medication.Parsers
         public TRPMessageParser(IConfiguration config)
         {
             this.configuration = config;
+
+            this.TimeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Pacific Standard Time" : "America/Vancouver";
         }
 
         /// <inheritdoc/>
@@ -67,7 +71,7 @@ namespace HealthGateway.Medication.Parsers
 
             // MSH - Message Header
             DateTime utc = DateTime.UtcNow;
-            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById("America/Vancouver");
+            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById(this.TimeZoneId);
             DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
             m.AddSegmentMSH(hnClientConfig.SendingApplication, hnClientConfig.SendingFacility, hnClientConfig.ReceivingApplication, hnClientConfig.ReceivingFacility, $"{userId}:{ipAddress}", $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00", TRACE, hnClientConfig.ProcessingID, hnClientConfig.MessageVersion);
             m.SetValue("MSH.7", string.Format(culture, "{0:yyyy/MM/dd HH:mm:ss}", local)); // HNClient specific date format

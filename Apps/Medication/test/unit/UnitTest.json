@@ -23,6 +23,9 @@
             "PractitionerId": "XXAPZ",
             "PractitionerIdRef": "91"
         },
-        "Url": "http://localhost/"
+        "Url": "http://localhost/",
+        "ZPL": {
+            "TransactionReasonCode": "MM"
+        }
     }
 }
