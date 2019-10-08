@@ -52,7 +52,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<string> GetPatientPHNAsync(string hdid)
         {
-            JWTModel jwtModel = this.AuthenticateService();
+            //JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -82,7 +82,7 @@ namespace HealthGateway.Medication.Services
         /// <summary>
         /// Authenticates this service, using Client Credentials Grant.
         /// </summary>
-        private JWTModel AuthenticateService()
+        /*private JWTModel AuthenticateService()
         {
             JWTModel jwtModel;
 
@@ -90,6 +90,6 @@ namespace HealthGateway.Medication.Services
 
             jwtModel = authenticating.Result as JWTModel;
             return jwtModel;
-        }
+        }*/
     }
 }
