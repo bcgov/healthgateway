@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Test
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
     using Xunit;
 
@@ -52,8 +53,8 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldCreateTILRequestMessage()
         {
-            string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
-            string date = DateTime.Now.ToString("yyMMdd", this.culture);
+            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
+            string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
             HNMessage request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress);
 
@@ -68,8 +69,8 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldParseInvalidTILMessage()
         {
-            string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
-            string date = DateTime.Now.ToString("yyMMdd", this.culture);
+            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
+            string date = this.getDateTime().ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
             sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
             sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
@@ -100,8 +101,8 @@ namespace HealthGateway.Medication.Test
                 Province = "BC"
             };
 
-            string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
-            string date = DateTime.Now.ToString("yyMMdd", this.culture);
+            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
+            string date = this.getDateTime().ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
             sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
             sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
@@ -126,6 +127,15 @@ namespace HealthGateway.Medication.Test
 
             Assert.Single(pharmacies);
             Assert.True(expectedPharmacy.IsDeepEqual(pharmacies.First()));
+        }
+
+        private DateTime getDateTime()
+        {
+            DateTime utc = DateTime.UtcNow;
+            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? this.hnClientConfig.WindowsTimeZoneId : this.hnClientConfig.UnixTimeZoneId);
+            DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
+
+            return local;
         }
     }
 }

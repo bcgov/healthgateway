@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Test
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
     using Xunit;
 
@@ -52,8 +53,8 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldCreateRequestMessage()
         {
-            string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
-            string date = DateTime.Now.ToString("yyMMdd", this.culture);
+            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
+            string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
             HNMessage request = this.parser.CreateRequestMessage(phn, userId, ipAddress);
 
@@ -68,14 +69,14 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldParseInvalidMessage()
         {
-            string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
-            string date = DateTime.Now.ToString("yyMMdd", this.culture);
+            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
+            string date = this.getDateTime().ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
             sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
             sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
             sb.Append($"ZZZ|TRP|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||1 SOME ERROR\r");
             sb.Append($"ZCC||||||||||{phn}\r");
-            Exception ex = Assert.Throws<Exception>(() => this.parser.ParseResponseMessage(sb.ToString()));            
+            Exception ex = Assert.Throws<Exception>(() => this.parser.ParseResponseMessage(sb.ToString()));
         }
 
         [Fact]
@@ -111,10 +112,10 @@ namespace HealthGateway.Medication.Test
             sb.Append($"ZZZ|TRP|0|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||0 Operation successful\r");
             sb.Append($"ZCC||||||||||{phn}\r");
             sb.Append("ZPB");
-            
+
             // ZPB1 medical condition
             sb.Append("|ZPB1^THIS IS A CLINICAL CONDITION*AND IT HAS EXACTLY 56 BYTES^Y^DP^20170330^^^");
-            
+
             // ZPB2 reactions
             sb.Append("|ZPB2^294322^ALLOPURINOL                   APOTEX INC     300 MG    TABLET^^^AE^20190815^*ADE_0427_Adverse Drug Reaction_Possible_Hospitalization^91^XXANR^20190815");
 
@@ -142,5 +143,15 @@ namespace HealthGateway.Medication.Test
             Assert.Equal(3, medicationStatements.Count);
             Assert.True(expectedMedicationStatement.IsDeepEqual(medicationStatements.First()));
         }
+
+        private DateTime getDateTime()
+        {
+            DateTime utc = DateTime.UtcNow;
+            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? this.hnClientConfig.WindowsTimeZoneId : this.hnClientConfig.UnixTimeZoneId);
+            DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
+
+            return local;
+        }
+
     }
 }
