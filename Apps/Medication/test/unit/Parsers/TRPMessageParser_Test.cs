@@ -33,7 +33,7 @@ namespace HealthGateway.Medication.Test
     public class TRPMessageParser_Test
     {
         private readonly IHNMessageParser<MedicationStatement> parser;
-        private readonly string phn = "123456789";
+        private readonly string phn = "0000123456789";
         private readonly string userId = "test";
         private readonly string ipAddress = "127.0.0.1";
         private readonly string traceNumber = "101010";

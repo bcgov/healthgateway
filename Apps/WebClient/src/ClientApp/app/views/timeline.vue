@@ -148,7 +148,7 @@ $radius: 15px;
                           View Details
                         </b-btn>
                         <b-collapse :id="'entryDetails-' + index">
-                          The details of the Entry go here
+                          The details of the record go here
                         </b-collapse>
                       </b-col>
                     </b-row>
@@ -230,7 +230,7 @@ export default class TimelineComponent extends Vue {
     let iconClass = "fa-times";
     switch (entry.type) {
       case EntryType.Medication:
-        iconClass = "fa-prescription";
+        iconClass = "fa-pills";
         break;
       case EntryType.Laboratory:
         iconClass = "fa-flask";

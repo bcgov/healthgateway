@@ -18,7 +18,11 @@ export default class TimelineEntry {
     // The ID needs to come from the the server
     this.id = "id-" + Math.random();
     this.date = other.dispensedDate;
-    this.title = "TODO: - Brand name - " + other.brandName;
+    // TODO: we need to get the brand name instead
+    var firstWord = other.genericName
+      ? other.genericName.replace(/ .*/, "")
+      : "No brand name";
+    this.title = firstWord;
     this.description = other.genericName;
     this.type = EntryType.Medication;
   }
