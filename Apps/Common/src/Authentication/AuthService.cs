@@ -39,6 +39,7 @@ namespace HealthGateway.Common.Authentication
             {
                 Audience = configSection.GetValue<string>("Audience"),
                 ClientId = configSection.GetValue<string>("ClientId"),
+                ClientSecret = configSection.GetValue<string>("ClientSecret"),
             };
         }
 

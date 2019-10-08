@@ -70,6 +70,14 @@ namespace HealthGateway.Medication
                 };
             });
 
+            services.AddHttpClient("patientService").ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                };
+            });
+
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
