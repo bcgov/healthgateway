@@ -148,7 +148,7 @@ $radius: 15px;
                           View Details
                         </b-btn>
                         <b-collapse :id="'entryDetails-' + index">
-                          The details of the Entry go here
+                          The details of the record go here
                         </b-collapse>
                       </b-col>
                     </b-row>
