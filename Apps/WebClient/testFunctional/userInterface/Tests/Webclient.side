@@ -1028,7 +1028,7 @@
       "command": "assertText",
       "target": "id=menuBtndUser__BV_button_",
       "targets": [],
-      "value": "Hi GATEWAY Larisa ONE"
+      "value": "Hi Test ONE"
     }]
   }, {
     "id": "1ac3c249-0fb3-4609-afa9-24208fd6b2f9",
@@ -1067,6 +1067,169 @@
       "targets": [],
       "value": "PHN: Not Found"
     }]
+  }, {
+    "id": "31429eb6-c2c4-4282-8512-9f77cc9488c2",
+    "name": "Timeline - Date sorting",
+    "commands": [{
+      "id": "69ff4e97-1d1e-4c6a-9668-915fe068346f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "834d0923-ec67-49d0-b3b5-c7b255614f40",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Timeline",
+      "targets": [
+        ["linkText=Timeline", "linkText"],
+        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a2a91491-6d76-4328-a5aa-2e0ab30f1233",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "4e5cad3a-c2ae-49ca-9cfa-abecdaed2b89",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row > .btn",
+      "targets": [
+        ["css=.row > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"]
+      ],
+      "value": "Date (Newest)"
+    }, {
+      "id": "77080eec-898d-44dd-8b0c-5fe1663acf68",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.row:nth-child(1) > .col .date",
+      "targets": [
+        ["css=.row:nth-child(1) > .col .date", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/div/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": "newestDate"
+    }, {
+      "id": "32298f61-0bf9-4474-8e63-b2d533aeebe2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.row > .btn > span:nth-child(2)",
+      "targets": [
+        ["css=.row > .btn > span:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='listControlls']/div/div[2]/div/button/span[2]", "xpath:idRelative"],
+        ["xpath=//span[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7065e187-7c3f-42c2-a3ce-fd992b7a4d99",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.row:nth-child(1) > .col .date",
+      "targets": [],
+      "value": "oldestDate"
+    }, {
+      "id": "fec4647e-38fc-481a-a166-06922369b039",
+      "comment": "",
+      "command": "echo",
+      "target": "${newestDate}  -- ${oldestDate} ",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "157484bc-6c57-42b0-994f-4f49cf1e52c0",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return new Date(${newestDate}) > new Date(${oldestDate})",
+      "targets": [],
+      "value": "isSorted"
+    }, {
+      "id": "2e1691d9-091f-454f-bed8-ea0416c10413",
+      "comment": "",
+      "command": "assert",
+      "target": "isSorted",
+      "targets": [],
+      "value": "true"
+    }]
+  }, {
+    "id": "938bf782-7029-421e-9789-0778be5f1295",
+    "name": "Timeline - Verify count",
+    "commands": [{
+      "id": "0b16961b-a90c-461d-87d2-62c0304ed7c8",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "841a4c41-7e07-474b-90c8-c966a9616cfd",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Timeline",
+      "targets": [
+        ["linkText=Timeline", "linkText"],
+        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "78c67b4a-caab-46a6-965c-27cd398554c2",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "d74b95b9-eb06-4723-a53a-e2306e2b137a",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.col",
+      "targets": [],
+      "value": "Displaying 23 out of 23 records"
+    }, {
+      "id": "d9da2318-7e9f-463f-b238-cb2a0e8461ba",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//*[contains(@class, 'entryCard')]",
+      "targets": [],
+      "value": "countCards"
+    }, {
+      "id": "d576acae-5944-45f0-996d-20c60692e438",
+      "comment": "",
+      "command": "echo",
+      "target": "${countCards}",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "15bfc83a-bd53-490e-b3d8-7bac05a24ed1",
+      "comment": "",
+      "command": "assert",
+      "target": "countCards",
+      "targets": [],
+      "value": "23"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -1096,6 +1259,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["9a66f6f0-d151-41fd-a2d1-5f20d89f3348", "1c8da969-a155-4b3c-95e2-3c75aa5c4533", "66c85c6d-f3d1-4e31-aca8-802cc4e9fe55"]
+  }, {
+    "id": "2347de0a-896f-4f4e-8a91-3891b634bcdf",
+    "name": "Timeline Page",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []
