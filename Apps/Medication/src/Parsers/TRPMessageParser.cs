@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Parsers
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -30,6 +31,8 @@ namespace HealthGateway.Medication.Parsers
     {
         private const string TRACE = "101010";
         private readonly IConfiguration configuration;
+        private readonly string timeZoneId;
+        private readonly HNClientConfiguration hnClientConfig = new HNClientConfiguration();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
@@ -38,6 +41,9 @@ namespace HealthGateway.Medication.Parsers
         public TRPMessageParser(IConfiguration config)
         {
             this.configuration = config;
+            this.configuration.GetSection("HNClient").Bind(this.hnClientConfig);
+
+            this.timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? this.hnClientConfig.WindowsTimeZoneId : this.hnClientConfig.UnixTimeZoneId;
         }
 
         /// <inheritdoc/>
@@ -72,9 +78,18 @@ namespace HealthGateway.Medication.Parsers
 
             // MSH - Message Header
             DateTime utc = DateTime.UtcNow;
-            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById("America/Vancouver");
+            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById(this.timeZoneId);
             DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
-            m.AddSegmentMSH(hnClientConfig.SendingApplication, hnClientConfig.SendingFacility, hnClientConfig.ReceivingApplication, hnClientConfig.ReceivingFacility, $"{userId}:{ipAddress}", $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00", TRACE, hnClientConfig.ProcessingID, hnClientConfig.MessageVersion);
+            m.AddSegmentMSH(
+                this.hnClientConfig.SendingApplication,
+                this.hnClientConfig.SendingFacility,
+                this.hnClientConfig.ReceivingApplication,
+                this.hnClientConfig.ReceivingFacility,
+                $"{userId}:{ipAddress}",
+                $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00",
+                TRACE,
+                this.hnClientConfig.ProcessingID,
+                this.hnClientConfig.MessageVersion);
             m.SetValue("MSH.7", string.Format(culture, "{0:yyyy/MM/dd HH:mm:ss}", local)); // HNClient specific date format
             m.SetValue("MSH.9", HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE); // HNClient doesn't recognize event types (removes ^00 from message type)
 
@@ -83,22 +98,22 @@ namespace HealthGateway.Medication.Parsers
             zzz.AddNewField(HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID); // Transaction ID
             zzz.AddNewField(string.Empty); // Response Status (Empty)
             zzz.AddNewField(TRACE); // Trace Number
-            zzz.AddNewField(hnClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
-            zzz.AddNewField(hnClientConfig.ZZZ.PractitionerId); // Practitioner ID
+            zzz.AddNewField(this.hnClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
+            zzz.AddNewField(this.hnClientConfig.ZZZ.PractitionerId); // Practitioner ID
             m.AddNewSegment(zzz);
 
             // ZCA - Claims Standard Message Header
             Segment zca = new Segment(HNClientConfiguration.SEGMENT_ZCA, encoding);
-            zca.AddNewField(hnClientConfig.ZCA.BIN); // BIN
-            zca.AddNewField(hnClientConfig.ZCA.CPHAVersionNumber); // CPHA Version Number
-            zca.AddNewField(hnClientConfig.ZCA.TransactionCode); // Transaction Code
-            zca.AddNewField(hnClientConfig.ZCA.SoftwareId); // Provider Software ID
-            zca.AddNewField(hnClientConfig.ZCA.SoftwareVersion); // Provider Software Version
+            zca.AddNewField(this.hnClientConfig.ZCA.BIN); // BIN
+            zca.AddNewField(this.hnClientConfig.ZCA.CPHAVersionNumber); // CPHA Version Number
+            zca.AddNewField(this.hnClientConfig.ZCA.TransactionCode); // Transaction Code
+            zca.AddNewField(this.hnClientConfig.ZCA.SoftwareId); // Provider Software ID
+            zca.AddNewField(this.hnClientConfig.ZCA.SoftwareVersion); // Provider Software Version
             m.AddNewSegment(zca);
 
             // ZCB - Provider Information
             Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, encoding);
-            zcb.AddNewField(hnClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
+            zcb.AddNewField(this.hnClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
             zcb.AddNewField(DateTime.Now.ToString("yyMMdd", culture)); // Provider Transaction Date
             zcb.AddNewField(TRACE); // Trace Number
             m.AddNewSegment(zcb);
