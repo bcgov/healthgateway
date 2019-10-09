@@ -20,7 +20,7 @@ deploy() {
 # Namespace, Name, Environment, Config
    oc project $1
    oc delete route $2 || true
-   oc process -f ./service.yaml -p NAME=$2 -p ENV=$3 -p COMMON_CONFIG=$4 | oc apply -f -
+   oc process -f ./service.yaml -p NAME=$2 -p ENV=$3 -p COMMON_CONFIG=$4 -p APP_NAME=$5 | oc apply -f -
 }
 
 set -Eeo pipefail
@@ -32,14 +32,15 @@ usage() {
   cat <<-EOF
   A helper script to configure and start the Azure DevOps Agent.
 
-  Usage: ${0} [ -h -x ] -s ServiceName -n OpenShiftNamespace -e EnvironmentName [-c CommonConfig]
+  Usage: ${0} [ -h -x ] -s ServiceName -n OpenShiftNamespace -e EnvironmentName [-c CommonConfig] [-a Application name]
 
   OPTIONS:
   ========
     -s The name of the service
     -n The OpenShift namespace to deploy the service to
     -e The environment name
-    -c the name of the common config to use
+    -c The name of the common config to use
+    -a The name of the application which must match the image stream
 
     -h prints the usage for the script
     -x run the script in debug mode to see what's happening
@@ -51,12 +52,13 @@ exit
 # -----------------------------------------------------------------------------------------------------------------
 # Initialization:
 # -----------------------------------------------------------------------------------------------------------------
-while getopts s:n:e:c:hx FLAG; do
+while getopts s:n:e:c:a:hx FLAG; do
   case $FLAG in
     s ) NAME=$OPTARG ;;
     n ) NAMESPACE=$OPTARG ;;
     e ) ENVIRONMENT=$OPTARG ;;
     c ) COMMON=$OPTARG ;;
+    a ) APPNAME=$OPTARG ;;
     x ) export DEBUG=1 ;;
     h ) usage ;;
     \? ) #unrecognized option - show help
@@ -78,4 +80,4 @@ if [ -z "${NAME}" ] || [ -z "${NAMESPACE}" ] || [ -z "${ENVIRONMENT}" ]; then
   usage
 fi
 
-deploy $NAMESPACE $NAME $ENVIRONMENT ${COMMON:-"common"}
+deploy $NAMESPACE $NAME $ENVIRONMENT ${COMMON:-"common"} ${APPNAME:-$NAME}

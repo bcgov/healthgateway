@@ -94,7 +94,7 @@ objects:
         - ${NAME}
         from:
           kind: ImageStreamTag
-          name: ${NAME}:${ENV}
+          name: ${APP_NAME}:${ENV}
           namespace: ${TOOLS_NAMESPACE}
       type: ImageChange
     - type: ConfigChange
@@ -119,7 +119,7 @@ objects:
       app: ${NAME}
     name: ${NAME}
   spec:
-    host: ${ENV}-${NAME}-${WEB_HOST}.pathfinder.gov.bc.ca
+    host: ${ENV}-${APP_NAME}-${WEB_HOST}.pathfinder.gov.bc.ca
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
@@ -150,6 +150,10 @@ parameters:
   - name: NAME
     displayName: Template Name
     description: The name of the template and all related entities (override for multiple deployments in the same namespace)
+    required: true
+  - name: APP_NAME
+    displayName: Application Name
+    description: The name of the service which must match the image stream
     required: true
   - name: WEB_HOST
     displayName: Web host name used in the built URI
