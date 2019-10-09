@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import User from "@/models/user";
+import { User as OidcUser } from "oidc-client";
 import { RootState, AuthState } from "@/models/storeState";
 
 export const parseJwt = (token: string) => {
@@ -35,9 +35,9 @@ export const getters: GetterTree<AuthState, RootState> = {
   oidcIsAuthenticated(state: AuthState): boolean {
     return state.isAuthenticated;
   },
-  oidcUser(state: AuthState): User | undefined {
+  oidcUser(state: AuthState): OidcUser | undefined {
     const { authentication } = state;
-    return authentication.user;
+    return authentication.oidcUser;
   },
   oidcAccessToken(state: AuthState): string | undefined {
     return tokenIsExpired(state.authentication.accessToken)
@@ -65,7 +65,9 @@ export const getters: GetterTree<AuthState, RootState> = {
     return state.error;
   },
   userIsRegistered(state: AuthState): boolean {
-    let user = state.authentication.user;
-    return user === undefined ? false : user.acceptedTermsOfService;
+    let authentication = state.authentication;
+    return authentication === undefined
+      ? false
+      : authentication.acceptedTermsOfService;
   }
 };

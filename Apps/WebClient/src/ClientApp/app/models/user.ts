@@ -1,6 +1,11 @@
 export default class User {
-  //public id?: string;
-  public name?: string;
+  public firstName?: string;
+  public lastName?: string;
   public email?: string;
-  public acceptedTermsOfService: boolean = false;
+  public hdid?: string;
+  public phn?: string;
+
+  public getFullname(): string {
+    return this.firstName + " " + this.lastName;
+  }
 }

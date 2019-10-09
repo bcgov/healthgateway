@@ -22,13 +22,17 @@ describe("Auth mutations", () => {
     // apply mutation
     mutations.setOidcAuth(state, user);
 
+    console.log(state.authentication.oidcUser);
+
     // assert result
     expect(state.isAuthenticated).toBe(true);
     expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
     expect(state.authentication.idToken).toBe(settings.id_token);
     expect(state.authentication.accessToken).toBe(settings.access_token);
-    expect(state.authentication.user).not.toBe(undefined);
-    expect(state.authentication.user!.name).toBe(settings.profile.name);
+    expect(state.authentication.oidcUser).not.toBe(undefined);
+    expect(state.authentication.oidcUser!.profile.name).toBe(
+      settings.profile.name
+    );
   });
 
   test("Sets oidcAuth not authenticated", () => {
@@ -54,8 +58,10 @@ describe("Auth mutations", () => {
     expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
     expect(state.authentication.idToken).toBe(settings.id_token);
     expect(state.authentication.accessToken).toBe(settings.access_token);
-    expect(state.authentication.user).not.toBe(undefined);
-    expect(state.authentication.user!.name).toBe(settings.profile.name);
+    expect(state.authentication.oidcUser).not.toBe(undefined);
+    expect(state.authentication.oidcUser!.profile.name).toBe(
+      settings.profile.name
+    );
   });
 
   test("Unsets oidc data", () => {
@@ -81,8 +87,10 @@ describe("Auth mutations", () => {
     expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
     expect(state.authentication.idToken).toBe(settings.id_token);
     expect(state.authentication.accessToken).toBe(settings.access_token);
-    expect(state.authentication.user).not.toBe(undefined);
-    expect(state.authentication.user!.name).toBe(settings.profile.name);
+    expect(state.authentication.oidcUser).not.toBe(undefined);
+    expect(state.authentication.oidcUser!.profile.name).toBe(
+      settings.profile.name
+    );
 
     mutations.unsetOidcAuth(state);
 
@@ -90,7 +98,7 @@ describe("Auth mutations", () => {
     expect(state.authentication.scopes).toBe(undefined);
     expect(state.authentication.idToken).toBe(undefined);
     expect(state.authentication.accessToken).toBe(undefined);
-    expect(state.authentication.user).toBe(undefined);
+    expect(state.authentication.oidcUser).toBe(undefined);
   });
 
   test("Sets oidc isChecked", () => {

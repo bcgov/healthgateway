@@ -173,13 +173,6 @@
             </summary>
             <param name="args">The command line arguments to be passed in.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Program.BuildWebHost(System.String[])">
-            <summary>
-            Builds the webhost object with console logging and Configuration prefixing enabled.
-            </summary>
-            <param name="args">The command line arguments.</param>
-            <returns>Returns the configured webhost.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -214,10 +207,11 @@
             Configures the application during startup.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
+        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Startup"/> class.
             </summary>
+            <param name="env">The environment variables provider.</param>
             <param name="configuration">The injected configuration provider.</param>
             <param name="logger">The injected logger provider.</param>
         </member>
@@ -233,120 +227,6 @@
             </summary>
             <param name="app">The application builder.</param>
             <param name="env">The hosting environment.</param>
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions">
-            <inheritdoc />
-            <summary>
-            Implementation of IConfigureOptions&lt;SwaggerGenOptions&gt;.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions.#ctor(Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Options.IOptions{HealthGateway.WebClient.Swagger.SwaggerSettings})">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions"/> class.
-            </summary>
-            <param name="versionDescriptionProvider">IApiVersionDescriptionProvider.</param>
-            <param name="swaggerSettings">App Settings for Swagger.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerGenOptions.Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
-            <inheritdoc />
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions.#ctor(Microsoft.Extensions.Options.IOptions{HealthGateway.WebClient.Swagger.SwaggerSettings})">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions"/> class.
-            </summary>
-            <param name="settings">settings.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerOptions.Configure(Swashbuckle.AspNetCore.Swagger.SwaggerOptions)">
-            <inheritdoc />
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions">
-            <inheritdoc cref="T:Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions"/>>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions.#ctor(Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Options.IOptions{HealthGateway.WebClient.Swagger.SwaggerSettings})">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions"/> class.
-            </summary>
-            <param name="versionDescriptionProvider">versionDescriptionProvider.</param>
-            <param name="settings">settings.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ConfigureSwaggerUiOptions.Configure(Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions)">
-            <summary>
-            Configure.
-            </summary>
-            <param name="options">options.</param>
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.MiddlewareExtensions">
-            <summary>
-            Extending Swagger services.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.MiddlewareExtensions.UseSwaggerDocuments(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Enabling Swagger UI.
-            Excluding from test environment.
-            </summary>
-            <param name="app">IApplicationBuilder.</param>
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.ServicesExtensions">
-            <summary>
-            Service Collection(IServiceCollection) Extensions.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ServicesExtensions.AddApiVersionWithExplorer(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Add AddVersionedApiExplorer and AddApiVersioning middlewares.
-            </summary>
-            <param name="services">services.</param>
-            <returns>IServiceCollection.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.ServicesExtensions.AddSwaggerOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Add swagger services.
-            </summary>
-            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>/>.</param>
-            <returns>IServiceCollection.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.SwaggerDefaultValues">
-            <summary>
-            Represents the Swagger/Swashbuckle operation filter used to document the implicit API version parameter.
-            </summary>
-            <remarks>This <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.IOperationFilter"/> is only required due to bugs in the <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator"/>.
-            Once they are fixed and published, this class can be removed.</remarks>
-        </member>
-        <member name="M:HealthGateway.WebClient.Swagger.SwaggerDefaultValues.Apply(Swashbuckle.AspNetCore.Swagger.Operation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
-            <summary>
-            Applies the filter to the specified operation using the given context.
-            </summary>
-            <param name="operation">The operation to apply the filter to.</param>
-            <param name="context">The current operation filter context.</param>
-        </member>
-        <member name="T:HealthGateway.WebClient.Swagger.SwaggerSettings">
-            <summary>
-            Swagger Configuration.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.Name">
-            <summary>
-            Gets or sets document Name.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.Info">
-            <summary>
-            Gets or sets swagger Info.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.RoutePrefix">
-            <summary>
-            Gets or sets RoutePrefix.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Swagger.SwaggerSettings.RoutePrefixWithSlash">
-            <summary>
-            Gets Route Prefix with tailing slash.
-            </summary>
         </member>
     </members>
 </doc>

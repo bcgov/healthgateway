@@ -1,0 +1,59 @@
+name: PR$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Apps/HNClient
+  App.Name: HNClient
+  App.UnitTests: $(App.Home)/test/unit
+  App.FunctionalTests: $(App.Home)/test/functional
+
+pool:
+  name: 'HealthGateway'
+
+trigger: none
+
+pr:
+  branches:
+   include:
+   - dev  
+  paths:
+   include:
+   - Apps/HNClient/src
+   - Apps/HNClient/test
+   - Apps/HNClient/azure/prbuild.yml
+   
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Run dotnet Tests
+  inputs:
+    command: 'test'
+    projects: '$(App.UnitTests)/HNClientTests.csproj'
+    testRunTitle: 'HNClient Service Tests'
+
+- script: |
+    set -e
+    dotnet test test/unit/HNClientTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
+    dotnet sonarscanner begin /d:sonar.verbose=false /k:"hnclientservice_pr_$(System.PullRequest.PullRequestNumber)" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Perform Static Code Analysis'
+  continueOnError: 'false'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/HNClient
+  enabled: 'true'
+  
+- task: Bash@3
+  displayName: 'Add SonarQube Report to GitHub Pull Request'
+  inputs:
+    targetType: 'inline'
+    script: 'curl -d ''{"body":"SonarQube Report: https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=hnclientservice_pr_$(System.PullRequest.PullRequestNumber)"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish dotnet Code'
+  inputs:
+    modifyOutputPath: false
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(App.Home)/src'
+    arguments: '-o $(Build.BinariesDirectory)'
+    zipAfterPublish: false

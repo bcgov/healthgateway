@@ -7,7 +7,7 @@
     </b-alert>
     <h1 id="subject">
       <span class="fa fa-1x fa-syringe"></span>
-      &nbsp;{{ $t("immz-component.immunizations") }}
+      {{ $t("immz-component.immunizations") }}
     </h1>
     <p id="subtext" align="right">
       <b>Reference:</b>&nbsp;
@@ -142,12 +142,12 @@ export default class ImmunizationsComponent extends Vue {
       SERVICE_IDENTIFIER.ImmsService
     );
 
-  this.vaccineSearchURL = this.webClientConfiguration.externalURLs[
-    "HealthLinkVaccineSearch"
-  ];
-  this.healthLinkURL = this.webClientConfiguration.externalURLs[
-    "HealthLinkImmunizationSchedule"
-  ];
+    this.vaccineSearchURL = this.webClientConfiguration.externalURLs[
+      "HealthLinkVaccineSearch"
+    ];
+    this.healthLinkURL = this.webClientConfiguration.externalURLs[
+      "HealthLinkImmunizationSchedule"
+    ];
 
     immsService
       .getItems()

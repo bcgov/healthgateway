@@ -1,0 +1,21 @@
+@startuml Protected API Call
+autonumber
+    actor Citizen
+    Browser <-- HealthGateway : Begin
+    Browser <-> KeyCloak : Login Flow
+    Citizen -> Browser : Get Medications
+    Browser -> HealthGateway_PatientAPI : Get PHN (token, HDID)
+    HealthGateway_PatientAPI <-> HealthGateway_PatientAPI : Check Authorization (token, HDID)
+    HealthGateway_PatientAPI <-> HCIM : HCIM_IN_GetDemographics 
+    Browser <-- HealthGateway_PatientAPI : Return PHN
+    Browser -> HealthGateway_MedicationsAPI : Get Medications (token, PHN)
+    HealthGateway_MedicationsAPI <-> HealthGateway_MedicationsAPI : Check Authorization (token, PHN)
+    HealthGateway_MedicationsAPI <-> PharmaNet : Fetch Medications History via HNI
+    Browser <-- HealthGateway_MedicationsAPI : Return Medications
+    Citizen -> Browser : Logout
+    Browser <-> KeyCloak : OIDC Logout
+    Browser <-> Browser : Delete token (LocalStorage)
+    Browser -> HealthGateway_MedicationsAPI : Get Medications (token)
+    HealthGateway_MedicationsAPI <-> HealthGateway_MedicationsAPI : Check Authorization (token)
+    Browser <-- HealthGateway_MedicationsAPI : Return 401 Unauthorized
+@enduml

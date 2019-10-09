@@ -1,0 +1,6 @@
+﻿{
+    "HNClient": {
+        "Port": 19430,
+        "TimeMessage": "MSH|^~\\&|HNTIMEAP||HNETDTTN|BC00001000|20190101120000+0800|GATEWAY|NMQ||D|2.3"
+    }
+}

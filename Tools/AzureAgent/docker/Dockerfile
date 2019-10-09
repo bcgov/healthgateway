@@ -33,7 +33,7 @@ RUN yum repolist > /dev/null && \
     yum-config-manager --enable rhel-7-server-ose-3.11-rpms && \
     INSTALL_PKGS="nss_wrapper libtool-ltdl \
         scl-utils rh-dotnet22 atomic-openshift-clients \
-        java-11-openjdk-devel" && \
+        java-11-openjdk-devel traceroute telnet iputils" && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     # Remove redhat-logos (httpd dependency) to keep image size smaller.

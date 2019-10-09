@@ -72,7 +72,7 @@ export default class LoginComponent extends Vue {
 
   private redirectPath: string = "";
   private routeHandler = undefined;
-  
+
   mounted() {
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
       this.redirectPath = this.$route.query.redirect;

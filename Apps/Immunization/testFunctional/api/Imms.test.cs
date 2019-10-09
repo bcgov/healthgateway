@@ -5,7 +5,7 @@ namespace HealthGateway.WebClient.Test.Functional.Api
 {
     public class Configuration_Test
     {
-        private string baseUrl = "https://dev-immsservice-gateway.pathfinder.gov.bc.ca/";
+        private string baseUrl = "https://dev-immunization-gateway.pathfinder.gov.bc.ca/";
 
         [Fact]
         public void NonExistentApiTest()

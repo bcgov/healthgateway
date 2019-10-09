@@ -1,13 +1,22 @@
 {
 	"folders": [
 		{
+			"path": "Common"
+		},
+		{
 			"path": "Immunization"
 		},
 		{
 			"path": "WebClient"
 		},
 		{
-			"path": "WebClient/functional/api"
+			"path": "Patient"
+		},
+		{
+			"path": "HNClient"
+		},
+		{
+			"path": "Medication"
 		}
 	],
 	"settings": {}

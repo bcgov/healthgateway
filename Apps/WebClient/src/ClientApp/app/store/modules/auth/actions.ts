@@ -33,12 +33,12 @@ export const actions: ActionTree<AuthState, RootState> = {
       let isAuthenticatedInStore =
         context.state.authentication.idToken !== undefined;
 
-      authService.getUser().then(user => {
-        if (!user || user.expired) {
+      authService.getUser().then(oidcUser => {
+        if (!oidcUser || oidcUser.expired) {
           context.commit("unsetOidcAuth");
           hasAccess = false;
         } else {
-          context.dispatch("oidcWasAuthenticated", user);
+          context.dispatch("oidcWasAuthenticated", oidcUser);
           if (!isAuthenticatedInStore) {
             // We can add events when the user wasnt authenticated and now it is.
             console.log("The user was previously unauthenticated, now it is!");
@@ -57,8 +57,8 @@ export const actions: ActionTree<AuthState, RootState> = {
     return new Promise((resolve, reject) => {
       authService
         .signinRedirectCallback()
-        .then(user => {
-          context.dispatch("oidcWasAuthenticated", user).then(() => {
+        .then(oidcUser => {
+          context.dispatch("oidcWasAuthenticated", oidcUser).then(() => {
             resolve(sessionStorage.getItem("vuex_oidc_active_route") || "/");
           });
         })
@@ -72,31 +72,33 @@ export const actions: ActionTree<AuthState, RootState> = {
   authenticateOidcSilent(context) {
     return authService
       .signinSilent()
-      .then(user => {
-        context.dispatch("oidcWasAuthenticated", user);
+      .then(oidcUser => {
+        context.dispatch("oidcWasAuthenticated", oidcUser);
       })
       .catch(err => {
         context.commit("setOidcError", err);
         context.commit("setOidcAuthIsChecked");
       });
   },
-  oidcWasAuthenticated(context, user) {
-    context.commit("setOidcAuth", user);
+  oidcWasAuthenticated(context, oidcUser) {
+    context.commit("setOidcAuth", oidcUser);
+    context.commit("user/setOidcUserData", oidcUser, { root: true });
     context.commit("setOidcAuthIsChecked");
-    context.dispatch("setHttpToken", user.access_token);
+    context.dispatch("setHttpToken", oidcUser.access_token);
   },
   getOidcUser(context) {
-    authService.getUser().then(user => {
-      if (!user || user.expired) {
+    authService.getUser().then(oidcUser => {
+      if (!oidcUser || oidcUser.expired) {
         context.commit("unsetOidcAuth");
       } else {
-        context.commit("setOidcAuth", user);
+        context.commit("setOidcAuth", oidcUser);
       }
     });
   },
   signOutOidc(context) {
     authService.logout().then(() => {
       context.commit("unsetOidcAuth");
+      context.commit("user/clearUserData", { root: true });
       context.dispatch("unsetHttpToken");
     });
   },

@@ -35,6 +35,9 @@
         <router-link class="nav-link" to="/immunizations">
           <span class="fa fa-syringe"></span> Immunizations
         </router-link>
+        <router-link class="nav-link" to="/timeLine">
+          <span class="fa fa-stream"></span> Timeline
+        </router-link>
       </b-navbar-nav>
       <b-navbar-nav v-if="displayRegistration">
         <router-link class="nav-link" to="/registration">
@@ -91,6 +94,7 @@
 import Vue from "vue";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
 
 interface ILanguage {
@@ -98,13 +102,17 @@ interface ILanguage {
   description: string;
 }
 
-const namespace: string = "auth";
+const auth: string = "auth";
+const user: string = "user";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
-  @Getter("oidcUser", { namespace }) authenticatedUser: User;
-  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
+  @Getter("oidcIsAuthenticated", { namespace: auth })
+  oidcIsAuthenticated: boolean;
+  @Getter("userIsRegistered", { namespace: auth })
+  userIsRegistered: boolean;
+  @Getter("oidcUser", { namespace: auth }) oidcUser: OidcUser;
+  @Getter("user", { namespace: user }) user: User;
 
   languages: { [code: string]: ILanguage } = {};
   currentLanguage: ILanguage = null;
@@ -117,8 +125,8 @@ export default class HeaderComponent extends Vue {
     let isLandingPage = this.$route.path === "/";
     if (
       this.oidcIsAuthenticated &&
-      this.authenticatedUser != undefined &&
-      this.authenticatedUser != undefined &&
+      this.oidcUser != undefined &&
+      this.oidcUser != undefined &&
       this.userIsRegistered &&
       !isLandingPage
     ) {
@@ -136,8 +144,9 @@ export default class HeaderComponent extends Vue {
   }
 
   get greeting(): string {
-    if (this.oidcIsAuthenticated && this.authenticatedUser) {
-      return "Hi " + this.authenticatedUser.name;
+    console.log(this.user);
+    if (this.oidcIsAuthenticated && this.user !== undefined) {
+      return "Hi " + this.user.getFullname();
     } else {
       return "";
     }
