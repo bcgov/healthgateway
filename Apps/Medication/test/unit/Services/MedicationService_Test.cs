@@ -47,16 +47,13 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldGetMedications()
         {
-            HNMessage expected = new HNMessage() {
-                Message = "Test",
-                IsErr = false,
-            };
+            HNMessage<string> expected = new HNMessage<string>("test");
 
             Mock<IAuthService> authMock = new Mock<IAuthService>();
             authMock.Setup(s => s.ClientCredentialsAuth()).ReturnsAsync(new JWTModel());
 
-            Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
-            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new List<MedicationStatement>());
+            Mock<IHNMessageParser<List<MedicationStatement>>> parserMock = new Mock<IHNMessageParser<List<MedicationStatement>>>();
+            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
 
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
@@ -68,9 +65,9 @@ namespace HealthGateway.Medication.Test
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
             IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            List<MedicationStatement> medications = await service.GetMedicationsAsync("123456789", "test", "10.0.0.1");
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationsAsync("123456789", "test", "10.0.0.1");
 
-            Assert.True(medications.Count == 0);
+            Assert.True(actual.Message.Count == 0);
         }
 
         [Fact]
@@ -79,7 +76,7 @@ namespace HealthGateway.Medication.Test
             Mock<IAuthService> authMock = new Mock<IAuthService>();
             authMock.Setup(s => s.ClientCredentialsAuth()).ReturnsAsync(new JWTModel());
 
-            Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
+            Mock<IHNMessageParser<List<MedicationStatement>>> parserMock = new Mock<IHNMessageParser<List<MedicationStatement>>>();
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
                 request.SetConfiguration(new HttpConfiguration());
@@ -89,7 +86,10 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
             IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetMedicationsAsync("", "", ""));            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationsAsync("", "", "");
+
+            Assert.True(actual.IsErr);
+            Assert.Equal($"Unable to connect to HNClient: {HttpStatusCode.BadRequest}", actual.Error);
         }
     }
 }

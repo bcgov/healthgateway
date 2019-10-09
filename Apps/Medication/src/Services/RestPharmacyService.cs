@@ -50,7 +50,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Pharmacy> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
+        public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
         {
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
@@ -58,21 +58,19 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-                HNMessage responseMessage;
 
-                HNMessage requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress);
+                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
+                    return JsonConvert.DeserializeObject<HNMessage<Pharmacy>>(payload);
                 }
                 else
                 {
-                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                    return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
 
-                return this.pharmacyParser.ParseResponseMessage(responseMessage.Message).FirstOrDefault();
             }
         }
     }

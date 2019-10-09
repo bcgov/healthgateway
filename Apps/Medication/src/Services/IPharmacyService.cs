@@ -30,6 +30,6 @@ namespace HealthGateway.Medication.Services
         /// <param name="userId">The user id of the request.</param>
         /// <param name="ipAddress">The ip address of the request.</param>
         /// <returns>The Prescriptions model.</returns>
-        Task<Pharmacy> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress);
+        Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress);
     }
 }

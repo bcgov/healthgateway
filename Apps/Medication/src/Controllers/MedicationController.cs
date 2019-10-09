@@ -78,8 +78,7 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize]
-        public async Task<List<MedicationStatement>> GetMedications(string hdid)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
         {
             string phn = await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
             string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;

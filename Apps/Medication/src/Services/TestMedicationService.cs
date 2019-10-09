@@ -27,7 +27,7 @@ namespace HealthGateway.Medication.Services
     public class TestMedicationService : IMedicationService
     {
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
             List<MedicationStatement> returnList = new List<MedicationStatement>();
 
@@ -44,7 +44,7 @@ namespace HealthGateway.Medication.Services
                 );
             }
 
-            return returnList;
+            return new HNMessage<List<MedicationStatement>>(returnList);
         }
     }
 }

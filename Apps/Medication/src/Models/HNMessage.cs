@@ -15,15 +15,32 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The HN Client message.
     /// </summary>
-    public class HNMessage
+    public class HNMessage<T>
     {
+        public HNMessage()
+        {
+        }
+
+        public HNMessage(T response)
+        {
+            this.Message = response;
+        }
+
+        public HNMessage(bool isError, string errorMessage)
+        {
+            this.IsErr = isError;
+            this.Error = errorMessage;
+        }
+
         /// <summary>
-        /// Gets or sets the HL7 2.3 response message.
+        /// Gets or sets the response message.
         /// </summary>
-        public string Message { get; set; }
+        public T Message { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether an error occurred.
