@@ -16,9 +16,9 @@ echo "TEST ended"
 
 # DEMO
 echo "DEMO started"
-./service.sh -s patient-demo -n q6qfzk-test -e demo -c common-demo
-./service.sh -s immunization-demo -n q6qfzk-test -e demo -c common-demo
-./service.sh -s medication-demo -n q6qfzk-test -e demo -c common-demo
+./service.sh -s patient-demo -n q6qfzk-test -e demo -c common-demo -a patient
+./service.sh -s immunization-demo -n q6qfzk-test -e demo -c common-demo -a immunization
+./service.sh -s medication-demo -n q6qfzk-test -e demo -c common-demo -a medication
 echo "DEMO ended"
 
 # TRAINING
