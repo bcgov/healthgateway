@@ -16,13 +16,13 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using System.Net;
 
     /// <summary>
     /// The Medication controller.
@@ -49,8 +49,8 @@ namespace HealthGateway.Medication.Controllers
         private readonly ICustomAuthorizationService authorizationService;
 
         /// <summary>
-        /// The patient service provider used to retrieve Personal Health Number for subject
-        /// </summary>        
+        /// The patient service provider used to retrieve Personal Health Number for subject.
+        /// </summary>
         private readonly IPatientService patientService;
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace HealthGateway.Medication.Controllers
         /// <param name="medicationService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="authZService">The injected authService authorization provider.</param>
-        /// <param name="patientService">The injected patientService patient registry provider.true</param>
+        /// <param name="patientService">The injected patientService patient registry provider.</param>
         public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
         {
             this.medicationService = medicationService;
@@ -78,8 +78,7 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize]
-        public async Task<List<MedicationStatement>> GetMedications(string hdid)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
         {
             string phn = await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
             string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;

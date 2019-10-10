@@ -16,14 +16,12 @@
 namespace HealthGateway.Common.Authentication
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Mime;
-    using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
-    using System.Collections.Generic;
 
     /// <summary>
     /// The Authorization service

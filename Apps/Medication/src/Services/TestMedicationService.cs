@@ -27,24 +27,22 @@ namespace HealthGateway.Medication.Services
     public class TestMedicationService : IMedicationService
     {
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
             List<MedicationStatement> returnList = new List<MedicationStatement>();
 
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
-                returnList.Add(
-                    new MedicationStatement()
-                    {
-                        BrandName = "A brand name " + i,
-                        DIN = "ABC" + i,
-                        GenericName = "A generic name " + i,
-                        DispensedDate = DateTime.Today.AddDays(i % 5) ,
-                    }
-                );
+                returnList.Add(new MedicationStatement()
+                {
+                    BrandName = "A brand name " + i,
+                    DIN = "ABC" + i,
+                    GenericName = "A generic name " + i,
+                    DispensedDate = DateTime.Today.AddDays(i % 5),
+                });
             }
 
-            return returnList;
+            return Task.FromResult(new HNMessage<List<MedicationStatement>>(returnList));
         }
     }
 }

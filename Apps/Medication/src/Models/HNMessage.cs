@@ -18,12 +18,40 @@ namespace HealthGateway.Medication.Models
     /// <summary>
     /// The HN Client message.
     /// </summary>
-    public class HNMessage
+    /// <typeparam name="T">The message type.</typeparam>
+    public class HNMessage<T>
     {
         /// <summary>
-        /// Gets or sets the HL7 2.3 response message.
+        /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
         /// </summary>
-        public string Message { get; set; }
+        public HNMessage()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
+        /// </summary>
+        /// <param name="response">The response message object.</param>
+        public HNMessage(T response)
+        {
+            this.Message = response;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
+        /// </summary>
+        /// <param name="isError">The error indicator.</param>
+        /// <param name="errorMessage">The error message.</param>
+        public HNMessage(bool isError, string errorMessage)
+        {
+            this.IsErr = isError;
+            this.Error = errorMessage;
+        }
+
+        /// <summary>
+        /// Gets or sets the response message.
+        /// </summary>
+        public T Message { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether an error occurred.
