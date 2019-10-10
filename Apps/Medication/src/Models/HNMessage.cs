@@ -15,22 +15,33 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// The HN Client message.
     /// </summary>
+    /// <typeparam name="T">The message type.</typeparam>
     public class HNMessage<T>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
+        /// </summary>
         public HNMessage()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
+        /// </summary>
+        /// <param name="response">The response message object.</param>
         public HNMessage(T response)
         {
             this.Message = response;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
+        /// </summary>
+        /// <param name="isError">The error indicator.</param>
+        /// <param name="errorMessage">The error message.</param>
         public HNMessage(bool isError, string errorMessage)
         {
             this.IsErr = isError;

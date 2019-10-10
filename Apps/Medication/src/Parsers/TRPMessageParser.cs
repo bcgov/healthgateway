@@ -33,23 +33,30 @@ namespace HealthGateway.Medication.Parsers
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
         /// </summary>
         /// <param name="config">The injected configuration provider.</param>
-        public TRPMessageParser(IConfiguration config) : base(config)
+        public TRPMessageParser(IConfiguration config)
+            : base(config)
         {
         }
 
         /// <inheritdoc/>
         public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            // HNClient only accepts a 13 digit phn
             id = id.PadLeft(13, '0');
             Message m = new Message();
 
             this.SetMessageHeader(m, userId, ipAddress);
             this.SetTransactionControlSegment(m, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID);
-            this.SetClaimsStandardSegment(m, this.hnClientConfig.ZCA.BIN);
+            this.SetClaimsStandardSegment(m, this.ClientConfig.ZCA.BIN);
             this.SetProviderInfoSegment(m);
 
             // ZCC - Beneficiary Information
-            Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, encoding);
+            Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, this.Encoding);
             zcc.AddNewField(string.Empty); // Carrier ID
             zcc.AddNewField(string.Empty); // Group Number or Code
             zcc.AddNewField(string.Empty); // Client ID Number or Code
@@ -143,6 +150,7 @@ namespace HealthGateway.Medication.Parsers
                     medicationStatements.Add(medicationStatement);
                 }
             }
+
             return new HNMessage<List<MedicationStatement>>(medicationStatements);
         }
     }

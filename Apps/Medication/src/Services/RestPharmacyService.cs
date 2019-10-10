@@ -16,8 +16,6 @@
 namespace HealthGateway.Medication.Services
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
@@ -70,7 +68,6 @@ namespace HealthGateway.Medication.Services
                 {
                     return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
-
             }
         }
     }

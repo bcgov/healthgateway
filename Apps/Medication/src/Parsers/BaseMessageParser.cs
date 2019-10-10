@@ -16,9 +16,7 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
@@ -27,30 +25,47 @@ namespace HealthGateway.Medication.Parsers
     /// <summary>
     /// Base class of HNClient message parser.
     /// </summary>
+    /// <typeparam name="T">The message type.</typeparam>
     public abstract class BaseMessageParser<T> : IHNMessageParser<T>
     {
-        protected const string TRACE = "101010";
-        protected readonly IConfiguration configuration;
-        protected readonly HNClientConfiguration hnClientConfig;
-        protected readonly HL7Encoding encoding;
         private readonly TimeZoneInfo localTimeZone;
+        private readonly string traceId = "101010";
+        private readonly IConfiguration configuration;
         private readonly CultureInfo culture;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseMessageParser{T}"/> class.
+        /// </summary>
+        /// <param name="config">The configuration provider.</param>
         protected BaseMessageParser(IConfiguration config)
         {
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             this.configuration = config;
-            this.hnClientConfig = new HNClientConfiguration();
-            this.configuration.GetSection("HNClient").Bind(this.hnClientConfig);
-
+            this.ClientConfig = new HNClientConfiguration();
+            this.configuration.GetSection("HNClient").Bind(this.ClientConfig);
             string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                this.hnClientConfig.WindowsTimeZoneId : this.hnClientConfig.UnixTimeZoneId;
-            localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(tzId);
+                this.ClientConfig.WindowsTimeZoneId : this.ClientConfig.UnixTimeZoneId;
+            this.localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(tzId);
 
-            culture = CultureInfo.CreateSpecificCulture("en-CA");
-            culture.DateTimeFormat.DateSeparator = "/";
+            this.culture = CultureInfo.CreateSpecificCulture("en-CA");
+            this.culture.DateTimeFormat.DateSeparator = "/";
 
-            encoding = new HL7Encoding();
+            this.Encoding = new HL7Encoding();
         }
+
+        /// <summary>
+        /// Gets or sets the HNClient configuration.
+        /// </summary>
+        protected HNClientConfiguration ClientConfig { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Hl7 encoding.
+        /// </summary>
+        protected HL7Encoding Encoding { get; set; }
 
         /// <inheritdoc/>
         public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress);
@@ -58,59 +73,109 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public abstract HNMessage<T> ParseResponseMessage(string hl7Message);
 
+        /// <summary>
+        /// Sets the MSH segment into the message.
+        /// </summary>
+        /// <param name="m">The message object.</param>
+        /// <param name="userId">The request user id.</param>
+        /// <param name="ipAddress">The request user ip address.</param>
         protected void SetMessageHeader(Message m, string userId, string ipAddress)
         {
+            if (m is null)
+            {
+                throw new ArgumentNullException(nameof(m));
+            }
+
             // MSH - Message Header
             m.AddSegmentMSH(
-                this.hnClientConfig.SendingApplication,
-                this.hnClientConfig.SendingFacility,
-                this.hnClientConfig.ReceivingApplication,
-                this.hnClientConfig.ReceivingFacility,
+                this.ClientConfig.SendingApplication,
+                this.ClientConfig.SendingFacility,
+                this.ClientConfig.ReceivingApplication,
+                this.ClientConfig.ReceivingFacility,
                 $"{userId}:{ipAddress}",
                 $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00",
-                TRACE,
-                this.hnClientConfig.ProcessingID,
-                this.hnClientConfig.MessageVersion);
+                this.traceId,
+                this.ClientConfig.ProcessingID,
+                this.ClientConfig.MessageVersion);
             m.SetValue("MSH.7", this.GetLocalDateTime()); // HNClient specific date format
             m.SetValue("MSH.9", HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE); // HNClient doesn't recognize event types (removes ^00 from message type)
         }
 
+        /// <summary>
+        /// Sets the ZZZ segment into the message.
+        /// </summary>
+        /// <param name="m">The message object.</param>
+        /// <param name="transactionId">The message transaction id.</param>
         protected void SetTransactionControlSegment(Message m, string transactionId)
         {
+            if (m is null)
+            {
+                throw new ArgumentNullException(nameof(m));
+            }
+
             // ZZZ - Transaction Control
-            Segment zzz = new Segment(HNClientConfiguration.SEGMENT_ZZZ, encoding);
+            Segment zzz = new Segment(HNClientConfiguration.SEGMENT_ZZZ, this.Encoding);
             zzz.AddNewField(transactionId); // Transaction ID
             zzz.AddNewField(string.Empty); // Response Status (Empty)
-            zzz.AddNewField(TRACE); // Trace Number
-            zzz.AddNewField(this.hnClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
-            zzz.AddNewField(this.hnClientConfig.ZZZ.PractitionerId); // Practitioner ID
+            zzz.AddNewField(this.traceId); // Trace Number
+            zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
+            zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
             m.AddNewSegment(zzz);
         }
 
+        /// <summary>
+        /// Sets the ZCA segment into the message.
+        /// </summary>
+        /// <param name="m">The message object.</param>
+        /// <param name="id">The first field in the ZCA segment.</param>
         protected void SetClaimsStandardSegment(Message m, string id)
         {
+            if (m is null)
+            {
+                throw new ArgumentNullException(nameof(m));
+            }
+
             // ZCA - Claims Standard Message Header
-            Segment zca = new Segment(HNClientConfiguration.SEGMENT_ZCA, this.encoding);
+            Segment zca = new Segment(HNClientConfiguration.SEGMENT_ZCA, this.Encoding);
             zca.AddNewField(id); // BIN
-            zca.AddNewField(this.hnClientConfig.ZCA.CPHAVersionNumber); // CPHA Version Number
-            zca.AddNewField(this.hnClientConfig.ZCA.TransactionCode); // Transaction Code
-            zca.AddNewField(this.hnClientConfig.ZCA.SoftwareId); // Provider Software ID
-            zca.AddNewField(this.hnClientConfig.ZCA.SoftwareVersion); // Provider Software Version
+            zca.AddNewField(this.ClientConfig.ZCA.CPHAVersionNumber); // CPHA Version Number
+            zca.AddNewField(this.ClientConfig.ZCA.TransactionCode); // Transaction Code
+            zca.AddNewField(this.ClientConfig.ZCA.SoftwareId); // Provider Software ID
+            zca.AddNewField(this.ClientConfig.ZCA.SoftwareVersion); // Provider Software Version
             m.AddNewSegment(zca);
         }
 
+        /// <summary>
+        /// Sets the ZCB segment into the message.
+        /// </summary>
+        /// <param name="m">The message object.</param>
         protected void SetProviderInfoSegment(Message m)
         {
+            if (m is null)
+            {
+                throw new ArgumentNullException(nameof(m));
+            }
+
             // ZCB - Provider Information
-            Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, this.encoding);
-            zcb.AddNewField(this.hnClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
+            Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, this.Encoding);
+            zcb.AddNewField(this.ClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
             zcb.AddNewField(this.GetLocalDate()); // Provider Transaction Date
-            zcb.AddNewField(TRACE); // Trace Number
+            zcb.AddNewField(this.traceId); // Trace Number
             m.AddNewSegment(zcb);
         }
 
+        /// <summary>
+        /// Parses the raw hl7 message into a message object.
+        /// </summary>
+        /// <param name="message">The raw hl7 message.</param>
+        /// <returns>The parsed message object.</returns>
         protected Message ParseRawMessage(string message)
         {
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             // Replaces the message type with message type + event so it can correcly parse the message.
             message = message.Replace(
                 $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}|",
@@ -122,16 +187,24 @@ namespace HealthGateway.Medication.Parsers
             return m;
         }
 
+        /// <summary>
+        /// Gets the local date and time.
+        /// </summary>
+        /// <returns>The local date and time in yyyy/MM/dd HH:mm:ss format.</returns>
         protected string GetLocalDateTime()
         {
-            DateTime localDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimeZone);
-            return string.Format(culture, "{0:yyyy/MM/dd HH:mm:ss}", localDate);
+            DateTime localDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, this.localTimeZone);
+            return string.Format(this.culture, "{0:yyyy/MM/dd HH:mm:ss}", localDate);
         }
 
+        /// <summary>
+        /// Gets the local date.
+        /// </summary>
+        /// <returns>The local date in yyMMdd format.</returns>
         protected string GetLocalDate()
         {
-            DateTime localDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimeZone);
-            return string.Format(culture, "{0:yyMMdd}", localDate);
+            DateTime localDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, this.localTimeZone);
+            return string.Format(this.culture, "{0:yyMMdd}", localDate);
         }
 
         /// <summary>
@@ -142,7 +215,7 @@ namespace HealthGateway.Medication.Parsers
         protected DateTime? ParseDate(string value)
         {
             return string.IsNullOrEmpty(value) ?
-                (DateTime?)null : DateTime.ParseExact(value, "yyyyMMdd", culture);
+                (DateTime?)null : DateTime.ParseExact(value, "yyyyMMdd", this.culture);
         }
     }
 }

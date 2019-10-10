@@ -16,10 +16,7 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -32,10 +29,10 @@ namespace HealthGateway.Medication.Parsers
         /// <summary>
         /// Initializes a new instance of the <see cref="TILMessageParser"/> class.
         /// </summary>
-        /// <param name="config"></param>
-        public TILMessageParser(IConfiguration config) : base(config)
+        /// <param name="config">The configuration provider.</param>
+        public TILMessageParser(IConfiguration config)
+            : base(config)
         {
-
         }
 
         /// <inheritdoc/>
@@ -48,7 +45,7 @@ namespace HealthGateway.Medication.Parsers
             this.SetProviderInfoSegment(m);
 
             // ZPL - Location Information
-            Segment zpl = new Segment(HNClientConfiguration.SEGMENT_ZPL, this.encoding);
+            Segment zpl = new Segment(HNClientConfiguration.SEGMENT_ZPL, this.Encoding);
             zpl.AddNewField(id); // Requested PharmaNet Location Identifier
             zpl.AddNewField(string.Empty); // PharmaNet Location Name
             zpl.AddNewField(string.Empty); // Location Type Code
@@ -63,7 +60,7 @@ namespace HealthGateway.Medication.Parsers
             zpl.AddNewField(string.Empty); // Area Code
             zpl.AddNewField(string.Empty); // Telephone Number
             zpl.AddNewField(string.Empty); // Termination Date
-            zpl.AddNewField(this.hnClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
+            zpl.AddNewField(this.ClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
             m.AddNewSegment(zpl);
 
             this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID);
