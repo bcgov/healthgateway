@@ -16,10 +16,7 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
-    using System;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;

@@ -1,3 +1,4 @@
+import Pharmacy from "./pharmacy";
 // Medication statement model
 export default class MedicationStatement {
   // Drug Identification Number for the medication statement.
@@ -22,4 +23,6 @@ export default class MedicationStatement {
   public directions?: string;
   // Date the medication statement was entered.
   public dateEntered?: Date;
+  // The pharmacy where the medication was filled.
+  public pharmacy?: Pharmacy;
 }

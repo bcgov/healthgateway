@@ -31,15 +31,30 @@ namespace HealthGateway.Medication.Services
         {
             List<MedicationStatement> returnList = new List<MedicationStatement>();
 
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 returnList.Add(
                     new MedicationStatement()
                     {
-                        BrandName = "A brand name " + i,
-                        DIN = "ABC" + i,
-                        GenericName = "A generic name " + i,
-                        DispensedDate = DateTime.Today.AddDays(i % 5) ,
+                        DispensedDate = DateTime.Today.AddDays(i % 5),
+                        PractitionerSurname = "Doctor Gateway",
+                        Pharmacy = new Pharmacy()
+                        {
+                            Name = "Pharmacorp" + i % 3,
+                            AddressLine1 = "Good street 1234",
+                            AddressLine2 = "Unit5",
+                            City = "Victoria",
+                            Province = "BC",
+                            PhoneNumber = "250-555-1234"
+                        },
+                        Medication = new Medication()
+                        {
+                            BrandName = "Brandicon A" + i,
+                            DIN = "ABC" + i,
+                            GenericName = "A generic name " + i,
+                            Quantity = 30,
+                            Dosage = 4.35f,
+                        }
                     }
                 );
             }

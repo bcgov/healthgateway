@@ -135,7 +135,9 @@ $radius: 15px;
                     <b-row>
                       <b-col>
                         <b-btn
-                          v-b-toggle="'entryDetails-' + index"
+                          v-b-toggle="
+                            'entryDetails-' + index + '-' + dateGroup.key
+                          "
                           variant="link"
                           class="detailsButton"
                         >
@@ -147,8 +149,17 @@ $radius: 15px;
                           ></span>
                           View Details
                         </b-btn>
-                        <b-collapse :id="'entryDetails-' + index">
-                          The details of the record go here
+                        <b-collapse
+                          :id="'entryDetails-' + index + '-' + dateGroup.key"
+                        >
+                          <b-col>
+                            <div
+                              v-for="detail in entry.details"
+                              :key="detail.name"
+                            >
+                              {{ detail.name }}: {{ detail.value }}
+                            </div>
+                          </b-col>
                         </b-collapse>
                       </b-col>
                     </b-row>

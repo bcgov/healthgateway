@@ -81,7 +81,7 @@ namespace HealthGateway.Medication.Controllers
         [Authorize]
         public async Task<List<MedicationStatement>> GetMedications(string hdid)
         {
-            string phn = await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
+            string phn = "9735353315";//await this.patientService.GetPatientPHNAsync(hdid).ConfigureAwait(true);
             string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();

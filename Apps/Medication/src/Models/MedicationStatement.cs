@@ -21,29 +21,9 @@ namespace HealthGateway.Medication.Models
     public class MedicationStatement
     {
         /// <summary>
-        /// Gets or sets the Drug Identification Number for the prescribed medication.
-        /// </summary>
-        public string DIN { get; set; }
-
-        /// <summary>
         /// Gets or sets the brand name of the  medication.
         /// </summary>
-        public string BrandName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the common or generic name of the  medication.
-        /// </summary>
-        public string GenericName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the quantity for the  medication prescribed.
-        /// </summary>
-        public float Quantity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the  medication dosage.
-        /// </summary>
-        public float Dosage { get; set; }
+        public string PrescriptionIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets the Prescription status.
@@ -61,11 +41,6 @@ namespace HealthGateway.Medication.Models
         public string PractitionerSurname { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the Drug was discontinued if applicable.
-        /// </summary>
-        public System.DateTime? DrugDiscontinuedDate { get; set; }
-
-        /// <summary>
         /// Gets or sets the directions as prescribed.
         /// </summary>
         public string Directions { get; set; }
@@ -79,5 +54,15 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the pharmacy id.
         /// </summary>
         public string PharmacyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pharmacy model.
+        /// </summary>
+        public Pharmacy Pharmacy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the medication for the current MedicationStatement
+        /// </summary>
+        public Medication Medication { get; set; }
     }
 }
