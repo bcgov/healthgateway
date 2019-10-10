@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 import BootstrapVue from "bootstrap-vue";
-import HomeComponent from "@/views/home.vue";
+import ProfileComponent from "@/views/profile.vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 import store from "@/store/store";
@@ -10,7 +10,7 @@ describe("Home view", () => {
   localVue.use(BootstrapVue);
   localVue.use(VueRouter);
   localVue.use(Vuex);
-  const wrapper = shallowMount(HomeComponent, { localVue, store });
+  const wrapper = shallowMount(ProfileComponent, { localVue, store });
 
   test("is a Vue instance", () => {
     expect(wrapper.isVueInstance()).toBeTruthy();

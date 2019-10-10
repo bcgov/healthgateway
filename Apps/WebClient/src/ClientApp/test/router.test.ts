@@ -1,8 +1,7 @@
 import router from "../app/router";
-import HomeComponent from "../app/views/home.vue";
+import ProfileComponent from "../app/views/profile.vue";
 import RegistrationComponent from "../app/views/registration.vue";
 import LandingComponent from "../app/views/landing.vue";
-import ImmunizationsComponent from "../app/views/immunizations.vue";
 import NotFoundComponent from "../app/views/errors/notFound.vue";
 import LoginComponent from "../app/views/login.vue";
 import LogoutComponent from "../app/views/logout.vue";
@@ -14,10 +13,10 @@ describe("Router", () => {
     expect(actualComponent.name).toBe(LandingComponent.name);
   });
 
-  test("has home route", () => {
-    const result = router.resolve("/home");
+  test("has profile route", () => {
+    const result = router.resolve("/profile");
     expect(result.resolved.matched[0].components.default.name).toBe(
-      HomeComponent.name
+      ProfileComponent.name
     );
     expect(result.route.meta.requiresRegistration).toBe(true);
   });
@@ -25,11 +24,6 @@ describe("Router", () => {
   test("has registration route", () => {
     const actualComponent = router.getMatchedComponents("/registration")[0];
     expect(actualComponent.name).toBe(RegistrationComponent.name);
-  });
-
-  test("has immunizations route", () => {
-    const actualComponent = router.getMatchedComponents("/immunizations")[0];
-    expect(actualComponent.name).toBe(ImmunizationsComponent.name);
   });
 
   test("has logout route", () => {

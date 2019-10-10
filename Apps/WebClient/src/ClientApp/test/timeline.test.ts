@@ -158,28 +158,28 @@ describe("Timeline view", () => {
     wrapper.vm.$nextTick(() => {
       expect(
         wrapper.find(".sortContainer button [name='descending']").isVisible()
-      ).toBe(false);
+      ).toBe(true);
       expect(
         wrapper.find(".sortContainer button [name='ascending']").isVisible()
-      ).toBe(true);
+      ).toBe(false);
       var dates = wrapper.findAll(".date");
       var topDate = new Date(dates.at(0).text());
       var bottomDate = new Date(dates.at(1).text());
-      expect(topDate > bottomDate).toBe(false);
+      expect(topDate > bottomDate).toBe(true);
 
       wrapper.find(".sortContainer button").trigger("click");
 
       expect(
         wrapper.find(".sortContainer button [name='descending']").isVisible()
-      ).toBe(true);
+      ).toBe(false);
       expect(
         wrapper.find(".sortContainer button [name='ascending']").isVisible()
-      ).toBe(false);
+      ).toBe(true);
 
       dates = wrapper.findAll(".date");
       topDate = new Date(dates.at(0).text());
       bottomDate = new Date(dates.at(1).text());
-      expect(topDate > bottomDate).toBe(true);
+      expect(topDate > bottomDate).toBe(false);
     });
   });
 });

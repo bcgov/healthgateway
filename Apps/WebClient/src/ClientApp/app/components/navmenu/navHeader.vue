@@ -2,7 +2,7 @@
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
     <b-navbar-brand>
-      <router-link to="/" :exact="true">
+      <router-link to="/">
         <img
           class="img-fluid d-none d-md-block"
           src="@/assets/images/gov/bcid-logo-rev-en.svg"
@@ -29,14 +29,11 @@
     <b-collapse id="nav-collapse" is-nav>
       <!-- Menu -->
       <b-navbar-nav v-if="displayMenu">
-        <router-link class="nav-link" to="/home" :exact="true">
-          <span class="fa fa-home"></span> Home
-        </router-link>
-        <router-link class="nav-link" to="/immunizations">
-          <span class="fa fa-syringe"></span> Immunizations
-        </router-link>
         <router-link class="nav-link" to="/timeLine">
           <span class="fa fa-stream"></span> Timeline
+        </router-link>
+        <router-link class="nav-link" to="/profile">
+          <span class="fa fa-user"></span> Profile
         </router-link>
       </b-navbar-nav>
       <b-navbar-nav v-if="displayRegistration">
@@ -54,18 +51,12 @@
           right
         >
           <b-dropdown-item>
-            <router-link id="menuBtnLogout" to="/logout" :exact="true">
+            <router-link id="menuBtnLogout" to="/logout">
               <span class="fa fa-user"></span> Logout
             </router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
-        <router-link
-          v-else
-          id="menuBtnLogin"
-          class="nav-link"
-          to="/login"
-          :exact="true"
-        >
+        <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
           <span class="fa fa-user"></span> Login
         </router-link>
         <b-nav-item-dropdown
