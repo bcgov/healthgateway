@@ -25,7 +25,8 @@ namespace HealthGateway.Medication.Test
     using System.Net.Mime;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using System.Web.Http;
+    using System.Text;
+    using Newtonsoft.Json;
     using Xunit;
 
 
@@ -42,10 +43,9 @@ namespace HealthGateway.Medication.Test
         {
             Patient expected = new Patient("1234","000", "Test", "Gateway");
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
-                request.SetConfiguration(new HttpConfiguration());
-                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.OK, expected, MediaTypeNames.Application.Json);
-                return Task.FromResult(response);
+            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage() {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
@@ -70,10 +70,8 @@ namespace HealthGateway.Medication.Test
         public async Task ShouldCatchBadRequest()
         {
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
-                request.SetConfiguration(new HttpConfiguration());
-                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.BadRequest);
-                return Task.FromResult(response);
+            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage() {
+                StatusCode = HttpStatusCode.BadRequest,
             });
             Mock<IAuthService> authMock = new Mock<IAuthService>();
 

@@ -21,12 +21,10 @@ namespace HealthGateway.Medication.Services
     using System.Net.Mime;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
-    using System.Net;
 
     /// <summary>
     /// The patient service.
@@ -53,7 +51,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<string> GetPatientPHNAsync(string hdid, ClaimsPrincipal user)
         {
-            //JWTModel jwtModel = this.AuthenticateService();
+            // JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -74,7 +72,16 @@ namespace HealthGateway.Medication.Services
                 }
                 else
                 {
-                    throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                        Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                        return responseMessage.PersonalHealthNumber;
+                    }
+                    else
+                    {
+                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                    }
                 }
             }
         }
