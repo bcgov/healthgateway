@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Test
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using System.Web.Http;
     using Xunit;
@@ -58,8 +59,9 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);*/
 
-            IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);            
-            string phn = await service.GetPatientPHNAsync(expected.HdId);
+            IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);    
+            ClaimsPrincipal user = new ClaimsPrincipal();   
+            string phn = await service.GetPatientPHNAsync(expected.HdId, user);
 
             Assert.Equal(expected.PersonalHealthNumber, phn);
         }
@@ -78,7 +80,7 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
             IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);            
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync(""));            
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", new ClaimsPrincipal()));            
         }
     }
 }

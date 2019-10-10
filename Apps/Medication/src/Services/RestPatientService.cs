@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
@@ -50,7 +51,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientPHNAsync(string hdid)
+        public async Task<string> GetPatientPHNAsync(string hdid, ClaimsPrincipal user)
         {
             //JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
@@ -59,10 +60,9 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
-                
-                // TODO: This does not work since it gets the audience for the medication call "medication-service" instead of the general one.
-                // Otherwise the audience needs to be null. At this point that is not possible on the AuthenticationService
-                //client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+
+                string accessToken = user.FindFirst("access_token")?.Value; // get the existing JWT for the user.
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
 
                 HttpResponseMessage response = await client.GetAsync($"v1/api/Patient/{hdid}").ConfigureAwait(true);
                 
@@ -78,18 +78,5 @@ namespace HealthGateway.Medication.Services
                 }
             }
         }
-
-        /// <summary>
-        /// Authenticates this service, using Client Credentials Grant.
-        /// </summary>
-        /*private JWTModel AuthenticateService()
-        {
-            JWTModel jwtModel;
-
-            Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
-
-            jwtModel = authenticating.Result as JWTModel;
-            return jwtModel;
-        }*/
     }
 }
