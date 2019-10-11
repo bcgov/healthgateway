@@ -88,11 +88,11 @@ $radius: 15px;
             <b-btn variant="link" @click="toggleSort()">
               Date
               <span v-show="sortDesc" name="descending">
-                (Oldest)
+                (Newest)
                 <i class="fa fa-chevron-down" aria-hidden="true"></i
               ></span>
               <span v-show="!sortDesc" name="ascending">
-                (Newest)
+                (Oldest)
                 <i class="fa fa-chevron-up" aria-hidden="true"></i
               ></span>
             </b-btn>
@@ -194,7 +194,7 @@ export default class TimelineComponent extends Vue {
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
-  private sortDesc: boolean = false;
+  private sortDesc: boolean = true;
 
   mounted() {
     this.isLoading = true;
@@ -276,7 +276,7 @@ export default class TimelineComponent extends Vue {
 
   private sortGroup(groupArrays) {
     groupArrays.sort((a, b) =>
-      a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+      a.date > b.date ? 1 : a.date < b.date ? -1 : 0
     );
 
     if (this.sortDesc) {
