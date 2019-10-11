@@ -80,8 +80,8 @@ namespace HealthGateway.Medication.Controllers
         [Route("{hdid}")]
         public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
         {
-            string accessToken = User.FindFirst("access_token")?.Value;
-            string phn = await this.patientService.GetPatientPHNAsync(hdid, this.User).ConfigureAwait(true);
+            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+            string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
             string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();

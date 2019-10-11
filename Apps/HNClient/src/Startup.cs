@@ -51,6 +51,7 @@ namespace HealthGateway.HNClient
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
 
             // HNClient Service and delegate
             services.AddTransient<IHNClientDelegate, SocketHNClientDelegate>();
@@ -63,6 +64,7 @@ namespace HealthGateway.HNClient
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
+            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
         }

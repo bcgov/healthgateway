@@ -24,7 +24,7 @@ const namespace: string = "user";
     LoadingComponent
   }
 })
-export default class HomeComponent extends Vue {
+export default class ProfileComponent extends Vue {
   @Action("getPatientData", { namespace }) getPatientData;
   @Getter("user", { namespace }) user: User;
 

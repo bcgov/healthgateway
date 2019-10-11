@@ -88,11 +88,11 @@ $radius: 15px;
             <b-btn variant="link" @click="toggleSort()">
               Date
               <span v-show="sortDesc" name="descending">
-                (Oldest)
+                (Newest)
                 <i class="fa fa-chevron-down" aria-hidden="true"></i
               ></span>
               <span v-show="!sortDesc" name="ascending">
-                (Newest)
+                (Oldest)
                 <i class="fa fa-chevron-up" aria-hidden="true"></i
               ></span>
             </b-btn>
@@ -194,7 +194,7 @@ export default class TimelineComponent extends Vue {
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
-  private sortDesc: boolean = false;
+  private sortDesc: boolean = true;
 
   mounted() {
     this.isLoading = true;
@@ -204,9 +204,15 @@ export default class TimelineComponent extends Vue {
     medicationService
       .getPatientMedicationStatemens(this.user.hdid)
       .then(results => {
-        // Add the medication entries to the timeline list
-        for (let result of results) {
-          this.timelineEntries.push(new TimelineEntry(result));
+        if (!results.isErr) {
+          // Add the medication entries to the timeline list
+          for (let result of results.message) {
+            this.timelineEntries.push(new TimelineEntry(result));
+          }
+        } else {
+          console.log(
+            "Error returned from the medication statements call: " + results.err
+          );
         }
       })
       .catch(err => {
@@ -270,7 +276,7 @@ export default class TimelineComponent extends Vue {
 
   private sortGroup(groupArrays) {
     groupArrays.sort((a, b) =>
-      a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+      a.date > b.date ? 1 : a.date < b.date ? -1 : 0
     );
 
     if (this.sortDesc) {

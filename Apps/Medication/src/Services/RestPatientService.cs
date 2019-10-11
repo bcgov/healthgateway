@@ -20,9 +20,11 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Security.Claims;
+    using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -49,28 +51,17 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientPHNAsync(string hdid, ClaimsPrincipal user)
+        public async Task<string> GetPatientPHNAsync(string hdid, string jwtString)
         {
-            // JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", jwtString);
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
 
-                string accessToken = user.FindFirst("access_token")?.Value; // get the existing JWT for the user.
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-
-                HttpResponseMessage response = await client.GetAsync($"v1/api/Patient/{hdid}").ConfigureAwait(true);
-                
-                if (response.IsSuccessStatusCode)
-                {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                    return responseMessage.PersonalHealthNumber;
-                }
-                else
+                using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -80,7 +71,16 @@ namespace HealthGateway.Medication.Services
                     }
                     else
                     {
-                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                            Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                            return responseMessage.PersonalHealthNumber;
+                        }
+                        else
+                        {
+                            throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                        }
                     }
                 }
             }

@@ -21,6 +21,7 @@ namespace HealthGateway.Medication.Test
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authorization.Infrastructure;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Primitives;
     using Moq;
     using System.Collections.Generic;
     using System.Net;
@@ -49,9 +50,15 @@ namespace HealthGateway.Medication.Test
             Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
             connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
 
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("Authorization", "Bearer TestJWT");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+
             Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
             httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
@@ -63,7 +70,7 @@ namespace HealthGateway.Medication.Test
             authMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>(), It.IsAny<OperationAuthorizationRequirement>())).ReturnsAsync(AuthorizationResult.Success());
 
             Mock<IPatientService> patientMock = new Mock<IPatientService>();
-            patientMock.Setup(s => s.GetPatientPHNAsync(hdid)).ReturnsAsync(phn);
+            patientMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
             MedicationController controller = new MedicationController(
                 svcMock.Object,
