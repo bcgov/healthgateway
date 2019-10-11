@@ -16,10 +16,7 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -27,71 +24,30 @@ namespace HealthGateway.Medication.Parsers
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
     /// </summary>
-    public class TILMessageParser : IHNMessageParser<Pharmacy>
+    public class TILMessageParser : BaseMessageParser<Pharmacy>
     {
-        private const string TRACE = "101010";
-        private readonly IConfiguration configuration;
-        private readonly string timeZoneId;
-        private readonly HNClientConfiguration hnClientConfig = new HNClientConfiguration();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TILMessageParser"/> class.
         /// </summary>
-        /// <param name="config">The injected configuration provider.</param>
+        /// <param name="config">The configuration provider.</param>
         public TILMessageParser(IConfiguration config)
+            : base(config)
         {
-            this.configuration = config;
-            this.configuration.GetSection("HNClient").Bind(this.hnClientConfig);
-            this.timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? this.hnClientConfig.WindowsTimeZoneId : this.hnClientConfig.UnixTimeZoneId;
         }
 
         /// <inheritdoc/>
-        public HNMessage CreateRequestMessage(string pharmacyId, string userId, string ipAddress)
+        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress)
         {
-            CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
-            culture.DateTimeFormat.DateSeparator = "/";
-
-            HL7Encoding encoding = new HL7Encoding();
             Message m = new Message();
 
-            DateTime utc = DateTime.UtcNow;
-            TimeZoneInfo localtz = TimeZoneInfo.FindSystemTimeZoneById(this.timeZoneId);
-            DateTime localDateTime = TimeZoneInfo.ConvertTimeFromUtc(utc, localtz);
-
-            // MSH - Message Header
-            m.AddSegmentMSH(
-                this.hnClientConfig.SendingApplication,
-                this.hnClientConfig.SendingFacility,
-                this.hnClientConfig.ReceivingApplication,
-                this.hnClientConfig.ReceivingFacility,
-                $"{userId}:{ipAddress}",
-                $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00",
-                TRACE,
-                this.hnClientConfig.ProcessingID,
-                this.hnClientConfig.MessageVersion);
-            m.SetValue("MSH.7", string.Format(culture, "{0:yyyy/MM/dd HH:mm:ss}", localDateTime)); // HNClient specific date format
-            m.SetValue("MSH.9", HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE); // HNClient doesn't recognize event types (removes ^00 from message type)
-
-            // ZCA - Claims Standard Message Header
-            Segment zca = new Segment(HNClientConfiguration.SEGMENT_ZCA, encoding);
-            zca.AddNewField(string.Empty); // BIN
-            zca.AddNewField(this.hnClientConfig.ZCA.CPHAVersionNumber); // CPHA Version Number
-            zca.AddNewField(this.hnClientConfig.ZCA.TransactionCode); // Transaction Code
-            zca.AddNewField(this.hnClientConfig.ZCA.SoftwareId); // Provider Software ID
-            zca.AddNewField(this.hnClientConfig.ZCA.SoftwareVersion); // Provider Software Version
-            m.AddNewSegment(zca);
-
-            // ZCB - Provider Information
-            Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, encoding);
-            zcb.AddNewField(this.hnClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
-            zcb.AddNewField(localDateTime.ToString("yyMMdd", culture)); // Provider Transaction Date
-            zcb.AddNewField(TRACE); // Trace Number
-            m.AddNewSegment(zcb);
+            this.SetMessageHeader(m, userId, ipAddress);
+            this.SetClaimsStandardSegment(m, string.Empty);
+            this.SetProviderInfoSegment(m);
 
             // ZPL - Location Information
-            Segment zpl = new Segment(HNClientConfiguration.SEGMENT_ZPL, encoding);
-            zpl.AddNewField(pharmacyId); // Requested PharmaNet Location Identifier
-            zpl.AddNewField(string.Empty); // PharmaNet Location Nam
+            Segment zpl = new Segment(HNClientConfiguration.SEGMENT_ZPL, this.Encoding);
+            zpl.AddNewField(id); // Requested PharmaNet Location Identifier
+            zpl.AddNewField(string.Empty); // PharmaNet Location Name
             zpl.AddNewField(string.Empty); // Location Type Code
             zpl.AddNewField(string.Empty); // Address Line 1
             zpl.AddNewField(string.Empty); // Address Line 2
@@ -104,39 +60,23 @@ namespace HealthGateway.Medication.Parsers
             zpl.AddNewField(string.Empty); // Area Code
             zpl.AddNewField(string.Empty); // Telephone Number
             zpl.AddNewField(string.Empty); // Termination Date
-            zpl.AddNewField(this.hnClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
+            zpl.AddNewField(this.ClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
             m.AddNewSegment(zpl);
 
-            // ZZZ - Transaction Control
-            // ZZZ|TIL||1111|P1|nnnnnnnnnn|||||ZZZ1
-            Segment zzz = new Segment(HNClientConfiguration.SEGMENT_ZZZ, encoding);
-            zzz.AddNewField(HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID); // Transaction ID
-            zzz.AddNewField(string.Empty); // Response Status (Empty)
-            zzz.AddNewField(TRACE); // Trace Number
-            zzz.AddNewField(this.hnClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
-            zzz.AddNewField(this.hnClientConfig.ZZZ.PractitionerId); // Practitioner ID
-            m.AddNewSegment(zzz);
+            this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID);
 
-            HNMessage retMessage = new HNMessage();
-            retMessage.Message = m.SerializeMessage(false);
-            return retMessage;
+            return new HNMessage<string>(m.SerializeMessage(false));
         }
 
         /// <inheritdoc/>
-        public List<Pharmacy> ParseResponseMessage(string hl7Message)
+        public override HNMessage<Pharmacy> ParseResponseMessage(string hl7Message)
         {
             if (string.IsNullOrEmpty(hl7Message))
             {
                 throw new ArgumentNullException(nameof(hl7Message));
             }
 
-            // Replaces the message type with message type + event so it can correcly parse the message.
-            hl7Message = hl7Message.Replace(
-                $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}|",
-                $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00|",
-                StringComparison.CurrentCulture);
-            Message m = new Message(hl7Message);
-            m.ParseMessage();
+            Message m = this.ParseRawMessage(hl7Message);
 
             // Checks the response status
             Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
@@ -145,7 +85,8 @@ namespace HealthGateway.Medication.Parsers
 
             if (status.Value != "0")
             {
-                throw new Exception($"Failed to process the TIL request: {statusMessage}", new Exception(hl7Message));
+                // The request was not processed
+                return new HNMessage<Pharmacy>(true, statusMessage.Value);
             }
 
             // ZPL location information
@@ -169,7 +110,7 @@ namespace HealthGateway.Medication.Parsers
 
             // zpl.Fields(14).Value; // Termination Date
             // zpl.Fields(1)5.Value; // Transaction Reason Code
-            return new List<Pharmacy>(new Pharmacy[] { pharmacy });
+            return new HNMessage<Pharmacy>(pharmacy);
         }
     }
 }
