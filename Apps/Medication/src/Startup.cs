@@ -76,6 +76,7 @@ namespace HealthGateway.Medication
                 return new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                    AllowAutoRedirect = false,
                 };
             });
 

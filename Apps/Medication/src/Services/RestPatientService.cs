@@ -23,7 +23,10 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Newtonsoft.Json;
+    using HealthGateway.Common.Authentication;
+    using System.Text;
 
     /// <summary>
     /// The patient service.
@@ -48,21 +51,19 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientPHNAsync(string hdid)
+        public async Task<string> GetPatientPHNAsync(string hdid, string jwtString)
         {
-            // JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", jwtString);
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
 
-                // TODO: This does not work since it gets the audience for the medication call "medication-service" instead of the general one.
-                // Otherwise the audience needs to be null. At this point that is not possible on the AuthenticationService
-                // client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
                 {
+
                     if (response.IsSuccessStatusCode)
                     {
                         string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -71,7 +72,16 @@ namespace HealthGateway.Medication.Services
                     }
                     else
                     {
-                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                            Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
+                            return responseMessage.PersonalHealthNumber;
+                        }
+                        else
+                        {
+                            throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                        }
                     }
                 }
             }

@@ -204,9 +204,15 @@ export default class TimelineComponent extends Vue {
     medicationService
       .getPatientMedicationStatemens(this.user.hdid)
       .then(results => {
-        // Add the medication entries to the timeline list
-        for (let result of results) {
-          this.timelineEntries.push(new TimelineEntry(result));
+        if (!results.isErr) {
+          // Add the medication entries to the timeline list
+          for (let result of results.message) {
+            this.timelineEntries.push(new TimelineEntry(result));
+          }
+        } else {
+          console.log(
+            "Error returned from the medication statements call: " + results.err
+          );
         }
       })
       .catch(err => {
