@@ -92,7 +92,7 @@ namespace HealthGateway.Medication.Parsers
                 this.ClientConfig.SendingFacility,
                 this.ClientConfig.ReceivingApplication,
                 this.ClientConfig.ReceivingFacility,
-                $"{userId}:{ipAddress}",
+                $"{userId?.ToUpper(this.culture)}:{ipAddress}",
                 $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00",
                 this.traceId,
                 this.ClientConfig.ProcessingID,
