@@ -66,7 +66,6 @@ namespace HealthGateway.HNClient.Controllers
         /// <response code="401">The client is not authorized to call SendMessage.</response>
         [HttpPost]
         [Produces("application/json")]
-        [Route("time")]
         [EnableCors]
         [Authorize]
         public HNMessage SendMessage(HNMessage msg)
