@@ -3,10 +3,9 @@ import Vue from "vue";
 // Routes
 import VueRouter from "vue-router";
 import store from "./store/store";
-import HomeComponent from "@/views/home.vue";
+import ProfileComponent from "@/views/profile.vue";
 import CardInfoComponent from "@/views/cardInfo.vue";
 import LandingComponent from "@/views/landing.vue";
-import ImmunizationsComponent from "@/views/immunizations.vue";
 import NotFoundComponent from "@/views/errors/notFound.vue";
 import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
@@ -29,19 +28,14 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: "/home",
-    component: HomeComponent,
+    path: "/profile",
+    component: ProfileComponent,
     meta: { requiresRegistration: true, roles: ["user"] }
   },
   {
     path: "/cardInfo",
     component: CardInfoComponent,
     meta: { requiresAuth: false, roles: ["user"] }
-  },
-  {
-    path: "/immunizations",
-    component: ImmunizationsComponent,
-    meta: { requiresRegistration: true, roles: ["user"] }
   },
   {
     path: "/timeline",
@@ -86,7 +80,7 @@ router.beforeEach(async (to, from, next) => {
         let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
         // If the user is registerd and is attempting to go to registration re-route
         if (userIsRegistered && to.path === "/registration") {
-          next({ path: "/home" });
+          next({ path: "/timeline" });
         } else if (to.meta.requiresRegistration && !userIsRegistered) {
           next({ path: "/unauthorized" });
         } else {
