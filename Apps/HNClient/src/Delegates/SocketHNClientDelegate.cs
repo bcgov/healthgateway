@@ -131,7 +131,7 @@ namespace HealthGateway.HNClient.Delegates
                 numSocketReadTries = 0;
                 byte[] dataHL7in = new byte[messageLength];
                 int totalReceived = 0;
-                while (socket.Available > 0)
+                while (socket.Available > 0 && totalReceived < messageLength)
                 {
                     if (numSocketReadTries >= MAX_SOCKET_READ_TRIES)
                     {

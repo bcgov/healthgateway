@@ -44,9 +44,7 @@ namespace HealthGateway.HNClient.Test
             proxyMock.Setup(s => s.Available).Returns(0);
             SocketHNClientDelegateMock dlg = new SocketHNClientDelegateMock(proxyMock, this.configuration, this.delegateLogger.Object);
 
-            string messageReceived = dlg.SendReceive(string.Empty);
-
-            Assert.Equal(string.Empty, string.Empty);
+            Assert.Throws<SystemException>(() => { dlg.SendReceive(string.Empty); });
         }
 
         [Fact]
@@ -65,7 +63,7 @@ namespace HealthGateway.HNClient.Test
 
             Mock<ISocketProxy> proxyMock = new Mock<ISocketProxy>();
             proxyMock.Setup(s => s.IsConnected).Returns(true);
-            proxyMock.Setup(s => s.Available).Returns(1000);
+            proxyMock.Setup(s => s.Available).Returns(hl7Message.Length);
 
             proxyMock.Setup(s => s.Receive(new byte[12], 0, 12)).Returns(12);
             proxyMock.Setup(s => s.Receive(new byte[8], 0, 8))
