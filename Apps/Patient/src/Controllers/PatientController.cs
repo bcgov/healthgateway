@@ -25,7 +25,7 @@ namespace HealthGateway.PatientService.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class PatientController : ControllerBase
     {
         /// <summary>

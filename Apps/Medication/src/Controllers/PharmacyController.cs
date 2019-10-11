@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
@@ -62,7 +61,7 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{pharmacyId}")]
-        public async Task<Pharmacy> GetPharmacy(string pharmacyId)
+        public async Task<HNMessage<Pharmacy>> GetPharmacy(string pharmacyId)
         {
             string userId = "1001"; // This should be the hdid from the token
             string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();

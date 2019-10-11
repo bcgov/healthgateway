@@ -56,7 +56,7 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress);
+            HNMessage<string> request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress);
 
             Assert.False(request.IsErr);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
@@ -69,14 +69,19 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldParseInvalidTILMessage()
         {
+            string expectedErrorMessage = "SOME ERROR";
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
             sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
             sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
             sb.Append($"ZPL|{pharmacyId}||||||||||||||{hnClientConfig.ZPL.TransactionReasonCode}|\r");
-            sb.Append($"ZZZ|TIL|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||1 SOME ERROR\r");
-            Exception ex = Assert.Throws<Exception>(() => this.parser.ParseResponseMessage(sb.ToString()));            
+            sb.Append($"ZZZ|TIL|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||{expectedErrorMessage}\r");
+            HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
+
+            Assert.True(actual.IsErr);
+            Assert.Equal(expectedErrorMessage, actual.Error);
+            Assert.Null(actual.Message);
         }
 
         [Fact]
@@ -123,10 +128,10 @@ namespace HealthGateway.Medication.Test
 
             sb.Append($"ZZZ|TRP|0|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||0 Operation successful\r");
 
-            List<Pharmacy> pharmacies = this.parser.ParseResponseMessage(sb.ToString());
+            HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.Single(pharmacies);
-            Assert.True(expectedPharmacy.IsDeepEqual(pharmacies.First()));
+            Assert.False(actual.IsErr);
+            Assert.True(expectedPharmacy.IsDeepEqual(actual.Message));
         }
 
         private DateTime getDateTime()

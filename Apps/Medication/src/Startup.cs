@@ -16,6 +16,7 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
+    using System.Collections.Generic;
     using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
@@ -72,13 +73,14 @@ namespace HealthGateway.Medication
                 return new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                    AllowAutoRedirect = false,
                 };
             });
 
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
-            services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
+            services.AddSingleton<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddSingleton<IPharmacyService, RestPharmacyService>();
             services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
             services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();

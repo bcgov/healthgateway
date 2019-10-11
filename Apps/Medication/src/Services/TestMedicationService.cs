@@ -27,7 +27,7 @@ namespace HealthGateway.Medication.Services
     public class TestMedicationService : IMedicationService
     {
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
             List<MedicationStatement> returnList = new List<MedicationStatement>();
 
@@ -53,13 +53,13 @@ namespace HealthGateway.Medication.Services
                             DIN = "ABC" + i,
                             GenericName = "A generic name " + i,
                             Quantity = 30,
-                            Dosage = 4.35f,
+                            MaxDailyDosage = 4.35f,
                         }
                     }
                 );
             }
 
-            return returnList;
+            return Task.FromResult(new HNMessage<List<MedicationStatement>>(returnList));
         }
     }
 }

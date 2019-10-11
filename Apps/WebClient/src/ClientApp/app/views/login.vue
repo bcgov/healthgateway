@@ -77,7 +77,7 @@ export default class LoginComponent extends Vue {
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
       this.redirectPath = this.$route.query.redirect;
     } else {
-      this.redirectPath = "/home";
+      this.redirectPath = "/timeline";
     }
 
     this.routeHandler = this.$router;

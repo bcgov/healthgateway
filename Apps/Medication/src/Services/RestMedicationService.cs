@@ -35,7 +35,7 @@ namespace HealthGateway.Medication.Services
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configService;
-        private readonly IHNMessageParser<MedicationStatement> medicationParser;
+        private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IAuthService authService;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace HealthGateway.Medication.Services
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationService(IHNMessageParser<MedicationStatement> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
+        public RestMedicationService(IHNMessageParser<List<MedicationStatement>> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
         {
             this.medicationParser = parser;
             this.httpClientFactory = httpClientFactory;
@@ -54,9 +54,10 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MedicationStatement>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
         {
             JWTModel jwtModel = this.AuthenticateService();
+            HNMessage<List<MedicationStatement>> hnClientMedicationResult;
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -65,19 +66,39 @@ namespace HealthGateway.Medication.Services
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
-                HNMessage requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
+                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    HNMessage responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
-                    return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
+                    hnClientMedicationResult = this.medicationParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {
-                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                    return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
+
+            if (!hnClientMedicationResult.IsErr)
+            {
+                foreach (MedicationStatement medicationStatement in hnClientMedicationResult.Message)
+                {
+                    // TODO: Add the brand name and pharmacy
+                    medicationStatement.Medication.BrandName = "Test Brand Name";
+                    medicationStatement.Pharmacy = new Pharmacy()
+                        {
+                            Name = "Test Pharmacorp",
+                            AddressLine1 = "Good street 1234",
+                            AddressLine2 = "Unit5",
+                            City = "Victoria",
+                            Province = "BC",
+                            PhoneNumber = "250-555-1234",
+                        };
+                }
+            }
+
+            return hnClientMedicationResult;
         }
 
         /// <summary>
@@ -85,11 +106,9 @@ namespace HealthGateway.Medication.Services
         /// </summary>
         private JWTModel AuthenticateService()
         {
-            JWTModel jwtModel;
-
             Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
-            jwtModel = authenticating.Result as JWTModel;
+            JWTModel jwtModel = authenticating.Result as JWTModel;
             return jwtModel;
         }
     }

@@ -23,20 +23,15 @@ namespace HealthGateway.Medication.Test
 
     public class DelegatingHandlerStub : DelegatingHandler
     {
-        private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _handlerFunc;
-        public DelegatingHandlerStub()
+        private HttpResponseMessage responseMessage;
+        public DelegatingHandlerStub(HttpResponseMessage response)
         {
-            _handlerFunc = (request, cancellationToken) => Task.FromResult(request.CreateResponse(HttpStatusCode.OK));
+            this.responseMessage = response;
         }
 
-        public DelegatingHandlerStub(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handlerFunc)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            _handlerFunc = handlerFunc;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return _handlerFunc(request, cancellationToken);
+            return await Task.FromResult(this.responseMessage);
         }
     }
 }
