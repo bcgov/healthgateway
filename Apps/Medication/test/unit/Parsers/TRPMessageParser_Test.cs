@@ -101,16 +101,23 @@ namespace HealthGateway.Medication.Test
                 DispensedDate = DateTime.Today.AddDays(-1),                
                 PharmacyId = "BC123456",
                 PractitionerSurname = "DR.GATEWAY",
-                PrescriptionStatus = 'F',                
+                PrescriptionStatus = 'F',
+                PrescriptionIdentifier = "5790",
                 Medication = new Medication(){
                     BrandName = null,
                     DIN = "123456",
-                    MaxDailyDosage = 1.555F,
+                    MaxDailyDosage = 1.555f,
                     DrugDiscontinuedDate = null,
-                    GenericName = "GENERICNAME   LABNAME   STRENGHT   TYPE",
-                    Quantity = 55.5F,
+                    GenericName = "CLARITHROMYCIN",
+                    Manufacturer = "BGP PHARMA ULC",
+                    DosageUnit = "MG",
+                    Dosage = 500.0f,
+                    Form = "TABLET",
+                    Quantity = 55.5f,
                 }
             };
+
+            string genericName = "CLARITHROMYCIN                BGP PHARMA ULC 500 MG    TABLET";
 
             string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = DateTime.Now.ToString("yyMMdd", this.culture);
@@ -131,16 +138,17 @@ namespace HealthGateway.Medication.Test
             sb.Append("|ZPB3^");
 
             sb.Append($"{expectedMedicationStatement.Medication.DIN}^");
-            sb.Append($"{expectedMedicationStatement.Medication.GenericName}^N^");
+            sb.Append($"{genericName}^N^");
             sb.Append($"{expectedMedicationStatement.Medication.Quantity.ToString("F1").Replace(".", string.Empty)}^");
             sb.Append($"{expectedMedicationStatement.Medication.MaxDailyDosage.ToString("F3").Replace(".", string.Empty)}^^^");
-            sb.Append($"{expectedMedicationStatement.Medication.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
             sb.Append($"{expectedMedicationStatement.PrescriptionStatus}^");
             sb.Append($"{expectedMedicationStatement.DispensedDate.ToString("yyyyMMdd")}^CACI^P1^XXALE^");
-            sb.Append($"{expectedMedicationStatement.PractitionerSurname}^");            
+            sb.Append($"{expectedMedicationStatement.PractitionerSurname}^");
+            sb.Append($"{expectedMedicationStatement.Medication.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
             sb.Append($"{expectedMedicationStatement.Directions}^^^^");
             sb.Append($"{expectedMedicationStatement.DateEntered?.ToString("yyyyMMdd")}^");
-            sb.Append($"{expectedMedicationStatement.PharmacyId}^Y^5790");
+            sb.Append($"{expectedMedicationStatement.PharmacyId}^Y^");
+            sb.Append($"{expectedMedicationStatement.PrescriptionIdentifier}^");
 
             // Other prescriptions
             sb.Append("~ZPB3^572349^COLCHICINE                    ODAN LABS      0.6 MG    TABLET^N^70^1000^^^D^20190129^NI^P1^XXALE^PHARMACISTWITHLONGCHARACTERNAME#035^20190129^PR^ADAPTED RX AND DISCONTINUED^REASON FOR DISCONTINUATION^P1^XXALE^20190129^QAERXPP^Y^5788^HIGH^CHGD");
