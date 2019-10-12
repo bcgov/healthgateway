@@ -4,7 +4,7 @@ import Pharmacy from "./pharmacy";
 // Medication statement model
 export default class MedicationStatement {
   // The prescription identifier for this statment.
-  public prescriptionIdentifier?:string
+  public prescriptionIdentifier?: string;
   // Medication statement prescription status.
   public prescriptionStatus?: string;
   // Date the medication statement was dispensed.

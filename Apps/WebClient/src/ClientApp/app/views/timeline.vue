@@ -157,7 +157,8 @@ $radius: 15px;
                               v-for="detail in entry.details"
                               :key="detail.name"
                             >
-                              <strong>{{ detail.name }}:</strong> {{ detail.value }}
+                              <strong>{{ detail.name }}:</strong>
+                              {{ detail.value }}
                             </div>
                           </b-col>
                         </b-collapse>

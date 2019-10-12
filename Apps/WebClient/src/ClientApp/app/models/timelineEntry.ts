@@ -35,21 +35,24 @@ export default class TimelineEntry {
 
     var pharmacyDescription: string = "";
     console.log(other.pharmacy);
-    if(other.pharmacy)
-    {
+    if (other.pharmacy) {
       pharmacyDescription = other.pharmacy.name ? other.pharmacy.name : "";
-      pharmacyDescription += " | " + (other.pharmacy.addressLine1 ? other.pharmacy.addressLine1 : "");
-      pharmacyDescription += " | " + (other.pharmacy.addressLine2 ? other.pharmacy.addressLine2 : "");
-      pharmacyDescription += " | " + (other.pharmacy.phoneNumber ? other.pharmacy.phoneNumber : "");
+      pharmacyDescription +=
+        " | " +
+        (other.pharmacy.addressLine1 ? other.pharmacy.addressLine1 : "");
+      pharmacyDescription +=
+        " | " +
+        (other.pharmacy.addressLine2 ? other.pharmacy.addressLine2 : "");
+      pharmacyDescription +=
+        " | " + (other.pharmacy.phoneNumber ? other.pharmacy.phoneNumber : "");
     }
 
-    var strenght:string = "";
-    if(other.medication.complexDose)
-    {
-      strenght = other.medication.complexDose ? other.medication.complexDose : "N/A";
-    }
-    else
-    {
+    var strenght: string = "";
+    if (other.medication.complexDose) {
+      strenght = other.medication.complexDose
+        ? other.medication.complexDose
+        : "N/A";
+    } else {
       strenght = other.medication.dosage + " " + other.medication.dosageUnit;
     }
 
