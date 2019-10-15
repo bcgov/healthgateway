@@ -6,7 +6,7 @@ import {
 import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
 import HttpDelegate from "./httpDelegate";
-import RequestResult from '@/models/requestResult';
+import RequestResult from "@/models/requestResult";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration): void;
