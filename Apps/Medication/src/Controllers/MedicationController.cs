@@ -36,7 +36,7 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Gets or sets the medication data service.
         /// </summary>
-        private readonly IMedicationService medicationService;
+        private readonly IMedicationStatementService medicationService;
 
         /// <summary>
         /// The http context provider.
@@ -60,7 +60,7 @@ namespace HealthGateway.Medication.Controllers
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="authZService">The injected authService authorization provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
-        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
+        public MedicationController(IMedicationStatementService medicationService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
         {
             this.medicationService = medicationService;
             this.httpContextAccessor = httpAccessor;
@@ -86,7 +86,7 @@ namespace HealthGateway.Medication.Controllers
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await this.medicationService.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
+            return await this.medicationService.GetMedicationStatementsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
         }
     }
 }

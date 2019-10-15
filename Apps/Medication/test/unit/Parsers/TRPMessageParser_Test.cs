@@ -19,8 +19,6 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Moq;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -58,7 +56,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress);
 
-            Assert.False(request.IsErr);
+            Assert.False(request.IsError);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA|{hnClientConfig.ZCA.BIN}|{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
             Assert.Contains($"ZZZ|TRP||{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}", request.Message);
@@ -80,7 +78,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.IsErr);
+            Assert.True(actual.IsError);
             Assert.Equal(expectedErrorMessage, actual.Error);
             Assert.Null(actual.Message);
         }
@@ -146,7 +144,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.False(actual.IsErr);
+            Assert.False(actual.IsError);
             Assert.Equal(3, actual.Message.Count);
             Assert.True(expectedMedicationStatement.IsDeepEqual(actual.Message.First()));
         }

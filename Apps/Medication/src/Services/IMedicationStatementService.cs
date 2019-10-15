@@ -22,13 +22,15 @@ namespace HealthGateway.Medication.Services
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public interface IMedicationService
+    public interface IMedicationStatementService
     {
         /// <summary>
-        /// Gets the medications that match the DIN.
+        /// Gets the patient record.
         /// </summary>
-        /// <param name="medicationDinList">The ip address of the request.</param>
+        /// <param name="phn">The patient phn.</param>
+        /// <param name="userId">The user id of the request.</param>
+        /// <param name="ipAddress">The ip address of the request.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<Medication>>> GetMedicationsAsync(List<string> medicationDinList);
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
     }
 }

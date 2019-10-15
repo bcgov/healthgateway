@@ -31,7 +31,7 @@ namespace HealthGateway.Medication.Services
     /// <summary>
     /// The Medication data service.
     /// </summary>
-    public class RestMedicationService : IMedicationService
+    public class RestMedicationStatementService : IMedicationStatementService
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configService;
@@ -39,13 +39,13 @@ namespace HealthGateway.Medication.Services
         private readonly IAuthService authService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
+        /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
         /// </summary>
         /// <param name="parser">The injected hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationService(IHNMessageParser<List<MedicationStatement>> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
+        public RestMedicationStatementService(IHNMessageParser<List<MedicationStatement>> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
         {
             this.medicationParser = parser;
             this.httpClientFactory = httpClientFactory;
@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
             JWTModel jwtModel = this.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))

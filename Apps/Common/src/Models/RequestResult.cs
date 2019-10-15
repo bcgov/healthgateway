@@ -13,22 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Common.Models
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.Medication.Models;
-
-    /// <summary>
-    /// The Medication data service.
-    /// </summary>
-    public interface IMedicationService
+    public class Result<T>
     {
-        /// <summary>
-        /// Gets the medications that match the DIN.
-        /// </summary>
-        /// <param name="medicationDinList">The ip address of the request.</param>
-        /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<Medication>>> GetMedicationsAsync(List<string> medicationDinList);
+        public T ResourcePayload;
+
+        public int TotalResultCount;
+
+        public int PageIndex;
     }
 }

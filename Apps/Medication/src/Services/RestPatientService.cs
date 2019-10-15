@@ -23,10 +23,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Newtonsoft.Json;
-    using HealthGateway.Common.Authentication;
-    using System.Text;
 
     /// <summary>
     /// The patient service.
