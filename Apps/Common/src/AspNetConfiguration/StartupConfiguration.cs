@@ -134,7 +134,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     ValidateIssuerSigningKey = true,
                     ValidateAudience = true,
-                    ValidateIssuer = true
+                    ValidateIssuer = true,
                 };
                 o.Events = new JwtBearerEvents()
                 {
