@@ -21,6 +21,7 @@ namespace HealthGateway.Medication.Controllers
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -78,6 +79,8 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
+        [Authorize]
+        [EnableCors]
         public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
         {
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];

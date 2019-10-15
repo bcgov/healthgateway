@@ -27,7 +27,6 @@ namespace HealthGateway.HNClient.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    //[Authorize]
     public class HNClientController : ControllerBase
     {
         private readonly IHNClientService service;
@@ -42,22 +41,6 @@ namespace HealthGateway.HNClient.Controllers
         }
 
         /// <summary>
-        /// Performs an access check for required authorization to reach.
-        /// </summary>
-        /// <returns>a Structured TimeMessage object.</returns>
-        /// <response code="200">Returns a message containing the DateTime from HNSecure.</response>
-        /// <response code="401">Returns 401 Unauthorized if the client is not authenticated.</response>
-        [HttpGet]
-        [Produces("text/plain")]
-        [Route("ping")]
-        //[Authorize]
-        //[EnableCors]
-        public ActionResult<string> Ping()
-        {
-            return @"ok";
-        }
-
-        /// <summary>
         /// Sends the HL7 V2.3 message to HNClient.
         /// </summary>
         /// <returns>A structured Message object.</returns>
@@ -66,7 +49,7 @@ namespace HealthGateway.HNClient.Controllers
         /// <response code="401">The client is not authorized to call SendMessage.</response>
         [HttpPost]
         [Produces("application/json")]
-        //[EnableCors]
+        [EnableCors]
         [Authorize]
         public HNMessage SendMessage(HNMessage msg)
         {
@@ -80,8 +63,6 @@ namespace HealthGateway.HNClient.Controllers
         /// <response code="200">Returns a message containing the DateTime from HNSecure.</response>
         [HttpGet]
         [Produces("application/json")]
-        //[Authorize]
-        //[EnableCors]
         public HNMessage GetTime()
         {
             return this.service.GetTime();
