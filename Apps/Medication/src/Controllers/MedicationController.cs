@@ -16,10 +16,10 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
-    using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
+    using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -36,7 +36,7 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Gets or sets the medication data service.
         /// </summary>
-        private readonly IMedicationStatementService medicationService;
+        private readonly IMedicationService medicationService;
 
         /// <summary>
         /// The http context provider.
@@ -44,49 +44,29 @@ namespace HealthGateway.Medication.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// The authorization service provider.
-        /// </summary>
-        private readonly ICustomAuthorizationService authorizationService;
-
-        /// <summary>
-        /// The patient service provider used to retrieve Personal Health Number for subject.
-        /// </summary>
-        private readonly IPatientService patientService;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="medicationService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="authZService">The injected authService authorization provider.</param>
-        /// <param name="patientService">The injected patientService patient registry provider.</param>
-        public MedicationController(IMedicationStatementService medicationService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
+        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor)
         {
             this.medicationService = medicationService;
             this.httpContextAccessor = httpAccessor;
-            this.authorizationService = authZService;
-            this.patientService = patientService;
         }
 
         /// <summary>
-        /// Gets a json of medication record.
+        /// Gets a list of medications that match the requested identifiers.
         /// </summary>
         /// <returns>The medication statement records.</returns>
-        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="medicationIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
+        public async Task<RequestResult<List<MedicationStatement>>> GetMedications(List<string> medicationIdentifiers)
         {
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
-            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-            string ipv4Address = address.MapToIPv4().ToString();
-
-            return await this.medicationService.GetMedicationStatementsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
+            return new RequestResult<List<MedicationStatement>>();
         }
     }
 }

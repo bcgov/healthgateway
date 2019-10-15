@@ -80,7 +80,7 @@ namespace HealthGateway.Medication.Services
                 }
             }
 
-            if (!hnClientMedicationResult.IsErr)
+            if (!hnClientMedicationResult.IsError)
             {
                 foreach (MedicationStatement medicationStatement in hnClientMedicationResult.Message)
                 {

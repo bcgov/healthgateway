@@ -15,12 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
-    public class Result<T>
+    public class RequestResult<T>
     {
         public T ResourcePayload;
-
         public int TotalResultCount;
-
         public int PageIndex;
+        public int PageSize;
+        public string ErrorMessage;
     }
 }
