@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Parsers
 {
-    using System.Collections.Generic;
     using HealthGateway.Medication.Models;
 
     /// <summary>
