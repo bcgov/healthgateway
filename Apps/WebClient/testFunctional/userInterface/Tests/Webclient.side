@@ -600,93 +600,63 @@
     }, {
       "id": "d56f7392-19ee-42d4-8871-17bfbdd0ed60",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "linkText=Immunizations",
-      "targets": [
-        ["linkText=Immunizations", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(2)", "css:finder"],
-        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[2]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
-        ["xpath=//a[2]", "xpath:position"],
-        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "6e398a09-b40a-4159-afb4-728e8a868878",
       "comment": "",
-      "command": "assertText",
+      "command": "//assertText",
       "target": "id=subject",
-      "targets": [
-        ["id=subject", "id"],
-        ["css=#subject", "css:finder"],
-        ["xpath=//h1[@id='subject']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/main/div/div/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'  Immunizations')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "Immunizations"
     }, {
       "id": "575cf040-5269-4c98-9b05-8f6c8ffb72e4",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "css=th:nth-child(1)",
-      "targets": [
-        ["css=th:nth-child(1)", "css:finder"],
-        ["xpath=//table[@id='__BVID__42']/thead/tr/th", "xpath:idRelative"],
-        ["xpath=//th", "xpath:position"],
-        ["xpath=//th[contains(.,'Date')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "e5970daa-127e-423f-bde2-ff7df9506ffe",
       "comment": "",
-      "command": "storeText",
+      "command": "//storeText",
       "target": "css=tr:nth-child(1) > td:nth-child(1)",
-      "targets": [
-        ["css=tr:nth-child(1) > td:nth-child(1)", "css:finder"],
-        ["xpath=//table[@id='__BVID__42']/tbody/tr/td", "xpath:idRelative"],
-        ["xpath=//td", "xpath:position"],
-        ["xpath=//td[contains(.,'1999 Jun 10')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "firstDate"
     }, {
       "id": "152fda0a-24b2-4577-b9d7-31cd135c9ba7",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "css=th:nth-child(1)",
-      "targets": [
-        ["css=tr:nth-child(1) > td:nth-child(1)", "css:finder"],
-        ["xpath=//table[@id='__BVID__42']/tbody/tr/td", "xpath:idRelative"],
-        ["xpath=//td", "xpath:position"],
-        ["xpath=//td[contains(.,'1999 Aug 14')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "6dff3b88-01f1-4e66-b235-b501a7b51815",
       "comment": "",
-      "command": "storeText",
+      "command": "//storeText",
       "target": "css=tr:nth-child(1) > td:nth-child(1)",
       "targets": [],
       "value": "lastDate"
     }, {
       "id": "f783a4f3-32cd-4df0-ab70-24a213037058",
       "comment": "",
-      "command": "echo",
+      "command": "//echo",
       "target": "${firstDate}  -- ${lastDate} ",
       "targets": [],
       "value": ""
     }, {
       "id": "5535f3f8-3096-429f-aef3-6045ae9c4f8c",
       "comment": "",
-      "command": "executeScript",
+      "command": "//executeScript",
       "target": "return new Date(${firstDate}) < new Date(${lastDate})",
       "targets": [],
       "value": "isSorted"
     }, {
       "id": "4224cea5-efb3-419c-bd57-7ebf98543e3c",
       "comment": "",
-      "command": "assert",
+      "command": "//assert",
       "target": "isSorted",
       "targets": [],
       "value": "true"
@@ -704,50 +674,35 @@
     }, {
       "id": "5e57640a-938c-4df4-8b8e-e14668c94d13",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "linkText=Immunizations",
-      "targets": [
-        ["linkText=Immunizations", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(2)", "css:finder"],
-        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[2]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
-        ["xpath=//a[2]", "xpath:position"],
-        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "57747c28-6ca8-467e-911f-74b262b43a5a",
       "comment": "",
-      "command": "assertText",
+      "command": "//assertText",
       "target": "id=subject",
-      "targets": [
-        ["id=subject", "id"],
-        ["css=#subject", "css:finder"],
-        ["xpath=//h1[@id='subject']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/main/div/div/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'  Immunizations')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "Immunizations"
     }, {
       "id": "2cb6f6af-40d0-4dcb-9ec5-136b3c208644",
       "comment": "",
-      "command": "storeXpathCount",
+      "command": "//storeXpathCount",
       "target": "xpath=//table/tbody/tr",
       "targets": [],
       "value": "tableLength"
     }, {
       "id": "72e04e0b-519d-408c-a0ad-80da359a83a8",
       "comment": "",
-      "command": "executeScript",
+      "command": "//executeScript",
       "target": "return ${tableLength} > 1",
       "targets": [],
       "value": "hasData"
     }, {
       "id": "d903c4fc-4d29-4049-82d4-191127317bef",
       "comment": "",
-      "command": "assert",
+      "command": "//assert",
       "target": "hasData",
       "targets": [],
       "value": "true"
@@ -765,103 +720,65 @@
     }, {
       "id": "d0711f6f-8548-40ba-9288-950f0b623e68",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "linkText=Immunizations",
-      "targets": [
-        ["linkText=Immunizations", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(2)", "css:finder"],
-        ["xpath=//a[contains(text(),'Immunizations')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[2]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/immunizations')]", "xpath:href"],
-        ["xpath=//a[2]", "xpath:position"],
-        ["xpath=//a[contains(.,' Immunizations')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "d6cf440d-0acb-4abc-a8d9-d5c6eea802c8",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "id=btn1",
-      "targets": [
-        ["id=btn1", "id"],
-        ["css=tr:nth-child(1) #btn1", "css:finder"],
-        ["xpath=//button[@id='btn1']", "xpath:attributes"],
-        ["xpath=//table[@id='__BVID__43']/tbody/tr/td[4]/button", "xpath:idRelative"],
-        ["xpath=//td[4]/button", "xpath:position"],
-        ["xpath=//button[contains(.,'Show Details')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "014730ab-6ff4-4cc9-a370-7ce7f9a36f41",
       "comment": "",
-      "command": "storeText",
+      "command": "//storeText",
       "target": "css=.b-table-has-details > td:nth-child(2)",
-      "targets": [
-        ["css=.b-table-has-details > td:nth-child(2)", "css:finder"],
-        ["xpath=//table[@id='__BVID__43']/tbody/tr/td[2]", "xpath:idRelative"],
-        ["xpath=//td[2]", "xpath:position"],
-        ["xpath=//td[contains(.,'Diphtheria, Tetanus, Pertussis, Hepatitis B, Polio, Haemophilus Influenzae type b (DTaP-HB-IPV-Hib)')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "vaccineDesc"
     }, {
       "id": "7444a233-370f-457b-aadd-b185d4f857ac",
       "comment": "",
-      "command": "assertText",
+      "command": "//assertText",
       "target": "css=.row:nth-child(1) > .text-sm-right:nth-child(1) > b",
-      "targets": [
-        ["css=.row:nth-child(1) > .text-sm-right:nth-child(1) > b", "css:finder"],
-        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/div/div/b", "xpath:idRelative"],
-        ["xpath=//div/div/b", "xpath:position"],
-        ["xpath=//b[contains(.,'Lot:')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "Lot:"
     }, {
       "id": "15aaae1a-d1fb-4222-a853-4707091ed2ff",
       "comment": "",
-      "command": "storeText",
+      "command": "//storeText",
       "target": "css=.col-sm-6",
-      "targets": [
-        ["css=.col-sm-6", "css:finder"],
-        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/div[4]/div[2]", "xpath:idRelative"],
-        ["xpath=//div[4]/div[2]", "xpath:position"]
-      ],
+      "targets": [],
       "value": "vaccineDetailDesc"
     }, {
       "id": "ce48ad83-60f1-4602-8bcf-5561abb9a8f2",
       "comment": "",
-      "command": "executeScript",
+      "command": "//executeScript",
       "target": "return ${vaccineDesc} === ${vaccineDetailDesc}",
       "targets": [],
       "value": "validDetails"
     }, {
       "id": "b2bfc8c8-4f97-40ed-adca-20efc2f9e4ef",
       "comment": "",
-      "command": "assert",
+      "command": "//assert",
       "target": "validDetails",
       "targets": [],
       "value": "true"
     }, {
       "id": "9e3dc237-fd6b-45ef-bd73-df5311a6d44b",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "css=#\\__BVID__43__details_0_ .btn",
-      "targets": [
-        ["css=#\\__BVID__43__details_0_ .btn", "css:finder"],
-        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
-        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/button", "xpath:idRelative"],
-        ["xpath=//div/button", "xpath:position"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "92c872fa-f3e7-4fe2-b79c-64fffa2d843e",
       "comment": "",
-      "command": "waitForElementNotPresent",
+      "command": "//waitForElementNotPresent",
       "target": "css=#\\__BVID__43__details_0_ .row:nth-child(4) > .text-sm-right",
-      "targets": [
-        ["css=#\\__BVID__43__details_0_ .row:nth-child(4) > .text-sm-right", "css:finder"],
-        ["xpath=//tr[@id='__BVID__43__details_0_']/td/div/div/div[4]/div", "xpath:idRelative"],
-        ["xpath=//div/div[4]/div", "xpath:position"]
-      ],
+      "targets": [],
       "value": "300"
     }]
   }, {
