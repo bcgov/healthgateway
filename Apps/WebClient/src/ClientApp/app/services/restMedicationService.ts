@@ -9,7 +9,7 @@ import RequestResult from '@/models/requestResult';
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
-  private readonly MEDICATION_BASE_URI: string = "v1/api/Medication/";
+  private readonly MEDICATION_BASE_URI: string = "v1/api/MedicationStatement/";
   private baseUri: string = "";
   private http!: HttpDelegate;
   constructor() {}

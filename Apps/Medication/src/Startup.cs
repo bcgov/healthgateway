@@ -23,6 +23,7 @@ namespace HealthGateway.Medication
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
+    using HealthGateway.Medication.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -84,6 +85,7 @@ namespace HealthGateway.Medication
             services.AddSingleton<IPharmacyService, RestPharmacyService>();
             services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
             services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
+            services.AddSingleton<IDrugLookupDelegate, EntityDrugLookupDelegate>();
         }
 
         /// <summary>

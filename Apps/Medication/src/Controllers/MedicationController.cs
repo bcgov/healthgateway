@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -44,29 +45,36 @@ namespace HealthGateway.Medication.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
+        /// The drug lookup delegate.
+        /// </summary>
+        private readonly IDrugLookupDelegate dinLookupDelegate;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="medicationService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor)
+        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, IDrugLookupDelegate dinLookupDelegate)
         {
             this.medicationService = medicationService;
             this.httpContextAccessor = httpAccessor;
+            this.dinLookupDelegate = dinLookupDelegate;
         }
 
         /// <summary>
-        /// Gets a list of medications that match the requested identifiers.
+        /// Gets a list of medications that match the requested drug identifiers.
         /// </summary>
         /// <returns>The medication statement records.</returns>
-        /// <param name="medicationIdentifiers">The list of medication identifiers to retrieve.</param>
+        /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<RequestResult<List<MedicationStatement>>> GetMedications(List<string> medicationIdentifiers)
+        public async Task<RequestResult<List<Medication>>> GetMedications(List<string> drugIdentifiers)
         {
-            return new RequestResult<List<MedicationStatement>>();
+            RequestResult<List<Medication>> result = await this.dinLookupDelegate.FindMedicationsByDIN(drugIdentifiers);
+            return result;
         }
     }
 }

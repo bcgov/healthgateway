@@ -21,7 +21,7 @@ namespace HealthGateway.Medication.Test
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authorization.Infrastructure;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
+    using HealthGateway.Common.Models;
     using Moq;
     using System.Collections.Generic;
     using System.Net;
@@ -31,7 +31,7 @@ namespace HealthGateway.Medication.Test
     using Xunit;
 
 
-    public class MedicationController_Test
+    public class MedicationStatementController_Test
     {
         [Fact]
         public async Task ShouldGetMedications()
@@ -72,15 +72,15 @@ namespace HealthGateway.Medication.Test
             Mock<IPatientService> patientMock = new Mock<IPatientService>();
             patientMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
-            MedicationController controller = new MedicationController(
+            MedicationStatementController controller = new MedicationStatementController(
                 svcMock.Object,
                 httpContextAccessorMock.Object,
                 authZService: authMock.Object,
                 patientService: patientMock.Object);
 
-            HNMessage<List<MedicationStatement>> actual = await controller.GetMedications(hdid); 
+            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid); 
             
-            Assert.True(actual.Message.Count == 0);
+            Assert.True(actual.ResourcePayload.Count == 0);
         }
     }
 }
