@@ -29,6 +29,9 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     public class TRPMessageParser : BaseMessageParser<List<MedicationStatement>>
     {
+        /// The minimun size of the expected TRF field length
+        public static readonly int MIN_TRF_FIELD_LENGTH = 23;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
         /// </summary>
@@ -143,7 +146,7 @@ namespace HealthGateway.Medication.Parsers
 
                     medicationStatement.PharmacyId = fields[21]; // Pharmacy ID
 
-                    if (fields.Length > 23)
+                    if (fields.Length > MIN_TRF_FIELD_LENGTH)
                     {
                         // fields[22].ToString(); // Adaptation Indicator.
                         medicationStatement.PrescriptionIdentifier = fields[23]; // PharmaNet Prescription Identifier
