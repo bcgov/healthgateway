@@ -15,12 +15,31 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    /// <summary>
+    /// Class that represents the result of a request. Contains members for handling pagination and error resolution
+    /// </summary>
+    /// <typeparam name="T">The payload type.</typeparam>
     public class RequestResult<T>
     {
-        public T ResourcePayload;
-        public int TotalResultCount;
-        public int PageIndex;
-        public int PageSize;
-        public string ErrorMessage;
+        /// <summary>
+        /// Gets or sets the result payload.
+        /// </summary>
+        public T ResourcePayload { get; set; }
+        /// <summary>
+        /// The toal result count for the request for pagination.
+        /// </summary>
+        public int TotalResultCount { get; set; }
+        /// <summary>
+        /// The page being returned on this result for pagination.
+        /// </summary>
+        public int PageIndex { get; set; }
+        /// <summary>
+        /// The page size for pagination.
+        /// </summary>
+        public int PageSize { get; set; }
+        /// <summary>
+        /// The error message if there was any.
+        /// </summary>
+        public string ErrorMessage { get; set; }
     }
 }
