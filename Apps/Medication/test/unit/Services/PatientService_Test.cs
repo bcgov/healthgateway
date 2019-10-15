@@ -78,13 +78,8 @@ namespace HealthGateway.Medication.Test
 
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-<<<<<<< HEAD
-            IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);            
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", new ClaimsPrincipal()));            
-=======
             IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));
->>>>>>> dev
         }
     }
 }
