@@ -29,7 +29,7 @@ namespace HealthGateway.Common.Authorization
                 #pragma warning disable CA1303 // Do not pass literals as localized parameters
                 System.Console.WriteLine(@"hdid parameter doest not match user's JWT");
                 #pragma warning restore CA1303 // Do not pass literals as localized parameters
-                context.Fail();
+                context?.Fail();
                 return Task.CompletedTask;
             }
 
