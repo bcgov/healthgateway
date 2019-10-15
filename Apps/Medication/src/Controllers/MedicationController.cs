@@ -80,7 +80,6 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize]
-        [EnableCors]
         public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
         {
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
