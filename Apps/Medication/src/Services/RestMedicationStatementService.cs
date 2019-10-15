@@ -57,6 +57,7 @@ namespace HealthGateway.Medication.Services
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
             JWTModel jwtModel = this.AuthenticateService();
+            HNMessage<List<MedicationStatement>> hnClientMedicationResult;
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -71,13 +72,33 @@ namespace HealthGateway.Medication.Services
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    hnClientMedicationResult = this.medicationParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {
                     return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
+
+            if (!hnClientMedicationResult.IsErr)
+            {
+                foreach (MedicationStatement medicationStatement in hnClientMedicationResult.Message)
+                {
+                    // TODO: Add the brand name and pharmacy
+                    medicationStatement.Medication.BrandName = "Test Brand Name";
+                    medicationStatement.Pharmacy = new Pharmacy()
+                        {
+                            Name = "Test Pharmacorp",
+                            AddressLine1 = "Good street 1234",
+                            AddressLine2 = "Unit5",
+                            City = "Victoria",
+                            Province = "BC",
+                            PhoneNumber = "250-555-1234",
+                        };
+                }
+            }
+
+            return hnClientMedicationResult;
         }
 
         /// <summary>
@@ -85,11 +106,9 @@ namespace HealthGateway.Medication.Services
         /// </summary>
         private JWTModel AuthenticateService()
         {
-            JWTModel jwtModel;
-
             Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
-            jwtModel = authenticating.Result as JWTModel;
+            JWTModel jwtModel = authenticating.Result as JWTModel;
             return jwtModel;
         }
     }

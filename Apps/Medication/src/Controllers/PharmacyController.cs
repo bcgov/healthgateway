@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;

@@ -29,6 +29,9 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     public class TRPMessageParser : BaseMessageParser<List<MedicationStatement>>
     {
+        /// The minimun size of the expected TRF field length
+        public static readonly int MIN_TRF_FIELD_LENGTH = 23;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
         /// </summary>
@@ -112,14 +115,15 @@ namespace HealthGateway.Medication.Parsers
                 string[] records = zpb3.Value.Split('~');
                 foreach (string record in records)
                 {
-                    MedicationStatement medicationStatement = new MedicationStatement();
                     string[] fields = record.Split('^');
-                    medicationStatement.DIN = fields[1]; // DIN
-                    medicationStatement.GenericName = fields[2]; // Generic Name
+                    MedicationStatement medicationStatement = new MedicationStatement();
+                    Medication medication = new Medication();
+                    medication.DIN = fields[1]; // DIN
+                    medication.ParseHL7V2GenericName(fields[2]); // Generic Name
 
                     // fields[3]; // Same Store Indicator
-                    medicationStatement.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
-                    medicationStatement.Dosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
+                    medication.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
+                    medication.MaxDailyDosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
 
                     // fields[6]; // Ingredient Code
                     // fields[7]; // Ingredient Name
@@ -130,7 +134,7 @@ namespace HealthGateway.Medication.Parsers
                     // fields[11]; // Practitioner ID Reference
                     // fields[12]; // Practitioner ID
                     medicationStatement.PractitionerSurname = fields[13]; // Practitioner Family Name
-                    medicationStatement.DrugDiscontinuedDate = this.ParseDate(fields[14]); // Drug Discontinued Date
+                    medication.DrugDiscontinuedDate = this.ParseDate(fields[14]); // Drug Discontinued Date
 
                     // fields[15]; // Drug Discontinued Source
                     medicationStatement.Directions = fields[16]; // Directions
@@ -142,11 +146,16 @@ namespace HealthGateway.Medication.Parsers
 
                     medicationStatement.PharmacyId = fields[21]; // Pharmacy ID
 
-                    // fields[22].ToString(); // Adaptation Indicator
+                    if (fields.Length > MIN_TRF_FIELD_LENGTH)
+                    {
+                        // fields[22].ToString(); // Adaptation Indicator.
+                        medicationStatement.PrescriptionIdentifier = fields[23]; // PharmaNet Prescription Identifier
 
-                    // fields[23].ToString(); // PharmaNet Prescription Identifier
-                    // fields[24].ToString(); // MMI Codes
-                    // fields[25].ToString(); // Clinical Service Codes
+                        // fields[24].ToString(); // MMI Codes
+                        // fields[25].ToString(); // Clinical Service Codes
+                    }
+
+                    medicationStatement.Medication = medication;
                     medicationStatements.Add(medicationStatement);
                 }
             }
