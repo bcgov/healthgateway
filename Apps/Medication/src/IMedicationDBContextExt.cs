@@ -23,8 +23,8 @@ namespace HealthGateway.Medication
         /// <summary>
         /// Gets the next sequence number for the given sequence name.
         /// </summary>
-        /// <param name="ctx"></param>
-        /// <param name="seq"></param>
+        /// <param name="ctx">The database context.</param>
+        /// <param name="seq">The sequence name</param>
         /// <returns>The next sequence value</returns>
         long NextValueForSequence(MedicationDBContext ctx, string seq);
     }

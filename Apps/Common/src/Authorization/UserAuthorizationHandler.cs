@@ -17,25 +17,31 @@ namespace HealthGateway.Common.Authorization
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Extensions.Logging;
 
     public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, string>
     {
+        private ILogger<UserAuthorizationHandler> logger;
+
+        public UserAuthorizationHandler(ILogger<UserAuthorizationHandler> logger)
+        {
+            this.logger = logger;
+        }
+
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hdid)
         {
             string hdidClaim = context?.User.FindFirst(c => c.Type == "hdid").Value;
 
-            // We custom map the subject id to a custom hdid claim inside the JWT, so we need to check that it
-            // matches what is being used for the target subject
             if (!string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal))
             {
-                #pragma warning disable CA1303 // Do not pass literals as localized parameters
-                System.Console.WriteLine(@"hdid matches JWT");
-                #pragma warning restore CA1303 // Do not pass literals as localized parameters
-
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+                this.logger?.LogWarning(@"hdid parameter doest not match user's JWT");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+                context?.Fail();
                 return Task.CompletedTask;
             }
- 
-            context.Succeed(requirement);
+
+            context?.Succeed(requirement);
 
             return Task.CompletedTask;
         }

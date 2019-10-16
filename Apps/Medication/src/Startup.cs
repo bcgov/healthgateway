@@ -20,6 +20,7 @@ namespace HealthGateway.Medication
     using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
@@ -80,16 +81,16 @@ namespace HealthGateway.Medication
             });
 
             var info = this.configuration.GetConnectionString("MedicationConnection");
-            // Configure the database
             services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("MedicationConnection")));
             services.AddSingleton<IAuthService, AuthService>();
-            services.AddTransient<IMedicationService, RestMedicationService>();
+            services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddSingleton<IPharmacyService, RestPharmacyService>();
             services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
             services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
+            services.AddSingleton<IDrugLookupDelegate, EntityDrugLookupDelegate>();
         }
 
         /// <summary>

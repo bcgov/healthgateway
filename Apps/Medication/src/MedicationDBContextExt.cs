@@ -29,9 +29,10 @@ namespace HealthGateway.Medication
         {
             NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
             {
-                Direction = System.Data.ParameterDirection.Output
+                Direction = System.Data.ParameterDirection.Output,
             };
             ctx.Database.ExecuteSqlCommand($"SELECT nextval('{seq}')", result);
+
             // code below is to be used when updating to EF 3
             // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);
             return (long)result.Value;

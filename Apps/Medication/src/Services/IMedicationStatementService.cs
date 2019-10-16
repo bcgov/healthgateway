@@ -13,27 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication
+namespace HealthGateway.Medication.Services
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The entry point for the project.
+    /// The Medication data service.
     /// </summary>
-    public static class Program
+    public interface IMedicationStatementService
     {
-        /// <summary>.
-        /// The entry point for the class.
+        /// <summary>
+        /// Gets the patient record.
         /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
+        /// <param name="phn">The patient phn.</param>
+        /// <param name="userId">The user id of the request.</param>
+        /// <param name="ipAddress">The ip address of the request.</param>
+        /// <returns>A List of MedicationStatement models.</returns>
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
     }
 }

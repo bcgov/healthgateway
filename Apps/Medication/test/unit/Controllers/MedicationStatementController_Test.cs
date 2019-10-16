@@ -21,7 +21,7 @@ namespace HealthGateway.Medication.Test
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authorization.Infrastructure;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
+    using HealthGateway.Common.Models;
     using Moq;
     using System.Collections.Generic;
     using System.Net;
@@ -31,12 +31,12 @@ namespace HealthGateway.Medication.Test
     using Xunit;
 
 
-    public class MedicationController_Test
+    public class MedicationStatementController_Test
     {
         [Fact]
         public async Task ShouldGetMedications()
         {
-            string hdid = "1192929388";
+            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string phn = "0009735353315";
             string userId = "1001";
             string ipAddress = "10.0.0.1";
@@ -63,8 +63,8 @@ namespace HealthGateway.Medication.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IMedicationService> svcMock = new Mock<IMedicationService>();
-            svcMock.Setup(s => s.GetMedicationsAsync(phn, userId, ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
+            svcMock.Setup(s => s.GetMedicationStatementsAsync(phn, userId, ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
 
             Mock<ICustomAuthorizationService> authMock = new Mock<ICustomAuthorizationService>();
             authMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>(), It.IsAny<OperationAuthorizationRequirement>())).ReturnsAsync(AuthorizationResult.Success());
@@ -72,15 +72,15 @@ namespace HealthGateway.Medication.Test
             Mock<IPatientService> patientMock = new Mock<IPatientService>();
             patientMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
-            MedicationController controller = new MedicationController(
+            MedicationStatementController controller = new MedicationStatementController(
                 svcMock.Object,
                 httpContextAccessorMock.Object,
                 authZService: authMock.Object,
                 patientService: patientMock.Object);
 
-            HNMessage<List<MedicationStatement>> actual = await controller.GetMedications(hdid); 
+            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid); 
             
-            Assert.True(actual.Message.Count == 0);
+            Assert.True(actual.ResourcePayload.Count == 0);
         }
     }
 }

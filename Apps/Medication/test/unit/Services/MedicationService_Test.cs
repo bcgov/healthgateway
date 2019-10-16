@@ -64,11 +64,10 @@ namespace HealthGateway.Medication.Test
             Mock<MedicationDBContext> dbctxMock = new Mock<MedicationDBContext>(dbOPtions);
             Mock<IMedicationDBContextExt> mockExtensions = new Mock<IMedicationDBContextExt>();
             mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
-            MedicationDBContextExtentions.Implementation = mockExtensions.Object;
+            MedicationDBContextExtensions.Implementation = mockExtensions.Object;
 
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationsAsync("123456789", "test", "10.0.0.1");
-
+            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", "test", "10.0.0.1");
             Assert.True(actual.Message.Count == 0);
         }
 
@@ -91,12 +90,12 @@ namespace HealthGateway.Medication.Test
             Mock<MedicationDBContext> dbctxMock = new Mock<MedicationDBContext>(dbOPtions);
             Mock<IMedicationDBContextExt> mockExtensions = new Mock<IMedicationDBContextExt>();
             mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
-            MedicationDBContextExtentions.Implementation = mockExtensions.Object;
+            MedicationDBContextExtensions.Implementation = mockExtensions.Object;
 
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationsAsync("", "", "");
+            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("", "", "");
 
-            Assert.True(actual.IsErr);
+            Assert.True(actual.IsError);
             Assert.Equal($"Unable to connect to HNClient: {HttpStatusCode.BadRequest}", actual.Error);
         }
     }

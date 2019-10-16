@@ -17,6 +17,8 @@ namespace HealthGateway.HNClient.Controllers
 {
     using HealthGateway.HNClient.Models;
     using HealthGateway.HNClient.Services;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -47,6 +49,7 @@ namespace HealthGateway.HNClient.Controllers
         /// <response code="401">The client is not authorized to call SendMessage.</response>
         [HttpPost]
         [Produces("application/json")]
+        [Authorize]
         public HNMessage SendMessage(HNMessage msg)
         {
             return this.service.SendMessage(msg);

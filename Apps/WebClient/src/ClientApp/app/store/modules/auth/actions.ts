@@ -35,7 +35,7 @@ export const actions: ActionTree<AuthState, RootState> = {
 
       authService.getUser().then(oidcUser => {
         if (!oidcUser || oidcUser.expired) {
-          context.commit("unsetOidcAuth");
+          context.dispatch("clearStorage");
           hasAccess = false;
         } else {
           context.dispatch("oidcWasAuthenticated", oidcUser);
@@ -87,23 +87,31 @@ export const actions: ActionTree<AuthState, RootState> = {
     context.dispatch("setHttpToken", oidcUser.access_token);
   },
   getOidcUser(context) {
-    authService.getUser().then(oidcUser => {
-      if (!oidcUser || oidcUser.expired) {
-        context.commit("unsetOidcAuth");
-      } else {
-        context.commit("setOidcAuth", oidcUser);
-      }
-    });
+    authService
+      .getUser()
+      .then(oidcUser => {
+        if (!oidcUser || oidcUser.expired) {
+          context.dispatch("clearStorage");
+        } else {
+          context.commit("setOidcAuth", oidcUser);
+        }
+      })
+      .finally(() => {
+        // Clear any stale information from previous login attempts
+        authService.clearStaleState();
+      });
   },
   signOutOidc(context) {
     authService.logout().then(() => {
-      context.commit("unsetOidcAuth");
-      context.commit("user/clearUserData", { root: true });
-      context.dispatch("unsetHttpToken");
+      context.dispatch("clearStorage");
     });
   },
-  unsetHttpToken(context) {
-    httpDelegate.unsetAuthorizationHeader();
+  clearStorage(context) {
+    authService.removeUser().finally(() => {
+      httpDelegate.unsetAuthorizationHeader();
+      context.commit("unsetOidcAuth");
+      context.commit("user/clearUserData", { root: true });
+    });
   },
   setHttpToken(context, token) {
     httpDelegate.setAuthorizationHeader(token);

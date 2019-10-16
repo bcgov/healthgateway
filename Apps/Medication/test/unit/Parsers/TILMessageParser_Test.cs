@@ -19,12 +19,8 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Moq;
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
     using Xunit;
@@ -58,7 +54,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<string> request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress, 101010);
 
-            Assert.False(request.IsErr);
+            Assert.False(request.IsError);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA||{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
             Assert.Contains($"ZCB|{hnClientConfig.ZCB.PharmacyId}|{date}|{traceNumber}", request.Message);
@@ -79,7 +75,7 @@ namespace HealthGateway.Medication.Test
             sb.Append($"ZZZ|TIL|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||{expectedErrorMessage}\r");
             HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.IsErr);
+            Assert.True(actual.IsError);
             Assert.Equal(expectedErrorMessage, actual.Error);
             Assert.Null(actual.Message);
         }
@@ -130,7 +126,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.False(actual.IsErr);
+            Assert.False(actual.IsError);
             Assert.True(expectedPharmacy.IsDeepEqual(actual.Message));
         }
 

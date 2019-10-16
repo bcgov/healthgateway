@@ -17,20 +17,22 @@ namespace HealthGateway.Medication
 {
     using Microsoft.EntityFrameworkCore;
 
-
     /// <summary>
-    /// The database context to be used for the Medication Service
+    /// The database context to be used for the Medication Service.
     /// </summary>
     public class MedicationDBContext : DbContext
     {
-        //The DB name for the Pharmanet Trace ID Sequence
+        /// <summary>
+        /// The DB name for the Pharmanet Trace ID Sequence.
+        /// </summary>
         public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
 
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public MedicationDBContext(DbContextOptions<MedicationDBContext> options) : base(options)
+        public MedicationDBContext(DbContextOptions<MedicationDBContext> options)
+            : base(options)
         {
         }
 

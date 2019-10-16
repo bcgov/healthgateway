@@ -1,3 +1,4 @@
+
 //-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
@@ -13,33 +14,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication
+namespace HealthGateway.Medication.Delegates
 {
-    using System;
-    using System.IO;
-    using Microsoft.EntityFrameworkCore;
-    using Npgsql;
-    using NpgsqlTypes;
+    using HealthGateway.Common.Models;
+    using System.Collections.Generic;
+    using HealthGateway.Medication.Models;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// Extensions to the Medications DB Context.
+    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management
     /// </summary>
-    public static class MedicationDBContextExtensions
+    public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {
-        private static IMedicationDBContextExt defaultImpl = new MedicationDBContextExt();
-
-        /// Allow us to swap out implementations for testing.
-        public static IMedicationDBContextExt Implementation { get; set; } = defaultImpl;
-
-        public static void RevertToDefaultImplementation()
-        {
-            Implementation = defaultImpl;
-        }
-
         /// <inheritdoc/>
-        public static long NextValueForSequence(this MedicationDBContext ctx, string seq)
+        public Task<RequestResult<List<Medication>>> FindMedicationsByDIN(List<string> drugIdentifiers)
         {
-            return Implementation.NextValueForSequence(ctx, seq);
+            throw new System.NotImplementedException();
         }
     }
 }

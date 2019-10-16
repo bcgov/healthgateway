@@ -24,10 +24,10 @@ namespace HealthGateway.Medication.Services
     /// The TEST Medication data service.
     /// IMPORTANT TODO: Service only to be used for development.
     /// </summary>
-    public class TestMedicationService : IMedicationService
+    public class TestMedicationStatementService : IMedicationStatementService
     {
         /// <inheritdoc/>
-        public Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
+        public Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
             List<MedicationStatement> returnList = new List<MedicationStatement>();
 

@@ -13,27 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication
+namespace HealthGateway.Medication.Delegates
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Medication.Models;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// The entry point for the project.
+    /// Delegate that retrieves drugs based on the drug identifier.
     /// </summary>
-    public static class Program
+    public interface IDrugLookupDelegate
     {
-        /// <summary>.
-        /// The entry point for the class.
+        /// <summary>
+        /// Retrieves the Medications that match a set of drug identifier numbers (DINs).
         /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
+        /// <param name="drugIdentifiers">List of drug identifiers.</param>
+        /// <returns>A request results with the outcome of the lookup.</returns>
+        Task<RequestResult<List<Medication>>> FindMedicationsByDIN(List<string> drugIdentifiers);
     }
 }

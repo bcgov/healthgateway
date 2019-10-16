@@ -41,6 +41,7 @@ namespace HealthGateway.Medication.Services
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
+        /// <param name="ctx">The injected DB Context.</param>
         public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory, MedicationDBContext ctx)
         {
             this.configService = config;

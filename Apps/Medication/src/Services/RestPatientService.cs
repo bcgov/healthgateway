@@ -23,10 +23,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Newtonsoft.Json;
-    using HealthGateway.Common.Authentication;
-    using System.Text;
 
     /// <summary>
     /// The patient service.
@@ -63,7 +60,6 @@ namespace HealthGateway.Medication.Services
 
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
                 {
-
                     if (response.IsSuccessStatusCode)
                     {
                         string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);

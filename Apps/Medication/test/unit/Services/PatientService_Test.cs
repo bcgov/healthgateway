@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Test
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using System.Text;
     using Newtonsoft.Json;
