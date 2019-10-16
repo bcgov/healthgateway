@@ -16,6 +16,8 @@ export interface IAuthenticationService {
   signinRedirect(idphint: string, redirectPath: string): Promise<void>;
   signinRedirectCallback(): Promise<OidcUser>;
   getOidcConfig(): UserManagerSettings;
+  removeUser(): Promise<void>;
+  clearStaleState(): Promise<void>;
 }
 
 export interface IImmsService {
