@@ -780,7 +780,7 @@
     "commands": [{
       "id": "864d1ef9-0a5e-440c-bb39-bc02023fdc63",
       "comment": "",
-      "command": "//run",
+      "command": "run",
       "target": "Keycloak Login",
       "targets": [],
       "value": ""
@@ -821,10 +821,10 @@
     }, {
       "id": "8a721487-5b1c-4a05-9c24-3562f8cfe5ea",
       "comment": "",
-      "command": "assertText",
-      "target": "css=h2",
+      "command": "verifyElementPresent",
+      "target": "xpath=//*[starts-with(., 'PHN') and string-length() = 15]",
       "targets": [],
-      "value": "PHN: Not Found"
+      "value": ""
     }]
   }, {
     "id": "31429eb6-c2c4-4282-8512-9f77cc9488c2",
