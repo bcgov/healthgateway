@@ -19,12 +19,9 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
-    using System.Security.Claims;
-    using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 

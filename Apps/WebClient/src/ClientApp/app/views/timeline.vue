@@ -135,7 +135,9 @@ $radius: 15px;
                     <b-row>
                       <b-col>
                         <b-btn
-                          v-b-toggle="'entryDetails-' + index"
+                          v-b-toggle="
+                            'entryDetails-' + index + '-' + dateGroup.key
+                          "
                           variant="link"
                           class="detailsButton"
                         >
@@ -147,8 +149,18 @@ $radius: 15px;
                           ></span>
                           View Details
                         </b-btn>
-                        <b-collapse :id="'entryDetails-' + index">
-                          The details of the record go here
+                        <b-collapse
+                          :id="'entryDetails-' + index + '-' + dateGroup.key"
+                        >
+                          <b-col>
+                            <div
+                              v-for="detail in entry.details"
+                              :key="detail.name"
+                            >
+                              <strong>{{ detail.name }}:</strong>
+                              {{ detail.value }}
+                            </div>
+                          </b-col>
                         </b-collapse>
                       </b-col>
                     </b-row>
@@ -204,14 +216,16 @@ export default class TimelineComponent extends Vue {
     medicationService
       .getPatientMedicationStatemens(this.user.hdid)
       .then(results => {
-        if (!results.isErr) {
+        console.log(results);
+        if (!results.errorMessage) {
           // Add the medication entries to the timeline list
-          for (let result of results.message) {
+          for (let result of results.resourcePayload) {
             this.timelineEntries.push(new TimelineEntry(result));
           }
         } else {
           console.log(
-            "Error returned from the medication statements call: " + results.err
+            "Error returned from the medication statements call: " +
+              results.errorMessage
           );
         }
       })

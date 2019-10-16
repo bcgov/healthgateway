@@ -59,8 +59,8 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationsAsync("123456789", "test", "10.0.0.1");
+            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", "test", "10.0.0.1");
 
             Assert.True(actual.Message.Count == 0);
         }
@@ -78,10 +78,10 @@ namespace HealthGateway.Medication.Test
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationsAsync("", "", "");
+            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("", "", "");
 
-            Assert.True(actual.IsErr);
+            Assert.True(actual.IsError);
             Assert.Equal($"Unable to connect to HNClient: {HttpStatusCode.BadRequest}", actual.Error);
         }
     }

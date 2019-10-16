@@ -5,11 +5,11 @@ import "reflect-metadata";
 
 import { ExternalConfiguration } from "@/models/configData";
 import HttpDelegate from "@/services/httpDelegate";
-import MedicationStatement from "@/models/medicationStatement";
+import RequestResult from "@/models/requestResult";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
-  private readonly MEDICATION_BASE_URI: string = "v1/api/Medication/";
+  private readonly MEDICATION_BASE_URI: string = "v1/api/MedicationStatement/";
   private baseUri: string = "";
   private http!: HttpDelegate;
   constructor() {}
@@ -19,10 +19,8 @@ export class RestMedicationService implements IMedicationService {
     this.http = http;
   }
 
-  public getPatientMedicationStatemens(
-    hdid: string
-  ): Promise<MedicationStatement[]> {
-    return this.http.get<MedicationStatement[]>(
+  public getPatientMedicationStatemens(hdid: string): Promise<RequestResult> {
+    return this.http.get<RequestResult>(
       `${this.baseUri}${this.MEDICATION_BASE_URI}${hdid}`
     );
   }

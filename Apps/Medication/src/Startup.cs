@@ -16,16 +16,14 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
-    using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
+    using HealthGateway.Medication.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -81,12 +79,13 @@ namespace HealthGateway.Medication
             });
 
             services.AddSingleton<IAuthService, AuthService>();
-            services.AddSingleton<IMedicationService, RestMedicationService>();
+            services.AddSingleton<IMedicationStatementService, RestMedicationStatementService>();
             services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddSingleton<IPharmacyService, RestPharmacyService>();
             services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
             services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
+            services.AddSingleton<IDrugLookupDelegate, EntityDrugLookupDelegate>();
         }
 
         /// <summary>

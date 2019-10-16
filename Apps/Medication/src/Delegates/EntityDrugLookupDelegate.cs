@@ -1,3 +1,4 @@
+
 //-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
@@ -13,22 +14,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Medication.Delegates
 {
+    using HealthGateway.Common.Models;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// The Medication data service.
+    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management
     /// </summary>
-    public interface IMedicationService
+    public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {
-        /// <summary>
-        /// Gets the medications that match the DIN.
-        /// </summary>
-        /// <param name="medicationDinList">The ip address of the request.</param>
-        /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<Medication>>> GetMedicationsAsync(List<string> medicationDinList);
+        /// <inheritdoc/>
+        public Task<RequestResult<List<Medication>>> FindMedicationsByDIN(List<string> drugIdentifiers)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

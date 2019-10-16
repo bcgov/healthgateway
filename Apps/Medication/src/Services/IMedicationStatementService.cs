@@ -15,34 +15,22 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The TEST Medication data service.
-    /// IMPORTANT TODO: Service only to be used for development.
+    /// The Medication data service.
     /// </summary>
-    public class TestMedicationService : IMedicationService
+    public interface IMedicationStatementService
     {
-        /// <inheritdoc/>
-        public Task<HNMessage<List<MedicationStatement>>> GetMedicationsAsync(string phn, string userId, string ipAddress)
-        {
-            List<MedicationStatement> returnList = new List<MedicationStatement>();
-
-            for (int i = 0; i < 10; i++)
-            {
-                returnList.Add(new MedicationStatement()
-                {
-                    BrandName = "A brand name " + i,
-                    DIN = "ABC" + i,
-                    GenericName = "A generic name " + i,
-                    DispensedDate = DateTime.Today.AddDays(i % 5),
-                });
-            }
-
-            return Task.FromResult(new HNMessage<List<MedicationStatement>>(returnList));
-        }
+        /// <summary>
+        /// Gets the patient record.
+        /// </summary>
+        /// <param name="phn">The patient phn.</param>
+        /// <param name="userId">The user id of the request.</param>
+        /// <param name="ipAddress">The ip address of the request.</param>
+        /// <returns>A List of MedicationStatement models.</returns>
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
     }
 }

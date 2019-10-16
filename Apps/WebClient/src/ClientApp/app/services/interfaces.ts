@@ -6,7 +6,7 @@ import {
 import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
 import HttpDelegate from "./httpDelegate";
-import MedicationStatement from "@/models/medicationStatement";
+import RequestResult from "@/models/requestResult";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration): void;
@@ -16,6 +16,8 @@ export interface IAuthenticationService {
   signinRedirect(idphint: string, redirectPath: string): Promise<void>;
   signinRedirectCallback(): Promise<OidcUser>;
   getOidcConfig(): UserManagerSettings;
+  removeUser(): Promise<void>;
+  clearStaleState(): Promise<void>;
 }
 
 export interface IImmsService {
@@ -30,7 +32,7 @@ export interface IPatientService {
 
 export interface IMedicationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getPatientMedicationStatemens(hdid: string): Promise<MedicationStatement[]>;
+  getPatientMedicationStatemens(hdid: string): Promise<RequestResult>;
 }
 
 export interface IConfigService {

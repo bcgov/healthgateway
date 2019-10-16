@@ -16,12 +16,12 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
-    using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
+    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -45,50 +45,36 @@ namespace HealthGateway.Medication.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// The authorization service provider.
+        /// The drug lookup delegate.
         /// </summary>
-        private readonly ICustomAuthorizationService authorizationService;
-
-        /// <summary>
-        /// The patient service provider used to retrieve Personal Health Number for subject.
-        /// </summary>
-        private readonly IPatientService patientService;
+        private readonly IDrugLookupDelegate dinLookupDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="medicationService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="authZService">The injected authService authorization provider.</param>
-        /// <param name="patientService">The injected patientService patient registry provider.</param>
-        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
+        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, IDrugLookupDelegate dinLookupDelegate)
         {
             this.medicationService = medicationService;
             this.httpContextAccessor = httpAccessor;
-            this.authorizationService = authZService;
-            this.patientService = patientService;
+            this.dinLookupDelegate = dinLookupDelegate;
         }
 
         /// <summary>
-        /// Gets a json of medication record.
+        /// Gets a list of medications that match the requested drug identifiers.
         /// </summary>
         /// <returns>The medication statement records.</returns>
-        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize]
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedications(string hdid)
+        public async Task<RequestResult<List<Medication>>> GetMedications(List<string> drugIdentifiers)
         {
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
-            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-            string ipv4Address = address.MapToIPv4().ToString();
-
-            return await this.medicationService.GetMedicationsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
+            RequestResult<List<Medication>> result = await this.dinLookupDelegate.FindMedicationsByDIN(drugIdentifiers);
+            return result;
         }
     }
 }

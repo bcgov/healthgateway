@@ -13,22 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Medication.Delegates
 {
+    using HealthGateway.Common.Models;
+    using HealthGateway.Medication.Models;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// Delegate that retrieves drugs based on the drug identifier.
     /// </summary>
-    public interface IMedicationService
+    public interface IDrugLookupDelegate
     {
         /// <summary>
-        /// Gets the medications that match the DIN.
+        /// Retrieves the Medications that match a set of drug identifier numbers (DINs).
         /// </summary>
-        /// <param name="medicationDinList">The ip address of the request.</param>
-        /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<Medication>>> GetMedicationsAsync(List<string> medicationDinList);
+        /// <param name="drugIdentifiers">List of drug identifiers.</param>
+        /// <returns>A request results with the outcome of the lookup.</returns>
+        Task<RequestResult<List<Medication>>> FindMedicationsByDIN(List<string> drugIdentifiers);
     }
 }
