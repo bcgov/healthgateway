@@ -100,11 +100,18 @@ namespace HealthGateway.Common.AspNetConfiguration
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddAuthorization(options =>
-                {
-                    options.AddPolicy("ReadPolicy", policy =>
-                        policy.Requirements.Add(new UserIsPatientRequirement()));
-                });
-            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+            {
+                options.AddPolicy("ReadPolicy", policy =>
+                    policy.Requirements.Add(new UserIsPatientRequirement()));
+            });
+
+            // Configuration Service
+            services.AddTransient<IAuthorizationHandler>(serviceProvider =>
+            {
+                IAuthorizationHandler service = new UserAuthorizationHandler(
+                    serviceProvider.GetService<ILogger<UserAuthorizationHandler>>());
+                return service;
+            });
         }
 
         /// <summary>

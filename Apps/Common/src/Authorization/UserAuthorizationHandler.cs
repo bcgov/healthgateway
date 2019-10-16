@@ -21,9 +21,9 @@ namespace HealthGateway.Common.Authorization
 
     public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, string>
     {
-        private ILogger logger;
+        private ILogger<UserAuthorizationHandler> logger;
 
-        public UserAuthorizationHandler(ILogger logger)
+        public UserAuthorizationHandler(ILogger<UserAuthorizationHandler> logger)
         {
             this.logger = logger;
         }
