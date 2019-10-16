@@ -36,7 +36,7 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldGetMedications()
         {
-            string hdid = "1192929388";
+            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string phn = "0009735353315";
             string userId = "1001";
             string ipAddress = "10.0.0.1";

@@ -60,7 +60,6 @@ namespace HealthGateway.Medication.Services
 
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
                 {
-
                     if (response.IsSuccessStatusCode)
                     {
                         string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);

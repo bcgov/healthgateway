@@ -33,6 +33,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -124,7 +125,17 @@ namespace HealthGateway.Common.AspNetConfiguration
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>
             {
+                o.SaveToken = true;
+                o.RequireHttpsMetadata = true;
+                o.IncludeErrorDetails = true;
                 this.configuration.GetSection("OpenIdConnect").Bind(o);
+
+                o.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                };
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>

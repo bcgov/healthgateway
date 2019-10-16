@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     /// <summary>
