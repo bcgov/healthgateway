@@ -69,6 +69,14 @@ export class RestAuthenticationService implements IAuthenticationService {
     return this.oidcUserManager!.signinRedirectCallback();
   }
 
+  public removeUser(): Promise<void> {
+    return this.oidcUserManager!.removeUser();
+  }
+
+  public clearStaleState(): Promise<void> {
+    return this.oidcUserManager!.clearStaleState();
+  }
+
   //TODO: Do we still need this?
   public expireSiteMinderCookie() {
     // This expires the siteminder cookie preventing the app from login in using the cache.
