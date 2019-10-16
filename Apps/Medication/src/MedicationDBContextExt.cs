@@ -15,28 +15,26 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
+    using System;
+    using System.IO;
+    using Microsoft.EntityFrameworkCore;
+    using Npgsql;
+    using NpgsqlTypes;
 
-    /// <summary>
-    /// The entry point for the project.
-    /// </summary>
-    public static class Program
+    /// <inheritdoc/>
+    public class MedicationDBContextExt : IMedicationDBContextExt
     {
-        /// <summary>.
-        /// The entry point for the class.
-        /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
+        /// <inheritdoc/>
+        public long NextValueForSequence(MedicationDBContext ctx, string seq)
         {
-            //    ProgramConfiguration.BuildWebHost<Startup>(args).Run();
-            CreateWebHostBuilder(args).Build().Run();
+            NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            ctx.Database.ExecuteSqlCommand($"SELECT nextval('{seq}')", result);
+            // code below is to be used when updating to EF 3
+            // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);
+            return (long)result.Value;
         }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
-            //WebHost.CreateDefaultBuilder(args)
-            //       .UseStartup<Startup>();
     }
 }

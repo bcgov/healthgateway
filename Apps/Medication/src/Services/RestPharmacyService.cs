@@ -33,6 +33,7 @@ namespace HealthGateway.Medication.Services
         private readonly IConfiguration configService;
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
         private readonly IHttpClientFactory httpClientFactory;
+        private MedicationDBContext ctx;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
@@ -40,11 +41,12 @@ namespace HealthGateway.Medication.Services
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
-        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory)
+        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory, MedicationDBContext ctx)
         {
             this.configService = config;
             this.pharmacyParser = parser;
             this.httpClientFactory = httpClientFactory;
+            this.ctx = ctx;
         }
 
         /// <inheritdoc/>
@@ -56,17 +58,20 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-
-                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress);
-                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
+                using (ctx)
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    return JsonConvert.DeserializeObject<HNMessage<Pharmacy>>(payload);
-                }
-                else
-                {
-                    return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                    long traceId = ctx.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                    HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
+                    HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                        return JsonConvert.DeserializeObject<HNMessage<Pharmacy>>(payload);
+                    }
+                    else
+                    {
+                        return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                    }
                 }
             }
         }

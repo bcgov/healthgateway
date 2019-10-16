@@ -15,28 +15,30 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
+    using System;
+    using System.IO;
+    using Microsoft.EntityFrameworkCore;
+    using Npgsql;
+    using NpgsqlTypes;
 
     /// <summary>
-    /// The entry point for the project.
+    /// Extensions to the Medications DB Context.
     /// </summary>
-    public static class Program
+    public static class MedicationDBContextExtentions
     {
-        /// <summary>.
-        /// The entry point for the class.
-        /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
+
+        private static IMedicationDBContextExt defaultImpl = new MedicationDBContextExt();
+        public static IMedicationDBContextExt Implementation { get; set; } = defaultImpl;
+
+        public static void RevertToDefaultImplementation()
         {
-            //    ProgramConfiguration.BuildWebHost<Startup>(args).Run();
-            CreateWebHostBuilder(args).Build().Run();
+            Implementation = defaultImpl;
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
-            //WebHost.CreateDefaultBuilder(args)
-            //       .UseStartup<Startup>();
+        /// <inheritdoc/>
+        public static long NextValueForSequence(this MedicationDBContext ctx, string seq)
+        {
+            return Implementation.NextValueForSequence(ctx, seq);
+        }
     }
 }

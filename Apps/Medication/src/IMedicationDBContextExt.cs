@@ -15,28 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
-
     /// <summary>
-    /// The entry point for the project.
+    /// Extensions to the Medications DB Context.
     /// </summary>
-    public static class Program
+    public interface IMedicationDBContextExt
     {
-        /// <summary>.
-        /// The entry point for the class.
+        /// <summary>
+        /// Gets the next sequence number for the given sequence name.
         /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
-        {
-            //    ProgramConfiguration.BuildWebHost<Startup>(args).Run();
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
-            //WebHost.CreateDefaultBuilder(args)
-            //       .UseStartup<Startup>();
+        /// <param name="ctx"></param>
+        /// <param name="seq"></param>
+        /// <returns>The next sequence value</returns>
+        long NextValueForSequence(MedicationDBContext ctx, string seq);
     }
 }

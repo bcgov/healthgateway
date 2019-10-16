@@ -25,6 +25,8 @@ namespace HealthGateway.Medication
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -77,8 +79,12 @@ namespace HealthGateway.Medication
                 };
             });
 
+            var info = this.configuration.GetConnectionString("MedicationConnection");
+            // Configure the database
+            services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
+                    this.configuration.GetConnectionString("MedicationConnection")));
             services.AddSingleton<IAuthService, AuthService>();
-            services.AddSingleton<IMedicationService, RestMedicationService>();
+            services.AddTransient<IMedicationService, RestMedicationService>();
             services.AddSingleton<IPatientService, RestPatientService>();
             services.AddSingleton<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddSingleton<IPharmacyService, RestPharmacyService>();

@@ -36,13 +36,13 @@ namespace HealthGateway.Medication.Parsers
         }
 
         /// <inheritdoc/>
-        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress)
+        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId)
         {
             Message m = new Message();
 
-            this.SetMessageHeader(m, userId, ipAddress);
+            this.SetMessageHeader(m, userId, ipAddress, traceId);
             this.SetClaimsStandardSegment(m, string.Empty);
-            this.SetProviderInfoSegment(m);
+            this.SetProviderInfoSegment(m, traceId);
 
             // ZPL - Location Information
             Segment zpl = new Segment(HNClientConfiguration.SEGMENT_ZPL, this.Encoding);
@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Parsers
             zpl.AddNewField(this.ClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
             m.AddNewSegment(zpl);
 
-            this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID);
+            this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID, traceId);
 
             return new HNMessage<string>(m.SerializeMessage(false));
         }
