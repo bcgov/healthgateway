@@ -13,6 +13,7 @@ import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import Medication from "@/models/medication";
 import Pharmacy from "@/models/pharmacy";
+import RequestResult from "@/models/requestResult";
 
 const today = new Date();
 var yesterday = new Date(today);
@@ -42,12 +43,18 @@ class MockMedicationService implements IMedicationService {
     // No need to implement for the mock
     throw new Error("Method not implemented.");
   }
-  getPatientMedicationStatemens(hdid: string): Promise<MedicationStatement[]> {
-    return new Promise<MedicationStatement[]>((resolve, reject) => {
+  getPatientMedicationStatemens(hdid: string): Promise<RequestResult> {
+    return new Promise<RequestResult>((resolve, reject) => {
       if (hdid === "hdid_with_results") {
-        resolve(medicationStatements);
+        resolve({
+          totalResultCount: medicationStatements.length,
+          pageIndex: 0,
+          pageSize: medicationStatements.length,
+          errorMessage: "",
+          resourcePayload: medicationStatements
+        });
       } else if (hdid === "hdid_no_results") {
-        resolve([]);
+        resolve();
       } else {
         reject({
           error: "User with " + hdid + " not found."

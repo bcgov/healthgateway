@@ -44,7 +44,7 @@ namespace HealthGateway.Medication.Models
         /// <param name="errorMessage">The error message.</param>
         public HNMessage(bool isError, string errorMessage)
         {
-            this.IsErr = isError;
+            this.IsError = isError;
             this.Error = errorMessage;
         }
 
@@ -56,7 +56,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets a value indicating whether an error occurred.
         /// </summary>
-        public bool IsErr { get; set; }
+        public bool IsError { get; set; }
 
         /// <summary>
         /// Gets or sets the error message associated to this Message.
