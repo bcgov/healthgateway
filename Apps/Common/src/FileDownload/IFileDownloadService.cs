@@ -29,3 +29,4 @@ namespace HealthGateway.Common.FileDownload
         /// <returns>The DownloadedFile.</returns>      
         Task <DownloadedFile> GetFileFromUrl(string url);
     }
+}
