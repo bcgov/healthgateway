@@ -45,7 +45,7 @@ namespace HealthGateway.DIN.Models
         /// <summary>
         /// The Drug Class
         /// </summary>
-        [MaxLength(40)]
+        [MaxLength(80)]
         public string DrugClassFrench { get; set; }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace HealthGateway.DIN.Models
         /// <summary>
         /// The Brand name of the Drug in French.
         /// </summary>
-        [MaxLength(200)]
+        [MaxLength(300)]
         public string BrandNameFrench { get; set; }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace HealthGateway.DIN.Models
         /// <summary>
         /// The Descriptor for the Drug in French
         /// </summary>
-        [MaxLength(150)]
+        [MaxLength(200)]
         public string DescriptorFrench { get; set; }
 
         /// <summary>

@@ -29,6 +29,9 @@ namespace HealthGateway.DIN.Models
         [MaxLength(240)]
         public string Ingredient { get; set; }
 
+        [MaxLength(400)]
+        public string IngredientFrench { get; set; }
+
         [MaxLength(1)]
         public string IngredientSuppliedInd { get; set; }
 
@@ -38,8 +41,14 @@ namespace HealthGateway.DIN.Models
         [MaxLength(40)]
         public string StrengthUnit { get; set; }
 
+        [MaxLength(80)]
+        public string StrengthUnitFrench { get; set; }
+
         [MaxLength(40)]
         public string StrengthType { get; set; }
+
+        [MaxLength(80)]
+        public string StrengthTypeFrench { get; set; }
 
         [MaxLength(20)]
         public string DosageValue { get; set; }
@@ -50,10 +59,10 @@ namespace HealthGateway.DIN.Models
         [MaxLength(40)]
         public string DosageUnit { get; set; }
 
+        [MaxLength(80)]
+        public string DosageUnitFrench { get; set; }
+
         [MaxLength(2000)]
         public string Notes { get; set; }
-
-        //Foreign Keys
-        //Ingredient, Strength Unit, Type, and DosageUnit
     }
 }
