@@ -1,4 +1,4 @@
-﻿// //-------------------------------------------------------------------------
+// //-------------------------------------------------------------------------
 // // Copyright © 2019 Province of British Columbia
 // //
 // // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,31 +13,21 @@
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
 // //-------------------------------------------------------------------------
-namespace HealthGateway.DIN.Models
+namespace HealthGateway.DrugMaintainer
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
+    using CsvHelper.Configuration;
+    using HealthGateway.DIN.Models;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    public class Status : AuditableEntity
+    public class PharmaceuticalStdMapper : ClassMap<PharmaceuticalStd>
     {
-        public Guid StatusId { get; set; }
-
-        public DrugProduct Drug { get; set; }
-
-        [MaxLength(1)]
-        public string CurrentStatusFlag { get; set; }
-
-        [MaxLength(40)]
-        public string StatusDesc { get; set; }
-
-        [MaxLength(80)]
-        public string StatusDescFrench { get; set; }
-
-        public DateTime? HistoryDate { get; set; }
-
-        [MaxLength(80)]
-        public string LotNumber { get; set; }
-
-        public DateTime? ExpirationDate { get; set; }
+        public PharmaceuticalStdMapper(IEnumerable<DrugProduct> drugProducts)
+        {
+            // DRUG_CODE
+            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            // PHARMACEUTICAL_STD
+            Map(m => m.PharmaceuticalStdDesc).Index(1);
+        }
     }
 }
