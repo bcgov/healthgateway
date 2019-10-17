@@ -75,8 +75,8 @@ namespace HealthGateway.Common.FileDownload
             {
                 this.logger.LogDebug(exception.ToString());
                 File.Delete(filePath);
-                df.LocalFilePath = "";
-                df.FileSHA256 = "";
+                df.LocalFilePath = string.Empty;
+                df.FileSHA256 = string.Empty;
             }
 
             return df;
