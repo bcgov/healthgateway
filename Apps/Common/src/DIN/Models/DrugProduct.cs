@@ -26,16 +26,27 @@ namespace HealthGateway.DIN.Models
         public Guid DrugProductId { get; set; }
 
         /// <summary>
+        /// The source Drug Code from the Government extract QRYM_DRUG_PRODUCT
+        /// </summary>
+        public string DrugCode { get; set; }
+
+        /// <summary>
         /// The Drug Production Categorization.
         /// </summary>
         [MaxLength(80)]
         public string ProductCategorization { get; set; }
 
         /// <summary>
-        /// The Drug Class
+        /// The Drug Class in French
         /// </summary>
         [MaxLength(40)]
         public string DrugClass { get; set; }
+
+        /// <summary>
+        /// The Drug Class
+        /// </summary>
+        [MaxLength(40)]
+        public string DrugClassFrench { get; set; }
 
         /// <summary>
         /// The Drug Identification Number.
@@ -49,11 +60,24 @@ namespace HealthGateway.DIN.Models
         [MaxLength(200)]
         public string BrandName { get; set; }
 
+
+        /// <summary>
+        /// The Brand name of the Drug in French.
+        /// </summary>
+        [MaxLength(200)]
+        public string BrandNameFrench { get; set; }
+
         /// <summary>
         /// The Descriptor for the Drug.
         /// </summary>
         [MaxLength(150)]
         public string Descriptor { get; set; }
+
+        /// <summary>
+        /// The Descriptor for the Drug in French
+        /// </summary>
+        [MaxLength(150)]
+        public string DescriptorFrench { get; set; }
 
         /// <summary>
         /// The Pediatric flag.
@@ -83,10 +107,5 @@ namespace HealthGateway.DIN.Models
         /// </summary>
         [MaxLength(10)]
         public string AiGroupNumber { get; set; }
-
-        //Foriegn Keys
-        //class, BrandName, Descriptor
-
-
     }
 }
