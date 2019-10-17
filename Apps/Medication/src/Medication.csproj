@@ -56,8 +56,6 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="Database\" />
-    <Folder Include="DIN\" />
-    <Folder Include="DIN\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20191017020339_InitialCreate.Designer.cs" />

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Medication.Migrations
 {
     [DbContext(typeof(MedicationDBContext))]
-    [Migration("20191017182854_InitialCreate")]
+    [Migration("20191017184659_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
