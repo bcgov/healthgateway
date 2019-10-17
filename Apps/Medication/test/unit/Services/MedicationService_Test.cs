@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Test
 {
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;

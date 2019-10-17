@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;

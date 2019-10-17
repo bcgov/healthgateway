@@ -20,6 +20,7 @@ namespace HealthGateway.Medication
     using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;

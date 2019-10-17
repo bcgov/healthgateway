@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication
+namespace HealthGateway.Medication.Database
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +38,7 @@ namespace HealthGateway.Medication
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasSequence<int>(PHARMANET_TRACE_SEQUENCE)
+            modelBuilder.HasSequence<long>(PHARMANET_TRACE_SEQUENCE)
                         .StartsAt(1)
                         .IncrementsBy(1)
                         .HasMin(1)

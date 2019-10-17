@@ -20,6 +20,7 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;

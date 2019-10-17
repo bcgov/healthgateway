@@ -55,5 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Database\" />
   </ItemGroup>
 </Project>

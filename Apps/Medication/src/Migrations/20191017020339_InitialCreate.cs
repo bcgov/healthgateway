@@ -6,7 +6,7 @@ namespace Medication.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateSequence<int>(
+            migrationBuilder.CreateSequence(
                 name: "trace_seq",
                 minValue: 1L,
                 maxValue: 999999L,
