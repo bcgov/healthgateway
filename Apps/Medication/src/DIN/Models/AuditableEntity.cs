@@ -16,10 +16,11 @@
 using System;
 namespace Medication.Models.DIN
 {
-    public class Drug
+    public abstract class AuditableEntity: IAuditable
     {
-        public Drug()
-        {
-        }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDateTime { get; set; }
+        public string UpdatedBy { get; set; }
+        public string UpdatedDateTime { get; set; }
     }
 }
