@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Medication.Migrations
 {
     [DbContext(typeof(MedicationDBContext))]
-    [Migration("20191017222715_InitialCreate")]
+    [Migration("20191017225716_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -445,6 +445,9 @@ namespace Medication.Migrations
 
                     b.Property<string>("AhfsFrench")
                         .HasMaxLength(160);
+
+                    b.Property<string>("AhfsNumber")
+                        .HasMaxLength(20);
 
                     b.Property<string>("Atc")
                         .HasMaxLength(120);

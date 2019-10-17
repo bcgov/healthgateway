@@ -284,6 +284,7 @@ namespace Medication.Migrations
                     AtcNumber = table.Column<string>(maxLength: 8, nullable: true),
                     Atc = table.Column<string>(maxLength: 120, nullable: true),
                     AtcFrench = table.Column<string>(maxLength: 240, nullable: true),
+                    AhfsNumber = table.Column<string>(maxLength: 20, nullable: true),
                     Ahfs = table.Column<string>(maxLength: 80, nullable: true),
                     AhfsFrench = table.Column<string>(maxLength: 160, nullable: true)
                 },

@@ -444,6 +444,9 @@ namespace Medication.Migrations
                     b.Property<string>("AhfsFrench")
                         .HasMaxLength(160);
 
+                    b.Property<string>("AhfsNumber")
+                        .HasMaxLength(20);
+
                     b.Property<string>("Atc")
                         .HasMaxLength(120);
 
