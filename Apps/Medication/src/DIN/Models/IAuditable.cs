@@ -14,7 +14,7 @@
 // // limitations under the License.
 // //-------------------------------------------------------------------------
 using System;
-namespace Medication.Models.DIN
+namespace HealthGateway.DIN.Models
 {
     public interface IAuditable
     {

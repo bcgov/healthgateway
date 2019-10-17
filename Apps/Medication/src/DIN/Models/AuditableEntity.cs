@@ -13,14 +13,22 @@
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
 // //-------------------------------------------------------------------------
-using System;
-namespace Medication.Models.DIN
+namespace HealthGateway.DIN.Models
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
     public abstract class AuditableEntity: IAuditable
     {
+        [Required]
         public string CreatedBy { get; set; }
+
+        [Required]
         public DateTime CreatedDateTime { get; set; }
+
+        [Required]
         public string UpdatedBy { get; set; }
+
+        [Required]
         public string UpdatedDateTime { get; set; }
     }
 }
