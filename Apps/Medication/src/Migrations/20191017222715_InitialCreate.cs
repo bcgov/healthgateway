@@ -14,21 +14,6 @@ namespace Medication.Migrations
                 cyclic: true);
 
             migrationBuilder.CreateTable(
-                name: "Companies",
-                columns: table => new
-                {
-                    CompanyId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
-                    UpdatedDateTime = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Companies", x => x.CompanyId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Drugs",
                 columns: table => new
                 {
@@ -87,6 +72,45 @@ namespace Medication.Migrations
                     table.PrimaryKey("PK_ActiveIngredients", x => x.ActiveIngredientId);
                     table.ForeignKey(
                         name: "FK_ActiveIngredients_Drugs_DrugProductId",
+                        column: x => x.DrugProductId,
+                        principalTable: "Drugs",
+                        principalColumn: "DrugProductId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    CompanyId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedDateTime = table.Column<string>(nullable: false),
+                    DrugProductId = table.Column<Guid>(nullable: true),
+                    ManufacturerCode = table.Column<string>(maxLength: 5, nullable: true),
+                    CompanyCode = table.Column<int>(nullable: false),
+                    CompanyName = table.Column<string>(maxLength: 80, nullable: true),
+                    CompanyType = table.Column<string>(maxLength: 40, nullable: true),
+                    AddressMailingFlag = table.Column<string>(maxLength: 1, nullable: true),
+                    AddressBillingFlag = table.Column<string>(maxLength: 1, nullable: true),
+                    AddressNotificationFlag = table.Column<string>(maxLength: 1, nullable: true),
+                    AddressOther = table.Column<string>(maxLength: 1, nullable: true),
+                    SuiteNumber = table.Column<string>(maxLength: 20, nullable: true),
+                    StreetName = table.Column<string>(maxLength: 80, nullable: true),
+                    CityName = table.Column<string>(maxLength: 60, nullable: true),
+                    Province = table.Column<string>(maxLength: 40, nullable: true),
+                    ProvinceFrench = table.Column<string>(maxLength: 100, nullable: true),
+                    Country = table.Column<string>(maxLength: 40, nullable: true),
+                    CountryFrench = table.Column<string>(maxLength: 100, nullable: true),
+                    PostalCode = table.Column<string>(maxLength: 20, nullable: true),
+                    PostOfficeBox = table.Column<string>(maxLength: 15, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.CompanyId);
+                    table.ForeignKey(
+                        name: "FK_Companies_Drugs_DrugProductId",
                         column: x => x.DrugProductId,
                         principalTable: "Drugs",
                         principalColumn: "DrugProductId",
@@ -302,6 +326,11 @@ namespace Medication.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveIngredients_DrugProductId",
                 table: "ActiveIngredients",
+                column: "DrugProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_DrugProductId",
+                table: "Companies",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(

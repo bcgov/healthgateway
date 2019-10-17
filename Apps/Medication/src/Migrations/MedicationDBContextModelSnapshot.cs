@@ -91,10 +91,62 @@ namespace Medication.Migrations
                     b.Property<Guid>("CompanyId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("AddressBillingFlag")
+                        .HasMaxLength(1);
+
+                    b.Property<string>("AddressMailingFlag")
+                        .HasMaxLength(1);
+
+                    b.Property<string>("AddressNotificationFlag")
+                        .HasMaxLength(1);
+
+                    b.Property<string>("AddressOther")
+                        .HasMaxLength(1);
+
+                    b.Property<string>("CityName")
+                        .HasMaxLength(60);
+
+                    b.Property<int>("CompanyCode");
+
+                    b.Property<string>("CompanyName")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("CompanyType")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("CountryFrench")
+                        .HasMaxLength(100);
+
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
                     b.Property<DateTime>("CreatedDateTime");
+
+                    b.Property<Guid?>("DrugProductId");
+
+                    b.Property<string>("ManufacturerCode")
+                        .HasMaxLength(5);
+
+                    b.Property<string>("PostOfficeBox")
+                        .HasMaxLength(15);
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20);
+
+                    b.Property<string>("Province")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("ProvinceFrench")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("StreetName")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("SuiteNumber")
+                        .HasMaxLength(20);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
@@ -103,6 +155,8 @@ namespace Medication.Migrations
                         .IsRequired();
 
                     b.HasKey("CompanyId");
+
+                    b.HasIndex("DrugProductId");
 
                     b.ToTable("Companies");
                 });
@@ -454,6 +508,13 @@ namespace Medication.Migrations
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.ActiveIngredient", b =>
+                {
+                    b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
+                        .WithMany()
+                        .HasForeignKey("DrugProductId");
+                });
+
+            modelBuilder.Entity("HealthGateway.DIN.Models.Company", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
