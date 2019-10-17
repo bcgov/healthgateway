@@ -17,9 +17,11 @@ namespace HealthGateway.Medication.Test
 {
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using System.Collections.Generic;
@@ -30,7 +32,6 @@ namespace HealthGateway.Medication.Test
     using System.Text;
     using Newtonsoft.Json;
     using Xunit;
-
 
     public class MedicationService_Test
     {
@@ -59,9 +60,15 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", "test", "10.0.0.1");
+            //DB Mockup
+            DbContextOptions<MedicationDBContext> dbOPtions = new DbContextOptions<MedicationDBContext>();
+            Mock<MedicationDBContext> dbctxMock = new Mock<MedicationDBContext>(dbOPtions);
+            Mock<IMedicationDBContextExt> mockExtensions = new Mock<IMedicationDBContextExt>();
+            mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
+            MedicationDBContextExtensions.Implementation = mockExtensions.Object;
 
+            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", "test", "10.0.0.1");
             Assert.True(actual.Message.Count == 0);
         }
 
@@ -78,7 +85,15 @@ namespace HealthGateway.Medication.Test
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
+
+            //DB Mockup
+            DbContextOptions<MedicationDBContext> dbOPtions = new DbContextOptions<MedicationDBContext>();
+            Mock<MedicationDBContext> dbctxMock = new Mock<MedicationDBContext>(dbOPtions);
+            Mock<IMedicationDBContextExt> mockExtensions = new Mock<IMedicationDBContextExt>();
+            mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
+            MedicationDBContextExtensions.Implementation = mockExtensions.Object;
+
+            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
             HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("", "", "");
 
             Assert.True(actual.IsError);

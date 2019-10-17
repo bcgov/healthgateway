@@ -29,7 +29,6 @@ namespace HealthGateway.Medication.Parsers
     public abstract class BaseMessageParser<T> : IHNMessageParser<T>
     {
         private readonly TimeZoneInfo localTimeZone;
-        private readonly string traceId = "101010";
         private readonly IConfiguration configuration;
         private readonly CultureInfo culture;
 
@@ -68,7 +67,7 @@ namespace HealthGateway.Medication.Parsers
         protected HL7Encoding Encoding { get; set; }
 
         /// <inheritdoc/>
-        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress);
+        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId);
 
         /// <inheritdoc/>
         public abstract HNMessage<T> ParseResponseMessage(string hl7Message);
@@ -79,13 +78,13 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="m">The message object.</param>
         /// <param name="userId">The request user id.</param>
         /// <param name="ipAddress">The request user ip address.</param>
-        protected void SetMessageHeader(Message m, string userId, string ipAddress)
+        protected void SetMessageHeader(Message m, string userId, string ipAddress, long traceId)
         {
             if (m is null)
             {
                 throw new ArgumentNullException(nameof(m));
             }
-
+            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
             // MSH - Message Header
             m.AddSegmentMSH(
                 this.ClientConfig.SendingApplication,
@@ -94,7 +93,7 @@ namespace HealthGateway.Medication.Parsers
                 this.ClientConfig.ReceivingFacility,
                 $"{userId?.ToUpper(this.culture)}:{ipAddress}",
                 $"{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00",
-                this.traceId,
+                formattedTraceId,
                 this.ClientConfig.ProcessingID,
                 this.ClientConfig.MessageVersion);
             m.SetValue("MSH.7", this.GetLocalDateTime()); // HNClient specific date format
@@ -106,18 +105,18 @@ namespace HealthGateway.Medication.Parsers
         /// </summary>
         /// <param name="m">The message object.</param>
         /// <param name="transactionId">The message transaction id.</param>
-        protected void SetTransactionControlSegment(Message m, string transactionId)
+        protected void SetTransactionControlSegment(Message m, string transactionId, long traceId)
         {
             if (m is null)
             {
                 throw new ArgumentNullException(nameof(m));
             }
-
+            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
             // ZZZ - Transaction Control
             Segment zzz = new Segment(HNClientConfiguration.SEGMENT_ZZZ, this.Encoding);
             zzz.AddNewField(transactionId); // Transaction ID
             zzz.AddNewField(string.Empty); // Response Status (Empty)
-            zzz.AddNewField(this.traceId); // Trace Number
+            zzz.AddNewField(formattedTraceId); // Trace Number
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
             m.AddNewSegment(zzz);
@@ -149,18 +148,18 @@ namespace HealthGateway.Medication.Parsers
         /// Sets the ZCB segment into the message.
         /// </summary>
         /// <param name="m">The message object.</param>
-        protected void SetProviderInfoSegment(Message m)
+        protected void SetProviderInfoSegment(Message m, long traceId)
         {
             if (m is null)
             {
                 throw new ArgumentNullException(nameof(m));
             }
-
+            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
             // ZCB - Provider Information
             Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, this.Encoding);
             zcb.AddNewField(this.ClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
             zcb.AddNewField(this.GetLocalDate()); // Provider Transaction Date
-            zcb.AddNewField(this.traceId); // Trace Number
+            zcb.AddNewField(formattedTraceId); // Trace Number
             m.AddNewSegment(zcb);
         }
 

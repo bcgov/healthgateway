@@ -13,27 +13,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication
+namespace HealthGateway.Medication.Database
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
+    using System;
+    using System.IO;
+    using Microsoft.EntityFrameworkCore;
+    using Npgsql;
+    using NpgsqlTypes;
 
     /// <summary>
-    /// The entry point for the project.
+    /// Extensions to the Medications DB Context.
     /// </summary>
-    public static class Program
+    public static class MedicationDBContextExtensions
     {
-        /// <summary>.
-        /// The entry point for the class.
-        /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
+        private static IMedicationDBContextExt defaultImpl = new MedicationDBContextExt();
+
+        /// Allow us to swap out implementations for testing.
+        public static IMedicationDBContextExt Implementation { get; set; } = defaultImpl;
+
+        public static void RevertToDefaultImplementation()
         {
-            CreateWebHostBuilder(args).Build().Run();
+            Implementation = defaultImpl;
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
+        /// <inheritdoc/>
+        public static long NextValueForSequence(this MedicationDBContext ctx, string seq)
+        {
+            return Implementation.NextValueForSequence(ctx, seq);
+        }
     }
 }

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration
 {
+    using System;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -33,21 +34,33 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <typeparam name="T">The startup class.</typeparam>
         /// <param name="args">The command line arguments.</param>
         /// <returns>Returns the configured webhost.</returns>
+        [Obsolete("Invoke static CreateWebHostBuilder - See Medication Program.cs")] 
         public static IWebHost BuildWebHost<T>(string[] args)
             where T : class
         {
+            return CreateWebHostBuilder<T>(args).Build();
+        }
+
+        /// <summary>
+        /// Creates a WebHostBuild with console logging and Configuration prefixing enabled.
+        /// </summary>
+        /// <typeparam name="T">The startup class.</typeparam>
+        /// <param name="args">The command line arguments.</param>
+        /// <returns>Returns the configured WebHostBuilder</returns>
+        public static IWebHostBuilder CreateWebHostBuilder<T>(string[] args)
+             where T : class
+        {
             return WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((builderContext, config) =>
-                {
-                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                })
-                .UseStartup<T>()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
-                .Build();
+            .ConfigureAppConfiguration((builderContext, config) =>
+            {
+                config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+            })
+            .UseStartup<T>()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddConsole();
+            });
         }
     }
 }

@@ -42,7 +42,7 @@ namespace HealthGateway.Medication.Parsers
         }
 
         /// <inheritdoc/>
-        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress)
+        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -53,10 +53,10 @@ namespace HealthGateway.Medication.Parsers
             id = id.PadLeft(13, '0');
             Message m = new Message();
 
-            this.SetMessageHeader(m, userId, ipAddress);
-            this.SetTransactionControlSegment(m, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID);
+            this.SetMessageHeader(m, userId, ipAddress, traceId);
+            this.SetTransactionControlSegment(m, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID,traceId);
             this.SetClaimsStandardSegment(m, this.ClientConfig.ZCA.BIN);
-            this.SetProviderInfoSegment(m);
+            this.SetProviderInfoSegment(m,traceId);
 
             // ZCC - Beneficiary Information
             Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, this.Encoding);

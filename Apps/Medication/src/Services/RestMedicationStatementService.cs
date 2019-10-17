@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
@@ -37,6 +38,7 @@ namespace HealthGateway.Medication.Services
         private readonly IConfiguration configService;
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IAuthService authService;
+        private MedicationDBContext ctx;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -45,12 +47,13 @@ namespace HealthGateway.Medication.Services
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationStatementService(IHNMessageParser<List<MedicationStatement>> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
+        public RestMedicationStatementService(IHNMessageParser<List<MedicationStatement>> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService, MedicationDBContext ctx)
         {
             this.medicationParser = parser;
             this.httpClientFactory = httpClientFactory;
             this.configService = configuration;
             this.authService = authService;
+            this.ctx = ctx;
         }
 
         /// <inheritdoc/>
@@ -65,18 +68,21 @@ namespace HealthGateway.Medication.Services
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
-
-                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress);
-                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
+                using (ctx)
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    hnClientMedicationResult = this.medicationParser.ParseResponseMessage(responseMessage.Message);
-                }
-                else
-                {
-                    return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                    long traceId = ctx.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                    HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId);
+                    HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                        HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
+                        hnClientMedicationResult = this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    }
+                    else
+                    {
+                        return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                    }
                 }
             }
 
