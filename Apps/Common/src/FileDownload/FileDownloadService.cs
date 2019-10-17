@@ -68,6 +68,7 @@ namespace HealthGateway.Common.FileDownload
                         }
                         fileStream.Close();
                     }
+                    stream.Close();
                 }
             }
             catch (Exception exception)
