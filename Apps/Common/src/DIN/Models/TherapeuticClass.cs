@@ -34,9 +34,9 @@ namespace HealthGateway.DIN.Models
         public string AtcFrench { get; set; }
 
         [MaxLength(80)]
-        public string Ahfs { get; set }
+        public string Ahfs { get; set; }
 
         [MaxLength(160)]
-        public string AhfsFrench { get; set }
+        public string AhfsFrench { get; set; }
     }
 }

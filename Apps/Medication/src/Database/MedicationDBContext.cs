@@ -47,7 +47,16 @@ namespace HealthGateway.Medication.Database
                         .IsCyclic(true);
         }
 
-        DbSet<DrugProduct> Drugs { get; set; }
         DbSet<ActiveIngredient> ActiveIngredients { get; set; }
+        DbSet<Company> Companies { get; set; }
+        DbSet<DrugProduct> Drugs { get; set; }
+        DbSet<Form> Forms { get; set; }
+        DbSet<Packaging> Packaging { get; set; }
+        DbSet<PharmaceuticalStd> PharmaceuticalStds { get; set; }
+        DbSet<Route> Routes { get; set; }
+        DbSet<Schedule> Schedules { get; set; }
+        DbSet<Status> Status { get; set; }
+        DbSet<TherapeuticClass> TherapeuticClass { get; set; }
+        DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
     }
 }
