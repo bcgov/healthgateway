@@ -14,26 +14,13 @@
 // // limitations under the License.
 // //-------------------------------------------------------------------------
 using System;
-namespace Medication.Models.DIN
+namespace HealthGateway.DIN.Models
 {
-    public class ActiveIngredients
+    public interface IAuditable
     {
-        public Guid ActiveIngredientId { get; set; }
-
-        public int ActiveIngredientCode { get; set; }
-
-        [MaxLength(240)]
-        public string Ingredient { get; set; }
-
-        [MaxLength(1)]
-        public string IngredientSuppliedInd { get; set; }
-
-        [MaxLength(20)]
-        public string Strength { get; set; }
-
-        public string StrengthUnit { get; set; }
-
-        public string
-
-
+        string CreatedBy { get; set; }
+        DateTime CreatedDateTime { get; set; }
+        string UpdatedBy { get; set; }
+        string UpdatedDateTime { get; set; }
     }
+}

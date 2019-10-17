@@ -57,4 +57,11 @@
     <Folder Include="Migrations\" />
     <Folder Include="Database\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20191017020339_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\MedicationDBContextModelSnapshot.cs" />
+    <Compile Remove="Migrations\20191017020339_InitialCreate.cs" />
+    <Compile Remove="Migrations\20191017182150_InitialDIN.cs" />
+    <Compile Remove="Migrations\20191017182150_InitialDIN.Designer.cs" />
+  </ItemGroup>
 </Project>

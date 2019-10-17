@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Database
 {
     using Microsoft.EntityFrameworkCore;
+    using HealthGateway.DIN.Models;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
@@ -45,5 +46,8 @@ namespace HealthGateway.Medication.Database
                         .HasMax(999999)
                         .IsCyclic(true);
         }
+
+        DbSet<DrugProduct> Drugs { get; set; }
+        DbSet<ActiveIngredient> ActiveIngredients { get; set; }
     }
 }
