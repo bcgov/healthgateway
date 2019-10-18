@@ -22,6 +22,7 @@ namespace HealthGateway.DIN.Models
     {
         public Guid ScheduleId { get; set; }
 
+        [Required]
         public DrugProduct Drug { get; set; }
 
         [MaxLength(40)]

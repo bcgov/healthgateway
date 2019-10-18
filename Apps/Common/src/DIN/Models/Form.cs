@@ -22,6 +22,7 @@ namespace HealthGateway.DIN.Models
     {
         public Guid FormId { get; set; }
 
+        [Required]
         public DrugProduct Drug { get; set; }
 
         public int PharmaceuticalFormCode { get; set; }

@@ -67,14 +67,14 @@ namespace HealthGateway.DrugMaintainer.Database
             return base.SaveChanges();
         }
 
-        public DbSet<ActiveIngredient> ActiveIngredients { get; set; }
-        public DbSet<Company> Companies { get; set; }
-        public DbSet<DrugProduct> Drugs { get; set; }
-        public DbSet<Form> Forms { get; set; }
+        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
+        public DbSet<Company> Company { get; set; }
+        public DbSet<DrugProduct> DrugProduct { get; set; }
+        public DbSet<Form> Form { get; set; }
         public DbSet<Packaging> Packaging { get; set; }
-        public DbSet<PharmaceuticalStd> PharmaceuticalStds { get; set; }
-        public DbSet<Route> Routes { get; set; }
-        public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
+        public DbSet<Route> Route { get; set; }
+        public DbSet<Schedule> Schedule { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
         public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }

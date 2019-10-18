@@ -31,7 +31,8 @@ namespace Medication.Migrations
                         .HasMaxLength(1);
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -44,7 +45,7 @@ namespace Medication.Migrations
                     b.Property<string>("DosageValue")
                         .HasMaxLength(20);
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("Ingredient")
                         .HasMaxLength(240);
@@ -74,7 +75,8 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -82,7 +84,7 @@ namespace Medication.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("ActiveIngredients");
+                    b.ToTable("ActiveIngredient");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Company", b =>
@@ -120,11 +122,12 @@ namespace Medication.Migrations
                         .HasMaxLength(100);
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("ManufacturerCode")
                         .HasMaxLength(5);
@@ -148,7 +151,8 @@ namespace Medication.Migrations
                         .HasMaxLength(20);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -156,7 +160,7 @@ namespace Medication.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.DrugProduct", b =>
@@ -177,7 +181,8 @@ namespace Medication.Migrations
                         .HasMaxLength(300);
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -193,7 +198,9 @@ namespace Medication.Migrations
                     b.Property<string>("DrugClassFrench")
                         .HasMaxLength(80);
 
-                    b.Property<string>("DrugCode");
+                    b.Property<string>("DrugCode")
+                        .IsRequired()
+                        .HasMaxLength(8);
 
                     b.Property<string>("DrugIdentificationNumber")
                         .HasMaxLength(29);
@@ -210,13 +217,14 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("DrugProductId");
 
-                    b.ToTable("Drugs");
+                    b.ToTable("DrugProduct");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Form", b =>
@@ -225,11 +233,12 @@ namespace Medication.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("PharmaceuticalForm")
                         .HasMaxLength(40);
@@ -240,7 +249,8 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -248,7 +258,7 @@ namespace Medication.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("Forms");
+                    b.ToTable("Form");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Packaging", b =>
@@ -257,11 +267,12 @@ namespace Medication.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("PackageSize")
                         .HasMaxLength(5);
@@ -285,7 +296,8 @@ namespace Medication.Migrations
                         .HasMaxLength(12);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -302,16 +314,18 @@ namespace Medication.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("PharmaceuticalStdDesc");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -319,7 +333,7 @@ namespace Medication.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("PharmaceuticalStds");
+                    b.ToTable("PharmaceuticalStd");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Route", b =>
@@ -336,14 +350,16 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -351,7 +367,7 @@ namespace Medication.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("Routes");
+                    b.ToTable("Route");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Schedule", b =>
@@ -360,11 +376,12 @@ namespace Medication.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("ScheduleDesc")
                         .HasMaxLength(40);
@@ -373,7 +390,8 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -381,7 +399,7 @@ namespace Medication.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("Schedules");
+                    b.ToTable("Schedule");
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Status", b =>
@@ -390,14 +408,15 @@ namespace Medication.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
                     b.Property<string>("CurrentStatusFlag")
                         .HasMaxLength(1);
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<DateTime?>("ExpirationDate");
 
@@ -413,7 +432,8 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -448,14 +468,16 @@ namespace Medication.Migrations
                         .HasMaxLength(8);
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -472,11 +494,12 @@ namespace Medication.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreatedDateTime");
 
-                    b.Property<Guid?>("DrugProductId");
+                    b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("Species")
                         .HasMaxLength(80);
@@ -488,7 +511,8 @@ namespace Medication.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -503,70 +527,80 @@ namespace Medication.Migrations
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Company", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Form", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Packaging", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.PharmaceuticalStd", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Route", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Schedule", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.Status", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.TherapeuticClass", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.DIN.Models.VeterinarySpecies", b =>
                 {
                     b.HasOne("HealthGateway.DIN.Models.DrugProduct", "Drug")
                         .WithMany()
-                        .HasForeignKey("DrugProductId");
+                        .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

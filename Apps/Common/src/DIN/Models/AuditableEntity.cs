@@ -20,12 +20,14 @@ namespace HealthGateway.DIN.Models
     public abstract class AuditableEntity: IAuditable
     {
         [Required]
+        [MaxLength(30)]
         public string CreatedBy { get; set; }
 
         [Required]
         public DateTime CreatedDateTime { get; set; }
 
         [Required]
+        [MaxLength(30)]
         public string UpdatedBy { get; set; }
 
         [Required]

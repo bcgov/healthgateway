@@ -22,6 +22,7 @@ namespace HealthGateway.DIN.Models
     {
         public Guid ActiveIngredientId { get; set; }
 
+        [Required]
         public DrugProduct Drug { get; set; }
 
         public int ActiveIngredientCode { get; set; }

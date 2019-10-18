@@ -28,6 +28,8 @@ namespace HealthGateway.DIN.Models
         /// <summary>
         /// The source Drug Code from the Government extract QRYM_DRUG_PRODUCT
         /// </summary>
+        [Required]
+        [MaxLength(8)]
         public string DrugCode { get; set; }
 
         /// <summary>

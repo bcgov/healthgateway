@@ -14,15 +14,15 @@ namespace Medication.Migrations
                 cyclic: true);
 
             migrationBuilder.CreateTable(
-                name: "Drugs",
+                name: "DrugProduct",
                 columns: table => new
                 {
                     DrugProductId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugCode = table.Column<string>(nullable: true),
+                    DrugCode = table.Column<string>(maxLength: 8, nullable: false),
                     ProductCategorization = table.Column<string>(maxLength: 80, nullable: true),
                     DrugClass = table.Column<string>(maxLength: 40, nullable: true),
                     DrugClassFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -39,19 +39,19 @@ namespace Medication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Drugs", x => x.DrugProductId);
+                    table.PrimaryKey("PK_DrugProduct", x => x.DrugProductId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActiveIngredients",
+                name: "ActiveIngredient",
                 columns: table => new
                 {
                     ActiveIngredientId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     ActiveIngredientCode = table.Column<int>(nullable: false),
                     Ingredient = table.Column<string>(maxLength: 240, nullable: true),
                     IngredientFrench = table.Column<string>(maxLength: 400, nullable: true),
@@ -69,25 +69,25 @@ namespace Medication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActiveIngredients", x => x.ActiveIngredientId);
+                    table.PrimaryKey("PK_ActiveIngredient", x => x.ActiveIngredientId);
                     table.ForeignKey(
-                        name: "FK_ActiveIngredients_Drugs_DrugProductId",
+                        name: "FK_ActiveIngredient_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Companies",
+                name: "Company",
                 columns: table => new
                 {
                     CompanyId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     ManufacturerCode = table.Column<string>(maxLength: 5, nullable: true),
                     CompanyCode = table.Column<int>(nullable: false),
                     CompanyName = table.Column<string>(maxLength: 80, nullable: true),
@@ -108,38 +108,38 @@ namespace Medication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Companies", x => x.CompanyId);
+                    table.PrimaryKey("PK_Company", x => x.CompanyId);
                     table.ForeignKey(
-                        name: "FK_Companies_Drugs_DrugProductId",
+                        name: "FK_Company_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Forms",
+                name: "Form",
                 columns: table => new
                 {
                     FormId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     PharmaceuticalFormCode = table.Column<int>(nullable: false),
                     PharmaceuticalForm = table.Column<string>(maxLength: 40, nullable: true),
                     PharmaceuticalFormFrench = table.Column<string>(maxLength: 80, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Forms", x => x.FormId);
+                    table.PrimaryKey("PK_Form", x => x.FormId);
                     table.ForeignKey(
-                        name: "FK_Forms_Drugs_DrugProductId",
+                        name: "FK_Form_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -147,11 +147,11 @@ namespace Medication.Migrations
                 columns: table => new
                 {
                     PackagingId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     UPC = table.Column<string>(maxLength: 12, nullable: true),
                     PackageType = table.Column<string>(maxLength: 40, nullable: true),
                     PackageTypeFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -164,83 +164,83 @@ namespace Medication.Migrations
                 {
                     table.PrimaryKey("PK_Packaging", x => x.PackagingId);
                     table.ForeignKey(
-                        name: "FK_Packaging_Drugs_DrugProductId",
+                        name: "FK_Packaging_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PharmaceuticalStds",
+                name: "PharmaceuticalStd",
                 columns: table => new
                 {
                     PharmaceuticalStdId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     PharmaceuticalStdDesc = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PharmaceuticalStds", x => x.PharmaceuticalStdId);
+                    table.PrimaryKey("PK_PharmaceuticalStd", x => x.PharmaceuticalStdId);
                     table.ForeignKey(
-                        name: "FK_PharmaceuticalStds_Drugs_DrugProductId",
+                        name: "FK_PharmaceuticalStd_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Routes",
+                name: "Route",
                 columns: table => new
                 {
                     RouteId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     AdministrationCode = table.Column<int>(nullable: false),
                     Administration = table.Column<string>(maxLength: 40, nullable: true),
                     AdministrationFrench = table.Column<string>(maxLength: 80, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Routes", x => x.RouteId);
+                    table.PrimaryKey("PK_Route", x => x.RouteId);
                     table.ForeignKey(
-                        name: "FK_Routes_Drugs_DrugProductId",
+                        name: "FK_Route_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Schedules",
+                name: "Schedule",
                 columns: table => new
                 {
                     ScheduleId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     ScheduleDesc = table.Column<string>(maxLength: 40, nullable: true),
                     ScheduleDescFrench = table.Column<string>(maxLength: 80, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Schedules", x => x.ScheduleId);
+                    table.PrimaryKey("PK_Schedule", x => x.ScheduleId);
                     table.ForeignKey(
-                        name: "FK_Schedules_Drugs_DrugProductId",
+                        name: "FK_Schedule_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,11 +248,11 @@ namespace Medication.Migrations
                 columns: table => new
                 {
                     StatusId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     CurrentStatusFlag = table.Column<string>(maxLength: 1, nullable: true),
                     StatusDesc = table.Column<string>(maxLength: 40, nullable: true),
                     StatusDescFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -264,11 +264,11 @@ namespace Medication.Migrations
                 {
                     table.PrimaryKey("PK_Status", x => x.StatusId);
                     table.ForeignKey(
-                        name: "FK_Status_Drugs_DrugProductId",
+                        name: "FK_Status_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -276,11 +276,11 @@ namespace Medication.Migrations
                 columns: table => new
                 {
                     TherapeuticClassId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     AtcNumber = table.Column<string>(maxLength: 8, nullable: true),
                     Atc = table.Column<string>(maxLength: 120, nullable: true),
                     AtcFrench = table.Column<string>(maxLength: 240, nullable: true),
@@ -292,11 +292,11 @@ namespace Medication.Migrations
                 {
                     table.PrimaryKey("PK_TherapeuticClass", x => x.TherapeuticClassId);
                     table.ForeignKey(
-                        name: "FK_TherapeuticClass_Drugs_DrugProductId",
+                        name: "FK_TherapeuticClass_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -304,11 +304,11 @@ namespace Medication.Migrations
                 columns: table => new
                 {
                     VeterinarySpeciesId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false),
                     Species = table.Column<string>(maxLength: 80, nullable: true),
                     SpeciesFrench = table.Column<string>(maxLength: 160, nullable: true),
                     SubSpecies = table.Column<string>(maxLength: 80, nullable: true)
@@ -317,26 +317,26 @@ namespace Medication.Migrations
                 {
                     table.PrimaryKey("PK_VeterinarySpecies", x => x.VeterinarySpeciesId);
                     table.ForeignKey(
-                        name: "FK_VeterinarySpecies_Drugs_DrugProductId",
+                        name: "FK_VeterinarySpecies_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
-                        principalTable: "Drugs",
+                        principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActiveIngredients_DrugProductId",
-                table: "ActiveIngredients",
+                name: "IX_ActiveIngredient_DrugProductId",
+                table: "ActiveIngredient",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Companies_DrugProductId",
-                table: "Companies",
+                name: "IX_Company_DrugProductId",
+                table: "Company",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Forms_DrugProductId",
-                table: "Forms",
+                name: "IX_Form_DrugProductId",
+                table: "Form",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
@@ -345,18 +345,18 @@ namespace Medication.Migrations
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PharmaceuticalStds_DrugProductId",
-                table: "PharmaceuticalStds",
+                name: "IX_PharmaceuticalStd_DrugProductId",
+                table: "PharmaceuticalStd",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Routes_DrugProductId",
-                table: "Routes",
+                name: "IX_Route_DrugProductId",
+                table: "Route",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedules_DrugProductId",
-                table: "Schedules",
+                name: "IX_Schedule_DrugProductId",
+                table: "Schedule",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
@@ -378,25 +378,25 @@ namespace Medication.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActiveIngredients");
+                name: "ActiveIngredient");
 
             migrationBuilder.DropTable(
-                name: "Companies");
+                name: "Company");
 
             migrationBuilder.DropTable(
-                name: "Forms");
+                name: "Form");
 
             migrationBuilder.DropTable(
                 name: "Packaging");
 
             migrationBuilder.DropTable(
-                name: "PharmaceuticalStds");
+                name: "PharmaceuticalStd");
 
             migrationBuilder.DropTable(
-                name: "Routes");
+                name: "Route");
 
             migrationBuilder.DropTable(
-                name: "Schedules");
+                name: "Schedule");
 
             migrationBuilder.DropTable(
                 name: "Status");
@@ -408,7 +408,7 @@ namespace Medication.Migrations
                 name: "VeterinarySpecies");
 
             migrationBuilder.DropTable(
-                name: "Drugs");
+                name: "DrugProduct");
 
             migrationBuilder.DropSequence(
                 name: "trace_seq");
