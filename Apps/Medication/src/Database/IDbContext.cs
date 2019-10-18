@@ -18,14 +18,14 @@ namespace HealthGateway.Medication.Database
     /// <summary>
     /// Extensions to the Medications DB Context.
     /// </summary>
-    public interface IMedicationDBContextExt
+    public interface IDbContext
     {
         /// <summary>
-        /// Gets the next sequence number for the given sequence name.
+        /// Executes a sql command.
         /// </summary>
-        /// <param name="ctx">The database context.</param>
-        /// <param name="seq">The sequence name</param>
-        /// <returns>The next sequence value</returns>
-        long NextValueForSequence(IDbContext ctx, string seq);
+        /// <param name="sql">The sql query script.</param>
+        /// <param name="parameters">The sql query parameters.</param>
+        /// <returns>The number of lines affected.</returns>
+        int ExecuteSqlCommand(string sql, params object[] parameters);
     }
 }

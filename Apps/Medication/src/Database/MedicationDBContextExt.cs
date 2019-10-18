@@ -25,13 +25,13 @@ namespace HealthGateway.Medication.Database
     public class MedicationDBContextExt : IMedicationDBContextExt
     {
         /// <inheritdoc/>
-        public long NextValueForSequence(MedicationDBContext ctx, string seq)
+        public long NextValueForSequence(IDbContext ctx, string seq)
         {
             NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
             {
                 Direction = System.Data.ParameterDirection.Output,
             };
-            ctx.Database.ExecuteSqlCommand($"SELECT nextval('{seq}')", result);
+            ctx.ExecuteSqlCommand($"SELECT nextval('{seq}')", result);
 
             // code below is to be used when updating to EF 3
             // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);

@@ -20,7 +20,7 @@ namespace HealthGateway.Medication.Database
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class MedicationDBContext : DbContext
+    public class MedicationDBContext : DbContext, IDbContext
     {
         /// <summary>
         /// The DB name for the Pharmanet Trace ID Sequence.
@@ -34,6 +34,12 @@ namespace HealthGateway.Medication.Database
         public MedicationDBContext(DbContextOptions<MedicationDBContext> options)
             : base(options)
         {
+        }
+
+        /// <inheritdoc/>
+        public int ExecuteSqlCommand(string sql, params object[] parameters)
+        {
+            return this.Database.ExecuteSqlCommand(sql, parameters);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
