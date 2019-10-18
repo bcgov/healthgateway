@@ -23,7 +23,7 @@ namespace HealthGateway.Common.FileDownload
         /// <summary>
         /// Gets or sets the local file path to store the downloaded file.
         /// </summary>
-        public string  LocalFilePath { get; set; }
+        public string LocalFilePath { get; set; }
 
         /// <summary>
         /// Gets or sets the SHA256 Hash of the file saved to the local file path.

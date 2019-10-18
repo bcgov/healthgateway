@@ -16,31 +16,22 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System;
+    using Microsoft.Extensions.DependencyInjection;
     using System.Linq;
     using System.Collections.Generic;
     using HealthGateway.DIN.Models;
+    using HealthGateway.Common.FileDownload;
 
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            IDrugProductParser parser = new FederalDrugProductParser();
+            IDrugProductParser parser = new FederalDrugProductParser("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/");
+            IFileDownloadService downloader = new FileDownloadService();
 
-            List<DrugProduct> drugProducts = parser.ParseDrugFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/drug.txt");
-            List<ActiveIngredient> ingredients = parser.ParseActiveIngredientFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/ingred.txt", drugProducts);
-            List<Company> companies = parser.ParseCompanyFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/comp.txt", drugProducts);
-            List<Status> statuses = parser.ParseStatusFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/status.txt", drugProducts);
-            List<Form> froms = parser.ParseFormFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/form.txt", drugProducts);
-            List<Packaging> packagings = parser.ParsePackagingFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/package.txt", drugProducts);
-            List<PharmaceuticalStd> pharmaceuticals = parser.ParsePharmaceuticalStdFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/pharm.txt", drugProducts);
-            List<Route> routes = parser.ParseRouteFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/route.txt", drugProducts);
-            List<Schedule> schedules = parser.ParseScheduleFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/schedule.txt", drugProducts);
-            List<TherapeuticClass> therapeuticClasses = parser.ParseTherapeuticFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/ther.txt", drugProducts);
-            List<VeterinarySpecies> veterinarySpecies = parser.ParseVeterinarySpeciesFile("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/vet.txt", drugProducts);
-
-
-            var c = 3;
+            Maintainer maintainer = new Maintainer(parser, downloader);
+            maintainer.ParseFiles();
         }
     }
 }

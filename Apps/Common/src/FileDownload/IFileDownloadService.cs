@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.FileDownload
 {
+    using System;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -27,6 +28,6 @@ namespace HealthGateway.Common.FileDownload
         /// </summary>
         /// <parameter>url</parameter>
         /// <returns>The DownloadedFile.</returns>      
-        Task <DownloadedFile> GetFileFromUrl(string url);
+        Task<DownloadedFile> GetFileFromUrl(Uri url);
     }
 }

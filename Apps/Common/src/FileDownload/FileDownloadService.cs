@@ -28,8 +28,8 @@ namespace HealthGateway.Common.FileDownload
     /// </summary>
     public class FileDownloadService : IFileDownloadService
     {
-        private ILogger<FileDownloadService> logger;
-        private string targetFolder;
+        private readonly ILogger<FileDownloadService> logger;
+        private readonly string targetFolder;
         private readonly HttpClient httpClient;
 
         /// <summary>
@@ -44,12 +44,13 @@ namespace HealthGateway.Common.FileDownload
             this.targetFolder = targetFolder;
             this.httpClient = httpClient;
         }
+
         /// <inheritdoc/>
-        public async Task<DownloadedFile> GetFileFromUrl(string url)
+        public async Task<DownloadedFile> GetFileFromUrl(Uri url)
         {
             DownloadedFile df = new DownloadedFile();
 
-            string filePath = Path.Combine(targetFolder, Path.GetRandomFileName());
+            string filePath = Path.Combine(this.targetFolder, Path.GetRandomFileName());
 
             df.LocalFilePath = filePath;
 
@@ -80,7 +81,6 @@ namespace HealthGateway.Common.FileDownload
             }
 
             return df;
-
         }
     }
 }
