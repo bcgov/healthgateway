@@ -22,6 +22,7 @@ namespace HealthGateway.DIN.Models
     {
         public Guid RouteId { get; set; }
 
+        [Required]
         public DrugProduct Drug { get; set; }
 
         public int AdministrationCode { get; set; }

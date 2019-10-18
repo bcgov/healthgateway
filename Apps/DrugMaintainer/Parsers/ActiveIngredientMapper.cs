@@ -31,29 +31,30 @@ namespace HealthGateway.DrugMaintainer
             // INGREDIENT
             Map(m => m.Ingredient).Index(2);
             // INGREDIENT_SUPPLIED_IND
-            Map(m => m.IngredientFrench).Index(3);
+            Map(m => m.IngredientSuppliedInd).Index(3);
             // STRENGTH
-            Map(m => m.IngredientSuppliedInd).Index(4);
+            Map(m => m.Strength).Index(4);
             // STRENGTH_UNIT
-            Map(m => m.Strength).Index(5);
+            Map(m => m.StrengthUnit).Index(5);
             // STRENGTH_TYPE
-            Map(m => m.StrengthUnit).Index(6);
+            Map(m => m.StrengthType).Index(6);
             // DOSAGE_VALUE
-            Map(m => m.StrengthUnitFrench).Index(7);
+            Map(m => m.DosageValue).Index(7);
             // BASE
-            Map(m => m.StrengthType).Index(8);
+            Map(m => m.Base).Index(8);
             // DOSAGE_UNIT
-            Map(m => m.StrengthTypeFrench).Index(9);
+            Map(m => m.DosageUnit).Index(9);
             // NOTES
-            Map(m => m.DosageValue).Index(10);
+            Map(m => m.Notes).Index(10);
             // INGREDIENT_FFootnote
-            Map(m => m.Base).Index(11);
+            Map(m => m.IngredientFrench).Index(11);
             // STRENGTH_UNIT_FFootnote
-            Map(m => m.DosageUnit).Index(12);
+            Map(m => m.StrengthUnitFrench).Index(12);
             // STRENGTH_TYPE_FFootnote
-            Map(m => m.DosageUnitFrench).Index(13);
+            Map(m => m.StrengthTypeFrench).Index(13);
             //DOSAGE_UNIT_FFootnote
-            Map(m => m.Notes).Index(14);
+            Map(m => m.DosageUnitFrench).Index(14);
+
         }
     }
 }
