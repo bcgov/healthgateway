@@ -43,32 +43,32 @@ namespace HealthGateway.DrugMaintainer
             Console.WriteLine("DIN Parsing...");
             IDrugProductParser parser = new FederalDrugProductParser();
 
-            List<DrugProduct> drugProducts = parser.ParseDrugFile("/Users/stephen/Projects/Health/healthgateway/Apps/DrugMaintainer/Resources/DrugProducts/drug.txt");
-            List<ActiveIngredient> ingredients = parser.ParseActiveIngredientFile("/Users/stephen/Projects/Health/healthgateway/Apps/DrugMaintainer/Resources/DrugProducts/ingred.txt", drugProducts);
-            //List<Company> companies = parser.ParseCompanyFile("./Resources/DrugProducts/comp.txt", drugProducts);
-            //List<Status> statuses = parser.ParseStatusFile("./Resources/DrugProducts/status.txt", drugProducts);
-            //List<Form> forms = parser.ParseFormFile("./Resources/DrugProducts/form.txt", drugProducts);
-            //List<Packaging> packagings = parser.ParsePackagingFile("./Resources/DrugProducts/package.txt", drugProducts);
-            //List<PharmaceuticalStd> pharmaceuticals = parser.ParsePharmaceuticalStdFile("./Resources/DrugProducts/pharm.txt", drugProducts);
-            //List<Route> routes = parser.ParseRouteFile("./Resources/DrugProducts/route.txt", drugProducts);
-            //List<Schedule> schedules = parser.ParseScheduleFile("./Resources/DrugProducts/schedule.txt", drugProducts);
-            //List<TherapeuticClass> therapeuticClasses = parser.ParseTherapeuticFile("./Resources/DrugProducts/ther.txt", drugProducts);
-            //List<VeterinarySpecies> veterinarySpecies = parser.ParseVeterinarySpeciesFile("./Resources/DrugProducts/vet.txt", drugProducts);
+            List<DrugProduct> drugProducts = parser.ParseDrugFile("./Resources/DrugProducts/drug.txt");
+            List<ActiveIngredient> ingredients = parser.ParseActiveIngredientFile("./Resources/DrugProducts/ingred.txt", drugProducts);
+            List<Company> companies = parser.ParseCompanyFile("./Resources/DrugProducts/comp.txt", drugProducts);
+            List<Status> statuses = parser.ParseStatusFile("./Resources/DrugProducts/status.txt", drugProducts);
+            List<Form> forms = parser.ParseFormFile("./Resources/DrugProducts/form.txt", drugProducts);
+            List<Packaging> packagings = parser.ParsePackagingFile("./Resources/DrugProducts/package.txt", drugProducts);
+            List<PharmaceuticalStd> pharmaceuticals = parser.ParsePharmaceuticalStdFile("./Resources/DrugProducts/pharm.txt", drugProducts);
+            List<Route> routes = parser.ParseRouteFile("./Resources/DrugProducts/route.txt", drugProducts);
+            List<Schedule> schedules = parser.ParseScheduleFile("./Resources/DrugProducts/schedule.txt", drugProducts);
+            List<TherapeuticClass> therapeuticClasses = parser.ParseTherapeuticFile("./Resources/DrugProducts/ther.txt", drugProducts);
+            List<VeterinarySpecies> veterinarySpecies = parser.ParseVeterinarySpeciesFile("./Resources/DrugProducts/vet.txt", drugProducts);
 
             Console.WriteLine("Adding Entities to DB");
             using (var ctx = new DrugDBContext(configuration))
             {
                 ctx.DrugProduct.AddRange(drugProducts);
                 ctx.ActiveIngredient.AddRange(ingredients);
-                //ctx.Companies.AddRange(companies);
-                //ctx.Statuses.AddRange(statuses);
-                //ctx.Forms.AddRange(forms);
-                //ctx.Packaging.AddRange(packagings);
-                //ctx.PharmaceuticalStds.AddRange(pharmaceuticals);
-                //ctx.Routes.AddRange(routes);
-                //ctx.Schedules.AddRange(schedules);
-                //ctx.TherapeuticClass.AddRange(therapeuticClasses);
-                //ctx.VeterinarySpecies.AddRange(veterinarySpecies);
+                ctx.Company.AddRange(companies);
+                ctx.Status.AddRange(statuses);
+                ctx.Form.AddRange(forms);
+                ctx.Packaging.AddRange(packagings);
+                ctx.PharmaceuticalStd.AddRange(pharmaceuticals);
+                ctx.Route.AddRange(routes);
+                ctx.Schedule.AddRange(schedules);
+                ctx.TherapeuticClass.AddRange(therapeuticClasses);
+                ctx.VeterinarySpecies.AddRange(veterinarySpecies);
                 Console.WriteLine("Saving Entities");
                 ctx.SaveChanges();
             }
