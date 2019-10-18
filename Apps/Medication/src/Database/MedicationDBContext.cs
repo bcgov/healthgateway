@@ -16,11 +16,12 @@
 namespace HealthGateway.Medication.Database
 {
     using Microsoft.EntityFrameworkCore;
+    using HealthGateway.DIN.Models;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class MedicationDBContext : DbContext
+    public class MedicationDBContext : DbContext, IDbContext
     {
         /// <summary>
         /// The DB name for the Pharmanet Trace ID Sequence.

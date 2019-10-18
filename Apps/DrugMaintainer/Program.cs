@@ -67,7 +67,6 @@ namespace HealthGateway.DrugMaintainer
 
             // Add services
             serviceCollection.AddTransient<IDBContextFactory, DrugDBFactory>();
-            serviceCollection.AddTransient<IDBContextFactory, DrugDBFactory>();
             serviceCollection.AddTransient<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddTransient<IDrugProductParser, FederalDrugProductParser>();
 
