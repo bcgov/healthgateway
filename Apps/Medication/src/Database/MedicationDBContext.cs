@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Database
 {
     using Microsoft.EntityFrameworkCore;
-    using HealthGateway.DIN.Models;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
@@ -36,6 +35,13 @@ namespace HealthGateway.Medication.Database
             : base(options)
         {
         }
+
+        /// <inheritdoc/>
+        public int ExecuteSqlCommand(string sql, params object[] parameters)
+        {
+            return this.Database.ExecuteSqlCommand(sql, parameters);
+        }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
