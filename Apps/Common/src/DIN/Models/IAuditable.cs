@@ -21,6 +21,6 @@ namespace HealthGateway.DIN.Models
         string CreatedBy { get; set; }
         DateTime CreatedDateTime { get; set; }
         string UpdatedBy { get; set; }
-        string UpdatedDateTime { get; set; }
+        DateTime UpdatedDateTime { get; set; }
     }
 }

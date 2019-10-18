@@ -29,6 +29,6 @@ namespace HealthGateway.DIN.Models
         public string UpdatedBy { get; set; }
 
         [Required]
-        public string UpdatedDateTime { get; set; }
+        public DateTime UpdatedDateTime { get; set; }
     }
 }

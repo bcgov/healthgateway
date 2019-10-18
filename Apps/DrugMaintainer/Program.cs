@@ -17,30 +17,40 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Collections.Generic;
+    using DrugMaintainer.Database;
     using HealthGateway.DIN.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Configuration.FileExtensions;
-    using Microsoft.Extensions.Configuration.Json;
 
     class Program
     {
-        static void Main(string[] args)
+        private static IConfiguration configuration;
+        
+        static void Initialize()
         {
             string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            Console.WriteLine("Running in Environment {0}",environmentName);
-
-            IConfiguration config = new ConfigurationBuilder()
+            Console.WriteLine("Running in Environment {0}", environmentName);
+            configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile($"appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
                 .Build();
-            Console.WriteLine(config.GetConnectionString("GatewayConnection"));
-            Console.WriteLine("Hello World!");
+        }
+        static void Main(string[] args)
+        {
+            Initialize();
+
+            Console.WriteLine("DIN Parsering...");
             IDrugProductParser parser = new FederalDrugProductParser();
 
             List<DrugProduct> drugProducts = parser.ParseDrugFile("./Resources/DrugProducts/drug.txt");
+            using (var ctx = new DrugDBContext(configuration))
+            {
+                ctx.Drugs.AddRange(drugProducts);
+                ctx.SaveChanges();
+            }
+            Console.WriteLine("Saved all DrugProducts to DB");
+
             List<ActiveIngredient> ingredients = parser.ParseActiveIngredientFile("./Resources/DrugProducts/ingred.txt", drugProducts);
             List<Company> companies = parser.ParseCompanyFile("./Resources/DrugProducts/comp.txt", drugProducts);
             List<Status> statuses = parser.ParseStatusFile("./Resources/DrugProducts/status.txt", drugProducts);
@@ -51,9 +61,7 @@ namespace HealthGateway.DrugMaintainer
             List<Schedule> schedules = parser.ParseScheduleFile("./Resources/DrugProducts/schedule.txt", drugProducts);
             List<TherapeuticClass> therapeuticClasses = parser.ParseTherapeuticFile("./Resources/DrugProducts/ther.txt", drugProducts);
             List<VeterinarySpecies> veterinarySpecies = parser.ParseVeterinarySpeciesFile("./Resources/DrugProducts/vet.txt", drugProducts);
-
-
-            var c = 3;
+            
         }
     }
 }

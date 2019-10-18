@@ -76,8 +76,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("ActiveIngredientId");
 
@@ -151,8 +150,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("CompanyId");
 
@@ -214,8 +212,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("DrugProductId");
 
@@ -245,8 +242,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("FormId");
 
@@ -291,8 +287,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("PackagingId");
 
@@ -318,8 +313,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("PharmaceuticalStdId");
 
@@ -351,8 +345,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("RouteId");
 
@@ -382,8 +375,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("ScheduleId");
 
@@ -407,9 +399,9 @@ namespace Medication.Migrations
 
                     b.Property<Guid?>("DrugProductId");
 
-                    b.Property<DateTime>("ExpirationDate");
+                    b.Property<DateTime?>("ExpirationDate");
 
-                    b.Property<DateTime>("HistoryDate");
+                    b.Property<DateTime?>("HistoryDate");
 
                     b.Property<string>("LotNumber")
                         .HasMaxLength(80);
@@ -423,8 +415,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("StatusId");
 
@@ -466,8 +457,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("TherapeuticClassId");
 
@@ -500,8 +490,7 @@ namespace Medication.Migrations
                     b.Property<string>("UpdatedBy")
                         .IsRequired();
 
-                    b.Property<string>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("VeterinarySpeciesId");
 
