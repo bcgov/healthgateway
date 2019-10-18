@@ -45,7 +45,7 @@ namespace HealthGateway.DrugMaintainer.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("GatewayConnection"));
+            optionsBuilder.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         public override int SaveChanges()

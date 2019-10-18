@@ -27,7 +27,9 @@ namespace HealthGateway.Common.FileDownload
         /// Service to download a file specified by the supplied URL.
         /// </summary>
         /// <parameter>url</parameter>
-        /// <returns>The DownloadedFile.</returns>      
-        Task<DownloadedFile> GetFileFromUrl(Uri url);
+        /// <parameter>targetFolder</parameter>
+        /// <parameter>isRelativePath</parameter>
+        /// <returns>The DownloadedFile.</returns>
+        Task<DownloadedFile> GetFileFromUrl(Uri url, string targetFolder, bool isRelativePath);
     }
 }

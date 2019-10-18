@@ -13,26 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.DrugMaintainer.Database
 {
     /// <summary>
-    /// The DownloadedFile containing local file path, and md5 resulting from a service request.
+    /// Interface for creating database contexts.
     /// </summary>
-    public class DownloadedFile
+    public interface IDBContextFactory
     {
-        /// <summary>
-        /// Gets or sets the  file name.
-        /// </summary>
-        public string FileName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the local file path to store the downloaded file.
-        /// </summary>
-        public string LocalFilePath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the SHA256 Hash of the file saved to the local file path.
-        /// </summary>
-        public string FileSHA256 { get; set; }
+        DrugDBContext CreateDrugDBContext();
     }
 }

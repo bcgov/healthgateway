@@ -29,53 +29,72 @@ namespace HealthGateway.Common.FileDownload
     public class FileDownloadService : IFileDownloadService
     {
         private readonly ILogger<FileDownloadService> logger;
-        private readonly string targetFolder;
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
         /// FileDownloadService constructor
         /// </summary>
         /// <param name="logger">ILogger instance</param>
-        /// <param name="httpClient">HttpClient instance</param>
-        /// <param name="targetFolder">full folder path to target folder</param>
-        public FileDownloadService(ILogger<FileDownloadService> logger, HttpClient httpClient, string targetFolder)
+        /// <param name="httpClientFactory">IHttpClientFactory instance</param>
+        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger;
-            this.targetFolder = targetFolder;
-            this.httpClient = httpClient;
+            this.httpClientFactory = httpClientFactory;
         }
 
         /// <inheritdoc/>
-        public async Task<DownloadedFile> GetFileFromUrl(Uri url)
+        public async Task<DownloadedFile> GetFileFromUrl(Uri url, string targetFolder, bool isRelativePath)
         {
             DownloadedFile df = new DownloadedFile();
 
-            string filePath = Path.Combine(this.targetFolder, Path.GetRandomFileName());
+            if (isRelativePath)
+            {
+                targetFolder = Path.Combine(Directory.GetCurrentDirectory(), targetFolder);
+            }
 
-            df.LocalFilePath = filePath;
+            df.FileName = Path.GetRandomFileName() + Path.GetExtension(url.ToString());
+            df.LocalFilePath = targetFolder;
+
+            string filePath = Path.Combine(df.LocalFilePath, df.FileName);
 
             try
             {
-                using (Stream stream = await this.httpClient.GetStreamAsync(url).ConfigureAwait(false))
+                using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    using (FileStream fileStream = File.Open(filePath, FileMode.OpenOrCreate))
+                    HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(true);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        await stream.CopyToAsync(fileStream);
-                        using (SHA256 mySHA256 = SHA256.Create())
+                        HttpContent content = response.Content;
+                        using (Stream stream = await content.ReadAsStreamAsync().ConfigureAwait(true))
                         {
-                            fileStream.Position = 0;
-                            byte[] hashValue = mySHA256.ComputeHash(fileStream);
-                            df.FileSHA256 = Encoding.UTF8.GetString(hashValue, 0, hashValue.Length);
+                            using (FileStream fileStream = File.Open(filePath, FileMode.OpenOrCreate))
+                            {
+                                await stream.CopyToAsync(fileStream).ConfigureAwait(true);
+                                using (SHA256 mySHA256 = SHA256.Create())
+                                {
+                                    fileStream.Position = 0;
+                                    byte[] hashValue = mySHA256.ComputeHash(fileStream);
+                                    df.FileSHA256 = Encoding.UTF8.GetString(hashValue, 0, hashValue.Length);
+                                }
+
+                                fileStream.Close();
+                            }
+
+                            stream.Close();
                         }
-                        fileStream.Close();
                     }
-                    stream.Close();
+                    else
+                    {
+                        throw new FileNotFoundException();
+                    }
                 }
             }
             catch (Exception exception)
             {
                 this.logger.LogDebug(exception.ToString());
                 File.Delete(filePath);
+                df.FileName = string.Empty;
                 df.LocalFilePath = string.Empty;
                 df.FileSHA256 = string.Empty;
             }

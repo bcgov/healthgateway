@@ -13,26 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.DrugMaintainer.Database
 {
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.EntityFrameworkCore;
+    using HealthGateway.DIN.Models;
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
+
     /// <summary>
-    /// The DownloadedFile containing local file path, and md5 resulting from a service request.
+    /// The database context to be used for the Medication Service.
     /// </summary>
-    public class DownloadedFile
+    public class DrugDBFactory : IDBContextFactory
     {
-        /// <summary>
-        /// Gets or sets the  file name.
-        /// </summary>
-        public string FileName { get; set; }
+        private readonly IConfiguration configuration;
 
-        /// <summary>
-        /// Gets or sets the local file path to store the downloaded file.
-        /// </summary>
-        public string LocalFilePath { get; set; }
+        public DrugDBFactory(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
-        /// <summary>
-        /// Gets or sets the SHA256 Hash of the file saved to the local file path.
-        /// </summary>
-        public string FileSHA256 { get; set; }
+        public DrugDBContext CreateDrugDBContext()
+        {
+            return new DrugDBContext(this.configuration);
+        }
     }
 }

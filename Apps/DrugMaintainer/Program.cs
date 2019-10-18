@@ -16,54 +16,63 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System;
-    using HealthGateway.Common.FileDownload;
-
     using System.IO;
+    using HealthGateway.Common.FileDownload;    
+    using HealthGateway.DrugMaintainer.Database;    
     using Microsoft.Extensions.Configuration;
-
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     class Program
     {
-        private static IConfiguration configuration;
+        static void Main(string[] args)
+        {
+            IConfiguration configuration = Initialize();
+
+            // create service collection
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection, configuration);
         
-        static void Initialize()
+            // create service provider
+            var serviceProvider = serviceCollection.BuildServiceProvider();            
+
+            // entry to run app
+            serviceProvider.GetService<DrugMaintainerApp>().UpdateDrugProducts().Wait();
+        }
+        
+        static IConfiguration Initialize()
         {
             string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Console.WriteLine("Running in Environment {0}", environmentName);
-            configuration = new ConfigurationBuilder()
+            return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile($"appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
                 .Build();
-        }
-        static void Main(string[] args)
+        }        
+
+        private static void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            Initialize();
+            // add configured instance of logging
+            serviceCollection.AddSingleton(new LoggerFactory());
 
-            Console.WriteLine("DIN Parsing...");
-            IDrugProductParser parser = new FederalDrugProductParser("/home/dev/Development/HealthGateway/Apps/DrugMaintainer/Resources/DrugProducts/");
-            IFileDownloadService downloader = new FileDownloadService();
+            // add logging
+            serviceCollection.AddLogging();
 
-            Maintainer maintainer = new Maintainer(parser, downloader);
-            maintainer.ParseFiles();
+            // add httpclient
+            serviceCollection.AddHttpClient();
+            
+            // add configuration
+            serviceCollection.AddSingleton<IConfiguration>(configuration);
 
-            Console.WriteLine("Adding Entities to DB");
-            using (var ctx = new DrugDBContext(configuration))
-            {
-                ctx.DrugProduct.AddRange(drugProducts);
-                ctx.ActiveIngredient.AddRange(ingredients);
-                ctx.Company.AddRange(companies);
-                ctx.Status.AddRange(statuses);
-                ctx.Form.AddRange(forms);
-                ctx.Packaging.AddRange(packagings);
-                ctx.PharmaceuticalStd.AddRange(pharmaceuticals);
-                ctx.Route.AddRange(routes);
-                ctx.Schedule.AddRange(schedules);
-                ctx.TherapeuticClass.AddRange(therapeuticClasses);
-                ctx.VeterinarySpecies.AddRange(veterinarySpecies);
-                Console.WriteLine("Saving Entities");
-                ctx.SaveChanges();
-            }
+            // Add services
+            serviceCollection.AddTransient<IDBContextFactory, DrugDBFactory>();
+            serviceCollection.AddTransient<IDBContextFactory, DrugDBFactory>();
+            serviceCollection.AddTransient<IFileDownloadService, FileDownloadService>();
+            serviceCollection.AddTransient<IDrugProductParser, FederalDrugProductParser>();
+
+            // Add app
+            serviceCollection.AddTransient<DrugMaintainerApp>();
         }
     }
 }
