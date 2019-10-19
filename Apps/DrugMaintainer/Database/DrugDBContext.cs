@@ -13,49 +13,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Database
+namespace HealthGateway.DrugMaintainer.Database
 {
+    using Microsoft.Extensions.Configuration;
     using Microsoft.EntityFrameworkCore;
     using HealthGateway.DIN.Models;
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class MedicationDBContext : DbContext, IDbContext
+    public class DrugDBContext : DbContext
     {
-        /// <summary>
-        /// The DB name for the Pharmanet Trace ID Sequence.
-        /// </summary>
-        public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
+        private readonly IConfiguration configuration;
+
+        public DrugDBContext(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public MedicationDBContext(DbContextOptions<MedicationDBContext> options)
+        public DrugDBContext(DbContextOptions<DrugDBContext> options)
             : base(options)
         {
         }
 
-        /// <inheritdoc/>
-        public int ExecuteSqlCommand(string sql, params object[] parameters)
-        {
-            return this.Database.ExecuteSqlCommand(sql, parameters);
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        { 
+            optionsBuilder.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public override int SaveChanges()
         {
-            modelBuilder.HasSequence<long>(PHARMANET_TRACE_SEQUENCE)
-                        .StartsAt(1)
-                        .IncrementsBy(1)
-                        .HasMin(1)
-                        .HasMax(999999)
-                        .IsCyclic(true);
+            const string user = "DrugMaintainer";
+            DateTime now = System.DateTime.UtcNow;
+
+            foreach (var auditEntity in ChangeTracker.Entries<IAuditable>()
+                   .Where(x => (x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified))))
+            {
+                if (auditEntity.State == EntityState.Added)
+                {
+                    auditEntity.Entity.CreatedDateTime = now;
+                    auditEntity.Entity.CreatedBy = user;
+                }
+                auditEntity.Entity.UpdatedDateTime = now;
+                auditEntity.Entity.UpdatedBy = user;
+            }
+            return base.SaveChanges();
         }
 
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
-        public DbSet<Company> Company{ get; set; }
+        public DbSet<Company> Company { get; set; }
         public DbSet<DrugProduct> DrugProduct { get; set; }
         public DbSet<Form> Form { get; set; }
         public DbSet<Packaging> Packaging { get; set; }
