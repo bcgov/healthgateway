@@ -93,6 +93,7 @@ namespace HealthGateway.Medication.Models
                 var dosageWithForm = hl7v2Name.Substring(45).Trim();
                 if (dosageWithForm[9] == ' ')
                 {
+                    this.Form = dosageWithForm.Substring(9).Trim();
                     // Pic the strength from the unit [500 MG    TABLET]
                     string[] unitWithDosage = dosageWithForm.Substring(0, 9).Trim().Split(" ");
                     if (unitWithDosage.Length == 2)
@@ -104,11 +105,11 @@ namespace HealthGateway.Medication.Models
                         }
                         else 
                         {
-                            throw new System.Exception($"Invalid dosage: '{unitWithDosage[0]}', generic name: '{hl7v2Name}'");
+                            // Unable to parse the dosage, just skip it for now.
+                            this.ComplexDose = dosageWithForm;
+                            this.Form = string.Empty;
                         }
                     }
-
-                    this.Form = dosageWithForm.Substring(9).Trim();
                 }
                 else
                 {
