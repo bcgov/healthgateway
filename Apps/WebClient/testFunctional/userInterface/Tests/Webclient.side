@@ -859,6 +859,13 @@
       "targets": [],
       "value": "Health Care Timeline"
     }, {
+      "id": "62bd6f44-36ac-456a-a529-7d042a1ed44f",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
       "id": "4e5cad3a-c2ae-49ca-9cfa-abecdaed2b89",
       "comment": "",
       "command": "assertText",
@@ -990,6 +997,137 @@
       "targets": [],
       "value": "23"
     }]
+  }, {
+    "id": "7a8e3e70-67ba-49e8-94a7-241c2f407c4b",
+    "name": "Timeline - Medication Details",
+    "commands": [{
+      "id": "0d999b0d-96cf-42a3-b7ce-bd293a6e072f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d93f7ee4-147c-47fb-9e79-b1d196264795",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Timeline",
+      "targets": [
+        ["linkText=Timeline", "linkText"],
+        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8c2ea1c2-5c7b-4c2d-b058-6ddb74a07202",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "ea2e120a-899b-4698-a3d8-9de6c448e7c6",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "2ce1d32c-9626-4afa-8a70-e731972d700f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row > .btn",
+      "targets": [
+        ["css=.row > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"]
+      ],
+      "value": "Date (Newest)"
+    }, {
+      "id": "fcacfb86-1967-490b-9e1e-a14ff42fd62f",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.row:nth-child(1) > .col .date",
+      "targets": [
+        ["css=.row:nth-child(1) > .col .date", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/div/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "1d9a9e74-d6ba-433a-afcd-9e6565424627",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) > .col .date",
+      "targets": [
+        ["css=.row:nth-child(1) > .col .date", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/div/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 30, 2019"
+    }, {
+      "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .row:nth-child(2) .entryTitle",
+      "targets": [
+        ["css=.row:nth-child(1) .row:nth-child(2) .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/div/div[2]/div/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Test Brand Name"
+    }, {
+      "id": "b55dca54-e78b-48a7-ab44-8244c0544310",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .row:nth-child(2) > .row .row .row:nth-child(1) > .col",
+      "targets": [
+        ["css=.row:nth-child(1) .row:nth-child(2) > .row .row .row:nth-child(1) > .col", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/div/div[2]/div/div/div[2]/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "CLARITHROMYCIN"
+    }, {
+      "id": "e9d35420-6d19-4bab-a6fc-5c57ad0f7886",
+      "comment": "",
+      "command": "click",
+      "target": "css=.row:nth-child(1) .row:nth-child(2) > .row:nth-child(1) .btn:nth-child(1)",
+      "targets": [
+        ["css=.row:nth-child(1) .row:nth-child(2) > .row:nth-child(1) .btn:nth-child(1)", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,' View Details')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "91d14cea-7271-4b8d-8556-aefbf561ab56",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#entryDetails-0-1548835200000 div:nth-child(2)",
+      "targets": [
+        ["css=#entryDetails-0-1548835200000 div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Prescription Number: 5790"
+    }, {
+      "id": "3cd87878-95b3-4b1a-9b9f-4aeb9e807027",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#entryDetails-0-1548835200000 div:nth-child(6)",
+      "targets": [
+        ["css=#entryDetails-0-1548835200000 div:nth-child(6)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[6]", "xpath:idRelative"],
+        ["xpath=//div/div[6]", "xpath:position"]
+      ],
+      "value": "Manufacturer: BGP PHARMA ULC"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -1018,7 +1156,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []
