@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrugMaintainer", "DrugMaintainer.csproj", "{3A00882E-E99E-4B42-99D9-C8485378E606}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBMaintainer", "DBMaintainer.csproj", "{3A00882E-E99E-4B42-99D9-C8485378E606}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\src\Common.csproj", "{84CFC171-6C08-4A73-85E2-DF81EB896D62}"
 EndProject
