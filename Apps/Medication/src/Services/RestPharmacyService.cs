@@ -60,20 +60,17 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-                using (ctx)
+                long traceId = ctx.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
+                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                if (response.IsSuccessStatusCode)
                 {
-                    long traceId = ctx.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
-                    HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
-                    HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        return JsonConvert.DeserializeObject<HNMessage<Pharmacy>>(payload);
-                    }
-                    else
-                    {
-                        return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
-                    }
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    return JsonConvert.DeserializeObject<HNMessage<Pharmacy>>(payload);
+                }
+                else
+                {
+                    return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
         }
