@@ -39,6 +39,7 @@ namespace HealthGateway.Medication.Services
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IAuthService authService;
         private MedicationDBContext ctx;
+        private IPharmacyService pharmacyService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -47,13 +48,22 @@ namespace HealthGateway.Medication.Services
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestMedicationStatementService(IHNMessageParser<List<MedicationStatement>> parser, IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService, MedicationDBContext ctx)
+        /// <param name="ctx">The injected medication database context.</param>
+        /// <param name="pharmacyService">The injected pharmacy lookup service.</param>
+        public RestMedicationStatementService(
+            IHNMessageParser<List<MedicationStatement>> parser, 
+            IHttpClientFactory httpClientFactory, 
+            IConfiguration configuration, 
+            IAuthService authService, 
+            MedicationDBContext ctx,
+            IPharmacyService pharmacyService)
         {
             this.medicationParser = parser;
             this.httpClientFactory = httpClientFactory;
             this.configService = configuration;
             this.authService = authService;
             this.ctx = ctx;
+            this.pharmacyService = pharmacyService;
         }
 
         /// <inheritdoc/>
@@ -88,19 +98,22 @@ namespace HealthGateway.Medication.Services
 
             if (!hnClientMedicationResult.IsError)
             {
+                IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
                 foreach (MedicationStatement medicationStatement in hnClientMedicationResult.Message)
                 {
-                    // TODO: Add the brand name and pharmacy
+                    // TODO: Add the brand name
                     medicationStatement.Medication.BrandName = "Test Brand Name";
-                    medicationStatement.Pharmacy = new Pharmacy()
-                        {
-                            Name = "Test Pharmacorp",
-                            AddressLine1 = "Good street 1234",
-                            AddressLine2 = "Unit5",
-                            City = "Victoria",
-                            Province = "BC",
-                            PhoneNumber = "250-555-1234",
-                        };
+
+                    string pharmacyId = medicationStatement.PharmacyId.ToUpper();
+
+                    // Fetches the pharmacy if it hasn't been loaded yet.
+                    if (!pharmacyDict.ContainsKey(pharmacyId)) {
+                        HNMessage<Pharmacy> pharmacy = 
+                            await this.pharmacyService.GetPharmacyAsync(pharmacyId, userId, ipAddress).ConfigureAwait(true);
+                        pharmacyDict.Add(pharmacyId, pharmacy.Message);
+                    }
+                    
+                    medicationStatement.Pharmacy = pharmacyDict[pharmacyId];
                 }
             }
 

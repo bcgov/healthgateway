@@ -93,15 +93,23 @@ namespace HealthGateway.Medication.Models
                 var dosageWithForm = hl7v2Name.Substring(45).Trim();
                 if (dosageWithForm[9] == ' ')
                 {
+                    this.Form = dosageWithForm.Substring(9).Trim();
                     // Pic the strength from the unit [500 MG    TABLET]
                     string[] unitWithDosage = dosageWithForm.Substring(0, 9).Trim().Split(" ");
                     if (unitWithDosage.Length == 2)
                     {
-                        this.Dosage = float.Parse(unitWithDosage[0], CultureInfo.CurrentCulture);
-                        this.DosageUnit = unitWithDosage[1];
+                        if (float.TryParse(unitWithDosage[0], out float dosage))
+                        {
+                            this.Dosage = dosage;
+                            this.DosageUnit = unitWithDosage[1];
+                        }
+                        else 
+                        {
+                            // Unable to parse the dosage, just skip it for now.
+                            this.ComplexDose = dosageWithForm;
+                            this.Form = string.Empty;
+                        }
                     }
-
-                    this.Form = dosageWithForm.Substring(9).Trim();
                 }
                 else
                 {
