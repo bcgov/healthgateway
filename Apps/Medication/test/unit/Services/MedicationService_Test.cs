@@ -44,6 +44,8 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldGetMedications()
         {
+            string userId = "test";
+            string ipAddress = "10.0.0.1";
             HNMessage<string> expected = new HNMessage<string>("test");
 
             Mock<IAuthService> authMock = new Mock<IAuthService>();
@@ -67,8 +69,12 @@ namespace HealthGateway.Medication.Test
             mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
             MedicationDBContextExtensions.Implementation = mockExtensions.Object;
 
-            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", "test", "10.0.0.1");
+            Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
+            mockPharmacySvc.Setup(p => p.GetPharmacyAsync(It.IsAny<string>(), userId, ipAddress)).ReturnsAsync(new HNMessage<Pharmacy>());
+
+            IMedicationStatementService service = new RestMedicationStatementService(
+                parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object, mockPharmacySvc.Object);            
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", userId, ipAddress);
             Assert.True(actual.Message.Count == 0);
         }
 
@@ -93,7 +99,9 @@ namespace HealthGateway.Medication.Test
             mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
             MedicationDBContextExtensions.Implementation = mockExtensions.Object;
 
-            IMedicationStatementService service = new RestMedicationStatementService(parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object);            
+            Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
+            IMedicationStatementService service = new RestMedicationStatementService(
+                parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object, mockPharmacySvc.Object);            
             HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("", "", "");
 
             Assert.True(actual.IsError);
