@@ -17,9 +17,9 @@ namespace HealthGateway.Common.FileDownload
 {
     using System;
     using System.IO;
+    using System.Net.Http;
     using System.Security.Cryptography;
     using System.Text;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
@@ -45,6 +45,9 @@ namespace HealthGateway.Common.FileDownload
         /// <inheritdoc/>
         public async Task<DownloadedFile> GetFileFromUrl(Uri url, string targetFolder, bool isRelativePath)
         {
+            #pragma warning disable CA1303 // literal string check
+            Uri fileUrl = url ?? throw new ArgumentNullException(nameof(url), "URL for file to download must not be null");
+            #pragma warning restore CA1303 // literal string check
             DownloadedFile df = new DownloadedFile();
 
             if (isRelativePath)
@@ -52,7 +55,7 @@ namespace HealthGateway.Common.FileDownload
                 targetFolder = Path.Combine(Directory.GetCurrentDirectory(), targetFolder);
             }
 
-            df.FileName = Path.GetRandomFileName() + Path.GetExtension(url.ToString());
+            df.FileName = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
             df.LocalFilePath = targetFolder;
 
             string filePath = Path.Combine(df.LocalFilePath, df.FileName);
@@ -61,7 +64,7 @@ namespace HealthGateway.Common.FileDownload
             {
                 using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(true);
+                    HttpResponseMessage response = await client.GetAsync(fileUrl).ConfigureAwait(true);
 
                     if (response.IsSuccessStatusCode)
                     {

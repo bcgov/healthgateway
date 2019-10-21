@@ -25,18 +25,22 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the result payload.
         /// </summary>
         public T ResourcePayload { get; set; }
+
         /// <summary>
         /// The toal result count for the request for pagination.
         /// </summary>
         public int TotalResultCount { get; set; }
+
         /// <summary>
         /// The page being returned on this result for pagination.
         /// </summary>
         public int PageIndex { get; set; }
+
         /// <summary>
         /// The page size for pagination.
         /// </summary>
         public int PageSize { get; set; }
+
         /// <summary>
         /// The error message if there was any.
         /// </summary>
