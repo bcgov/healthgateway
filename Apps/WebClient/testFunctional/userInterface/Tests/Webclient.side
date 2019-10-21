@@ -859,6 +859,13 @@
       "targets": [],
       "value": "Health Care Timeline"
     }, {
+      "id": "62bd6f44-36ac-456a-a529-7d042a1ed44f",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
       "id": "4e5cad3a-c2ae-49ca-9cfa-abecdaed2b89",
       "comment": "",
       "command": "assertText",
@@ -1022,6 +1029,13 @@
       "target": "id=subject",
       "targets": [],
       "value": "Health Care Timeline"
+    }, {
+      "id": "ea2e120a-899b-4698-a3d8-9de6c448e7c6",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
     }, {
       "id": "2ce1d32c-9626-4afa-8a70-e731972d700f",
       "comment": "",
