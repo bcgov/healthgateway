@@ -88,32 +88,39 @@ namespace HealthGateway.Medication.Models
             // Some generic names are too short, if that is the case dont attempt to extract the rest of the data.
             if (hl7v2Name.Length > 45)
             {
-                this.Manufacturer = hl7v2Name.Substring(30, 15).Trim();
-
-                var dosageWithForm = hl7v2Name.Substring(45).Trim();
-                if (dosageWithForm[9] == ' ')
+                try
                 {
-                    this.Form = dosageWithForm.Substring(9).Trim();
-                    // Pic the strength from the unit [500 MG    TABLET]
-                    string[] unitWithDosage = dosageWithForm.Substring(0, 9).Trim().Split(" ");
-                    if (unitWithDosage.Length == 2)
+                    this.Manufacturer = hl7v2Name.Substring(30, 15).Trim();
+
+                    var dosageWithForm = hl7v2Name.Substring(45).Trim();
+                    if (dosageWithForm[9] == ' ')
                     {
-                        if (float.TryParse(unitWithDosage[0], out float dosage))
+                        this.Form = dosageWithForm.Substring(9).Trim();
+                        // Pic the strength from the unit [500 MG    TABLET]
+                        string[] unitWithDosage = dosageWithForm.Substring(0, 9).Trim().Split(" ");
+                        if (unitWithDosage.Length == 2)
                         {
-                            this.Dosage = dosage;
-                            this.DosageUnit = unitWithDosage[1];
-                        }
-                        else 
-                        {
-                            // Unable to parse the dosage, just skip it for now.
-                            this.ComplexDose = dosageWithForm;
-                            this.Form = string.Empty;
+                            if (float.TryParse(unitWithDosage[0], out float dosage))
+                            {
+                                this.Dosage = dosage;
+                                this.DosageUnit = unitWithDosage[1];
+                            }
+                            else 
+                            {
+                                // Unable to parse the dosage, just skip it for now.
+                                this.ComplexDose = dosageWithForm;
+                                this.Form = string.Empty;
+                            }
                         }
                     }
+                    else
+                    {
+                        this.ComplexDose = dosageWithForm;
+                    }                
                 }
-                else
-                {
-                    this.ComplexDose = dosageWithForm;
+                catch (System.Exception ex) {
+                    System.Console.WriteLine($"Dosage parser error! Generic Name: '{hl7v2Name}' Error: {ex.ToString()}");
+                    // Suppress the exception
                 }
             }
             else
