@@ -13,13 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer.Database
+namespace HealthGateway.Medication.Database
 {
+    using Microsoft.Extensions.Configuration;
+    using HealthGateway.Common.Database;
+    using Microsoft.EntityFrameworkCore;
+
     /// <summary>
-    /// Interface for creating database contexts.
+    /// The database context to be used for the Medication Service.
     /// </summary>
-    public interface IDBContextFactory
+    public class MedicationDBContextFactory : IDBContextFactory
     {
-        DrugDBContext CreateDrugDBContext();
+        private readonly IConfiguration configuration;
+
+        public MedicationDBContextFactory(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
+        public DbContext CreateContext()
+        {
+            return new MedicationDBContext(this.configuration);
+        }
     }
 }

@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "DrugMaintainer"
+		},
+		{
+			"path": "DBMaintainer"
 		}
 	],
 	"settings": {}

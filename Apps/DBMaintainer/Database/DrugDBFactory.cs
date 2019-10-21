@@ -16,20 +16,22 @@
 namespace HealthGateway.DrugMaintainer.Database
 {
     using Microsoft.Extensions.Configuration;
+    using HealthGateway.Common.Database;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class DrugDBFactory : IDBContextFactory
+    public class DrugDBContextFactory : IDBContextFactory
     {
         private readonly IConfiguration configuration;
 
-        public DrugDBFactory(IConfiguration configuration)
+        public DrugDBContextFactory(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
 
-        public DrugDBContext CreateDrugDBContext()
+        public DbContext CreateContext()
         {
             return new DrugDBContext(this.configuration);
         }

@@ -13,29 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Database
+namespace HealthGateway.Common.Database
 {
-    using System;
-    using System.IO;
     using Microsoft.EntityFrameworkCore;
-    using Npgsql;
-    using NpgsqlTypes;
 
-    /// <inheritdoc/>
-    public class MedicationDBContextExt : IMedicationDBContextExt
+    /// <summary>
+    /// Interface for creating database contexts.
+    /// </summary>
+    public interface IDBContextFactory
     {
-        /// <inheritdoc/>
-        public long NextValueForSequence(IDbContext ctx, string seq)
-        {
-            NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
-            {
-                Direction = System.Data.ParameterDirection.Output,
-            };
-            ctx.ExecuteSqlCommand($"SELECT nextval('{seq}')", result);
-
-            // code below is to be used when updating to EF 3
-            // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);
-            return (long)result.Value;
-        }
+        DbContext CreateContext();
     }
 }

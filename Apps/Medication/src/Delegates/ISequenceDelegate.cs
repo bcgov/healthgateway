@@ -13,19 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Database
+namespace HealthGateway.Medication.Delegates
 {
     /// <summary>
-    /// Extensions to the Medications DB Context.
+    /// Delegate that retrieves drugs based on the drug identifier.
     /// </summary>
-    public interface IMedicationDBContextExt
+    public interface ISequenceDelegate
     {
-        /// <summary>
-        /// Gets the next sequence number for the given sequence name.
-        /// </summary>
-        /// <param name="ctx">The database context.</param>
-        /// <param name="seq">The sequence name</param>
-        /// <returns>The next sequence value</returns>
-        long NextValueForSequence(IDbContext ctx, string seq);
+        /// <inheritdoc/>
+        long NextValueForSequence(string seq);
     }
 }

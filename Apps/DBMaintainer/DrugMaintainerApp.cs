@@ -16,15 +16,16 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System;
-    using System.Collections.Generic;    
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
     using HealthGateway.Common.FileDownload;
+    using HealthGateway.Common.Database;
     using HealthGateway.DrugMaintainer.Database;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
     using System.IO;
-    using System.IO.Compression;    
+    using System.IO.Compression;
 
     public class DrugMaintainerApp
     {
@@ -74,7 +75,7 @@ namespace HealthGateway.DrugMaintainer
         private void updateDatabase(string unzippedPath)
         {
             this.logger.LogInformation("Adding Entities to DB");
-            using (var ctx = this.dbContextFactory.CreateDrugDBContext())
+            using (DrugDBContext ctx = (DrugDBContext)this.dbContextFactory.CreateContext())
             {
                 List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
                 ctx.DrugProduct.AddRange(drugProducts);

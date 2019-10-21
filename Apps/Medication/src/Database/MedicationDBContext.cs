@@ -16,17 +16,30 @@
 namespace HealthGateway.Medication.Database
 {
     using Microsoft.EntityFrameworkCore;
-    using HealthGateway.DIN.Models;
+    using HealthGateway.Common.Database.Models;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
     public class MedicationDBContext : DbContext, IDbContext
     {
+        private readonly IConfiguration configuration;
+
         /// <summary>
         /// The DB name for the Pharmanet Trace ID Sequence.
         /// </summary>
         public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
+
+        public MedicationDBContext(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
+        }
 
         /// <summary>
         /// Constructor required to instantiated the context via startup.

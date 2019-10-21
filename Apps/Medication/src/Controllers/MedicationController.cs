@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using HealthGateway.Medication.Delegates;
@@ -47,18 +46,19 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// The drug lookup delegate.
         /// </summary>
-        private readonly IDrugLookupDelegate dinLookupDelegate;
+        private readonly IDrugLookupDelegate drugLookupDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="medicationService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, IDrugLookupDelegate dinLookupDelegate)
+        /// <param name="drugLookupDelegate">The injected Drug product provider.</param>
+        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, IDrugLookupDelegate drugLookupDelegate)
         {
             this.medicationService = medicationService;
             this.httpContextAccessor = httpAccessor;
-            this.dinLookupDelegate = dinLookupDelegate;
+            this.drugLookupDelegate = drugLookupDelegate;
         }
 
         /// <summary>
@@ -71,9 +71,18 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<RequestResult<List<Medication>>> GetMedications(List<string> drugIdentifiers)
+        public RequestResult<List<Medication>> GetMedications(List<string> drugIdentifiers)
         {
-            RequestResult<List<Medication>> result = await this.dinLookupDelegate.FindMedicationsByDIN(drugIdentifiers);
+            List<Medication> medications = this.drugLookupDelegate.FindMedicationsByDIN(drugIdentifiers);
+
+            RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
+            {
+                ResourcePayload = medications,
+                TotalResultCount = medications.Count,
+                PageIndex = 0,
+                PageSize = medications.Count
+            };
+
             return result;
         }
     }

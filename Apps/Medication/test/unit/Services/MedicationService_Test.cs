@@ -17,11 +17,10 @@ namespace HealthGateway.Medication.Test
 {
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
-    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
-    using Microsoft.EntityFrameworkCore;
+    using HealthGateway.Medication.Delegates;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using System.Collections.Generic;
@@ -55,25 +54,32 @@ namespace HealthGateway.Medication.Test
             parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
 
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage() {
+            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
+            {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            //DB Mockup
-            DbContextOptions<MedicationDBContext> dbOPtions = new DbContextOptions<MedicationDBContext>();
-            Mock<MedicationDBContext> dbctxMock = new Mock<MedicationDBContext>(dbOPtions);
-            Mock<IMedicationDBContextExt> mockExtensions = new Mock<IMedicationDBContextExt>();
-            mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
-            MedicationDBContextExtensions.Implementation = mockExtensions.Object;
+            // Sequence delegate
+            Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
+            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
             mockPharmacySvc.Setup(p => p.GetPharmacyAsync(It.IsAny<string>(), userId, ipAddress)).ReturnsAsync(new HNMessage<Pharmacy>());
 
+            Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
+            mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());
+
             IMedicationStatementService service = new RestMedicationStatementService(
-                parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object, mockPharmacySvc.Object);            
+                parserMock.Object,
+                httpMock.Object,
+                configuration,
+                authMock.Object,
+                sequenceDelegateMock.Object,
+                mockPharmacySvc.Object,
+                mockDrugLookupDelegate.Object);
             HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", userId, ipAddress);
             Assert.True(actual.Message.Count == 0);
         }
@@ -86,22 +92,29 @@ namespace HealthGateway.Medication.Test
 
             Mock<IHNMessageParser<List<MedicationStatement>>> parserMock = new Mock<IHNMessageParser<List<MedicationStatement>>>();
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage() {
+            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
+            {
                 StatusCode = HttpStatusCode.BadRequest,
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            //DB Mockup
-            DbContextOptions<MedicationDBContext> dbOPtions = new DbContextOptions<MedicationDBContext>();
-            Mock<MedicationDBContext> dbctxMock = new Mock<MedicationDBContext>(dbOPtions);
-            Mock<IMedicationDBContextExt> mockExtensions = new Mock<IMedicationDBContextExt>();
-            mockExtensions.Setup(s => s.NextValueForSequence(dbctxMock.Object, It.IsAny<string>())).Returns(101010);
-            MedicationDBContextExtensions.Implementation = mockExtensions.Object;
+            Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
+            mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());
+
+            // Sequence delegate
+            Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
+            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
             IMedicationStatementService service = new RestMedicationStatementService(
-                parserMock.Object, httpMock.Object, configuration, authMock.Object, dbctxMock.Object, mockPharmacySvc.Object);            
+                parserMock.Object,
+                httpMock.Object,
+                configuration,
+                authMock.Object,
+                sequenceDelegateMock.Object,
+                mockPharmacySvc.Object,
+                mockDrugLookupDelegate.Object);
             HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("", "", "");
 
             Assert.True(actual.IsError);

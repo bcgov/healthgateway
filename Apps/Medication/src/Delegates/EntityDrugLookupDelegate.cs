@@ -16,20 +16,36 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Delegates
 {
-    using HealthGateway.Common.Models;
+    using System.Linq;
     using System.Collections.Generic;
     using HealthGateway.Medication.Models;
-    using System.Threading.Tasks;
+    using HealthGateway.Medication.Database;
+    using HealthGateway.Common.Database;
+    using HealthGateway.Common.Database.Models;
 
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management
     /// </summary>
     public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {
-        /// <inheritdoc/>
-        public Task<RequestResult<List<Medication>>> FindMedicationsByDIN(List<string> drugIdentifiers)
+        private IDBContextFactory contextFactory;
+
+        /// <summary>
+        /// Constructor that requires a database context factory
+        /// </summary>
+        public EntityDrugLookupDelegate(IDBContextFactory contextFactory)
         {
-            throw new System.NotImplementedException();
+            this.contextFactory = contextFactory;
+        }
+
+        /// <inheritdoc/>
+        public List<Medication> FindMedicationsByDIN(List<string> drugIdentifiers)
+        {
+            using (MedicationDBContext ctx = (MedicationDBContext)this.contextFactory.CreateContext())
+            {
+                List<DrugProduct> drugProducts = ctx.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber)).ToList();
+                return SimpleModelMapper.ToMedicationList(drugProducts);
+            }
         }
     }
 }

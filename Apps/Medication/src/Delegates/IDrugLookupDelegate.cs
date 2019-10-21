@@ -15,10 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Delegates
 {
-    using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Delegate that retrieves drugs based on the drug identifier.
@@ -30,6 +28,6 @@ namespace HealthGateway.Medication.Delegates
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>
         /// <returns>A request results with the outcome of the lookup.</returns>
-        Task<RequestResult<List<Medication>>> FindMedicationsByDIN(List<string> drugIdentifiers);
+        List<Medication> FindMedicationsByDIN(List<string> drugIdentifiers);
     }
 }

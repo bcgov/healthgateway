@@ -20,7 +20,6 @@ namespace HealthGateway.DrugMaintainer.Database
     using HealthGateway.Common.Database.Models;
     using System;
     using System.Linq;
-    using System.Collections.Generic;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
@@ -44,7 +43,7 @@ namespace HealthGateway.DrugMaintainer.Database
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        { 
+        {
             optionsBuilder.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
         }
 

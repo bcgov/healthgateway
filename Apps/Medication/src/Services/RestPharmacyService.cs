@@ -20,6 +20,7 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
@@ -34,7 +35,7 @@ namespace HealthGateway.Medication.Services
         private readonly IConfiguration configService;
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
         private readonly IHttpClientFactory httpClientFactory;
-        private MedicationDBContext ctx;
+        private readonly ISequenceDelegate sequenceDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
@@ -42,13 +43,13 @@ namespace HealthGateway.Medication.Services
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
-        /// <param name="ctx">The injected DB Context.</param>
-        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory, MedicationDBContext ctx)
+        /// <param name="sequenceDelegate">The injected sequence delegate.</param>
+        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory, ISequenceDelegate sequenceDelegate)
         {
             this.configService = config;
             this.pharmacyParser = parser;
             this.httpClientFactory = httpClientFactory;
-            this.ctx = ctx;
+            this.sequenceDelegate = sequenceDelegate;
         }
 
         /// <inheritdoc/>
@@ -60,7 +61,7 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-                long traceId = ctx.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                long traceId = sequenceDelegate.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
                 HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
