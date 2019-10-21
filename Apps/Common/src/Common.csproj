@@ -43,4 +43,9 @@
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Audit\" />
+    <Folder Include="Database\" />
+    <Folder Include="Database\Models\" />
+  </ItemGroup>
 </Project>

@@ -13,32 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DIN.Models
+namespace HealthGateway.Common.Database.Models
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
 
-    public class Status : AuditableEntity
+    public interface IAuditable
     {
-        public Guid StatusId { get; set; }
+        /// <summary>
+        /// The audit created by field in the DB.
+        /// </summary>
+        string CreatedBy { get; set; }
 
-        [Required]
-        public DrugProduct Drug { get; set; }
+        /// <summary>
+        /// The audit created date/time field in the DB.
+        /// </summary>
+        DateTime CreatedDateTime { get; set; }
 
-        [MaxLength(1)]
-        public string CurrentStatusFlag { get; set; }
+        /// <summary>
+        /// The audit updated by field in the DB.
+        /// </summary>
+        string UpdatedBy { get; set; }
 
-        [MaxLength(40)]
-        public string StatusDesc { get; set; }
-
-        [MaxLength(80)]
-        public string StatusDescFrench { get; set; }
-
-        public DateTime? HistoryDate { get; set; }
-
-        [MaxLength(80)]
-        public string LotNumber { get; set; }
-
-        public DateTime? ExpirationDate { get; set; }
+        /// <summary>
+        /// The audit updated date/time in the DB.
+        /// </summary>
+        DateTime UpdatedDateTime { get; set; }
     }
 }
