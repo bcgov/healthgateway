@@ -17,7 +17,9 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.IO;
+    using HealthGateway.Common.Attributes;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -80,8 +82,9 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddHealthChecks();
 
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
             services
-                .AddMvc()
+                .AddMvc(c => c.Filters.Add(new AuditAttribute(serviceProvider.GetService<IAuditService>())))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
