@@ -17,9 +17,9 @@ namespace HealthGateway.Common.Database.Models
 {
     using System;
 
-    public class Audit
+    public class AuditEvent
     {
-        public Audit()
+        public AuditEvent()
         {
         }
     }
