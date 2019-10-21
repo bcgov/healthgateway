@@ -34,7 +34,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <typeparam name="T">The startup class.</typeparam>
         /// <param name="args">The command line arguments.</param>
         /// <returns>Returns the configured webhost.</returns>
-        [Obsolete("Invoke static CreateWebHostBuilder - See Medication Program.cs")] 
+        [Obsolete("Invoke static CreateWebHostBuilder - See Medication Program.cs")]
         public static IWebHost BuildWebHost<T>(string[] args)
             where T : class
         {
