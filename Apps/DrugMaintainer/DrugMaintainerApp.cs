@@ -18,7 +18,7 @@ namespace HealthGateway.DrugMaintainer
     using System;
     using System.Collections.Generic;    
     using System.Threading.Tasks;
-    using HealthGateway.DIN.Models;
+    using HealthGateway.Common.Database.Models;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.DrugMaintainer.Database;
     using Microsoft.Extensions.Logging;

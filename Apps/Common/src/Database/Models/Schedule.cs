@@ -13,19 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DIN.Models
+namespace HealthGateway.Common.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Common.Database.Models;
 
-    public class PharmaceuticalStd : AuditableEntity
+    public class Schedule : AuditableEntity
     {
-        public Guid PharmaceuticalStdId { get; set; }
+        public Guid ScheduleId { get; set; }
 
         [Required]
         public DrugProduct Drug { get; set; }
 
-        public string PharmaceuticalStdDesc { get; set; }
+        [MaxLength(40)]
+        public string ScheduleDesc { get; set; }
+
+        [MaxLength(80)]
+        public string ScheduleDescFrench { get; set; }
     }
 }
