@@ -97,8 +97,15 @@ namespace HealthGateway.Medication.Models
                     string[] unitWithDosage = dosageWithForm.Substring(0, 9).Trim().Split(" ");
                     if (unitWithDosage.Length == 2)
                     {
-                        this.Dosage = float.Parse(unitWithDosage[0], CultureInfo.CurrentCulture);
-                        this.DosageUnit = unitWithDosage[1];
+                        if (float.TryParse(unitWithDosage[0], out float dosage))
+                        {
+                            this.Dosage = dosage;
+                            this.DosageUnit = unitWithDosage[1];
+                        }
+                        else 
+                        {
+                            throw new System.Exception($"Invalid dosage: '{unitWithDosage[0]}', generic name: '{hl7v2Name}'");
+                        }
                     }
 
                     this.Form = dosageWithForm.Substring(9).Trim();
