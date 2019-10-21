@@ -13,11 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-<<<<<<< HEAD:Apps/Common/src/Database/Models/Company.cs
 namespace HealthGateway.Common.Database.Models
-=======
-namespace HealthGateway.DIN.Models
->>>>>>> dev:Apps/Common/src/DIN/Models/Company.cs
 {
     using System;
     using System.ComponentModel.DataAnnotations;
