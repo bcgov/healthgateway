@@ -17,6 +17,7 @@ namespace HealthGateway.DIN.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using HealthGateway.Common.Database.Models;
 
     public class Form : AuditableEntity
     {
