@@ -15,7 +15,7 @@
 // //-------------------------------------------------------------------------
 namespace HealthGateway.DrugMaintainer
 {
-    using HealthGateway.DIN.Models;
+    using HealthGateway.Common.Database.Models;
     using System.Collections.Generic;
 
     public interface IDrugProductParser

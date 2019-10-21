@@ -17,7 +17,7 @@ namespace HealthGateway.DrugMaintainer.Database
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.EntityFrameworkCore;
-    using HealthGateway.DIN.Models;
+    using HealthGateway.Common.Database.Models;
     using System;
     using System.Linq;
     using System.Collections.Generic;

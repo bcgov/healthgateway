@@ -13,30 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DIN.Models
+namespace HealthGateway.Common.Database.Models
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
 
-    public interface IAuditable
+    public abstract class AuditableEntity : IAuditable
     {
-        /// <summary>
-        /// The audit created by field in the DB.
-        /// </summary>
-        string CreatedBy { get; set; }
+        [Required]
+        [MaxLength(30)]
+        public string CreatedBy { get; set; }
 
-        /// <summary>
-        /// The audit created date/time field in the DB.
-        /// </summary>
-        DateTime CreatedDateTime { get; set; }
+        [Required]
+        public DateTime CreatedDateTime { get; set; }
 
-        /// <summary>
-        /// The audit updated by field in the DB.
-        /// </summary>
-        string UpdatedBy { get; set; }
+        [Required]
+        [MaxLength(30)]
+        public string UpdatedBy { get; set; }
 
-        /// <summary>
-        /// The audit updated date/time in the DB.
-        /// </summary>
-        DateTime UpdatedDateTime { get; set; }
+        [Required]
+        public DateTime UpdatedDateTime { get; set; }
     }
 }

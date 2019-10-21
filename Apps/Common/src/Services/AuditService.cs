@@ -13,30 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer.Database
+namespace HealthGateway.Common.Services
 {
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.EntityFrameworkCore;
-    using HealthGateway.Common.Database.Models;
     using System;
-    using System.Linq;
-    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
+    using HealthGateway.Common.Database.Models;
 
     /// <summary>
-    /// The database context to be used for the Medication Service.
+    /// The Authorization service
     /// </summary>
-    public class DrugDBFactory : IDBContextFactory
+    public class AuditService : IAuditService
     {
-        private readonly IConfiguration configuration;
-
-        public DrugDBFactory(IConfiguration configuration)
+        public AuditService(IConfiguration config)
         {
-            this.configuration = configuration;
+
         }
-
-        public DrugDBContext CreateDrugDBContext()
+        public Task WriteAuditEvent(AuditEvent auditEvent)
         {
-            return new DrugDBContext(this.configuration);
+            Task t = Task.Factory.StartNew(() => 
+            {
+                // Execute audit logging into database context
+
+            } );
+            
+            return t;
         }
     }
 }
