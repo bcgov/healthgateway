@@ -20,6 +20,7 @@ namespace HealthGateway.Medication
     using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Database;
     using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
@@ -27,7 +28,6 @@ namespace HealthGateway.Medication
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -81,17 +81,20 @@ namespace HealthGateway.Medication
                 };
             });
 
-            var info = this.configuration.GetConnectionString("MedicationConnection");
+            var info = this.configuration.GetConnectionString("GatewayConnection");
             services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
-                    this.configuration.GetConnectionString("MedicationConnection")));
-            services.AddSingleton<IAuthService, AuthService>();
+                    this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
-            services.AddSingleton<IPatientService, RestPatientService>();
-            services.AddSingleton<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
-            services.AddSingleton<IPharmacyService, RestPharmacyService>();
-            services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
-            services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
-            services.AddSingleton<IDrugLookupDelegate, EntityDrugLookupDelegate>();
+            services.AddTransient<IMedicationService, RestMedicationService>();
+            services.AddTransient<IPatientService, RestPatientService>();
+            services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
+            services.AddTransient<IPharmacyService, RestPharmacyService>();
+            services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
+            services.AddTransient<ICustomAuthorizationService, CustomAuthorizationService>();
+            services.AddTransient<IDrugLookupDelegate, EntityDrugLookupDelegate>();
+            services.AddTransient<ISequenceDelegate, EntitySequenceDelegate>();
+            services.AddTransient<IDBContextFactory, MedicationDBContextFactory>();
         }
 
         /// <summary>

@@ -13,31 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication
+namespace HealthGateway.Medication.Delegates
 {
-    using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
-
     /// <summary>
-    /// The entry point for the project.
+    /// Delegate that retrieves drugs based on the drug identifier.
     /// </summary>
-    public static class Program
+    public interface ISequenceDelegate
     {
-        /// <summary>.
-        /// The entry point for the class.
+        /// <summary>
+        /// Gets the next sequence number for the given sequence name.
         /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        /// <summary>.
-        /// Creates the IWebHostBuilder
-        /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        long NextValueForSequence(string sequenceName);
     }
 }

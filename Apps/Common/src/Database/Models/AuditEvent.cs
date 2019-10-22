@@ -67,8 +67,16 @@ namespace HealthGateway.Common.Database.Models
         public string TransactionVersion { get; set; }
 
         /// <summary>
+        /// The trace value for the audit event
+        /// </summary>
+        ///
+        [MaxLength(20)]
+        public string Trace { get; set; }
+
+        /// <summary>
         /// The result code/status code from the transaction.
         /// </summary>
+        [Required]
         public AuditTransactionResult TransactionResult { get; set; }
 
         public AuditEvent()

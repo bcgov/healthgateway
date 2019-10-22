@@ -15,31 +15,25 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Database
 {
-    using System;
-    using System.IO;
+    using Microsoft.Extensions.Configuration;
+    using HealthGateway.Common.Database;
     using Microsoft.EntityFrameworkCore;
-    using Npgsql;
-    using NpgsqlTypes;
 
     /// <summary>
-    /// Extensions to the Medications DB Context.
+    /// The database context to be used for the Medication Service.
     /// </summary>
-    public static class MedicationDBContextExtensions
+    public class MedicationDBContextFactory : IDBContextFactory
     {
-        private static IMedicationDBContextExt defaultImpl = new MedicationDBContextExt();
+        private readonly IConfiguration configuration;
 
-        /// Allow us to swap out implementations for testing.
-        public static IMedicationDBContextExt Implementation { get; set; } = defaultImpl;
-
-        public static void RevertToDefaultImplementation()
+        public MedicationDBContextFactory(IConfiguration configuration)
         {
-            Implementation = defaultImpl;
+            this.configuration = configuration;
         }
 
-        /// <inheritdoc/>
-        public static long NextValueForSequence(this MedicationDBContext ctx, string seq)
+        public DbContext CreateContext()
         {
-            return Implementation.NextValueForSequence(ctx, seq);
+            return new MedicationDBContext(this.configuration);
         }
     }
 }

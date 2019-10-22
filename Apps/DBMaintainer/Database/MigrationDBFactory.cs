@@ -15,11 +15,23 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.DrugMaintainer.Database
 {
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Design;
+
     /// <summary>
-    /// Interface for creating database contexts.
+    /// The database context to be used for the Medication Service.
     /// </summary>
-    public interface IDBContextFactory
+    public class MigrationDBFactory : IDesignTimeDbContextFactory<MigrationDBContext>
     {
-        DrugDBContext CreateDrugDBContext();
+        public MigrationDBFactory()
+        {
+        }
+
+        public MigrationDBContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<MigrationDBContext>();
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=gateway;User ID=gateway;Password=passw0rd;Integrated Security=true;Pooling=true;");
+            return new MigrationDBContext(optionsBuilder.Options);
+        }
     }
 }

@@ -16,15 +16,16 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System;
-    using System.Collections.Generic;    
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
     using HealthGateway.Common.FileDownload;
+    using HealthGateway.Common.Database;
     using HealthGateway.DrugMaintainer.Database;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
     using System.IO;
-    using System.IO.Compression;    
+    using System.IO.Compression;
 
     public class DrugMaintainerApp
     {
@@ -74,10 +75,12 @@ namespace HealthGateway.DrugMaintainer
         private void updateDatabase(string unzippedPath)
         {
             this.logger.LogInformation("Adding Entities to DB");
-            using (var ctx = this.dbContextFactory.CreateDrugDBContext())
+            using (DrugDBContext ctx = (DrugDBContext)this.dbContextFactory.CreateContext())
             {
                 List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
                 ctx.DrugProduct.AddRange(drugProducts);
+                logger.LogInformation("Saving Drug Products.");
+                ctx.SaveChanges();
                 List<ActiveIngredient> ingredients = this.parser.ParseActiveIngredientFile(unzippedPath, drugProducts);
                 ctx.ActiveIngredient.AddRange(ingredients);
                 List<Company> companies = this.parser.ParseCompanyFile(unzippedPath, drugProducts);
@@ -88,6 +91,8 @@ namespace HealthGateway.DrugMaintainer
                 ctx.Form.AddRange(forms);
                 List<Packaging> packagings = this.parser.ParsePackagingFile(unzippedPath, drugProducts);
                 ctx.Packaging.AddRange(packagings);
+                logger.LogInformation("Saving ingredients, companies, statuses, forms and packagings.");
+                ctx.SaveChanges();
                 List<PharmaceuticalStd> pharmaceuticals = this.parser.ParsePharmaceuticalStdFile(unzippedPath, drugProducts);
                 ctx.PharmaceuticalStd.AddRange(pharmaceuticals);
                 List<Route> routes = this.parser.ParseRouteFile(unzippedPath, drugProducts);

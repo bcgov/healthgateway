@@ -29,6 +29,6 @@ namespace HealthGateway.Medication.Services
         /// </summary>
         /// <param name="medicationDinList">The ip address of the request.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<Medication>>> GetMedicationsAsync(List<string> medicationDinList);
+        List<Medication> GetMedications(List<string> medicationDinList);
     }
 }

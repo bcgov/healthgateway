@@ -84,7 +84,7 @@ namespace HealthGateway.Medication.Models
         public void ParseHL7V2GenericName(string hl7v2Name)
         {
             this.GenericName = hl7v2Name.Substring(0, 30).Trim();
-            
+
             // Some generic names are too short, if that is the case dont attempt to extract the rest of the data.
             if (hl7v2Name.Length > 45)
             {
@@ -96,6 +96,7 @@ namespace HealthGateway.Medication.Models
                     if (dosageWithForm[9] == ' ')
                     {
                         this.Form = dosageWithForm.Substring(9).Trim();
+
                         // Pic the strength from the unit [500 MG    TABLET]
                         string[] unitWithDosage = dosageWithForm.Substring(0, 9).Trim().Split(" ");
                         if (unitWithDosage.Length == 2)
@@ -105,7 +106,7 @@ namespace HealthGateway.Medication.Models
                                 this.Dosage = dosage;
                                 this.DosageUnit = unitWithDosage[1];
                             }
-                            else 
+                            else
                             {
                                 // Unable to parse the dosage, just skip it for now.
                                 this.ComplexDose = dosageWithForm;
@@ -116,11 +117,12 @@ namespace HealthGateway.Medication.Models
                     else
                     {
                         this.ComplexDose = dosageWithForm;
-                    }                
+                    }
                 }
-                catch (System.Exception ex) {
+                catch (System.Exception ex)
+                {
+                    // TODO: Suppress the exception and log into the console
                     System.Console.WriteLine($"Dosage parser error! Generic Name: '{hl7v2Name}' Error: {ex.ToString()}");
-                    // Suppress the exception
                 }
             }
             else

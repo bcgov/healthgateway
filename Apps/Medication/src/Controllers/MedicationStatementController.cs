@@ -18,9 +18,9 @@ namespace HealthGateway.Medication.Controllers
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -45,11 +45,6 @@ namespace HealthGateway.Medication.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// The authorization service provider.
-        /// </summary>
-        private readonly ICustomAuthorizationService authorizationService;
-
-        /// <summary>
         /// The patient service provider used to retrieve Personal Health Number for subject.
         /// </summary>
         private readonly IPatientService patientService;
@@ -65,7 +60,6 @@ namespace HealthGateway.Medication.Controllers
         {
             this.medicationStatementService = medicationStatementService;
             this.httpContextAccessor = httpAccessor;
-            this.authorizationService = authZService;
             this.patientService = patientService;
         }
 
@@ -93,7 +87,7 @@ namespace HealthGateway.Medication.Controllers
             {
                 RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
                 {
-                    ErrorMessage = medicationStatements.Error
+                    ErrorMessage = medicationStatements.Error,
                 };
 
                 return result;
@@ -105,7 +99,7 @@ namespace HealthGateway.Medication.Controllers
                     ResourcePayload = medicationStatements.Message,
                     PageIndex = 0,
                     PageSize = medicationStatements.Message.Count,
-                    TotalResultCount = medicationStatements.Message.Count
+                    TotalResultCount = medicationStatements.Message.Count,
                 };
 
                 return result;

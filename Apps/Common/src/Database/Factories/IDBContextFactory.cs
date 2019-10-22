@@ -13,19 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Database
+namespace HealthGateway.Common.Database
 {
+    using Microsoft.EntityFrameworkCore;
+
     /// <summary>
-    /// Extensions to the Medications DB Context.
+    /// Interface for creating database contexts.
     /// </summary>
-    public interface IMedicationDBContextExt
+    public interface IDBContextFactory
     {
-        /// <summary>
-        /// Gets the next sequence number for the given sequence name.
-        /// </summary>
-        /// <param name="ctx">The database context.</param>
-        /// <param name="seq">The sequence name</param>
-        /// <returns>The next sequence value</returns>
-        long NextValueForSequence(IDbContext ctx, string seq);
+        DbContext CreateContext();
     }
 }
