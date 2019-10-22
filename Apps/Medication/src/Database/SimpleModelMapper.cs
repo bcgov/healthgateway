@@ -40,7 +40,7 @@ namespace HealthGateway.Medication.Database
             return new Medication()
             {
                 DIN = drugProduct.DrugIdentificationNumber,
-                Form = drugProduct.BrandName,
+                BrandName = drugProduct.BrandName,
                 // TODO: Map the rest of the information
             };
         }

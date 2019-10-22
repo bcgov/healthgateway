@@ -24,6 +24,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
+    using HealthGateway.Common.Authentication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -53,7 +54,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
+        public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(JWTModel jwtModel, string pharmacyId, string userId, string ipAddress)
         {
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
@@ -61,13 +62,16 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
+
                 long traceId = sequenceDelegate.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
                 HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    return JsonConvert.DeserializeObject<HNMessage<Pharmacy>>(payload);
+                    HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
+                    return this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {

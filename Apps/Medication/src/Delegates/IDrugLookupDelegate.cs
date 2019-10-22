@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Delegates
 {
-    using HealthGateway.Medication.Models;
     using System.Collections.Generic;
+    using HealthGateway.Medication.Models;
 
     /// <summary>
     /// Delegate that retrieves drugs based on the drug identifier.

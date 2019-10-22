@@ -20,7 +20,11 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public interface ISequenceDelegate
     {
-        /// <inheritdoc/>
-        long NextValueForSequence(string seq);
+        /// <summary>
+        /// Gets the next sequence number for the given sequence name.
+        /// </summary>
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        long NextValueForSequence(string sequenceName);
     }
 }

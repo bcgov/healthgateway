@@ -67,7 +67,7 @@ namespace HealthGateway.Medication.Test
             sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
-            mockPharmacySvc.Setup(p => p.GetPharmacyAsync(It.IsAny<string>(), userId, ipAddress)).ReturnsAsync(new HNMessage<Pharmacy>());
+            mockPharmacySvc.Setup(p => p.GetPharmacyAsync(It.IsAny<JWTModel>(), It.IsAny<string>(), userId, ipAddress)).ReturnsAsync(new HNMessage<Pharmacy>());
 
             Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
             mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());

@@ -22,12 +22,16 @@ namespace HealthGateway.Medication.Delegates
     using NpgsqlTypes;
 
     /// <summary>
-    /// Entity framework baed implementation of the sequence delegate
+    /// Entity framework baed implementation of the sequence delegate.
     /// </summary>
-    public class EntitySequenceDelegate
+    public class EntitySequenceDelegate : ISequenceDelegate
     {
         private IDBContextFactory dbContextFactory;
 
+        /// <summary>
+        /// Constructor that uses the dependency injection interfaces.
+        /// <param name="dbContextFactory">The context factory to be used when accessing the databaase context.</param>
+        /// </summary>
         public EntitySequenceDelegate(IDBContextFactory dbContextFactory)
         {
             this.dbContextFactory = dbContextFactory;

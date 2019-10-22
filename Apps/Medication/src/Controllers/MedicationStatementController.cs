@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Controllers
             {
                 RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
                 {
-                    ErrorMessage = medicationStatements.Error
+                    ErrorMessage = medicationStatements.Error,
                 };
 
                 return result;
@@ -105,7 +105,7 @@ namespace HealthGateway.Medication.Controllers
                     ResourcePayload = medicationStatements.Message,
                     PageIndex = 0,
                     PageSize = medicationStatements.Message.Count,
-                    TotalResultCount = medicationStatements.Message.Count
+                    TotalResultCount = medicationStatements.Message.Count,
                 };
 
                 return result;

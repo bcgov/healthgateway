@@ -92,6 +92,7 @@ namespace HealthGateway.Medication
             services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
             services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
             services.AddSingleton<IDrugLookupDelegate, EntityDrugLookupDelegate>();
+            services.AddSingleton<ISequenceDelegate, EntitySequenceDelegate>();
             services.AddSingleton<IDBContextFactory, MedicationDBContextFactory>();
         }
 

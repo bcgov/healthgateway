@@ -31,7 +31,8 @@ namespace HealthGateway.Medication.Delegates
         private IDBContextFactory contextFactory;
 
         /// <summary>
-        /// Constructor that requires a database context factory
+        /// Constructor that requires a database context factory.
+        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
         /// </summary>
         public EntityDrugLookupDelegate(IDBContextFactory contextFactory)
         {

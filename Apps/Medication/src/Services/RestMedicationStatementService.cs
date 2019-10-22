@@ -22,13 +22,12 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Database;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Medication.Database;
-    using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Delegates;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Parsers;    
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -104,7 +103,7 @@ namespace HealthGateway.Medication.Services
 
             if (!hnClientMedicationResult.IsError)
             {
-                populatePharmacy(hnClientMedicationResult.Message, userId, ipAddress);
+                populatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress);
 
                 populateBrandName(hnClientMedicationResult.Message);
             }
@@ -123,7 +122,7 @@ namespace HealthGateway.Medication.Services
             return jwtModel;
         }
 
-        private async void populatePharmacy(List<MedicationStatement> statements, string userId, string ipAddress)
+        private async void populatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
         {
             IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
             foreach (MedicationStatement medicationStatement in statements)
@@ -134,7 +133,7 @@ namespace HealthGateway.Medication.Services
                 if (!pharmacyDict.ContainsKey(pharmacyId))
                 {
                     HNMessage<Pharmacy> pharmacy =
-                        await this.pharmacyService.GetPharmacyAsync(pharmacyId, userId, ipAddress).ConfigureAwait(true);
+                        await this.pharmacyService.GetPharmacyAsync(jwtModel, pharmacyId, userId, ipAddress).ConfigureAwait(true);
                     pharmacyDict.Add(pharmacyId, pharmacy.Message);
                 }
 
@@ -144,15 +143,24 @@ namespace HealthGateway.Medication.Services
 
         private void populateBrandName(List<MedicationStatement> statements)
         {
-            List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN).ToList();
+            // The Drug Product Database pads zeroes to the left of Drug Identifiers
+            List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
 
             List<Medication> retrievedMedications = drugLookupDelegate.FindMedicationsByDIN(medicationIdentifiers);
 
-            Dictionary<string, Medication> medicationsMap = retrievedMedications.ToDictionary(x => x.DIN, x => x);
+            // Make a map of the retrieved medications removing the padded zero to match the DIN definitions from pharmanet
+            Dictionary<string, Medication> medicationsMap = retrievedMedications.ToDictionary(x => x.DIN.TrimStart('0'), x => x);
 
             foreach (MedicationStatement medicationStatement in statements)
             {
-                medicationStatement.Medication.BrandName = medicationsMap[medicationStatement.Medication.DIN].BrandName;
+                if (medicationsMap.ContainsKey(medicationStatement.Medication.DIN))
+                {
+                    medicationStatement.Medication.BrandName = medicationsMap[medicationStatement.Medication.DIN].BrandName;
+                }
+                else
+                {
+                    medicationStatement.Medication.BrandName = "Unknown brand name";
+                }
             }
         }
     }
