@@ -75,7 +75,7 @@ namespace HealthGateway.DrugMaintainer
             // add configuration
             serviceCollection.AddSingleton<IConfiguration>(configuration);
 
-            // Add servicesd
+            // Add services
             serviceCollection.AddTransient<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddTransient<IDrugProductParser, FederalDrugProductParser>();
 

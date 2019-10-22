@@ -16,12 +16,9 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using HealthGateway.Medication.Delegates;
-    using HealthGateway.Common.Models;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -30,7 +27,6 @@ namespace HealthGateway.Medication.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    [Authorize]
     public class MedicationController : ControllerBase
     {
         /// <summary>
@@ -39,26 +35,37 @@ namespace HealthGateway.Medication.Controllers
         private readonly IMedicationService medicationService;
 
         /// <summary>
-        /// The http context provider.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// The drug lookup delegate.
-        /// </summary>
-        private readonly IDrugLookupDelegate drugLookupDelegate;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
         /// <param name="medicationService">The injected medication data service.</param>
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="drugLookupDelegate">The injected Drug product provider.</param>
-        public MedicationController(IMedicationService medicationService, IHttpContextAccessor httpAccessor, IDrugLookupDelegate drugLookupDelegate)
+        public MedicationController(IMedicationService medicationService)
         {
             this.medicationService = medicationService;
-            this.httpContextAccessor = httpAccessor;
-            this.drugLookupDelegate = drugLookupDelegate;
+        }
+
+        /// <summary>
+        /// Gets a list of medications that match the requested drug identifier.
+        /// </summary>
+        /// <returns>The medication statement records.</returns>
+        /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
+        /// <response code="200">Returns the medication statement bundle.</response>
+        /// <response code="401">The client is not authorized to retrieve the record.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Route("{drugIdentifier}")]
+        public RequestResult<List<Medication>> GetMedication(string drugIdentifier)
+        {
+            List<Medication> medications = this.medicationService.GetMedications(new List<string>() { drugIdentifier });
+
+            RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
+            {
+                ResourcePayload = medications,
+                TotalResultCount = medications.Count,
+                PageIndex = 0,
+                PageSize = medications.Count,
+            };
+
+            return result;
         }
 
         /// <summary>
@@ -70,17 +77,16 @@ namespace HealthGateway.Medication.Controllers
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("{hdid}")]
         public RequestResult<List<Medication>> GetMedications(List<string> drugIdentifiers)
         {
-            List<Medication> medications = this.drugLookupDelegate.FindMedicationsByDIN(drugIdentifiers);
+            List<Medication> medications = this.medicationService.GetMedications(drugIdentifiers);
 
             RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
             {
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
-                PageSize = medications.Count
+                PageSize = medications.Count,
             };
 
             return result;
