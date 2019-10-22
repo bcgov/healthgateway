@@ -79,6 +79,8 @@ namespace HealthGateway.DrugMaintainer
             {
                 List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
                 ctx.DrugProduct.AddRange(drugProducts);
+                logger.LogInformation("Saving Drug Products.");
+                ctx.SaveChanges();
                 List<ActiveIngredient> ingredients = this.parser.ParseActiveIngredientFile(unzippedPath, drugProducts);
                 ctx.ActiveIngredient.AddRange(ingredients);
                 List<Company> companies = this.parser.ParseCompanyFile(unzippedPath, drugProducts);
@@ -89,6 +91,8 @@ namespace HealthGateway.DrugMaintainer
                 ctx.Form.AddRange(forms);
                 List<Packaging> packagings = this.parser.ParsePackagingFile(unzippedPath, drugProducts);
                 ctx.Packaging.AddRange(packagings);
+                logger.LogInformation("Saving ingredients, companies, statuses, forms and packagings.");
+                ctx.SaveChanges();
                 List<PharmaceuticalStd> pharmaceuticals = this.parser.ParsePharmaceuticalStdFile(unzippedPath, drugProducts);
                 ctx.PharmaceuticalStd.AddRange(pharmaceuticals);
                 List<Route> routes = this.parser.ParseRouteFile(unzippedPath, drugProducts);

@@ -20,6 +20,7 @@ namespace HealthGateway.DrugMaintainer
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Database;
     using HealthGateway.DrugMaintainer.Database;
+    using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -53,12 +54,20 @@ namespace HealthGateway.DrugMaintainer
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)
-        {
+        {            
+            // DB Context Factory used for Migration only.
+            serviceCollection.AddTransient<IDesignTimeDbContextFactory<MigrationDBContext>, MigrationDBFactory>();
+
+            // Drug DB Context Factory
+            serviceCollection.AddTransient<IDBContextFactory, DrugDBContextFactory>();
+
             // add configured instance of logging
             serviceCollection.AddSingleton(new LoggerFactory());
 
             // add logging
-            serviceCollection.AddLogging();
+            serviceCollection.AddLogging((options) => {
+                options.AddConsole();
+            });
 
             // add httpclient
             serviceCollection.AddHttpClient();
@@ -66,8 +75,7 @@ namespace HealthGateway.DrugMaintainer
             // add configuration
             serviceCollection.AddSingleton<IConfiguration>(configuration);
 
-            // Add services
-            serviceCollection.AddTransient<IDBContextFactory, DrugDBContextFactory>();
+            // Add servicesd
             serviceCollection.AddTransient<IFileDownloadService, FileDownloadService>();
             serviceCollection.AddTransient<IDrugProductParser, FederalDrugProductParser>();
 
