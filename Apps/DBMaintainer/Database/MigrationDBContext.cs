@@ -25,34 +25,15 @@ namespace HealthGateway.DrugMaintainer.Database
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class DrugDBContext : DbContext
+    public class MigrationDBContext : DbContext
     {
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public DrugDBContext(DbContextOptions<DrugDBContext> options)
+        public MigrationDBContext(DbContextOptions<MigrationDBContext> options)
             : base(options)
         {
-        }
-
-        public override int SaveChanges()
-        {
-            const string user = "DrugMaintainer";
-            DateTime now = System.DateTime.UtcNow;
-
-            foreach (var auditEntity in ChangeTracker.Entries<IAuditable>()
-                   .Where(x => (x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified))))
-            {
-                if (auditEntity.State == EntityState.Added)
-                {
-                    auditEntity.Entity.CreatedDateTime = now;
-                    auditEntity.Entity.CreatedBy = user;
-                }
-                auditEntity.Entity.UpdatedDateTime = now;
-                auditEntity.Entity.UpdatedBy = user;
-            }
-            return base.SaveChanges();
         }
 
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
