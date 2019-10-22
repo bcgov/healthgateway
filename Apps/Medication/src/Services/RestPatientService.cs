@@ -20,7 +20,6 @@ namespace HealthGateway.Medication.Services
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
@@ -32,19 +31,16 @@ namespace HealthGateway.Medication.Services
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
-        private readonly IAuthService authService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPatientService"/> class.
         /// </summary>
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        public RestPatientService(IHttpClientFactory httpClientFactory, IConfiguration configuration, IAuthService authService)
+        public RestPatientService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
-            this.authService = authService;
         }
 
         /// <inheritdoc/>

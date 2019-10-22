@@ -84,17 +84,17 @@ namespace HealthGateway.Medication
             var info = this.configuration.GetConnectionString("GatewayConnection");
             services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
-            services.AddSingleton<IAuthService, AuthService>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
-            services.AddSingleton<IPatientService, RestPatientService>();
-            services.AddSingleton<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
-            services.AddSingleton<IPharmacyService, RestPharmacyService>();
-            services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
-            services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
-            services.AddSingleton<IDrugLookupDelegate, EntityDrugLookupDelegate>();
-            services.AddSingleton<ISequenceDelegate, EntitySequenceDelegate>();
-            services.AddSingleton<IDBContextFactory, MedicationDBContextFactory>();
+            services.AddTransient<IPatientService, RestPatientService>();
+            services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
+            services.AddTransient<IPharmacyService, RestPharmacyService>();
+            services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
+            services.AddTransient<ICustomAuthorizationService, CustomAuthorizationService>();
+            services.AddTransient<IDrugLookupDelegate, EntityDrugLookupDelegate>();
+            services.AddTransient<ISequenceDelegate, EntitySequenceDelegate>();
+            services.AddTransient<IDBContextFactory, MedicationDBContextFactory>();
         }
 
         /// <summary>

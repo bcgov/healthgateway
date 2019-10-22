@@ -21,18 +21,18 @@ namespace HealthGateway.Common.Authorization
 
     public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, string>
     {
-        private ILogger<UserAuthorizationHandler> logger;
+        private readonly ILogger<UserAuthorizationHandler> logger;
 
         public UserAuthorizationHandler(ILogger<UserAuthorizationHandler> logger)
         {
             this.logger = logger;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hdid)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string resource)
         {
             string hdidClaim = context?.User.FindFirst(c => c.Type == "hdid").Value;
 
-            if (!string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal))
+            if (!string.Equals(hdidClaim, resource, System.StringComparison.Ordinal))
             {
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
                 this.logger?.LogWarning(@"hdid parameter doest not match user's JWT");

@@ -1,4 +1,3 @@
-
 //-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
@@ -28,12 +27,12 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {
-        private IDBContextFactory contextFactory;
+        private readonly IDBContextFactory contextFactory;
 
         /// <summary>
         /// Constructor that requires a database context factory.
-        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
         /// </summary>
+        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
         public EntityDrugLookupDelegate(IDBContextFactory contextFactory)
         {
             this.contextFactory = contextFactory;

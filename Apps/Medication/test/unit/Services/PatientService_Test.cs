@@ -51,16 +51,7 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            Mock<IAuthService> authMock = new Mock<IAuthService>();
-            /*var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
-                request.SetConfiguration(new HttpConfiguration());
-                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.OK, expected, MediaTypeNames.Application.Json);
-                return Task.FromResult(response);
-            });
-            var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);*/
-
-            IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);
+            IPatientService service = new RestPatientService(httpMock.Object, configuration);
             string phn = await service.GetPatientPHNAsync(expected.HdId, "Bearer TheTestToken");
 
             Assert.Equal(expected.PersonalHealthNumber, phn);
@@ -74,11 +65,10 @@ namespace HealthGateway.Medication.Test
             {
                 StatusCode = HttpStatusCode.BadRequest,
             });
-            Mock<IAuthService> authMock = new Mock<IAuthService>();
 
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IPatientService service = new RestPatientService(httpMock.Object, configuration, authMock.Object);
+            IPatientService service = new RestPatientService(httpMock.Object, configuration);
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));
         }
     }

@@ -30,8 +30,8 @@ namespace HealthGateway.Medication.Delegates
 
         /// <summary>
         /// Constructor that uses the dependency injection interfaces.
-        /// <param name="dbContextFactory">The context factory to be used when accessing the databaase context.</param>
         /// </summary>
+        /// <param name="dbContextFactory">The context factory to be used when accessing the databaase context.</param>
         public EntitySequenceDelegate(IDBContextFactory dbContextFactory)
         {
             this.dbContextFactory = dbContextFactory;
