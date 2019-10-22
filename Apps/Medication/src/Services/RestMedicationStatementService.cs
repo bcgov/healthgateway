@@ -103,7 +103,7 @@ namespace HealthGateway.Medication.Services
 
             if (!hnClientMedicationResult.IsError)
             {
-                populatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress);
+                await populatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress);
 
                 populateBrandName(hnClientMedicationResult.Message);
             }
@@ -122,7 +122,7 @@ namespace HealthGateway.Medication.Services
             return jwtModel;
         }
 
-        private async void populatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
+        private async Task populatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
         {
             IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
             foreach (MedicationStatement medicationStatement in statements)

@@ -20,10 +20,14 @@ namespace HealthGateway.Medication.Database
     using HealthGateway.Common.Database.Models;
 
     /// <summary>
-    /// Extensions to the Medications DB Context.
+    /// Static class that maps between DrugProcucts (Database) and Medication (SimpleJSON) objects.
     /// </summary>
     public static class SimpleModelMapper
     {
+        /// <summary>
+        /// Maps a list of drug products to medication objects.
+        /// </summary>
+        /// <param name="drugProducts">The DrugProducts to map.</param>
         public static List<Medication> ToMedicationList(List<DrugProduct> drugProducts)
         {
             List<Medication> medicationList = new List<Medication>(drugProducts.Count);
@@ -35,6 +39,10 @@ namespace HealthGateway.Medication.Database
             return medicationList;
         }
 
+        /// <summary>
+        /// Maps a drug product to a medication object.
+        /// </summary>
+        /// <param name="drugProduct">The DrugProduct to map.</param>
         public static Medication ToMedication(DrugProduct drugProduct)
         {
             return new Medication()

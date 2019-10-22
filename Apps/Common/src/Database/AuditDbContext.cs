@@ -21,10 +21,10 @@ namespace HealthGateway.Common.Database
 
     public class AuditDbContext : DbContext
     {
-        public DbSet<AuditEvent> AuditEvent { get; set; }
-
         public AuditDbContext()
         {
         }
+
+        public DbSet<AuditEvent> AuditEvent { get; set; }
     }
 }

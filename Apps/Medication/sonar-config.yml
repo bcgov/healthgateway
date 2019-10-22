@@ -6,4 +6,4 @@ properties:
 test-runners:
   - xunit
 paths:
-  jest: src/ClientApp
+  xunit: test/unit/MedicationTests.csproj

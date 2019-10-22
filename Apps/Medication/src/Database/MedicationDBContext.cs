@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Database
 {
-    using Microsoft.EntityFrameworkCore;
     using HealthGateway.Common.Database.Models;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -31,14 +31,13 @@ namespace HealthGateway.Medication.Database
         /// </summary>
         public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
 
+        /// <summary>
+        /// Constructs a dbcontext using the configuration object.
+        /// </summary>
+        /// <param name="configuration">The configuration options.</param>
         public MedicationDBContext(IConfiguration configuration)
         {
             this.configuration = configuration;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         /// <summary>
@@ -56,7 +55,13 @@ namespace HealthGateway.Medication.Database
             return this.Database.ExecuteSqlCommand(sql, parameters);
         }
 
+        /// <inheritdoc/>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
+        }
 
+        /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasSequence<long>(PHARMANET_TRACE_SEQUENCE)
@@ -67,16 +72,49 @@ namespace HealthGateway.Medication.Database
                         .IsCyclic(true);
         }
 
+        /// <summary>
+        /// Accessor to the ActiveIngredient database set.
+        /// </summary>
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
-        public DbSet<Company> Company{ get; set; }
+        /// <summary>
+        /// Accessor to the Company database set.
+        /// </summary>
+        public DbSet<Company> Company { get; set; }
+        /// <summary>
+        /// Accessor to the DrugProduct database set.
+        /// </summary>
         public DbSet<DrugProduct> DrugProduct { get; set; }
+        /// <summary>
+        /// Accessor to the Form database set.
+        /// </summary>
         public DbSet<Form> Form { get; set; }
+        /// <summary>
+        /// Accessor to the Packaging database set.
+        /// </summary>
         public DbSet<Packaging> Packaging { get; set; }
+        /// <summary>
+        /// Accessor to the PharmaceuticalStd database set.
+        /// </summary>
         public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
+        /// <summary>
+        /// Accessor to the Route database set.
+        /// </summary>
         public DbSet<Route> Route { get; set; }
+        /// <summary>
+        /// Accessor to the Schedule database set.
+        /// </summary>
         public DbSet<Schedule> Schedule { get; set; }
+        /// <summary>
+        /// Accessor to the Status database set.
+        /// </summary>
         public DbSet<Status> Status { get; set; }
+        /// <summary>
+        /// Accessor to the TherapeuticClass database set.
+        /// </summary>
         public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
+        /// <summary>
+        /// Accessor to the VeterinarySpecies database set.
+        /// </summary>
         public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
     }
 }
