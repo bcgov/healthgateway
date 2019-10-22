@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Services
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -24,8 +25,9 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Medication.Database;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;
+    using HealthGateway.Medication.Parsers;    
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -38,8 +40,9 @@ namespace HealthGateway.Medication.Services
         private readonly IConfiguration configService;
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IAuthService authService;
-        private MedicationDBContext ctx;
-        private IPharmacyService pharmacyService;
+        private readonly ISequenceDelegate sequenceDelegate;
+        private readonly IPharmacyService pharmacyService;
+        private readonly IDrugLookupDelegate drugLookupDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -48,22 +51,25 @@ namespace HealthGateway.Medication.Services
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
-        /// <param name="ctx">The injected medication database context.</param>
+        /// <param name="sequenceDelegate">The injected sequence delegate.</param>
         /// <param name="pharmacyService">The injected pharmacy lookup service.</param>
+        /// <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
         public RestMedicationStatementService(
-            IHNMessageParser<List<MedicationStatement>> parser, 
-            IHttpClientFactory httpClientFactory, 
-            IConfiguration configuration, 
-            IAuthService authService, 
-            MedicationDBContext ctx,
-            IPharmacyService pharmacyService)
+            IHNMessageParser<List<MedicationStatement>> parser,
+            IHttpClientFactory httpClientFactory,
+            IConfiguration configuration,
+            IAuthService authService,
+            ISequenceDelegate sequenceDelegate,
+            IPharmacyService pharmacyService,
+            IDrugLookupDelegate drugLookupDelegate)
         {
             this.medicationParser = parser;
             this.httpClientFactory = httpClientFactory;
             this.configService = configuration;
             this.authService = authService;
-            this.ctx = ctx;
+            this.sequenceDelegate = sequenceDelegate;
             this.pharmacyService = pharmacyService;
+            this.drugLookupDelegate = drugLookupDelegate;
         }
 
         /// <inheritdoc/>
@@ -78,43 +84,28 @@ namespace HealthGateway.Medication.Services
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
-                using (ctx)
+
+                long traceId = sequenceDelegate.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId);
+                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                if (response.IsSuccessStatusCode)
                 {
-                    long traceId = ctx.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
-                    HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId);
-                    HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                        hnClientMedicationResult = this.medicationParser.ParseResponseMessage(responseMessage.Message);
-                    }
-                    else
-                    {
-                        return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
-                    }
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
+                    hnClientMedicationResult = this.medicationParser.ParseResponseMessage(responseMessage.Message);
                 }
+                else
+                {
+                    return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                }
+
             }
 
             if (!hnClientMedicationResult.IsError)
             {
-                IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
-                foreach (MedicationStatement medicationStatement in hnClientMedicationResult.Message)
-                {
-                    // TODO: Add the brand name
-                    medicationStatement.Medication.BrandName = "Test Brand Name";
+                populatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress);
 
-                    string pharmacyId = medicationStatement.PharmacyId.ToUpper();
-
-                    // Fetches the pharmacy if it hasn't been loaded yet.
-                    if (!pharmacyDict.ContainsKey(pharmacyId)) {
-                        HNMessage<Pharmacy> pharmacy = 
-                            await this.pharmacyService.GetPharmacyAsync(pharmacyId, userId, ipAddress).ConfigureAwait(true);
-                        pharmacyDict.Add(pharmacyId, pharmacy.Message);
-                    }
-                    
-                    medicationStatement.Pharmacy = pharmacyDict[pharmacyId];
-                }
+                populateBrandName(hnClientMedicationResult.Message);
             }
 
             return hnClientMedicationResult;
@@ -129,6 +120,48 @@ namespace HealthGateway.Medication.Services
 
             JWTModel jwtModel = authenticating.Result as JWTModel;
             return jwtModel;
+        }
+
+        private async void populatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
+        {
+            IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
+            foreach (MedicationStatement medicationStatement in statements)
+            {
+                string pharmacyId = medicationStatement.PharmacyId.ToUpper();
+
+                // Fetches the pharmacy if it hasn't been loaded yet.
+                if (!pharmacyDict.ContainsKey(pharmacyId))
+                {
+                    HNMessage<Pharmacy> pharmacy =
+                        await this.pharmacyService.GetPharmacyAsync(jwtModel, pharmacyId, userId, ipAddress).ConfigureAwait(true);
+                    pharmacyDict.Add(pharmacyId, pharmacy.Message);
+                }
+
+                medicationStatement.Pharmacy = pharmacyDict[pharmacyId];
+            }
+        }
+
+        private void populateBrandName(List<MedicationStatement> statements)
+        {
+            // The Drug Product Database pads zeroes to the left of Drug Identifiers
+            List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
+
+            List<Medication> retrievedMedications = drugLookupDelegate.FindMedicationsByDIN(medicationIdentifiers);
+
+            // Make a map of the retrieved medications removing the padded zero to match the DIN definitions from pharmanet
+            Dictionary<string, Medication> medicationsMap = retrievedMedications.ToDictionary(x => x.DIN.TrimStart('0'), x => x);
+
+            foreach (MedicationStatement medicationStatement in statements)
+            {
+                if (medicationsMap.ContainsKey(medicationStatement.Medication.DIN))
+                {
+                    medicationStatement.Medication.BrandName = medicationsMap[medicationStatement.Medication.DIN].BrandName;
+                }
+                else
+                {
+                    medicationStatement.Medication.BrandName = "Unknown brand name";
+                }
+            }
         }
     }
 }

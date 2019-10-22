@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DBMaintainer.Migrations
 {
-    [DbContext(typeof(DrugDBContext))]
+    [DbContext(typeof(MigrationDBContext))]
     [Migration("20191021232457_DrugProductMigration")]
     partial class DrugProductMigration
     {

@@ -20,6 +20,7 @@ namespace HealthGateway.Medication.Controllers
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using HealthGateway.Common.Authentication.Models;
 
     /// <summary>
     /// The Medication controller.
@@ -65,7 +66,9 @@ namespace HealthGateway.Medication.Controllers
         {
             string userId = "1001"; // This should be the hdid from the token
             string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            return await this.service.GetPharmacyAsync(pharmacyId, userId, ipAddress).ConfigureAwait(true);
+            // TODO: This needs to have the JWT to be passed to the pharmacy service
+            JWTModel jwtModel = null;
+            return await this.service.GetPharmacyAsync(jwtModel, pharmacyId, userId, ipAddress).ConfigureAwait(true);
         }
     }
 }

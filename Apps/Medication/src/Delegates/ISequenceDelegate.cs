@@ -13,25 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer.Database
+namespace HealthGateway.Medication.Delegates
 {
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Design;
-
     /// <summary>
-    /// The database context to be used for the Medication Service.
+    /// Delegate that retrieves drugs based on the drug identifier.
     /// </summary>
-    public class MigrationDBFactory : IDesignTimeDbContextFactory<MigrationDBContext>
+    public interface ISequenceDelegate
     {
-        public MigrationDBFactory()
-        {
-        }
-
-        public MigrationDBContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<MigrationDBContext>();
-            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=gateway;User ID=gateway;Password=passw0rd;Integrated Security=true;Pooling=true;");
-            return new MigrationDBContext(optionsBuilder.Options);
-        }
+        /// <summary>
+        /// Gets the next sequence number for the given sequence name.
+        /// </summary>
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        long NextValueForSequence(string sequenceName);
     }
 }

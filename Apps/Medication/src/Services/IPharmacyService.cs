@@ -16,7 +16,8 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Medication.Models;
+    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Medication.Models;    
 
     /// <summary>
     /// The Medication data service.
@@ -26,10 +27,11 @@ namespace HealthGateway.Medication.Services
         /// <summary>
         /// Gets the pharmacy record.
         /// </summary>
+        /// <param name="jwtModel">The JWTModel that contains the authentication context.</param>
         /// <param name="pharmacyId">The pharmacy identifier.</param>
         /// <param name="userId">The user id of the request.</param>
         /// <param name="ipAddress">The ip address of the request.</param>
         /// <returns>The Prescriptions model.</returns>
-        Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress);
+        Task<HNMessage<Pharmacy>> GetPharmacyAsync(JWTModel jwtModel, string pharmacyId, string userId, string ipAddress);
     }
 }

@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DBMaintainer.Migrations
 {
-    [DbContext(typeof(DrugDBContext))]
+    [DbContext(typeof(MigrationDBContext))]
     partial class DrugDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

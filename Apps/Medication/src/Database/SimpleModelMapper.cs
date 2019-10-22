@@ -15,31 +15,34 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Database
 {
-    using System;
-    using System.IO;
-    using Microsoft.EntityFrameworkCore;
-    using Npgsql;
-    using NpgsqlTypes;
+    using System.Collections.Generic;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Common.Database.Models;
 
     /// <summary>
     /// Extensions to the Medications DB Context.
     /// </summary>
-    public static class MedicationDBContextExtensions
+    public static class SimpleModelMapper
     {
-        private static IMedicationDBContextExt defaultImpl = new MedicationDBContextExt();
-
-        /// Allow us to swap out implementations for testing.
-        public static IMedicationDBContextExt Implementation { get; set; } = defaultImpl;
-
-        public static void RevertToDefaultImplementation()
+        public static List<Medication> ToMedicationList(List<DrugProduct> drugProducts)
         {
-            Implementation = defaultImpl;
+            List<Medication> medicationList = new List<Medication>(drugProducts.Count);
+            foreach (DrugProduct product in drugProducts)
+            {
+                medicationList.Add(ToMedication(product));
+            }
+
+            return medicationList;
         }
 
-        /// <inheritdoc/>
-        public static long NextValueForSequence(this MedicationDBContext ctx, string seq)
+        public static Medication ToMedication(DrugProduct drugProduct)
         {
-            return Implementation.NextValueForSequence(ctx, seq);
+            return new Medication()
+            {
+                DIN = drugProduct.DrugIdentificationNumber,
+                BrandName = drugProduct.BrandName,
+                // TODO: Map the rest of the information
+            };
         }
     }
 }

@@ -75,18 +75,19 @@ namespace HealthGateway.Medication.Parsers
         /// <summary>
         /// Sets the MSH segment into the message.
         /// </summary>
-        /// <param name="m">The message object.</param>
+        /// <param name="message">The message object.</param>
         /// <param name="userId">The request user id.</param>
         /// <param name="ipAddress">The request user ip address.</param>
-        protected void SetMessageHeader(Message m, string userId, string ipAddress, long traceId)
+        /// <param name="traceId">The trace ID of the Pharmanet message.</param>
+        protected void SetMessageHeader(Message message, string userId, string ipAddress, long traceId)
         {
-            if (m is null)
+            if (message is null)
             {
-                throw new ArgumentNullException(nameof(m));
+                throw new ArgumentNullException(nameof(message));
             }
             string formattedTraceId = traceId.ToString().PadLeft(6, '0');
             // MSH - Message Header
-            m.AddSegmentMSH(
+            message.AddSegmentMSH(
                 this.ClientConfig.SendingApplication,
                 this.ClientConfig.SendingFacility,
                 this.ClientConfig.ReceivingApplication,
@@ -96,20 +97,21 @@ namespace HealthGateway.Medication.Parsers
                 formattedTraceId,
                 this.ClientConfig.ProcessingID,
                 this.ClientConfig.MessageVersion);
-            m.SetValue("MSH.7", this.GetLocalDateTime()); // HNClient specific date format
-            m.SetValue("MSH.9", HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE); // HNClient doesn't recognize event types (removes ^00 from message type)
+            message.SetValue("MSH.7", this.GetLocalDateTime()); // HNClient specific date format
+            message.SetValue("MSH.9", HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE); // HNClient doesn't recognize event types (removes ^00 from message type)
         }
 
         /// <summary>
         /// Sets the ZZZ segment into the message.
         /// </summary>
-        /// <param name="m">The message object.</param>
+        /// <param name="message">The message object.</param>
         /// <param name="transactionId">The message transaction id.</param>
-        protected void SetTransactionControlSegment(Message m, string transactionId, long traceId)
+        /// <param name="traceId">The trace ID of the Pharmanet message.</param>
+        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId)
         {
-            if (m is null)
+            if (message is null)
             {
-                throw new ArgumentNullException(nameof(m));
+                throw new ArgumentNullException(nameof(message));
             }
             string formattedTraceId = traceId.ToString().PadLeft(6, '0');
             // ZZZ - Transaction Control
@@ -119,19 +121,19 @@ namespace HealthGateway.Medication.Parsers
             zzz.AddNewField(formattedTraceId); // Trace Number
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
-            m.AddNewSegment(zzz);
+            message.AddNewSegment(zzz);
         }
 
         /// <summary>
         /// Sets the ZCA segment into the message.
         /// </summary>
-        /// <param name="m">The message object.</param>
+        /// <param name="message">The message object.</param>
         /// <param name="id">The first field in the ZCA segment.</param>
-        protected void SetClaimsStandardSegment(Message m, string id)
+        protected void SetClaimsStandardSegment(Message message, string id)
         {
-            if (m is null)
+            if (message is null)
             {
-                throw new ArgumentNullException(nameof(m));
+                throw new ArgumentNullException(nameof(message));
             }
 
             // ZCA - Claims Standard Message Header
@@ -141,18 +143,19 @@ namespace HealthGateway.Medication.Parsers
             zca.AddNewField(this.ClientConfig.ZCA.TransactionCode); // Transaction Code
             zca.AddNewField(this.ClientConfig.ZCA.SoftwareId); // Provider Software ID
             zca.AddNewField(this.ClientConfig.ZCA.SoftwareVersion); // Provider Software Version
-            m.AddNewSegment(zca);
+            message.AddNewSegment(zca);
         }
 
         /// <summary>
         /// Sets the ZCB segment into the message.
         /// </summary>
-        /// <param name="m">The message object.</param>
-        protected void SetProviderInfoSegment(Message m, long traceId)
+        /// <param name="message">The message object.</param>
+        /// <param name="traceId">The trace ID of the Pharmanet message.</param>
+        protected void SetProviderInfoSegment(Message message, long traceId)
         {
-            if (m is null)
+            if (message is null)
             {
-                throw new ArgumentNullException(nameof(m));
+                throw new ArgumentNullException(nameof(message));
             }
             string formattedTraceId = traceId.ToString().PadLeft(6, '0');
             // ZCB - Provider Information
@@ -160,30 +163,30 @@ namespace HealthGateway.Medication.Parsers
             zcb.AddNewField(this.ClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
             zcb.AddNewField(this.GetLocalDate()); // Provider Transaction Date
             zcb.AddNewField(formattedTraceId); // Trace Number
-            m.AddNewSegment(zcb);
+            message.AddNewSegment(zcb);
         }
 
         /// <summary>
         /// Parses the raw hl7 message into a message object.
         /// </summary>
-        /// <param name="message">The raw hl7 message.</param>
+        /// <param name="rawMessage">The raw hl7 message.</param>
         /// <returns>The parsed message object.</returns>
-        protected Message ParseRawMessage(string message)
+        protected Message ParseRawMessage(string rawMessage)
         {
-            if (string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(rawMessage))
             {
-                throw new ArgumentNullException(nameof(message));
+                throw new ArgumentNullException(nameof(rawMessage));
             }
 
             // Replaces the message type with message type + event so it can correcly parse the message.
-            message = message.Replace(
+            rawMessage = rawMessage.Replace(
                 $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}|",
                 $"|{HNClientConfiguration.PATIENT_PROFILE_MESSAGE_TYPE}^00|",
                 StringComparison.CurrentCulture);
-            Message m = new Message(message);
-            m.ParseMessage();
+            Message message = new Message(rawMessage);
+            message.ParseMessage();
 
-            return m;
+            return message;
         }
 
         /// <summary>
