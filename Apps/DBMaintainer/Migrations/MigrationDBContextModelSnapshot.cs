@@ -3,23 +3,22 @@ using System;
 using HealthGateway.DrugMaintainer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DBMaintainer.Migrations
 {
     [DbContext(typeof(MigrationDBContext))]
-    [Migration("20191021232457_DrugProductMigration")]
-    partial class DrugProductMigration
+    partial class MigrationDBContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("Relational:Sequence:.trace_seq", "'trace_seq', '', '1', '1', '1', '999999', 'Int64', 'True'");
 
             modelBuilder.Entity("HealthGateway.Common.Database.Models.ActiveIngredient", b =>
                 {

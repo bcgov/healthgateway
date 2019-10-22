@@ -3,10 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DBMaintainer.Migrations
 {
-    public partial class DrugProductMigration : Migration
+    public partial class InitialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateSequence(
+                name: "trace_seq",
+                minValue: 1L,
+                maxValue: 999999L,
+                cyclic: true);
+
             migrationBuilder.CreateTable(
                 name: "DrugProduct",
                 columns: table => new
@@ -403,6 +409,9 @@ namespace DBMaintainer.Migrations
 
             migrationBuilder.DropTable(
                 name: "DrugProduct");
+
+            migrationBuilder.DropSequence(
+                name: "trace_seq");
         }
     }
 }

@@ -23,6 +23,12 @@ namespace HealthGateway.DrugMaintainer.Database
     /// </summary>
     public class MigrationDBContext : DbContext
     {
+
+        /// <summary>
+        /// The DB name for the Pharmanet Trace ID Sequence.
+        /// </summary>
+        public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
+        
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
@@ -30,6 +36,16 @@ namespace HealthGateway.DrugMaintainer.Database
         public MigrationDBContext(DbContextOptions<MigrationDBContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasSequence<long>(PHARMANET_TRACE_SEQUENCE)
+                        .StartsAt(1)
+                        .IncrementsBy(1)
+                        .HasMin(1)
+                        .HasMax(999999)
+                        .IsCyclic(true);
         }
 
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
