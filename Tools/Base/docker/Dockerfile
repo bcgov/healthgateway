@@ -62,7 +62,4 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ENV HOME=${APP_HOME}
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 
-#Add Immunization Endpoints into our base image
-RUN echo "10.248.101.18 test-citz.healthbc.org" >> /etc/hosts
-
 WORKDIR ${APP_HOME}
