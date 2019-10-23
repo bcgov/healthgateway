@@ -33,6 +33,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -99,11 +100,18 @@ namespace HealthGateway.Common.AspNetConfiguration
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddAuthorization(options =>
-                {
-                    options.AddPolicy("ReadPolicy", policy =>
-                        policy.Requirements.Add(new UserIsPatientRequirement()));
-                });
-            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+            {
+                options.AddPolicy("ReadPolicy", policy =>
+                    policy.Requirements.Add(new UserIsPatientRequirement()));
+            });
+
+            // Configuration Service
+            services.AddTransient<IAuthorizationHandler>(serviceProvider =>
+            {
+                IAuthorizationHandler service = new UserAuthorizationHandler(
+                    serviceProvider.GetService<ILogger<UserAuthorizationHandler>>());
+                return service;
+            });
         }
 
         /// <summary>
@@ -124,7 +132,17 @@ namespace HealthGateway.Common.AspNetConfiguration
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>
             {
+                o.SaveToken = true;
+                o.RequireHttpsMetadata = true;
+                o.IncludeErrorDetails = true;
                 this.configuration.GetSection("OpenIdConnect").Bind(o);
+
+                o.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                };
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>

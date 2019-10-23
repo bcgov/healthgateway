@@ -17,6 +17,15 @@
 		},
 		{
 			"path": "Medication"
+		},
+		{
+			"path": "DrugMaintainer"
+		},
+		{
+			"path": "DBMaintainer"
+		},
+		{
+			"path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
 		}
 	],
 	"settings": {}

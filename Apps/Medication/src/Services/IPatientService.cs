@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -26,7 +27,8 @@ namespace HealthGateway.Medication.Services
         /// Gets the patient phn.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
+        /// <param name="jwtString">The JWT authorization for the call.</param>
         /// <returns>The patient phn.</returns>
-        Task<string> GetPatientPHNAsync(string hdid);
+        Task<string> GetPatientPHNAsync(string hdid, string jwtString);
     }
 }

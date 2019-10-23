@@ -16,17 +16,19 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
-    using System;
+    using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Database;
+    using HealthGateway.Medication.Database;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -75,16 +77,24 @@ namespace HealthGateway.Medication
                 return new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                    AllowAutoRedirect = false,
                 };
             });
 
-            services.AddSingleton<IAuthService, AuthService>();
-            services.AddSingleton<IMedicationService, RestMedicationService>();
-            services.AddSingleton<IPatientService, RestPatientService>();
-            services.AddSingleton<IHNMessageParser<MedicationStatement>, TRPMessageParser>();
-            services.AddSingleton<IPharmacyService, RestPharmacyService>();
-            services.AddSingleton<IHNMessageParser<Pharmacy>, TILMessageParser>();
-            services.AddSingleton<ICustomAuthorizationService, CustomAuthorizationService>();
+            var info = this.configuration.GetConnectionString("GatewayConnection");
+            services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
+                    this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
+            services.AddTransient<IMedicationService, RestMedicationService>();
+            services.AddTransient<IPatientService, RestPatientService>();
+            services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
+            services.AddTransient<IPharmacyService, RestPharmacyService>();
+            services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
+            services.AddTransient<ICustomAuthorizationService, CustomAuthorizationService>();
+            services.AddTransient<IDrugLookupDelegate, EntityDrugLookupDelegate>();
+            services.AddTransient<ISequenceDelegate, EntitySequenceDelegate>();
+            services.AddTransient<IDBContextFactory, MedicationDBContextFactory>();
         }
 
         /// <summary>

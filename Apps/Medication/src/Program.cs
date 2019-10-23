@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
 
     /// <summary>
@@ -29,7 +30,14 @@ namespace HealthGateway.Medication
         /// <param name="args">The command line arguments to be passed in.</param>
         public static void Main(string[] args)
         {
-            ProgramConfiguration.BuildWebHost<Startup>(args).Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
+
+        /// <summary>.
+        /// Creates the IWebHostBuilder
+        /// </summary>
+        /// <param name="args">The command line arguments to be passed in.</param>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
     }
 }

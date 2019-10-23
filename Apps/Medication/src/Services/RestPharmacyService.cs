@@ -16,14 +16,15 @@
 namespace HealthGateway.Medication.Services
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
+    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Medication.Database;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
+    using HealthGateway.Common.Authentication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -35,6 +36,7 @@ namespace HealthGateway.Medication.Services
         private readonly IConfiguration configService;
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly ISequenceDelegate sequenceDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
@@ -42,15 +44,17 @@ namespace HealthGateway.Medication.Services
         /// <param name="config">The injected configuration provider.</param>
         /// <param name="parser">The injected hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
-        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory)
+        /// <param name="sequenceDelegate">The injected sequence delegate.</param>
+        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory, ISequenceDelegate sequenceDelegate)
         {
             this.configService = config;
             this.pharmacyParser = parser;
             this.httpClientFactory = httpClientFactory;
+            this.sequenceDelegate = sequenceDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<Pharmacy> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
+        public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(JWTModel jwtModel, string pharmacyId, string userId, string ipAddress)
         {
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
@@ -58,21 +62,21 @@ namespace HealthGateway.Medication.Services
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-                HNMessage responseMessage;
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
-                HNMessage requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress);
+                long traceId = sequenceDelegate.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    responseMessage = JsonConvert.DeserializeObject<HNMessage>(payload);
+                    HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
+                    return this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {
-                    throw new HttpRequestException($"Unable to connect to HNClient: ${response.StatusCode}");
+                    return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
-
-                return this.pharmacyParser.ParseResponseMessage(responseMessage.Message).FirstOrDefault();
             }
         }
     }

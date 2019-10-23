@@ -123,7 +123,7 @@ def run(key, verbose):
     for runner_name in sonar_conf.test_runners:
         click.echo('Executing ' + runner_name + ' test')
         if runner_name == 'xunit':
-            output = _run_command('dotnet test testUnit/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults ')
+            output = _run_command('dotnet test ' + sonar_conf.paths['xunit'] + ' /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults ')
             if output != 0:
                 click.secho('Error, please check logs', fg='red')
                 exit()

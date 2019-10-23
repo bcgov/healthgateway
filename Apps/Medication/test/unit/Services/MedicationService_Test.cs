@@ -20,21 +20,17 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
+    using HealthGateway.Medication.Delegates;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Moq;
-    using Newtonsoft.Json;
-    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
-    using System.Text;
     using System.Threading.Tasks;
-    using System.Web.Http;
+    using System.Text;
+    using Newtonsoft.Json;
     using Xunit;
-
 
     public class MedicationService_Test
     {
@@ -47,30 +43,45 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldGetMedications()
         {
-            HNMessage expected = new HNMessage() {
-                Message = "Test",
-                IsErr = false,
-            };
+            string userId = "test";
+            string ipAddress = "10.0.0.1";
+            HNMessage<string> expected = new HNMessage<string>("test");
 
             Mock<IAuthService> authMock = new Mock<IAuthService>();
             authMock.Setup(s => s.ClientCredentialsAuth()).ReturnsAsync(new JWTModel());
 
-            Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
-            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new List<MedicationStatement>());
+            Mock<IHNMessageParser<List<MedicationStatement>>> parserMock = new Mock<IHNMessageParser<List<MedicationStatement>>>();
+            parserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
 
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
-                request.SetConfiguration(new HttpConfiguration());
-                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.OK, expected, MediaTypeNames.Application.Json);
-                return Task.FromResult(response);
+            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            List<MedicationStatement> medications = await service.GetMedicationsAsync("123456789", "test", "10.0.0.1");
+            // Sequence delegate
+            Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
+            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
 
-            Assert.True(medications.Count == 0);
+            Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
+            mockPharmacySvc.Setup(p => p.GetPharmacyAsync(It.IsAny<JWTModel>(), It.IsAny<string>(), userId, ipAddress)).ReturnsAsync(new HNMessage<Pharmacy>());
+
+            Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
+            mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());
+
+            IMedicationStatementService service = new RestMedicationStatementService(
+                parserMock.Object,
+                httpMock.Object,
+                configuration,
+                authMock.Object,
+                sequenceDelegateMock.Object,
+                mockPharmacySvc.Object,
+                mockDrugLookupDelegate.Object);
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("123456789", userId, ipAddress);
+            Assert.True(actual.Message.Count == 0);
         }
 
         [Fact]
@@ -79,17 +90,35 @@ namespace HealthGateway.Medication.Test
             Mock<IAuthService> authMock = new Mock<IAuthService>();
             authMock.Setup(s => s.ClientCredentialsAuth()).ReturnsAsync(new JWTModel());
 
-            Mock<IHNMessageParser<MedicationStatement>> parserMock = new Mock<IHNMessageParser<MedicationStatement>>();
+            Mock<IHNMessageParser<List<MedicationStatement>>> parserMock = new Mock<IHNMessageParser<List<MedicationStatement>>>();
             Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
-            var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) => {
-                request.SetConfiguration(new HttpConfiguration());
-                HttpResponseMessage response = request.CreateResponse(HttpStatusCode.BadRequest);
-                return Task.FromResult(response);
+            var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IMedicationService service = new RestMedicationService(parserMock.Object, httpMock.Object, configuration, authMock.Object);            
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetMedicationsAsync("", "", ""));            
+
+            Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
+            mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());
+
+            // Sequence delegate
+            Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
+            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
+
+            Mock<IPharmacyService> mockPharmacySvc = new Mock<IPharmacyService>();
+            IMedicationStatementService service = new RestMedicationStatementService(
+                parserMock.Object,
+                httpMock.Object,
+                configuration,
+                authMock.Object,
+                sequenceDelegateMock.Object,
+                mockPharmacySvc.Object,
+                mockDrugLookupDelegate.Object);
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatementsAsync("", "", "");
+
+            Assert.True(actual.IsError);
+            Assert.Equal($"Unable to connect to HNClient: {HttpStatusCode.BadRequest}", actual.Error);
         }
     }
 }

@@ -19,8 +19,6 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Moq;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -32,7 +30,7 @@ namespace HealthGateway.Medication.Test
 
     public class TRPMessageParser_Test
     {
-        private readonly IHNMessageParser<MedicationStatement> parser;
+        private readonly IHNMessageParser<List<MedicationStatement>> parser;
         private readonly string phn = "0000123456789";
         private readonly string userId = "test";
         private readonly string ipAddress = "127.0.0.1";
@@ -56,10 +54,10 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage request = this.parser.CreateRequestMessage(phn, userId, ipAddress);
+            HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress, 101010);
 
-            Assert.False(request.IsErr);
-            Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
+            Assert.False(request.IsError);
+            Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA|{hnClientConfig.ZCA.BIN}|{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
             Assert.Contains($"ZZZ|TRP||{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}", request.Message);
             Assert.Contains($"ZCB|{hnClientConfig.ZCB.PharmacyId}|{date}|{traceNumber}", request.Message);
@@ -69,14 +67,20 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldParseInvalidMessage()
         {
+            string expectedErrorMessage = "SOME ERROR";
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
             sb.Append($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r");
             sb.Append($"ZCB|BCXXZZZYYY|{date}|{traceNumber}\r");
-            sb.Append($"ZZZ|TRP|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||1 SOME ERROR\r");
+            sb.Append($"ZZZ|TRP|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||{expectedErrorMessage}\r");
             sb.Append($"ZCC||||||||||{phn}\r");
-            Exception ex = Assert.Throws<Exception>(() => this.parser.ParseResponseMessage(sb.ToString()));
+
+            HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
+
+            Assert.True(actual.IsError);
+            Assert.Equal(expectedErrorMessage, actual.Error);
+            Assert.Null(actual.Message);
         }
 
         [Fact]
@@ -90,19 +94,28 @@ namespace HealthGateway.Medication.Test
         {
             MedicationStatement expectedMedicationStatement = new MedicationStatement()
             {
-                BrandName = null,
                 DateEntered = DateTime.Today,
-                DIN = "123456",
                 Directions = "DIRECTIONS",
-                DispensedDate = DateTime.Today.AddDays(-1),
-                Dosage = 1.555F,
-                DrugDiscontinuedDate = null,
-                GenericName = "GENERICNAME   LABNAME   STRENGHT   TYPE",
+                DispensedDate = DateTime.Today.AddDays(-1),                
                 PharmacyId = "BC123456",
                 PractitionerSurname = "DR.GATEWAY",
                 PrescriptionStatus = 'F',
-                Quantity = 55.5F
+                PrescriptionIdentifier = "5790",
+                Medication = new Medication(){
+                    BrandName = null,
+                    DIN = "123456",
+                    MaxDailyDosage = 1.555f,
+                    DrugDiscontinuedDate = null,
+                    GenericName = "CLARITHROMYCIN",
+                    Manufacturer = "BGP PHARMA ULC",
+                    DosageUnit = "MG",
+                    Dosage = 500.0f,
+                    Form = "TABLET",
+                    Quantity = 55.5f,
+                }
             };
+
+            string genericName = "CLARITHROMYCIN                BGP PHARMA ULC 500 MG    TABLET";
 
             string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = DateTime.Now.ToString("yyMMdd", this.culture);
@@ -122,26 +135,28 @@ namespace HealthGateway.Medication.Test
             // ZPB3 prescriptions
             sb.Append("|ZPB3^");
 
-            sb.Append($"{expectedMedicationStatement.DIN}^");
-            sb.Append($"{expectedMedicationStatement.GenericName}^N^");
-            sb.Append($"{expectedMedicationStatement.Quantity.ToString("F1").Replace(".", string.Empty)}^");
-            sb.Append($"{expectedMedicationStatement.Dosage.ToString("F3").Replace(".", string.Empty)}^^^");
+            sb.Append($"{expectedMedicationStatement.Medication.DIN}^");
+            sb.Append($"{genericName}^N^");
+            sb.Append($"{expectedMedicationStatement.Medication.Quantity.ToString("F1").Replace(".", string.Empty)}^");
+            sb.Append($"{expectedMedicationStatement.Medication.MaxDailyDosage.ToString("F3").Replace(".", string.Empty)}^^^");
             sb.Append($"{expectedMedicationStatement.PrescriptionStatus}^");
             sb.Append($"{expectedMedicationStatement.DispensedDate.ToString("yyyyMMdd")}^CACI^P1^XXALE^");
             sb.Append($"{expectedMedicationStatement.PractitionerSurname}^");
-            sb.Append($"{expectedMedicationStatement.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
+            sb.Append($"{expectedMedicationStatement.Medication.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
             sb.Append($"{expectedMedicationStatement.Directions}^^^^");
             sb.Append($"{expectedMedicationStatement.DateEntered?.ToString("yyyyMMdd")}^");
-            sb.Append($"{expectedMedicationStatement.PharmacyId}^Y^5790");
+            sb.Append($"{expectedMedicationStatement.PharmacyId}^Y^");
+            sb.Append($"{expectedMedicationStatement.PrescriptionIdentifier}^");
 
             // Other prescriptions
             sb.Append("~ZPB3^572349^COLCHICINE                    ODAN LABS      0.6 MG    TABLET^N^70^1000^^^D^20190129^NI^P1^XXALE^PHARMACISTWITHLONGCHARACTERNAME#035^20190129^PR^ADAPTED RX AND DISCONTINUED^REASON FOR DISCONTINUATION^P1^XXALE^20190129^QAERXPP^Y^5788^HIGH^CHGD");
             sb.Append("~ZPB3^294322^ALLOPURINOL                   APOTEX INC     300 MG    TABLET^N^1200^4000^^^D^20190116^^91^XXALT^ABLEBODIED^20190116^PH^PRESCRIPTION # 16^REASON FOR DISCONTINUATION^P1^XXAKZ^20190116^BC000000QA^N");
 
-            List<MedicationStatement> medicationStatements = this.parser.ParseResponseMessage(sb.ToString());
+            HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.Equal(3, medicationStatements.Count);
-            Assert.True(expectedMedicationStatement.IsDeepEqual(medicationStatements.First()));
+            Assert.False(actual.IsError);
+            Assert.Equal(3, actual.Message.Count);
+            Assert.True(expectedMedicationStatement.IsDeepEqual(actual.Message.First()));
         }
 
         private DateTime getDateTime()

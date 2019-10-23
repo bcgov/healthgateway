@@ -18,57 +18,48 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Authorization.Infrastructure;
-    using Microsoft.AspNetCore.Http;
+    using HealthGateway.Common.Models;
     using Moq;
     using System.Collections.Generic;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Xunit;
 
 
     public class MedicationController_Test
     {
         [Fact]
-        public async Task ShouldGetMedications()
+        public void ShouldGetSingleMedication()
         {
-            string hdid = "1192929388";
-            string phn = "0009735353315";
-            string userId = "1001";
-            string ipAddress = "10.0.0.1";
+            // Setup
+            Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new List<Medication>());
 
-            Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
-            connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
+            string drugIdentifier = "000001";
+            MedicationController controller = new MedicationController(serviceMock.Object);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
-            
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+            // Act
+            RequestResult<List<Medication>> actual = controller.GetMedication(drugIdentifier);
 
-            Mock<IMedicationService> svcMock = new Mock<IMedicationService>();
-            svcMock.Setup(s => s.GetMedicationsAsync(phn, userId, ipAddress)).ReturnsAsync(new List<MedicationStatement>());
+            // Verify
+            serviceMock.Verify(s => s.GetMedications(new List<string> { drugIdentifier }), Times.Once());
+            Assert.True(actual.ResourcePayload.Count == 0);
+        }
 
-            Mock<ICustomAuthorizationService> authMock = new Mock<ICustomAuthorizationService>();
-            authMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>(), It.IsAny<OperationAuthorizationRequirement>())).ReturnsAsync(AuthorizationResult.Success());
+        [Fact]
+        public void ShouldGetMultipleMedications()
+        {
+            // Setup
+            Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new List<Medication>());
 
-/*
-            Mock<IPatientService> patientMock = new Mock<IPatientService>();
-            patientMock.Setup(s => s.GetPatientPHNAsync(hdid)).ReturnsAsync(phn);
+            List<string> drugIdentifiers = new List<string>() { "000001", "000003", "000003" };
+            MedicationController controller = new MedicationController(serviceMock.Object);
 
-            MedicationController controller = new MedicationController(
-                svcMock.Object,
-                httpContextAccessorMock.Object,
-                authZService: authMock.Object,
-                patientService: patientMock.Object);
+            // Act
+            RequestResult<List<Medication>> actual = controller.GetMedications(drugIdentifiers);
 
-            List<MedicationStatement> medications = null;
-            medications = await controller.GetMedications(hdid); 
-            
-            Assert.True(medications?.Count == 0); */
-            Assert.True(true); // @todo: get above working right.
+            // Verify
+            serviceMock.Verify(s => s.GetMedications(drugIdentifiers), Times.Once());
+            Assert.True(actual.ResourcePayload.Count == 0);
         }
     }
 }

@@ -16,6 +16,7 @@
 namespace HealthGateway.HNClient.Delegates
 {
     using System;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -37,6 +38,8 @@ namespace HealthGateway.HNClient.Delegates
         private const int DATA_INDICATOR_LENGTH = 2; // data indicator length
         private const int SOCKET_READ_SLEEP_TIME = 100;  // milliseconds
         private const int MAX_SOCKET_READ_TRIES = 100;
+        private const string ERROR_MAX_RETRIES_MESSAGE_FORMAT = "Exceeded maximum retries to retrieve {0} from HNClient.";
+        private const string ERROR_INVALID_MESSAGE_FORMAT = "Invalid HL7 message from HNClient: {0}.";
 #pragma warning restore SA1310 // Field names should not contain underscore
 
         private readonly int port;
@@ -67,87 +70,97 @@ namespace HealthGateway.HNClient.Delegates
             using (ISocketProxy socket = this.CreateSocket())
             {
                 int numSocketReadTries = 0;
-                while (socket.Available < 1 && numSocketReadTries < MAX_SOCKET_READ_TRIES)
+                while (socket.Available < 1)
                 {
+                    if (numSocketReadTries >= MAX_SOCKET_READ_TRIES)
+                    {
+                        throw new SystemException(string.Format(CultureInfo.CurrentCulture, ERROR_MAX_RETRIES_MESSAGE_FORMAT, "HANDSHAKE"));
+                    }
+
                     numSocketReadTries++;
                     Thread.Sleep(SOCKET_READ_SLEEP_TIME);
                 }
 
                 // Verify that the initial connection has data (handshake)
-                if (socket.Available > 0)
+                byte[] handShakeSegment = new byte[12];
+                byte[] handShakeData = new byte[8];
+
+                // Read 12 bytes of HandShake Segment and 8 bytes of HandShake data
+                socket.Receive(handShakeSegment, 0, 12);
+                socket.Receive(handShakeData, 0, 8);
+
+                byte initialSeed = 0;
+                byte[] encodedHandshake = this.EncodeData(handShakeData, initialSeed);
+                byte seed = encodedHandshake[7];
+                using (MemoryStream encodedMessage = this.CreateEncodedMessage(encodedHandshake, message, seed))
                 {
-                    int bytes = 0;
-                    byte[] handShakeSegment = new byte[12];
-                    byte[] handShakeData = new byte[8];
-
-                    // read 12 bytes of HandShake Segment and 8 bytes of HandShake data
-                    bytes = socket.Receive(handShakeSegment, 0, 12);
-                    bytes = socket.Receive(handShakeData, 0, 8);
-
-                    byte initialSeed = 0;
-                    byte[] encodedHandshake = this.EncodeData(handShakeData, initialSeed);
-                    byte seed = encodedHandshake[7];
-                    using (MemoryStream encodedMessage = this.CreateEncodedMessage(encodedHandshake, message, seed))
-                    {
-                        // send message to HNClient
-                        socket.Send(encodedMessage.ToArray(), (int)encodedMessage.Length);
-                    }
-
-                    numSocketReadTries = 0;
-                    while (socket.Available < 1 && numSocketReadTries < MAX_SOCKET_READ_TRIES)
-                    {
-                        numSocketReadTries++;
-                        Thread.Sleep(SOCKET_READ_SLEEP_TIME);
-                    }
-
-                    // Receive the data
-                    byte[] bytesReceived = new byte[12];
-                    bytes = socket.Receive(bytesReceived, 0, 12);
-                    if (bytesReceived.Length <= 0)
-                    {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                        throw new InvalidDataException("Could not find entire message.");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-                    }
-
-                    // Read the message payload and attempt to load the message;
-                    string headerIn = this.DecodeData(bytesReceived, seed);
-                    int messageLength = int.Parse(headerIn.Substring(DATA_INDICATOR_LENGTH, LENGTH_INDICATOR_LENGTH - DATA_INDICATOR_LENGTH), System.Globalization.CultureInfo.InvariantCulture);
-                    numSocketReadTries = 0;
-                    while (socket.Available < messageLength)
-                    {
-                        if (numSocketReadTries < MAX_SOCKET_READ_TRIES)
-                        {
-                            numSocketReadTries++;
-                            Thread.Sleep(SOCKET_READ_SLEEP_TIME);
-                        }
-                        else
-                        {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                            throw new InvalidDataException("Could not find entire message.");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-                        }
-                    }
-
-                    // Receive the HL7 Data
-                    byte[] dataHL7in = new byte[messageLength];
-                    socket.Receive(dataHL7in, 0, messageLength);
-                    string hl7Message = this.DecodeData(dataHL7in, seed);
-
-                    // Validate the hl7 message
-                    int indexOfMSG = hl7Message.IndexOf(HEADER_INDICATOR, StringComparison.InvariantCulture);
-                    if (indexOfMSG != -1)
-                    {
-                        // Read after the MSH segment.
-                        receivedMessage = hl7Message.Substring(indexOfMSG) + "\r";
-                    }
-                    else
-                    {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                        throw new InvalidDataException("Could not find MSG header");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-                    }
+                    // send message to HNClient
+                    socket.Send(encodedMessage.ToArray(), (int)encodedMessage.Length);
                 }
+
+                numSocketReadTries = 0;
+                while (socket.Available < 12 && numSocketReadTries < MAX_SOCKET_READ_TRIES)
+                {
+                    if (numSocketReadTries >= MAX_SOCKET_READ_TRIES)
+                    {
+                        throw new SystemException(string.Format(CultureInfo.CurrentCulture, ERROR_MAX_RETRIES_MESSAGE_FORMAT, "HEADER"));
+                    }
+
+                    numSocketReadTries++;
+                    Thread.Sleep(SOCKET_READ_SLEEP_TIME);
+                }
+
+                int messageLength = 0;
+                numSocketReadTries = 0;
+                while (messageLength == 0)
+                {
+                    if (numSocketReadTries >= MAX_SOCKET_READ_TRIES)
+                    {
+                        throw new SystemException(string.Format(CultureInfo.CurrentCulture, ERROR_MAX_RETRIES_MESSAGE_FORMAT, "MESSAGE SIZE"));
+                    }
+
+                    // Receive the message header (size) data
+                    byte[] bytesReceived = new byte[12];
+                    socket.Receive(bytesReceived, 0, 12);
+
+                    // Decode the message header and retrieve the total message length;
+                    string headerIn = this.DecodeData(bytesReceived, seed);
+                    messageLength = int.Parse(headerIn.Substring(DATA_INDICATOR_LENGTH, LENGTH_INDICATOR_LENGTH - DATA_INDICATOR_LENGTH), CultureInfo.InvariantCulture);
+                }
+
+                numSocketReadTries = 0;
+                byte[] dataHL7in = new byte[messageLength];
+                int totalReceived = 0;
+                while (socket.Available > 0 && totalReceived < messageLength)
+                {
+                    if (numSocketReadTries >= MAX_SOCKET_READ_TRIES)
+                    {
+                        throw new SystemException(string.Format(CultureInfo.CurrentCulture, ERROR_MAX_RETRIES_MESSAGE_FORMAT, "MESSAGE"));
+                    }
+
+                    int partialMessageSize = socket.Available;
+                    byte[] partialMessage = new byte[partialMessageSize];
+                    socket.Receive(partialMessage, 0, partialMessageSize);
+                    partialMessage.CopyTo(dataHL7in, totalReceived);
+                    totalReceived += partialMessage.Length;
+                    numSocketReadTries++;
+                }
+
+                // decode the HL7 Data
+                string hl7Message = this.DecodeData(dataHL7in, seed);
+
+                // Validate the hl7 message
+                int indexOfMSG = hl7Message.IndexOf(HEADER_INDICATOR, StringComparison.InvariantCulture);
+                if (indexOfMSG != -1)
+                {
+                    // Read after the MSH segment.
+                    receivedMessage = hl7Message.Substring(indexOfMSG) + "\r";
+                }
+                else
+                {
+                    throw new SystemException(string.Format(CultureInfo.CurrentCulture, ERROR_INVALID_MESSAGE_FORMAT, "MISSING HEADER"));
+                }
+
             }
 
             return receivedMessage;
@@ -166,9 +179,7 @@ namespace HealthGateway.HNClient.Delegates
             ISocketProxy socket = new SocketProxy(endpoint);
             if (!socket.IsConnected)
             {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                throw new InvalidOperationException("Could not connect to the socket");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
+                throw new SystemException(string.Format(CultureInfo.CurrentCulture, "Could not connect to the socket. {0}:{1}", address.ToString(), this.port));
             }
 
             return socket;
