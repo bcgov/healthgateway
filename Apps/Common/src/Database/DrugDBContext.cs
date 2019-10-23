@@ -41,6 +41,7 @@ namespace HealthGateway.Common.Database
         public DbSet<Status> Status { get; set; }
         public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
         public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
+        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
 
         /// <summary>
         /// Constructor required to instantiated the context via startup.
