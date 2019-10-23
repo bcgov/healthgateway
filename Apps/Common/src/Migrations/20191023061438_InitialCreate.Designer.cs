@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Common.Migrations
 {
     [DbContext(typeof(DrugDBContext))]
-    [Migration("20191023051435_AddedPharmacareDrug")]
-    partial class AddedPharmacareDrug
+    [Migration("20191023061438_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -337,11 +337,14 @@ namespace HealthGateway.Common.Migrations
                     b.Property<string>("DosageForm")
                         .HasMaxLength(20);
 
-                    b.Property<DateTime>("EffectiveDate");
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("Date");
 
-                    b.Property<DateTime>("EndDate");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("Date");
 
-                    b.Property<DateTime>("FormularyListDate");
+                    b.Property<DateTime>("FormularyListDate")
+                        .HasColumnType("Date");
 
                     b.Property<string>("GenericName")
                         .HasMaxLength(60);
@@ -349,14 +352,16 @@ namespace HealthGateway.Common.Migrations
                     b.Property<string>("LCAIndicator")
                         .HasMaxLength(2);
 
-                    b.Property<decimal>("LCAPrice");
+                    b.Property<decimal?>("LCAPrice")
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("LimitedUseFlag")
                         .HasMaxLength(1);
 
-                    b.Property<decimal>("MaxPrice");
+                    b.Property<int?>("MaximumDaysSupply");
 
-                    b.Property<int>("MaximumDaysSupply");
+                    b.Property<decimal?>("MaximumPrice")
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("PayGenericIndicator")
                         .HasMaxLength(1);
@@ -365,16 +370,18 @@ namespace HealthGateway.Common.Migrations
                         .HasMaxLength(20);
 
                     b.Property<string>("Plan")
-                        .IsRequired()
                         .HasMaxLength(2);
 
-                    b.Property<int>("QuantityLimit");
+                    b.Property<int?>("QuantityLimit");
 
                     b.Property<string>("RDPCategory")
                         .HasMaxLength(4);
 
                     b.Property<string>("RDPExcludedPlans")
                         .HasMaxLength(20);
+
+                    b.Property<decimal?>("RDPPrice")
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("RDPSubCategory")
                         .HasMaxLength(4);

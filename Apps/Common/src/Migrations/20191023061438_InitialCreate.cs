@@ -43,6 +43,44 @@ namespace HealthGateway.Common.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PharmaCareDrug",
+                columns: table => new
+                {
+                    PharmaCareDrugId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    DINPIN = table.Column<string>(maxLength: 8, nullable: false),
+                    Plan = table.Column<string>(maxLength: 2, nullable: true),
+                    EffectiveDate = table.Column<DateTime>(type: "Date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "Date", nullable: false),
+                    BenefitGroupList = table.Column<string>(maxLength: 60, nullable: true),
+                    LCAIndicator = table.Column<string>(maxLength: 2, nullable: true),
+                    PayGenericIndicator = table.Column<string>(maxLength: 1, nullable: true),
+                    BrandName = table.Column<string>(maxLength: 60, nullable: true),
+                    GenericName = table.Column<string>(maxLength: 60, nullable: true),
+                    DosageForm = table.Column<string>(maxLength: 20, nullable: true),
+                    TrialFlag = table.Column<string>(maxLength: 1, nullable: true),
+                    MaximumPrice = table.Column<decimal>(type: "decimal(8,4)", nullable: true),
+                    LCAPrice = table.Column<decimal>(type: "decimal(8,4)", nullable: true),
+                    RDPCategory = table.Column<string>(maxLength: 4, nullable: true),
+                    RDPSubCategory = table.Column<string>(maxLength: 4, nullable: true),
+                    RDPPrice = table.Column<decimal>(type: "decimal(8,4)", nullable: true),
+                    RDPExcludedPlans = table.Column<string>(maxLength: 20, nullable: true),
+                    CanadianFederalRegulatoryCode = table.Column<string>(maxLength: 1, nullable: true),
+                    PharmaCarePlanDescription = table.Column<string>(maxLength: 20, nullable: true),
+                    MaximumDaysSupply = table.Column<int>(nullable: true),
+                    QuantityLimit = table.Column<int>(nullable: true),
+                    FormularyListDate = table.Column<DateTime>(type: "Date", nullable: false),
+                    LimitedUseFlag = table.Column<string>(maxLength: 1, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PharmaCareDrug", x => x.PharmaCareDrugId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ActiveIngredient",
                 columns: table => new
                 {
@@ -388,6 +426,9 @@ namespace HealthGateway.Common.Migrations
 
             migrationBuilder.DropTable(
                 name: "Packaging");
+
+            migrationBuilder.DropTable(
+                name: "PharmaCareDrug");
 
             migrationBuilder.DropTable(
                 name: "PharmaceuticalStd");

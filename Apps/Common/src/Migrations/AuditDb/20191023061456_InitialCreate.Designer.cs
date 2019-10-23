@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Common.Migrations.AuditDb
 {
     [DbContext(typeof(AuditDbContext))]
-    [Migration("20191023052805_AddAudit")]
-    partial class AddAudit
+    [Migration("20191023061456_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

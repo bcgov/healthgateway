@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+	using System.ComponentModel.DataAnnotations.Schema;
 
     public class PharmaCareDrug : AuditableEntity
     {
@@ -26,16 +27,13 @@ namespace HealthGateway.Common.Database.Models
         [MaxLength(8)]
         public string DINPIN { get; set; }
 
-        [Required]
         [MaxLength(2)]
         public string Plan { get; set; }
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyyMMdd}", ApplyFormatInEditMode = true)]
-        public DateTime EffectiveDate { get; set; }
+		[Column(TypeName = "Date")]
+		public DateTime EffectiveDate { get; set; }
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyyMMdd}", ApplyFormatInEditMode = true)]
+        [Column(TypeName="Date")]
         public DateTime EndDate { get; set; }
 
         [MaxLength(60)]
@@ -59,15 +57,20 @@ namespace HealthGateway.Common.Database.Models
         [MaxLength(1)]
         public string TrialFlag { get; set; }
 
-        public decimal MaxPrice { get; set; }
+        [Column(TypeName = "decimal(8,4)")]
+        public decimal? MaximumPrice { get; set; }
 
-        public decimal LCAPrice { get; set; }
+		[Column(TypeName = "decimal(8,4)")]
+		public decimal? LCAPrice { get; set; }
 
         [MaxLength(4)]
         public string RDPCategory { get; set; }
 
         [MaxLength(4)]
         public string RDPSubCategory { get; set; }
+
+		[Column(TypeName = "decimal(8,4)")]
+		public decimal? RDPPrice { get; set; }
 
         [MaxLength(20)]
         public string RDPExcludedPlans { get; set; }
@@ -78,13 +81,12 @@ namespace HealthGateway.Common.Database.Models
         [MaxLength(20)]
         public string PharmaCarePlanDescription { get; set; }
 
-        public int MaximumDaysSupply { get; set; }
+        public int? MaximumDaysSupply { get; set; }
 
-        public int QuantityLimit { get; set; }
+        public int? QuantityLimit { get; set; }
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyyMMdd}", ApplyFormatInEditMode = true)]
-        public DateTime FormularyListDate { get; set; }
+		[Column(TypeName = "Date")]
+		public DateTime FormularyListDate { get; set; }
 
         [MaxLength(1)]
         public string LimitedUseFlag { get; set; }
