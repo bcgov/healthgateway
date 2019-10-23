@@ -13,19 +13,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer.Database
+namespace HealthGateway.Common.Database
 {
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.EntityFrameworkCore;
-    using HealthGateway.Common.Database.Models;
     using System;
     using System.Linq;
+    using Microsoft.EntityFrameworkCore;
+    using HealthGateway.Common.Database.Models;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
     public class DrugDBContext : DbContext
     {
+        /// <summary>
+        /// The DB name for the Pharmanet Trace ID Sequence.
+        /// </summary>
+        public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
+
+        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
+        public DbSet<Company> Company { get; set; }
+        public DbSet<DrugProduct> DrugProduct { get; set; }
+        public DbSet<Form> Form { get; set; }
+        public DbSet<Packaging> Packaging { get; set; }
+        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
+        public DbSet<Route> Route { get; set; }
+        public DbSet<Schedule> Schedule { get; set; }
+        public DbSet<Status> Status { get; set; }
+        public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
+        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
+        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
+
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
@@ -48,22 +65,21 @@ namespace HealthGateway.DrugMaintainer.Database
                     auditEntity.Entity.CreatedDateTime = now;
                     auditEntity.Entity.CreatedBy = user;
                 }
+
                 auditEntity.Entity.UpdatedDateTime = now;
                 auditEntity.Entity.UpdatedBy = user;
             }
             return base.SaveChanges();
         }
 
-        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
-        public DbSet<Company> Company { get; set; }
-        public DbSet<DrugProduct> DrugProduct { get; set; }
-        public DbSet<Form> Form { get; set; }
-        public DbSet<Packaging> Packaging { get; set; }
-        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
-        public DbSet<Route> Route { get; set; }
-        public DbSet<Schedule> Schedule { get; set; }
-        public DbSet<Status> Status { get; set; }
-        public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
-        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasSequence<long>(PHARMANET_TRACE_SEQUENCE)
+                        .StartsAt(1)
+                        .IncrementsBy(1)
+                        .HasMin(1)
+                        .HasMax(999999)
+                        .IsCyclic(true);
+        }
     }
 }

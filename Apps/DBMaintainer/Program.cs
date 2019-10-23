@@ -17,70 +17,57 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.IO;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Database;
-    using HealthGateway.DrugMaintainer.Database;
-    using Microsoft.EntityFrameworkCore.Design;
+    using HealthGateway.Common.FileDownload;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     class Program
     {
         static void Main(string[] args)
         {
-            IConfiguration configuration = Initialize();
-
-            // create service collection
-            var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection, configuration);
-
-            // create service provider
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            // entry to run app
-            serviceProvider.GetService<DrugMaintainerApp>().UpdateDrugProducts().Wait();
+            IHost host = CreateWebHostBuilder(args).Build();//.Run();
+            DrugMaintainerApp service = host.Services.GetService<DrugMaintainerApp>();
+            service.UpdateDrugProducts().Wait();
         }
 
-        static IConfiguration Initialize()
+        public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            Console.WriteLine("Running in Environment {0}", environmentName);
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile($"appsettings.json", true, true)
-                .AddJsonFile($"appsettings.{environmentName}.json", true, true)
-                .Build();
-        }
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            return new HostBuilder()
+                       .ConfigureAppConfiguration((hostingContext, config) =>
+                       {
+                           config.SetBasePath(Directory.GetCurrentDirectory());
+                           config.AddJsonFile($"appsettings.json", true, true);
+                           config.AddJsonFile($"appsettings.{environment}.json", true, true);
+                       })
+                       .ConfigureServices((hostContext, services) =>
+                       {
+                           Console.WriteLine("Configuring Services...");
+                           services.AddDbContextPool<DrugDBContext>(options =>
+                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
-        private static void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)
-        {            
-            // DB Context Factory used for Migration only.
-            serviceCollection.AddTransient<IDesignTimeDbContextFactory<MigrationDBContext>, MigrationDBFactory>();
+                           services.AddDbContextPool<AuditDbContext>(options =>
+                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
-            // Drug DB Context Factory
-            serviceCollection.AddTransient<IDBContextFactory, DrugDBContextFactory>();
+                           // add httpclient
+                           services.AddHttpClient();
 
-            // add configured instance of logging
-            serviceCollection.AddSingleton(new LoggerFactory());
+                           // Add services
+                           services.AddTransient<IFileDownloadService, FileDownloadService>();
+                           services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
 
-            // add logging
-            serviceCollection.AddLogging((options) => {
-                options.AddConsole();
-            });
-
-            // add httpclient
-            serviceCollection.AddHttpClient();
-
-            // add configuration
-            serviceCollection.AddSingleton<IConfiguration>(configuration);
-
-            // Add services
-            serviceCollection.AddTransient<IFileDownloadService, FileDownloadService>();
-            serviceCollection.AddTransient<IDrugProductParser, FederalDrugProductParser>();
-
-            // Add app
-            serviceCollection.AddTransient<DrugMaintainerApp>();
+                           // Add app
+                           services.AddTransient<DrugMaintainerApp>();
+                       })
+                       .ConfigureLogging(logging =>
+                       {
+                           logging.ClearProviders();
+                           logging.AddConsole();
+                       });
         }
     }
 }
