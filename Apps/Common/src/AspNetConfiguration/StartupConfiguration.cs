@@ -17,7 +17,8 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.IO;
-    using HealthGateway.Common.Attributes;
+    using System.Net;
+    using HealthGateway.Common.Middlewares;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
@@ -79,12 +80,14 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IAuditService, AuditService>();
+
 
             services.AddHealthChecks();
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
             services
-                .AddMvc(c => c.Filters.Add(new AuditAttribute(serviceProvider.GetService<IAuditService>())))
+                .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
@@ -148,14 +151,14 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = c =>
+                    OnAuthenticationFailed = (AuthenticationFailedContext context) =>
                     {
-                        c.Response.StatusCode = 401;
-                        c.Response.ContentType = "application/json";
-                        return c.Response.WriteAsync(JsonConvert.SerializeObject(new
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        context.Response.ContentType = "application/json";
+                        return context.Response.WriteAsync(JsonConvert.SerializeObject(new
                         {
                             State = "AuthenticationFailed",
-                            Message = c.Exception.ToString(),
+                            Message = context.Exception.ToString(),
                         }));
                     },
                 };
@@ -241,6 +244,15 @@ namespace HealthGateway.Common.AspNetConfiguration
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
+        }
+
+        /// <summary>
+        /// Configures the app to use a custom audit.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseAudit(IApplicationBuilder app)
+        {
+            app.UseMiddleware<AuditMiddleware>();
         }
 
         /// <summary>

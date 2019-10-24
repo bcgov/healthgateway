@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The audit service interface.
@@ -29,5 +30,12 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <returns>Task used for auditing. </returns>
         Task WriteAuditEvent(AuditEvent auditEvent);
+
+        /// <summary>
+        /// Parsers the audit event values from the http context.
+        /// </summary>
+        /// <param name="context">The http context.</param>
+        /// <param name="audit">The audit event object to be populated.</param>
+        AuditEvent ParseHttpContext(HttpContext context, AuditEvent audit);
     }
 }
