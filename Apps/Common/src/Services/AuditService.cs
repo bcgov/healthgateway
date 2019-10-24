@@ -123,7 +123,7 @@ namespace HealthGateway.Common.Services
             }
             else
             {
-                throw new Exception($"Audit Error: Invalid application name '{assemblyName.Name}'");
+                throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
         }
     }
