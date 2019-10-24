@@ -21,7 +21,6 @@ namespace HealthGateway.DrugMaintainer
     using HealthGateway.Common.Database.Models;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Database;
-    using HealthGateway.DrugMaintainer.Database;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
     using System.IO;
@@ -29,19 +28,19 @@ namespace HealthGateway.DrugMaintainer
 
     public class DrugMaintainerApp
     {
-        private ILogger logger;
+        private readonly ILogger logger;
         private IDrugProductParser parser;
         private IFileDownloadService downloadService;
-        private IDBContextFactory dbContextFactory;
-        private IConfiguration configuration;
+        private readonly IConfiguration configuration;
+        private readonly DrugDBContext drugDBContext;
 
-        public DrugMaintainerApp(ILogger<DrugMaintainerApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IDBContextFactory dbContextFactory, IConfiguration configuration)
+        public DrugMaintainerApp(ILogger<DrugMaintainerApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDBContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
             this.downloadService = downloadService;
-            this.dbContextFactory = dbContextFactory;
             this.configuration = configuration;
+            this.drugDBContext = drugDBContext;
         }
 
         public async Task UpdateDrugProducts()
@@ -75,37 +74,35 @@ namespace HealthGateway.DrugMaintainer
         private void updateDatabase(string unzippedPath)
         {
             this.logger.LogInformation("Adding Entities to DB");
-            using (DrugDBContext ctx = (DrugDBContext)this.dbContextFactory.CreateContext())
-            {
-                List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
-                ctx.DrugProduct.AddRange(drugProducts);
-                logger.LogInformation("Saving Drug Products.");
-                ctx.SaveChanges();
-                List<ActiveIngredient> ingredients = this.parser.ParseActiveIngredientFile(unzippedPath, drugProducts);
-                ctx.ActiveIngredient.AddRange(ingredients);
-                List<Company> companies = this.parser.ParseCompanyFile(unzippedPath, drugProducts);
-                ctx.Company.AddRange(companies);
-                List<Status> statuses = this.parser.ParseStatusFile(unzippedPath, drugProducts);
-                ctx.Status.AddRange(statuses);
-                List<Form> forms = this.parser.ParseFormFile(unzippedPath, drugProducts);
-                ctx.Form.AddRange(forms);
-                List<Packaging> packagings = this.parser.ParsePackagingFile(unzippedPath, drugProducts);
-                ctx.Packaging.AddRange(packagings);
-                logger.LogInformation("Saving ingredients, companies, statuses, forms and packagings.");
-                ctx.SaveChanges();
-                List<PharmaceuticalStd> pharmaceuticals = this.parser.ParsePharmaceuticalStdFile(unzippedPath, drugProducts);
-                ctx.PharmaceuticalStd.AddRange(pharmaceuticals);
-                List<Route> routes = this.parser.ParseRouteFile(unzippedPath, drugProducts);
-                ctx.Route.AddRange(routes);
-                List<Schedule> schedules = this.parser.ParseScheduleFile(unzippedPath, drugProducts);
-                ctx.Schedule.AddRange(schedules);
-                List<TherapeuticClass> therapeuticClasses = this.parser.ParseTherapeuticFile(unzippedPath, drugProducts);
-                ctx.TherapeuticClass.AddRange(therapeuticClasses);
-                List<VeterinarySpecies> veterinarySpecies = this.parser.ParseVeterinarySpeciesFile(unzippedPath, drugProducts);
-                ctx.VeterinarySpecies.AddRange(veterinarySpecies);
-                logger.LogInformation("Saving Entities");
-                ctx.SaveChanges();
-            }
+            DrugDBContext ctx = this.drugDBContext;
+            List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
+            ctx.DrugProduct.AddRange(drugProducts);
+            logger.LogInformation("Saving Drug Products.");
+            ctx.SaveChanges();
+            List<ActiveIngredient> ingredients = this.parser.ParseActiveIngredientFile(unzippedPath, drugProducts);
+            ctx.ActiveIngredient.AddRange(ingredients);
+            List<Company> companies = this.parser.ParseCompanyFile(unzippedPath, drugProducts);
+            ctx.Company.AddRange(companies);
+            List<Status> statuses = this.parser.ParseStatusFile(unzippedPath, drugProducts);
+            ctx.Status.AddRange(statuses);
+            List<Form> forms = this.parser.ParseFormFile(unzippedPath, drugProducts);
+            ctx.Form.AddRange(forms);
+            List<Packaging> packagings = this.parser.ParsePackagingFile(unzippedPath, drugProducts);
+            ctx.Packaging.AddRange(packagings);
+            logger.LogInformation("Saving ingredients, companies, statuses, forms and packagings.");
+            ctx.SaveChanges();
+            List<PharmaceuticalStd> pharmaceuticals = this.parser.ParsePharmaceuticalStdFile(unzippedPath, drugProducts);
+            ctx.PharmaceuticalStd.AddRange(pharmaceuticals);
+            List<Route> routes = this.parser.ParseRouteFile(unzippedPath, drugProducts);
+            ctx.Route.AddRange(routes);
+            List<Schedule> schedules = this.parser.ParseScheduleFile(unzippedPath, drugProducts);
+            ctx.Schedule.AddRange(schedules);
+            List<TherapeuticClass> therapeuticClasses = this.parser.ParseTherapeuticFile(unzippedPath, drugProducts);
+            ctx.TherapeuticClass.AddRange(therapeuticClasses);
+            List<VeterinarySpecies> veterinarySpecies = this.parser.ParseVeterinarySpeciesFile(unzippedPath, drugProducts);
+            ctx.VeterinarySpecies.AddRange(veterinarySpecies);
+            logger.LogInformation("Saving Entities");
+            ctx.SaveChanges();
         }
     }
 }

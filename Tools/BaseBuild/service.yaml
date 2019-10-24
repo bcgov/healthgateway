@@ -86,6 +86,10 @@ objects:
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30
+        hostAliases:
+        - ip: "10.248.101.18"
+          hostnames:
+          - "test-citz.healthbc.org"
     test: false
     triggers:
     - imageChangeParams:
