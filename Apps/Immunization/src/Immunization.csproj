@@ -4,7 +4,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{1842e377-23ad-4a52-881e-f0b82e7893a8}</ProjectGuid>
+    <ProjectGuid>{1842E377-23AD-4A52-881E-F0B82E7893A8}</ProjectGuid>
     <RootNamespace>HealthGateway.ImmsService</RootNamespace>
 </PropertyGroup>
 

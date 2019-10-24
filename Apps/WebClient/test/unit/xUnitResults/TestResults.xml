@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assemblies timestamp="09/05/2019 17:12:05">
+  <assembly name="/Users/tgraf/Documents/healthgateway/Apps/WebClient/testUnit/bin/Debug/netcoreapp2.2/test.dll" run-date="2019-09-05" run-time="17:12:05" total="1" passed="1" failed="0" skipped="0" time="0.242" errors="0">
+    <errors />
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.WebClient.Test.Services.ConfigurationServiceTest" time="0.242">
+      <test name="HealthGateway.WebClient.Test.Services.ConfigurationServiceTest.TestGetConfig" type="HealthGateway.WebClient.Test.Services.ConfigurationServiceTest" method="TestGetConfig" time="0.2420000" result="Pass">
+        <traits />
+      </test>
+    </collection>
+  </assembly>
+</assemblies>
