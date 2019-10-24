@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Middlewares
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Common.Auditing;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -27,14 +27,14 @@ namespace HealthGateway.Common.Middlewares
     public class AuditMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IAuditService auditService;
+        private readonly IAuditLogger auditService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuditMiddleware"/> class.
         /// </summary>
         /// <param name="auditService">The injected audit service.</param>
         /// <param name="next">The next request action.</param>
-        public AuditMiddleware(IAuditService auditService, RequestDelegate next)
+        public AuditMiddleware(IAuditLogger auditService, RequestDelegate next)
         {
             this.next = next;
             this.auditService = auditService;
