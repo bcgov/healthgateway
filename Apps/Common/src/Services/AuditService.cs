@@ -57,8 +57,12 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public AuditEvent ParseHttpContext(HttpContext context, AuditEvent audit)
         {
-            audit.ApplicationName = this.getApplication();
-            audit.TransactionResult = this.getTransactionResult(context.Response.StatusCode);
+            if (audit is null) {
+                audit = new AuditEvent();
+            }
+
+            audit.ApplicationName = this.GetApplication();
+            audit.TransactionResult = this.GetTransactionResult(context.Response.StatusCode);
             audit.ApplicationSubject = context.User.Identity.Name;
             audit.CreatedBy = string.IsNullOrEmpty(context.User.Identity.Name) ?
                 ANONYMOUS : context.User.Identity.Name;
@@ -77,26 +81,27 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="statusCode">The http context status code.</param>
         /// <returns>The mapped transaction result.</returns>
-        private AuditTransactionResult getTransactionResult(int statusCode)
+        private AuditTransactionResult GetTransactionResult(int statusCode)
         {
-            // Success codes (1xx 2xx 3xx)
+            // Success codes (1xx, 2xx, 3xx)
             if (statusCode < 400)
             {
                 return AuditTransactionResult.Success;
             }
 
-            // Unauthorized and forbidden
+            // Unauthorized and forbidden (401, 403)
             if (statusCode == 401 || statusCode == 403)
             {
                 return AuditTransactionResult.Unauthorized;
             }
 
-            // Client/Request errors other than unauthorized and forbidden
+            // Client/Request errors codes other than unauthorized and forbidden (4xx)
             if (statusCode >= 400 && statusCode < 500)
             {   
                 return AuditTransactionResult.Failure;
             } 
             
+            // System error codes (5xx)
             return AuditTransactionResult.SystemError;
         }
 
@@ -104,21 +109,17 @@ namespace HealthGateway.Common.Services
         /// Gets the current application.
         /// </summary>
         /// <returns>The mapped application.</returns>
-        private Applications getApplication()
+        private Applications GetApplication()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-            switch (assemblyName.Name)
+            object returnValue;
+            if (Enum.TryParse(typeof(Applications), assemblyName.Name, true, out returnValue))
             {
-                case "Immunization":
-                    return Applications.Immunization;
-                case "Medication":
-                    return  Applications.Medication;
-                case "Patient":
-                    return Applications.Patient;
-                case "WebClient":
-                    return Applications.WebClient;
-                default:
-                    throw new Exception($"Invalid application name: {assemblyName.Name}");
+                return (Applications)returnValue;
+            } 
+            else 
+            {
+                throw new Exception($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
         }
     }

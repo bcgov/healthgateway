@@ -38,6 +38,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The startup configuration class.
@@ -150,16 +151,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = (AuthenticationFailedContext context) =>
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync(JsonConvert.SerializeObject(new
-                        {
-                            State = "AuthenticationFailed",
-                            Message = context.Exception.ToString(),
-                        }));
-                    },
+                    OnAuthenticationFailed = this.OnAuthenticationFailed,
                 };
             });
         }
@@ -305,6 +297,22 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+        }
+
+        /// <summary>
+        /// Handles authentication failures.
+        /// </summary>
+        /// <param name="context">The authentication failed context.</param>
+        /// <returns>An async task.</returns>
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context) 
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new
+            {
+                State = "AuthenticationFailed",
+                Message = context.Exception.ToString(),
+            }));
         }
     }
 }
