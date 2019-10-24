@@ -19,7 +19,14 @@ namespace HealthGateway.Common.Database.Models
     using System.ComponentModel.DataAnnotations;
 
     public class AuditEvent : AuditableEntity
-    {
+    {  
+        /// <summary>
+        /// Default Constructor.
+        /// </summary>        
+        public AuditEvent()
+        {
+        }
+
         /// <summary>
         /// The surrogate key for the AuditEvent.
         /// </summary>

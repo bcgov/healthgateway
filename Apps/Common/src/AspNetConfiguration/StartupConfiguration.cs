@@ -19,9 +19,9 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Middlewares;
-    using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -81,7 +81,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IAuditLogger, AuditLogger>();
 
             services.AddHealthChecks();
 

@@ -13,41 +13,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Common.Auditing
 {
     using System;
     using System.Reflection;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Database;
     using HealthGateway.Common.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Authorization service
     /// </summary>
-    public class AuditService : IAuditService
+    public class AuditLogger : IAuditLogger
     {
         private const string ANONYMOUS = "anonymous";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuditService"/> class.
-        /// </summary>
-        /// <param name="config">The injected configuration provider.</param>
-        public AuditService(IConfiguration config)
+        private ILogger<IAuditLogger> logger;
+
+        private IConfiguration configuration;
+
+        private AuditDbContext dbContext;
+
+        public AuditLogger(ILogger<IAuditLogger> logger, AuditDbContext dbContext, IConfiguration config)
         {
+            this.logger = logger;
+            this.configuration = config;
+            this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
         public Task WriteAuditEvent(AuditEvent auditEvent)
         {
-            Task t = Task.Factory.StartNew(() => 
+            Task auditTask = Task.Factory.StartNew(() =>
             {
-                // Execute audit logging into database context
 
-            } );
-            
-            return t;
+                this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
+                try
+                {
+                    this.dbContext.AuditEvent.Add(auditEvent);
+                    this.dbContext.SaveChanges();
+                    logger.LogInformation(@"Saved AuditEvent");
+                }
+                catch (System.Exception ex)
+                {
+                    logger.LogError(ex, @"In WriteAuditEvent");
+                }
+            });
+            return auditTask;
         }
 
         /// <inheritdoc />

@@ -13,9 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Common.Auditing
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
     using Microsoft.AspNetCore.Http;
@@ -23,7 +22,7 @@ namespace HealthGateway.Common.Services
     /// <summary>
     /// The audit service interface.
     /// </summary>
-    public interface IAuditService
+    public interface IAuditLogger
     {
         /// <summary>
         /// Writes an Audit entry to the audit log
