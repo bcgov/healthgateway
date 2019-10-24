@@ -61,6 +61,7 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             services.AddHttpClient("medicationService").ConfigurePrimaryHttpMessageHandler(() =>
@@ -80,7 +81,6 @@ namespace HealthGateway.Medication
                 };
             });
 
-            var info = this.configuration.GetConnectionString("GatewayConnection");
             services.AddDbContext<DrugDBContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IAuthService, AuthService>();
@@ -101,6 +101,7 @@ namespace HealthGateway.Medication
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
+            this.startupConfig.UseAudit(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);

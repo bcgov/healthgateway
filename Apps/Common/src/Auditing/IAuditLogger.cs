@@ -13,23 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.Common.Auditing
 {
-    using System;
-    using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// Interface that defines a file downloader
+    /// The audit service interface.
     /// </summary>
-    public interface IFileDownloadService
+    public interface IAuditLogger
     {
         /// <summary>
-        /// Service to download a file specified by the supplied URL.
+        /// Writes an Audit entry to the audit log
         /// </summary>
-        /// <param name="fileUrl">The url of the file to be downloaded.</param>
-        /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
-        /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
-        /// <returns>The DownloadedFile.</returns>
-        Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
+        void WriteAuditEvent(AuditEvent auditEvent);
+
+        /// <summary>
+        /// Parsers the httpcontext and populates the audit event with it values.
+        /// </summary>
+        /// <param name="context">The http context.</param>
+        /// <param name="audit">The audit event object to be populated.</param>
+        void PopulateWithHttpContext(HttpContext context, AuditEvent audit);
     }
 }

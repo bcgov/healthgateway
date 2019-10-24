@@ -17,8 +17,13 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.IO;
+    using System.Net;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Middlewares;
     using HealthGateway.Common.Swagger;
+    using HealthGateway.Database.Context;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -29,6 +34,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.AspNetCore.SpaServices.Webpack;
     using Microsoft.AspNetCore.StaticFiles;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -75,9 +81,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 options.EnableForHttps = true;
             });
 
-            // Inject HttpContextAccessor
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
 
             services
@@ -145,18 +149,24 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = c =>
-                    {
-                        c.Response.StatusCode = 401;
-                        c.Response.ContentType = "application/json";
-                        return c.Response.WriteAsync(JsonConvert.SerializeObject(new
-                        {
-                            State = "AuthenticationFailed",
-                            Message = c.Exception.ToString(),
-                        }));
-                    },
+                    OnAuthenticationFailed = this.OnAuthenticationFailed,
                 };
             });
+        }
+
+        /// <summary>
+        /// Configures the authorization services.
+        /// </summary>
+        /// <param name="services">The services collection provider.</param>
+        public void ConfigureAuditServices(IServiceCollection services)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("ConfigureAuditServices...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
+                    this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddScoped<IAuditLogger, AuditLogger>();
         }
 
         /// <summary>
@@ -241,6 +251,19 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures the app to use a custom audit.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseAudit(IApplicationBuilder app)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("Use Audit...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            app.UseMiddleware<AuditMiddleware>();
+        }
+
+        /// <summary>
         /// Configures the app to use http.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
@@ -291,6 +314,22 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+        }
+
+        /// <summary>
+        /// Handles authentication failures.
+        /// </summary>
+        /// <param name="context">The authentication failed context.</param>
+        /// <returns>An async task.</returns>
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new
+            {
+                State = "AuthenticationFailed",
+                Message = context.Exception.ToString(),
+            }));
         }
     }
 }

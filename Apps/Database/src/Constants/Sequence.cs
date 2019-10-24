@@ -13,23 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.Database.Constant
 {
-    using System;
-    using System.Threading.Tasks;
-
-    /// <summary>
-    /// Interface that defines a file downloader
-    /// </summary>
-    public interface IFileDownloadService
+    #pragma warning disable CA1707 // The name of an identifier contains the underscore (_) character.
+    #pragma warning disable SA1310 // A field name in C# contains an underscore.
+    public static class Sequence
     {
         /// <summary>
-        /// Service to download a file specified by the supplied URL.
+        /// The DB name for the Pharmanet Trace ID Sequence.
         /// </summary>
-        /// <param name="fileUrl">The url of the file to be downloaded.</param>
-        /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
-        /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
-        /// <returns>The DownloadedFile.</returns>
-        Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
+        public const string PHARMANET_TRACE = @"trace_seq";
     }
+    #pragma warning restore SA1310
+    #pragma warning restore CA1707
 }

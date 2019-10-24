@@ -51,13 +51,12 @@ namespace HealthGateway.PatientService
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            // Medication Service
-           // services.AddSingleton<IMedicationService, PharmaNetMedicationServices>();  // @todo
-            services.AddSingleton<IEndpointBehavior, LoggingEndpointBehaviour>();
-            services.AddSingleton<IClientMessageInspector, LoggingMessageInspector>();
-            services.AddSingleton<IPatientService, SoapPatientService>();
+            services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
+            services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
+            services.AddTransient<IPatientService, SoapPatientService>();
         }
 
         /// <summary>
@@ -66,6 +65,7 @@ namespace HealthGateway.PatientService
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
+            this.startupConfig.UseAudit(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);

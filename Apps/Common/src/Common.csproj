@@ -30,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Database\src\Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)</Value>
     </SonarQubeSetting>
