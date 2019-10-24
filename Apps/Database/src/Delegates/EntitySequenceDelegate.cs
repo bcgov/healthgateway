@@ -24,13 +24,13 @@ namespace HealthGateway.Database.Delegates
     /// </summary>
     public class EntitySequenceDelegate : ISequenceDelegate
     {
-        private readonly DrugDBContext dbContext;
+        private readonly DrugDbContext dbContext;
 
         /// <summary>
         /// Constructor that uses the dependency injection interfaces.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the databaase context.</param>
-        public EntitySequenceDelegate(DrugDBContext dbContext)
+        public EntitySequenceDelegate(DrugDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
