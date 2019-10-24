@@ -17,7 +17,7 @@ namespace HealthGateway.Common.Database.Models
 {
     using System;
 
-    public enum Applications
+    public enum Application
     {
         Configuration = 100,
 

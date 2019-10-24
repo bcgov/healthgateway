@@ -18,8 +18,9 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System;
     using System.IO;
     using System.Net;
-    using HealthGateway.Common.Middlewares;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Middlewares;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,7 +39,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The startup configuration class.
@@ -82,7 +82,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuditService, AuditService>();
-
 
             services.AddHealthChecks();
 
@@ -243,6 +242,10 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseAudit(IApplicationBuilder app)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("Use Audit...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
             app.UseMiddleware<AuditMiddleware>();
         }
 
@@ -304,7 +307,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// </summary>
         /// <param name="context">The authentication failed context.</param>
         /// <returns>An async task.</returns>
-        private Task OnAuthenticationFailed(AuthenticationFailedContext context) 
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             context.Response.ContentType = "application/json";

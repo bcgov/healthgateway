@@ -16,15 +16,12 @@
 namespace HealthGateway.Common.Services
 {
     using System;
+    using System.Reflection;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Configuration;
     using HealthGateway.Common.Database.Models;
     using Microsoft.AspNetCore.Http;
-    using System.Reflection;
-    using Microsoft.Extensions.Primitives;
-    using System.Net;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The Authorization service
@@ -39,7 +36,6 @@ namespace HealthGateway.Common.Services
         /// <param name="config">The injected configuration provider.</param>
         public AuditService(IConfiguration config)
         {
-
         }
 
         /// <inheritdoc />
@@ -57,7 +53,13 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public AuditEvent ParseHttpContext(HttpContext context, AuditEvent audit)
         {
-            if (audit is null) {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (audit is null)
+            {
                 audit = new AuditEvent();
             }
 
@@ -71,8 +73,10 @@ namespace HealthGateway.Common.Services
             audit.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
 
             RouteData routeData = context.GetRouteData();
-            audit.TransactionVersion = routeData != null ? routeData.Values["version"].ToString() : "";
-            
+
+            // Some routes might not have the version
+            audit.TransactionVersion = routeData != null ?
+                routeData.Values["version"].ToString() : string.Empty;
             return audit;
         }
 
@@ -97,10 +101,10 @@ namespace HealthGateway.Common.Services
 
             // Client/Request errors codes other than unauthorized and forbidden (4xx)
             if (statusCode >= 400 && statusCode < 500)
-            {   
+            {
                 return AuditTransactionResult.Failure;
-            } 
-            
+            }
+
             // System error codes (5xx)
             return AuditTransactionResult.SystemError;
         }
@@ -109,15 +113,15 @@ namespace HealthGateway.Common.Services
         /// Gets the current application.
         /// </summary>
         /// <returns>The mapped application.</returns>
-        private Applications GetApplication()
+        private Application GetApplication()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
             object returnValue;
-            if (Enum.TryParse(typeof(Applications), assemblyName.Name, true, out returnValue))
+            if (Enum.TryParse(typeof(Application), assemblyName.Name, true, out returnValue))
             {
-                return (Applications)returnValue;
-            } 
-            else 
+                return (Application)returnValue;
+            }
+            else
             {
                 throw new Exception($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }

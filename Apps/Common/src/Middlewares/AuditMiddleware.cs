@@ -51,15 +51,14 @@ namespace HealthGateway.Common.Middlewares
             audit.AuditEventDateTime = DateTime.UtcNow;
             audit.AuditEventId = Guid.NewGuid();
 
-            //Continue down the Middleware pipeline, eventually returning to this class
-            await this.next(context);
+            // Continue down the Middleware pipeline, eventually returning to this class
+            await this.next(context).ConfigureAwait(true);
 
             audit.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(audit.AuditEventDateTime).TotalMilliseconds);
             this.auditService.ParseHttpContext(context, audit);
-            await this.auditService.WriteAuditEvent(audit);
+            await this.auditService.WriteAuditEvent(audit).ConfigureAwait(true);
 
             return;
         }
-
     }
 }
