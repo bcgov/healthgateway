@@ -56,12 +56,12 @@ namespace HealthGateway.Medication.Parsers
 
             // HNClient only accepts a 13 digit phn
             id = id.PadLeft(13, '0');
-            Message m = new Message();
+            Message message = new Message();
 
-            this.SetMessageHeader(m, userId, ipAddress, traceId);
-            this.SetTransactionControlSegment(m, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId);
-            this.SetClaimsStandardSegment(m, this.ClientConfig.ZCA.BIN);
-            this.SetProviderInfoSegment(m, traceId);
+            this.SetMessageHeader(message, userId, ipAddress, traceId);
+            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId);
+            this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA.BIN);
+            this.SetProviderInfoSegment(message, traceId);
 
             // ZCC - Beneficiary Information
             Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, this.Encoding);
@@ -76,9 +76,9 @@ namespace HealthGateway.Medication.Parsers
             zcc.AddNewField(string.Empty); // Patient Last Name
             zcc.AddNewField(id); // Provincial Health Care ID
             zcc.AddNewField(string.Empty); // Patient Gender
-            m.AddNewSegment(zcc);
+            message.AddNewSegment(zcc);
 
-            return new HNMessage<string>(m.SerializeMessage(false));
+            return new HNMessage<string>(message.SerializeMessage(false));
         }
 
         /// <inheritdoc/>
@@ -90,10 +90,10 @@ namespace HealthGateway.Medication.Parsers
                 throw new ArgumentNullException(nameof(hl7Message));
             }
 
-            Message m = this.ParseRawMessage(hl7Message);
+            Message message = this.ParseRawMessage(hl7Message);
 
             // Checks the response status
-            Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
+            Segment zzz = message.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
             Field status = zzz.Fields(2); // Status code
             Field statusMessage = zzz.Fields(7); // Status message
 
@@ -104,7 +104,7 @@ namespace HealthGateway.Medication.Parsers
             }
 
             // ZPB patient history response
-            Segment zpb = m.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
+            Segment zpb = message.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
 
             // ZPB sub segments (fields)
             // ZPB1 clinical information block (clinical condition)
