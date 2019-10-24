@@ -85,7 +85,6 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddHealthChecks();
 
-            ServiceProvider serviceProvider = services.BuildServiceProvider();
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
