@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Common.Audit
 {
     using System;
     using System.Threading.Tasks;
@@ -22,12 +22,12 @@ namespace HealthGateway.Common.Services
     /// <summary>
     /// The audit service interface.
     /// </summary>
-    public interface IAuditService
+    public interface IAuditLogger
     {
         /// <summary>
         /// Writes an Audit entry to the audit log
         /// </summary>
         /// <returns>Task used for auditing. </returns>
-        Task WriteAuditEvent(AuditEvent auditEvent);
+        void WriteAuditEvent(AuditEvent auditEvent);
     }
 }

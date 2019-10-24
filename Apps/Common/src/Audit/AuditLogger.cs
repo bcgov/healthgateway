@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Common.Audit
 {
     using System;
     using System.Threading.Tasks;
@@ -23,21 +23,27 @@ namespace HealthGateway.Common.Services
     /// <summary>
     /// The Authorization service
     /// </summary>
-    public class AuditService : IAuditService
+    public class AuditLogger : IAuditLogger
     {
-        public AuditService(IConfiguration config)
-        {
+        private ILogger<IAuditLogger> logger;
+        private IConfiguration configuration;
 
-        }
-        public Task WriteAuditEvent(AuditEvent auditEvent)
-        {
-            Task t = Task.Factory.StartNew(() => 
-            {
-                // Execute audit logging into database context
+        private AuditDbContext dbContext;
 
-            } );
-            
-            return t;
+        public AuditLogger(ILogger<IAuditLogger> logger, AuditDbContext dbContext, IConfiguration config)
+        {
+            this.logger = logger;
+            this.configuration = config;
+            this.dbContext = dbContext;
         }
-    }
+        public void WriteAuditEvent(AuditEvent auditEvent)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            this.dbContext.SaveChanges();
+            logger.LogInformation(@"Saved AuditEvent");
+        }
+}
 }
