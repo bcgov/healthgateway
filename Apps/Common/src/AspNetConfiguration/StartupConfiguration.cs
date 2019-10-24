@@ -17,7 +17,11 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.IO;
+    using System.Net;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Middlewares;
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -77,6 +81,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Inject HttpContextAccessor
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IAuditService, AuditService>();
 
             services.AddHealthChecks();
 
@@ -145,16 +150,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = c =>
-                    {
-                        c.Response.StatusCode = 401;
-                        c.Response.ContentType = "application/json";
-                        return c.Response.WriteAsync(JsonConvert.SerializeObject(new
-                        {
-                            State = "AuthenticationFailed",
-                            Message = c.Exception.ToString(),
-                        }));
-                    },
+                    OnAuthenticationFailed = this.OnAuthenticationFailed,
                 };
             });
         }
@@ -241,6 +237,19 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures the app to use a custom audit.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseAudit(IApplicationBuilder app)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("Use Audit...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            app.UseMiddleware<AuditMiddleware>();
+        }
+
+        /// <summary>
         /// Configures the app to use http.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
@@ -291,6 +300,22 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+        }
+
+        /// <summary>
+        /// Handles authentication failures.
+        /// </summary>
+        /// <param name="context">The authentication failed context.</param>
+        /// <returns>An async task.</returns>
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new
+            {
+                State = "AuthenticationFailed",
+                Message = context.Exception.ToString(),
+            }));
         }
     }
 }
