@@ -17,8 +17,8 @@ namespace HealthGateway.Common.Middlewares
 {
     using System;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Database.Models;
     using HealthGateway.Common.Auditing;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -27,37 +27,37 @@ namespace HealthGateway.Common.Middlewares
     public class AuditMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IAuditLogger auditService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuditMiddleware"/> class.
         /// </summary>
-        /// <param name="auditService">The injected audit service.</param>
+        
         /// <param name="next">The next request action.</param>
-        public AuditMiddleware(IAuditLogger auditService, RequestDelegate next)
+        public AuditMiddleware(RequestDelegate next)
         {
             this.next = next;
-            this.auditService = auditService;
         }
 
         /// <summary>
         /// The audit middleware handler method.
         /// </summary>
         /// <param name="context">The http context.</param>
+        /// <param name="auditService">The injected audit service.</param>
         /// <returns>An async task.</returns>
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IAuditLogger auditService)
         {
-            AuditEvent audit = new AuditEvent();
-            audit.AuditEventDateTime = DateTime.UtcNow;
-            audit.AuditEventId = Guid.NewGuid();
+            AuditEvent auditEvent = new AuditEvent();
+            auditEvent.AuditEventId = Guid.NewGuid();
+            auditEvent.AuditEventDateTime = DateTime.UtcNow;
 
             // Continue down the Middleware pipeline, eventually returning to this class
             await this.next(context).ConfigureAwait(true);
 
-            audit.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(audit.AuditEventDateTime).TotalMilliseconds);
-            this.auditService.ParseHttpContext(context, audit);
-            await this.auditService.WriteAuditEvent(audit).ConfigureAwait(true);
+            auditEvent.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(auditEvent.AuditEventDateTime).TotalMilliseconds);
 
+            // Write the event
+            auditService.PopulateWithHttpContext(context, auditEvent);
+            auditService.WriteAuditEvent(auditEvent);
             return;
         }
     }

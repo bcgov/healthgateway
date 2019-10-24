@@ -35,6 +35,11 @@ namespace HealthGateway.Common.Authentication
         Uri TokenUri { get; }
 
         /// <summary>
+        /// Authenticates this service, using Client Credentials Grant.
+        /// </summary>
+        JWTModel AuthenticateService();
+
+        /// <summary>
         /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
         /// </summary>
         /// <returns>The instance of an IAuthModel.</returns>

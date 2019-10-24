@@ -16,14 +16,17 @@
 namespace HealthGateway.Common.Auditing
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Reflection;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Database;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
     /// The Authorization service
@@ -32,11 +35,11 @@ namespace HealthGateway.Common.Auditing
     {
         private const string ANONYMOUS = "anonymous";
 
-        private ILogger<IAuditLogger> logger;
+        private readonly ILogger<IAuditLogger> logger;
 
-        private IConfiguration configuration;
+        private readonly IConfiguration configuration;
 
-        private AuditDbContext dbContext;
+        private readonly AuditDbContext dbContext;
 
         public AuditLogger(ILogger<IAuditLogger> logger, AuditDbContext dbContext, IConfiguration config)
         {
@@ -45,54 +48,44 @@ namespace HealthGateway.Common.Auditing
             this.dbContext = dbContext;
         }
 
-        public Task WriteAuditEvent(AuditEvent auditEvent)
+        public void WriteAuditEvent(AuditEvent auditEvent)
         {
-            Task auditTask = Task.Factory.StartNew(() =>
+            // An audit event catches all types of exceptions.
+#pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
+            this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
+            try
             {
-
-                this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
-                try
-                {
-                    this.dbContext.AuditEvent.Add(auditEvent);
-                    this.dbContext.SaveChanges();
-                    logger.LogInformation(@"Saved AuditEvent");
-                }
-                catch (System.Exception ex)
-                {
-                    logger.LogError(ex, @"In WriteAuditEvent");
-                }
-            });
-            return auditTask;
+                this.dbContext.AuditEvent.Add(auditEvent);
+                this.dbContext.SaveChanges();
+                this.logger.LogInformation(@"Saved AuditEvent");
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(ex, @"In WriteAuditEvent");
+            }
+#pragma warning restore CA1303
         }
 
         /// <inheritdoc />
-        public AuditEvent ParseHttpContext(HttpContext context, AuditEvent audit)
+        public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            Contract.Requires(context != null);
+            Contract.Requires(auditEvent != null);
 
-            if (audit is null)
-            {
-                audit = new AuditEvent();
-            }
-
-            audit.ApplicationName = this.GetApplication();
-            audit.TransactionResult = this.GetTransactionResult(context.Response.StatusCode);
-            audit.ApplicationSubject = context.User.Identity.Name;
-            audit.CreatedBy = string.IsNullOrEmpty(context.User.Identity.Name) ?
+            auditEvent.ApplicationType = this.GetApplicationType();
+            auditEvent.TransactionResultType = this.GetTransactionResultType(context.Response.StatusCode);
+            auditEvent.ApplicationSubject = context.User.Identity.Name;
+            auditEvent.CreatedBy = string.IsNullOrEmpty(context.User.Identity.Name) ?
                 ANONYMOUS : context.User.Identity.Name;
-            audit.TransacationName = context.Request.Path;
-            audit.Trace = context.TraceIdentifier;
-            audit.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            auditEvent.TransacationName = context.Request.Path;
+            auditEvent.Trace = context.TraceIdentifier;
+            auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
 
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
-            audit.TransactionVersion = routeData != null ?
+            auditEvent.TransactionVersion = routeData?.Values["version"] != null ?
                 routeData.Values["version"].ToString() : string.Empty;
-            return audit;
         }
 
         /// <summary>
@@ -100,41 +93,41 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="statusCode">The http context status code.</param>
         /// <returns>The mapped transaction result.</returns>
-        private AuditTransactionResult GetTransactionResult(int statusCode)
+        private AuditTransactionResultType GetTransactionResultType(int statusCode)
         {
             // Success codes (1xx, 2xx, 3xx)
             if (statusCode < 400)
             {
-                return AuditTransactionResult.Success;
+                return AuditTransactionResultType.Success;
             }
 
             // Unauthorized and forbidden (401, 403)
             if (statusCode == 401 || statusCode == 403)
             {
-                return AuditTransactionResult.Unauthorized;
+                return AuditTransactionResultType.Unauthorized;
             }
 
             // Client/Request errors codes other than unauthorized and forbidden (4xx)
             if (statusCode >= 400 && statusCode < 500)
             {
-                return AuditTransactionResult.Failure;
+                return AuditTransactionResultType.Failure;
             }
 
             // System error codes (5xx)
-            return AuditTransactionResult.SystemError;
+            return AuditTransactionResultType.SystemError;
         }
 
         /// <summary>
-        /// Gets the current application.
+        /// Gets the current audit application type from the assembly name.
         /// </summary>
-        /// <returns>The mapped application.</returns>
-        private Application GetApplication()
+        /// <returns>The mapped application type.</returns>
+        private AuditApplicationType GetApplicationType()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
             object returnValue;
-            if (Enum.TryParse(typeof(Application), assemblyName.Name, true, out returnValue))
+            if (Enum.TryParse(typeof(AuditApplicationType), assemblyName.Name, true, out returnValue))
             {
-                return (Application)returnValue;
+                return (AuditApplicationType)returnValue;
             }
             else
             {
@@ -142,4 +135,6 @@ namespace HealthGateway.Common.Auditing
             }
         }
     }
+
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 }

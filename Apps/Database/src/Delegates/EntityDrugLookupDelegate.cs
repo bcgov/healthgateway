@@ -13,34 +13,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Delegates;
-    using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management
     /// </summary>
-    public class RestMedicationService : IMedicationService
+    public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {
-        private readonly IDrugLookupDelegate drugLookupDelegate;
+        private readonly DrugDBContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
+        /// Constructor that requires a database context factory.
         /// </summary>
-        /// <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
-        public RestMedicationService(IDrugLookupDelegate drugLookupDelegate)
+        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
+        public EntityDrugLookupDelegate(DrugDBContext dbContext)
         {
-            this.drugLookupDelegate = drugLookupDelegate;
+            this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
-        public List<Medication> GetMedications(List<string> medicationDinList)
+        public List<DrugProduct> FindDrugProductsByDIN(List<string> drugIdentifiers)
         {
-            List<DrugProduct> drugProducts = this.drugLookupDelegate.FindDrugProductsByDIN(medicationDinList);
-            return SimpleModelMapper.ToMedicationList(drugProducts);
+            return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber)).ToList();
         }
     }
 }

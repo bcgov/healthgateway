@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Auditing
+namespace HealthGateway.Database.Context
 {
     using HealthGateway.Database.Models;
-    using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
 
-    /// <summary>
-    /// The audit service interface.
-    /// </summary>
-    public interface IAuditLogger
+    public class AuditDbContext : DbContext
     {
         /// <summary>
-        /// Writes an Audit entry to the audit log
+        /// Constructor required to instantiated the context via startup.
         /// </summary>
-        void WriteAuditEvent(AuditEvent auditEvent);
+        /// <param name="options">The DB Context options.</param>
+        public AuditDbContext(DbContextOptions<AuditDbContext> options)
+            : base(options)
+        {
+        }
 
-        /// <summary>
-        /// Parsers the httpcontext and populates the audit event with it values.
-        /// </summary>
-        /// <param name="context">The http context.</param>
-        /// <param name="audit">The audit event object to be populated.</param>
-        void PopulateWithHttpContext(HttpContext context, AuditEvent audit);
+        public DbSet<AuditEvent> AuditEvent { get; set; }
     }
 }

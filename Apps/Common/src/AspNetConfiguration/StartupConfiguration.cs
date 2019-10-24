@@ -23,6 +23,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Middlewares;
     using HealthGateway.Common.Swagger;
+    using HealthGateway.Database.Context;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.AspNetCore.SpaServices.Webpack;
     using Microsoft.AspNetCore.StaticFiles;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -79,10 +81,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 options.EnableForHttps = true;
             });
 
-            // Inject HttpContextAccessor
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IAuditLogger, AuditLogger>();
-
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
 
             services
@@ -153,6 +152,21 @@ namespace HealthGateway.Common.AspNetConfiguration
                     OnAuthenticationFailed = this.OnAuthenticationFailed,
                 };
             });
+        }
+
+        /// <summary>
+        /// Configures the authorization services.
+        /// </summary>
+        /// <param name="services">The services collection provider.</param>
+        public void ConfigureAuditServices(IServiceCollection services)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("ConfigureAuditServices...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
+                    this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddScoped<IAuditLogger, AuditLogger>();
         }
 
         /// <summary>

@@ -13,23 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.Database.Delegates
 {
-    using System;
-    using System.Threading.Tasks;
-
     /// <summary>
-    /// Interface that defines a file downloader
+    /// Delegate that retrieves drugs based on the drug identifier.
     /// </summary>
-    public interface IFileDownloadService
+    public interface ISequenceDelegate
     {
         /// <summary>
-        /// Service to download a file specified by the supplied URL.
+        /// Gets the next sequence number for the given sequence name.
         /// </summary>
-        /// <param name="fileUrl">The url of the file to be downloaded.</param>
-        /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
-        /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
-        /// <returns>The DownloadedFile.</returns>
-        Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        long NextValueForSequence(string sequenceName);
     }
 }
