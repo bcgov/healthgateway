@@ -2,10 +2,8 @@
 
 ## Create Migrations
 
-`dotnet ef migrations add InitialCreate --project "../Database/src" -c DrugDBContext`
-`dotnet ef migrations add InitialCreate --project "../Database/src" -c AuditDbContext`
+`dotnet ef migrations add InitialCreate --project "../Common/src" -c DrugDBContext`
 
 ## Run migrations
 
-`dotnet ef database update --project "../Database/src" -c DrugDBContext`
-`dotnet ef database update --project "../Database/src" -c AuditDbContext`
+`dotnet ef database update --project "../Common/src" -c DrugDBContext`

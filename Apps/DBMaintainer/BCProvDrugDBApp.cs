@@ -32,10 +32,10 @@ namespace HealthGateway.DrugMaintainer
         private IPharmaCareDrugParser parser;
         private IFileDownloadService downloadService;
         private readonly IConfiguration configuration;
-        private readonly DrugDbContext drugDBContext;
+        private readonly DrugDBContext drugDBContext;
         private const string CONFIG_SECTION = "PharmaCareDrugFile";
 
-        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDBContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
@@ -84,22 +84,22 @@ namespace HealthGateway.DrugMaintainer
             {
                 throw new ApplicationException($"The zip file contained {files.Length} CSV files, very confused.");
             }
-            this.logger.LogInformation("Parsing Provincial PharmaCare file");
+            this.logger.LogInformation("Adding Entities to DB");
+            DrugDBContext ctx = this.drugDBContext;
             List<PharmaCareDrug> pharmaCareDrugs = this.parser.ParsePharmaCareDrugFile(files[0]);
 
-            DrugDbContext ctx = this.drugDBContext;
-            //foreach(PharmaCareDrug drug in pharmaCareDrugs)
-            //{
-            //    ctx.Add(drug);
-            //    try
-            //    {
-            //        ctx.SaveChanges();
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        logger.LogCritical(e.ToString());
-            //    }
-            //}
+            foreach(PharmaCareDrug drug in pharmaCareDrugs)
+            {
+                ctx.Add(drug);
+                try
+                {
+                    ctx.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    logger.LogCritical(e.ToString());
+                }
+            }
             //ctx.PharmaCareDrug.AddRange(pharmaCareDrugs);
             //logger.LogInformation("Saving PharmaCare Drugs");
             //ctx.SaveChanges();

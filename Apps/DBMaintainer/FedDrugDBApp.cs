@@ -32,9 +32,9 @@ namespace HealthGateway.DrugMaintainer
         private IDrugProductParser parser;
         private IFileDownloadService downloadService;
         private readonly IConfiguration configuration;
-        private readonly DrugDbContext drugDBContext;
+        private readonly DrugDBContext drugDBContext;
 
-        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDBContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
@@ -76,7 +76,7 @@ namespace HealthGateway.DrugMaintainer
         private void updateDatabase(string unzippedPath)
         {
             this.logger.LogInformation("Adding Entities to DB");
-            DrugDbContext ctx = this.drugDBContext;
+            DrugDBContext ctx = this.drugDBContext;
             List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
             ctx.DrugProduct.AddRange(drugProducts);
             logger.LogInformation("Saving Drug Products.");

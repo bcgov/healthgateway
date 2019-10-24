@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <!-- SonarQube needs this -->
+    <ProjectGuid>{86D8658A-3997-4108-BB97-BB488F8E11EB}</ProjectGuid>
     <RootNamespace>HealthGateway.Database</RootNamespace>
   </PropertyGroup>
 

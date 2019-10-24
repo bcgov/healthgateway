@@ -30,8 +30,8 @@ namespace HealthGateway.DrugMaintainer
         static void Main(string[] args)
         {
             IHost host = CreateWebHostBuilder(args).Build();//.Run();
-            FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
-            fedDrugApp.UpdateDrugProducts().Wait();
+            //FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
+            //fedDrugApp.UpdateDrugProducts().Wait();
 
             BCPProvDrugDBApp bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
             bcDrugApp.UpdatePharmaCareDrugs().Wait();
@@ -50,7 +50,7 @@ namespace HealthGateway.DrugMaintainer
                        .ConfigureServices((hostContext, services) =>
                        {
                            Console.WriteLine("Configuring Services...");
-                           services.AddDbContextPool<DrugDbContext>(options =>
+                           services.AddDbContextPool<DrugDBContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
                            services.AddDbContextPool<AuditDbContext>(options =>
