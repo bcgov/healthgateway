@@ -17,7 +17,7 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.IO;
-    using HealthGateway.Common.Database;
+    using HealthGateway.Database.Context;
     using HealthGateway.Common.FileDownload;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;

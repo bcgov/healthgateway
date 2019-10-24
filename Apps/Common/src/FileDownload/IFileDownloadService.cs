@@ -19,17 +19,17 @@ namespace HealthGateway.Common.FileDownload
     using System.Threading.Tasks;
 
     /// <summary>
-    /// The file download service.
+    /// Interface that defines a file downloader
     /// </summary>
     public interface IFileDownloadService
     {
         /// <summary>
         /// Service to download a file specified by the supplied URL.
         /// </summary>
-        /// <parameter>url</parameter>
-        /// <parameter>targetFolder</parameter>
-        /// <parameter>isRelativePath</parameter>
+        /// <param name="fileUrl">The url of the file to be downloaded.</param>
+        /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
+        /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
         /// <returns>The DownloadedFile.</returns>
-        Task<DownloadedFile> GetFileFromUrl(Uri url, string targetFolder, bool isRelativePath);
+        Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
     }
 }

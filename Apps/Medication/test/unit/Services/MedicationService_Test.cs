@@ -17,10 +17,11 @@ namespace HealthGateway.Medication.Test
 {
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
-    using HealthGateway.Medication.Services;
-    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Medication.Services;    
     using Microsoft.Extensions.Configuration;
     using Moq;
     using System.Collections.Generic;
@@ -70,7 +71,7 @@ namespace HealthGateway.Medication.Test
             mockPharmacySvc.Setup(p => p.GetPharmacyAsync(It.IsAny<JWTModel>(), It.IsAny<string>(), userId, ipAddress)).ReturnsAsync(new HNMessage<Pharmacy>());
 
             Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
-            mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());
+            mockDrugLookupDelegate.Setup(p => p.FindDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 parserMock.Object,
@@ -100,7 +101,7 @@ namespace HealthGateway.Medication.Test
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
             Mock<IDrugLookupDelegate> mockDrugLookupDelegate = new Mock<IDrugLookupDelegate>();
-            mockDrugLookupDelegate.Setup(p => p.FindMedicationsByDIN(It.IsAny<List<string>>())).Returns(new List<Medication>());
+            mockDrugLookupDelegate.Setup(p => p.FindDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             // Sequence delegate
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();

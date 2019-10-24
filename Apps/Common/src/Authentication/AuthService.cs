@@ -48,6 +48,15 @@ namespace HealthGateway.Common.Authentication
         public Uri TokenUri { get; }
 
         /// <inheritdoc/>
+        public JWTModel AuthenticateService()
+        {
+            Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
+
+            JWTModel jwtModel = authenticating.Result as JWTModel;
+            return jwtModel;
+        }
+
+        /// <inheritdoc/>
         public async Task<IAuthModel> ClientCredentialsAuth()
         {
             JWTModel authModel = new JWTModel();

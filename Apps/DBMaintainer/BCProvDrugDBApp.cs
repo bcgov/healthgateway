@@ -17,14 +17,14 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Database.Models;
-    using HealthGateway.Common.FileDownload;
-    using HealthGateway.Common.Database;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Configuration;
     using System.IO;
     using System.IO.Compression;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.FileDownload;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Configuration;
 
     public class BCPProvDrugDBApp
     {

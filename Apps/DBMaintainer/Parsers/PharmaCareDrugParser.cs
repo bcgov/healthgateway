@@ -16,7 +16,7 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Models;
     using CsvHelper;
     using System.IO;
     using System.Linq;
