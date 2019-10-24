@@ -54,6 +54,7 @@ namespace HealthGateway.Common.Middlewares
             //Continue down the Middleware pipeline, eventually returning to this class
             await this.next(context);
 
+            audit.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(audit.AuditEventDateTime).TotalMilliseconds);
             this.auditService.ParseHttpContext(context, audit);
             await this.auditService.WriteAuditEvent(audit);
 
