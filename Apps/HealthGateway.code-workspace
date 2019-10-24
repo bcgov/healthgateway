@@ -26,6 +26,9 @@
 		},
 		{
 			"path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
+		},
+		{
+			"path": "Database"
 		}
 	],
 	"settings": {}

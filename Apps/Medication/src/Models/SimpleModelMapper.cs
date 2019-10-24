@@ -13,11 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Database
+namespace HealthGateway.Medication.Models
 {
     using System.Collections.Generic;
-    using HealthGateway.Medication.Models;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Static class that maps between DrugProcucts (Database) and Medication (SimpleJSON) objects.

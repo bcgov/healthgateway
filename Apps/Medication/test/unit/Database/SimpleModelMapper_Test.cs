@@ -17,8 +17,7 @@ namespace HealthGateway.Medication.Test
 {
     using HealthGateway.Medication.Models;
     using System.Collections.Generic;
-    using HealthGateway.Common.Database.Models;
-    using HealthGateway.Medication.Database;
+    using HealthGateway.Database.Models;
     using Xunit;
 
 

@@ -20,9 +20,8 @@ namespace HealthGateway.Medication
     using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Database;
-    using HealthGateway.Medication.Database;
-    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
@@ -82,7 +81,7 @@ namespace HealthGateway.Medication
             });
 
             var info = this.configuration.GetConnectionString("GatewayConnection");
-            services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
+            services.AddDbContext<DrugDBContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
@@ -94,7 +93,6 @@ namespace HealthGateway.Medication
             services.AddTransient<ICustomAuthorizationService, CustomAuthorizationService>();
             services.AddTransient<IDrugLookupDelegate, EntityDrugLookupDelegate>();
             services.AddTransient<ISequenceDelegate, EntitySequenceDelegate>();
-            services.AddTransient<IDBContextFactory, MedicationDBContextFactory>();
         }
 
         /// <summary>
