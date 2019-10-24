@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Audit
+namespace HealthGateway.Common.Auditing
 {
-    using System;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Database;
     using HealthGateway.Common.Database.Models;
 
     /// <summary>
@@ -38,12 +38,17 @@ namespace HealthGateway.Common.Audit
         }
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-
-            this.dbContext.SaveChanges();
-            logger.LogInformation(@"Saved AuditEvent");
+            this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
+            try
+            {
+                this.dbContext.AuditEvent.Add(auditEvent);
+                this.dbContext.SaveChanges();
+                logger.LogInformation(@"Saved AuditEvent");
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError(ex, @"In WriteAuditEvent");
+            }
         }
-}
+    }
 }

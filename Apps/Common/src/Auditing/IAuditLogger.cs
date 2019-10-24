@@ -13,10 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Audit
+namespace HealthGateway.Common.Auditing
 {
-    using System;
-    using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
 
     /// <summary>
