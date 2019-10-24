@@ -17,8 +17,8 @@ namespace HealthGateway.Common.Database
 {
     using System;
     using System.Linq;
-    using Microsoft.EntityFrameworkCore;
     using HealthGateway.Common.Database.Models;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// The database context to be used for the Medication Service.
@@ -28,20 +28,7 @@ namespace HealthGateway.Common.Database
         /// <summary>
         /// The DB name for the Pharmanet Trace ID Sequence.
         /// </summary>
-        public const string PHARMANET_TRACE_SEQUENCE = "trace_seq";
-
-        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
-        public DbSet<Company> Company { get; set; }
-        public DbSet<DrugProduct> DrugProduct { get; set; }
-        public DbSet<Form> Form { get; set; }
-        public DbSet<Packaging> Packaging { get; set; }
-        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
-        public DbSet<Route> Route { get; set; }
-        public DbSet<Schedule> Schedule { get; set; }
-        public DbSet<Status> Status { get; set; }
-        public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
-        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
-        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
+        public const string PHARMANET_TRACE_SEQUENCE = @"trace_seq";
 
         /// <summary>
         /// Constructor required to instantiated the context via startup.
@@ -51,6 +38,31 @@ namespace HealthGateway.Common.Database
             : base(options)
         {
         }
+
+        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
+
+        public DbSet<Company> Company { get; set; }
+
+        public DbSet<DrugProduct> DrugProduct { get; set; }
+
+        public DbSet<Form> Form { get; set; }
+
+        public DbSet<Packaging> Packaging { get; set; }
+
+        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
+
+        public DbSet<Route> Route { get; set; }
+
+        public DbSet<Schedule> Schedule { get; set; }
+
+        public DbSet<Status> Status { get; set; }
+
+        public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
+
+        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
+
+        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
+
 
         public override int SaveChanges()
         {
@@ -69,6 +81,7 @@ namespace HealthGateway.Common.Database
                 auditEntity.Entity.UpdatedDateTime = now;
                 auditEntity.Entity.UpdatedBy = user;
             }
+
             return base.SaveChanges();
         }
 

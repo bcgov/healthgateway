@@ -15,10 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Auditing
 {
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Database;
     using HealthGateway.Common.Database.Models;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Authorization service
@@ -26,6 +27,7 @@ namespace HealthGateway.Common.Auditing
     public class AuditLogger : IAuditLogger
     {
         private ILogger<IAuditLogger> logger;
+
         private IConfiguration configuration;
 
         private AuditDbContext dbContext;
@@ -36,19 +38,25 @@ namespace HealthGateway.Common.Auditing
             this.configuration = config;
             this.dbContext = dbContext;
         }
-        public void WriteAuditEvent(AuditEvent auditEvent)
+
+        public Task WriteAuditEvent(AuditEvent auditEvent)
         {
-            this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
-            try
+            Task auditTask = Task.Factory.StartNew(() =>
             {
-                this.dbContext.AuditEvent.Add(auditEvent);
-                this.dbContext.SaveChanges();
-                logger.LogInformation(@"Saved AuditEvent");
-            }
-            catch (System.Exception ex)
-            {
-                logger.LogError(ex, @"In WriteAuditEvent");
-            }
+
+                this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
+                try
+                {
+                    this.dbContext.AuditEvent.Add(auditEvent);
+                    this.dbContext.SaveChanges();
+                    logger.LogInformation(@"Saved AuditEvent");
+                }
+                catch (System.Exception ex)
+                {
+                    logger.LogError(ex, @"In WriteAuditEvent");
+                }
+            });
+            return auditTask;
         }
     }
 }

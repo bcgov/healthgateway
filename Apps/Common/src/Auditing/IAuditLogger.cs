@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Auditing
 {
+    using System.Threading.Tasks;
     using HealthGateway.Common.Database.Models;
 
     /// <summary>
@@ -26,6 +27,6 @@ namespace HealthGateway.Common.Auditing
         /// Writes an Audit entry to the audit log
         /// </summary>
         /// <returns>Task used for auditing. </returns>
-        void WriteAuditEvent(AuditEvent auditEvent);
+        Task WriteAuditEvent(AuditEvent auditEvent);
     }
 }

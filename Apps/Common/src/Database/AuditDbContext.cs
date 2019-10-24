@@ -21,8 +21,6 @@ namespace HealthGateway.Common.Database
 
     public class AuditDbContext : DbContext
     {
-        public DbSet<AuditEvent> AuditEvent { get; set; }
-
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
@@ -31,5 +29,10 @@ namespace HealthGateway.Common.Database
             : base(options)
         {
         }
+
+        /// <summary>
+        ///The DbSet of AuditEvents.
+        /// </summary>
+        public DbSet<AuditEvent> AuditEvent { get; set; }
     }
 }
