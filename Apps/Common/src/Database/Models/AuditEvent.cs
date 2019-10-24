@@ -51,7 +51,7 @@ namespace HealthGateway.Common.Database.Models
         /// </summary>
         [MaxLength(100)]
         [Required]
-        public Applications ApplicationName { get; set; }
+        public Application ApplicationName { get; set; }
 
         /// <summary>
         /// The transacation within the application causing the event.
@@ -83,9 +83,5 @@ namespace HealthGateway.Common.Database.Models
         /// The duration of the transaction in milliseconds.
         /// </summary>
         public long? TransactionDuration { get; set; }
-
-        public AuditEvent()
-        {
-        }
     }
 }

@@ -20,14 +20,12 @@ namespace HealthGateway.Common.Database.Models
 
     public enum AuditTransactionResult
     {
-        Success = HttpStatusCode.OK,
+        Success = 1,
 
-        Ok = Success,
+        Failure = 2,
 
-        BadRequest = HttpStatusCode.BadRequest,
+        Unauthorized = 3,
 
-        Unauthorized = HttpStatusCode.Unauthorized,
-
-        ServerError = HttpStatusCode.InternalServerError,
+        SystemError = 4,
     }
 }
