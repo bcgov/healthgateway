@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Models
 {
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -27,8 +28,11 @@ namespace HealthGateway.Medication.Models
         /// Maps a list of drug products to medication objects.
         /// </summary>
         /// <param name="drugProducts">The DrugProducts to map.</param>
+        /// <returns>A list of mapped medications.</returns>
         public static List<Medication> ToMedicationList(List<DrugProduct> drugProducts)
         {
+            Contract.Requires(drugProducts != null);
+
             List<Medication> medicationList = new List<Medication>(drugProducts.Count);
             foreach (DrugProduct product in drugProducts)
             {
@@ -42,12 +46,16 @@ namespace HealthGateway.Medication.Models
         /// Maps a drug product to a medication object.
         /// </summary>
         /// <param name="drugProduct">The DrugProduct to map.</param>
+        /// <returns>A mapped medication object.</returns>
         public static Medication ToMedication(DrugProduct drugProduct)
         {
+            Contract.Requires(drugProduct != null);
+
             return new Medication()
             {
                 DIN = drugProduct.DrugIdentificationNumber,
                 BrandName = drugProduct.BrandName,
+
                 // TODO: Map the rest of the information
             };
         }

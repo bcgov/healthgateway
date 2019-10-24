@@ -17,13 +17,14 @@ namespace ServiceReference
 {
     using System.ServiceModel;
     using System.ServiceModel.Description;
+#pragma warning disable CA1801 // Parameter clientCredentials of method ConfigureEndpoint is never used
 
+    /// <summary>
+    /// Port type client.
+    /// </summary>
 #pragma warning disable CA1707 // Identifiers should not contain underscores
-                              /// <summary>
-                              /// Port type client.
-                              /// </summary>
     public partial class QUPA_AR101102_PortTypeClient
-#pragma warning restore CA1707 // Identifiers should not contain underscores
+#pragma warning restore CA1707
     {
         /// <summary>
         /// Configures the GetDemographics client.
@@ -37,4 +38,5 @@ namespace ServiceReference
             serviceEndpoint.Binding = binding;
         }
     }
+#pragma warning restore CA1801
 }

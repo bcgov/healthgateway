@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
@@ -38,10 +39,8 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="config">The configuration provider.</param>
         protected BaseMessageParser(IConfiguration config)
         {
-            if (config is null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            Contract.Requires(config != null);
+            Contract.Requires(config.GetSection("HNClient") != null);
 
             this.configuration = config;
             this.ClientConfig = new HNClientConfiguration();
@@ -85,7 +84,9 @@ namespace HealthGateway.Medication.Parsers
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
+
+            string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
+
             // MSH - Message Header
             message.AddSegmentMSH(
                 this.ClientConfig.SendingApplication,
@@ -113,7 +114,9 @@ namespace HealthGateway.Medication.Parsers
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
+
+            string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
+
             // ZZZ - Transaction Control
             Segment zzz = new Segment(HNClientConfiguration.SEGMENT_ZZZ, this.Encoding);
             zzz.AddNewField(transactionId); // Transaction ID
@@ -157,7 +160,9 @@ namespace HealthGateway.Medication.Parsers
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
+
+            string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
+
             // ZCB - Provider Information
             Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, this.Encoding);
             zcb.AddNewField(this.ClientConfig.ZCB.PharmacyId); // Pharmacy ID Code

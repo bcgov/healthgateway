@@ -21,7 +21,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
-    using HealthGateway.Common.Middlewares;
+    using HealthGateway.Common.Middleware;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
     using Microsoft.AspNetCore.Authentication.JwtBearer;

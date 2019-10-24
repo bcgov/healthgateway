@@ -16,15 +16,16 @@
 namespace HealthGateway.Medication.Services
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
-    using HealthGateway.Common.Authentication.Models;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -56,6 +57,8 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(JWTModel jwtModel, string pharmacyId, string userId, string ipAddress)
         {
+            Contract.Requires(jwtModel != null);
+
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
