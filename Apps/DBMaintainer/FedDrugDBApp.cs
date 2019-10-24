@@ -26,7 +26,7 @@ namespace HealthGateway.DrugMaintainer
     using System.IO;
     using System.IO.Compression;
 
-    public class DrugMaintainerApp
+    public class FedDrugDBApp
     {
         private readonly ILogger logger;
         private IDrugProductParser parser;
@@ -34,7 +34,7 @@ namespace HealthGateway.DrugMaintainer
         private readonly IConfiguration configuration;
         private readonly DrugDBContext drugDBContext;
 
-        public DrugMaintainerApp(ILogger<DrugMaintainerApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDBContext drugDBContext)
+        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDBContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
@@ -46,19 +46,17 @@ namespace HealthGateway.DrugMaintainer
         public async Task UpdateDrugProducts()
         {
             string targetFolder = configuration.GetSection("DrugProductDatabase").GetValue<string>("TargetFolder");
-
-            logger.LogInformation("Downloading file...");
             DownloadedFile downloadedFile = await asyncDownloadFiles(targetFolder);
-
-            logger.LogInformation("Extracting zip file...");
             string unzippedPath = extractFiles(downloadedFile);
-
             logger.LogInformation("Updating Database");
             updateDatabase(unzippedPath);
+            logger.LogInformation($"Removing extracted files under {unzippedPath}");
+            Directory.Delete(unzippedPath, true);
         }
 
         private async Task<DownloadedFile> asyncDownloadFiles(string targetFolder)
         {
+            logger.LogInformation("Downloading file...");
             Uri filePath = configuration.GetSection("DrugProductDatabase").GetValue<Uri>("Url");
             Task<DownloadedFile> downloadedFile = downloadService.GetFileFromUrl(filePath, targetFolder, true);
             return await downloadedFile;
@@ -66,8 +64,12 @@ namespace HealthGateway.DrugMaintainer
 
         private string extractFiles(DownloadedFile downloadedFile)
         {
+            string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.FileName);
+            logger.LogInformation($"Extracting zip file: {filename}");
             string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.FileName));
-            ZipFile.ExtractToDirectory(Path.Combine(downloadedFile.LocalFilePath, downloadedFile.FileName), unzipedPath);
+            ZipFile.ExtractToDirectory(filename, unzipedPath);
+            logger.LogInformation("Deleting Zip file");
+            File.Delete(filename);
             return unzipedPath;
         }
 

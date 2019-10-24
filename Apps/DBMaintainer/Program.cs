@@ -30,8 +30,11 @@ namespace HealthGateway.DrugMaintainer
         static void Main(string[] args)
         {
             IHost host = CreateWebHostBuilder(args).Build();//.Run();
-            DrugMaintainerApp service = host.Services.GetService<DrugMaintainerApp>();
-            service.UpdateDrugProducts().Wait();
+            //FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
+            //fedDrugApp.UpdateDrugProducts().Wait();
+
+            BCPProvDrugDBApp bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
+            bcDrugApp.UpdatePharmaCareDrugs().Wait();
         }
 
         public static IHostBuilder CreateWebHostBuilder(string[] args)
@@ -59,9 +62,11 @@ namespace HealthGateway.DrugMaintainer
                            // Add services
                            services.AddTransient<IFileDownloadService, FileDownloadService>();
                            services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
+                           services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
 
                            // Add app
-                           services.AddTransient<DrugMaintainerApp>();
+                           services.AddTransient<FedDrugDBApp>();
+                           services.AddTransient<BCPProvDrugDBApp>();
                        })
                        .ConfigureLogging(logging =>
                        {

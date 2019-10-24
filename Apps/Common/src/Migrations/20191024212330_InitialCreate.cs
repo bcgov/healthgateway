@@ -59,6 +59,7 @@ namespace HealthGateway.Common.Migrations
                     LCAIndicator = table.Column<string>(maxLength: 2, nullable: true),
                     PayGenericIndicator = table.Column<string>(maxLength: 1, nullable: true),
                     BrandName = table.Column<string>(maxLength: 60, nullable: true),
+                    Manufacturer = table.Column<string>(maxLength: 6, nullable: true),
                     GenericName = table.Column<string>(maxLength: 60, nullable: true),
                     DosageForm = table.Column<string>(maxLength: 20, nullable: true),
                     TrialFlag = table.Column<string>(maxLength: 1, nullable: true),

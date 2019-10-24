@@ -95,7 +95,7 @@ namespace HealthGateway.Common.FileDownload
             }
             catch (Exception exception)
             {
-                this.logger.LogDebug(exception.ToString());
+                this.logger.LogCritical(exception.ToString());
                 File.Delete(filePath);
                 df.FileName = string.Empty;
                 df.LocalFilePath = string.Empty;

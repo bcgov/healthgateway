@@ -83,9 +83,5 @@ namespace HealthGateway.Common.Database.Models
         /// The duration of the transaction in milliseconds.
         /// </summary>
         public long? TransactionDuration { get; set; }
-
-        public AuditEvent()
-        {
-        }
     }
 }

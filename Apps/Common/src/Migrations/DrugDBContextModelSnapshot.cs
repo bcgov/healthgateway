@@ -356,6 +356,9 @@ namespace HealthGateway.Common.Migrations
                     b.Property<string>("LimitedUseFlag")
                         .HasMaxLength(1);
 
+                    b.Property<string>("Manufacturer")
+                        .HasMaxLength(6);
+
                     b.Property<int?>("MaximumDaysSupply");
 
                     b.Property<decimal?>("MaximumPrice")
