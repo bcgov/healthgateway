@@ -16,8 +16,8 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
 
     /// <summary>

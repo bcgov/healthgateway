@@ -31,7 +31,7 @@ namespace HealthGateway.Common.Middlewares
         /// <summary>
         /// Initializes a new instance of the <see cref="AuditMiddleware"/> class.
         /// </summary>
-        
+
         /// <param name="next">The next request action.</param>
         public AuditMiddleware(RequestDelegate next)
         {

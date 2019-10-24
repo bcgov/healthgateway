@@ -54,9 +54,8 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <param name="medicationStatementService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="authZService">The injected authService authorization provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
-        public MedicationStatementController(IMedicationStatementService medicationStatementService, IHttpContextAccessor httpAccessor, ICustomAuthorizationService authZService, IPatientService patientService)
+        public MedicationStatementController(IMedicationStatementService medicationStatementService, IHttpContextAccessor httpAccessor, IPatientService patientService)
         {
             this.medicationStatementService = medicationStatementService;
             this.httpContextAccessor = httpAccessor;

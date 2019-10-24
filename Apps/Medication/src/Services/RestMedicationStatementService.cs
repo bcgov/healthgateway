@@ -16,8 +16,8 @@
 namespace HealthGateway.Medication.Services
 {
     using System;
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
@@ -99,25 +99,23 @@ namespace HealthGateway.Medication.Services
                 {
                     return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
-
             }
 
             if (!hnClientMedicationResult.IsError)
             {
-                await populatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress);
-
-                populateBrandName(hnClientMedicationResult.Message);
+                await this.PopulatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress).ConfigureAwait(true);
+                this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
             return hnClientMedicationResult;
         }
 
-        private async Task populatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
+        private async Task PopulatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
         {
             IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
             foreach (MedicationStatement medicationStatement in statements)
             {
-                string pharmacyId = medicationStatement.PharmacyId.ToUpper();
+                string pharmacyId = medicationStatement.PharmacyId.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
                 // Fetches the pharmacy if it hasn't been loaded yet.
                 if (!pharmacyDict.ContainsKey(pharmacyId))
@@ -131,12 +129,12 @@ namespace HealthGateway.Medication.Services
             }
         }
 
-        private void populateBrandName(List<MedicationStatement> statements)
+        private void PopulateBrandName(List<MedicationStatement> statements)
         {
             // The Drug Product Database pads zeroes to the left of Drug Identifiers
             List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
 
-            List<DrugProduct> retrievedDrugProducts = drugLookupDelegate.FindDrugProductsByDIN(medicationIdentifiers);
+            List<DrugProduct> retrievedDrugProducts = this.drugLookupDelegate.FindDrugProductsByDIN(medicationIdentifiers);
             List<Medication> retrievedMedications = SimpleModelMapper.ToMedicationList(retrievedDrugProducts);
 
             // Make a map of the retrieved medications removing the padded zero to match the DIN definitions from pharmanet
