@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Models
+namespace HealthGateway.Immunization.Models
 {
     /// <summary>
     /// The Immunization record data model.

@@ -1,13 +1,12 @@
 namespace HealthGateway.Immunization.Test.Controller
 {
     using System.Collections.Generic;
-    using Xunit;
-    using HealthGateway.Service;
-    using Moq;
-    using HealthGateway.Models;
-    using Microsoft.AspNetCore.Mvc;
     using DeepEqual.Syntax;
-    using global::Immunization.Controllers;
+    using HealthGateway.Immunization.Controllers;
+    using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Services;
+    using Moq;
+    using Xunit;
 
     public class ImmsController_Test
     {

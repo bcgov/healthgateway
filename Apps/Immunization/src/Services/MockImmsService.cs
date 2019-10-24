@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service
+namespace HealthGateway.Immunization.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Models;
+    using HealthGateway.Immunization.Models;
     using Newtonsoft.Json;
 
     /// <summary>

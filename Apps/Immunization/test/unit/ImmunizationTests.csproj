@@ -40,14 +40,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Immunization.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Mvc.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
     <Reference Include="Microsoft.AspNetCore.Mvc.ViewFeatures, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers.Test\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Immunization.csproj" />
   </ItemGroup>
 </Project>

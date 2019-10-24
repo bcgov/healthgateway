@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace Immunization.Controllers
+namespace HealthGateway.Immunization.Controllers
 {
     using System.Collections.Generic;
-    using HealthGateway.Models;
-    using HealthGateway.Service;
+    using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
