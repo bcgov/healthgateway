@@ -26,6 +26,7 @@ namespace HealthGateway.Common.Middleware
     /// </summary>
     public class AuditMiddleware
     {
+        private const string CREATEDBY = nameof(AuditMiddleware);
         private readonly RequestDelegate next;
 
         /// <summary>
@@ -56,6 +57,7 @@ namespace HealthGateway.Common.Middleware
 
             // Write the event
             auditService.PopulateWithHttpContext(context, auditEvent);
+            auditEvent.CreatedBy = CREATEDBY;
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditService.WriteAuditEvent(auditEvent);
             return;
