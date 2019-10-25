@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace Immunization.Controllers
+namespace HealthGateway.Immunization.Controllers
 {
     using System.Collections.Generic;
-    using HealthGateway.Models;
-    using HealthGateway.Service;
+    using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +28,7 @@ namespace Immunization.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    public class ImmsController : ControllerBase
+    public class ImmunizationController : ControllerBase
     {
         /// <summary>
         /// Gets or sets the immunization data service.
@@ -36,10 +36,10 @@ namespace Immunization.Controllers
         private readonly IImmsService service;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmsController"/> class.
+        /// Initializes a new instance of the <see cref="ImmunizationController"/> class.
         /// </summary>
         /// <param name="svc">The immunization data service.</param>
-        public ImmsController(IImmsService svc)
+        public ImmunizationController(IImmsService svc)
         {
             this.service = svc;
         }

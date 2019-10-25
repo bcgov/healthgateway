@@ -6,15 +6,14 @@
     <IsPackable>false</IsPackable>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{DE237219-CFAC-4186-B909-4A8F3312ABC4}</ProjectGuid>
     <SonarQubeTestProject>true</SonarQubeTestProject>
+    <RootNamespace>HealthGateway.ImmunizationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Mock\**" />
     <EmbeddedResource Remove="Mock\**" />
     <None Remove="Mock\**" />
-    <None Remove="UnitTest.json"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -34,26 +33,20 @@
 </PackageReference>
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\src\WebClient.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.All">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Mvc.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
     <Reference Include="Microsoft.AspNetCore.Mvc.ViewFeatures, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Controllers.Test\" />
-    <Folder Include="Services.Test\" />
   </ItemGroup>
-    <ItemGroup>
-    <Content Include="UnitTest.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Immunization.csproj" />
   </ItemGroup>
 </Project>

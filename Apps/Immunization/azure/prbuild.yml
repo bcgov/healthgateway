@@ -4,8 +4,8 @@ name: PR$(Rev:.r) #Build number
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Immunization
   App.Name: immunization
-  App.UnitTests: $(App.Home)/testUnit
-  App.FunctionalTests: $(App.Home)/testFunctional
+  App.UnitTests: $(App.Home)/test/unit
+  App.FunctionalTests: $(App.Home)/test/functional
 
 pool:
   name: 'HealthGateway'
@@ -26,12 +26,12 @@ steps:
   displayName: Run dotnet Tests
   inputs:
     command: 'test'
-    projects: '$(App.UnitTests)/test.csproj'
+    projects: '$(App.UnitTests)/ImmunizationTests.csproj'
     testRunTitle: 'Immunization Service Tests'
 
 - script: |
     set -e
-    dotnet test testUnit/test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
+    dotnet test test/unit/ImmunizationTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
     dotnet sonarscanner begin /d:sonar.verbose=false /k:"immunization_pr_$(System.PullRequest.PullRequestNumber)" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
@@ -45,7 +45,7 @@ steps:
   displayName: 'Add SonarQube Report to GitHub Pull Request'
   inputs:
     targetType: 'inline'
-    script: 'curl -d ''{"body":"SonarQube Report: https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=immunization_pr_$(System.PullRequest.PullRequestNumber)"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
+    script: 'curl -d ''{"body":"Immunization Project [SonarQube Report](https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=immunization_pr_$(System.PullRequest.PullRequestNumber))"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish dotnet Code'

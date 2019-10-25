@@ -1,15 +1,14 @@
 namespace HealthGateway.Immunization.Test.Controller
 {
     using System.Collections.Generic;
-    using Xunit;
-    using HealthGateway.Service;
-    using Moq;
-    using HealthGateway.Models;
-    using Microsoft.AspNetCore.Mvc;
     using DeepEqual.Syntax;
-    using global::Immunization.Controllers;
+    using HealthGateway.Immunization.Controllers;
+    using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Services;
+    using Moq;
+    using Xunit;
 
-    public class ImmsController_Test
+    public class ImmunizationController_Test
     {
         [Fact]
         public void Should_GetItems()
@@ -24,7 +23,7 @@ namespace HealthGateway.Immunization.Test.Controller
             mockSvc.Setup(m => m.GetImmunizations()).Returns(expected);
 
             // Create Controller
-            ImmsController controller = new ImmsController(mockSvc.Object);
+            ImmunizationController controller = new ImmunizationController(mockSvc.Object);
             IEnumerable<ImmsDataModel> actualResult = controller.GetItems();
             // Verify the result
             Assert.True(actualResult.IsDeepEqual(expected));

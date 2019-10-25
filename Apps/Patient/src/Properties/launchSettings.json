@@ -8,22 +8,14 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "HealthGateway.Patient": {
+      "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "template": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "api/values",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:3002"
+      "applicationUrl": "http://localhost:3002;"
     }
   }
 }

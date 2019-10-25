@@ -16,7 +16,7 @@
 namespace HealthGateway
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Service;
+    using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;

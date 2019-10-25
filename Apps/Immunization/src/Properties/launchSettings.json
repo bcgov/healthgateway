@@ -4,26 +4,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:3000"
+      "applicationUrl": "http://localhost:3001"
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "v1/api/imms/items",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "Immunization": {
+    "HealthGateway.Immunization": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "v1/api/imms/items",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:3001;http://localhost:3000"
+      "applicationUrl": "http://localhost:3001;"
     }
   }
 }

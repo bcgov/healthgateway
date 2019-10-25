@@ -1,6 +1,6 @@
 using Xunit;
-using HealthGateway.Service;
-using HealthGateway.Models;
+using HealthGateway.Immunization.Services;
+using HealthGateway.Immunization.Models;
 using System.Collections.Generic;
 using System.Linq;
 
