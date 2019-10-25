@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway
+namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
     using Microsoft.AspNetCore.Hosting;
