@@ -15,11 +15,8 @@ trigger:
      - dev
  paths:
    include:
-     - Apps/WebClient/src
-     - Apps/WebClient/testUnit
-     - Apps/WebClient/azure/build.yaml
-     - Apps/WebClient/Dockerfile
-     - Apps/WebClient/testFunctional
+     - Apps/WebClient
+     - Apps/Common
  
 pool:
   name: 'HealthGateway'
