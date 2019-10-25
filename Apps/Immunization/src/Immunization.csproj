@@ -4,8 +4,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{1842E377-23AD-4A52-881E-F0B82E7893A8}</ProjectGuid>
-    <RootNamespace>HealthGateway.ImmsService</RootNamespace>
+    <RootNamespace>HealthGateway.Immunization</RootNamespace>
 </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

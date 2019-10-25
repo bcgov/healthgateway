@@ -6,8 +6,8 @@
     <IsPackable>false</IsPackable>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{DE237219-CFAC-4186-B909-4A8F3312ABC4}</ProjectGuid>
     <SonarQubeTestProject>true</SonarQubeTestProject>
+    <RootNamespace>HealthGateway.WebClientTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\WebClient.csproj" />
+    <ProjectReference Include="..\..\src\WebClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

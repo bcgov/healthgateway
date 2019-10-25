@@ -6,8 +6,8 @@
     <IsPackable>false</IsPackable>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{30741500-8F59-45CF-B753-14EBE6EE275E}</ProjectGuid>
     <SonarQubeTestProject>true</SonarQubeTestProject>
+    <RootNamespace>HealthGateway.ImmunizationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

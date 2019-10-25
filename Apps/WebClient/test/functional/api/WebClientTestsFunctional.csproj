@@ -6,7 +6,6 @@
     <IsPackable>false</IsPackable>
 
     <!-- SonarQube needs this -->
-    <ProjectGuid>{DE237219-CFAC-4186-B909-4A8F3312ABC4}</ProjectGuid>
     <SonarQubeTestProject>true</SonarQubeTestProject>
   </PropertyGroup>
 

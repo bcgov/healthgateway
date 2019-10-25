@@ -28,7 +28,7 @@ namespace HealthGateway.Immunization.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    public class ImmsController : ControllerBase
+    public class ImmunizationController : ControllerBase
     {
         /// <summary>
         /// Gets or sets the immunization data service.
@@ -36,10 +36,10 @@ namespace HealthGateway.Immunization.Controllers
         private readonly IImmsService service;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmsController"/> class.
+        /// Initializes a new instance of the <see cref="ImmunizationController"/> class.
         /// </summary>
         /// <param name="svc">The immunization data service.</param>
-        public ImmsController(IImmsService svc)
+        public ImmunizationController(IImmsService svc)
         {
             this.service = svc;
         }

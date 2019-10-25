@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <ProjectGuid>{D55428F4-B07E-46AF-AB09-0F526701173F}</ProjectGuid>
     <IsPackable>false</IsPackable>
+    <RootNamespace>HealthGateway.CommonTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
