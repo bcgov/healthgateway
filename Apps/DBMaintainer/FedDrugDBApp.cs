@@ -17,24 +17,24 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Database.Models;
-    using HealthGateway.Common.FileDownload;
-    using HealthGateway.Common.Database;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Configuration;
     using System.IO;
     using System.IO.Compression;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.FileDownload;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Configuration;
 
-    public class DrugMaintainerApp
+    public class FedDrugDBApp
     {
         private readonly ILogger logger;
         private IDrugProductParser parser;
         private IFileDownloadService downloadService;
         private readonly IConfiguration configuration;
-        private readonly DrugDBContext drugDBContext;
+        private readonly DrugDbContext drugDBContext;
 
-        public DrugMaintainerApp(ILogger<DrugMaintainerApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDBContext drugDBContext)
+        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
@@ -46,19 +46,17 @@ namespace HealthGateway.DrugMaintainer
         public async Task UpdateDrugProducts()
         {
             string targetFolder = configuration.GetSection("DrugProductDatabase").GetValue<string>("TargetFolder");
-
-            logger.LogInformation("Downloading file...");
             DownloadedFile downloadedFile = await asyncDownloadFiles(targetFolder);
-
-            logger.LogInformation("Extracting zip file...");
             string unzippedPath = extractFiles(downloadedFile);
-
             logger.LogInformation("Updating Database");
             updateDatabase(unzippedPath);
+            logger.LogInformation($"Removing extracted files under {unzippedPath}");
+            Directory.Delete(unzippedPath, true);
         }
 
         private async Task<DownloadedFile> asyncDownloadFiles(string targetFolder)
         {
+            logger.LogInformation("Downloading file...");
             Uri filePath = configuration.GetSection("DrugProductDatabase").GetValue<Uri>("Url");
             Task<DownloadedFile> downloadedFile = downloadService.GetFileFromUrl(filePath, targetFolder, true);
             return await downloadedFile;
@@ -66,15 +64,19 @@ namespace HealthGateway.DrugMaintainer
 
         private string extractFiles(DownloadedFile downloadedFile)
         {
+            string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.FileName);
+            logger.LogInformation($"Extracting zip file: {filename}");
             string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.FileName));
-            ZipFile.ExtractToDirectory(Path.Combine(downloadedFile.LocalFilePath, downloadedFile.FileName), unzipedPath);
+            ZipFile.ExtractToDirectory(filename, unzipedPath);
+            logger.LogInformation("Deleting Zip file");
+            File.Delete(filename);
             return unzipedPath;
         }
 
         private void updateDatabase(string unzippedPath)
         {
             this.logger.LogInformation("Adding Entities to DB");
-            DrugDBContext ctx = this.drugDBContext;
+            DrugDbContext ctx = this.drugDBContext;
             List<DrugProduct> drugProducts = this.parser.ParseDrugFile(unzippedPath);
             ctx.DrugProduct.AddRange(drugProducts);
             logger.LogInformation("Saving Drug Products.");

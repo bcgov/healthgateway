@@ -15,9 +15,8 @@ trigger:
      - dev
  paths:
    include:
-     - Apps/Immunization/src
-     - Apps/Immunization/testUnit
-     - Apps/Immunization/testFunctional
+     - Apps/Immunization
+     - Apps/Common
 
 pool:
   name: 'HealthGateway'

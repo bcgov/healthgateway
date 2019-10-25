@@ -26,13 +26,13 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class DrugDBContext : DbContext
+    public class DrugDbContext : DbContext
     {
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public DrugDBContext(DbContextOptions<DrugDBContext> options)
+        public DrugDbContext(DbContextOptions<DrugDbContext> options)
             : base(options)
         {
         }

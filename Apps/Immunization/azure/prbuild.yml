@@ -18,10 +18,8 @@ pr:
    - dev  
   paths:
    include:
-   - Apps/Immunization/src
-   - Apps/Immunization/testUnit
-   - Apps/Immunization/testFunctional
-   - Apps/Immunization/azure/prbuild.yml
+   - Apps/Immunization
+   - Apps/Common
    
 steps:
 - task: DotNetCoreCLI@2

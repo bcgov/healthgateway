@@ -48,6 +48,9 @@ namespace HealthGateway.Database.Models
         [MaxLength(60)]
         public string BrandName { get; set; }
 
+        [MaxLength(6)]
+        public string Manufacturer { get; set; }
+
         [MaxLength(60)]
         public string GenericName { get; set; }
 

@@ -15,23 +15,12 @@
 // //-------------------------------------------------------------------------
 namespace HealthGateway.DrugMaintainer
 {
-    using CsvHelper.Configuration;
     using HealthGateway.Database.Models;
     using System.Collections.Generic;
-    using System.Linq;
 
-    public class VeterinarySpeciesMapper : ClassMap<VeterinarySpecies>
+    public interface IPharmaCareDrugParser
     {
-        public VeterinarySpeciesMapper(IEnumerable<DrugProduct> drugProducts)
-        {
-            // DRUG_CODE
-            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
-            // VET_SPECIES
-            Map(m => m.Species).Index(1);
-            // VET_SUB_SPECIES
-            Map(m => m.SubSpecies).Index(2);
-            // VET_SPECIES_F
-            Map(m => m.SpeciesFrench).Index(3);
-        }
+        List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename);
     }
+
 }

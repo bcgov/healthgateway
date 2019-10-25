@@ -16,9 +16,8 @@ pr:
    - dev  
   paths:
    include:
-   - Apps/WebClient/src
-   - Apps/WebClient/testUnit
-   - Apps/WebClient/azure/prbuild.yaml
+   - Apps/WebClient
+   - Apps/Common
    
 steps:
 - task: Npm@1
