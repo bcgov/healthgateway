@@ -3,7 +3,6 @@
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-
 namespace HealthGateway.Database.Migrations
 {
     public partial class InitialCreate : Migration
@@ -460,7 +459,3 @@ namespace HealthGateway.Database.Migrations
         }
     }
 }
-
-
-#pragma warning restore SA1200 // Using directive should appear within a namespace declaration
-#pragma warning restore SA1413 // Use trailing comma in multi-line initializers
