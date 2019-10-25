@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway
+namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Immunization.Services;
@@ -49,6 +49,7 @@ namespace HealthGateway
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Imms Service
