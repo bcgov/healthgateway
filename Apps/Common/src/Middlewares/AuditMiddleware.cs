@@ -56,6 +56,7 @@ namespace HealthGateway.Common.Middleware
 
             // Write the event
             auditService.PopulateWithHttpContext(context, auditEvent);
+            auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditService.WriteAuditEvent(auditEvent);
             return;
         }

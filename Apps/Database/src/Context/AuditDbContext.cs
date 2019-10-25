@@ -29,6 +29,9 @@ namespace HealthGateway.Database.Context
         {
         }
 
+        /// <summary>
+        /// The audit event dbset.
+        /// </summary>
         public DbSet<AuditEvent> AuditEvent { get; set; }
     }
 }

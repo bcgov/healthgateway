@@ -27,11 +27,9 @@ namespace HealthGateway.Database.Models
         [Required]
         public DateTime CreatedDateTime { get; set; }
 
-        [Required]
         [MaxLength(30)]
         public string UpdatedBy { get; set; }
 
-        [Required]
-        public DateTime UpdatedDateTime { get; set; }
+        public DateTime? UpdatedDateTime { get; set; }
     }
 }

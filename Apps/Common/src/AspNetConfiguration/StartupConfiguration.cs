@@ -110,12 +110,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             });
 
             // Configuration Service
-            services.AddTransient<IAuthorizationHandler>(serviceProvider =>
-            {
-                IAuthorizationHandler service = new UserAuthorizationHandler(
-                    serviceProvider.GetService<ILogger<UserAuthorizationHandler>>());
-                return service;
-            });
+            services.AddTransient<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>
@@ -125,7 +120,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
-            this.logger.LogDebug($"Debug configuration is ${debugEnabled}");
+            this.logger.LogDebug($"Debug configuration is {debugEnabled}");
 
             // Displays sensitive data from the jwt if the environment is development only
             IdentityModelEventSource.ShowPII = debugEnabled;
