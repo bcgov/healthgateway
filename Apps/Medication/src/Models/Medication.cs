@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
-    using System.Globalization;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// The medications data model.
@@ -79,10 +79,12 @@ namespace HealthGateway.Medication.Models
 
         /// <summary>
         /// Parses the message generic name into different components.
-        /// <param name="hl7v2Name">The generic name to be parsed.</param>
         /// </summary>
+        /// <param name="hl7v2Name">The generic name to be parsed.</param>
         public void ParseHL7V2GenericName(string hl7v2Name)
         {
+            Contract.Requires(hl7v2Name != null);
+
             this.GenericName = hl7v2Name.Substring(0, 30).Trim();
 
             // Some generic names are too short, if that is the case dont attempt to extract the rest of the data.

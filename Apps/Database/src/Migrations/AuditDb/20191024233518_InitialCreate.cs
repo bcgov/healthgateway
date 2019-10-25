@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace HealthGateway.Common.Migrations.AuditDb
+namespace HealthGateway.Database.Migrations.AuditDb
 {
     public partial class InitialCreate : Migration
     {
@@ -19,11 +19,12 @@ namespace HealthGateway.Common.Migrations.AuditDb
                     AuditEventDateTime = table.Column<DateTime>(nullable: false),
                     ClientIP = table.Column<string>(maxLength: 15, nullable: false),
                     ApplicationSubject = table.Column<string>(maxLength: 100, nullable: false),
-                    ApplicationName = table.Column<int>(maxLength: 100, nullable: false),
+                    ApplicationType = table.Column<int>(maxLength: 100, nullable: false),
                     TransacationName = table.Column<string>(maxLength: 100, nullable: false),
                     TransactionVersion = table.Column<string>(maxLength: 5, nullable: true),
                     Trace = table.Column<string>(maxLength: 20, nullable: true),
-                    TransactionResult = table.Column<int>(nullable: false)
+                    TransactionResultType = table.Column<int>(nullable: false),
+                    TransactionDuration = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {

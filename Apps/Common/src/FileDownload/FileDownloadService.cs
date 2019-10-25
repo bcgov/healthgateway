@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.FileDownload
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net.Http;
     using System.Security.Cryptography;
@@ -43,11 +44,9 @@ namespace HealthGateway.Common.FileDownload
         }
 
         /// <inheritdoc/>
-        public async Task<DownloadedFile> GetFileFromUrl(Uri url, string targetFolder, bool isRelativePath)
+        public async Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
-            #pragma warning disable CA1303 // literal string check
-            Uri fileUrl = url ?? throw new ArgumentNullException(nameof(url), "URL for file to download must not be null");
-            #pragma warning restore CA1303 // literal string check
+            Contract.Requires(fileUrl != null);
             DownloadedFile df = new DownloadedFile();
 
             if (isRelativePath)
@@ -95,7 +94,7 @@ namespace HealthGateway.Common.FileDownload
             }
             catch (Exception exception)
             {
-                this.logger.LogDebug(exception.ToString());
+                this.logger.LogCritical(exception.ToString());
                 File.Delete(filePath);
                 df.FileName = string.Empty;
                 df.LocalFilePath = string.Empty;

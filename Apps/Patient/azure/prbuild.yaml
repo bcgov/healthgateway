@@ -18,9 +18,8 @@ pr:
    - dev  
   paths:
    include:
-   - Apps/Patient/src
-   - Apps/Patient/test
-   - Apps/Patient/azure/prbuild.yml
+   - Apps/Patient
+   - Apps/Common
    
 steps:
 - task: DotNetCoreCLI@2

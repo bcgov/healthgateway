@@ -15,8 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Auditing
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -27,14 +26,13 @@ namespace HealthGateway.Common.Auditing
         /// <summary>
         /// Writes an Audit entry to the audit log
         /// </summary>
-        /// <returns>Task used for auditing. </returns>
-        Task WriteAuditEvent(AuditEvent auditEvent);
+        void WriteAuditEvent(AuditEvent auditEvent);
 
         /// <summary>
-        /// Parsers the audit event values from the http context.
+        /// Parsers the httpcontext and populates the audit event with it values.
         /// </summary>
         /// <param name="context">The http context.</param>
         /// <param name="audit">The audit event object to be populated.</param>
-        AuditEvent ParseHttpContext(HttpContext context, AuditEvent audit);
+        void PopulateWithHttpContext(HttpContext context, AuditEvent audit);
     }
 }

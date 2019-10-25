@@ -34,9 +34,10 @@ namespace HealthGateway.Medication
         }
 
         /// <summary>.
-        /// Creates the IWebHostBuilder
+        /// Creates the IWebHostBuilder.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
+        /// <returns>Returns the configured webhost.</returns>
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
     }

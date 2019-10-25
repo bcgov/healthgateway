@@ -19,7 +19,6 @@ namespace HealthGateway.Medication.Parsers
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -29,8 +28,14 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     public class TRPMessageParser : BaseMessageParser<List<MedicationStatement>>
     {
-        /// The minimun size of the expected TRF field length
-        public static readonly int MIN_TRF_FIELD_LENGTH = 23;
+        /// <summary>
+        /// The minimun size of the expected TRF field length.
+        /// </summary>
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable SA1310 // Field names should not contain underscore
+        public const int MIN_TRF_FIELD_LENGTH = 23;
+#pragma warning restore SA1310 // Field names should not contain underscore
+#pragma warning restore CA1707 // Identifiers should not contain underscores
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
@@ -51,12 +56,12 @@ namespace HealthGateway.Medication.Parsers
 
             // HNClient only accepts a 13 digit phn
             id = id.PadLeft(13, '0');
-            Message m = new Message();
+            Message message = new Message();
 
-            this.SetMessageHeader(m, userId, ipAddress, traceId);
-            this.SetTransactionControlSegment(m, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID,traceId);
-            this.SetClaimsStandardSegment(m, this.ClientConfig.ZCA.BIN);
-            this.SetProviderInfoSegment(m,traceId);
+            this.SetMessageHeader(message, userId, ipAddress, traceId);
+            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId);
+            this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA.BIN);
+            this.SetProviderInfoSegment(message, traceId);
 
             // ZCC - Beneficiary Information
             Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, this.Encoding);
@@ -71,9 +76,9 @@ namespace HealthGateway.Medication.Parsers
             zcc.AddNewField(string.Empty); // Patient Last Name
             zcc.AddNewField(id); // Provincial Health Care ID
             zcc.AddNewField(string.Empty); // Patient Gender
-            m.AddNewSegment(zcc);
+            message.AddNewSegment(zcc);
 
-            return new HNMessage<string>(m.SerializeMessage(false));
+            return new HNMessage<string>(message.SerializeMessage(false));
         }
 
         /// <inheritdoc/>
@@ -85,10 +90,10 @@ namespace HealthGateway.Medication.Parsers
                 throw new ArgumentNullException(nameof(hl7Message));
             }
 
-            Message m = this.ParseRawMessage(hl7Message);
+            Message message = this.ParseRawMessage(hl7Message);
 
             // Checks the response status
-            Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
+            Segment zzz = message.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
             Field status = zzz.Fields(2); // Status code
             Field statusMessage = zzz.Fields(7); // Status message
 
@@ -99,7 +104,7 @@ namespace HealthGateway.Medication.Parsers
             }
 
             // ZPB patient history response
-            Segment zpb = m.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
+            Segment zpb = message.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
 
             // ZPB sub segments (fields)
             // ZPB1 clinical information block (clinical condition)

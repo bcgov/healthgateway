@@ -17,7 +17,7 @@ namespace HealthGateway.Medication.Services
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
-    using HealthGateway.Medication.Models;    
+    using HealthGateway.Medication.Models;
 
     /// <summary>
     /// The Medication data service.

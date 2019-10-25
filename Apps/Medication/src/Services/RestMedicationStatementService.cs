@@ -16,18 +16,19 @@
 namespace HealthGateway.Medication.Services
 {
     using System;
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
-    using HealthGateway.Medication.Database;
-    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;    
+    using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
@@ -75,7 +76,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
         {
-            JWTModel jwtModel = this.AuthenticateService();
+            JWTModel jwtModel = this.authService.AuthenticateService();
             HNMessage<List<MedicationStatement>> hnClientMedicationResult;
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
@@ -85,7 +86,7 @@ namespace HealthGateway.Medication.Services
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
-                long traceId = sequenceDelegate.NextValueForSequence(MedicationDBContext.PHARMANET_TRACE_SEQUENCE);
+                long traceId = this.sequenceDelegate.NextValueForSequence(Sequence.PHARMANET_TRACE);
                 HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
@@ -98,36 +99,23 @@ namespace HealthGateway.Medication.Services
                 {
                     return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
-
             }
 
             if (!hnClientMedicationResult.IsError)
             {
-                await populatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress);
-
-                populateBrandName(hnClientMedicationResult.Message);
+                await this.PopulatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress).ConfigureAwait(true);
+                this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
             return hnClientMedicationResult;
         }
 
-        /// <summary>
-        /// Authenticates this service, using Client Credentials Grant.
-        /// </summary>
-        private JWTModel AuthenticateService()
-        {
-            Task<IAuthModel> authenticating = this.authService.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
-
-            JWTModel jwtModel = authenticating.Result as JWTModel;
-            return jwtModel;
-        }
-
-        private async Task populatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
+        private async Task PopulatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
         {
             IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
             foreach (MedicationStatement medicationStatement in statements)
             {
-                string pharmacyId = medicationStatement.PharmacyId.ToUpper();
+                string pharmacyId = medicationStatement.PharmacyId.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
                 // Fetches the pharmacy if it hasn't been loaded yet.
                 if (!pharmacyDict.ContainsKey(pharmacyId))
@@ -141,12 +129,13 @@ namespace HealthGateway.Medication.Services
             }
         }
 
-        private void populateBrandName(List<MedicationStatement> statements)
+        private void PopulateBrandName(List<MedicationStatement> statements)
         {
             // The Drug Product Database pads zeroes to the left of Drug Identifiers
             List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
 
-            List<Medication> retrievedMedications = drugLookupDelegate.FindMedicationsByDIN(medicationIdentifiers);
+            List<DrugProduct> retrievedDrugProducts = this.drugLookupDelegate.FindDrugProductsByDIN(medicationIdentifiers);
+            List<Medication> retrievedMedications = SimpleModelMapper.ToMedicationList(retrievedDrugProducts);
 
             // Make a map of the retrieved medications removing the padded zero to match the DIN definitions from pharmanet
             Dictionary<string, Medication> medicationsMap = retrievedMedications.ToDictionary(x => x.DIN.TrimStart('0'), x => x);

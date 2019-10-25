@@ -59,7 +59,7 @@ namespace HealthGateway.WebClient
                     serviceProvider.GetService<IConfiguration>());
                 return service;
             });
-
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
         }
 

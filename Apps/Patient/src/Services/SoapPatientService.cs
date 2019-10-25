@@ -117,7 +117,6 @@ namespace HealthGateway.PatientService
                 string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
                 string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
                 string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
-                // For now, add the return message to the reply
                 return new Patient(hdid, phn, givenNames, lastNames);
             }
             else
@@ -130,8 +129,8 @@ namespace HealthGateway.PatientService
         private HCIM_IN_GetDemographics CreateRequest(string hdid)
         {
             HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
-            request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() };
-            request.creationTime = new TS() { value = System.DateTime.Now.ToString("yyyyMMddHHmmss") };
+            request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture) };
+            request.creationTime = new TS() { value = System.DateTime.Now.ToString("yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture) };
             request.versionCode = new CS() { code = "V3PR1" };
             request.interactionId = new II() { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
             request.processingCode = new CS() { code = "P" };
@@ -155,16 +154,17 @@ namespace HealthGateway.PatientService
             request.sender.device.asAgent.representedOrganization.id = new II() { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
 
             request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess() { classCode = "ACCM", moodCode = "EVN" };
-            request.controlActProcess.effectiveTime = new IVL_TS() { value = System.DateTime.Now.ToString("yyyyMMddHHmmss") };
+            request.controlActProcess.effectiveTime = new IVL_TS() { value = System.DateTime.Now.ToString("yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture) };
             request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer() { typeCode = "CST", time = null, typeId = null };
             request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson() { classCode = "ENT" };
+
             // TODO: We should likely send the actual username instead of HLTHGTWAY
             request.controlActProcess.dataEnterer.assignedPerson.id = new II() { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" };
 
             request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
             request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
             request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6", extension = hdid, assigningAuthorityName="LCTZ_IAS" };
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6", extension = hdid, assigningAuthorityName = "LCTZ_IAS" };
 
             return request;
         }

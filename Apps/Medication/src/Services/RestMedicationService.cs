@@ -15,21 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
-    using System;
-    using System.Linq;
     using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
-    using HealthGateway.Medication.Database;
-    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;
-    using Microsoft.Extensions.Configuration;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -50,7 +39,8 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public List<Medication> GetMedications(List<string> medicationDinList)
         {
-            return this.drugLookupDelegate.FindMedicationsByDIN(medicationDinList);
+            List<DrugProduct> drugProducts = this.drugLookupDelegate.FindDrugProductsByDIN(medicationDinList);
+            return SimpleModelMapper.ToMedicationList(drugProducts);
         }
     }
 }
