@@ -2,8 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-
-    <!-- SonarQube needs this -->
     <RootNamespace>HealthGateway.Immunization</RootNamespace>
 </PropertyGroup>
 
