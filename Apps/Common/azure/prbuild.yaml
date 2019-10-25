@@ -45,7 +45,7 @@ steps:
   displayName: 'Add SonarQube Report to GitHub Pull Request'
   inputs:
     targetType: 'inline'
-    script: 'curl -d ''{"body":"SonarQube Report: https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=commonlibrary_pr_$(System.PullRequest.PullRequestNumber)"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
+    script: 'curl -d ''{"body":"Common Project [SonarQube Report](https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=commonlibrary_pr_$(System.PullRequest.PullRequestNumber))"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish dotnet Code'
