@@ -17,9 +17,10 @@ namespace HealthGateway.Common.FileDownload
 {
     using System;
     using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Interface that defines a file downloader
+    /// Interface that defines a file downloader.
     /// </summary>
     public interface IFileDownloadService
     {
@@ -30,6 +31,6 @@ namespace HealthGateway.Common.FileDownload
         /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
         /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
         /// <returns>The DownloadedFile.</returns>
-        Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
+        FileDownload GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
     }
 }

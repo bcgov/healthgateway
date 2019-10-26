@@ -18,8 +18,16 @@ namespace HealthGateway.DrugMaintainer
     using HealthGateway.Database.Models;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Interface to parse the BC Pharmacare drug file.
+    /// </summary>
     public interface IPharmaCareDrugParser
     {
+        /// <summary>
+        /// Parses the drug file.
+        /// </summary>
+        /// <param name="filename">The drug file to parse.</param>
+        /// <returns></returns>
         List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename);
     }
 

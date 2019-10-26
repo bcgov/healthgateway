@@ -18,10 +18,11 @@ namespace HealthGateway.Common.FileDownload
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography;
-    using System.Text;
     using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -33,10 +34,12 @@ namespace HealthGateway.Common.FileDownload
         private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
-        /// FileDownloadService constructor
+        /// Initializes a new instance of the <see cref="FileDownloadService"/> class.
+        /// FileDownloadService constructor.
         /// </summary>
-        /// <param name="logger">ILogger instance</param>
-        /// <param name="httpClientFactory">IHttpClientFactory instance</param>
+        /// <param name="logger">ILogger instance.</param>
+        /// <param name="httpClientFactory">IHttpClientFactory instance.</param>
+        ///
         public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger;
@@ -44,51 +47,31 @@ namespace HealthGateway.Common.FileDownload
         }
 
         /// <inheritdoc/>
-        public async Task<DownloadedFile> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
+        public FileDownload GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
             Contract.Requires(fileUrl != null);
-            DownloadedFile df = new DownloadedFile();
+            FileDownload fd = new FileDownload();
 
             if (isRelativePath)
             {
                 targetFolder = Path.Combine(Directory.GetCurrentDirectory(), targetFolder);
             }
 
-            df.FileName = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
-            df.LocalFilePath = targetFolder;
-
-            string filePath = Path.Combine(df.LocalFilePath, df.FileName);
-
+            fd.Name = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
+            fd.LocalFilePath = targetFolder;
+            string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
             {
-                using (HttpClient client = this.httpClientFactory.CreateClient())
+                using (WebClient wc = new WebClient())
                 {
-                    HttpResponseMessage response = await client.GetAsync(fileUrl).ConfigureAwait(true);
-
-                    if (response.IsSuccessStatusCode)
+                    wc.DownloadFile(fileUrl, filePath);
+                    using (Stream s = File.OpenRead(filePath))
                     {
-                        HttpContent content = response.Content;
-                        using (Stream stream = await content.ReadAsStreamAsync().ConfigureAwait(true))
+                        using (SHA256 mySHA256 = SHA256.Create())
                         {
-                            using (FileStream fileStream = File.Open(filePath, FileMode.OpenOrCreate))
-                            {
-                                await stream.CopyToAsync(fileStream).ConfigureAwait(true);
-                                using (SHA256 mySHA256 = SHA256.Create())
-                                {
-                                    fileStream.Position = 0;
-                                    byte[] hashValue = mySHA256.ComputeHash(fileStream);
-                                    df.FileSHA256 = Encoding.UTF8.GetString(hashValue, 0, hashValue.Length);
-                                }
-
-                                fileStream.Close();
-                            }
-
-                            stream.Close();
+                            byte[] hashValue = mySHA256.ComputeHash(s);
+                            fd.Hash = System.Convert.ToBase64String(hashValue);
                         }
-                    }
-                    else
-                    {
-                        throw new FileNotFoundException();
                     }
                 }
             }
@@ -96,12 +79,12 @@ namespace HealthGateway.Common.FileDownload
             {
                 this.logger.LogCritical(exception.ToString());
                 File.Delete(filePath);
-                df.FileName = string.Empty;
-                df.LocalFilePath = string.Empty;
-                df.FileSHA256 = string.Empty;
+                fd.Name = string.Empty;
+                fd.LocalFilePath = string.Empty;
+                fd.Hash = string.Empty;
             }
 
-            return df;
+            return fd;
         }
     }
 }
