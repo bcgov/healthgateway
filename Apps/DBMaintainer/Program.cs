@@ -57,9 +57,6 @@ namespace HealthGateway.DrugMaintainer
                            services.AddDbContextPool<AuditDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
-                           // add httpclient
-                           services.AddHttpClient();
-
                            // Add services
                            services.AddTransient<IFileDownloadService, FileDownloadService>();
                            services.AddTransient<IDrugProductParser, FederalDrugProductParser>();

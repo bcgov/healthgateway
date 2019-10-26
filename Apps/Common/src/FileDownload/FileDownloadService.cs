@@ -31,19 +31,16 @@ namespace HealthGateway.Common.FileDownload
     public class FileDownloadService : IFileDownloadService
     {
         private readonly ILogger<FileDownloadService> logger;
-        private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileDownloadService"/> class.
         /// FileDownloadService constructor.
         /// </summary>
         /// <param name="logger">ILogger instance.</param>
-        /// <param name="httpClientFactory">IHttpClientFactory instance.</param>
         ///
-        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
+        public FileDownloadService(ILogger<FileDownloadService> logger)
         {
             this.logger = logger;
-            this.httpClientFactory = httpClientFactory;
         }
 
         /// <inheritdoc/>
