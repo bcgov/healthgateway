@@ -18,7 +18,6 @@ namespace HealthGateway.Common.FileDownload
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
@@ -31,20 +30,23 @@ namespace HealthGateway.Common.FileDownload
     public class FileDownloadService : IFileDownloadService
     {
         private readonly ILogger<FileDownloadService> logger;
+        private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileDownloadService"/> class.
         /// FileDownloadService constructor.
         /// </summary>
         /// <param name="logger">ILogger instance.</param>
+        /// <param name="httpClientFactory">The HTTP Client Factory.</param>
         ///
-        public FileDownloadService(ILogger<FileDownloadService> logger)
+        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger;
+            this.httpClientFactory = httpClientFactory;
         }
 
         /// <inheritdoc/>
-        public FileDownload GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
+        public async Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
             Contract.Requires(fileUrl != null);
             FileDownload fd = new FileDownload();
@@ -59,16 +61,20 @@ namespace HealthGateway.Common.FileDownload
             string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
             {
-                using (WebClient wc = new WebClient())
+                using (Stream inStream = await this.httpClientFactory.CreateClient()
+                                         .GetStreamAsync(fileUrl))
                 {
-                    wc.DownloadFile(fileUrl, filePath);
-                    using (Stream s = File.OpenRead(filePath))
+                    using (Stream outStream = File.Open(filePath, FileMode.OpenOrCreate))
                     {
-                        using (SHA256 mySHA256 = SHA256.Create())
-                        {
-                            byte[] hashValue = mySHA256.ComputeHash(s);
-                            fd.Hash = System.Convert.ToBase64String(hashValue);
-                        }
+                        await inStream.CopyToAsync(outStream);
+                    }
+                }
+                using (Stream hashStream = File.OpenRead(filePath))
+                {
+                    using (SHA256 mySHA256 = SHA256.Create())
+                    {
+                        byte[] hashValue = mySHA256.ComputeHash(hashStream);
+                        fd.Hash = System.Convert.ToBase64String(hashValue);
                     }
                 }
             }

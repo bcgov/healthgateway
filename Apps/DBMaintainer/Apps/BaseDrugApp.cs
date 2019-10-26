@@ -19,6 +19,7 @@ namespace HealthGateway.DrugMaintainer.Apps
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -87,7 +88,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         private FileDownload DownloadFile(Uri source, string targetFolder)
         {
             logger.LogInformation($"Downloading file from {source.ToString()} to {targetFolder}");
-            return this.downloadService.GetFileFromUrl(source, targetFolder, true);
+            return Task.Run(async() => await this.downloadService.GetFileFromUrl(source, targetFolder, true)).Result;
         }
 
         /// <summary>

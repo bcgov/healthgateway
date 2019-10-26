@@ -31,6 +31,6 @@ namespace HealthGateway.Common.FileDownload
         /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
         /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
         /// <returns>The DownloadedFile.</returns>
-        FileDownload GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
+        Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
     }
 }
