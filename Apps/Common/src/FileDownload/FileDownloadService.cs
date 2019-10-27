@@ -61,14 +61,17 @@ namespace HealthGateway.Common.FileDownload
             string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
             {
-                using (Stream inStream = await this.httpClientFactory.CreateClient()
-                                         .GetStreamAsync(fileUrl))
+                using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    using (Stream outStream = File.Open(filePath, FileMode.OpenOrCreate))
+                    using (Stream inStream = await client.GetStreamAsync(fileUrl).ConfigureAwait(true))
                     {
-                        await inStream.CopyToAsync(outStream);
+                        using (Stream outStream = File.Open(filePath, FileMode.OpenOrCreate))
+                        {
+                            await inStream.CopyToAsync(outStream).ConfigureAwait(true);
+                        }
                     }
                 }
+
                 using (Stream hashStream = File.OpenRead(filePath))
                 {
                     using (SHA256 mySHA256 = SHA256.Create())

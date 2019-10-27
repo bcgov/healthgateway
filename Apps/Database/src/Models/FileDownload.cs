@@ -19,19 +19,25 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    /// <summary>
+    /// An entity represenging a file that was processed to load tables.
+    /// </summary>
     public class FileDownload : AuditableEntity
     {
+        /// <summary>
+        /// Gets or sets the unique id
+        /// </summary>
         public Guid FileDownloadId { get; set; }
 
         /// <summary>
-        /// The name of the file downloaded zip file.
+        /// Gets or sets the name of the downloaded zip file.
         /// </summary>
         [Required]
         [MaxLength(35)]
         public string Name { get; set; }
 
         /// <summary>
-        /// The SHA256 hash of the downloaded file.
+        /// Gets or sets the SHA256 hash of the downloaded file.
         /// </summary>
         [Required]
         [MaxLength(44)]
