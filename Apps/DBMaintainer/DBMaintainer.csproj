@@ -39,4 +39,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="stylecop.json" />
+    <Content Remove="wwwroot\dist\vendor-manifest.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
 </Project>
