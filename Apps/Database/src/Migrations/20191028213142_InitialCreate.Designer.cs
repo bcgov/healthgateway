@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191028205120_InitialCreate")]
+    [Migration("20191028213142_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,9 +78,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -154,9 +156,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(20);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -220,9 +224,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -250,9 +256,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(35);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -285,9 +293,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -332,9 +342,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(12);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -427,9 +439,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(1);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -453,9 +467,11 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("PharmaceuticalStdDesc");
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("PharmaceuticalStdId");
 
@@ -487,9 +503,11 @@ namespace HealthGateway.Database.Migrations
                     b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -519,9 +537,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -561,9 +581,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -605,9 +627,11 @@ namespace HealthGateway.Database.Migrations
                     b.Property<Guid>("DrugProductId");
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -640,9 +664,11 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
