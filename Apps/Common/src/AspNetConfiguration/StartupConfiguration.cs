@@ -161,6 +161,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddScoped<IAuditDbContext>((svcProvider) => svcProvider.GetService<AuditDbContext>());
             services.AddScoped<IAuditLogger, AuditLogger>();
         }
 
