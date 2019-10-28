@@ -17,13 +17,15 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class Packaging : AuditableEntity
     {
-        public Guid PackagingId { get; set; }
+        [Column("PackagingId")]
+        public Guid Id { get; set; }
 
         [Required]
-        public DrugProduct Drug { get; set; }
+        public DrugProduct DrugProduct { get; set; }
 
         [MaxLength(12)]
         public string UPC { get; set; }

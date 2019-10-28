@@ -27,7 +27,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the unique id
         /// </summary>
-        public Guid FileDownloadId { get; set; }
+        [Column("FileDownloadId")]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the downloaded zip file.

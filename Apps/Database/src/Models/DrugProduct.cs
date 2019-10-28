@@ -17,13 +17,15 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class DrugProduct : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the internal Guid representing the DrugProduct.
         /// </summary>
-        public Guid DrugProductId { get; set; }
+        [Column("DrugProductId")]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the source Drug Code from the Government extract QRYM_DRUG_PRODUCT

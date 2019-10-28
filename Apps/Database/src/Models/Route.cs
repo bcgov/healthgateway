@@ -17,13 +17,15 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class Route : AuditableEntity
     {
-        public Guid RouteId { get; set; }
+        [Column("RouteId")]
+        public Guid Id { get; set; }
 
         [Required]
-        public DrugProduct Drug { get; set; }
+        public DrugProduct DrugProduct { get; set; }
 
         public int AdministrationCode { get; set; }
 
