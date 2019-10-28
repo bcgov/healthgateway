@@ -21,7 +21,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management
+    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
     /// </summary>
     public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {

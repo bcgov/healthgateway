@@ -26,7 +26,7 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The database context to be used for the Medication Service.
     /// </summary>
-    public class DrugDbContext : DbContext
+    public class DrugDbContext : BaseDbContext
     {
         /// <summary>
         /// Constructor required to instantiated the context via startup.
@@ -62,41 +62,6 @@ namespace HealthGateway.Database.Context
         public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
 
         public DbSet<FileDownload> FileDownload { get; set; }
-
-        /// <summary>
-        /// Executes a sql command.
-        /// </summary>
-        /// <param name="sql">The sql query script.</param>
-        /// <param name="parameters">The sql query parameters.</param>
-        /// <returns>The number of lines affected.</returns>
-        public int ExecuteSqlCommand(string sql, params object[] parameters)
-        {
-            return this.Database.ExecuteSqlCommand(sql, parameters);
-        }
-
-        /// <inheritdoc />
-        public override int SaveChanges()
-        {
-            const string user = "DrugMaintainer";
-            DateTime now = System.DateTime.UtcNow;
-
-            IEnumerable<EntityEntry<IAuditable>> auditableEntries = this.ChangeTracker.Entries<IAuditable>()
-                   .Where(x => (x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified)));
-
-            foreach (EntityEntry<IAuditable> auditEntity in auditableEntries)
-            {
-                if (auditEntity.State == EntityState.Added)
-                {
-                    auditEntity.Entity.CreatedDateTime = now;
-                    auditEntity.Entity.CreatedBy = user;
-                }
-
-                auditEntity.Entity.UpdatedDateTime = now;
-                auditEntity.Entity.UpdatedBy = user;
-            }
-
-            return base.SaveChanges();
-        }
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)

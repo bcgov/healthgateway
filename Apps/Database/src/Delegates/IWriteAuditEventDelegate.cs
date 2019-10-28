@@ -15,16 +15,18 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using HealthGateway.Database.Models;
+
     /// <summary>
-    /// Delegate that adds a new audit event.
+    /// Delegate that writes a new audit event to the database.
     /// </summary>
-    public interface IAddAuditEventDelegate
+    public interface IWriteAuditEventDelegate
     {
         /// <summary>
-        /// Adds the next sequence number for the given sequence name.
+        /// Writes a audit event to the database.
         /// </summary>
         /// <param name="sequenceName">The sequence name</param>
         /// <returns>The next sequence value</returns>
-        long NextValueForSequence(string sequenceName);
+        void WriteAuditEvent(AuditEvent sequenceName);
     }
 }

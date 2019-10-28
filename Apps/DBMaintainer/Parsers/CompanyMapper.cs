@@ -25,7 +25,7 @@ namespace HealthGateway.DrugMaintainer
         public CompanyMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
             // MFR_CODE
             Map(m => m.ManufacturerCode).Index(1);
             // COMPANY_CODE
