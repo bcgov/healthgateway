@@ -23,7 +23,7 @@ namespace HealthGateway.Database.Models
         public Guid TherapeuticClassId { get; set; }
 
         [Required]
-        public DrugProduct Drug { get; set; }
+        virtual public DrugProduct Drug { get; set; }
 
         [MaxLength(8)]
         public string AtcNumber { get; set; }

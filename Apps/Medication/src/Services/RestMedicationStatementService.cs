@@ -134,7 +134,7 @@ namespace HealthGateway.Medication.Services
             // The Drug Product Database pads zeroes to the left of Drug Identifiers
             List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
 
-            List<DrugProduct> retrievedDrugProducts = this.drugLookupDelegate.FindDrugProductsByDIN(medicationIdentifiers);
+            List<DrugProduct> retrievedDrugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationIdentifiers);
             List<Medication> retrievedMedications = SimpleModelMapper.ToMedicationList(retrievedDrugProducts);
 
             // Make a map of the retrieved medications removing the padded zero to match the DIN definitions from pharmanet

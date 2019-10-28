@@ -17,12 +17,15 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class DrugProduct : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the internal Guid representing the DrugProduct.
         /// </summary>
+        [DataMember]
         public Guid DrugProductId { get; set; }
 
         /// <summary>
@@ -30,83 +33,97 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(8)]
+        [DataMember]
         public string DrugCode { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Production Categorization.
         /// </summary>
         [MaxLength(80)]
+        [DataMember]
         public string ProductCategorization { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Class in French
         /// </summary>
         [MaxLength(40)]
+        [DataMember]
         public string DrugClass { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Class
         /// </summary>
         [MaxLength(80)]
+        [DataMember]
         public string DrugClassFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Identification Number.
         /// </summary>
         [MaxLength(29)]
+        [DataMember]
         public string DrugIdentificationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the Brand name of the Drug.
         /// </summary>
         [MaxLength(200)]
+        [DataMember]
         public string BrandName { get; set; }
 
         /// <summary>
         /// Gets or sets the Brand name of the Drug in French.
         /// </summary>
         [MaxLength(300)]
+        [DataMember]
         public string BrandNameFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Descriptor for the Drug.
         /// </summary>
         [MaxLength(150)]
+        [DataMember]
         public string Descriptor { get; set; }
 
         /// <summary>
         /// Gets or sets the Descriptor for the Drug in French
         /// </summary>
         [MaxLength(200)]
+        [DataMember]
         public string DescriptorFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Pediatric flag.
         /// </summary>
         [MaxLength(1)]
+        [DataMember]
         public string PediatricFlag { get; set; }
 
         /// <summary>
         /// Gets or sets the Accession number.
         /// </summary>
         [MaxLength(5)]
+        [DataMember]
         public string AccessionNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the Number of AIS.
         /// </summary>
         [MaxLength(10)]
+        [DataMember]
         public string NumberOfAis { get; set; }
 
         /// <summary>
         /// Gets or sets the Last Update from the Fed DB.
         /// </summary>
+        [DataMember]
         public DateTime LastUpdate { get; set; }
 
         /// <summary>
         /// Gets or sets the AI Group Number.
         /// </summary>
         [MaxLength(10)]
+        [DataMember]
         public string AiGroupNumber { get; set; }
     }
 }

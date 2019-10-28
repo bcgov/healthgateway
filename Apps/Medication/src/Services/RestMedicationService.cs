@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
@@ -37,10 +38,51 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public List<Medication> GetMedications(List<string> medicationDinList)
+        public Dictionary<string, MedicationResult> GetMedications(List<string> medicationDinList)
         {
-            List<DrugProduct> drugProducts = this.drugLookupDelegate.FindDrugProductsByDIN(medicationDinList);
-            return SimpleModelMapper.ToMedicationList(drugProducts);
+            Dictionary<string, MedicationResult> result = new Dictionary<string, MedicationResult>();
+
+            // Federal dins are all the same size with padded zeroes on the left
+            List<string> paddedDinList = medicationDinList.Select(x => x.PadLeft(8, '0')).ToList();
+
+            // Retrieve drug information from the Federal soruce
+            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(paddedDinList);
+            foreach (DrugProduct drugProduct in drugProducts)
+            {
+                List<Form> forms = this.drugLookupDelegate.GetFormByDrugProductId(drugProduct.DrugProductId);
+                List<ActiveIngredient> ingredients = this.drugLookupDelegate.GetActiveIngredientByDrugProductId(drugProduct.DrugProductId);
+                List<Company> companies = this.drugLookupDelegate.GetCompanyByDrugProductId(drugProduct.DrugProductId);
+
+                MedicationResult.FederalDrugSource federalData = new MedicationResult.FederalDrugSource()
+                {
+                    DrugProduct = drugProduct,
+                    Forms = forms,
+                    ActiveIngredients = ingredients,
+                    Companies = companies,
+                };
+                result[drugProduct.DrugIdentificationNumber] = new MedicationResult() { DIN = drugProduct.DrugIdentificationNumber, FederalData = federalData };
+            }
+
+            // Retrieve drug information from the Provincial source and append it to the result if previously added.
+            List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(paddedDinList);
+            foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
+            {
+                MedicationResult.ProvincialDrugSource provincialData = new MedicationResult.ProvincialDrugSource()
+                {
+                    PharmaCareDrug = pharmaCareDrug
+                };
+
+                if (result.ContainsKey(pharmaCareDrug.DINPIN))
+                {
+                    result[pharmaCareDrug.DINPIN].ProvincialData = provincialData;
+                }
+                else
+                {
+                    result[pharmaCareDrug.DINPIN] = new MedicationResult() { DIN = pharmaCareDrug.DINPIN, ProvincialData = provincialData };
+                }
+            }
+
+            return result;
         }
     }
 }

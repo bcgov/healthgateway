@@ -28,18 +28,42 @@ namespace HealthGateway.Database.Delegates
         private readonly DrugDbContext dbContext;
 
         /// <summary>
-        /// Constructor that requires a database context factory.
+        /// Constructor that requires a database context.
         /// </summary>
-        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
+        /// <param name="dbContext">The context to be used when accessing the databaase.</param>
         public EntityDrugLookupDelegate(DrugDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
-        public List<DrugProduct> FindDrugProductsByDIN(List<string> drugIdentifiers)
+        public List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers)
         {
             return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber)).ToList();
+        }
+
+        /// <inheritdoc/>
+        public List<Form> GetFormByDrugProductId(System.Guid drugProductId)
+        {
+            return this.dbContext.Form.Where(c => c.Drug.DrugProductId == drugProductId).ToList();
+        }
+
+        /// <inheritdoc/>
+        public List<ActiveIngredient> GetActiveIngredientByDrugProductId(System.Guid drugProductId)
+        {
+            return this.dbContext.ActiveIngredient.Where(c => c.Drug.DrugProductId == drugProductId).ToList();
+        }
+
+        /// <inheritdoc/>
+        public List<Company> GetCompanyByDrugProductId(System.Guid drugProductId)
+        {
+            return this.dbContext.Company.Where(c => c.Drug.DrugProductId == drugProductId).ToList();
+        }
+
+        /// <inheritdoc/>
+        public List<PharmaCareDrug> GetPharmaCareDrugsByDIN(List<string> drugIdentifiers)
+        {
+            return this.dbContext.PharmaCareDrug.Where(dp => drugIdentifiers.Contains(dp.DINPIN)).ToList();
         }
     }
 }
