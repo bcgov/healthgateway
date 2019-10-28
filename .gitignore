@@ -15,5 +15,8 @@
 .vscode/
 *.code-workspace
 
-##Visual Studio
+## Visual Studio
 .vs/
+
+# Local settings files
+*.local.json

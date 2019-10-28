@@ -54,6 +54,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             .ConfigureAppConfiguration((builderContext, config) =>
             {
                 config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+                config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
             })
             .UseStartup<T>()
             .ConfigureLogging(logging =>
