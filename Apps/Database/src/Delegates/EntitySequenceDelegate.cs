@@ -20,7 +20,7 @@ namespace HealthGateway.Database.Delegates
     using NpgsqlTypes;
 
     /// <summary>
-    /// Entity framework baed implementation of the sequence delegate.
+    /// Entity framework based implementation of the sequence delegate.
     /// </summary>
     public class EntitySequenceDelegate : ISequenceDelegate
     {
@@ -29,7 +29,7 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Constructor that uses the dependency injection interfaces.
         /// </summary>
-        /// <param name="dbContext">The context to be used when accessing the databaase context.</param>
+        /// <param name="dbContext">The context to be used when accessing the database context.</param>
         public EntitySequenceDelegate(DrugDbContext dbContext)
         {
             this.dbContext = dbContext;

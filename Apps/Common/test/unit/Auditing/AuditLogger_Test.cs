@@ -21,6 +21,7 @@ namespace HealthGateway.CommonTests.Auditing
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -46,7 +47,7 @@ namespace HealthGateway.CommonTests.Auditing
             };
 
             Mock<ILogger<IAuditLogger>> logger = new Mock<ILogger<IAuditLogger>>();
-            Mock<IAuditDbContext> dbContext = new Mock<IAuditDbContext>();
+            Mock<IWriteAuditEventDelegate> dbContext = new Mock<IWriteAuditEventDelegate>();
             Mock<IConfiguration> config = new Mock<IConfiguration>();
             AuditLogger auditLogger = new AuditLogger(logger.Object, dbContext.Object, config.Object);
 

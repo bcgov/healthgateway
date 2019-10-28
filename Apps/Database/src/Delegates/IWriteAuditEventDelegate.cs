@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,13 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using HealthGateway.Database.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace HealthGateway.Database.Context
+namespace HealthGateway.Database.Delegates
 {
-    public interface IAuditDbContext : IDbContext
+    using HealthGateway.Database.Models;
+
+    /// <summary>
+    /// Delegate that writes a new audit event to the database.
+    /// </summary>
+    public interface IWriteAuditEventDelegate
     {
-        DbSet<AuditEvent> AuditEvent { get; set; }
+        /// <summary>
+        /// Writes a audit event to the database.
+        /// </summary>
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        void WriteAuditEvent(AuditEvent sequenceName);
     }
 }

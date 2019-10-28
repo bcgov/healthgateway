@@ -13,11 +13,17 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Context
+namespace HealthGateway.DatabaseTests.Context
 {
     using System;
-    public interface IDbContext
+    using Xunit;
+
+    public class Context_Test
     {
-        int SaveChanges();
+        [Fact]
+        public void Should_True()
+        {
+            Assert.True(true);
+        }
     }
 }

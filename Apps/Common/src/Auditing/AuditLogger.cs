@@ -22,6 +22,7 @@ namespace HealthGateway.Common.Auditing
     using System.Security.Claims;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
@@ -40,24 +41,22 @@ namespace HealthGateway.Common.Auditing
 
         private readonly IConfiguration configuration;
 
-        private readonly IAuditDbContext dbContext;
+        private readonly IWriteAuditEventDelegate writeEventDelegate;
 
-        public AuditLogger(ILogger<IAuditLogger> logger, IAuditDbContext dbContext, IConfiguration config)
+        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate, IConfiguration config)
         {
             this.logger = logger;
             this.configuration = config;
-            this.dbContext = dbContext;
+            this.writeEventDelegate = writeEventDelegate;
         }
 
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
-            // An audit event catches all types of exceptions.
 #pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
-            this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
+            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
             try
             {
-                this.dbContext.AuditEvent.Add(auditEvent);
-                this.dbContext.SaveChanges();
+                this.writeEventDelegate.WriteAuditEvent(auditEvent);
                 this.logger.LogInformation(@"Saved AuditEvent");
             }
             catch (System.Exception ex)
@@ -83,7 +82,7 @@ namespace HealthGateway.Common.Auditing
             auditEvent.TransacationName = context.Request.Path;
             auditEvent.Trace = context.TraceIdentifier;
             auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
-
+            auditEvent.UpdatedDateTime = new DateTime();
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version

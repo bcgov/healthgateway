@@ -24,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Middleware;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -161,8 +162,8 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
-            services.AddScoped<IAuditDbContext>((svcProvider) => svcProvider.GetService<AuditDbContext>());
             services.AddScoped<IAuditLogger, AuditLogger>();
+            services.AddTransient<IWriteAuditEventDelegate, WriteAuditEventDelegate>();
         }
 
         /// <summary>
