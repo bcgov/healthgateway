@@ -82,7 +82,6 @@ namespace HealthGateway.Common.Auditing
             auditEvent.TransacationName = context.Request.Path;
             auditEvent.Trace = context.TraceIdentifier;
             auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
-            auditEvent.UpdatedDateTime = new DateTime();
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
