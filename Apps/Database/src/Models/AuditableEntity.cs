@@ -32,6 +32,6 @@ namespace HealthGateway.Database.Models
         public string UpdatedBy { get; set; }
 
         [Required]
-        public DateTime? UpdatedDateTime { get; set; }
+        public DateTime UpdatedDateTime { get; set; }
     }
 }
