@@ -350,7 +350,7 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(60);
 
                     b.Property<string>("BrandName")
-                        .HasMaxLength(60);
+                        .HasMaxLength(80);
 
                     b.Property<string>("CFRCode")
                         .HasMaxLength(1);
@@ -401,7 +401,7 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(1);
 
                     b.Property<string>("PharmaCarePlanDescription")
-                        .HasMaxLength(20);
+                        .HasMaxLength(80);
 
                     b.Property<string>("Plan")
                         .HasMaxLength(2);

@@ -72,7 +72,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the brand name.
         /// </summary>
-        [MaxLength(60)]
+        [MaxLength(80)]
         public string BrandName { get; set; }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the PharmaCare Plan description.
         /// </summary>
-        [MaxLength(20)]
+        [MaxLength(80)]
         public string PharmaCarePlanDescription { get; set; }
 
         /// <summary>
