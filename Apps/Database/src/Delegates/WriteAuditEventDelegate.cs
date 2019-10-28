@@ -16,29 +16,41 @@
 namespace HealthGateway.Database.Delegates
 {
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Models;
     using Npgsql;
     using NpgsqlTypes;
 
-    /// <inheritdoc/>
-    public class WriteAuditEventDelegate : IWriteAuditEventDelegate
+    /// <summary>
+    /// Entity framework baed implementation of the sequence delegate.
+    /// </summary>
+    public class EntitySequenceDelegate : ISequenceDelegate
     {
-        private readonly AuditDbContext dbContext;
+        private readonly DrugDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of class <see cref="WriteAuditEventDelegate"/>.
+        /// Constructor that uses the dependency injection interfaces.
         /// </summary>
-        /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public WriteAuditEventDelegate(AuditDbContext dbContext)
+        /// <param name="dbContext">The context to be used when accessing the databaase context.</param>
+        public EntitySequenceDelegate(DrugDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc/>
-        public void WriteAuditEvent(AuditEvent auditEvent)
+        /// <summary>
+        /// Gets the next sequence number for the given sequence name.
+        /// </summary>
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        public long NextValueForSequence(string sequenceName)
         {
-            this.dbContext.AuditEvent.Add(auditEvent);
-            this.dbContext.SaveChanges();
+            NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
+            {
+                Direction = System.Data.ParameterDirection.Output,
+            };
+            this.dbContext.ExecuteSqlCommand($"SELECT nextval('{sequenceName}')", result);
+
+            // code below is to be used when updating to EF 3
+            // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);
+            return (long)result.Value;
         }
     }
 }

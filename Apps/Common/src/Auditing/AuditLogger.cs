@@ -22,7 +22,6 @@ namespace HealthGateway.Common.Auditing
     using System.Security.Claims;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
@@ -36,27 +35,28 @@ namespace HealthGateway.Common.Auditing
     /// </summary>
     public class AuditLogger : IAuditLogger
     {
-        private const string TESTHOST_NAME = "testhost";
         private readonly ILogger<IAuditLogger> logger;
 
         private readonly IConfiguration configuration;
 
-        private readonly IWriteAuditEventDelegate writeEventDelegate;
+        private readonly AuditDbContext dbContext;
 
-        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate, IConfiguration config)
+        public AuditLogger(ILogger<IAuditLogger> logger, AuditDbContext dbContext, IConfiguration config)
         {
             this.logger = logger;
             this.configuration = config;
-            this.writeEventDelegate = writeEventDelegate;
+            this.dbContext = dbContext;
         }
 
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
+            // An audit event catches all types of exceptions.
 #pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
-            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
+            this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
             try
             {
-                this.writeEventDelegate.WriteAuditEvent(auditEvent);
+                this.dbContext.AuditEvent.Add(auditEvent);
+                this.dbContext.SaveChanges();
                 this.logger.LogInformation(@"Saved AuditEvent");
             }
             catch (System.Exception ex)
@@ -82,7 +82,7 @@ namespace HealthGateway.Common.Auditing
             auditEvent.TransacationName = context.Request.Path;
             auditEvent.Trace = context.TraceIdentifier;
             auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
-            auditEvent.UpdatedDateTime = new DateTime();
+
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
@@ -133,11 +133,6 @@ namespace HealthGateway.Common.Auditing
             }
             else
             {
-                if (assemblyName.Name == TESTHOST_NAME) // This is used by unit tests
-                {
-                    return AuditApplicationType.Configuration;
-                }
-
                 throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
         }

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <IsPackable>false</IsPackable>
-    <RootNamespace>HealthGateway.DatabaseTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +14,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Database.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Context\" />
   </ItemGroup>
 </Project>
