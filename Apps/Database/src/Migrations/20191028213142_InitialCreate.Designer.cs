@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191028183223_InitialCreate")]
+    [Migration("20191028213142_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,8 +24,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
-                    b.Property<Guid>("ActiveIngredientId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ActiveIngredientId");
 
                     b.Property<int>("ActiveIngredientCode");
 
@@ -80,9 +81,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("ActiveIngredientId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -91,8 +93,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
-                    b.Property<Guid>("CompanyId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CompanyId");
 
                     b.Property<string>("AddressBillingFlag")
                         .HasMaxLength(1);
@@ -156,9 +159,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("CompanyId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -167,8 +171,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
                 {
-                    b.Property<Guid>("DrugProductId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("DrugProductId");
 
                     b.Property<string>("AccessionNumber")
                         .HasMaxLength(5);
@@ -222,17 +227,19 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("DrugProductId");
+                    b.HasKey("Id");
 
                     b.ToTable("DrugProduct");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.FileDownload", b =>
                 {
-                    b.Property<Guid>("FileDownloadId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("FileDownloadId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -252,9 +259,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("FileDownloadId");
+                    b.HasKey("Id");
 
                     b.HasIndex("Hash")
                         .IsUnique();
@@ -264,8 +272,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Form", b =>
                 {
-                    b.Property<Guid>("FormId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("FormId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -287,9 +296,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("FormId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -298,8 +308,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>
                 {
-                    b.Property<Guid>("PackagingId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("PackagingId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -334,9 +345,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("PackagingId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -345,8 +357,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaCareDrug", b =>
                 {
-                    b.Property<Guid>("PharmaCareDrugId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("PharmaCareDrugId");
 
                     b.Property<string>("BenefitGroupList")
                         .HasMaxLength(60);
@@ -429,9 +442,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("PharmaCareDrugId");
+                    b.HasKey("Id");
 
                     b.ToTable("PharmaCareDrug");
                 });
@@ -439,7 +453,8 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
                 {
                     b.Property<Guid>("PharmaceuticalStdId")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("PharmaceuticalStdId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -455,7 +470,8 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("PharmaceuticalStdId");
 
@@ -466,8 +482,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
                 {
-                    b.Property<Guid>("RouteId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("RouteId");
 
                     b.Property<string>("Administration")
                         .HasMaxLength(40);
@@ -489,9 +506,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("RouteId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -500,8 +518,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Schedule", b =>
                 {
-                    b.Property<Guid>("ScheduleId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ScheduleId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -521,9 +540,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("ScheduleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -532,8 +552,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Status", b =>
                 {
-                    b.Property<Guid>("StatusId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("StatusId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -563,9 +584,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("StatusId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -574,8 +596,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.TherapeuticClass", b =>
                 {
-                    b.Property<Guid>("TherapeuticClassId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("TherapeuticClassId");
 
                     b.Property<string>("Ahfs")
                         .HasMaxLength(80);
@@ -607,9 +630,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("TherapeuticClassId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -618,8 +642,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
-                    b.Property<Guid>("VeterinarySpeciesId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("VeterinarySpeciesId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -642,9 +667,10 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
-                    b.HasKey("VeterinarySpeciesId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -653,7 +679,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -661,7 +687,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -669,7 +695,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Form", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -677,7 +703,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -685,7 +711,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -693,7 +719,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -701,7 +727,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Schedule", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -709,7 +735,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Status", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -717,7 +743,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.TherapeuticClass", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -725,7 +751,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "Drug")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);

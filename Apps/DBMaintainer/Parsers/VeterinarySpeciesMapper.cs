@@ -25,7 +25,7 @@ namespace HealthGateway.DrugMaintainer
         public VeterinarySpeciesMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
             // VET_SPECIES
             Map(m => m.Species).Index(1);
             // VET_SUB_SPECIES

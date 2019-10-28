@@ -25,7 +25,7 @@ namespace HealthGateway.DrugMaintainer
         public StatusMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
             // CURRENT_STATUS_FLAG
             Map(m => m.CurrentStatusFlag).Index(1);
             // STATUS

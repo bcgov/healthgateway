@@ -57,9 +57,11 @@ namespace HealthGateway.Database.Migrations.AuditDb
                         .HasMaxLength(5);
 
                     b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("AuditEventId");
 

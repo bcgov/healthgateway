@@ -37,6 +37,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// The audit updated date/time in the DB.
         /// </summary>
-        DateTime? UpdatedDateTime { get; set; }
+        DateTime UpdatedDateTime { get; set; }
     }
 }

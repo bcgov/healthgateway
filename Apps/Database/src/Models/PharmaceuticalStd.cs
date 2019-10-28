@@ -17,13 +17,15 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class PharmaceuticalStd : AuditableEntity
     {
+        [Column("PharmaceuticalStdId")]
         public Guid PharmaceuticalStdId { get; set; }
 
         [Required]
-        public DrugProduct Drug { get; set; }
+        public DrugProduct DrugProduct { get; set; }
 
         public string PharmaceuticalStdDesc { get; set; }
     }
