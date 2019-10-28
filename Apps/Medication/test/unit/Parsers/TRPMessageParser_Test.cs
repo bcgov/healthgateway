@@ -51,14 +51,13 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldCreateRequestMessage()
         {
-            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:", this.culture);
+            string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
             HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress, 101010);
 
             Assert.False(request.IsError);
-            Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);
-            Assert.Contains($"|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
+            Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA|{hnClientConfig.ZCA.BIN}|{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
             Assert.Contains($"ZZZ|TRP||{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}", request.Message);
             Assert.Contains($"ZCB|{hnClientConfig.ZCB.PharmacyId}|{date}|{traceNumber}", request.Message);

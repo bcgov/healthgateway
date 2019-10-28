@@ -85,7 +85,7 @@ namespace HealthGateway.Medication.Parsers
                 throw new ArgumentNullException(nameof(message));
             }
 
-            string formattedTraceId = traceId.ToString(CultureInfo.InvariantCulture).PadLeft(6, '0');
+            string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
 
             // MSH - Message Header
             message.AddSegmentMSH(
