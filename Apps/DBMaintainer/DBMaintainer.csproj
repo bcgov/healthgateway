@@ -6,6 +6,9 @@
     <RootNamespace>HealthGateway.DBMaintainer</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DocumentationFile>bin\Debug\netcoreapp2.2\DBMaintainer.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\src\Common.csproj" />
     <ProjectReference Include="..\Database\src\Database.csproj" />
@@ -26,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Database\" />
+    <Folder Include="Apps\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
@@ -34,5 +38,12 @@
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="stylecop.json" />
+    <Content Remove="wwwroot\dist\vendor-manifest.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 </Project>

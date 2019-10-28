@@ -21,90 +21,90 @@ namespace HealthGateway.Database.Models
     public class DrugProduct : AuditableEntity
     {
         /// <summary>
-        /// The internal Guid representing the DrugProduct.
+        /// Gets or sets the internal Guid representing the DrugProduct.
         /// </summary>
         public Guid DrugProductId { get; set; }
 
         /// <summary>
-        /// The source Drug Code from the Government extract QRYM_DRUG_PRODUCT
+        /// Gets or sets the source Drug Code from the Government extract QRYM_DRUG_PRODUCT
         /// </summary>
         [Required]
         [MaxLength(8)]
         public string DrugCode { get; set; }
 
         /// <summary>
-        /// The Drug Production Categorization.
+        /// Gets or sets the Drug Production Categorization.
         /// </summary>
         [MaxLength(80)]
         public string ProductCategorization { get; set; }
 
         /// <summary>
-        /// The Drug Class in French
+        /// Gets or sets the Drug Class in French
         /// </summary>
         [MaxLength(40)]
         public string DrugClass { get; set; }
 
         /// <summary>
-        /// The Drug Class
+        /// Gets or sets the Drug Class
         /// </summary>
         [MaxLength(80)]
         public string DrugClassFrench { get; set; }
 
         /// <summary>
-        /// The Drug Identification Number.
+        /// Gets or sets the Drug Identification Number.
         /// </summary>
         [MaxLength(29)]
         public string DrugIdentificationNumber { get; set; }
 
         /// <summary>
-        /// The Brand name of the Drug.
+        /// Gets or sets the Brand name of the Drug.
         /// </summary>
         [MaxLength(200)]
         public string BrandName { get; set; }
 
         /// <summary>
-        /// The Brand name of the Drug in French.
+        /// Gets or sets the Brand name of the Drug in French.
         /// </summary>
         [MaxLength(300)]
         public string BrandNameFrench { get; set; }
 
         /// <summary>
-        /// The Descriptor for the Drug.
+        /// Gets or sets the Descriptor for the Drug.
         /// </summary>
         [MaxLength(150)]
         public string Descriptor { get; set; }
 
         /// <summary>
-        /// The Descriptor for the Drug in French
+        /// Gets or sets the Descriptor for the Drug in French
         /// </summary>
         [MaxLength(200)]
         public string DescriptorFrench { get; set; }
 
         /// <summary>
-        /// The Pediatric flag.
+        /// Gets or sets the Pediatric flag.
         /// </summary>
         [MaxLength(1)]
         public string PediatricFlag { get; set; }
 
         /// <summary>
-        /// The Accession number.
+        /// Gets or sets the Accession number.
         /// </summary>
         [MaxLength(5)]
         public string AccessionNumber { get; set; }
 
         /// <summary>
-        /// The Number of AIS.
+        /// Gets or sets the Number of AIS.
         /// </summary>
         [MaxLength(10)]
         public string NumberOfAis { get; set; }
 
         /// <summary>
-        /// The Last Update from the Fed DB.
+        /// Gets or sets the Last Update from the Fed DB.
         /// </summary>
         public DateTime LastUpdate { get; set; }
 
         /// <summary>
-        /// The AI Group Number.
+        /// Gets or sets the AI Group Number.
         /// </summary>
         [MaxLength(10)]
         public string AiGroupNumber { get; set; }

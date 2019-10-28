@@ -17,6 +17,7 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.IO;
+    using HealthGateway.DrugMaintainer.Apps;
     using HealthGateway.Database.Context;
     using HealthGateway.Common.FileDownload;
     using Microsoft.EntityFrameworkCore;
@@ -29,12 +30,12 @@ namespace HealthGateway.DrugMaintainer
     {
         static void Main(string[] args)
         {
-            IHost host = CreateWebHostBuilder(args).Build();//.Run();
+            IHost host = CreateWebHostBuilder(args).Build();
             FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
-            fedDrugApp.UpdateDrugProducts().Wait();
+            fedDrugApp.Process();
 
             BCPProvDrugDBApp bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
-            bcDrugApp.UpdatePharmaCareDrugs().Wait();
+            bcDrugApp.Process();
         }
 
         public static IHostBuilder CreateWebHostBuilder(string[] args)
@@ -56,7 +57,7 @@ namespace HealthGateway.DrugMaintainer
                            services.AddDbContextPool<AuditDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
-                           // add httpclient
+                           // Add HTTP Client
                            services.AddHttpClient();
 
                            // Add services

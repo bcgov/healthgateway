@@ -61,6 +61,8 @@ namespace HealthGateway.Database.Context
 
         public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
 
+        public DbSet<FileDownload> FileDownload { get; set; }
+
         /// <summary>
         /// Executes a sql command.
         /// </summary>
@@ -72,6 +74,7 @@ namespace HealthGateway.Database.Context
             return this.Database.ExecuteSqlCommand(sql, parameters);
         }
 
+        /// <inheritdoc />
         public override int SaveChanges()
         {
             const string user = "DrugMaintainer";
@@ -95,6 +98,7 @@ namespace HealthGateway.Database.Context
             return base.SaveChanges();
         }
 
+        /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasSequence<long>(Sequence.PHARMANET_TRACE)
@@ -103,6 +107,11 @@ namespace HealthGateway.Database.Context
                         .HasMin(1)
                         .HasMax(999999)
                         .IsCyclic(true);
+
+            // Create the unique index for the SHA256 hash
+            modelBuilder.Entity<FileDownload>()
+                    .HasIndex(f => f.Hash)
+                    .IsUnique();
         }
     }
 }
