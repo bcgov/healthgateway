@@ -35,13 +35,14 @@ namespace HealthGateway.Common.Auditing
     /// </summary>
     public class AuditLogger : IAuditLogger
     {
+        private const string TESTHOST_NAME = "testhost";
         private readonly ILogger<IAuditLogger> logger;
 
         private readonly IConfiguration configuration;
 
-        private readonly AuditDbContext dbContext;
+        private readonly IAuditDbContext dbContext;
 
-        public AuditLogger(ILogger<IAuditLogger> logger, AuditDbContext dbContext, IConfiguration config)
+        public AuditLogger(ILogger<IAuditLogger> logger, IAuditDbContext dbContext, IConfiguration config)
         {
             this.logger = logger;
             this.configuration = config;
@@ -133,6 +134,11 @@ namespace HealthGateway.Common.Auditing
             }
             else
             {
+                if (assemblyName.Name == TESTHOST_NAME) // This is used by unit tests
+                {
+                    return AuditApplicationType.Configuration;
+                }
+
                 throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
         }

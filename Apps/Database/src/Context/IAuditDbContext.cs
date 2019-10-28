@@ -13,25 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+using HealthGateway.Database.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace HealthGateway.Database.Context
 {
-    using HealthGateway.Database.Models;
-    using Microsoft.EntityFrameworkCore;
-
-    public class AuditDbContext : DbContext, IAuditDbContext
+    public interface IAuditDbContext : IDbContext
     {
-        /// <summary>
-        /// Constructor required to instantiated the context via startup.
-        /// </summary>
-        /// <param name="options">The DB Context options.</param>
-        public AuditDbContext(DbContextOptions<AuditDbContext> options)
-            : base(options)
-        {
-        }
-
-        /// <summary>
-        /// The audit event dbset.
-        /// </summary>
-        public DbSet<AuditEvent> AuditEvent { get; set; }
+        DbSet<AuditEvent> AuditEvent { get; set; }
     }
 }
