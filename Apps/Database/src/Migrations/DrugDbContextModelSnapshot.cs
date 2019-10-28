@@ -352,7 +352,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("BrandName")
                         .HasMaxLength(60);
 
-                    b.Property<string>("CanadianFederalRegulatoryCode")
+                    b.Property<string>("CFRCode")
                         .HasMaxLength(1);
 
                     b.Property<string>("CreatedBy")

@@ -86,7 +86,7 @@ namespace HealthGateway.Database.Migrations
                     RDPSubCategory = table.Column<string>(maxLength: 4, nullable: true),
                     RDPPrice = table.Column<decimal>(type: "decimal(8,4)", nullable: true),
                     RDPExcludedPlans = table.Column<string>(maxLength: 20, nullable: true),
-                    CanadianFederalRegulatoryCode = table.Column<string>(maxLength: 1, nullable: true),
+                    CFRCode = table.Column<string>(maxLength: 1, nullable: true),
                     PharmaCarePlanDescription = table.Column<string>(maxLength: 20, nullable: true),
                     MaximumDaysSupply = table.Column<int>(nullable: true),
                     QuantityLimit = table.Column<int>(nullable: true),

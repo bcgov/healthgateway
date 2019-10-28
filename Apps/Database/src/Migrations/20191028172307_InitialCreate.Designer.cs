@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191027191316_InitialCreate")]
+    [Migration("20191028172307_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -354,7 +354,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("BrandName")
                         .HasMaxLength(60);
 
-                    b.Property<string>("CanadianFederalRegulatoryCode")
+                    b.Property<string>("CFRCode")
                         .HasMaxLength(1);
 
                     b.Property<string>("CreatedBy")
