@@ -23,15 +23,23 @@ namespace HealthGateway.DrugMaintainer
     using Microsoft.Extensions.Logging;
     using System;
 
+    /// <summary>
+    /// /// Concrete implemention of the <see cref="IPharmaCareDrugParser"/>
+    /// </summary>
     public class PharmaCareDrugParser : IPharmaCareDrugParser
     {
         private readonly ILogger logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PharmaCareDrugParser"/> class.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
         public PharmaCareDrugParser(ILogger<PharmaCareDrugParser> logger)
         {
             this.logger = logger;
         }
 
+        /// <inheritdoc/>
         public List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename)
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");

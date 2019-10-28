@@ -39,7 +39,7 @@ namespace HealthGateway.DrugMaintainer
             Map(m => m.RDPSubCategory).Name("RDP Sub Cat");
             Map(m => m.RDPPrice).Name("RDP Price");
             Map(m => m.RDPExcludedPlans).Name("RDP Excl Plans");
-            Map(m => m.CanadianFederalRegulatoryCode).Name("Can Fed Reg Cd");
+            Map(m => m.CFRCode).Name("Can Fed Reg Cd");
             Map(m => m.PharmaCarePlanDescription).Name("Pcare Plan Desc");
             Map(m => m.MaximumDaysSupply).Name("Max Days Supply");
             Map(m => m.QuantityLimit).Name("Qty Limit");
