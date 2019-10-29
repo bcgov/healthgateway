@@ -16,13 +16,12 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
-    using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
+    
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -39,27 +38,15 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         private readonly IMedicationStatementService medicationStatementService;
 
-        /// <summary>
-        /// The http context provider.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// The patient service provider used to retrieve Personal Health Number for subject.
-        /// </summary>
-        private readonly IPatientService patientService;
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
         /// <param name="medicationStatementService">The injected medication data service.</param>
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientService">The injected patientService patient registry provider.</param>
-        public MedicationStatementController(IMedicationStatementService medicationStatementService, IHttpContextAccessor httpAccessor, IPatientService patientService)
+        public MedicationStatementController(IMedicationStatementService medicationStatementService)
         {
             this.medicationStatementService = medicationStatementService;
-            this.httpContextAccessor = httpAccessor;
-            this.patientService = patientService;
         }
 
         /// <summary>
@@ -74,13 +61,7 @@ namespace HealthGateway.Medication.Controllers
         [Route("{hdid}")]
         public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid)
         {
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
-            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-            string ipv4Address = address.MapToIPv4().ToString();
-
-            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatementsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
+            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid).ConfigureAwait(true);
 
             if (medicationStatements.IsError)
             {

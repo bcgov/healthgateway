@@ -13,22 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Medication.Delegate
 {
-    using System.Security.Claims;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// The patient service.
+    /// Interface that defines a delegate to retrieve patient information.
     /// </summary>
-    public interface IPatientService
+    public interface IPatientDelegate
     {
         /// <summary>
         /// Gets the patient phn.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
-        /// <param name="jwtString">The JWT authorization for the call.</param>
+        /// <param name="authorization">Authorization for the call.</param>
         /// <returns>The patient phn.</returns>
-        Task<string> GetPatientPHNAsync(string hdid, string jwtString);
+        Task<string> GetPatientPHNAsync(string hdid, string authorization);
     }
 }

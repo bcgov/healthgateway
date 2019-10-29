@@ -31,22 +31,22 @@ namespace HealthGateway.Medication.Test
     using Xunit;
 
 
-    public class MedicationStatementController_Test
+    public class PharmacyController_Test
     {
         [Fact]
-        public async Task ShouldGetMedicationStatemets()
+        public async Task ShouldGetPharmacy()
         {
             // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
-            MedicationStatementController controller = new MedicationStatementController(svcMock.Object);
+            string pharmacyId = "SomeId";
+            Mock<IPharmacyService> svcMock = new Mock<IPharmacyService>();
+            svcMock.Setup(s => s.GetPharmacyAsync(pharmacyId)).ReturnsAsync(new HNMessage<Pharmacy>(new Pharmacy()));
+            PharmacyController controller = new PharmacyController(svcMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
+            RequestResult<Pharmacy> actual = await controller.GetPharmacy(pharmacyId);
 
             // Verify
-            Assert.True(actual.ResourcePayload.Count == 0);
+            Assert.True(actual.TotalResultCount == 1);
         }
 
         [Fact]
@@ -54,15 +54,13 @@ namespace HealthGateway.Medication.Test
         {
             // Setup
             string errorMessage = "The error message";
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-
-            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(true, errorMessage));
-
-            MedicationStatementController controller = new MedicationStatementController(svcMock.Object);
+            string pharmacyId = "SomeId";
+            Mock<IPharmacyService> svcMock = new Mock<IPharmacyService>();
+            svcMock.Setup(s => s.GetPharmacyAsync(pharmacyId)).ReturnsAsync(new HNMessage<Pharmacy>(true, errorMessage));
+            PharmacyController controller = new PharmacyController(svcMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
+            RequestResult<Pharmacy> actual = await controller.GetPharmacy(pharmacyId);
 
             // Verify
             Assert.Null(actual.ResourcePayload);
