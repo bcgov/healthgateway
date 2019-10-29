@@ -146,8 +146,11 @@ $radius: 15px;
                         </b-btn>
                         <b-collapse :id="'entryDetails-' + index + '-' + dateGroup.key">
                           <b-col>
-                            <div v-for="detail in entry.details" :key="detail.name">
-                              <strong>{{ detail.name }}:</strong>
+                            <div v-for="detail in entry.details" :key="detail.name+detail.value">
+                              <br v-if="detail.newLine" />
+                              <span v-if="detail.name != ''" class="font-weight-bold" :aria-hidden="detail.name != ''">
+                                <strong>{{ detail.name }}:</strong>
+                              </span>                              
                               {{ detail.value }}
                             </div>
                           </b-col>
@@ -217,6 +220,7 @@ export default class TimelineComponent extends Vue {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
         } else {
+          this.hasErrors = true;
           console.log(
             "Error returned from the medication statements call: " +
               results.errorMessage
@@ -233,12 +237,25 @@ export default class TimelineComponent extends Vue {
   }
 
   private toggleDetails(timelineEntry: TimelineEntry): void {
-    this.isLoading = true;
     var medicationEntry: MedicationTimelineEntry = timelineEntry;
+
+    // If the pharmacy details is cached do not fetch it again
+    if (medicationEntry.pharmacy) {
+      return;
+    }
+
+    this.isLoading = true;
     this.medicationService
       .getPharmacyInfo(medicationEntry.pharmacyId)
-      .then(result => {
-        medicationEntry.PopulatePharmacy(result);
+      .then(results => {
+        if (!results.errorMessage) {
+          medicationEntry.PopulatePharmacy(results.resourcePayload);
+        } else {
+          this.hasErrors = true;
+          console.log(
+            "Error returned from the pharmacy details call: " +
+              results.errorMessage
+          );
       })
       .catch(err => {
         this.hasErrors = true;

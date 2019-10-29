@@ -10,15 +10,17 @@ export enum EntryType {
 export class EntryDetail {
     public readonly name: string;
     public readonly value: string;
+    public readonly newLine?: boolean;
 
-    public constructor(name: string, value: any) {
+    public constructor(name: string, value: any, newLine?: boolean) {
         this.name = name;
-        this.value = value ? value.toString() : "N/A";
+        this.value = value ? value.toString() : "";
+        this.newLine = newLine;
     }
 }
 
-// Timeline entry model
-export default class TimelineEntry {
+// The base timeline entry model 
+export default abstract class TimelineEntry {
     public readonly id?: string;
     public readonly date?: Date;
     public readonly title?: string;
@@ -43,8 +45,10 @@ export default class TimelineEntry {
     }
 }
 
+// The medication timeline entry model
 export class MedicationTimelineEntry extends TimelineEntry {
     public readonly pharmacyId?: string;
+    public pharmacy?: Pharmacy;
 
     public constructor(other: MedicationStatement) {
         var details: EntryDetail[] = [
@@ -52,8 +56,8 @@ export class MedicationTimelineEntry extends TimelineEntry {
             new EntryDetail("Prescription Number", other.prescriptionIdentifier),
             new EntryDetail("Quantity", other.medicationSumary.quantity),
             new EntryDetail("Strength", "TODO"),
-            new EntryDetail("Form", other.medicationSumary.form),
-            new EntryDetail("Manufacturer", other.medicationSumary.manufacturer),
+            new EntryDetail("Form", other.medicationSumary.form || "N/A"),
+            new EntryDetail("Manufacturer", other.medicationSumary.manufacturer || "N/A"),
         ];
 
         super(
@@ -69,9 +73,17 @@ export class MedicationTimelineEntry extends TimelineEntry {
 
     public PopulatePharmacy(pharmacy: Pharmacy): void
     {
-        var pharmacyDescription: string = 
-            `${pharmacy.name} | ${pharmacy.addressLine1} | ${pharmacy.addressLine2} | ${pharmacy.phoneNumber}`;
+        console.log(pharmacy);
+        this.pharmacy = pharmacy;
+        this.details.push(new EntryDetail("Filled At", "", true));       
+        this.details.push(new EntryDetail("", pharmacy.name));       
+        this.details.push(new EntryDetail("", pharmacy.addressLine1));       
+        this.details.push(new EntryDetail("", pharmacy.addressLine2));       
 
-        this.details.push(new EntryDetail("Filled At", pharmacyDescription));       
+        var formattedPhone: string = pharmacy.phoneNumber || "";
+        formattedPhone = formattedPhone.replace(/[^0-9]/g, "")
+            .replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+        this.details.push(new EntryDetail("", formattedPhone));       
+        
     }
 }
