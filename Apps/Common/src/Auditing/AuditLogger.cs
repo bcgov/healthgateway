@@ -29,20 +29,26 @@ namespace HealthGateway.Common.Auditing
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
+    #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
-    /// The Authorization service
+    /// The Authorization service.
     /// </summary>
     public class AuditLogger : IAuditLogger
     {
-        private const string TESTHOST_NAME = "testhost";
+        private const string TESTHOSTNAME = "testhost";
         private readonly ILogger<IAuditLogger> logger;
 
         private readonly IConfiguration configuration;
 
         private readonly IWriteAuditEventDelegate writeEventDelegate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuditLogger"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="writeEventDelegate">The audit event delegate.</param>
+        /// <param name="config">The configuration.</param>
         public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate, IConfiguration config)
         {
             this.logger = logger;
@@ -50,9 +56,10 @@ namespace HealthGateway.Common.Auditing
             this.writeEventDelegate = writeEventDelegate;
         }
 
+        /// <inheritdoc />
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
-#pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
+            #pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
             this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
             try
             {
@@ -63,7 +70,7 @@ namespace HealthGateway.Common.Auditing
             {
                 this.logger.LogError(ex, @"In WriteAuditEvent");
             }
-#pragma warning restore CA1303
+            #pragma warning restore CA1303
         }
 
         /// <inheritdoc />
@@ -132,7 +139,8 @@ namespace HealthGateway.Common.Auditing
             }
             else
             {
-                if (assemblyName.Name == TESTHOST_NAME) // This is used by unit tests
+                // This is used by unit tests
+                if (assemblyName.Name == TESTHOSTNAME)
                 {
                     return AuditApplicationType.Configuration;
                 }
@@ -142,5 +150,5 @@ namespace HealthGateway.Common.Auditing
         }
     }
 
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
+    #pragma warning restore CA1303 // Do not pass literals as localized parameters
 }

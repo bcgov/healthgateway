@@ -19,6 +19,10 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    /// <summary>
+    /// The entity representing a row in the Federal Government
+    /// Active Ingredient file.
+    /// </summary>
     public class ActiveIngredient : AuditableEntity
     {
         /// <summary>

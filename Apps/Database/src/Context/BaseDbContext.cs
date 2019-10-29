@@ -24,19 +24,18 @@ namespace HealthGateway.Database.Context
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <summary>
-    /// The common database context to be used by all of HealthGateway.
+    /// The common database context to be used by all other HealthGateway contexts.
     /// </summary>
     public class BaseDbContext : DbContext
     {
         /// <summary>
-        /// Constructor required to instantiated the context via startup.
+        /// Initializes a new instance of the <see cref="BaseDbContext"/> class.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
         public BaseDbContext(DbContextOptions options)
             : base(options)
         {
         }
-
 
         /// <summary>
         /// Executes a sql command.

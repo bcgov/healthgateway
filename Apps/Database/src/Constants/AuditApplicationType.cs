@@ -15,16 +15,34 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Constant
 {
+    /// <summary>
+    /// The application type being recorded in the DB.
+    /// </summary>
     public enum AuditApplicationType
     {
+        /// <summary>
+        /// Represents the Configuration application.
+        /// </summary>
         Configuration = 100,
 
+        /// <summary>
+        /// Represents the WebClient application.
+        /// </summary>
         WebClient = 200,
 
+        /// <summary>
+        /// Represents the Immunization application.
+        /// </summary>
         Immunization = 300,
 
+        /// <summary>
+        /// Represents the Patient application.
+        /// </summary>
         Patient = 400,
 
+        /// <summary>
+        /// Represents the Medication application.
+        /// </summary>
         Medication = 500,
     }
 }

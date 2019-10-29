@@ -46,7 +46,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// </summary>
         /// <typeparam name="T">The startup class.</typeparam>
         /// <param name="args">The command line arguments.</param>
-        /// <returns>Returns the configured WebHostBuilder</returns>
+        /// <returns>Returns the configured WebHostBuilder.</returns>
         public static IWebHostBuilder CreateWebHostBuilder<T>(string[] args)
              where T : class
         {
