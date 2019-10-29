@@ -31,13 +31,13 @@ namespace HealthGateway.Medication.Test
         {
             // Setup
             Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new List<Medication>());
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationResult>());
 
             string drugIdentifier = "000001";
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
-            RequestResult<List<Medication>> actual = controller.GetMedication(drugIdentifier);
+            RequestResult<Dictionary<string, MedicationResult>> actual = controller.GetMedication(drugIdentifier);
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(new List<string> { drugIdentifier }), Times.Once());
@@ -49,13 +49,13 @@ namespace HealthGateway.Medication.Test
         {
             // Setup
             Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new List<Medication>());
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationResult>());
 
             List<string> drugIdentifiers = new List<string>() { "000001", "000003", "000003" };
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
-            RequestResult<List<Medication>> actual = controller.GetMedications(drugIdentifiers);
+            RequestResult<Dictionary<string, MedicationResult>> actual = controller.GetMedications(drugIdentifiers);
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(drugIdentifiers), Times.Once());

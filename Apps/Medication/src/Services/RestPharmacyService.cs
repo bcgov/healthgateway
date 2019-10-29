@@ -15,72 +15,47 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
-    using System;
-    using System.Diagnostics.Contracts;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
+    using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication.Models;
-    using HealthGateway.Database.Constant;
-    using HealthGateway.Database.Delegates;
+    using HealthGateway.Medication.Delegate;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;
-    using Microsoft.Extensions.Configuration;
-    using Newtonsoft.Json;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
     public class RestPharmacyService : IPharmacyService
     {
-        private readonly IConfiguration configService;
-        private readonly IHNMessageParser<Pharmacy> pharmacyParser;
-        private readonly IHttpClientFactory httpClientFactory;
-        private readonly ISequenceDelegate sequenceDelegate;
+        /// <summary>
+        /// The http context provider.
+        /// </summary>
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
+        /// Delegate to interact with hnclient.
+        /// </summary>
+        private readonly IHNClientDelegate hnClientDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
         /// </summary>
-        /// <param name="config">The injected configuration provider.</param>
-        /// <param name="parser">The injected hn parser.</param>
-        /// <param name="httpClientFactory">The injected http client factory.</param>
-        /// <param name="sequenceDelegate">The injected sequence delegate.</param>
-        public RestPharmacyService(IConfiguration config, IHNMessageParser<Pharmacy> parser, IHttpClientFactory httpClientFactory, ISequenceDelegate sequenceDelegate)
+        /// <param name="httpAccessor">The injected http context accessor provider.</param>
+        /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
+        public RestPharmacyService(IHttpContextAccessor httpAccessor, IHNClientDelegate hnClientDelegate)
         {
-            this.configService = config;
-            this.pharmacyParser = parser;
-            this.httpClientFactory = httpClientFactory;
-            this.sequenceDelegate = sequenceDelegate;
+            this.httpContextAccessor = httpAccessor;
+            this.hnClientDelegate = hnClientDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(JWTModel jwtModel, string pharmacyId, string userId, string ipAddress)
+        public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId)
         {
-            Contract.Requires(jwtModel != null);
+            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
+            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+            string ipv4Address = address.MapToIPv4().ToString();
 
-            using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
-            {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
-
-                long traceId = this.sequenceDelegate.NextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
-                HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
-                {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    return this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
-                }
-                else
-                {
-                    return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
-                }
-            }
+            return await hnClientDelegate.GetPharmacyAsync(pharmacyId, userId, ipv4Address);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Base class for all DB entities to ensure audit data is saved.
@@ -29,6 +30,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(30)]
+        [IgnoreDataMember]
         public string CreatedBy { get; set; }
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace HealthGateway.Database.Models
         /// This is generally set by the baseDbContext.
         /// </summary>
         [Required]
+        [IgnoreDataMember]
         public DateTime CreatedDateTime { get; set; }
 
         /// <summary>
@@ -44,6 +47,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(30)]
+        [IgnoreDataMember]
         public string UpdatedBy { get; set; }
 
         /// <summary>
@@ -51,6 +55,7 @@ namespace HealthGateway.Database.Models
         /// This is generally set by the baseDbContext.
         /// </summary>
         [Required]
+        [IgnoreDataMember]
         public DateTime UpdatedDateTime { get; set; }
     }
 }

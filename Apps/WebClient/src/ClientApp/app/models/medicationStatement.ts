@@ -1,5 +1,4 @@
-import Medication from "./medication";
-import Pharmacy from "./pharmacy";
+import MedicationSumary from "./medicationSumary";
 
 // Medication statement model
 export default class MedicationStatement {
@@ -16,7 +15,7 @@ export default class MedicationStatement {
   // Date the medication statement was entered.
   public dateEntered?: Date;
   // The medication of this MedicationStatement.
-  public medication: Medication = new Medication();
+  public medicationSumary: MedicationSumary = new MedicationSumary();
   // The pharmacy where the medication was filled.
-  public pharmacy: Pharmacy = new Pharmacy();
+  public pharmacyId?:string
 }
