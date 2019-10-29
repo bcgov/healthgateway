@@ -24,8 +24,9 @@ namespace HealthGateway.Common.Auditing
     public interface IAuditLogger
     {
         /// <summary>
-        /// Writes an Audit entry to the audit log
+        /// Writes an Audit entry to the audit log.
         /// </summary>
+        /// <param name="auditEvent">The audit event to record.</param>
         void WriteAuditEvent(AuditEvent auditEvent);
 
         /// <summary>

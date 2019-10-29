@@ -28,9 +28,9 @@ namespace HealthGateway.Database.Delegates
         private readonly DrugDbContext dbContext;
 
         /// <summary>
-        /// Constructor that requires a database context factory.
+        /// Initializes a new instance of the <see cref="EntityDrugLookupDelegate"/> class.
         /// </summary>
-        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
+        /// <param name="dbContext">The context to be used when accessing the databaase.</param>
         public EntityDrugLookupDelegate(DrugDbContext dbContext)
         {
             this.dbContext = dbContext;

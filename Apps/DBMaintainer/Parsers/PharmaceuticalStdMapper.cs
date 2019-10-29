@@ -20,8 +20,15 @@ namespace HealthGateway.DrugMaintainer
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Mapping class to which maps the read file to the relavent model object.
+    /// </summary>
     public class PharmaceuticalStdMapper : ClassMap<PharmaceuticalStd>
     {
+        /// <summary>
+        /// Performs the mapping of the read file to the to the model.
+        /// </summary>
+        /// <param name="drugProducts">The DrugProduct to relate the object to.</param>
         public PharmaceuticalStdMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE

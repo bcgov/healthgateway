@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Models;
@@ -24,12 +25,12 @@ namespace HealthGateway.Database.Context
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <summary>
-    /// The database context to be used for the Medication Service.
+    /// The database context to be used for accessing the Federal and Provincial drug files.
     /// </summary>
     public class DrugDbContext : BaseDbContext
     {
         /// <summary>
-        /// Constructor required to instantiated the context via startup.
+        /// Initializes a new instance of the <see cref="DrugDbContext"/> class.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
         public DrugDbContext(DbContextOptions<DrugDbContext> options)
@@ -37,6 +38,8 @@ namespace HealthGateway.Database.Context
         {
         }
 
+        #pragma warning disable CS1591 // These are self explanatory.
+        #pragma warning disable SA1600 // These are self explanatory.
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
 
         public DbSet<Company> Company { get; set; }
@@ -63,9 +66,13 @@ namespace HealthGateway.Database.Context
 
         public DbSet<FileDownload> FileDownload { get; set; }
 
+        #pragma warning restore CS1591 //Turn XML documentation back on.
+
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            Contract.Requires(modelBuilder != null);
+
             modelBuilder.HasSequence<long>(Sequence.PHARMANET_TRACE)
                         .StartsAt(1)
                         .IncrementsBy(1)

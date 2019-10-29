@@ -17,8 +17,15 @@ namespace HealthGateway.DrugMaintainer
 {
     using CsvHelper.Configuration;
     using HealthGateway.Database.Models;
+
+    /// <summary>
+    /// Performs a mapping from the read file to the model object.
+    /// </summary>
     public class PharmaCareDrugMapper : ClassMap<PharmaCareDrug>
     {
+        /// <summary>
+        /// Performs the mapping of read Pharmacare file to the db model.
+        /// </summary>
         public PharmaCareDrugMapper()
         {
             Map(m => m.DINPIN).Name("DIN/PIN");
