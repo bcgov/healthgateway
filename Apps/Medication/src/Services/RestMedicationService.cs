@@ -49,12 +49,13 @@ namespace HealthGateway.Medication.Services
             List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(paddedDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
-                List<Form> forms = this.drugLookupDelegate.GetFormByDrugProductId(drugProduct.DrugProductId);
-                List<ActiveIngredient> ingredients = this.drugLookupDelegate.GetActiveIngredientByDrugProductId(drugProduct.DrugProductId);
-                List<Company> companies = this.drugLookupDelegate.GetCompanyByDrugProductId(drugProduct.DrugProductId);
+                List<Form> forms = this.drugLookupDelegate.GetFormByDrugProductId(drugProduct.Id);
+                List<ActiveIngredient> ingredients = this.drugLookupDelegate.GetActiveIngredientByDrugProductId(drugProduct.Id);
+                List<Company> companies = this.drugLookupDelegate.GetCompanyByDrugProductId(drugProduct.Id);
 
                 MedicationResult.FederalDrugSource federalData = new MedicationResult.FederalDrugSource()
                 {
+                    UpdateDateTime = drugProduct.UpdatedDateTime,
                     DrugProduct = drugProduct,
                     Forms = forms,
                     ActiveIngredients = ingredients,
@@ -69,6 +70,7 @@ namespace HealthGateway.Medication.Services
             {
                 MedicationResult.ProvincialDrugSource provincialData = new MedicationResult.ProvincialDrugSource()
                 {
+                    UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
                     PharmaCareDrug = pharmaCareDrug
                 };
 

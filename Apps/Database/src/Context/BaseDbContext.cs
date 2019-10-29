@@ -18,50 +18,23 @@ namespace HealthGateway.Database.Context
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <summary>
-    /// The database context to be used for the Medication Service.
+    /// The common database context to be used by all of HealthGateway.
     /// </summary>
-    public class DrugDbContext : DbContext
+    public class BaseDbContext : DbContext
     {
         /// <summary>
         /// Constructor required to instantiated the context via startup.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public DrugDbContext(DbContextOptions<DrugDbContext> options)
+        public BaseDbContext(DbContextOptions options)
             : base(options)
         {
         }
-
-        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
-
-        public DbSet<Company> Company { get; set; }
-
-        public DbSet<DrugProduct> DrugProduct { get; set; }
-
-        public DbSet<Form> Form { get; set; }
-
-        public DbSet<Packaging> Packaging { get; set; }
-
-        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
-
-        public DbSet<Route> Route { get; set; }
-
-        public DbSet<Schedule> Schedule { get; set; }
-
-        public DbSet<Status> Status { get; set; }
-
-        public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
-
-        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
-
-        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
-
-        public DbSet<FileDownload> FileDownload { get; set; }
 
         /// <summary>
         /// Executes a sql command.
@@ -77,7 +50,7 @@ namespace HealthGateway.Database.Context
         /// <inheritdoc />
         public override int SaveChanges()
         {
-            const string user = "DrugMaintainer";
+            const string user = "System";
             DateTime now = System.DateTime.UtcNow;
 
             IEnumerable<EntityEntry<IAuditable>> auditableEntries = this.ChangeTracker.Entries<IAuditable>()
@@ -88,30 +61,14 @@ namespace HealthGateway.Database.Context
                 if (auditEntity.State == EntityState.Added)
                 {
                     auditEntity.Entity.CreatedDateTime = now;
-                    auditEntity.Entity.CreatedBy = user;
+                    auditEntity.Entity.CreatedBy = auditEntity.Entity.CreatedBy ?? user;
                 }
 
                 auditEntity.Entity.UpdatedDateTime = now;
-                auditEntity.Entity.UpdatedBy = user;
+                auditEntity.Entity.UpdatedBy = auditEntity.Entity.CreatedBy ?? user;
             }
 
             return base.SaveChanges();
-        }
-
-        /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.HasSequence<long>(Sequence.PHARMANET_TRACE)
-                        .StartsAt(1)
-                        .IncrementsBy(1)
-                        .HasMin(1)
-                        .HasMax(999999)
-                        .IsCyclic(true);
-
-            // Create the unique index for the SHA256 hash
-            modelBuilder.Entity<FileDownload>()
-                    .HasIndex(f => f.Hash)
-                    .IsUnique();
         }
     }
 }

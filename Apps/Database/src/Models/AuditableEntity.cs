@@ -17,21 +17,26 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
     public abstract class AuditableEntity : IAuditable
     {
         [Required]
         [MaxLength(30)]
+        [IgnoreDataMember]
         public string CreatedBy { get; set; }
 
         [Required]
+        [IgnoreDataMember]
         public DateTime CreatedDateTime { get; set; }
 
         [Required]
         [MaxLength(30)]
+        [IgnoreDataMember]
         public string UpdatedBy { get; set; }
 
         [Required]
+        [IgnoreDataMember]
         public DateTime UpdatedDateTime { get; set; }
     }
 }

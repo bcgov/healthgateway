@@ -18,11 +18,11 @@ namespace HealthGateway.Database.Migrations.AuditDb
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     AuditEventDateTime = table.Column<DateTime>(nullable: false),
                     ClientIP = table.Column<string>(maxLength: 15, nullable: false),
-                    ApplicationSubject = table.Column<string>(maxLength: 100, nullable: false),
+                    ApplicationSubject = table.Column<string>(maxLength: 100, nullable: true),
                     ApplicationType = table.Column<int>(maxLength: 100, nullable: false),
                     TransacationName = table.Column<string>(maxLength: 100, nullable: false),
                     TransactionVersion = table.Column<string>(maxLength: 5, nullable: true),
-                    Trace = table.Column<string>(maxLength: 20, nullable: true),
+                    Trace = table.Column<string>(maxLength: 200, nullable: true),
                     TransactionResultType = table.Column<int>(nullable: false),
                     TransactionDuration = table.Column<long>(nullable: true)
                 },

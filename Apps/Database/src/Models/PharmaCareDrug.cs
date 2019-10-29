@@ -24,7 +24,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the system generated drug id.
         /// </summary>
-        public Guid PharmaCareDrugId { get; set; }
+        [Column("PharmaCareDrugId")]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the DIN/PIN.

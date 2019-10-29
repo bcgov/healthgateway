@@ -101,8 +101,8 @@ namespace HealthGateway.Medication
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
-            this.startupConfig.UseAudit(app);
             this.startupConfig.UseAuth(app);
+            this.startupConfig.UseAudit(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
         }

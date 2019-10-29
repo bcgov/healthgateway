@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Database.Context;
@@ -45,25 +46,52 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<Form> GetFormByDrugProductId(System.Guid drugProductId)
         {
-            return this.dbContext.Form.Where(c => c.Drug.DrugProductId == drugProductId).ToList();
+            return this.dbContext.Form.Where(c => c.DrugProduct.Id == drugProductId).ToList();
         }
 
         /// <inheritdoc/>
         public List<ActiveIngredient> GetActiveIngredientByDrugProductId(System.Guid drugProductId)
         {
-            return this.dbContext.ActiveIngredient.Where(c => c.Drug.DrugProductId == drugProductId).ToList();
+            return this.dbContext.ActiveIngredient.Where(c => c.DrugProduct.Id == drugProductId).ToList();
         }
 
         /// <inheritdoc/>
         public List<Company> GetCompanyByDrugProductId(System.Guid drugProductId)
         {
-            return this.dbContext.Company.Where(c => c.Drug.DrugProductId == drugProductId).ToList();
+            return this.dbContext.Company.Where(c => c.DrugProduct.Id == drugProductId).ToList();
         }
 
         /// <inheritdoc/>
         public List<PharmaCareDrug> GetPharmaCareDrugsByDIN(List<string> drugIdentifiers)
         {
-            return this.dbContext.PharmaCareDrug.Where(dp => drugIdentifiers.Contains(dp.DINPIN)).ToList();
+            DateTime now = DateTime.UtcNow;
+            return this.dbContext.PharmaCareDrug
+                .Where(dp => drugIdentifiers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate))
+                .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).FirstOrDefault())
+                .ToList();
+        }
+
+        /// <inheritdoc/>
+        public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
+        {
+            // Retrieve the brand names using the provincial data
+            List<PharmaCareDrug> pharmaCareDrugs = GetPharmaCareDrugsByDIN(drugIdentifiers);
+            Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(pcd => pcd.DINPIN, pcd => pcd.BrandName);
+
+            if (drugIdentifiers.Count > provicialBrandNames.Count())
+            {
+                // Get the DINs not found on the previous query
+                List<string> notFoundDins = drugIdentifiers.Where(din => !provicialBrandNames.Keys.Contains(din)).ToList();
+
+                // Retrieve the brand names using the federal data
+                List<DrugProduct> drugProducts = GetDrugProductsByDIN(notFoundDins);
+                Dictionary<string, string> federalBrandNames = drugProducts.ToDictionary(dp => dp.DrugIdentificationNumber, dp => dp.BrandName);
+
+                // Merge both data sets
+                federalBrandNames.ToList().ForEach(x => provicialBrandNames.Add(x.Key, x.Value));
+            }
+
+            return provicialBrandNames;
         }
     }
 }

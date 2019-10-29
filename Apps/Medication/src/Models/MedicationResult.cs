@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -35,6 +35,7 @@ namespace HealthGateway.Medication.Models
 
         public class FederalDrugSource
         {
+            public DateTime UpdateDateTime;
             public DrugProduct DrugProduct { get; set; }
             public List<Form> Forms { get; set; }
             public List<ActiveIngredient> ActiveIngredients;
@@ -43,6 +44,7 @@ namespace HealthGateway.Medication.Models
 
         public class ProvincialDrugSource
         {
+            public DateTime UpdateDateTime;
             public PharmaCareDrug PharmaCareDrug { get; set; }
         }
     }

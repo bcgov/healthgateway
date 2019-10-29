@@ -17,7 +17,9 @@ namespace HealthGateway.Common.Auditing
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Reflection;
+    using System.Security.Claims;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -33,8 +35,6 @@ namespace HealthGateway.Common.Auditing
     /// </summary>
     public class AuditLogger : IAuditLogger
     {
-        private const string ANONYMOUS = "anonymous";
-
         private readonly ILogger<IAuditLogger> logger;
 
         private readonly IConfiguration configuration;
@@ -72,11 +72,13 @@ namespace HealthGateway.Common.Auditing
             Contract.Requires(context != null);
             Contract.Requires(auditEvent != null);
 
+            ClaimsIdentity claimsIdentity = (ClaimsIdentity)context.User.Identity;
+            Claim hdidClaim = claimsIdentity.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
+            string hdid = hdidClaim?.Value;
+
             auditEvent.ApplicationType = this.GetApplicationType();
             auditEvent.TransactionResultType = this.GetTransactionResultType(context.Response.StatusCode);
-            auditEvent.ApplicationSubject = context.User.Identity.Name;
-            auditEvent.CreatedBy = string.IsNullOrEmpty(context.User.Identity.Name) ?
-                ANONYMOUS : context.User.Identity.Name;
+            auditEvent.ApplicationSubject = hdid;
             auditEvent.TransacationName = context.Request.Path;
             auditEvent.Trace = context.TraceIdentifier;
             auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();

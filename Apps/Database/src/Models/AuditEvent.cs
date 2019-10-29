@@ -51,7 +51,6 @@ namespace HealthGateway.Database.Models
         /// The application specific subject identifer.
         /// </summary>
         [MaxLength(100)]
-        [Required]
         public string ApplicationSubject { get; set; }
 
         /// <summary>
@@ -78,7 +77,7 @@ namespace HealthGateway.Database.Models
         /// The trace value for the audit event
         /// </summary>
         ///
-        [MaxLength(20)]
+        [MaxLength(200)]
         public string Trace { get; set; }
 
         /// <summary>

@@ -103,7 +103,6 @@ namespace HealthGateway.Medication.Services
 
             if (!hnClientMedicationResult.IsError)
             {
-                await this.PopulatePharmacy(hnClientMedicationResult.Message, jwtModel, userId, ipAddress).ConfigureAwait(true);
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
@@ -131,20 +130,16 @@ namespace HealthGateway.Medication.Services
 
         private void PopulateBrandName(List<MedicationStatement> statements)
         {
-            // The Drug Product Database pads zeroes to the left of Drug Identifiers
             List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
 
-            List<DrugProduct> retrievedDrugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationIdentifiers);
-            List<Medication> retrievedMedications = SimpleModelMapper.ToMedicationList(retrievedDrugProducts);
-
-            // Make a map of the retrieved medications removing the padded zero to match the DIN definitions from pharmanet
-            Dictionary<string, Medication> medicationsMap = retrievedMedications.ToDictionary(x => x.DIN.TrimStart('0'), x => x);
+            Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
 
             foreach (MedicationStatement medicationStatement in statements)
             {
-                if (medicationsMap.ContainsKey(medicationStatement.Medication.DIN))
+                string din = medicationStatement.Medication.DIN.PadLeft(8, '0');
+                if (brandNameMap.ContainsKey(din))
                 {
-                    medicationStatement.Medication.BrandName = medicationsMap[medicationStatement.Medication.DIN].BrandName;
+                    medicationStatement.Medication.BrandName = brandNameMap[din];
                 }
                 else
                 {
