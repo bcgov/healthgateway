@@ -22,6 +22,7 @@ namespace HealthGateway.Medication
     using HealthGateway.Common.Authentication;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Medication.Delegate;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
@@ -86,7 +87,7 @@ namespace HealthGateway.Medication
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
-            services.AddTransient<IPatientService, RestPatientService>();
+            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddTransient<IPharmacyService, RestPharmacyService>();
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();

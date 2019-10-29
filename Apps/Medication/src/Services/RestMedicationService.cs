@@ -71,7 +71,7 @@ namespace HealthGateway.Medication.Services
                 MedicationResult.ProvincialDrugSource provincialData = new MedicationResult.ProvincialDrugSource()
                 {
                     UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
-                    PharmaCareDrug = pharmaCareDrug
+                    PharmaCareDrug = pharmaCareDrug,
                 };
 
                 if (result.ContainsKey(pharmaCareDrug.DINPIN))

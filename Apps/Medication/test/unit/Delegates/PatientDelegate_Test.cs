@@ -15,25 +15,24 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
+    using HealthGateway.Medication.Delegate;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Services;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using HealthGateway.Common.Authentication;
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using System.Text;
     using Newtonsoft.Json;
     using Xunit;
 
 
-    public class PatientService_Test
+    public class PatientDelegate_Test
     {
         private readonly IConfiguration configuration;
-        public PatientService_Test()
+        
+        public PatientDelegate_Test()
         {
             this.configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
         }
@@ -51,7 +50,7 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            IPatientService service = new RestPatientService(httpMock.Object, configuration);
+            IPatientDelegate service = new RestPatientDelegate(httpMock.Object, configuration);
             string phn = await service.GetPatientPHNAsync(expected.HdId, "Bearer TheTestToken");
 
             Assert.Equal(expected.PersonalHealthNumber, phn);
@@ -68,7 +67,7 @@ namespace HealthGateway.Medication.Test
 
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IPatientService service = new RestPatientService(httpMock.Object, configuration);
+            IPatientDelegate service = new RestPatientDelegate(httpMock.Object, configuration);
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));
         }
     }
