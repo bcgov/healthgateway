@@ -29,6 +29,6 @@ namespace HealthGateway.Medication.Services
         /// </summary>
         /// <param name="medicationDinList">The ip address of the request.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        List<Medication> GetMedications(List<string> medicationDinList);
+        Dictionary<string, MedicationResult> GetMedications(List<string> medicationDinList);
     }
 }

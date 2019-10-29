@@ -102,22 +102,16 @@ namespace HealthGateway.Medication.Test
                 PractitionerSurname = "DR.GATEWAY",
                 PrescriptionStatus = 'F',
                 PrescriptionIdentifier = "5790",
-                Medication = new Medication(){
+                MedicationSumary = new MedicationSumary(){
                     BrandName = null,
                     DIN = "123456",
                     MaxDailyDosage = 1.555f,
                     DrugDiscontinuedDate = null,
                     GenericName = "CLARITHROMYCIN",
-                    Manufacturer = "BGP PHARMA ULC",
-                    DosageUnit = "MG",
-                    Dosage = 500.0f,
-                    Form = "TABLET",
                     Quantity = 55.5f,
                 }
             };
-
-            string genericName = "CLARITHROMYCIN                BGP PHARMA ULC 500 MG    TABLET";
-
+            
             string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", this.culture);
             string date = DateTime.Now.ToString("yyMMdd", this.culture);
             StringBuilder sb = new StringBuilder();
@@ -136,14 +130,14 @@ namespace HealthGateway.Medication.Test
             // ZPB3 prescriptions
             sb.Append("|ZPB3^");
 
-            sb.Append($"{expectedMedicationStatement.Medication.DIN}^");
-            sb.Append($"{genericName}^N^");
-            sb.Append($"{expectedMedicationStatement.Medication.Quantity.ToString("F1").Replace(".", string.Empty)}^");
-            sb.Append($"{expectedMedicationStatement.Medication.MaxDailyDosage.ToString("F3").Replace(".", string.Empty)}^^^");
+            sb.Append($"{expectedMedicationStatement.MedicationSumary.DIN}^");
+            sb.Append($"{expectedMedicationStatement.MedicationSumary.GenericName}^N^");
+            sb.Append($"{expectedMedicationStatement.MedicationSumary.Quantity.ToString("F1").Replace(".", string.Empty)}^");
+            sb.Append($"{expectedMedicationStatement.MedicationSumary.MaxDailyDosage.ToString("F3").Replace(".", string.Empty)}^^^");
             sb.Append($"{expectedMedicationStatement.PrescriptionStatus}^");
             sb.Append($"{expectedMedicationStatement.DispensedDate.ToString("yyyyMMdd")}^CACI^P1^XXALE^");
             sb.Append($"{expectedMedicationStatement.PractitionerSurname}^");
-            sb.Append($"{expectedMedicationStatement.Medication.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
+            sb.Append($"{expectedMedicationStatement.MedicationSumary.DrugDiscontinuedDate?.ToString("yyyyMMdd")}^^");
             sb.Append($"{expectedMedicationStatement.Directions}^^^^");
             sb.Append($"{expectedMedicationStatement.DateEntered?.ToString("yyyyMMdd")}^");
             sb.Append($"{expectedMedicationStatement.PharmacyId}^Y^");

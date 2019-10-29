@@ -53,11 +53,11 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
-        public RequestResult<List<Medication>> GetMedication(string drugIdentifier)
+        public RequestResult<Dictionary<string, MedicationResult>> GetMedication(string drugIdentifier)
         {
-            List<Medication> medications = this.medicationService.GetMedications(new List<string>() { drugIdentifier });
+            Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { drugIdentifier });
 
-            RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
+            RequestResult<Dictionary<string, MedicationResult>> result = new RequestResult<Dictionary<string, MedicationResult>>()
             {
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,
@@ -77,11 +77,11 @@ namespace HealthGateway.Medication.Controllers
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
-        public RequestResult<List<Medication>> GetMedications(List<string> drugIdentifiers)
+        public RequestResult<Dictionary<string, MedicationResult>> GetMedications(List<string> drugIdentifiers)
         {
-            List<Medication> medications = this.medicationService.GetMedications(drugIdentifiers);
+            Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(drugIdentifiers);
 
-            RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
+            RequestResult<Dictionary<string, MedicationResult>> result = new RequestResult<Dictionary<string, MedicationResult>>()
             {
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,

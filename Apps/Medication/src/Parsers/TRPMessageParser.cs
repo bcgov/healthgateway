@@ -122,13 +122,13 @@ namespace HealthGateway.Medication.Parsers
                 {
                     string[] fields = record.Split('^');
                     MedicationStatement medicationStatement = new MedicationStatement();
-                    Medication medication = new Medication();
-                    medication.DIN = fields[1]; // DIN
-                    medication.ParseHL7V2GenericName(fields[2]); // Generic Name
+                    MedicationSumary medicationSumary = new MedicationSumary();
+                    medicationSumary.DIN = fields[1]; // DIN
+                    medicationSumary.GenericName = fields[2]; // Generic Name
 
                     // fields[3]; // Same Store Indicator
-                    medication.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
-                    medication.MaxDailyDosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
+                    medicationSumary.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
+                    medicationSumary.MaxDailyDosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
 
                     // fields[6]; // Ingredient Code
                     // fields[7]; // Ingredient Name
@@ -139,7 +139,7 @@ namespace HealthGateway.Medication.Parsers
                     // fields[11]; // Practitioner ID Reference
                     // fields[12]; // Practitioner ID
                     medicationStatement.PractitionerSurname = fields[13]; // Practitioner Family Name
-                    medication.DrugDiscontinuedDate = this.ParseDate(fields[14]); // Drug Discontinued Date
+                    medicationSumary.DrugDiscontinuedDate = this.ParseDate(fields[14]); // Drug Discontinued Date
 
                     // fields[15]; // Drug Discontinued Source
                     medicationStatement.Directions = fields[16]; // Directions
@@ -160,7 +160,7 @@ namespace HealthGateway.Medication.Parsers
                         // fields[25].ToString(); // Clinical Service Codes
                     }
 
-                    medicationStatement.Medication = medication;
+                    medicationStatement.MedicationSumary = medicationSumary;
                     medicationStatements.Add(medicationStatement);
                 }
             }
