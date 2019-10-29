@@ -32,8 +32,7 @@ export interface IPatientService {
 
 export interface IMedicationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getPatientMedicationStatements(hdid: string): Promise<RequestResult>;
-  getPharmacyInfo(pharmacyId: string): Promise<RequestResult>;
+  getPatientMedicationStatemens(hdid: string): Promise<RequestResult>;
 }
 
 export interface IConfigService {

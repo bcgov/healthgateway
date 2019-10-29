@@ -6,7 +6,6 @@ $radius: 15px;
 #pageTitle {
   color: $primary;
 }
-
 #pageTitle hr {
   border-top: 2px solid $primary;
 }
@@ -18,7 +17,6 @@ $radius: 15px;
 .dateBreakLine {
   border-top: dashed 2px $primary;
 }
-
 .date {
   padding-top: 0px;
   color: $primary;
@@ -71,7 +69,9 @@ $radius: 15px;
       <span>An unexpected error occured while processing the request.</span>
     </b-alert>
     <div id="pageTitle">
-      <h1 id="subject">Health Care Timeline</h1>
+      <h1 id="subject">
+        Health Care Timeline
+      </h1>
       <hr />
     </div>
     <div id="listControlls">
@@ -89,12 +89,12 @@ $radius: 15px;
               Date
               <span v-show="sortDesc" name="descending">
                 (Newest)
-                <i class="fa fa-chevron-down" aria-hidden="true"></i>
-              </span>
+                <i class="fa fa-chevron-down" aria-hidden="true"></i
+              ></span>
               <span v-show="!sortDesc" name="ascending">
                 (Oldest)
-                <i class="fa fa-chevron-up" aria-hidden="true"></i>
-              </span>
+                <i class="fa fa-chevron-up" aria-hidden="true"></i
+              ></span>
             </b-btn>
           </b-row>
         </b-col>
@@ -105,7 +105,9 @@ $radius: 15px;
         <b-col>
           <b-row>
             <b-col cols="auto">
-              <div class="date">{{ getHeadingDate(dateGroup.date) }}</div>
+              <div class="date">
+                {{ getHeadingDate(dateGroup.date) }}
+              </div>
             </b-col>
             <b-col>
               <hr class="dateBreakLine" />
@@ -118,18 +120,21 @@ $radius: 15px;
                   <b-col class="icon leftPane" cols="0">
                     <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
                   </b-col>
-                  <b-col class="entryTitle">{{ entry.title }}</b-col>
+                  <b-col class="entryTitle">
+                    {{ entry.title }}
+                  </b-col>
                 </b-row>
                 <b-row>
-                  <b-col class="leftPane" cols="0"></b-col>
+                  <b-col class="leftPane" cols="0"> </b-col>
                   <b-col>
                     <b-row>
-                      <b-col>{{ entry.description }}</b-col>
+                      <b-col>
+                        {{ entry.description }}
+                      </b-col>
                     </b-row>
                     <b-row>
                       <b-col>
                         <b-btn
-                          @click="toggleDetails(entry)"
                           v-b-toggle="
                             'entryDetails-' + index + '-' + dateGroup.key
                           "
@@ -137,16 +142,21 @@ $radius: 15px;
                           class="detailsButton"
                         >
                           <span class="when-opened">
-                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                          </span>
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i
+                          ></span>
                           <span class="when-closed">
-                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                          </span>
+                            <i class="fa fa-chevron-up" aria-hidden="true"></i
+                          ></span>
                           View Details
                         </b-btn>
-                        <b-collapse :id="'entryDetails-' + index + '-' + dateGroup.key">
+                        <b-collapse
+                          :id="'entryDetails-' + index + '-' + dateGroup.key"
+                        >
                           <b-col>
-                            <div v-for="detail in entry.details" :key="detail.name">
+                            <div
+                              v-for="detail in entry.details"
+                              :key="detail.name"
+                            >
                               <strong>{{ detail.name }}:</strong>
                               {{ detail.value }}
                             </div>
@@ -174,10 +184,7 @@ import LoadingComponent from "@/components/loading.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
-import TimelineEntry, {
-  EntryType,
-  MedicationTimelineEntry
-} from "@/models/timelineEntry";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import moment from "moment";
 
@@ -200,21 +207,20 @@ export default class TimelineComponent extends Vue {
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
-  private medicationService: IMedicationService;
 
   mounted() {
     this.isLoading = true;
-    this.medicationService = container.get(
+    const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
-    this.medicationService
-      .getPatientMedicationStatements(this.user.hdid)
+    medicationService
+      .getPatientMedicationStatemens(this.user.hdid)
       .then(results => {
         console.log(results);
         if (!results.errorMessage) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
-            this.timelineEntries.push(new MedicationTimelineEntry(result));
+            this.timelineEntries.push(new TimelineEntry(result));
           }
         } else {
           console.log(
@@ -222,23 +228,6 @@ export default class TimelineComponent extends Vue {
               results.errorMessage
           );
         }
-      })
-      .catch(err => {
-        this.hasErrors = true;
-        console.log(err);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
-  }
-
-  private toggleDetails(timelineEntry: TimelineEntry): void {
-    this.isLoading = true;
-    var medicationEntry: MedicationTimelineEntry = timelineEntry;
-    this.medicationService
-      .getPharmacyInfo(medicationEntry.pharmacyId)
-      .then(result => {
-        medicationEntry.PopulatePharmacy(result);
       })
       .catch(err => {
         this.hasErrors = true;
