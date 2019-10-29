@@ -4,6 +4,7 @@ name: 1.0.0$(Rev:.r) #Build number
 variables:
   App.Home: $(Build.SourcesDirectory)/Apps/Immunization
   App.Name: immunization
+  App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
 
 pr: none
@@ -26,7 +27,7 @@ steps:
   displayName: Run dotnet Tests
   inputs:
     command: 'test'
-    projects: '$(App.Home)/test/unit/ImmunizationTests.csproj'
+    projects: '$(App.UnitTests)/ImmunizationTests.csproj'
     testRunTitle: 'ImmsService'
 
 - script: |
@@ -49,15 +50,6 @@ steps:
     projects: '$(App.Home)/src'
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
-
-#- script: |
-#    pushd $(App.Home)
-#     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-#    pushd src
-#    dotnet publish -o $(Build.BinariesDirectory)
-#    popd
-#    popd
-#  displayName: 'Restore and publish .Net App'
 
 - script: |
     set -e
