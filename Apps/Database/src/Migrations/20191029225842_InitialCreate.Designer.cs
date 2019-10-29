@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191028213142_InitialCreate")]
+    [Migration("20191029225842_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,8 +81,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -159,8 +158,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -212,6 +210,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("DrugIdentificationNumber")
                         .HasMaxLength(29);
 
+                    b.Property<Guid>("FileDownloadId");
+
                     b.Property<DateTime>("LastUpdate");
 
                     b.Property<string>("NumberOfAis")
@@ -227,10 +227,11 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FileDownloadId");
 
                     b.ToTable("DrugProduct");
                 });
@@ -255,17 +256,20 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(35);
 
+                    b.Property<int>("ProgramTypeCodeId");
+
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Hash")
                         .IsUnique();
+
+                    b.HasIndex("ProgramTypeCodeId");
 
                     b.ToTable("FileDownload");
                 });
@@ -296,8 +300,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -345,8 +348,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -388,6 +390,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("Date");
+
+                    b.Property<Guid>("FileDownloadId");
 
                     b.Property<DateTime>("FormularyListDate")
                         .HasColumnType("Date");
@@ -442,10 +446,11 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FileDownloadId");
 
                     b.ToTable("PharmaCareDrug");
                 });
@@ -470,14 +475,58 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("PharmaceuticalStdId");
 
                     b.HasIndex("DrugProductId");
 
                     b.ToTable("PharmaceuticalStd");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.ProgramTypeCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnName("ProgramTypeCodeId");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30);
+
+                    b.Property<DateTime>("CreatedDateTime");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30);
+
+                    b.Property<DateTime>("UpdatedDateTime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProgramTypeCode");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 100,
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400),
+                            Name = "Federal",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400)
+                        },
+                        new
+                        {
+                            Id = 200,
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400),
+                            Name = "Provincial",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400)
+                        });
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
@@ -506,8 +555,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -540,8 +588,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -584,8 +631,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -630,8 +676,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -667,8 +712,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
 
@@ -693,6 +737,22 @@ namespace HealthGateway.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.FileDownload", "FileDownload")
+                        .WithMany()
+                        .HasForeignKey("FileDownloadId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.FileDownload", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode", "ProgramTypeCode")
+                        .WithMany()
+                        .HasForeignKey("ProgramTypeCodeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.Form", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
@@ -706,6 +766,14 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithMany()
                         .HasForeignKey("DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.PharmaCareDrug", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.FileDownload", "FileDownload")
+                        .WithMany()
+                        .HasForeignKey("FileDownloadId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

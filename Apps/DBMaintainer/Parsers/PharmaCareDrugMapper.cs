@@ -26,7 +26,7 @@ namespace HealthGateway.DrugMaintainer
         /// <summary>
         /// Performs the mapping of read Pharmacare file to the db model.
         /// </summary>
-        public PharmaCareDrugMapper()
+        public PharmaCareDrugMapper(FileDownload filedownload)
         {
             Map(m => m.DINPIN).Name("DIN/PIN");
             Map(m => m.Plan).Name("Plan");
@@ -60,6 +60,8 @@ namespace HealthGateway.DrugMaintainer
             // Map(m => m.).Name("BGTS Cat Cd");
             // Map(m => m.).Name("BGTS Cat Desc");
             // Map(m => m.).Name("BGTS Max Annual Qty");
+            // Map the Filedownload to each object
+            Map(m => m.FileDownload).ConvertUsing(row => filedownload);
         }
     }
 }
