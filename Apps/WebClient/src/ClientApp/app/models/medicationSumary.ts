@@ -1,5 +1,5 @@
 // Medication model
-export default class Medication {
+export default class MedicationSumary {
   // Drug Identification Number for the medication.
   public DIN?: string;
   /// The medication form (tablet/drop/etc).
