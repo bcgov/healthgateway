@@ -129,28 +129,40 @@ $radius: 15px;
                     <b-row>
                       <b-col>
                         <b-btn
-                          @click="toggleDetails(entry)"
                           v-b-toggle="
                             'entryDetails-' + index + '-' + dateGroup.key
                           "
                           variant="link"
                           class="detailsButton"
+                          @click="toggleDetails(entry)"
                         >
                           <span class="when-opened">
-                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                            <i
+                              class="fa fa-chevron-down"
+                              aria-hidden="true"
+                            ></i>
                           </span>
                           <span class="when-closed">
                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                           </span>
                           View Details
                         </b-btn>
-                        <b-collapse :id="'entryDetails-' + index + '-' + dateGroup.key">
+                        <b-collapse
+                          :id="'entryDetails-' + index + '-' + dateGroup.key"
+                        >
                           <b-col>
-                            <div v-for="detail in entry.details" :key="detail.name+detail.value">
+                            <div
+                              v-for="detail in entry.details"
+                              :key="detail.name + detail.value"
+                            >
                               <br v-if="detail.newLine" />
-                              <span v-if="detail.name != ''" class="font-weight-bold" :aria-hidden="detail.name != ''">
+                              <span
+                                v-if="detail.name != ''"
+                                class="font-weight-bold"
+                                :aria-hidden="detail.name != ''"
+                              >
                                 <strong>{{ detail.name }}:</strong>
-                              </span>                              
+                              </span>
                               {{ detail.value }}
                             </div>
                           </b-col>
@@ -256,6 +268,7 @@ export default class TimelineComponent extends Vue {
             "Error returned from the pharmacy details call: " +
               results.errorMessage
           );
+        }
       })
       .catch(err => {
         this.hasErrors = true;
