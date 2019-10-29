@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Medication.Delegate
 {
     using System;
     using System.Net.Http;
@@ -25,31 +25,31 @@ namespace HealthGateway.Medication.Services
     using Newtonsoft.Json;
 
     /// <summary>
-    /// The patient service.
+    /// Implementation that uses HTTP to retrieve patient information.
     /// </summary>
-    public class RestPatientService : IPatientService
+    public class RestPatientDelegate : IPatientDelegate
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestPatientService"/> class.
+        /// Initializes a new instance of the <see cref="RestPatientDelegate"/> class.
         /// </summary>
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public RestPatientService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public RestPatientDelegate(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientPHNAsync(string hdid, string jwtString)
+        public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", jwtString);
+                client.DefaultRequestHeaders.Add("Authorization", authorization);
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
