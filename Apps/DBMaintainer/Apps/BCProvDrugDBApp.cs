@@ -53,6 +53,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <inheritdoc/>
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
+            downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Provincial;
             string[] files = Directory.GetFiles(sourceFolder, "pddf*.csv");
             if (files.Length > 1)
             {
@@ -60,6 +61,8 @@ namespace HealthGateway.DrugMaintainer.Apps
             }
             this.logger.LogInformation("Parsing Provincial PharmaCare file");
             List<PharmaCareDrug> pharmaCareDrugs = this.parser.ParsePharmaCareDrugFile(files[0]);
+            // inject the FileDownload into the pharmacare drugs
+            pharmaCareDrugs.ForEach(c => c.FileDownload = downloadedFile);
             this.drugDbContext.AddRange(pharmaCareDrugs);
             AddFileToDB(downloadedFile);
             logger.LogInformation("Saving PharmaCare Drugs");

@@ -18,35 +18,33 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constant;
 
-    /// <summary>
-    /// An entity represenging a file that was processed to load tables.
-    /// </summary>
-    public class FileDownload : AuditableEntity
+    /// <inheritdoc />
+    public class FileDownload : AuditableEntity, IFileDownload
     {
-        /// <summary>
-        /// Gets or sets the unique id.
-        /// </summary>
+        /// <inheritdoc />
         [Column("FileDownloadId")]
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the downloaded zip file.
-        /// </summary>
+        /// <inheritdoc />
         [Required]
         [MaxLength(35)]
         public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the SHA256 hash of the downloaded file.
-        /// </summary>
+        /// <inheritdoc />
         [Required]
         [MaxLength(44)]
         public string Hash { get; set; }
 
-        /// <summary>
-        /// Gets or sets the local file path to store the downloaded file.
-        /// </summary>
+        /// <inheritdoc />
+        [Required]
+        public ProgramType ProgramTypeCodeId { get; set; }
+
+        /// <inheritdoc />
+        public virtual ProgramTypeCode ProgramTypeCode { get; set; }
+
+        /// <inheritdoc />
         [NotMapped]
         public string LocalFilePath { get; set; }
     }

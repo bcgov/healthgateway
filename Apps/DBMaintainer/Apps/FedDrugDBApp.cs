@@ -52,8 +52,11 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <inheritdoc/>
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
+            downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
             this.logger.LogInformation("Parsing files...");
             List<DrugProduct> drugProducts = this.parser.ParseDrugFile(sourceFolder);
+            // inject the FileDownload into the drug products
+            drugProducts.ForEach(c => c.FileDownload = downloadedFile);
             List<ActiveIngredient> ingredients = this.parser.ParseActiveIngredientFile(sourceFolder, drugProducts);
             List<Company> companies = this.parser.ParseCompanyFile(sourceFolder, drugProducts);
             List<Status> statuses = this.parser.ParseStatusFile(sourceFolder, drugProducts);
@@ -64,7 +67,7 @@ namespace HealthGateway.DrugMaintainer.Apps
             List<Schedule> schedules = this.parser.ParseScheduleFile(sourceFolder, drugProducts);
             List<TherapeuticClass> therapeuticClasses = this.parser.ParseTherapeuticFile(sourceFolder, drugProducts);
             List<VeterinarySpecies> veterinarySpecies = this.parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts);
-            logger.LogInformation("Adding entities to context");
+            this.logger.LogInformation("Adding entities to context");
             this.drugDbContext.DrugProduct.AddRange(drugProducts);
             this.drugDbContext.ActiveIngredient.AddRange(ingredients);
             this.drugDbContext.Company.AddRange(companies);
@@ -76,8 +79,9 @@ namespace HealthGateway.DrugMaintainer.Apps
             this.drugDbContext.Schedule.AddRange(schedules);
             this.drugDbContext.TherapeuticClass.AddRange(therapeuticClasses);
             this.drugDbContext.VeterinarySpecies.AddRange(veterinarySpecies);
-            AddFileToDB(downloadedFile);
-            logger.LogInformation("Saving Entities to the database");
+            downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
+            this.AddFileToDB(downloadedFile);
+            this.logger.LogInformation("Saving Entities to the database");
             this.drugDbContext.SaveChanges();
         }
     }
