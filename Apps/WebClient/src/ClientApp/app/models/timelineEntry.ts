@@ -19,7 +19,6 @@ export class EntryDetail {
 
 // Timeline entry model
 export default class TimelineEntry {
-<<<<<<< HEAD
     public readonly id?: string;
     public readonly date?: Date;
     public readonly title?: string;
@@ -48,29 +47,20 @@ export class MedicationTimelineEntry extends TimelineEntry {
     public readonly pharmacyId?: string;
 
     public constructor(other: MedicationStatement) {
-        var strenght: string = "";
-        if (other.medication.complexDose) {
-            strenght = other.medication.complexDose
-                ? other.medication.complexDose
-                : "N/A";
-        } else {
-            strenght = other.medication.dosage + " " + other.medication.dosageUnit;
-        }
-
         var details: EntryDetail[] = [
             new EntryDetail("Practitioner", other.practitionerSurname),
             new EntryDetail("Prescription Number", other.prescriptionIdentifier),
-            new EntryDetail("Quantity", other.medication.quantity),
-            new EntryDetail("Strength", strenght),
-            new EntryDetail("Form", other.medication.form),
-            new EntryDetail("Manufacturer", other.medication.manufacturer),
+            new EntryDetail("Quantity", other.medicationSumary.quantity),
+            new EntryDetail("Strength", "TODO"),
+            new EntryDetail("Form", other.medicationSumary.form),
+            new EntryDetail("Manufacturer", other.medicationSumary.manufacturer),
         ];
 
         super(
             "id-" + Math.random(),
             other.dispensedDate,
-            other.medication.brandName,
-            other.medication.genericName,
+            other.medicationSumary.brandName,
+            other.medicationSumary.genericName,
             EntryType.Medication,
             details
         );
@@ -84,31 +74,4 @@ export class MedicationTimelineEntry extends TimelineEntry {
 
         this.details.push(new EntryDetail("Filled At", pharmacyDescription));       
     }
-=======
-  public readonly date?: Date;
-  public readonly id?: string;
-  public readonly title?: string;
-  public readonly description?: string;
-  public readonly type: EntryType;
-  public readonly details: EntryDetail[];
-
-  public constructor(other: MedicationStatement) {
-    // The ID needs to come from the the server
-    this.type = EntryType.Medication;
-    this.id = "id-" + Math.random();
-    this.date = other.dispensedDate;
-    this.title = other.medicationSumary.brandName;
-    this.description = other.medicationSumary.genericName;
-
-    this.details = [
-      new EntryDetail("Practitioner", other.practitionerSurname),
-      new EntryDetail("Prescription Number", other.prescriptionIdentifier),
-      new EntryDetail("Quantity", other.medicationSumary.quantity),
-      new EntryDetail("Strength", "TODO"),
-      new EntryDetail("Form", other.medicationSumary.form),
-      new EntryDetail("Manufacturer", other.medicationSumary.manufacturer),
-      new EntryDetail("Filled At", "TODO")
-    ];
-  }
->>>>>>> dev
 }
