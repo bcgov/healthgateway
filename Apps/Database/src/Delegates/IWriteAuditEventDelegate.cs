@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Database.Delegates
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Models;
 
-    #pragma warning disable CS1591 // self explanatory simple model
-    #pragma warning disable SA1600 // self explanatory simple model
-    public class PharmaceuticalStd : AuditableEntity
+    /// <summary>
+    /// Delegate that writes a new audit event to the database.
+    /// </summary>
+    public interface IWriteAuditEventDelegate
     {
-        [Column("PharmaceuticalStdId")]
-        public Guid PharmaceuticalStdId { get; set; }
-
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
-        public string PharmaceuticalStdDesc { get; set; }
+        /// <summary>
+        /// Writes a audit event to the database.
+        /// </summary>
+        /// <param name="sequenceName">The sequence name</param>
+        /// <returns>The next sequence value</returns>
+        void WriteAuditEvent(AuditEvent sequenceName);
     }
 }

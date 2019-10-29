@@ -25,7 +25,7 @@ namespace HealthGateway.Database.Models
     public class FileDownload : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the unique id
+        /// Gets or sets the unique id.
         /// </summary>
         [Column("FileDownloadId")]
         public Guid Id { get; set; }

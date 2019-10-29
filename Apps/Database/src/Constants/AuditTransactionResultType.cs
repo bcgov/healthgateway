@@ -15,14 +15,29 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Constant
 {
+    /// <summary>
+    /// Transaction Result Types for the audit entity.
+    /// </summary>
     public enum AuditTransactionResultType
     {
+        /// <summary>
+        /// Represents a successful transaction.
+        /// </summary>
         Success = 1,
 
+        /// <summary>
+        /// Represents a failed transaction.
+        /// </summary>
         Failure = 2,
 
+        /// <summary>
+        /// Represents an unauthorized transaction.
+        /// </summary>
         Unauthorized = 3,
 
+        /// <summary>
+        /// Represents that a system error occurred.
+        /// </summary>
         SystemError = 4,
     }
 }

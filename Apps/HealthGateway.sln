@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmunizationTests", "Immuni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\src\Database.csproj", "{86D8658A-3997-4108-BB97-BB488F8E11EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseTests", "Database\test\unit\DatabaseTests.csproj", "{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,18 @@ Global
 		{86D8658A-3997-4108-BB97-BB488F8E11EB}.Release|x64.Build.0 = Release|Any CPU
 		{86D8658A-3997-4108-BB97-BB488F8E11EB}.Release|x86.ActiveCfg = Release|Any CPU
 		{86D8658A-3997-4108-BB97-BB488F8E11EB}.Release|x86.Build.0 = Release|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Debug|x64.Build.0 = Debug|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Debug|x86.Build.0 = Debug|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x64.ActiveCfg = Release|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x64.Build.0 = Release|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x86.ActiveCfg = Release|Any CPU
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

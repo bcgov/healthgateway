@@ -19,22 +19,41 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Base class for all DB entities to ensure audit data is saved.
+    /// </summary>
     public abstract class AuditableEntity : IAuditable
     {
+        /// <summary>
+        /// Gets or sets the user/system that created the entity.
+        /// This is generally set by the baseDbContext.
+        /// </summary>
         [Required]
         [MaxLength(30)]
         [IgnoreDataMember]
         public string CreatedBy { get; set; }
 
+        /// <summary>
+        /// Gets or sets the datetime the entity was created.
+        /// This is generally set by the baseDbContext.
+        /// </summary>
         [Required]
         [IgnoreDataMember]
         public DateTime CreatedDateTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user/system that created the entity.
+        /// This is generally set by the baseDbContext.
+        /// </summary>
         [Required]
         [MaxLength(30)]
         [IgnoreDataMember]
         public string UpdatedBy { get; set; }
 
+        /// <summary>
+        /// Gets or sets the datetime the entity was updated.
+        /// This is generally set by the baseDbContext.
+        /// </summary>
         [Required]
         [IgnoreDataMember]
         public DateTime UpdatedDateTime { get; set; }

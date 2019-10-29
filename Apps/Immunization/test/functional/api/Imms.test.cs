@@ -12,7 +12,7 @@ namespace HealthGateway.WebClient.Test.Functional.Api
         {
             // arrange
             RestClient client = new RestClient(baseUrl);
-            RestRequest request = new RestRequest("v1/api/Imms/InvalidAPI", Method.GET);
+            RestRequest request = new RestRequest("v1/api/Immunization/InvalidAPI", Method.GET);
 
             // act
             IRestResponse response = client.Execute(request);
@@ -27,7 +27,7 @@ namespace HealthGateway.WebClient.Test.Functional.Api
         {
             // arrange
             RestClient client = new RestClient(baseUrl);
-            RestRequest request = new RestRequest("/v1/api/Imms/items", Method.GET);
+            RestRequest request = new RestRequest("/v1/api/Immunization/items", Method.GET);
 
             // act
             IRestResponse response = client.Execute(request);

@@ -22,14 +22,14 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management
+    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
     /// </summary>
     public class EntityDrugLookupDelegate : IDrugLookupDelegate
     {
         private readonly DrugDbContext dbContext;
 
         /// <summary>
-        /// Constructor that requires a database context.
+        /// Initializes a new instance of the <see cref="EntityDrugLookupDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the databaase.</param>
         public EntityDrugLookupDelegate(DrugDbContext dbContext)
