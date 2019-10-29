@@ -40,7 +40,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename)
+        public List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");
             using (var reader = new StreamReader(filename))
@@ -49,7 +49,8 @@ namespace HealthGateway.DrugMaintainer
                 {
                     csv.Configuration.HasHeaderRecord = true;
                     csv.Configuration.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = new[] { "yyyyMMdd" };
-                    csv.Configuration.RegisterClassMap<PharmaCareDrugMapper>();
+                    PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);
+                    csv.Configuration.RegisterClassMap(mapper);
                     List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();
                     return records;
                 }

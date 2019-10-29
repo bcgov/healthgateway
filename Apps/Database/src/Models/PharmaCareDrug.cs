@@ -223,5 +223,17 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(1)]
         public string LimitedUseFlag { get; set; }
+
+        /// <summary>
+        /// Gets or sets the assoicated File Download ID.
+        /// </summary>
+        [Required]
+        public Guid FileDownloadId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the FileDownload entity.
+        /// Code first mechanism to define the foreign key.
+        /// </summary>
+        public virtual FileDownload FileDownload { get; set; }
     }
 }

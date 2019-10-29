@@ -38,8 +38,8 @@ namespace HealthGateway.Database.Context
         {
         }
 
-        #pragma warning disable CS1591 // These are self explanatory.
-        #pragma warning disable SA1600 // These are self explanatory.
+#pragma warning disable CS1591 // These are self explanatory.
+#pragma warning disable SA1600 // These are self explanatory.
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
 
         public DbSet<Company> Company { get; set; }
@@ -66,7 +66,7 @@ namespace HealthGateway.Database.Context
 
         public DbSet<FileDownload> FileDownload { get; set; }
 
-        #pragma warning restore CS1591 //Turn XML documentation back on.
+#pragma warning restore CS1591 //Turn XML documentation back on.
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -84,6 +84,26 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<FileDownload>()
                     .HasIndex(f => f.Hash)
                     .IsUnique();
+
+            string user = "System";
+            DateTime utcnow = System.DateTime.UtcNow;
+            modelBuilder.Entity<ProgramTypeCode>().HasData(
+                new ProgramTypeCode {
+                    Id = ProgramType.Federal,
+                    Name = "Federal",
+                    CreatedBy = user,
+                    CreatedDateTime = utcnow,
+                    UpdatedBy = user,
+                    UpdatedDateTime = utcnow,
+                },
+                new ProgramTypeCode {
+                    Id = ProgramType.Provincial,
+                    Name = "Provincial",
+                    CreatedBy = user,
+                    CreatedDateTime = utcnow,
+                    UpdatedBy = user,
+                    UpdatedDateTime = utcnow,
+                });
         }
     }
 }
