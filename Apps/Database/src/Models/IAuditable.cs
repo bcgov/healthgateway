@@ -17,25 +17,28 @@ namespace HealthGateway.Database.Models
 {
     using System;
 
+    /// <summary>
+    /// Interface representing audit fields to be recorded in all DB entities.
+    /// </summary>
     public interface IAuditable
     {
         /// <summary>
-        /// The audit created by field in the DB.
+        /// Gets or sets the The audit created by field.
         /// </summary>
         string CreatedBy { get; set; }
 
         /// <summary>
-        /// The audit created date/time field in the DB.
+        /// Gets or sets the audit created date/time field.
         /// </summary>
         DateTime CreatedDateTime { get; set; }
 
         /// <summary>
-        /// The audit updated by field in the DB.
+        /// Gets or sets the audit updated by field.
         /// </summary>
         string UpdatedBy { get; set; }
 
         /// <summary>
-        /// The audit updated date/time in the DB.
+        /// Gets or sets the audit updated date/time.
         /// </summary>
         DateTime UpdatedDateTime { get; set; }
     }

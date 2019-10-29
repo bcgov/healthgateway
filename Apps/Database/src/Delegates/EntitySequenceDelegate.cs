@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Delegates
         private readonly DrugDbContext dbContext;
 
         /// <summary>
-        /// Constructor that uses the dependency injection interfaces.
+        /// Initializes a new instance of the <see cref="EntitySequenceDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the databaase context.</param>
         public EntitySequenceDelegate(DrugDbContext dbContext)
@@ -38,8 +38,8 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Gets the next sequence number for the given sequence name.
         /// </summary>
-        /// <param name="sequenceName">The sequence name</param>
-        /// <returns>The next sequence value</returns>
+        /// <param name="sequenceName">The sequence name.</param>
+        /// <returns>The next sequence value.</returns>
         public long NextValueForSequence(string sequenceName)
         {
             NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)

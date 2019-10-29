@@ -160,7 +160,6 @@ namespace HealthGateway.HNClient.Delegates
                 {
                     throw new SystemException(string.Format(CultureInfo.CurrentCulture, ERROR_INVALID_MESSAGE_FORMAT, "MISSING HEADER"));
                 }
-
             }
 
             return receivedMessage;

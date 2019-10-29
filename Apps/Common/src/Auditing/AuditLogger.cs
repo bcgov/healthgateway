@@ -28,10 +28,10 @@ namespace HealthGateway.Common.Auditing
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
+    #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
-    /// The Authorization service
+    /// The Authorization service.
     /// </summary>
     public class AuditLogger : IAuditLogger
     {
@@ -41,6 +41,12 @@ namespace HealthGateway.Common.Auditing
 
         private readonly AuditDbContext dbContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuditLogger"/> class.
+        /// </summary>
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="dbContext">The injected db context.</param>
+        /// <param name="config">The injected IConfiguration.</param>
         public AuditLogger(ILogger<IAuditLogger> logger, AuditDbContext dbContext, IConfiguration config)
         {
             this.logger = logger;
@@ -48,10 +54,11 @@ namespace HealthGateway.Common.Auditing
             this.dbContext = dbContext;
         }
 
+        /// <inheritdoc />
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
             // An audit event catches all types of exceptions.
-#pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
+            #pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
             this.logger.LogDebug(@"Begin AuditLogger.WriteAuditEvent(auditEvent)");
             try
             {
@@ -63,7 +70,7 @@ namespace HealthGateway.Common.Auditing
             {
                 this.logger.LogError(ex, @"In WriteAuditEvent");
             }
-#pragma warning restore CA1303
+            #pragma warning restore CA1303
         }
 
         /// <inheritdoc />
@@ -138,5 +145,5 @@ namespace HealthGateway.Common.Auditing
         }
     }
 
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
+    #pragma warning restore CA1303 // Do not pass literals as localized parameters
 }
