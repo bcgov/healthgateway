@@ -109,41 +109,22 @@ namespace HealthGateway.Medication.Services
             return hnClientMedicationResult;
         }
 
-        private async Task PopulatePharmacy(List<MedicationStatement> statements, JWTModel jwtModel, string userId, string ipAddress)
-        {
-            IDictionary<string, Pharmacy> pharmacyDict = new Dictionary<string, Pharmacy>();
-            foreach (MedicationStatement medicationStatement in statements)
-            {
-                string pharmacyId = medicationStatement.PharmacyId.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
-
-                // Fetches the pharmacy if it hasn't been loaded yet.
-                if (!pharmacyDict.ContainsKey(pharmacyId))
-                {
-                    HNMessage<Pharmacy> pharmacy =
-                        await this.pharmacyService.GetPharmacyAsync(jwtModel, pharmacyId, userId, ipAddress).ConfigureAwait(true);
-                    pharmacyDict.Add(pharmacyId, pharmacy.Message);
-                }
-
-                medicationStatement.Pharmacy = pharmacyDict[pharmacyId];
-            }
-        }
-
         private void PopulateBrandName(List<MedicationStatement> statements)
         {
-            List<string> medicationIdentifiers = statements.Select(s => s.Medication.DIN.PadLeft(8, '0')).ToList();
+            List<string> medicationIdentifiers = statements.Select(s => s.MedicationSumary.DIN.PadLeft(8, '0')).ToList();
 
             Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
 
             foreach (MedicationStatement medicationStatement in statements)
             {
-                string din = medicationStatement.Medication.DIN.PadLeft(8, '0');
+                string din = medicationStatement.MedicationSumary.DIN.PadLeft(8, '0');
                 if (brandNameMap.ContainsKey(din))
                 {
-                    medicationStatement.Medication.BrandName = brandNameMap[din];
+                    medicationStatement.MedicationSumary.BrandName = brandNameMap[din];
                 }
                 else
                 {
-                    medicationStatement.Medication.BrandName = "Unknown brand name";
+                    medicationStatement.MedicationSumary.BrandName = "Unknown brand name";
                 }
             }
         }

@@ -15,49 +15,41 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
+    using System.Diagnostics.Contracts;
+
     /// <summary>
-    /// The medications statement data model.
+    /// Contains sumary information of a medication.
     /// </summary>
-    public class MedicationStatement
+    public class MedicationSumary
     {
+        /// <summary>
+        /// Gets or sets the Drug Identification Number for the prescribed medication.
+        /// </summary>
+        public string DIN { get; set; }
+
         /// <summary>
         /// Gets or sets the brand name of the  medication.
         /// </summary>
-        public string PrescriptionIdentifier { get; set; }
+        public string BrandName { get; set; }
 
         /// <summary>
-        /// Gets or sets the Prescription status.
+        /// Gets or sets the common or generic name of the  medication.
         /// </summary>
-        public char PrescriptionStatus { get; set; }
+        public string GenericName { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the medication was dispensed.
+        /// Gets or sets the quantity for the  medication prescribed.
         /// </summary>
-        public System.DateTime DispensedDate { get; set; }
+        public float Quantity { get; set; }
 
         /// <summary>
-        /// Gets or sets the Surname of the Practitioner who prescribed the medication.
+        /// Gets or sets the medication max daily dosage.
         /// </summary>
-        public string PractitionerSurname { get; set; }
+        public float MaxDailyDosage { get; set; }
 
         /// <summary>
-        /// Gets or sets the directions as prescribed.
+        /// Gets or sets the date the Drug was discontinued if applicable.
         /// </summary>
-        public string Directions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date the medication was entered.
-        /// </summary>
-        public System.DateTime? DateEntered { get; set; }
-
-        /// <summary>
-        /// Gets or sets the pharmacy id.
-        /// </summary>
-        public string PharmacyId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the medication for the current MedicationStatement.
-        /// </summary>
-        public MedicationSumary MedicationSumary { get; set; }
+        public System.DateTime? DrugDiscontinuedDate { get; set; }
     }
 }
