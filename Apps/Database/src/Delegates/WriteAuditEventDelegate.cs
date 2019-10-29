@@ -15,31 +15,30 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Npgsql;
+    using NpgsqlTypes;
 
-    /// <summary>
-    /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
-    /// </summary>
-    public class EntityDrugLookupDelegate : IDrugLookupDelegate
+    /// <inheritdoc/>
+    public class WriteAuditEventDelegate : IWriteAuditEventDelegate
     {
-        private readonly DrugDbContext dbContext;
+        private readonly AuditDbContext dbContext;
 
         /// <summary>
-        /// Constructor that requires a database context factory.
+        /// Initializes a new instance of class <see cref="WriteAuditEventDelegate"/>.
         /// </summary>
-        /// <param name="contextFactory">The context factory to be used when accessing the databaase context.</param>
-        public EntityDrugLookupDelegate(DrugDbContext dbContext)
+        /// <param name="dbContext">The context to be used when accessing the database context.</param>
+        public WriteAuditEventDelegate(AuditDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
-        public List<DrugProduct> FindDrugProductsByDIN(List<string> drugIdentifiers)
+        public void WriteAuditEvent(AuditEvent auditEvent)
         {
-            return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber)).ToList();
+            this.dbContext.AuditEvent.Add(auditEvent);
+            this.dbContext.SaveChanges();
         }
     }
 }
