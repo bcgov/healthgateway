@@ -68,7 +68,7 @@ namespace HealthGateway.Database.Context
                 auditEntity.Entity.UpdatedBy = auditEntity.Entity.CreatedBy ?? user;
             }
 
-            return 1;//base.SaveChanges();
+            return base.SaveChanges();
         }
     }
 }
