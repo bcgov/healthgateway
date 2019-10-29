@@ -53,32 +53,20 @@ namespace HealthGateway.DrugMaintainer.Apps
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
             downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
-            this.logger.LogInformation("Parsing files...");
-            List<DrugProduct> drugProducts = this.parser.ParseDrugFile(sourceFolder);
-            // inject the FileDownload into the drug products
-            drugProducts.ForEach(c => c.FileDownload = downloadedFile);
-            List<ActiveIngredient> ingredients = this.parser.ParseActiveIngredientFile(sourceFolder, drugProducts);
-            List<Company> companies = this.parser.ParseCompanyFile(sourceFolder, drugProducts);
-            List<Status> statuses = this.parser.ParseStatusFile(sourceFolder, drugProducts);
-            List<Form> forms = this.parser.ParseFormFile(sourceFolder, drugProducts);
-            List<Packaging> packagings = this.parser.ParsePackagingFile(sourceFolder, drugProducts);
-            List<PharmaceuticalStd> pharmaceuticals = this.parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts);
-            List<Route> routes = this.parser.ParseRouteFile(sourceFolder, drugProducts);
-            List<Schedule> schedules = this.parser.ParseScheduleFile(sourceFolder, drugProducts);
-            List<TherapeuticClass> therapeuticClasses = this.parser.ParseTherapeuticFile(sourceFolder, drugProducts);
-            List<VeterinarySpecies> veterinarySpecies = this.parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts);
-            this.logger.LogInformation("Adding entities to context");
+            this.logger.LogInformation("Parsing Drug File and adding to DB Context");
+            List<DrugProduct> drugProducts = this.parser.ParseDrugFile(sourceFolder, downloadedFile);
             this.drugDbContext.DrugProduct.AddRange(drugProducts);
-            this.drugDbContext.ActiveIngredient.AddRange(ingredients);
-            this.drugDbContext.Company.AddRange(companies);
-            this.drugDbContext.Status.AddRange(statuses);
-            this.drugDbContext.Form.AddRange(forms);
-            this.drugDbContext.Packaging.AddRange(packagings);
-            this.drugDbContext.PharmaceuticalStd.AddRange(pharmaceuticals);
-            this.drugDbContext.Route.AddRange(routes);
-            this.drugDbContext.Schedule.AddRange(schedules);
-            this.drugDbContext.TherapeuticClass.AddRange(therapeuticClasses);
-            this.drugDbContext.VeterinarySpecies.AddRange(veterinarySpecies);
+            this.logger.LogInformation("Parsing Other files and adding to DB Context");
+            this.drugDbContext.ActiveIngredient.AddRange(this.parser.ParseActiveIngredientFile(sourceFolder, drugProducts));
+            this.drugDbContext.Company.AddRange(this.parser.ParseCompanyFile(sourceFolder, drugProducts));
+            this.drugDbContext.Status.AddRange(this.parser.ParseStatusFile(sourceFolder, drugProducts));
+            this.drugDbContext.Form.AddRange(this.parser.ParseFormFile(sourceFolder, drugProducts));
+            this.drugDbContext.Packaging.AddRange(this.parser.ParsePackagingFile(sourceFolder, drugProducts));
+            this.drugDbContext.PharmaceuticalStd.AddRange(this.parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts));
+            this.drugDbContext.Route.AddRange(this.parser.ParseRouteFile(sourceFolder, drugProducts));
+            this.drugDbContext.Schedule.AddRange(this.parser.ParseScheduleFile(sourceFolder, drugProducts));
+            this.drugDbContext.TherapeuticClass.AddRange(this.parser.ParseTherapeuticFile(sourceFolder, drugProducts));
+            this.drugDbContext.VeterinarySpecies.AddRange(this.parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
             downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
             this.AddFileToDB(downloadedFile);
             this.logger.LogInformation("Saving Entities to the database");

@@ -21,30 +21,43 @@ namespace HealthGateway.Database.Models
     using HealthGateway.Database.Constant;
 
     /// <inheritdoc />
-    public class FileDownload : AuditableEntity, IFileDownload
+    public class FileDownload : AuditableEntity
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the unique id.
+        /// </summary>
         [Column("FileDownloadId")]
         public Guid Id { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the name of the downloaded zip file.
+        /// </summary>
         [Required]
         [MaxLength(35)]
         public string Name { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the SHA256 hash of the downloaded file.
+        /// </summary>
         [Required]
         [MaxLength(44)]
         public string Hash { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the id representing the program processing the file.
+        /// </summary>
         [Required]
         public ProgramType ProgramTypeCodeId { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the Program Type Code
+        /// Used to define the foreign key in code first.
+        /// </summary>
         public virtual ProgramTypeCode ProgramTypeCode { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the local file path to store the downloaded file.
+        /// </summary>
         [NotMapped]
         public string LocalFilePath { get; set; }
     }

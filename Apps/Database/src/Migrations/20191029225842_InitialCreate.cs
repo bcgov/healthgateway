@@ -422,8 +422,8 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { 100, "System", new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480), "Federal", "System", new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480) },
-                    { 200, "System", new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480), "Provincial", "System", new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480) }
+                    { 100, "System", new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400), "Federal", "System", new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400) },
+                    { 200, "System", new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400), "Provincial", "System", new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400) }
                 });
 
             migrationBuilder.CreateIndex(

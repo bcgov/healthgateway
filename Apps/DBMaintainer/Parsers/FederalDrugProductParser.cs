@@ -39,15 +39,16 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<DrugProduct> ParseDrugFile(string filePath)
+        public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing Drug file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "drug.txt")))
+            using (var reader = new StreamReader(Path.Combine(sourceFolder, "drug.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
                     csv.Configuration.HasHeaderRecord = false;
-                    csv.Configuration.RegisterClassMap<DrugProductMapper>();
+                    DrugProductMapper mapper = new DrugProductMapper(filedownload);
+                    csv.Configuration.RegisterClassMap(mapper);
                     List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
                     return records;
                 }

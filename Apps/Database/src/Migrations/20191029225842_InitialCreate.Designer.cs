@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191029220026_InitialCreate")]
+    [Migration("20191029225842_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -513,19 +513,19 @@ namespace HealthGateway.Database.Migrations
                         {
                             Id = 100,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480),
+                            CreatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400),
                             Name = "Federal",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480)
+                            UpdatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400)
                         },
                         new
                         {
                             Id = 200,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480),
+                            CreatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400),
                             Name = "Provincial",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 10, 29, 22, 0, 25, 848, DateTimeKind.Utc).AddTicks(9480)
+                            UpdatedDateTime = new DateTime(2019, 10, 29, 22, 58, 42, 174, DateTimeKind.Utc).AddTicks(4400)
                         });
                 });
 

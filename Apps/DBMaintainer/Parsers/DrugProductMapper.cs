@@ -26,7 +26,7 @@ namespace HealthGateway.DrugMaintainer
         /// <summary>
         /// Performs the mapping of the read file to the to the model.
         /// </summary>
-        public DrugProductMapper()
+        public DrugProductMapper(FileDownload fd)
         {
             // DRUG_CODE
             Map(m => m.DrugCode).Index(0);
@@ -56,7 +56,9 @@ namespace HealthGateway.DrugMaintainer
             Map(m => m.BrandNameFrench).Index(12);
             // DESCRIPTOR_F
             Map(m => m.DescriptorFrench).Index(13);
-            
+            // Map the Filedownload to each object
+            Map(m => m.FileDownload).ConvertUsing(row => fd);
+
         }
     }
 }
