@@ -100,17 +100,25 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
-            this.logger.LogDebug("ConfigureAuthoirzationServices...");
+            this.logger.LogDebug("ConfigureAuthorizationServices...");
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
+            // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ReadPolicy", policy =>
+                options.AddPolicy("PatientOnly",
+                    policy => policy.RequireClaim("hdid"));
+            });
+
+            // Add policy for reading a resource to ensure that 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("UserIsPatient", policy =>
                     policy.Requirements.Add(new UserIsPatientRequirement()));
             });
 
-            // Configuration Service
-            services.AddTransient<IAuthorizationHandler>(serviceProvider =>
+            // Authorization handler
+            services.AddScoped<IAuthorizationHandler>(serviceProvider =>
             {
                 IAuthorizationHandler service = new UserAuthorizationHandler(
                     serviceProvider.GetService<ILogger<UserAuthorizationHandler>>());
@@ -155,7 +163,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
-        /// Configures the authorization services.
+        /// Configures the audit services.
         /// </summary>
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuditServices(IServiceCollection services)

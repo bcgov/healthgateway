@@ -17,7 +17,9 @@ namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Net;
+    using System.Security.AccessControl;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
@@ -49,17 +51,21 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         private readonly IPatientService patientService;
 
+        private readonly IAuthorizationService authorizationService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
+        /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="medicationStatementService">The injected medication data service.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
-        public MedicationStatementController(IMedicationStatementService medicationStatementService, IHttpContextAccessor httpAccessor, IPatientService patientService)
+        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpAccessor, IPatientService patientService)
         {
             this.medicationStatementService = medicationStatementService;
             this.httpContextAccessor = httpAccessor;
             this.patientService = patientService;
+            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -72,37 +78,44 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid)
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<ActionResult> GetMedicationStatements(string hdid)
         {
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
-            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-            string ipv4Address = address.MapToIPv4().ToString();
-
-            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatementsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
-
-            if (medicationStatements.IsError)
+            var isAuthorized = await this.authorizationService.AuthorizeAsync(this.httpContextAccessor.HttpContext.User, hdid, PatientDataOperations.Read).ConfigureAwait(true);
+            if (isAuthorized.Succeeded)
             {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ErrorMessage = medicationStatements.Error,
-                };
+                string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+                string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+                string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
+                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+                string ipv4Address = address.MapToIPv4().ToString();
 
-                return result;
-            }
-            else
-            {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ResourcePayload = medicationStatements.Message,
-                    PageIndex = 0,
-                    PageSize = medicationStatements.Message.Count,
-                    TotalResultCount = medicationStatements.Message.Count,
-                };
+                HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatementsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
 
-                return result;
+                if (medicationStatements.IsError)
+                {
+                    RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
+                    {
+                        ErrorMessage = medicationStatements.Error,
+                    };
+
+                    return result;
+                }
+                else
+                {
+                    RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
+                    {
+                        ResourcePayload = medicationStatements.Message,
+                        PageIndex = 0,
+                        PageSize = medicationStatements.Message.Count,
+                        TotalResultCount = medicationStatements.Message.Count,
+                    };
+
+                    return result;
+                }
             }
+
+            return new ChallengeResult();
         }
     }
 }

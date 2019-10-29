@@ -17,6 +17,11 @@ namespace HealthGateway.Common.Authorization
 {
     using Microsoft.AspNetCore.Authorization;
 
+    /// <summary>
+    /// UserIsPatientRequirement is a custom IAuthorizationRequirement used to assert an authorization
+    /// that the hdid User claim (in the JWT) is the same as the Patient hdid (Patient ID) used in the resource
+    /// request.
+    /// </summary>
     public class UserIsPatientRequirement : IAuthorizationRequirement
     {
         // blank on purpose
