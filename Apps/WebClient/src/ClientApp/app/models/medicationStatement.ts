@@ -17,5 +17,5 @@ export default class MedicationStatement {
   // The medication of this MedicationStatement.
   public medicationSumary: MedicationSumary = new MedicationSumary();
   // The pharmacy where the medication was filled.
-  public pharmacyId?:string
+  public pharmacyId?: string;
 }

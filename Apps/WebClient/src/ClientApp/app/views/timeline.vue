@@ -113,60 +113,9 @@ $radius: 15px;
               <hr class="dateBreakLine" />
             </b-col>
           </b-row>
-          <b-row v-for="(entry, index) in dateGroup.entries" :key="entry.id">
+          <b-row v-for="(entry) in dateGroup.entries" :key="entry.id">
             <b-row class="entryCard">
-              <b-col>
-                <b-row class="entryHeading">
-                  <b-col class="icon leftPane" cols="0">
-                    <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
-                  </b-col>
-                  <b-col class="entryTitle">
-                    {{ entry.title }}
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col class="leftPane" cols="0"> </b-col>
-                  <b-col>
-                    <b-row>
-                      <b-col>
-                        {{ entry.description }}
-                      </b-col>
-                    </b-row>
-                    <b-row>
-                      <b-col>
-                        <b-btn
-                          v-b-toggle="
-                            'entryDetails-' + index + '-' + dateGroup.key
-                          "
-                          variant="link"
-                          class="detailsButton"
-                        >
-                          <span class="when-opened">
-                            <i class="fa fa-chevron-down" aria-hidden="true"></i
-                          ></span>
-                          <span class="when-closed">
-                            <i class="fa fa-chevron-up" aria-hidden="true"></i
-                          ></span>
-                          View Details
-                        </b-btn>
-                        <b-collapse
-                          :id="'entryDetails-' + index + '-' + dateGroup.key"
-                        >
-                          <b-col>
-                            <div
-                              v-for="detail in entry.details"
-                              :key="detail.name"
-                            >
-                              <strong>{{ detail.name }}:</strong>
-                              {{ detail.value }}
-                            </div>
-                          </b-col>
-                        </b-collapse>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
-              </b-col>
+              <MedicationComponent :entry="errorDescription" />
             </b-row>
           </b-row>
         </b-col>
@@ -186,6 +135,7 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
+import MedicationTimelineComponent from "@/components/timeline/medication";
 import moment from "moment";
 
 const namespace: string = "user";
@@ -197,7 +147,8 @@ interface DateGroup {
 
 @Component({
   components: {
-    LoadingComponent
+    LoadingComponent,
+    MedicationComponent: MedicationTimelineComponent
   }
 })
 export default class TimelineComponent extends Vue {
