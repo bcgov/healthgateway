@@ -20,12 +20,19 @@ namespace HealthGateway.DrugMaintainer
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Mapping class to which maps the read file to the relavent model object.
+    /// </summary>
     public class ScheduleMapper : ClassMap<Schedule>
     {
+        /// <summary>
+        /// Performs the mapping of the read file to the to the model.
+        /// </summary>
+        /// <param name="drugProducts">The DrugProduct to relate the object to.</param>
         public ScheduleMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
             // SCHEDULE
             Map(m => m.ScheduleDesc).Index(1);
             // SCHEDULE_FFootnote

@@ -18,8 +18,14 @@ namespace HealthGateway.DrugMaintainer
     using CsvHelper.Configuration;
     using HealthGateway.Database.Models;
 
+    /// <summary>
+    /// Mapping class to which maps the read file to the relavent model object.
+    /// </summary>
     public class DrugProductMapper : ClassMap<DrugProduct>
     {
+        /// <summary>
+        /// Performs the mapping of the read file to the to the model.
+        /// </summary>
         public DrugProductMapper()
         {
             // DRUG_CODE

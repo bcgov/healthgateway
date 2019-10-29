@@ -17,19 +17,25 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
+    /// <summary>
+    /// The entity representing a row in the Federal Government
+    /// Active Ingredient file.
+    /// </summary>
     public class ActiveIngredient : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the active ingredient id.
         /// </summary>
-        public Guid ActiveIngredientId { get; set; }
+        [Column("ActiveIngredientId")]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product.
         /// </summary>
         [Required]
-        public DrugProduct Drug { get; set; }
+        public DrugProduct DrugProduct { get; set; }
 
         /// <summary>
         /// Gets or sets the active ingredient code.

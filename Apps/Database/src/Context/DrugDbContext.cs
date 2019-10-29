@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Models;
@@ -24,12 +25,12 @@ namespace HealthGateway.Database.Context
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <summary>
-    /// The database context to be used for the Medication Service.
+    /// The database context to be used for accessing the Federal and Provincial drug files.
     /// </summary>
-    public class DrugDbContext : DbContext
+    public class DrugDbContext : BaseDbContext
     {
         /// <summary>
-        /// Constructor required to instantiated the context via startup.
+        /// Initializes a new instance of the <see cref="DrugDbContext"/> class.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
         public DrugDbContext(DbContextOptions<DrugDbContext> options)
@@ -37,6 +38,8 @@ namespace HealthGateway.Database.Context
         {
         }
 
+        #pragma warning disable CS1591 // These are self explanatory.
+        #pragma warning disable SA1600 // These are self explanatory.
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
 
         public DbSet<Company> Company { get; set; }
@@ -63,44 +66,13 @@ namespace HealthGateway.Database.Context
 
         public DbSet<FileDownload> FileDownload { get; set; }
 
-        /// <summary>
-        /// Executes a sql command.
-        /// </summary>
-        /// <param name="sql">The sql query script.</param>
-        /// <param name="parameters">The sql query parameters.</param>
-        /// <returns>The number of lines affected.</returns>
-        public int ExecuteSqlCommand(string sql, params object[] parameters)
-        {
-            return this.Database.ExecuteSqlCommand(sql, parameters);
-        }
-
-        /// <inheritdoc />
-        public override int SaveChanges()
-        {
-            const string user = "DrugMaintainer";
-            DateTime now = System.DateTime.UtcNow;
-
-            IEnumerable<EntityEntry<IAuditable>> auditableEntries = this.ChangeTracker.Entries<IAuditable>()
-                   .Where(x => (x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified)));
-
-            foreach (EntityEntry<IAuditable> auditEntity in auditableEntries)
-            {
-                if (auditEntity.State == EntityState.Added)
-                {
-                    auditEntity.Entity.CreatedDateTime = now;
-                    auditEntity.Entity.CreatedBy = user;
-                }
-
-                auditEntity.Entity.UpdatedDateTime = now;
-                auditEntity.Entity.UpdatedBy = user;
-            }
-
-            return base.SaveChanges();
-        }
+        #pragma warning restore CS1591 //Turn XML documentation back on.
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            Contract.Requires(modelBuilder != null);
+
             modelBuilder.HasSequence<long>(Sequence.PHARMANET_TRACE)
                         .StartsAt(1)
                         .IncrementsBy(1)

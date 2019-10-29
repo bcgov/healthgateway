@@ -17,13 +17,17 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
+    #pragma warning disable CS1591 // self explanatory simple model
+    #pragma warning disable SA1600 // self explanatory simple model
     public class Status : AuditableEntity
     {
-        public Guid StatusId { get; set; }
+        [Column("StatusId")]
+        public Guid Id { get; set; }
 
         [Required]
-        public DrugProduct Drug { get; set; }
+        public DrugProduct DrugProduct { get; set; }
 
         [MaxLength(1)]
         public string CurrentStatusFlag { get; set; }

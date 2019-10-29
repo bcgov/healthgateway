@@ -17,6 +17,10 @@ namespace HealthGateway.Database.Constant
 {
     #pragma warning disable CA1707 // The name of an identifier contains the underscore (_) character.
     #pragma warning disable SA1310 // A field name in C# contains an underscore.
+
+    /// <summary>
+    /// That static constant used for the Pharmanet Trace DB sequence.
+    /// </summary>
     public static class Sequence
     {
         /// <summary>

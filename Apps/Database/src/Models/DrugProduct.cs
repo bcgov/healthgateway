@@ -17,16 +17,21 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
+    /// <summary>
+    /// The entity representing a Drug Product from the Federal Drug Database.
+    /// </summary>
     public class DrugProduct : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the internal Guid representing the DrugProduct.
         /// </summary>
-        public Guid DrugProductId { get; set; }
+        [Column("DrugProductId")]
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the source Drug Code from the Government extract QRYM_DRUG_PRODUCT
+        /// Gets or sets the source Drug Code from the Government extract QRYM_DRUG_PRODUCT.
         /// </summary>
         [Required]
         [MaxLength(8)]
@@ -39,13 +44,13 @@ namespace HealthGateway.Database.Models
         public string ProductCategorization { get; set; }
 
         /// <summary>
-        /// Gets or sets the Drug Class in French
+        /// Gets or sets the Drug Class in French.
         /// </summary>
         [MaxLength(40)]
         public string DrugClass { get; set; }
 
         /// <summary>
-        /// Gets or sets the Drug Class
+        /// Gets or sets the Drug Class.
         /// </summary>
         [MaxLength(80)]
         public string DrugClassFrench { get; set; }
@@ -75,7 +80,7 @@ namespace HealthGateway.Database.Models
         public string Descriptor { get; set; }
 
         /// <summary>
-        /// Gets or sets the Descriptor for the Drug in French
+        /// Gets or sets the Descriptor for the Drug in French.
         /// </summary>
         [MaxLength(200)]
         public string DescriptorFrench { get; set; }

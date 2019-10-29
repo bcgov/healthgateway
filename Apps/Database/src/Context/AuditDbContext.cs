@@ -18,10 +18,13 @@ namespace HealthGateway.Database.Context
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
 
-    public class AuditDbContext : DbContext
+    /// <summary>
+    /// The database context used to interact with the audit DB.
+    /// </summary>
+    public class AuditDbContext : BaseDbContext
     {
         /// <summary>
-        /// Constructor required to instantiated the context via startup.
+        /// Initializes a new instance of the <see cref="AuditDbContext"/> class.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
         public AuditDbContext(DbContextOptions<AuditDbContext> options)
@@ -29,6 +32,9 @@ namespace HealthGateway.Database.Context
         {
         }
 
+        /// <summary>
+        /// Gets or sets the set of Audit Events.
+        /// </summary>
         public DbSet<AuditEvent> AuditEvent { get; set; }
     }
 }

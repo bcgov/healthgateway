@@ -24,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Middleware;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -117,13 +118,8 @@ namespace HealthGateway.Common.AspNetConfiguration
                     policy.Requirements.Add(new UserIsPatientRequirement()));
             });
 
-            // Authorization handler
-            services.AddScoped<IAuthorizationHandler>(serviceProvider =>
-            {
-                IAuthorizationHandler service = new UserAuthorizationHandler(
-                    serviceProvider.GetService<ILogger<UserAuthorizationHandler>>());
-                return service;
-            });
+            // Configuration Service
+            services.AddTransient<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>
@@ -133,7 +129,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
-            this.logger.LogDebug($"Debug configuration is ${debugEnabled}");
+            this.logger.LogDebug($"Debug configuration is {debugEnabled}");
 
             // Displays sensitive data from the jwt if the environment is development only
             IdentityModelEventSource.ShowPII = debugEnabled;
@@ -175,6 +171,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
+            services.AddTransient<IWriteAuditEventDelegate, WriteAuditEventDelegate>();
         }
 
         /// <summary>

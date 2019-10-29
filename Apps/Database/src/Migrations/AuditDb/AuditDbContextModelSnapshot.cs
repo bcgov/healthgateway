@@ -25,7 +25,6 @@ namespace HealthGateway.Database.Migrations.AuditDb
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ApplicationSubject")
-                        .IsRequired()
                         .HasMaxLength(100);
 
                     b.Property<int>("ApplicationType")
@@ -44,7 +43,7 @@ namespace HealthGateway.Database.Migrations.AuditDb
                     b.Property<DateTime>("CreatedDateTime");
 
                     b.Property<string>("Trace")
-                        .HasMaxLength(20);
+                        .HasMaxLength(200);
 
                     b.Property<string>("TransacationName")
                         .IsRequired()
@@ -61,7 +60,8 @@ namespace HealthGateway.Database.Migrations.AuditDb
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime?>("UpdatedDateTime")
+                        .IsRequired();
 
                     b.HasKey("AuditEventId");
 
