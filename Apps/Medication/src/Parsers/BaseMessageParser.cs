@@ -39,8 +39,17 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="config">The configuration provider.</param>
         protected BaseMessageParser(IConfiguration config)
         {
-            Contract.Requires(config != null);
-            Contract.Requires(config.GetSection("HNClient") != null);
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (config.GetSection("HNClient") is null)
+            {
+                #pragma warning disable RECS0143 // Cannot resolve symbol in text argument
+                throw new ArgumentNullException("HNClient configuration section missing");
+                #pragma warning restore RECS0143 // Cannot resolve symbol in text argument
+            }
 
             this.configuration = config;
             this.ClientConfig = new HNClientConfiguration();
@@ -80,7 +89,10 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="traceId">The trace ID of the Pharmanet message.</param>
         protected void SetMessageHeader(Message message, string userId, string ipAddress, long traceId)
         {
-            Contract.Requires(message != null);
+            if (message is null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
 
             string formattedTraceId = traceId.ToString(CultureInfo.InvariantCulture).PadLeft(6, '0');
 

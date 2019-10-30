@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Moq;

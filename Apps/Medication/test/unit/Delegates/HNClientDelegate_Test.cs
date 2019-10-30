@@ -19,7 +19,7 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;

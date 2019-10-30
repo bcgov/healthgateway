@@ -24,7 +24,7 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Http;
     using Moq;
@@ -73,7 +73,7 @@ namespace HealthGateway.Medication.Test
             patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
             Mock<IHNClientDelegate> hnClientDelegateMock = new Mock<IHNClientDelegate>();
-            hnClientDelegateMock.Setup(s => s.GetMedicationStatementsAsync(phn, userId, ipAddress, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            hnClientDelegateMock.Setup(s => s.GetMedicationStatementsAsync(phn, null, userId, ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());

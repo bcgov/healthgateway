@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegate
+namespace HealthGateway.Medication.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace HealthGateway.Medication.Delegate
     public interface IHNClientDelegate
     {
         /// <summary>
-        /// Retrieves a list of MedicationStatements that for the given phn
+        /// Retrieves a list of MedicationStatements that for the given phn.
         /// </summary>
         /// <param name="phn">The patient phn.</param>
         /// <param name="userId">The user id of the request.</param>

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegate
+namespace HealthGateway.Medication.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -30,6 +30,9 @@ namespace HealthGateway.Medication.Delegate
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// BC HealthNet Client Delegate.
+    /// </summary>
     public class RestHNClientDelegate : IHNClientDelegate
     {
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;

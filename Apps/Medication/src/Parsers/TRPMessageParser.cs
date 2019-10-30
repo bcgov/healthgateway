@@ -50,7 +50,10 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord)
         {
-            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(id));
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
 
             // HNClient only accepts a 13 digit phn
             id = id.PadLeft(13, '0');

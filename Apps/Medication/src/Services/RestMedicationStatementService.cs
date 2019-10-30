@@ -20,7 +20,7 @@ namespace HealthGateway.Medication.Services
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
 
@@ -57,7 +57,8 @@ namespace HealthGateway.Medication.Services
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         public RestMedicationStatementService(
-            IHttpContextAccessor httpAccessor, IPatientDelegate patientService,
+            IHttpContextAccessor httpAccessor,
+            IPatientDelegate patientService,
             IHNClientDelegate hnClientDelegate,
             IDrugLookupDelegate drugLookupDelegate)
         {
@@ -70,7 +71,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
-            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await RetrieveMedicationStatements(hdid, protectiveWord);
+            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);;
             if (!hnClientMedicationResult.IsError)
             {
                 this.PopulateBrandName(hnClientMedicationResult.Message);
@@ -87,7 +88,7 @@ namespace HealthGateway.Medication.Services
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, userId, ipv4Address);
+            return await hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, userId, ipv4Address).ConfigureAwait(true);
         }
 
         private void PopulateBrandName(List<MedicationStatement> statements)
