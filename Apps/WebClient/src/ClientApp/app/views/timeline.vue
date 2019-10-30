@@ -1,8 +1,6 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-$radius: 15px;
-
 #pageTitle {
   color: $primary;
 }
@@ -21,44 +19,6 @@ $radius: 15px;
   padding-top: 0px;
   color: $primary;
   font-size: 1.3em;
-}
-
-.entryHeading {
-  border-radius: 25px;
-}
-
-.entryCard {
-  padding-left: 50px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.entryTitle {
-  background-color: $soft_background;
-  color: $primary;
-  padding: 13px 15px;
-  font-weight: bold;
-}
-
-.icon {
-  background-color: $primary;
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-  border-radius: $radius 0px 0px $radius;
-}
-
-.leftPane {
-  width: 60px;
-}
-
-.detailsButton {
-  padding: 0px;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-  display: none;
 }
 </style>
 <template>
@@ -113,10 +73,12 @@ $radius: 15px;
               <hr class="dateBreakLine" />
             </b-col>
           </b-row>
-          <b-row v-for="(entry) in dateGroup.entries" :key="entry.id">
-            <b-row class="entryCard">
-              <MedicationComponent :entry="errorDescription" />
-            </b-row>
+          <b-row v-for="(entry2, index2) in dateGroup.entries" :key="entry2.id">
+            <MedicationComponent
+              :date_key="dateGroup.key"
+              :entry="entry2"
+              :index="index2"
+            />
           </b-row>
         </b-col>
       </b-row>
@@ -135,7 +97,7 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
-import MedicationTimelineComponent from "@/components/timeline/medication";
+import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import moment from "moment";
 
 const namespace: string = "user";
@@ -153,7 +115,7 @@ interface DateGroup {
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
-  private timelineEntries: TimelineEntry[] = [];
+  private timelineEntries: MedicationStatement[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
@@ -171,7 +133,7 @@ export default class TimelineComponent extends Vue {
         if (!results.errorMessage) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
-            this.timelineEntries.push(new TimelineEntry(result));
+            this.timelineEntries.push(result);
           }
         } else {
           console.log(
