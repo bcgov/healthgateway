@@ -17,22 +17,25 @@ namespace HealthGateway.Common.Authentication.Models
 {
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// OAuth2 OIDC Client Credentials Grant Token request information.
+    /// </summary>
     public class ClientCredentialsTokenRequest
     {
         /// <summary>
-        /// The unique identifier of the traget API you want to access
+        /// Gets or sets a unique identifier of the target API you want to access.
         /// </summary>
         [JsonProperty("audience")]
         public string Audience { get; set; }
 
         /// <summary>
-        /// Your application's Client ID
+        /// Gets or sets the application's Client ID.
         /// </summary>
         [JsonProperty("client_id")]
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Your application's Client Secret
+        /// Gets or sets your application's Client Secret.
         /// </summary>
         [JsonProperty("client_secret")]
         public string ClientSecret { get; set; }

@@ -24,7 +24,7 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Http;
     using Moq;

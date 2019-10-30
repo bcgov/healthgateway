@@ -72,3 +72,4 @@ namespace HealthGateway.PatientService
         }
     }
 }
+#pragma warning restore CA1303
