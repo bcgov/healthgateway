@@ -40,11 +40,13 @@ namespace HealthGateway.Medication.Test
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
+            Mock<IHttpContextAccessor> httpContextMock = new Mock<IHttpContextAccessor>();
+            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
             svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
-            MedicationStatementController controller = new MedicationStatementController(svcMock.Object);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
+            RequestResult<List<MedicationStatement>> actual = (RequestResult<List<MedicationStatement>>)await controller.GetMedicationStatements(hdid);
 
             // Verify
             Assert.True(actual.ResourcePayload.Count == 0);
@@ -58,9 +60,11 @@ namespace HealthGateway.Medication.Test
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
 
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
+            Mock<IHttpContextAccessor> httpContextMock = new Mock<IHttpContextAccessor>();
+            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
             svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(true, errorMessage));
 
-            MedicationStatementController controller = new MedicationStatementController(svcMock.Object);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextMock.Object);
 
             // Act
             RequestResult<List<MedicationStatement>> actual = (RequestResult<List<MedicationStatement>>) await controller.GetMedicationStatements(hdid);
