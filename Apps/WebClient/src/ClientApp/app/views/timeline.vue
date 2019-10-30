@@ -176,16 +176,21 @@ $radius: 15px;
           </b-row>
         </b-col>
       </b-row>
+      <ProtectiveWordComponent
+        ref="protectiveWordModal"
+        @submit="onProtectiveWordChanged"
+      />
     </b-container>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { IMedicationService } from "@/services/interfaces";
 import LoadingComponent from "@/components/loading.vue";
+import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
@@ -205,7 +210,8 @@ interface DateGroup {
 
 @Component({
   components: {
-    LoadingComponent
+    LoadingComponent,
+    ProtectiveWordComponent
   }
 })
 export default class TimelineComponent extends Vue {
@@ -216,6 +222,8 @@ export default class TimelineComponent extends Vue {
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
   private medicationService: IMedicationService;
+  @Ref("protectiveWordModal")
+  readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
     this.isLoading = true;
@@ -245,7 +253,12 @@ export default class TimelineComponent extends Vue {
       })
       .finally(() => {
         this.isLoading = false;
+        this.protectiveWordModal.showModal();
       });
+  }
+
+  private onProtectiveWordChanged(value: string) {
+    console.log(value);
   }
 
   private toggleDetails(timelineEntry: TimelineEntry): void {
