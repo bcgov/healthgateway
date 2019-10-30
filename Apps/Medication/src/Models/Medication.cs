@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Models
 {
     using System.Diagnostics.Contracts;
 
+    #pragma warning disable CA1724 // The type name Medication conflicts in whole or in part with the namespace name 'HealthGateway.Medication'
     /// <summary>
     /// The medications data model.
     /// </summary>
@@ -121,7 +122,7 @@ namespace HealthGateway.Medication.Models
                         this.ComplexDose = dosageWithForm;
                     }
                 }
-                catch (System.Exception ex)
+                catch (System.ArgumentException ex)
                 {
                     // TODO: Suppress the exception and log into the console
                     System.Console.WriteLine($"Dosage parser error! Generic Name: '{hl7v2Name}' Error: {ex.ToString()}");
@@ -134,4 +135,5 @@ namespace HealthGateway.Medication.Models
             }
         }
     }
+    #pragma warning restore CA1724
 }

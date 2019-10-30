@@ -15,32 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Authorization
 {
-    using Microsoft.AspNetCore.Authorization.Infrastructure;
-
     /// <summary>
-    /// The ResourceOperation for Authorization
+    /// The PolicyNameConstants for authorization policy names.
     /// </summary>
-    public static class PatientDataOperations
-    {
-
-        /// <summary>
-        /// The Read resource operation 
-        /// </summary>        
-        public static readonly OperationAuthorizationRequirement Read =
-        new OperationAuthorizationRequirement
-        {
-            Name = OperationConstants.ReadOperationName,
-        };
-    }
-
-    /// <summary>
-    /// The OperationConstants for use by <ref name="PatientDataOperations"/>
-    /// </summary>
-    public class OperationConstants
+    public static class PolicyNameConstants
     {
         /// <summary>
-        /// The Read operation for use by <ref name="PatientDataOperations"/>
-        /// </summary>        
-        public static readonly string ReadOperationName = "Read";
+        /// The PatientOnly policy name constant.
+        /// </summary>
+        public static readonly string PatientOnly = "PatientOnly";
+
+        /// <summary>
+        /// The UserIsPatient policy name constant.
+        /// </summary>
+        public static readonly string UserIsPatient = "UserIsPatient";
     }
 }

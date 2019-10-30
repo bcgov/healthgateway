@@ -100,26 +100,29 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            #pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuthorizationServices...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
+            #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("PatientOnly",
-                    policy => policy.RequireClaim("hdid"));
-            });
-
-            // Add policy for reading a resource to ensure that 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("UserIsPatient", policy =>
-                    policy.Requirements.Add(new UserIsPatientRequirement()));
+                options.AddPolicy(PolicyNameConstants.PatientOnly, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("hdid");
+                });
+                options.AddPolicy(PolicyNameConstants.UserIsPatient, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new UserIsPatientRequirement());
+                });
             });
 
             // Configuration Service
-            services.AddTransient<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>

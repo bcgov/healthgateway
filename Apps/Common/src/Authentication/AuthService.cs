@@ -21,15 +21,24 @@ namespace HealthGateway.Common.Authentication
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// The Authorization service
+    /// The Authorization service.
     /// </summary>
     public class AuthService : IAuthService
     {
-        public AuthService(IConfiguration config)
+        private readonly ILogger<AuthService> logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthService"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="config">The configuration.</param>
+        public AuthService(ILogger<AuthService> logger, IConfiguration config)
         {
+            this.logger = logger;
             IConfigurationSection configSection = config?.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
@@ -88,6 +97,9 @@ namespace HealthGateway.Common.Authentication
             }
             catch (HttpRequestException e)
             {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+                this.logger.LogDebug($"Error Message ${e.Message}");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
                 Console.WriteLine($"Error Message ${e.Message}");
             }
 

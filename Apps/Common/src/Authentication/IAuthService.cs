@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Authentication
     public interface IAuthService
     {
         /// <summary>
-        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard)
+        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard).
         /// </summary>
         ClientCredentialsTokenRequest TokenRequest { get; set; }
 
@@ -37,6 +37,7 @@ namespace HealthGateway.Common.Authentication
         /// <summary>
         /// Authenticates this service, using Client Credentials Grant.
         /// </summary>
+        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
         JWTModel AuthenticateService();
 
         /// <summary>

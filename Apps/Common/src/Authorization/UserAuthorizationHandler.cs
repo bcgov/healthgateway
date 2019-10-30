@@ -21,15 +21,14 @@ namespace HealthGateway.Common.Authorization
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// UserAuthorizationHandler is a custom authorization handler that 
-    /// checks whether the authenticated user has an hdid claim that matches the hdid of the resource being accessed.
+    /// UserAuthorizationHandler is a custom authorization handler that checks whether the authenticated user has an hdid claim that matches the hdid of the resource being accessed.
     /// </summary>
     public class UserAuthorizationHandler : AuthorizationHandler<UserIsPatientRequirement, string>
     {
         private readonly ILogger<UserAuthorizationHandler> logger;
 
         /// <summary>
-        /// UserAuthorizationHandler constructor
+        /// Initializes a new instance of the <see cref="UserAuthorizationHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         public UserAuthorizationHandler(ILogger<UserAuthorizationHandler> logger)
@@ -38,16 +37,17 @@ namespace HealthGateway.Common.Authorization
         }
 
         /// <summary>
-        /// HandleRequirementAsync method to assert that the hdid in the JWT matches the hdid in the request
+        /// HandleRequirementAsync method to assert that the hdid in the JWT matches the hdid in the request.
         /// </summary>
         /// <param name="context">the AuthorizationHandlerContext context.</param>
         /// <param name="requirement">the UserIsPatientRequirement requirement.</param>
         /// <param name="hdid">The patient identifier used as the resource argument.</param>
+        /// <returns>a Task.</returns>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hdid)
         {
-            if (this.IsOwner(context.User, hdid))
+            if (this.IsOwner(context?.User, hdid))
             {
-                context.Succeed(requirement);
+                context?.Succeed(requirement);
             }
 
             return Task.CompletedTask;
@@ -57,14 +57,16 @@ namespace HealthGateway.Common.Authorization
         /// Check if the authenticated user is the same patient as what is being accessed.
         /// </summary>
         /// <param name="user">The authenticated user.</param>
-        /// <param name="hdid">The health data resource subject identifier.</param>        
+        /// <param name="hdid">The health data resource subject identifier.</param>
         private bool IsOwner(ClaimsPrincipal user, string hdid)
         {
             if (user == null || hdid == null)
+            {
                 return false;
+            }
+
             string hdidClaim = user.FindFirst(c => c.Type == "hdid").Value;
             return string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal);
         }
     }
-
 }
