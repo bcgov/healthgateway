@@ -16,7 +16,6 @@
 namespace HealthGateway.DrugMaintainer.Apps
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
@@ -63,7 +62,7 @@ namespace HealthGateway.DrugMaintainer.Apps
             this.drugDbContext.AddRange(this.parser.ParsePharmaCareDrugFile(files[0], downloadedFile));
             this.AddFileToDB(downloadedFile);
             this.RemoveOldFiles(downloadedFile);
-            logger.LogInformation("Saving PharmaCare Drugs");
+            this.logger.LogInformation("Saving PharmaCare Drugs");
             this.drugDbContext.SaveChanges();
         }
     }

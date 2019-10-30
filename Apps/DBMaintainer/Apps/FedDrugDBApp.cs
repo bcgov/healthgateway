@@ -16,7 +16,6 @@
 namespace HealthGateway.DrugMaintainer.Apps
 {
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
