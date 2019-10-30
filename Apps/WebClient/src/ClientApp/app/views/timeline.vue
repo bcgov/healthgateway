@@ -73,13 +73,14 @@
               <hr class="dateBreakLine" />
             </b-col>
           </b-row>
-          <b-row v-for="(entry2, index2) in dateGroup.entries" :key="entry2.id">
-            <MedicationComponent
-              :date_key="dateGroup.key"
-              :entry="entry2"
-              :index="index2"
-            />
-          </b-row>
+
+          <MedicationComponent
+            v-for="(entry, index) in dateGroup.entries"
+            :key="entry.id"
+            :date_key="dateGroup.key"
+            :entry="entry"
+            :index="index"
+          />
         </b-col>
       </b-row>
     </b-container>
@@ -157,19 +158,6 @@ export default class TimelineComponent extends Vue {
 
   private getHeadingDate(date: Date): string {
     return moment(date).format("ll");
-  }
-
-  private getEntryIcon(entry: TimelineEntry): string {
-    let iconClass = "fa-times";
-    switch (entry.type) {
-      case EntryType.Medication:
-        iconClass = "fa-pills";
-        break;
-      case EntryType.Laboratory:
-        iconClass = "fa-flask";
-        break;
-    }
-    return iconClass;
   }
 
   private get dateGroups(): DateGroup[] {
