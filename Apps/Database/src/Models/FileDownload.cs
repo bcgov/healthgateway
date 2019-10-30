@@ -18,10 +18,9 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constant;
 
-    /// <summary>
-    /// An entity represenging a file that was processed to load tables.
-    /// </summary>
+    /// <inheritdoc />
     public class FileDownload : AuditableEntity
     {
         /// <summary>
@@ -43,6 +42,18 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(44)]
         public string Hash { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id representing the program processing the file.
+        /// </summary>
+        [Required]
+        public ProgramType ProgramTypeCodeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Program Type Code
+        /// Used to define the foreign key in code first.
+        /// </summary>
+        public virtual ProgramTypeCode ProgramTypeCode { get; set; }
 
         /// <summary>
         /// Gets or sets the local file path to store the downloaded file.

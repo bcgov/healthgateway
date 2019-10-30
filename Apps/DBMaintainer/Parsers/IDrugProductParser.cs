@@ -26,9 +26,10 @@ namespace HealthGateway.DrugMaintainer
         /// <summary>
         /// Parses the Drug file.
         /// </summary>
-        /// <param name="filePath">The path to the file.</param>
+        /// <param name="sourcefolder">The source folder of the extracted files.</param>
+        /// <param name="filedownload">The file download to assoicate to the parsed records.</param>
         /// <returns></returns>
-        List<DrugProduct> ParseDrugFile(string filePath);
+        List<DrugProduct> ParseDrugFile(string sourcefolder, FileDownload filedownload);
 
         /// <summary>
         /// Parses the Active Ingredient file.

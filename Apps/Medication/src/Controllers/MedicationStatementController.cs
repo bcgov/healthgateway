@@ -24,7 +24,6 @@ namespace HealthGateway.Medication.Controllers
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -42,15 +41,8 @@ namespace HealthGateway.Medication.Controllers
         private readonly IMedicationStatementService medicationStatementService;
 
         /// <summary>
-        /// The http context provider.
+        /// The authorization service.
         /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// The patient service provider used to retrieve Personal Health Number for subject.
-        /// </summary>
-        private readonly IPatientService patientService;
-
         private readonly IAuthorizationService authorizationService;
 
         /// <summary>
@@ -81,12 +73,9 @@ namespace HealthGateway.Medication.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<ActionResult> GetMedicationStatements(string hdid)
         {
-            System.Console.WriteLine($"Start GetMedicationStatements(${hdid})", hdid);
-
             var isAuthorized = await this.authorizationService.AuthorizeAsync(this.httpContextAccessor.HttpContext.User, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (isAuthorized.Succeeded)
             {
-                System.Console.WriteLine($"User: ${hdid} is fully authorized", hdid);
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 string phn = await this.patientService.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
                 string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;

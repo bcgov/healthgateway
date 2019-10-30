@@ -26,9 +26,10 @@ namespace HealthGateway.DrugMaintainer
         /// <summary>
         /// Parses the drug file.
         /// </summary>
-        /// <param name="filename">The drug file to parse.</param>
+        /// <param name="filename">The file to parse.</param>
+        /// <param name="filedownload">The related download file to associate with.</param>
         /// <returns></returns>
-        List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename);
+        List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload);
     }
 
 }

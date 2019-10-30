@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Medication.Delegate
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// Interface that defines a delegate to retrieve patient information.
     /// </summary>
-    public interface IMedicationStatementService
+    public interface IPatientDelegate
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Gets the patient phn.
         /// </summary>
-        /// <param name="hdid">The hdid to retrieve records for.</param>
-        /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid);        
+        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="authorization">Authorization for the call.</param>
+        /// <returns>The patient phn.</returns>
+        Task<string> GetPatientPHNAsync(string hdid, string authorization);
     }
 }

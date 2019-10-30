@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Context
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;

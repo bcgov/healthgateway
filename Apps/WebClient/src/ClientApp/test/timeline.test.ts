@@ -11,7 +11,7 @@ import { injectable } from "inversify";
 import container from "@/inversify.config";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
-import Medication from "@/models/medication";
+import medicationSumary from "@/models/medicationSumary";
 import Pharmacy from "@/models/pharmacy";
 import RequestResult from "@/models/requestResult";
 
@@ -21,19 +21,19 @@ yesterday.setDate(today.getDate() - 1);
 
 const medicationStatements: MedicationStatement[] = [
   {
-    medication: { brandName: "brand_name_A", genericName: "generic_name_A" },
+    medicationSumary: { brandName: "brand_name_A", genericName: "generic_name_A" },
     dispensedDate: today,
-    pharmacy: new Pharmacy()
+    pharmacyId:"pharmacyId"
   },
   {
-    medication: { brandName: "brand_name_B", genericName: "generic_name_B" },
+    medicationSumary: { brandName: "brand_name_B", genericName: "generic_name_B" },
     dispensedDate: today,
-    pharmacy: new Pharmacy()
+    pharmacyId:"pharmacyId"
   },
   {
-    medication: { brandName: "brand_name_C", genericName: "generic_name_C" },
+    medicationSumary: { brandName: "brand_name_C", genericName: "generic_name_C" },
     dispensedDate: yesterday,
-    pharmacy: new Pharmacy()
+    pharmacyId:"pharmacyId"
   }
 ];
 

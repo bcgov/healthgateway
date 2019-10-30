@@ -13,22 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Database.Models
 {
-    using System.Security.Claims;
-    using System.Threading.Tasks;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constant;
 
-    /// <summary>
-    /// The patient service.
-    /// </summary>
-    public interface IPatientService
+    #pragma warning disable CS1591 // self explanatory simple model
+    #pragma warning disable SA1600 // self explanatory simple model
+    public class ProgramTypeCode : AuditableEntity
     {
-        /// <summary>
-        /// Gets the patient phn.
-        /// </summary>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <param name="jwtString">The JWT authorization for the call.</param>
-        /// <returns>The patient phn.</returns>
-        Task<string> GetPatientPHNAsync(string hdid, string jwtString);
+        [Column("ProgramTypeCodeId")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public ProgramType Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
     }
 }
