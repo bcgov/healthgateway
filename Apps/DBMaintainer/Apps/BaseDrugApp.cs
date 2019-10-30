@@ -138,6 +138,18 @@ namespace HealthGateway.DrugMaintainer.Apps
         }
 
         /// <summary>
+        /// Removes All Download Files that match the Program type but do not match the file hash. 
+        /// </summary>
+        /// <param name="downloadedFile">Search for all download files not matching this one.</param>
+        protected void RemoveOldFiles(FileDownload downloadedFile)
+        {
+            var oldIds = this.drugDbContext.FileDownload.Where(p => p.ProgramTypeCodeId == downloadedFile.ProgramTypeCodeId &&
+                                          p.Hash != downloadedFile.Hash).Select(f => f.Id).ToList();
+            oldIds.ForEach(s => logger.LogInformation($"Deleting old Download file with hash: {s}"));
+            this.drugDbContext.RemoveRange(oldIds.Select(id => new FileDownload { Id = id }));
+        }
+
+        /// <summary>
         /// Performs the actual download of the file and verifies if it has been
         /// previously processed.
         /// </summary>
