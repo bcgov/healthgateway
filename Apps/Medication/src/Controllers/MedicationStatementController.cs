@@ -16,12 +16,14 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
-    
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -38,15 +40,27 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         private readonly IMedicationStatementService medicationStatementService;
 
-        
+        /// <summary>
+        /// The authorization service.
+        /// </summary>
+        private readonly IAuthorizationService authorizationService;
+
+        /// <summary>
+        /// The httpContextAccessor injected.
+        /// </summary>
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
+        /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="medicationStatementService">The injected medication data service.</param>
-        public MedicationStatementController(IMedicationStatementService medicationStatementService)
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor)
         {
             this.medicationStatementService = medicationStatementService;
+            this.httpContextAccessor = httpContextAccessor;
+            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -59,8 +73,16 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid)
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<ActionResult> GetMedicationStatements(string hdid)
         {
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ChallengeResult();
+            }
+
             HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid).ConfigureAwait(true);
 
             if (medicationStatements.IsError)

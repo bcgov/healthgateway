@@ -22,7 +22,7 @@ namespace HealthGateway.Medication
     using HealthGateway.Common.Authentication;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
@@ -85,14 +85,13 @@ namespace HealthGateway.Medication
             services.AddDbContext<DrugDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IAuthService, AuthService>();
-            services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();            
+            services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddTransient<IPharmacyService, RestPharmacyService>();
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
-            services.AddTransient<ICustomAuthorizationService, CustomAuthorizationService>();
             services.AddTransient<IDrugLookupDelegate, EntityDrugLookupDelegate>();
             services.AddTransient<ISequenceDelegate, EntitySequenceDelegate>();
         }
