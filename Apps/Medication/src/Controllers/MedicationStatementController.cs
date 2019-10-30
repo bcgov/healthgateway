@@ -21,9 +21,9 @@ namespace HealthGateway.Medication.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Models;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using HealthGateway.Medication.Delegate;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

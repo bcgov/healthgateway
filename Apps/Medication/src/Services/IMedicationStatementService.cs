@@ -29,6 +29,6 @@ namespace HealthGateway.Medication.Services
         /// </summary>
         /// <param name="hdid">The hdid to retrieve records for.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid);        
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid);
     }
 }
