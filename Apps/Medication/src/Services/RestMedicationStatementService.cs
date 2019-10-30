@@ -71,7 +71,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
-            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);;
+            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
             if (!hnClientMedicationResult.IsError)
             {
                 this.PopulateBrandName(hnClientMedicationResult.Message);
@@ -88,7 +88,7 @@ namespace HealthGateway.Medication.Services
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, userId, ipv4Address).ConfigureAwait(true);
+            return await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, userId, ipv4Address).ConfigureAwait(true);
         }
 
         private void PopulateBrandName(List<MedicationStatement> statements)

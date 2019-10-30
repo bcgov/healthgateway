@@ -46,9 +46,7 @@ namespace HealthGateway.Medication.Parsers
 
             if (config.GetSection("HNClient") is null)
             {
-                #pragma warning disable RECS0143 // Cannot resolve symbol in text argument
-                throw new ArgumentNullException("HNClient configuration section missing");
-                #pragma warning restore RECS0143 // Cannot resolve symbol in text argument
+                throw new ArgumentNullException(nameof(config));
             }
 
             this.configuration = config;
@@ -120,8 +118,11 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="protectiveWord">The protecitve word securing certain HL7 messages.</param>
         protected void SetTransactionControlSegment(Message message, string transactionId, long traceId, string protectiveWord)
         {
-            Contract.Requires(message != null);
-            
+            if (message is null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
 
             // ZZZ - Transaction Control

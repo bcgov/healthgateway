@@ -76,7 +76,7 @@ namespace HealthGateway.Medication.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<ActionResult> GetMedicationStatements(string hdid)
         {
-            return await this.GetMedicationStatements(hdid, null);
+            return await this.GetMedicationStatements(hdid, null).ConfigureAwait(true);
         }
 
         /// <summary>
