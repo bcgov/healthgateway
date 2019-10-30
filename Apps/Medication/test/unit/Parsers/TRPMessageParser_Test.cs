@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress, 101010);
+            HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress, 101010, null);
 
             Assert.False(request.IsError);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);

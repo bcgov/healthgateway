@@ -39,7 +39,7 @@ namespace HealthGateway.Medication.Test
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
             MedicationStatementController controller = new MedicationStatementController(svcMock.Object);
 
             // Act
@@ -57,7 +57,7 @@ namespace HealthGateway.Medication.Test
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
 
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(true, errorMessage));
+            svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(true, errorMessage));
 
             MedicationStatementController controller = new MedicationStatementController(svcMock.Object);
 

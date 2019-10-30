@@ -66,7 +66,7 @@ namespace HealthGateway.Medication.Parsers
         protected HL7Encoding Encoding { get; set; }
 
         /// <inheritdoc/>
-        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId);
+        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord);
 
         /// <inheritdoc/>
         public abstract HNMessage<T> ParseResponseMessage(string hl7Message);
@@ -80,10 +80,7 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="traceId">The trace ID of the Pharmanet message.</param>
         protected void SetMessageHeader(Message message, string userId, string ipAddress, long traceId)
         {
-            if (message is null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            Contract.Requires(message != null);
 
             string formattedTraceId = traceId.ToString(CultureInfo.InvariantCulture).PadLeft(6, '0');
 
@@ -108,13 +105,11 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="message">The message object.</param>
         /// <param name="transactionId">The message transaction id.</param>
         /// <param name="traceId">The trace ID of the Pharmanet message.</param>
-        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId)
+        /// <param name="protectiveWord">The protecitve word securing certain HL7 messages.</param>
+        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId, string protectiveWord)
         {
-            if (message is null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
+            Contract.Requires(message != null);
+            
             string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
 
             // ZZZ - Transaction Control
@@ -124,6 +119,12 @@ namespace HealthGateway.Medication.Parsers
             zzz.AddNewField(formattedTraceId); // Trace Number
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
+            zzz.AddNewField(string.Empty); // Transaction Segment Count
+            zzz.AddNewField(string.Empty); // Transaction Text
+            zzz.AddNewField(string.IsNullOrEmpty(protectiveWord) ? string.Empty : protectiveWord); // Current Patient Keyword
+            zzz.AddNewField(string.Empty); // New Patient Keyword
+            zzz.AddNewField(string.Empty); // Additional Transaction Text
+
             message.AddNewSegment(zzz);
         }
 

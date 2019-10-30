@@ -80,7 +80,7 @@ namespace HealthGateway.Medication.Test
                 sequenceDelegateMock.Object);
 
             // Act
-            HNMessage<List<MedicationStatement>> actual = await hnclientDelegate.GetMedicationStatementsAsync("123456789", userId, ipAddress);
+            HNMessage<List<MedicationStatement>> actual = await hnclientDelegate.GetMedicationStatementsAsync("123456789", userId, ipAddress, null);
 
             // Verify
             Assert.True(actual.Message.Count == 0);
@@ -124,7 +124,7 @@ namespace HealthGateway.Medication.Test
                 sequenceDelegateMock.Object);
 
             // Act
-            HNMessage<List<MedicationStatement>> actual = await hnclientDelegate.GetMedicationStatementsAsync("123456789", userId, ipAddress);
+            HNMessage<List<MedicationStatement>> actual = await hnclientDelegate.GetMedicationStatementsAsync("123456789", userId, ipAddress, null);
 
             // Verify
             Assert.True(actual.IsError);

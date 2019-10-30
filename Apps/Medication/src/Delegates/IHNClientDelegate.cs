@@ -31,7 +31,7 @@ namespace HealthGateway.Medication.Delegate
         /// <param name="userId">The user id of the request.</param>
         /// <param name="ipAddress">The ip address of the request.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress);
 
         /// <summary>
         /// Retrieves a pharmacy record that match the given pharmacy id.
