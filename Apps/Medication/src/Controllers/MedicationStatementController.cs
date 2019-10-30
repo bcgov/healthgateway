@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Net;
+    using System.Security.Claims;
     using System.Security.AccessControl;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
@@ -78,7 +79,8 @@ namespace HealthGateway.Medication.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<ActionResult> GetMedicationStatements(string hdid)
         {
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(this.httpContextAccessor.HttpContext.User, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ChallengeResult();
