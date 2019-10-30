@@ -7,7 +7,6 @@
 <template>
   <b-modal
     ref="protectiveWord-modal"
-    v-model="visible"
     title="Protective word required"
     @ok="handleOk"
   >
