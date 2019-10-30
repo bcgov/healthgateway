@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Authorization
 {
+    using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -60,10 +61,8 @@ namespace HealthGateway.Common.Authorization
         /// <param name="hdid">The health data resource subject identifier.</param>
         private bool IsOwner(ClaimsPrincipal user, string hdid)
         {
-            if (user == null || hdid == null)
-            {
-                return false;
-            }
+            Contract.Requires(hdid != null);
+            Contract.Requires(user != null);
 
             string hdidClaim = user.FindFirst(c => c.Type == "hdid").Value;
             return string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal);
