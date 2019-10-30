@@ -178,7 +178,8 @@ $radius: 15px;
       </b-row>
       <ProtectiveWordComponent
         ref="protectiveWordModal"
-        @submit="onProtectiveWordChanged"
+        @submit="onProtectiveWordSubmit"
+        @cancel="onProtectiveWordCancel"
       />
     </b-container>
   </div>
@@ -257,8 +258,13 @@ export default class TimelineComponent extends Vue {
       });
   }
 
-  private onProtectiveWordChanged(value: string) {
+  private onProtectiveWordSubmit(value: string) {
     console.log(value);
+  }
+
+  private onProtectiveWordCancel() {
+    // Redirect to profile?
+    console.log("cancel");
   }
 
   private toggleDetails(timelineEntry: TimelineEntry): void {

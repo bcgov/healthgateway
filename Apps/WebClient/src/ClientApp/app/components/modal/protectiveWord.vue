@@ -9,6 +9,7 @@
     ref="protectiveWord-modal"
     title="Protective word required"
     @ok="handleOk"
+    @cancel="cancel"
   >
     <b-row>
       <b-col>
@@ -79,6 +80,11 @@ export default class ProtectiveWordComponent extends Vue {
   @Emit()
   public submit() {
     return this.protectiveWord;
+  }
+
+  @Emit()
+  public cancel() {
+    return;
   }
 
   private checkFormValidity() {
