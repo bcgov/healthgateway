@@ -75,7 +75,7 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord)
+        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
