@@ -107,7 +107,7 @@ namespace HealthGateway.Medication.Test
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();            
             svcMock
                 .Setup(s => s.GetMedicationStatements(hdid, null))
-                .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { IsError = true, Error = errorMessage });
+                .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { Result = HealthGateway.Common.Constants.ResultType.Error, ResultMessage = errorMessage });
 
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
@@ -119,7 +119,7 @@ namespace HealthGateway.Medication.Test
             Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), actual);
             RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)actual;
             Assert.Null(requestResult.ResourcePayload);
-            Assert.Equal(errorMessage, requestResult.ErrorMessage);
+            Assert.Equal(errorMessage, requestResult.ResultMessage);
         }
 
         [Fact]

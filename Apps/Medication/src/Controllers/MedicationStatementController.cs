@@ -75,38 +75,26 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
+        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
-                return new ChallengeResult();
+               // return new ChallengeResult();
             }
-
+            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>();
             HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-
-            if (medicationStatements.IsError)
+            result.ResultStatus = medicationStatements.Result;
+            result.ResultMessage = medicationStatements.ResultMessage;
+            if (medicationStatements.Result == Common.Constants.ResultType.Sucess)
             {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ErrorMessage = medicationStatements.Error,
-                };
-
-                return result;
+                result.ResourcePayload = medicationStatements.Message;
+                result.PageIndex = 0;
+                result.PageSize = medicationStatements.Message.Count;
+                result.TotalResultCount = medicationStatements.Message.Count;
             }
-            else
-            {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ResourcePayload = medicationStatements.Message,
-                    PageIndex = 0,
-                    PageSize = medicationStatements.Message.Count,
-                    TotalResultCount = medicationStatements.Message.Count,
-                };
-
-                return result;
-            }
+            return result;
         }
     }
 }

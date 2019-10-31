@@ -72,7 +72,7 @@ namespace HealthGateway.Medication.Services
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (!hnClientMedicationResult.IsError)
+            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
             {
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }

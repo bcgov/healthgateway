@@ -127,8 +127,8 @@ namespace HealthGateway.Medication.Test
             HNMessage<List<MedicationStatement>> actual = await hnclientDelegate.GetMedicationStatementsAsync("123456789", userId, ipAddress, null);
 
             // Verify
-            Assert.True(actual.IsError);
-            Assert.Equal($"Unable to connect to HNClient: {HttpStatusCode.BadRequest}", actual.Error);
+            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Error);
+            Assert.Equal($"Unable to connect to HNClient: {HttpStatusCode.BadRequest}", actual.ResultMessage);
         }
     }
 }

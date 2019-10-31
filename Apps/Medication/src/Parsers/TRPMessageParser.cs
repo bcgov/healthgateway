@@ -101,7 +101,8 @@ namespace HealthGateway.Medication.Parsers
             if (status.Value != "0")
             {
                 // The request was not processed
-                return new HNMessage<List<MedicationStatement>>(true, statusMessage.Value);
+                // If the protected word - 17 Field Keyword contains invalid value
+                return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, statusMessage.Value);
             }
 
             // ZPB patient history response

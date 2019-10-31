@@ -226,7 +226,7 @@ export default class TimelineComponent extends Vue {
       .getPatientMedicationStatements(this.user.hdid)
       .then(results => {
         console.log(results);
-        if (!results.errorMessage) {
+          if (results.resultStatus == 0) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
