@@ -152,9 +152,6 @@ $radius: 15px;
 import Vue from "vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Prop, Component } from "vue-property-decorator";
-import container from "@/inversify.config";
-import { IMedicationService } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import { State, Action, Getter } from "vuex-class";
 
 @Component
@@ -165,7 +162,6 @@ export default class MedicationTimelineComponent extends Vue {
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
 
-  private medicationService: IMedicationService;
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
 
@@ -176,12 +172,6 @@ export default class MedicationTimelineComponent extends Vue {
 
   get detailsLoaded(): boolean {
     return this.medicationLoaded && this.pharmacyLoaded;
-  }
-
-  mounted() {
-    this.medicationService = container.get(
-      SERVICE_IDENTIFIER.MedicationService
-    );
   }
 
   private getEntryIcon(entry: any): string {
