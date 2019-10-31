@@ -68,22 +68,6 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="hdid">The patient hdid.</param>
-        /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
-        [HttpGet]
-        [Produces("application/json")]
-        [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid)
-        {
-            return await this.GetMedicationStatements(hdid, null).ConfigureAwait(true);
-        }
-
-        /// <summary>
-        /// Gets a json of medication record.
-        /// </summary>
-        /// <returns>The medication statement records.</returns>
-        /// <param name="hdid">The patient hdid.</param>
         /// <param name="protectiveWord">The clients protective word for Pharmanet.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
@@ -91,7 +75,7 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid, string protectiveWord)
+        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);

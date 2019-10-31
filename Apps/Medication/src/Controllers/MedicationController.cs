@@ -45,6 +45,7 @@ namespace HealthGateway.Medication.Controllers
 
         /// <summary>
         /// Gets a list of medications that match the requested drug identifier.
+        /// The drug identifier must be either a Health Canada DIN or a BC Pharmanet PIN
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
