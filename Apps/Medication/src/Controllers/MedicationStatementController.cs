@@ -68,13 +68,14 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="hdid">The patient hdid.</param>
+        /// <param name="protectiveWord">The clients protective word for Pharmanet.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid)
+        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord)
         {
             return await this.GetMedicationStatements(hdid, null).ConfigureAwait(true);
         }
