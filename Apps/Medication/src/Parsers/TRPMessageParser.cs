@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Parsers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using HealthGateway.Medication.Models;
@@ -31,11 +32,11 @@ namespace HealthGateway.Medication.Parsers
         /// <summary>
         /// The minimun size of the expected TRF field length.
         /// </summary>
-#pragma warning disable CA1707 // Identifiers should not contain underscores
-#pragma warning disable SA1310 // Field names should not contain underscore
+        #pragma warning disable CA1707 // Identifiers should not contain underscores
+        #pragma warning disable SA1310 // Field names should not contain underscore
         public const int MIN_TRF_FIELD_LENGTH = 23;
-#pragma warning restore SA1310 // Field names should not contain underscore
-#pragma warning restore CA1707 // Identifiers should not contain underscores
+        #pragma warning restore SA1310 // Field names should not contain underscore
+        #pragma warning restore CA1707 // Identifiers should not contain underscores
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
@@ -47,7 +48,7 @@ namespace HealthGateway.Medication.Parsers
         }
 
         /// <inheritdoc/>
-        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId)
+        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -59,7 +60,7 @@ namespace HealthGateway.Medication.Parsers
             Message message = new Message();
 
             this.SetMessageHeader(message, userId, ipAddress, traceId);
-            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId);
+            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId, protectiveWord);
             this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA.BIN);
             this.SetProviderInfoSegment(message, traceId);
 

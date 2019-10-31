@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Test
 
             Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
 
-            svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
@@ -106,7 +106,7 @@ namespace HealthGateway.Medication.Test
 
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();            
             svcMock
-                .Setup(s => s.GetMedicationStatements(hdid))
+                .Setup(s => s.GetMedicationStatements(hdid, null))
                 .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { IsError = true, Error = errorMessage });
 
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
@@ -150,7 +150,7 @@ namespace HealthGateway.Medication.Test
 
             Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
 
-            svcMock.Setup(s => s.GetMedicationStatements(hdid)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            svcMock.Setup(s => s.GetMedicationStatements(hdid,null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Failed);
 
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);

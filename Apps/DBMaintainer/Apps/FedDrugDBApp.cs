@@ -69,6 +69,7 @@ namespace HealthGateway.DrugMaintainer.Apps
             this.drugDbContext.VeterinarySpecies.AddRange(this.parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
             downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
             this.AddFileToDB(downloadedFile);
+            this.RemoveOldFiles(downloadedFile);
             this.logger.LogInformation("Saving Entities to the database");
             this.drugDbContext.SaveChanges();
         }
