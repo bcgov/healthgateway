@@ -91,7 +91,7 @@ namespace HealthGateway.Medication.Delegates
                 }
                 else
                 {
-                    return new HNMessage<List<MedicationStatement>>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace HealthGateway.Medication.Delegates
                 }
                 else
                 {
-                    return new HNMessage<Pharmacy>(true, $"Unable to connect to HNClient: {response.StatusCode}");
+                    return new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
         }
