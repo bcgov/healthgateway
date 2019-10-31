@@ -14,6 +14,46 @@ namespace HealthGateway.Database.Migrations
                 cyclic: true);
 
             migrationBuilder.CreateTable(
+                name: "ProgramTypeCode",
+                columns: table => new
+                {
+                    ProgramTypeCodeId = table.Column<int>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProgramTypeCode", x => x.ProgramTypeCodeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileDownload",
+                columns: table => new
+                {
+                    FileDownloadId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(maxLength: 35, nullable: false),
+                    Hash = table.Column<string>(maxLength: 44, nullable: false),
+                    ProgramTypeCodeId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileDownload", x => x.FileDownloadId);
+                    table.ForeignKey(
+                        name: "FK_FileDownload_ProgramTypeCode_ProgramTypeCodeId",
+                        column: x => x.ProgramTypeCodeId,
+                        principalTable: "ProgramTypeCode",
+                        principalColumn: "ProgramTypeCodeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DrugProduct",
                 columns: table => new
                 {
@@ -35,28 +75,18 @@ namespace HealthGateway.Database.Migrations
                     AccessionNumber = table.Column<string>(maxLength: 5, nullable: true),
                     NumberOfAis = table.Column<string>(maxLength: 10, nullable: true),
                     LastUpdate = table.Column<DateTime>(nullable: false),
-                    AiGroupNumber = table.Column<string>(maxLength: 10, nullable: true)
+                    AiGroupNumber = table.Column<string>(maxLength: 10, nullable: true),
+                    FileDownloadId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DrugProduct", x => x.DrugProductId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FileDownload",
-                columns: table => new
-                {
-                    FileDownloadId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
-                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    Name = table.Column<string>(maxLength: 35, nullable: false),
-                    Hash = table.Column<string>(maxLength: 44, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FileDownload", x => x.FileDownloadId);
+                    table.ForeignKey(
+                        name: "FK_DrugProduct_FileDownload_FileDownloadId",
+                        column: x => x.FileDownloadId,
+                        principalTable: "FileDownload",
+                        principalColumn: "FileDownloadId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,11 +121,18 @@ namespace HealthGateway.Database.Migrations
                     MaximumDaysSupply = table.Column<int>(nullable: true),
                     QuantityLimit = table.Column<int>(nullable: true),
                     FormularyListDate = table.Column<DateTime>(type: "Date", nullable: false),
-                    LimitedUseFlag = table.Column<string>(maxLength: 1, nullable: true)
+                    LimitedUseFlag = table.Column<string>(maxLength: 1, nullable: true),
+                    FileDownloadId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PharmaCareDrug", x => x.PharmaCareDrugId);
+                    table.ForeignKey(
+                        name: "FK_PharmaCareDrug_FileDownload_FileDownloadId",
+                        column: x => x.FileDownloadId,
+                        principalTable: "FileDownload",
+                        principalColumn: "FileDownloadId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -380,6 +417,15 @@ namespace HealthGateway.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "ProgramTypeCode",
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[,]
+                {
+                    { 100, "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380), "Federal", "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380) },
+                    { 200, "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380), "Provincial", "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380) }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveIngredient_DrugProductId",
                 table: "ActiveIngredient",
@@ -391,10 +437,20 @@ namespace HealthGateway.Database.Migrations
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DrugProduct_FileDownloadId",
+                table: "DrugProduct",
+                column: "FileDownloadId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FileDownload_Hash",
                 table: "FileDownload",
                 column: "Hash",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileDownload_ProgramTypeCodeId",
+                table: "FileDownload",
+                column: "ProgramTypeCodeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Form_DrugProductId",
@@ -405,6 +461,11 @@ namespace HealthGateway.Database.Migrations
                 name: "IX_Packaging_DrugProductId",
                 table: "Packaging",
                 column: "DrugProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PharmaCareDrug_FileDownloadId",
+                table: "PharmaCareDrug",
+                column: "FileDownloadId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PharmaceuticalStd_DrugProductId",
@@ -446,9 +507,6 @@ namespace HealthGateway.Database.Migrations
                 name: "Company");
 
             migrationBuilder.DropTable(
-                name: "FileDownload");
-
-            migrationBuilder.DropTable(
                 name: "Form");
 
             migrationBuilder.DropTable(
@@ -477,6 +535,12 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "DrugProduct");
+
+            migrationBuilder.DropTable(
+                name: "FileDownload");
+
+            migrationBuilder.DropTable(
+                name: "ProgramTypeCode");
 
             migrationBuilder.DropSequence(
                 name: "trace_seq");

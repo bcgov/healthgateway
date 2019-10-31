@@ -76,10 +76,10 @@ namespace HealthGateway.Medication.Parsers
                 throw new ArgumentNullException(nameof(hl7Message));
             }
 
-            Message m = this.ParseRawMessage(hl7Message);
+            Message message = this.ParseRawMessage(hl7Message);
 
             // Checks the response status
-            Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
+            Segment zzz = message.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
             Field status = zzz.Fields(2); // Status code
             Field statusMessage = zzz.Fields(7); // Status message
 
@@ -90,7 +90,7 @@ namespace HealthGateway.Medication.Parsers
             }
 
             // ZPL location information
-            Segment zpl = m.Segments(HNClientConfiguration.SEGMENT_ZPL).FirstOrDefault();
+            Segment zpl = message.Segments(HNClientConfiguration.SEGMENT_ZPL).FirstOrDefault();
             Pharmacy pharmacy = new Pharmacy();
 
             pharmacy.PharmacyId = zpl.Fields(1).Value; // Requested PharmaNet Location Identifier

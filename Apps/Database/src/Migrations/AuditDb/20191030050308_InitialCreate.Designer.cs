@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations.AuditDb
 {
     [DbContext(typeof(AuditDbContext))]
-    [Migration("20191028213159_InitialCreate")]
+    [Migration("20191030050308_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,8 +62,7 @@ namespace HealthGateway.Database.Migrations.AuditDb
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<DateTime?>("UpdatedDateTime")
-                        .IsRequired();
+                    b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("AuditEventId");
 

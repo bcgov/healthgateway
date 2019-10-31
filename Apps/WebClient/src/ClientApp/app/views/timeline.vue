@@ -1,6 +1,10 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
+.column-wrapper {
+  border: 1px;
+}
+
 #pageTitle {
   color: $primary;
 }
@@ -22,48 +26,49 @@
 }
 </style>
 <template>
-  <div>
+  <b-container fluid>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <b-alert :show="hasErrors" dismissible variant="danger">
-      <h4>Error</h4>
-      <span>An unexpected error occured while processing the request.</span>
-    </b-alert>
-    <div id="pageTitle">
-      <h1 id="subject">
-        Health Care Timeline
-      </h1>
-      <hr />
-    </div>
-    <div id="listControlls">
-      <b-row>
-        <b-col>
-          Displaying {{ getVisibleCount() }} out of
-          {{ getTotalCount() }} records
-        </b-col>
-        <b-col cols="auto">
-          <b-row
-            :class="{ descending: sortDesc, ascending: !sortDesc }"
-            class="text-right sortContainer"
-          >
-            <b-btn variant="link" @click="toggleSort()">
-              Date
-              <span v-show="sortDesc" name="descending">
-                (Newest)
-                <i class="fa fa-chevron-down" aria-hidden="true"></i
-              ></span>
-              <span v-show="!sortDesc" name="ascending">
-                (Oldest)
-                <i class="fa fa-chevron-up" aria-hidden="true"></i
-              ></span>
-            </b-btn>
-          </b-row>
-        </b-col>
-      </b-row>
-    </div>
-    <b-container id="timeline">
-      <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
-        <b-col>
+    <b-row>
+      <b-col class="col-3 column-wrapper"> </b-col>
+      <b-col id="timeline" class="col-6 column-wrapper">
+        <b-alert :show="hasErrors" dismissible variant="danger">
+          <h4>Error</h4>
+          <span>An unexpected error occured while processing the request.</span>
+        </b-alert>
+        <div id="pageTitle">
+          <h1 id="subject">
+            Health Care Timeline
+          </h1>
+          <hr />
+        </div>
+        <div id="listControlls">
           <b-row>
+            <b-col>
+              Displaying {{ getVisibleCount() }} out of
+              {{ getTotalCount() }} records
+            </b-col>
+            <b-col cols="auto">
+              <b-row
+                :class="{ descending: sortDesc, ascending: !sortDesc }"
+                class="text-right sortContainer"
+              >
+                <b-btn variant="link" @click="toggleSort()">
+                  Date
+                  <span v-show="sortDesc" name="descending">
+                    (Newest)
+                    <i class="fa fa-chevron-down" aria-hidden="true"></i
+                  ></span>
+                  <span v-show="!sortDesc" name="ascending">
+                    (Oldest)
+                    <i class="fa fa-chevron-up" aria-hidden="true"></i
+                  ></span>
+                </b-btn>
+              </b-row>
+            </b-col>
+          </b-row>
+        </div>
+        <div id="timeData">
+          <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
             <b-col cols="auto">
               <div class="date">
                 {{ getHeadingDate(dateGroup.date) }}
@@ -72,19 +77,19 @@
             <b-col>
               <hr class="dateBreakLine" />
             </b-col>
+            <MedicationComponent
+              v-for="(entry, index) in dateGroup.entries"
+              :key="entry.id"
+              :datekey="dateGroup.key"
+              :entry="entry"
+              :index="index"
+            />
           </b-row>
-
-          <MedicationComponent
-            v-for="(entry, index) in dateGroup.entries"
-            :key="entry.id"
-            :date_key="dateGroup.key"
-            :entry="entry"
-            :index="index"
-          />
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
+        </div>
+      </b-col>
+      <b-col class="col-3 column-wrapper"> </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script lang="ts">
@@ -97,6 +102,7 @@ import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import moment from "moment";
@@ -116,7 +122,8 @@ interface DateGroup {
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
-  private timelineEntries: MedicationStatement[] = [];
+
+  private timelineEntries: TimelineEntry[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
@@ -128,13 +135,13 @@ export default class TimelineComponent extends Vue {
       SERVICE_IDENTIFIER.MedicationService
     );
     medicationService
-      .getPatientMedicationStatemens(this.user.hdid)
+      .getPatientMedicationStatements(this.user.hdid)
       .then(results => {
         console.log(results);
         if (!results.errorMessage) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
-            this.timelineEntries.push(result);
+            this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
         } else {
           console.log(

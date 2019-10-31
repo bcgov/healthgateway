@@ -37,6 +37,10 @@ $radius: 15px;
   padding: 0px;
 }
 
+.detailSection {
+  margin-top: 15px;
+}
+
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
   display: none;
@@ -51,7 +55,7 @@ $radius: 15px;
           <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
         </b-col>
         <b-col class="entryTitle">
-          {{ entry.medicationSumary.brandName }}
+          {{ entry.medication.brandName }}
         </b-col>
       </b-row>
       <b-row>
@@ -59,15 +63,16 @@ $radius: 15px;
         <b-col>
           <b-row>
             <b-col>
-              {{ entry.medicationSumary.genericName }}
+              {{ entry.medication.genericName }}
             </b-col>
           </b-row>
           <b-row>
             <b-col>
               <b-btn
-                v-b-toggle="'entryDetails-' + index + '-' + dateKey"
+                v-b-toggle="'entryDetails-' + index + '-' + datekey"
                 variant="link"
                 class="detailsButton"
+                @click="toggleDetails(entry)"
               >
                 <span class="when-opened">
                   <i class="fa fa-chevron-down" aria-hidden="true"></i
@@ -75,15 +80,65 @@ $radius: 15px;
                 <span class="when-closed">
                   <i class="fa fa-chevron-up" aria-hidden="true"></i
                 ></span>
-                View Details
+                <span v-if="detailsVisible">Hide Details</span>
+                <span v-else>View Details</span>
               </b-btn>
-              <b-collapse :id="'entryDetails-' + index + '-' + dateKey">
-                <b-col>
-                  <div v-for="detail in entry.details" :key="detail.name">
-                    <strong>{{ detail.name }}:</strong>
-                    {{ detail.value }}
+              <b-collapse :id="'entryDetails-' + index + '-' + datekey">
+                <div v-if="detailsLoaded">
+                  <div class="detailSection">
+                    <div>
+                      <strong>Practitioner:</strong>
+                      {{ entry.practitionerSurname }}
+                    </div>
+                    <div>
+                      <strong>Prescription #:</strong>
+                      {{ entry.prescriptionIdentifier }}
+                    </div>
                   </div>
-                </b-col>
+                  <div class="detailSection">
+                    <div>
+                      <strong>Quantity:</strong>
+                      {{ entry.medication.quantity }}
+                    </div>
+                    <div>
+                      <strong>Strength:</strong>
+                      {{ entry.medication.strength }}
+                      {{ entry.medication.strengthUnit }}
+                    </div>
+                    <div>
+                      <strong>Form:</strong>
+                      {{ entry.medication.form }}
+                    </div>
+                    <div>
+                      <strong>Manufacturer:</strong>
+                      {{ entry.medication.manufacturer }}
+                    </div>
+                  </div>
+                  <div class="detailSection">
+                    <strong>DIN/PIN:</strong>
+                    {{ entry.medication.din }}
+                  </div>
+                  <div class="detailSection">
+                    <div>
+                      <strong>Filled At:</strong>
+                    </div>
+                    <div>
+                      {{ entry.pharmacy.name }}
+                    </div>
+                    <div>
+                      {{ entry.pharmacy.address }}
+                    </div>
+                    <div>
+                      {{ formatPhoneNumber(entry.pharmacy.phoneNumber) }}
+                    </div>
+                  </div>
+                </div>
+                <div v-else>
+                  <div class="d-flex align-items-center">
+                    <strong>Loading...</strong>
+                    <b-spinner class="ml-5"></b-spinner>
+                  </div>
+                </div>
               </b-collapse>
             </b-col>
           </b-row>
@@ -95,17 +150,85 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
-import MedicationStatement from "@/models/medicationStatement";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Prop, Component } from "vue-property-decorator";
+import container from "@/inversify.config";
+import { IMedicationService } from "@/services/interfaces";
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { State, Action, Getter } from "vuex-class";
 
 @Component
 export default class MedicationTimelineComponent extends Vue {
-  @Prop() entry!: MedicationStatement;
+  @Prop() entry!: MedicationTimelineEntry;
   @Prop() index!: number;
-  @Prop() dateKey!: string;
+  @Prop() datekey!: string;
+  @Action("getMedication", { namespace: "medication" }) getMedication;
+  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
+
+  private medicationService: IMedicationService;
+  private isLoading: boolean = false;
+  private hasErrors: boolean = false;
+
+  private medicationLoaded: boolean = false;
+  private pharmacyLoaded: boolean = false;
+
+  private detailsVisible = false;
+
+  get detailsLoaded(): boolean {
+    return this.medicationLoaded && this.pharmacyLoaded;
+  }
+
+  mounted() {
+    this.medicationService = container.get(
+      SERVICE_IDENTIFIER.MedicationService
+    );
+  }
 
   private getEntryIcon(entry: any): string {
     return "fa-pills";
+  }
+
+  private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
+    this.detailsVisible = !this.detailsVisible;
+    // If the medicaiton or pharmacy details are loaded dont fetch again.
+    if (this.medicationLoaded && this.pharmacyLoaded) {
+      return;
+    }
+
+    console.log("Loading details");
+
+    this.isLoading = true;
+    var medicationPromise = this.getMedication({
+      din: medicationEntry.medication.din
+    });
+
+    var pharmacyPromise = this.getPharmacy({
+      pharmacyId: medicationEntry.pharmacy.id
+    });
+
+    Promise.all([medicationPromise, pharmacyPromise])
+      .then(results => {
+        // Load medication redails
+        medicationEntry.medication.populateFromModel(results[0]);
+        this.medicationLoaded = true;
+
+        // Load pharmacy details
+        medicationEntry.pharmacy.populateFromModel(results[1]);
+        this.pharmacyLoaded = true;
+        this.isLoading = false;
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+        this.isLoading = false;
+      });
+  }
+
+  private formatPhoneNumber(phoneNumber: string): string {
+    phoneNumber = phoneNumber || "";
+    return phoneNumber
+      .replace(/[^0-9]/g, "")
+      .replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
   }
 }
 </script>

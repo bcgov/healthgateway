@@ -18,7 +18,11 @@ import RequestResult from "@/models/requestResult";
 const today = new Date();
 var yesterday = new Date(today);
 yesterday.setDate(today.getDate() - 1);
-
+const pharmacy: Pharmacy = {
+  pharmacyId: "123",
+  addressLine1: "TEST",
+  addressLine2: "TEST2"
+};
 const medicationStatements: MedicationStatement[] = [
   {
     medicationSumary: {
@@ -52,7 +56,7 @@ class MockMedicationService implements IMedicationService {
     // No need to implement for the mock
     throw new Error("Method not implemented.");
   }
-  getPatientMedicationStatemens(hdid: string): Promise<RequestResult> {
+  getPatientMedicationStatements(hdid: string): Promise<RequestResult> {
     return new Promise<RequestResult>((resolve, reject) => {
       if (hdid === "hdid_with_results") {
         resolve({
@@ -67,6 +71,26 @@ class MockMedicationService implements IMedicationService {
       } else {
         reject({
           error: "User with " + hdid + " not found."
+        });
+      }
+    });
+  }
+  getMedicationInformation(drugIdentifier: string): Promise<RequestResult> {
+    throw new Error("Method not implemented.");
+  }
+  getPharmacyInfo(pharmacyId: string): Promise<RequestResult> {
+    return new Promise<RequestResult>((resolve, reject) => {
+      if (pharmacyId === "123") {
+        resolve({
+          totalResultCount: 1,
+          pageIndex: 0,
+          pageSize: 1,
+          errorMessage: "",
+          resourcePayload: pharmacy
+        });
+      } else {
+        reject({
+          error: "Pharmacy with " + pharmacyId + " not found."
         });
       }
     });
