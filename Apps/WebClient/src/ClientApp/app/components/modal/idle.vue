@@ -1,0 +1,74 @@
+﻿<style>
+.text-large {
+  font-size: 250%;
+}
+</style>
+<template>
+  <b-modal
+    ref="idle-modal"
+    v-model="visible"
+    title="Session Timeout"
+    ok-title="I'm here!"
+    cancel-title="Logoff"
+    @ok="refresh"
+    @hidden="refresh"
+    @cancel="logout"
+  >
+    <b-row>
+      <b-col>
+        Your session is expiring in:
+      </b-col>
+    </b-row>
+    <br />
+    <b-row>
+      <b-col class="text-center">
+        <p class="w-100 text-large">{{ totalTime }}</p>
+      </b-col>
+    </b-row>
+  </b-modal>
+</template>
+
+<script lang="ts">
+import Vue from "vue";
+import { Ref, Emit, Component } from "vue-property-decorator";
+import { Action } from "vuex-class";
+
+@Component
+export default class IdleComponent extends Vue {
+  @Ref("idle-modal") readonly modal: HTMLElement;
+  @Action("authenticateOidcSilent", { namespace: "auth" })
+  authenticateOidcSilent;
+
+  private totalTime: number = 60;
+  private visible: boolean = false;
+
+  @Emit()
+  public show() {
+    if (!this.visible) {
+      this.modal.show();
+      var self = this;
+      this.timer = setInterval(() => self.countdown(), 1000);
+      this.timeout = setTimeout(() => self.logout(), 1000 * 60);
+    }
+  }
+  @Emit()
+  public logout() {
+    this.$router.push("/logout");
+  }
+
+  private refresh(bvModalEvt) {
+    this.authenticateOidcSilent();
+    this.reset();
+  }
+
+  private reset() {
+    this.totalTime = 60;
+    clearTimeout(this.timeout);
+    clearInterval(this.timer);
+  }
+
+  private countdown() {
+    this.totalTime--;
+  }
+}
+</script>
