@@ -75,16 +75,16 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
+        public async Task<IActionResult> GetMedicationStatements(string hdid)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
-                return new ChallengeResult();
+                return new ForbidResult();
             }
 
-            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
+            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, null).ConfigureAwait(true);
 
             if (medicationStatements.IsError)
             {
@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Controllers
                     ErrorMessage = medicationStatements.Error,
                 };
 
-                return result;
+                return new JsonResult(result);
             }
             else
             {
@@ -105,7 +105,7 @@ namespace HealthGateway.Medication.Controllers
                     TotalResultCount = medicationStatements.Message.Count,
                 };
 
-                return result;
+                return new JsonResult(result);
             }
         }
     }

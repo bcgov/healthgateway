@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Models
     /// Class that represents the result of a request. Contains members for handling pagination and error resolution.
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
-    public class RequestResult<T> : ActionResult
+    public class RequestResult<T>
     {
         /// <summary>
         /// Gets or sets the result payload.

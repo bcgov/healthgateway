@@ -69,10 +69,18 @@ namespace HealthGateway.Medication.Test
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = (RequestResult<List<MedicationStatement>>)await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
+
+            Assert.IsType(typeof(JsonResult), actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+
+            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), jsonResult.Value);
+
+            RequestResult<List<MedicationStatement>> result = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
 
             // Verify
-            Assert.True(actual.ResourcePayload.Count == 0);
+            Assert.True(result.ResourcePayload.Count == 0);
         }
 
         [Fact]
@@ -113,11 +121,15 @@ namespace HealthGateway.Medication.Test
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            ActionResult actual = await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), actual);
-            RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)actual;
+            Assert.IsType(typeof(JsonResult), actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), jsonResult.Value);
+
+            RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
             Assert.Null(requestResult.ResourcePayload);
             Assert.Equal(errorMessage, requestResult.ErrorMessage);
         }
@@ -156,10 +168,10 @@ namespace HealthGateway.Medication.Test
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            ActionResult actual = await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(ChallengeResult), actual);
+            Assert.IsType(typeof(ForbidResult), actual);
             Assert.True(actual != null);
         }
     }
