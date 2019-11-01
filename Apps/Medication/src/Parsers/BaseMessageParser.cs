@@ -28,6 +28,7 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
     public abstract class BaseMessageParser<T> : IHNMessageParser<T>
+        where T : class
     {
         private readonly TimeZoneInfo localTimeZone;
         private readonly IConfiguration configuration;
