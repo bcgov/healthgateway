@@ -81,7 +81,7 @@ namespace HealthGateway.Medication.Controllers
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
-                return new ChallengeResult();
+                return new ForbidResult();
             }
 
             HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Controllers
                     ErrorMessage = medicationStatements.Error,
                 };
 
-                return result;
+                return new JsonResult(result);
             }
             else
             {
@@ -105,7 +105,7 @@ namespace HealthGateway.Medication.Controllers
                     TotalResultCount = medicationStatements.Message.Count,
                 };
 
-                return result;
+                return new JsonResult(result);
             }
         }
     }
