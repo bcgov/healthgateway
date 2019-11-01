@@ -1,28 +1,37 @@
-﻿<style>
+﻿<style lang="scss">
+@import "../../assets/scss/_variables.scss";
 .text-large {
   font-size: 250%;
+}
+.modal-header {
+  background-color: $primary;
+  color: $primary_text;
+
+  button,
+  button:hover {
+    color: #fff;
+  }
+}
+.modal-footer {
+  justify-content: flex-start;
 }
 </style>
 <template>
   <b-modal
     ref="idle-modal"
     v-model="visible"
+    header-class="modal-header"
+    footer-class="modal-footer"
+    :ok-only="true"
     title="Session Timeout"
     ok-title="I'm here!"
-    cancel-title="Logoff"
+    centered
     @ok="refresh"
     @hidden="refresh"
-    @cancel="logout"
   >
     <b-row>
       <b-col>
-        Your session is expiring in:
-      </b-col>
-    </b-row>
-    <br />
-    <b-row>
-      <b-col class="text-center">
-        <p class="w-100 text-large">{{ totalTime }}</p>
+        You will be automatically logged out in {{ totalTime }} seconds.
       </b-col>
     </b-row>
   </b-modal>
