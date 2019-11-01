@@ -36,7 +36,7 @@ namespace HealthGateway.Medication.Parsers
         }
 
         /// <inheritdoc/>
-        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId)
+        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord)
         {
             Message m = new Message();
 
@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Parsers
             zpl.AddNewField(this.ClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
             m.AddNewSegment(zpl);
 
-            this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID, traceId);
+            this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID, traceId, null);
 
             return new HNMessage<string>(m.SerializeMessage(false));
         }
@@ -76,21 +76,21 @@ namespace HealthGateway.Medication.Parsers
                 throw new ArgumentNullException(nameof(hl7Message));
             }
 
-            Message m = this.ParseRawMessage(hl7Message);
+            Message message = this.ParseRawMessage(hl7Message);
 
             // Checks the response status
-            Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
+            Segment zzz = message.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
             Field status = zzz.Fields(2); // Status code
             Field statusMessage = zzz.Fields(7); // Status message
 
             if (status.Value != "0")
             {
                 // The request was not processed
-                return new HNMessage<Pharmacy>(true, statusMessage.Value);
+                return new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, statusMessage.Value);
             }
 
             // ZPL location information
-            Segment zpl = m.Segments(HNClientConfiguration.SEGMENT_ZPL).FirstOrDefault();
+            Segment zpl = message.Segments(HNClientConfiguration.SEGMENT_ZPL).FirstOrDefault();
             Pharmacy pharmacy = new Pharmacy();
 
             pharmacy.PharmacyId = zpl.Fields(1).Value; // Requested PharmaNet Location Identifier

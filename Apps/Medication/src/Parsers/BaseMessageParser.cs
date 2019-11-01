@@ -28,6 +28,7 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
     public abstract class BaseMessageParser<T> : IHNMessageParser<T>
+        where T : class
     {
         private readonly TimeZoneInfo localTimeZone;
         private readonly IConfiguration configuration;
@@ -39,8 +40,15 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="config">The configuration provider.</param>
         protected BaseMessageParser(IConfiguration config)
         {
-            Contract.Requires(config != null);
-            Contract.Requires(config.GetSection("HNClient") != null);
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (config.GetSection("HNClient") is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
 
             this.configuration = config;
             this.ClientConfig = new HNClientConfiguration();
@@ -66,7 +74,7 @@ namespace HealthGateway.Medication.Parsers
         protected HL7Encoding Encoding { get; set; }
 
         /// <inheritdoc/>
-        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId);
+        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord);
 
         /// <inheritdoc/>
         public abstract HNMessage<T> ParseResponseMessage(string hl7Message);
@@ -108,7 +116,8 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="message">The message object.</param>
         /// <param name="transactionId">The message transaction id.</param>
         /// <param name="traceId">The trace ID of the Pharmanet message.</param>
-        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId)
+        /// <param name="protectiveWord">The protecitve word securing certain HL7 messages.</param>
+        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId, string protectiveWord)
         {
             if (message is null)
             {
@@ -124,6 +133,12 @@ namespace HealthGateway.Medication.Parsers
             zzz.AddNewField(formattedTraceId); // Trace Number
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
+            zzz.AddNewField(string.Empty); // Transaction Segment Count
+            zzz.AddNewField(string.Empty); // Transaction Text
+            zzz.AddNewField(string.IsNullOrEmpty(protectiveWord) ? string.Empty : protectiveWord); // Current Patient Keyword
+            zzz.AddNewField(string.Empty); // New Patient Keyword
+            zzz.AddNewField(string.Empty); // Additional Transaction Text
+
             message.AddNewSegment(zzz);
         }
 

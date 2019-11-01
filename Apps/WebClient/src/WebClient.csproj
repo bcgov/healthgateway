@@ -54,6 +54,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\app\app.vue" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="ClientApp\app\components\modal\" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">

@@ -9,7 +9,9 @@ import RequestResult from "@/models/requestResult";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
-  private readonly MEDICATION_BASE_URI: string = "v1/api/MedicationStatement/";
+  private readonly MEDICATION_STATEMENT_BASE_URI: string =
+    "v1/api/MedicationStatement/";
+  private readonly MEDICATION_BASE_URI: string = "v1/api/Medication/";
   private readonly PHARMACY_BASE_URI: string = "v1/api/Pharmacy/";
   private baseUri: string = "";
   private http!: HttpDelegate;
@@ -22,7 +24,15 @@ export class RestMedicationService implements IMedicationService {
 
   public getPatientMedicationStatements(hdid: string): Promise<RequestResult> {
     return this.http.get<RequestResult>(
-      `${this.baseUri}${this.MEDICATION_BASE_URI}${hdid}`
+      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`
+    );
+  }
+
+  public getMedicationInformation(
+    drugIdentifier: string
+  ): Promise<RequestResult> {
+    return this.http.get<RequestResult>(
+      `${this.baseUri}${this.MEDICATION_BASE_URI}${drugIdentifier}`
     );
   }
 

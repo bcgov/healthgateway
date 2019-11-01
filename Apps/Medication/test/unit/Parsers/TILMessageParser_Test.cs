@@ -52,15 +52,15 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:", this.culture); // Skips seconds to avoid time mismatching
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage<string> request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress, 101010);
+            HNMessage<string> request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress, 101010, null);
 
-            Assert.False(request.IsError);
+            Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Sucess);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);
             Assert.Contains($"|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA||{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
             Assert.Contains($"ZCB|{hnClientConfig.ZCB.PharmacyId}|{date}|{traceNumber}", request.Message);
             Assert.Contains($"ZPL|{pharmacyId}||||||||||||||{hnClientConfig.ZPL.TransactionReasonCode}\r", request.Message);
-            Assert.EndsWith($"ZZZ|TIL||{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}\r", request.Message);
+            Assert.EndsWith($"ZZZ|TIL||{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}|||||\r", request.Message);
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace HealthGateway.Medication.Test
             sb.Append($"ZZZ|TIL|1|{traceNumber}|{hnClientConfig.ZZZ.PractitionerIdRef}|{hnClientConfig.ZZZ.PractitionerId}||{expectedErrorMessage}\r");
             HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.IsError);
-            Assert.Equal(expectedErrorMessage, actual.Error);
+            Assert.True(actual.Result == Common.Constants.ResultType.Error);
+            Assert.Equal(expectedErrorMessage, actual.ResultMessage);
             Assert.Null(actual.Message);
         }
 
@@ -127,7 +127,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.False(actual.IsError);
+            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Sucess);
             Assert.True(expectedPharmacy.IsDeepEqual(actual.Message));
         }
 

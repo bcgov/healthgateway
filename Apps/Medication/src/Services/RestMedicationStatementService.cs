@@ -69,10 +69,10 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
-            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid).ConfigureAwait(true);
-            if (!hnClientMedicationResult.IsError)
+            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
+            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
             {
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
@@ -80,15 +80,16 @@ namespace HealthGateway.Medication.Services
             return hnClientMedicationResult;
         }
 
-        private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid)
+        private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string protectiveWord)
         {
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
+            // string userId = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
+            string userId = "USER_ID";
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await this.hnClientDelegate.GetMedicationStatementsAsync(phn, userId, ipv4Address).ConfigureAwait(true);
+            return await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, userId, ipv4Address).ConfigureAwait(true);
         }
 
         private void PopulateBrandName(List<MedicationStatement> statements)

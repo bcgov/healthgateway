@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     /// <typeparam name="T">The model type.</typeparam>
     public interface IHNMessageParser<T>
+        where T : class
     {
         /// <summary>
         /// Creates a request message to HNClient.
@@ -30,8 +31,9 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="userId">The requester user id.</param>
         /// <param name="ipAddress">The requester ip address.</param>
         /// <param name="traceId">The unique trace id for pharmanet transactions.</param>
+        /// <param name="protectiveWord">The protected word required for certain HL7 messages.</param>
         /// <returns>The HL7 message.</returns>
-        HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId);
+        HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord);
 
         /// <summary>
         /// Parses a response message from HNClient.

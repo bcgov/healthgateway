@@ -68,44 +68,38 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="hdid">The patient hdid.</param>
+        /// <param name="protectiveWord">The clients protective word for Pharmanet.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid)
+        public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
-                return new ChallengeResult();
+               return new ForbidResult();
             }
 
-            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid).ConfigureAwait(true);
-
-            if (medicationStatements.IsError)
+            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
+            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
             {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ErrorMessage = medicationStatements.Error,
-                };
+                ResultStatus = medicationStatements.Result,
+                ResultMessage = medicationStatements.ResultMessage,
+            };
 
-                return result;
-            }
-            else
+            if (result.ResultStatus == Common.Constants.ResultType.Sucess)
             {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ResourcePayload = medicationStatements.Message,
-                    PageIndex = 0,
-                    PageSize = medicationStatements.Message.Count,
-                    TotalResultCount = medicationStatements.Message.Count,
-                };
-
-                return result;
+                result.ResourcePayload = medicationStatements.Message;
+                result.PageIndex = 0;
+                result.PageSize = medicationStatements.Message.Count;
+                result.TotalResultCount = medicationStatements.Message.Count;
             }
+
+            return new JsonResult(result);
         }
     }
 }
