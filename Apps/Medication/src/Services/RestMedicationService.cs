@@ -42,11 +42,8 @@ namespace HealthGateway.Medication.Services
         {
             Dictionary<string, MedicationResult> result = new Dictionary<string, MedicationResult>();
 
-            // Federal dins are all the same size with padded zeroes on the left
-            List<string> paddedDinList = medicationDinList.Select(x => x.PadLeft(8, '0')).ToList();
-
             // Retrieve drug information from the Federal soruce
-            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(paddedDinList);
+            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
                 List<Form> forms = this.drugLookupDelegate.GetFormByDrugProductId(drugProduct.Id);
@@ -65,7 +62,7 @@ namespace HealthGateway.Medication.Services
             }
 
             // Retrieve drug information from the Provincial source and append it to the result if previously added.
-            List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(paddedDinList);
+            List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
             foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
             {
                 MedicationResult.ProvincialDrugSource provincialData = new MedicationResult.ProvincialDrugSource()

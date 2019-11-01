@@ -7,6 +7,8 @@ export default interface RequestResult {
   pageIndex: number;
   // The current page size for pagnation
   pageSize: number;
-  // The error message (could be empty)
-  errorMessage: string;
+  //The status of the request
+  resultStatus: number;
+  // The message associated to the request (could be empty)
+  resultMessage: string;
 }

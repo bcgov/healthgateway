@@ -56,7 +56,7 @@ namespace HealthGateway.Medication.Test
             string errorMessage = "The error message";
             string pharmacyId = "SomeId";
             Mock<IPharmacyService> svcMock = new Mock<IPharmacyService>();
-            svcMock.Setup(s => s.GetPharmacyAsync(pharmacyId)).ReturnsAsync(new HNMessage<Pharmacy>(true, errorMessage));
+            svcMock.Setup(s => s.GetPharmacyAsync(pharmacyId)).ReturnsAsync(new HNMessage<Pharmacy>(HealthGateway.Common.Constants.ResultType.Error, errorMessage));
             PharmacyController controller = new PharmacyController(svcMock.Object);
 
             // Act
@@ -64,7 +64,7 @@ namespace HealthGateway.Medication.Test
 
             // Verify
             Assert.Null(actual.ResourcePayload);
-            Assert.Equal(errorMessage, actual.ErrorMessage);
+            Assert.Equal(errorMessage, actual.ResultMessage);
         }
     }
 }

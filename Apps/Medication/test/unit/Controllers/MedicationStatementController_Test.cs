@@ -20,14 +20,11 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Authorization.Infrastructure;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using System.Collections.Generic;
-    using System.Net;
-    using System.Security.AccessControl;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading.Tasks;
@@ -69,10 +66,18 @@ namespace HealthGateway.Medication.Test
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = (RequestResult<List<MedicationStatement>>)await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.True(actual.ResourcePayload.Count == 0);
+            Assert.IsType(typeof(JsonResult), actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+
+            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), jsonResult.Value);
+
+            RequestResult<List<MedicationStatement>> result = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
+
+            Assert.True(result.ResourcePayload.Count == 0);
         }
 
         [Fact]
@@ -107,19 +112,23 @@ namespace HealthGateway.Medication.Test
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();            
             svcMock
                 .Setup(s => s.GetMedicationStatements(hdid, null))
-                .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { IsError = true, Error = errorMessage });
+                .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { Result = HealthGateway.Common.Constants.ResultType.Error, ResultMessage = errorMessage });
 
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            ActionResult actual = await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), actual);
-            RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)actual;
+            Assert.IsType(typeof(JsonResult), actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), jsonResult.Value);
+
+            RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
             Assert.Null(requestResult.ResourcePayload);
-            Assert.Equal(errorMessage, requestResult.ErrorMessage);
+            Assert.Equal(errorMessage, requestResult.ResultMessage);
         }
 
         [Fact]
@@ -156,10 +165,10 @@ namespace HealthGateway.Medication.Test
             MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            ActionResult actual = await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(ChallengeResult), actual);
+            Assert.IsType(typeof(ForbidResult), actual);
             Assert.True(actual != null);
         }
     }

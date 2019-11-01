@@ -75,7 +75,7 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<ActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
+        public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string protectiveWord = null)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
@@ -85,28 +85,21 @@ namespace HealthGateway.Medication.Controllers
             }
 
             HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-
-            if (medicationStatements.IsError)
+            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
             {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ErrorMessage = medicationStatements.Error,
-                };
+                ResultStatus = medicationStatements.Result,
+                ResultMessage = medicationStatements.ResultMessage,
+            };
 
-                return new JsonResult(result);
-            }
-            else
+            if (result.ResultStatus == Common.Constants.ResultType.Sucess)
             {
-                RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>()
-                {
-                    ResourcePayload = medicationStatements.Message,
-                    PageIndex = 0,
-                    PageSize = medicationStatements.Message.Count,
-                    TotalResultCount = medicationStatements.Message.Count,
-                };
-
-                return new JsonResult(result);
+                result.ResourcePayload = medicationStatements.Message;
+                result.PageIndex = 0;
+                result.PageSize = medicationStatements.Message.Count;
+                result.TotalResultCount = medicationStatements.Message.Count;
             }
+
+            return new JsonResult(result);
         }
     }
 }

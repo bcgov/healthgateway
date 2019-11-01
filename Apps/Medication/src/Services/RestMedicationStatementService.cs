@@ -72,7 +72,7 @@ namespace HealthGateway.Medication.Services
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (!hnClientMedicationResult.IsError)
+            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
             {
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
@@ -84,7 +84,8 @@ namespace HealthGateway.Medication.Services
         {
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            string userId = this.httpContextAccessor.HttpContext.User.Identity.Name;
+            // string userId = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
+            string userId = "USER_ID";
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 

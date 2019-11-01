@@ -38,6 +38,8 @@ namespace HealthGateway.Medication.Parsers
         #pragma warning restore SA1310 // Field names should not contain underscore
         #pragma warning restore CA1707 // Identifiers should not contain underscores
 
+        private const string PROTECTEDWORD = "17 Field KEYWORD contains invalid value";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
         /// </summary>
@@ -100,8 +102,16 @@ namespace HealthGateway.Medication.Parsers
 
             if (status.Value != "0")
             {
-                // The request was not processed
-                return new HNMessage<List<MedicationStatement>>(true, statusMessage.Value);
+                if (statusMessage.Value == PROTECTEDWORD)
+                {
+                    // If the protected word - 17 Field Keyword contains invalid value
+                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, "Record protected by keyword");
+                }
+                else
+                {
+                    // The request was not processed
+                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, statusMessage.Value);
+                }
             }
 
             // ZPB patient history response
