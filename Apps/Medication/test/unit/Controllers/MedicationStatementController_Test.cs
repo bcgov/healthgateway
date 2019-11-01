@@ -18,15 +18,9 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Authorization.Infrastructure;
-    using Microsoft.AspNetCore.Http;
     using HealthGateway.Common.Models;
     using Moq;
     using System.Collections.Generic;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Security.Principal;
     using System.Threading.Tasks;
     using Xunit;
 
