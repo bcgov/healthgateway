@@ -422,19 +422,21 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { 100, "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190), "Federal", "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190) },
-                    { 200, "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190), "Provincial", "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190) }
+                    { 100, "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610), "Federal", "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610) },
+                    { 200, "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610), "Provincial", "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610) }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveIngredient_DrugProductId",
                 table: "ActiveIngredient",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Company_DrugProductId",
                 table: "Company",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DrugProduct_FileDownloadId",
@@ -455,12 +457,14 @@ namespace HealthGateway.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Form_DrugProductId",
                 table: "Form",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Packaging_DrugProductId",
                 table: "Packaging",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PharmaCareDrug_FileDownloadId",
@@ -470,12 +474,14 @@ namespace HealthGateway.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_PharmaceuticalStd_DrugProductId",
                 table: "PharmaceuticalStd",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Route_DrugProductId",
                 table: "Route",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedule_DrugProductId",
@@ -490,12 +496,14 @@ namespace HealthGateway.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_TherapeuticClass_DrugProductId",
                 table: "TherapeuticClass",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_VeterinarySpecies_DrugProductId",
                 table: "VeterinarySpecies",
-                column: "DrugProductId");
+                column: "DrugProductId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
