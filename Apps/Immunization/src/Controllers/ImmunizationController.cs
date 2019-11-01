@@ -82,7 +82,7 @@ namespace HealthGateway.Immunization.Controllers
                 return new ForbidResult();
             }
 
-            return new JsonResult(this.service.GetImmunizations());
+            return new JsonResult(this.service.GetImmunizations(hdid));
         }
     }
 }

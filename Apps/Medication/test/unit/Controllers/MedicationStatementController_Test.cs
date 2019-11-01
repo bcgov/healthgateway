@@ -33,7 +33,7 @@ namespace HealthGateway.Medication.Test
     public class MedicationStatementController_Test
     {
         [Fact]
-        public async Task ShouldGetMedicationStatemets()
+        public async Task ShouldGetMedicationStatements()
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";

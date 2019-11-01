@@ -1,21 +1,28 @@
 namespace HealthGateway.Immunization.Test.Controller
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Authorization;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
     using Moq;
-    using System.Security.Claims;
     using Xunit;
 
     public class ImmunizationController_Test
     {
         [Fact]
-        public void Should_GetItems()
+        public async Task ShouldGetImmunizations()
         {
-            string errorMessage = "The error message";
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            string userId = "1001";
 
             IHeaderDictionary headerDictionary = new HeaderDictionary();
             headerDictionary.Add("Authorization", "Bearer TestJWT");
@@ -39,24 +46,24 @@ namespace HealthGateway.Immunization.Test.Controller
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
             Mock<IImmsService> svcMock = new Mock<IImmsService>();
-            svcMock
-                .Setup(s => s.GetImmunizations(hdid))
-                .ReturnsAsync(new IEnumerable<ImmsDataModel>(new IEnumerable<ImmsDataModel>()) { IsError = true, Error = errorMessage });
 
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IImmsService> mockSvc = new Mock<IImmsService>();
             List<ImmsDataModel> expected = new List<ImmsDataModel>();
             expected.Add(new ImmsDataModel()
             {
                 Vaccine = "test"
             });
-            mockSvc.Setup(m => m.GetImmunizations()).Returns(expected);
+            svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(expected);
 
-            // Create Controller
-            ImmunizationController controller = new ImmunizationController(mockSvc.Object);
-            IEnumerable<ImmsDataModel> actualResult = controller.GetItems();
+            ImmunizationController controller = new ImmunizationController(svcMock.Object, httpContextAccessorMock.Object, authzMock.Object);
+
+            // Act
+            JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);
+
+            // Verify
+            IEnumerable<ImmsDataModel> actual = (List<ImmsDataModel>)result.Value;
+
             // Verify the result
-            Assert.True(actualResult.IsDeepEqual(expected));
+            Assert.True(actual.IsDeepEqual(expected));
         }
     }
 }
