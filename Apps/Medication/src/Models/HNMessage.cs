@@ -21,12 +21,12 @@ namespace HealthGateway.Medication.Models
     /// The HN Client message.
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
-    public class HNMessage<T>
+    public class HNMessage<T> where T : class
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
         /// </summary>
-        public HNMessage() : this(default, ResultType.Sucess, null)
+        public HNMessage() : this(null, ResultType.Sucess, null)
         {
         }
 
@@ -43,7 +43,7 @@ namespace HealthGateway.Medication.Models
         /// </summary>
         /// <param name="result">The result of the transaction.</param>
         /// <param name="resultMessage">A message based on the result.</param>
-        public HNMessage(ResultType result, string resultMessage) : this(default, result, resultMessage)
+        public HNMessage(ResultType result, string resultMessage) : this(null, result, resultMessage)
         {
         }
 
