@@ -19,7 +19,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// Interface that defined a PharmacyService
+    /// Interface that defined a PharmacyService.
     /// </summary>
     public interface IPharmacyService
     {

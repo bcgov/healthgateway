@@ -17,7 +17,7 @@ namespace HealthGateway.Medication.Services
 {
     using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.Medication.Delegate;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
 
@@ -56,7 +56,7 @@ namespace HealthGateway.Medication.Services
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await hnClientDelegate.GetPharmacyAsync(pharmacyId, userId, ipv4Address);
+            return await this.hnClientDelegate.GetPharmacyAsync(pharmacyId, userId, ipv4Address).ConfigureAwait(true);
         }
     }
 }

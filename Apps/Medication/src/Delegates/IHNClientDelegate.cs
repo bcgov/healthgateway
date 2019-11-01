@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegate
+namespace HealthGateway.Medication.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -25,13 +25,14 @@ namespace HealthGateway.Medication.Delegate
     public interface IHNClientDelegate
     {
         /// <summary>
-        /// Retrieves a list of MedicationStatements that for the given phn
+        /// Retrieves a list of MedicationStatements that for the given phn.
         /// </summary>
         /// <param name="phn">The patient phn.</param>
+        /// <param name="protectiveWord">The clients protective word.</param>
         /// <param name="userId">The user id of the request.</param>
         /// <param name="ipAddress">The ip address of the request.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress);
 
         /// <summary>
         /// Retrieves a pharmacy record that match the given pharmacy id.

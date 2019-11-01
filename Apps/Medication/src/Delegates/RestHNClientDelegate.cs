@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegate
+namespace HealthGateway.Medication.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -30,6 +30,9 @@ namespace HealthGateway.Medication.Delegate
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// BC HealthNet Client Delegate.
+    /// </summary>
     public class RestHNClientDelegate : IHNClientDelegate
     {
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
@@ -66,7 +69,7 @@ namespace HealthGateway.Medication.Delegate
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
         {
             JWTModel jwtModel = this.authService.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
@@ -78,7 +81,7 @@ namespace HealthGateway.Medication.Delegate
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.NextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId);
+                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId, protectiveWord);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
@@ -106,7 +109,7 @@ namespace HealthGateway.Medication.Delegate
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.NextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId);
+                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId, null);
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
