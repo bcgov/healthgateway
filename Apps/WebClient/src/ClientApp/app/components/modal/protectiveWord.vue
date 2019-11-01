@@ -70,14 +70,19 @@
           <b-row>
             <b-col>
               <small>
-              Please enter the protective word required to access these restricted PharmaNet records.
+                Please enter the protective word required to access these
+                restricted PharmaNet records.
               </small>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
               <small>
-              For more information visit <a href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record">protective-word-for-a-pharmanet-record</a>
+                For more information visit
+                <a
+                  href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
+                  >protective-word-for-a-pharmanet-record</a
+                >
               </small>
             </b-col>
           </b-row>

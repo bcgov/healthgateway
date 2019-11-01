@@ -156,11 +156,9 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-        }
-        else if (results.resultStatus = ResultType.Protected) {
-            this.protectiveWordModal.showModal();
-        }
-        else {
+        } else if ((results.resultStatus = ResultType.Protected)) {
+          this.protectiveWordModal.showModal();
+        } else {
           console.log(
             "Error returned from the medication statements call: " +
               results.errorMessage

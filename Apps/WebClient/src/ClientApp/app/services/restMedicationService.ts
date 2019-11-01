@@ -6,7 +6,7 @@ import "reflect-metadata";
 import { ExternalConfiguration } from "@/models/configData";
 import HttpDelegate from "@/services/httpDelegate";
 import RequestResult from "@/models/requestResult";
-import { Dictionary } from 'vue-router/types/router';
+import { Dictionary } from "vue-router/types/router";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -23,14 +23,16 @@ export class RestMedicationService implements IMedicationService {
     this.http = http;
   }
 
-  public getPatientMedicationStatements(hdid: string, protectiveWord?: string): Promise<RequestResult> {
-    let headers: Dictionary<string> = {}
-    if (protectiveWord)
-    {
+  public getPatientMedicationStatements(
+    hdid: string,
+    protectiveWord?: string
+  ): Promise<RequestResult> {
+    let headers: Dictionary<string> = {};
+    if (protectiveWord) {
       headers["protectiveWord"] = protectiveWord;
     }
     return this.http.get<RequestResult>(
-      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`, 
+      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
       headers
     );
   }

@@ -1,7 +1,7 @@
 import Axios, { AxiosRequestConfig } from "axios";
 import { IHttpDelegate } from "./interfaces";
 import { injectable } from "inversify";
-import { Dictionary } from 'vue-router/types/router';
+import { Dictionary } from "vue-router/types/router";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {
