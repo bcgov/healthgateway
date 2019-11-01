@@ -1,5 +1,6 @@
 <style>
-.container {
+.container,
+.container-fluid {
   min-height: 100vh;
 }
 </style>
@@ -10,9 +11,7 @@
       <NavHeader />
     </header>
     <main>
-      <div class="container">
-        <router-view></router-view>
-      </div>
+      <router-view></router-view>
     </main>
     <NavFooter />
   </div>

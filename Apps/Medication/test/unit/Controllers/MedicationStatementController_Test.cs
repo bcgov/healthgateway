@@ -20,14 +20,11 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Authorization.Infrastructure;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using System.Collections.Generic;
-    using System.Net;
-    using System.Security.AccessControl;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading.Tasks;

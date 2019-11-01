@@ -11,18 +11,12 @@ import { injectable } from "inversify";
 import container from "@/inversify.config";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
-import medicationSumary from "@/models/medicationSumary";
-import Pharmacy from "@/models/pharmacy";
 import RequestResult from "@/models/requestResult";
 
+const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
 var yesterday = new Date(today);
 yesterday.setDate(today.getDate() - 1);
-const pharmacy: Pharmacy = {
-  pharmacyId: "123",
-  addressLine1: "TEST",
-  addressLine2: "TEST2"
-};
 const medicationStatements: MedicationStatement[] = [
   {
     medicationSumary: {
@@ -30,7 +24,7 @@ const medicationStatements: MedicationStatement[] = [
       genericName: "generic_name_A"
     },
     dispensedDate: today,
-    pharmacyId: "123"
+    pharmacyId: "pharmacyId"
   },
   {
     medicationSumary: {
@@ -38,7 +32,7 @@ const medicationStatements: MedicationStatement[] = [
       genericName: "generic_name_B"
     },
     dispensedDate: today,
-    pharmacyId: "123"
+    pharmacyId: "pharmacyId"
   },
   {
     medicationSumary: {
@@ -46,7 +40,7 @@ const medicationStatements: MedicationStatement[] = [
       genericName: "generic_name_C"
     },
     dispensedDate: yesterday,
-    pharmacyId: "123"
+    pharmacyId: "pharmacyId"
   }
 ];
 
@@ -54,7 +48,7 @@ const medicationStatements: MedicationStatement[] = [
 class MockMedicationService implements IMedicationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
     // No need to implement for the mock
-    throw new Error("Method not implemented.");
+    throw new Error(METHOD_NOT_IMPLEMENTED);
   }
   getPatientMedicationStatements(hdid: string): Promise<RequestResult> {
     return new Promise<RequestResult>((resolve, reject) => {
@@ -75,26 +69,14 @@ class MockMedicationService implements IMedicationService {
       }
     });
   }
+  getMedicationInformation(drugIdentifier: string): Promise<RequestResult> {
+    throw new Error(METHOD_NOT_IMPLEMENTED);
+  }
   getPharmacyInfo(pharmacyId: string): Promise<RequestResult> {
-    return new Promise<RequestResult>((resolve, reject) => {
-      if (pharmacyId === "123") {
-        resolve({
-          totalResultCount: 1,
-          pageIndex: 0,
-          pageSize: 1,
-          errorMessage: "",
-          resourcePayload: pharmacy
-        });
-      } else {
-        reject({
-          error: "Pharmacy with " + pharmacyId + " not found."
-        });
-      }
-    });
+    // No need to implement for the mock
+    throw new Error(METHOD_NOT_IMPLEMENTED);
   }
 }
-
-const pushMethod = jest.fn();
 
 let $router = {};
 let $route = {
