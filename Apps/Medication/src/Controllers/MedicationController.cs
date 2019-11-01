@@ -46,7 +46,7 @@ namespace HealthGateway.Medication.Controllers
 
         /// <summary>
         /// Gets a list of medications that match the requested drug identifier.
-        /// The drug identifier must be either a Health Canada DIN or a BC Pharmanet PIN
+        /// The drug identifier must be either a Health Canada DIN or a BC Pharmanet PIN.
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
@@ -60,7 +60,6 @@ namespace HealthGateway.Medication.Controllers
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
-
 
             RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()
             {

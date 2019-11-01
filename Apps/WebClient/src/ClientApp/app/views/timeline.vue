@@ -105,6 +105,7 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import MedicationTimelineComponent from "@/components/timeline/medication.vue";
+import { ResultType } from "@/constants/resulttype.ts";
 import moment from "moment";
 
 const namespace: string = "user";
@@ -138,7 +139,7 @@ export default class TimelineComponent extends Vue {
       .getPatientMedicationStatements(this.user.hdid)
       .then(results => {
         console.log(results);
-        if (!results.errorMessage) {
+          if (results.resultStatus == ResultType.Success) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));

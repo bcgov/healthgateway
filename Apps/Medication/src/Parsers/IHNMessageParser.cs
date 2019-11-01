@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     /// <typeparam name="T">The model type.</typeparam>
     public interface IHNMessageParser<T>
+        where T : class
     {
         /// <summary>
         /// Creates a request message to HNClient.

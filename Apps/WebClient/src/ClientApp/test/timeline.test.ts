@@ -57,7 +57,8 @@ class MockMedicationService implements IMedicationService {
           totalResultCount: medicationStatements.length,
           pageIndex: 0,
           pageSize: medicationStatements.length,
-          errorMessage: "",
+          resultStatus: 0,
+          resultMessage: "",
           resourcePayload: medicationStatements
         });
       } else if (hdid === "hdid_no_results") {

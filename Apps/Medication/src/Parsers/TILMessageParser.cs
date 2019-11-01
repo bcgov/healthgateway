@@ -86,7 +86,7 @@ namespace HealthGateway.Medication.Parsers
             if (status.Value != "0")
             {
                 // The request was not processed
-                return new HNMessage<Pharmacy>(true, statusMessage.Value);
+                return new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, statusMessage.Value);
             }
 
             // ZPL location information

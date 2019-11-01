@@ -59,28 +59,20 @@ namespace HealthGateway.Medication.Controllers
         public async Task<RequestResult<Pharmacy>> GetPharmacy(string pharmacyId)
         {
             HNMessage<Pharmacy> pharmacyResult = await this.pharmacyService.GetPharmacyAsync(pharmacyId).ConfigureAwait(true);
-
-            if (pharmacyResult.IsError)
+            RequestResult<Pharmacy> result = new RequestResult<Pharmacy>
             {
-                RequestResult<Pharmacy> result = new RequestResult<Pharmacy>()
-                {
-                    ErrorMessage = pharmacyResult.Error,
-                };
-
-                return result;
-            }
-            else
+                ResultStatus = pharmacyResult.Result,
+                ResultMessage = pharmacyResult.ResultMessage,
+            };
+            if (pharmacyResult.Result == Common.Constants.ResultType.Sucess)
             {
-                RequestResult<Pharmacy> result = new RequestResult<Pharmacy>()
-                {
-                    ResourcePayload = pharmacyResult.Message,
-                    PageIndex = 0,
-                    PageSize = 1,
-                    TotalResultCount = 1,
-                };
-
-                return result;
+                result.ResourcePayload = pharmacyResult.Message;
+                result.PageIndex = 0;
+                result.PageSize = 1;
+                result.TotalResultCount = 1;
             }
+
+            return result;
         }
     }
 }
