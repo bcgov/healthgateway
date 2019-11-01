@@ -53,6 +53,12 @@
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ClientApp\app\app.vue" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClientApp\app\components\modal\" />
+  </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
   </Target>

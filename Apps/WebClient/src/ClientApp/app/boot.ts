@@ -26,7 +26,14 @@ import SERVICE_IDENTIFIER, {
 } from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
+import IdleVue from "idle-vue";
 
+Vue.use(IdleVue, {
+  eventEmitter: new Vue(),
+  idleTime: 300000,
+  store,
+  startAtIdle: false
+});
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
