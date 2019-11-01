@@ -1,42 +1,49 @@
 ﻿<style lang="scss" scoped>
-.error-template {
-  padding: 40px 15px;
+@import "../../assets/scss/_variables.scss";
+.text-large {
+  font-size: 250%;
+}
+.modal-header {
+  background-color: $primary;
+  color: $primary_text;
+
+  button,
+  button:hover {
+    color: #fff;
+  }
+}
+.modal-footer {
+  justify-content: flex-start;
+  button {
+    padding: 5px 20px 5px 20px;
+  }
 }
 </style>
 
 <template>
   <b-modal
     ref="protectiveWord-modal"
-    title="Protective word required"
+    title="Restricted PharmaNet Records"
+    header-class="modal-header"
+    footer-class="modal-footer"
+    centered
     @ok="handleOk"
-    @cancel="cancel"
+    @close="cancel"
+    @hide="reset"
   >
-    <b-row>
-      <b-col>
-        Your information is protected by a protective word.
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        To view your records you must enter it below:
-      </b-col>
-    </b-row>
-    <br />
     <b-row>
       <b-col>
         <form ref="form" @submit.stop.prevent="handleSubmit">
           <b-row>
-            <b-col cols="4">
+            <b-col cols="8">
               <b-form-group
                 :state="state"
-                label="Protective Word:"
+                label="Protective Word"
                 class="font-weight-bold pt-2"
                 label-for="protectiveWord-input"
                 invalid-feedback="Protective word is required"
               >
               </b-form-group>
-            </b-col>
-            <b-col>
               <b-form-input
                 id="protectiveWord-input"
                 v-model="protectiveWord"
@@ -49,15 +56,34 @@
         </form>
       </b-col>
     </b-row>
-    <br />
-    <b-row>
-      <b-col>
-        <a
-          href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record#storing"
-          >What is a protective word?</a
-        >
-      </b-col>
-    </b-row>
+    <template v-slot:modal-footer="{ ok, cancel, hide }">
+      <b-row>
+        <b-col>
+          <b-row>
+            <b-col>
+              <b-button size="lg" variant="primary" @click="ok()">
+                Continue
+              </b-button>
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col>
+              <small>
+              Please enter the protective word required to access these restricted PharmaNet records.
+              </small>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <small>
+              For more information visit <a href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record">protective-word-for-a-pharmanet-record</a>
+              </small>
+            </b-col>
+          </b-row>
+        </b-col>
+      </b-row>
+    </template>
   </b-modal>
 </template>
 
@@ -85,6 +111,11 @@ export default class ProtectiveWordComponent extends Vue {
   @Emit()
   public cancel() {
     return;
+  }
+
+  private reset() {
+    this.protectiveWord = "";
+    this.state = "";
   }
 
   private checkFormValidity() {

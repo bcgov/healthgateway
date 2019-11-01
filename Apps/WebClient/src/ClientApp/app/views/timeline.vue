@@ -140,20 +140,27 @@ export default class TimelineComponent extends Vue {
   readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
-    this.isLoading = true;
+    this.fechMedicationStatements();
+  }
+
+  private fechMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
     medicationService
-      .getPatientMedicationStatements(this.user.hdid)
+      .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
         console.log(results);
-          if (results.resultStatus == ResultType.Success) {
+        if (results.resultStatus == ResultType.Success) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-        } else {
+        }
+        else if (results.resultStatus = ResultType.Protected) {
+            this.protectiveWordModal.showModal();
+        }
+        else {
           console.log(
             "Error returned from the medication statements call: " +
               results.errorMessage
@@ -166,17 +173,16 @@ export default class TimelineComponent extends Vue {
       })
       .finally(() => {
         this.isLoading = false;
-        this.protectiveWordModal.showModal();
       });
   }
-  
+
   private onProtectiveWordSubmit(value: string) {
-    console.log(value);
+    this.fechMedicationStatements(value);
   }
 
   private onProtectiveWordCancel() {
-    // Redirect to profile?
-    console.log("cancel");
+    // Does nothing as it won't be able to fetch pharmanet data.
+    console.log("protective word cancelled");
   }
 
   private toggleSort(): void {
