@@ -68,6 +68,7 @@ namespace HealthGateway.Medication.Test
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
 
+            // Verify
             Assert.IsType(typeof(JsonResult), actual);
 
             JsonResult jsonResult = (JsonResult)actual;
@@ -76,7 +77,6 @@ namespace HealthGateway.Medication.Test
 
             RequestResult<List<MedicationStatement>> result = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
 
-            // Verify
             Assert.True(result.ResourcePayload.Count == 0);
         }
 

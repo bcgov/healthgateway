@@ -61,7 +61,6 @@ namespace HealthGateway.Medication.Controllers
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
 
-
             RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()
             {
                 ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,

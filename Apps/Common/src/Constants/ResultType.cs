@@ -15,10 +15,24 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Constants
 {
+    /// <summary>
+    /// An enum representing the possible results for our transactions.
+    /// </summary>
     public enum ResultType
     {
-        Sucess,
-        Protected,
-        Error,
+        /// <summary>
+        /// Represents an error condition.
+        /// </summary>
+        Error = 0,
+
+        /// <summary>
+        /// Represents a successful result.
+        /// </summary>
+        Sucess = 1,
+
+        /// <summary>
+        /// Represents that the transactions requires a protective word.
+        /// </summary>
+        Protected = 99,
     }
 }

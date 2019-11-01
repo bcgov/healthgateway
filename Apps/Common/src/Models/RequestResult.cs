@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
-    using Microsoft.AspNetCore.Mvc;
     using HealthGateway.Common.Constants;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// Class that represents the result of a request. Contains members for handling pagination and error resolution.
@@ -45,9 +45,9 @@ namespace HealthGateway.Common.Models
         public int PageSize { get; set; }
 
         /// <summary>
-        /// The Result of the request.
+        /// Gets or sets the Result of the request.
         /// </summary>
-        public ResultType ResultStatus { get; set;}
+        public ResultType ResultStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the message depending on the result type.
