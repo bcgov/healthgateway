@@ -10,5 +10,5 @@ export default interface RequestResult {
   //The status of the request
   resultStatus: number;
   // The message associated to the request (could be empty)
-  resulttMessage: string;
+  resultMessage: string;
 }
