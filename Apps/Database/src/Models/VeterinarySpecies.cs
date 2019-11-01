@@ -26,9 +26,6 @@ namespace HealthGateway.Database.Models
         [Column("VeterinarySpeciesId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         [MaxLength(80)]
         public string Species { get; set; }
 
@@ -37,5 +34,17 @@ namespace HealthGateway.Database.Models
 
         [MaxLength(80)]
         public string SubSpecies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object Drug Product reference.
+        /// </summary>
+        [Required]
+        public virtual DrugProduct DrugProduct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

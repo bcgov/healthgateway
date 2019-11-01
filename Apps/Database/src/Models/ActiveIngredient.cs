@@ -32,12 +32,6 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the Drug Product.
-        /// </summary>
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
-        /// <summary>
         /// Gets or sets the active ingredient code.
         /// </summary>
         public int ActiveIngredientCode { get; set; }
@@ -119,5 +113,17 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(2000)]
         public string Notes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object Drug Product reference.
+        /// </summary>
+        [Required]
+        public virtual DrugProduct DrugProduct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

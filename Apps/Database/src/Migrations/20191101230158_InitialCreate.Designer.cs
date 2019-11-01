@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191030050249_InitialCreate")]
+    [Migration("20191101230158_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -457,7 +457,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
                 {
-                    b.Property<Guid>("PharmaceuticalStdId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("PharmaceuticalStdId");
 
@@ -477,7 +477,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("UpdatedDateTime");
 
-                    b.HasKey("PharmaceuticalStdId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DrugProductId");
 
@@ -513,19 +513,19 @@ namespace HealthGateway.Database.Migrations
                         {
                             Id = 100,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380),
+                            CreatedDateTime = new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190),
                             Name = "Federal",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380)
+                            UpdatedDateTime = new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190)
                         },
                         new
                         {
                             Id = 200,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380),
+                            CreatedDateTime = new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190),
                             Name = "Provincial",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380)
+                            UpdatedDateTime = new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190)
                         });
                 });
 

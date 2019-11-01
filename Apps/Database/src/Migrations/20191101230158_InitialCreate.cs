@@ -144,7 +144,6 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     ActiveIngredientCode = table.Column<int>(nullable: false),
                     Ingredient = table.Column<string>(maxLength: 240, nullable: true),
                     IngredientFrench = table.Column<string>(maxLength: 400, nullable: true),
@@ -158,7 +157,8 @@ namespace HealthGateway.Database.Migrations
                     Base = table.Column<string>(maxLength: 1, nullable: true),
                     DosageUnit = table.Column<string>(maxLength: 40, nullable: true),
                     DosageUnitFrench = table.Column<string>(maxLength: 80, nullable: true),
-                    Notes = table.Column<string>(maxLength: 2000, nullable: true)
+                    Notes = table.Column<string>(maxLength: 2000, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,7 +180,6 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     ManufacturerCode = table.Column<string>(maxLength: 5, nullable: true),
                     CompanyCode = table.Column<int>(nullable: false),
                     CompanyName = table.Column<string>(maxLength: 80, nullable: true),
@@ -197,7 +196,8 @@ namespace HealthGateway.Database.Migrations
                     Country = table.Column<string>(maxLength: 40, nullable: true),
                     CountryFrench = table.Column<string>(maxLength: 100, nullable: true),
                     PostalCode = table.Column<string>(maxLength: 20, nullable: true),
-                    PostOfficeBox = table.Column<string>(maxLength: 15, nullable: true)
+                    PostOfficeBox = table.Column<string>(maxLength: 15, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -219,10 +219,10 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     PharmaceuticalFormCode = table.Column<int>(nullable: false),
                     PharmaceuticalForm = table.Column<string>(maxLength: 40, nullable: true),
-                    PharmaceuticalFormFrench = table.Column<string>(maxLength: 80, nullable: true)
+                    PharmaceuticalFormFrench = table.Column<string>(maxLength: 80, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,14 +244,14 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     UPC = table.Column<string>(maxLength: 12, nullable: true),
                     PackageType = table.Column<string>(maxLength: 40, nullable: true),
                     PackageTypeFrench = table.Column<string>(maxLength: 80, nullable: true),
                     PackageSizeUnit = table.Column<string>(maxLength: 40, nullable: true),
                     PackageSizeUnitFrench = table.Column<string>(maxLength: 80, nullable: true),
                     PackageSize = table.Column<string>(maxLength: 5, nullable: true),
-                    ProductInformation = table.Column<string>(maxLength: 80, nullable: true)
+                    ProductInformation = table.Column<string>(maxLength: 80, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -273,8 +273,8 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
-                    PharmaceuticalStdDesc = table.Column<string>(nullable: true)
+                    PharmaceuticalStdDesc = table.Column<string>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -296,10 +296,10 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     AdministrationCode = table.Column<int>(nullable: false),
                     Administration = table.Column<string>(maxLength: 40, nullable: true),
-                    AdministrationFrench = table.Column<string>(maxLength: 80, nullable: true)
+                    AdministrationFrench = table.Column<string>(maxLength: 80, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -321,9 +321,9 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     ScheduleDesc = table.Column<string>(maxLength: 40, nullable: true),
-                    ScheduleDescFrench = table.Column<string>(maxLength: 80, nullable: true)
+                    ScheduleDescFrench = table.Column<string>(maxLength: 80, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -345,13 +345,13 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     CurrentStatusFlag = table.Column<string>(maxLength: 1, nullable: true),
                     StatusDesc = table.Column<string>(maxLength: 40, nullable: true),
                     StatusDescFrench = table.Column<string>(maxLength: 80, nullable: true),
                     HistoryDate = table.Column<DateTime>(nullable: true),
                     LotNumber = table.Column<string>(maxLength: 80, nullable: true),
-                    ExpirationDate = table.Column<DateTime>(nullable: true)
+                    ExpirationDate = table.Column<DateTime>(nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -373,13 +373,13 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     AtcNumber = table.Column<string>(maxLength: 8, nullable: true),
                     Atc = table.Column<string>(maxLength: 120, nullable: true),
                     AtcFrench = table.Column<string>(maxLength: 240, nullable: true),
                     AhfsNumber = table.Column<string>(maxLength: 20, nullable: true),
                     Ahfs = table.Column<string>(maxLength: 80, nullable: true),
-                    AhfsFrench = table.Column<string>(maxLength: 160, nullable: true)
+                    AhfsFrench = table.Column<string>(maxLength: 160, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -401,10 +401,10 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    DrugProductId = table.Column<Guid>(nullable: false),
                     Species = table.Column<string>(maxLength: 80, nullable: true),
                     SpeciesFrench = table.Column<string>(maxLength: 160, nullable: true),
-                    SubSpecies = table.Column<string>(maxLength: 80, nullable: true)
+                    SubSpecies = table.Column<string>(maxLength: 80, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -422,8 +422,8 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { 100, "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380), "Federal", "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380) },
-                    { 200, "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380), "Provincial", "System", new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380) }
+                    { 100, "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190), "Federal", "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190) },
+                    { 200, "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190), "Provincial", "System", new DateTime(2019, 11, 1, 23, 1, 57, 527, DateTimeKind.Utc).AddTicks(6190) }
                 });
 
             migrationBuilder.CreateIndex(

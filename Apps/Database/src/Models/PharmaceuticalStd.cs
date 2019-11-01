@@ -24,11 +24,20 @@ namespace HealthGateway.Database.Models
     public class PharmaceuticalStd : AuditableEntity
     {
         [Column("PharmaceuticalStdId")]
-        public Guid PharmaceuticalStdId { get; set; }
-
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
+        public Guid Id { get; set; }
 
         public string PharmaceuticalStdDesc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object Drug Product reference.
+        /// </summary>
+        [Required]
+        public virtual DrugProduct DrugProduct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

@@ -26,9 +26,6 @@ namespace HealthGateway.Database.Models
         [Column("FormId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         public int PharmaceuticalFormCode { get; set; }
 
         [MaxLength(40)]
@@ -36,5 +33,17 @@ namespace HealthGateway.Database.Models
 
         [MaxLength(80)]
         public string PharmaceuticalFormFrench { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object Drug Product reference.
+        /// </summary>
+        [Required]
+        public virtual DrugProduct DrugProduct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }
