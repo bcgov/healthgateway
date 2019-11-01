@@ -89,7 +89,7 @@ namespace HealthGateway.Medication.Controllers
             {
                 ResultStatus = medicationStatements.Result,
                 ResultMessage = medicationStatements.ResultMessage,
-            }
+            };
 
             if (result.ResultStatus == Common.Constants.ResultType.Sucess)
             {
