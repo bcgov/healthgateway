@@ -23,7 +23,7 @@
     header-class="modal-header"
     footer-class="modal-footer"
     :ok-only="true"
-    title="Session Timeout"
+    title="Are you still there?"
     ok-title="I'm here!"
     centered
     @ok="refresh"
