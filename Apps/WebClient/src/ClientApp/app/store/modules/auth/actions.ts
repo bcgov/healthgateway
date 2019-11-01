@@ -110,7 +110,7 @@ export const actions: ActionTree<AuthState, RootState> = {
     authService.removeUser().finally(() => {
       httpDelegate.unsetAuthorizationHeader();
       context.commit("unsetOidcAuth");
-      context.commit("user/clearUserData", { root: true });
+      context.commit("user/clearUserData", null, { root: true });
     });
   },
   setHttpToken(context, token) {
