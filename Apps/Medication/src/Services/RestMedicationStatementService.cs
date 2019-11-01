@@ -84,7 +84,7 @@ namespace HealthGateway.Medication.Services
         {
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-            //string userId = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
+            // string userId = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
             string userId = "USER_ID";
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
