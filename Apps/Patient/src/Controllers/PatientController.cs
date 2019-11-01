@@ -66,7 +66,9 @@ namespace HealthGateway.PatientService.Controllers
         /// <returns>The patient record.</returns>
         /// <param name="hdid">The patient hdid.</param>
         /// <response code="200">Returns the patient record.</response>
-        /// <response code="401">The client is not authorzied to retrieve the record.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
