@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The entity representing a Drug Product from the Federal Drug Database.
@@ -130,47 +131,56 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the Manufacturer.
         /// </summary>
+        [IgnoreDataMember]
         public virtual Company Company { get; set; }
 
         /// <summary>
         /// Gets or sets the ActiveIngredient.
         /// </summary>
+        [IgnoreDataMember]
         public virtual ActiveIngredient ActiveIngredient { get; set; }
 
         /// <summary>
         /// Gets or sets the Form. 
         /// </summary>
+        [IgnoreDataMember]
         public virtual Form Form { get; set; }
 
         /// <summary>
         /// Gets or sets the Packaging.
         /// </summary>
+        [IgnoreDataMember]
         public virtual Packaging Packaging { get; set; }
 
         /// <summary>
         /// Gets or sets the PharmaceuticalStd.
         /// </summary>
+        [IgnoreDataMember]
         public virtual PharmaceuticalStd PharmaceuticalStd { get; set; }
 
         /// <summary>
         /// Gets or sets the Route. 
         /// </summary>
+        [IgnoreDataMember]
         public virtual Route Route { get; set; }
 
 
         /// <summary>
         /// Gets or sets the related statuses
         /// </summary>
+        [IgnoreDataMember]
         public virtual ICollection<Status> Statuses { get; set; }
 
         /// <summary>
         /// Gets or sets the related TherapeuticClass.
         /// </summary>
+        [IgnoreDataMember]
         public virtual TherapeuticClass TherapeuticClass {get; set;}
 
         /// <summary>
         /// Gets or sets the related VeterinarySpecies.
         /// </summary>
+        [IgnoreDataMember]
         public virtual VeterinarySpecies VeterinarySpecies { get; set; }
     }
 }
