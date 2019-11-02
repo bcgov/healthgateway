@@ -77,12 +77,6 @@ namespace HealthGateway.Database.Models
         public string PostOfficeBox { get; set; }
 
         /// <summary>
-        /// Gets or sets the object Drug Product reference.
-        /// </summary>
-        [Required]
-        public virtual DrugProduct DrugProduct { get; set; }
-
-        /// <summary>
         /// Gets or sets the Drug Product foreign key.
         /// </summary>
         [Required]

@@ -46,19 +46,19 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<Form> GetFormByDrugProductId(System.Guid drugProductId)
         {
-            return this.dbContext.Form.Where(c => c.DrugProduct.Id == drugProductId).ToList();
+            return this.dbContext.Form.Where(c => c.DrugProductId == drugProductId).ToList();
         }
 
         /// <inheritdoc/>
         public List<ActiveIngredient> GetActiveIngredientByDrugProductId(System.Guid drugProductId)
         {
-            return this.dbContext.ActiveIngredient.Where(c => c.DrugProduct.Id == drugProductId).ToList();
+            return this.dbContext.ActiveIngredient.Where(c => c.DrugProductId == drugProductId).ToList();
         }
 
         /// <inheritdoc/>
         public List<Company> GetCompanyByDrugProductId(System.Guid drugProductId)
         {
-            return this.dbContext.Company.Where(c => c.DrugProduct.Id == drugProductId).ToList();
+            return this.dbContext.Company.Where(c => c.DrugProductId == drugProductId).ToList();
         }
 
         /// <inheritdoc/>

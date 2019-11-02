@@ -43,12 +43,6 @@ namespace HealthGateway.Database.Models
         public DateTime? ExpirationDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the object Drug Product reference.
-        /// </summary>
-        [Required]
-        public virtual DrugProduct DrugProduct { get; set; }
-
-        /// <summary>
         /// Gets or sets the Drug Product foreign key.
         /// </summary>
         [Required]
