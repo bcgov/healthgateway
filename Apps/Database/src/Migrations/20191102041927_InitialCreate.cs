@@ -30,6 +30,24 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Schedule",
+                columns: table => new
+                {
+                    ScheduleId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    ScheduleDesc = table.Column<string>(maxLength: 40, nullable: true),
+                    ScheduleDescFrench = table.Column<string>(maxLength: 80, nullable: true),
+                    DrugProductId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Schedule", x => x.ScheduleId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FileDownload",
                 columns: table => new
                 {
@@ -313,30 +331,6 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Schedule",
-                columns: table => new
-                {
-                    ScheduleId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
-                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    ScheduleDesc = table.Column<string>(maxLength: 40, nullable: true),
-                    ScheduleDescFrench = table.Column<string>(maxLength: 80, nullable: true),
-                    DrugProductId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Schedule", x => x.ScheduleId);
-                    table.ForeignKey(
-                        name: "FK_Schedule_DrugProduct_DrugProductId",
-                        column: x => x.DrugProductId,
-                        principalTable: "DrugProduct",
-                        principalColumn: "DrugProductId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Status",
                 columns: table => new
                 {
@@ -422,8 +416,8 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { 100, "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610), "Federal", "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610) },
-                    { 200, "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610), "Provincial", "System", new DateTime(2019, 11, 1, 23, 45, 27, 93, DateTimeKind.Utc).AddTicks(3610) }
+                    { 100, "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050), "Federal", "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050) },
+                    { 200, "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050), "Provincial", "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -482,11 +476,6 @@ namespace HealthGateway.Database.Migrations
                 table: "Route",
                 column: "DrugProductId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Schedule_DrugProductId",
-                table: "Schedule",
-                column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Status_DrugProductId",
