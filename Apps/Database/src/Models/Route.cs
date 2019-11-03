@@ -26,9 +26,6 @@ namespace HealthGateway.Database.Models
         [Column("RouteId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         public int AdministrationCode { get; set; }
 
         [MaxLength(40)]
@@ -36,5 +33,11 @@ namespace HealthGateway.Database.Models
 
         [MaxLength(80)]
         public string AdministrationFrench { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

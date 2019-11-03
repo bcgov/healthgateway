@@ -32,7 +32,7 @@ namespace HealthGateway.DrugMaintainer
         public TherapeuticMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProductId).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First().Id);
             // TC_ATC_NUMBER
             Map(m => m.AtcNumber).Index(1);
             // TC_ATC

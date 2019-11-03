@@ -26,9 +26,6 @@ namespace HealthGateway.Database.Models
         [Column("TherapeuticClassId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         [MaxLength(8)]
         public string AtcNumber { get; set; }
 
@@ -46,5 +43,11 @@ namespace HealthGateway.Database.Models
 
         [MaxLength(160)]
         public string AhfsFrench { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

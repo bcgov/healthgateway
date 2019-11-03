@@ -26,9 +26,6 @@ namespace HealthGateway.Database.Models
         [Column("CompanyId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         [MaxLength(5)]
         public string ManufacturerCode { get; set; }
 
@@ -78,5 +75,11 @@ namespace HealthGateway.Database.Models
 
         [MaxLength(15)]
         public string PostOfficeBox { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

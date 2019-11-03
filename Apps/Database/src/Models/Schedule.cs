@@ -26,13 +26,16 @@ namespace HealthGateway.Database.Models
         [Column("ScheduleId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         [MaxLength(40)]
         public string ScheduleDesc { get; set; }
 
         [MaxLength(80)]
         public string ScheduleDescFrench { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }

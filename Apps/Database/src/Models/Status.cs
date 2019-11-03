@@ -26,9 +26,6 @@ namespace HealthGateway.Database.Models
         [Column("StatusId")]
         public Guid Id { get; set; }
 
-        [Required]
-        public DrugProduct DrugProduct { get; set; }
-
         [MaxLength(1)]
         public string CurrentStatusFlag { get; set; }
 
@@ -44,5 +41,11 @@ namespace HealthGateway.Database.Models
         public string LotNumber { get; set; }
 
         public DateTime? ExpirationDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Drug Product foreign key.
+        /// </summary>
+        [Required]
+        public Guid DrugProductId { get; set; }
     }
 }
