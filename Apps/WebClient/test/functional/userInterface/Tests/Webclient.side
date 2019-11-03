@@ -781,7 +781,7 @@
       "id": "864d1ef9-0a5e-440c-bb39-bc02023fdc63",
       "comment": "",
       "command": "run",
-      "target": "Keycloak Login Protected",
+      "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
@@ -833,7 +833,7 @@
       "id": "69ff4e97-1d1e-4c6a-9668-915fe068346f",
       "comment": "",
       "command": "run",
-      "target": "Keycloak Login Protected",
+      "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
@@ -881,11 +881,11 @@
       "id": "77080eec-898d-44dd-8b0c-5fe1663acf68",
       "comment": "",
       "command": "storeText",
-      "target": "css=.row:nth-child(1) > .col .date",
+      "target": "css=.row:nth-child(1) .date",
       "targets": [
-        ["css=.row:nth-child(1) > .col .date", "css:finder"],
-        ["xpath=//div[@id='timeline']/div/div/div/div/div", "xpath:idRelative"],
-        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
       ],
       "value": "newestDate"
     }, {
@@ -904,7 +904,7 @@
       "id": "7065e187-7c3f-42c2-a3ce-fd992b7a4d99",
       "comment": "",
       "command": "storeText",
-      "target": "css=.row:nth-child(1) > .col .date",
+      "target": "css=.row:nth-child(1) .date",
       "targets": [],
       "value": "oldestDate"
     }, {
@@ -936,7 +936,7 @@
       "id": "0b16961b-a90c-461d-87d2-62c0304ed7c8",
       "comment": "",
       "command": "run",
-      "target": "Keycloak Login Protected",
+      "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
@@ -965,15 +965,24 @@
       "id": "d9da2318-7e9f-463f-b238-cb2a0e8461ba",
       "comment": "",
       "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [],
+      "target": "css=#menuBtndUser__BV_button_ > span",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
       "value": "30000"
     }, {
       "id": "d74b95b9-eb06-4723-a53a-e2306e2b137a",
       "comment": "",
       "command": "assertText",
-      "target": "css=.col",
-      "targets": [],
+      "target": "css=#listControlls .col",
+      "targets": [
+        ["css=#listControlls .col", "css:finder"],
+        ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
+      ],
       "value": "Displaying 23 out of 23 records"
     }, {
       "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
@@ -1004,7 +1013,7 @@
       "id": "0d999b0d-96cf-42a3-b7ce-bd293a6e072f",
       "comment": "",
       "command": "run",
-      "target": "Keycloak Login Protected",
+      "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
@@ -1308,7 +1317,7 @@
       "id": "5811ddfe-d616-4924-bade-bed53784e88f",
       "comment": "",
       "command": "run",
-      "target": "Keycloak Login",
+      "target": "Keycloak Login Protected",
       "targets": [],
       "value": ""
     }, {
