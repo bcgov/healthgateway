@@ -32,7 +32,7 @@ namespace HealthGateway.DrugMaintainer
         public FormMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProductId).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First().Id);
             // PHARM_FORM_CODE
             Map(m => m.PharmaceuticalFormCode).Index(1);
             // PHARMACEUTICAL_FORM

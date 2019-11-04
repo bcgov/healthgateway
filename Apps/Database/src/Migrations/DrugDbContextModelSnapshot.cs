@@ -83,7 +83,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("ActiveIngredient");
                 });
@@ -160,7 +161,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("Company");
                 });
@@ -302,7 +304,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("Form");
                 });
@@ -350,7 +353,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("Packaging");
                 });
@@ -455,7 +459,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
                 {
-                    b.Property<Guid>("PharmaceuticalStdId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("PharmaceuticalStdId");
 
@@ -475,9 +479,10 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("UpdatedDateTime");
 
-                    b.HasKey("PharmaceuticalStdId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("PharmaceuticalStd");
                 });
@@ -511,19 +516,19 @@ namespace HealthGateway.Database.Migrations
                         {
                             Id = 100,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380),
+                            CreatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050),
                             Name = "Federal",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380)
+                            UpdatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050)
                         },
                         new
                         {
                             Id = 200,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380),
+                            CreatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050),
                             Name = "Provincial",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 10, 30, 5, 2, 49, 223, DateTimeKind.Utc).AddTicks(3380)
+                            UpdatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050)
                         });
                 });
 
@@ -557,7 +562,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("Route");
                 });
@@ -589,8 +595,6 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("UpdatedDateTime");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DrugProductId");
 
                     b.ToTable("Schedule");
                 });
@@ -678,7 +682,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("TherapeuticClass");
                 });
@@ -714,24 +719,25 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId");
+                    b.HasIndex("DrugProductId")
+                        .IsUnique();
 
                     b.ToTable("VeterinarySpecies");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("ActiveIngredient")
+                        .HasForeignKey("HealthGateway.Database.Models.ActiveIngredient", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("Company")
+                        .HasForeignKey("HealthGateway.Database.Models.Company", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -753,17 +759,17 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Form", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("Form")
+                        .HasForeignKey("HealthGateway.Database.Models.Form", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("Packaging")
+                        .HasForeignKey("HealthGateway.Database.Models.Packaging", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -778,48 +784,40 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                        .WithOne("PharmaceuticalStd")
+                        .HasForeignKey("HealthGateway.Database.Models.PharmaceuticalStd", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.Schedule", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("Route")
+                        .HasForeignKey("HealthGateway.Database.Models.Route", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Status", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithMany("Statuses")
                         .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.TherapeuticClass", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("TherapeuticClass")
+                        .HasForeignKey("HealthGateway.Database.Models.TherapeuticClass", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
-                        .WithMany()
-                        .HasForeignKey("DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                        .WithOne("VeterinarySpecies")
+                        .HasForeignKey("HealthGateway.Database.Models.VeterinarySpecies", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

@@ -16,8 +16,10 @@
 namespace HealthGateway.Database.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The entity representing a Drug Product from the Federal Drug Database.
@@ -125,5 +127,51 @@ namespace HealthGateway.Database.Models
         /// Code first mechanism to define the foreign key.
         /// </summary>
         public virtual FileDownload FileDownload { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Manufacturer.
+        /// </summary>
+        public virtual Company Company { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ActiveIngredient.
+        /// </summary>
+        public virtual ActiveIngredient ActiveIngredient { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Form. 
+        /// </summary>
+        public virtual Form Form { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Packaging.
+        /// </summary>
+        public virtual Packaging Packaging { get; set; }
+
+        /// <summary>
+        /// Gets or sets the PharmaceuticalStd.
+        /// </summary>
+        public virtual PharmaceuticalStd PharmaceuticalStd { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Route. 
+        /// </summary>
+        public virtual Route Route { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the related statuses
+        /// </summary>
+        public virtual ICollection<Status> Statuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related TherapeuticClass.
+        /// </summary>
+        public virtual TherapeuticClass TherapeuticClass {get; set;}
+
+        /// <summary>
+        /// Gets or sets the related VeterinarySpecies.
+        /// </summary>
+        public virtual VeterinarySpecies VeterinarySpecies { get; set; }
     }
 }

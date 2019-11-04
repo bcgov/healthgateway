@@ -1,6 +1,7 @@
 import Axios, { AxiosRequestConfig } from "axios";
 import { IHttpDelegate } from "./interfaces";
 import { injectable } from "inversify";
+import { Dictionary } from "vue-router/types/router";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {
@@ -12,10 +13,11 @@ export default class HttpDelegate implements IHttpDelegate {
       Authorization: `Bearer ${accessToken}`
     };
   }
-  public get<T>(url: string): Promise<T> {
+  public get<T>(url: string, headers: Dictionary<string> = {}): Promise<T> {
     return new Promise<T>((resolve, reject) => {
+      headers["Access-Control-Allow-Origin"] = "*";
       let config: AxiosRequestConfig = {
-        headers: { "Access-Control-Allow-Origin": "*" }
+        headers
       };
       Axios.get(url, config)
         .then(response => {

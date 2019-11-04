@@ -89,15 +89,21 @@
       </b-col>
       <b-col class="col-3 column-wrapper"> </b-col>
     </b-row>
+    <ProtectiveWordComponent
+      ref="protectiveWordModal"
+      @submit="onProtectiveWordSubmit"
+      @cancel="onProtectiveWordCancel"
+    />
   </b-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { IMedicationService } from "@/services/interfaces";
 import LoadingComponent from "@/components/loading.vue";
+import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import User from "@/models/user";
@@ -118,6 +124,7 @@ interface DateGroup {
 @Component({
   components: {
     LoadingComponent,
+    ProtectiveWordComponent,
     MedicationComponent: MedicationTimelineComponent
   }
 })
@@ -129,21 +136,28 @@ export default class TimelineComponent extends Vue {
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
+  @Ref("protectiveWordModal")
+  readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
-    this.isLoading = true;
+    this.fechMedicationStatements();
+  }
+
+  private fechMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
     medicationService
-      .getPatientMedicationStatements(this.user.hdid)
+      .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
         console.log(results);
-          if (results.resultStatus == ResultType.Success) {
+        if (results.resultStatus == ResultType.Success) {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
+        } else if ((results.resultStatus = ResultType.Protected)) {
+          this.protectiveWordModal.showModal();
         } else {
           console.log(
             "Error returned from the medication statements call: " +
@@ -158,6 +172,15 @@ export default class TimelineComponent extends Vue {
       .finally(() => {
         this.isLoading = false;
       });
+  }
+
+  private onProtectiveWordSubmit(value: string) {
+    this.fechMedicationStatements(value);
+  }
+
+  private onProtectiveWordCancel() {
+    // Does nothing as it won't be able to fetch pharmanet data.
+    console.log("protective word cancelled");
   }
 
   private toggleSort(): void {
