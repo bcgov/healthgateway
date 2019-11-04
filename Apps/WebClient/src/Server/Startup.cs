@@ -72,7 +72,6 @@ namespace HealthGateway.WebClient
         {
             Contract.Requires(env != null);
             this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseAudit(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseWebClient(app);

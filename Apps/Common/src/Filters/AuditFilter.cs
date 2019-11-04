@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,54 +13,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Middleware
+namespace HealthGateway.Common.Filters
 {
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc.Filters;
 
     /// <summary>
     /// The audit middleware class.
     /// </summary>
-    public class AuditMiddleware
+    public class AuditFilter : IAsyncActionFilter
     {
-        private const string CREATEDBY = nameof(AuditMiddleware);
-        private readonly RequestDelegate next;
+        private readonly IAuditLogger auditService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuditMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="AuditFilter"/> class.
         /// </summary>
-        /// <param name="next">The next request action.</param>
-        public AuditMiddleware(RequestDelegate next)
+        /// <param name="auditService">The injected audit service.</param>
+        public AuditFilter(IAuditLogger auditService)
         {
-            this.next = next;
+            this.auditService = auditService;
         }
 
-        /// <summary>
-        /// The audit middleware handler method.
-        /// </summary>
-        /// <param name="context">The http context.</param>
-        /// <param name="auditService">The injected audit service.</param>
-        /// <returns>An async task.</returns>
-        public async Task Invoke(HttpContext context, IAuditLogger auditService)
+        /// <inheritdoc/>
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventId = Guid.NewGuid();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
 
-            // Continue down the Middleware pipeline, eventually returning to this class
-            await this.next(context).ConfigureAwait(true);
+            // Executes the action (Controller method)
+            await next();
+
+            // Check for ignored controllers
+            if (context.Controller.GetType().GetCustomAttributes(typeof(IgnoreAuditAttribute), true).Length > 0)
+                return;
 
             auditEvent.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(auditEvent.AuditEventDateTime).TotalMilliseconds);
 
             // Write the event
-            auditService.PopulateWithHttpContext(context, auditEvent);
-            auditEvent.CreatedBy = CREATEDBY;
+            auditService.PopulateWithHttpContext(context.HttpContext, auditEvent);
+            auditEvent.CreatedBy = nameof(AuditFilter);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditService.WriteAuditEvent(auditEvent);
-            return;
         }
     }
 }

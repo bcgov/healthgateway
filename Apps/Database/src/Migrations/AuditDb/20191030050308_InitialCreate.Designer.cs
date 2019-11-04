@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Migrations.AuditDb
                     b.Property<string>("Trace")
                         .HasMaxLength(200);
 
-                    b.Property<string>("TransacationName")
+                    b.Property<string>("TransactionName")
                         .IsRequired()
                         .HasMaxLength(100);
 

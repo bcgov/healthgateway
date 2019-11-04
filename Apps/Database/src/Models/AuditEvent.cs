@@ -69,7 +69,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(100)]
         [Required]
-        public string TransacationName { get; set; }
+        public string TransactionName { get; set; }
 
         /// <summary>
         /// Gets or sets the version of the transaction.

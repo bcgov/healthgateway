@@ -50,9 +50,9 @@ namespace HealthGateway.PatientService
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
-            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
@@ -68,7 +68,6 @@ namespace HealthGateway.PatientService
         {
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseAuth(app);
-            this.startupConfig.UseAudit(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
         }
