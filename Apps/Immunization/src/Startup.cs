@@ -66,7 +66,6 @@ namespace HealthGateway.Immunization
         {
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseAuth(app);
-            this.startupConfig.UseAudit(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
         }

@@ -26,6 +26,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -134,6 +135,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The injected services provider.</param>
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
+            IAuditLogger auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
             this.logger.LogDebug($"Debug configuration is {debugEnabled}");
 
@@ -159,7 +161,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = this.OnAuthenticationFailed,
+                    OnAuthenticationFailed = (ctx) => { return this.OnAuthenticationFailed(ctx, auditLogger); },
                 };
             });
         }
@@ -345,8 +347,21 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// </summary>
         /// <param name="context">The authentication failed context.</param>
         /// <returns>An async task.</returns>
-        private Task OnAuthenticationFailed(AuthenticationFailedContext context)
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
+            AuditEvent auditEvent = new AuditEvent();
+            auditEvent.AuditEventId = Guid.NewGuid();
+            auditEvent.AuditEventDateTime = DateTime.UtcNow;
+            auditEvent.TransactionDuration = 0; // There's not a way to calculate the duration here.
+
+            auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);
+
+            auditEvent.TransactionResultType = Database.Constant.AuditTransactionResultType.Unauthorized;
+            auditEvent.CreatedBy = nameof(StartupConfiguration);
+            auditEvent.CreatedDateTime = DateTime.UtcNow;
+
+            auditLogger.WriteAuditEvent(auditEvent);
+
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(JsonConvert.SerializeObject(new

@@ -27,7 +27,6 @@ namespace HealthGateway.Common.Filters
     /// </summary>
     public class AuditFilter : IAsyncActionFilter
     {
-        private const string CREATEDBY = nameof(AuditFilter);
         private readonly IAuditLogger auditService;
 
         /// <summary>
@@ -57,7 +56,7 @@ namespace HealthGateway.Common.Filters
 
             // Write the event
             auditService.PopulateWithHttpContext(context.HttpContext, auditEvent);
-            auditEvent.CreatedBy = CREATEDBY;
+            auditEvent.CreatedBy = nameof(AuditFilter);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditService.WriteAuditEvent(auditEvent);
         }
