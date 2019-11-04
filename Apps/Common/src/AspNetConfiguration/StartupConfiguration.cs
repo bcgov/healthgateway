@@ -210,7 +210,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures the app to use x-forwarded-for headers to obtain the real client IP.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
-        public void useForwardHeaders(IApplicationBuilder app)
+        public void UseForwardHeaders(IApplicationBuilder app)
         {
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
