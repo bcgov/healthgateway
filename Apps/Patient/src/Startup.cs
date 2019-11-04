@@ -66,7 +66,6 @@ namespace HealthGateway.PatientService
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseAuth(app);
-            this.startupConfig.UseAudit(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
         }

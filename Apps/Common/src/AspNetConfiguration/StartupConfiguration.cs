@@ -21,7 +21,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
-    using HealthGateway.Common.Middleware;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
@@ -86,7 +86,9 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks();
 
             services
-                .AddMvc()
+                .AddMvc(options => {
+                    options.Filters.Add(typeof(AuditFilter));
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
@@ -256,19 +258,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
-        }
-
-        /// <summary>
-        /// Configures the app to use a custom audit.
-        /// </summary>
-        /// <param name="app">The application builder provider.</param>
-        public void UseAudit(IApplicationBuilder app)
-        {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-            this.logger.LogDebug("Use Audit...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-
-            app.UseMiddleware<AuditMiddleware>();
         }
 
         /// <summary>
