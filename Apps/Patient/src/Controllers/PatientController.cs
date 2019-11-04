@@ -15,8 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.PatientService.Controllers
 {
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Authorization;
     using HealthGateway.PatientService.Models;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -34,12 +38,26 @@ namespace HealthGateway.PatientService.Controllers
         private readonly IPatientService service;
 
         /// <summary>
+        /// The authorization service.
+        /// </summary>
+        private readonly IAuthorizationService authorizationService;
+
+        /// <summary>
+        /// Gets or sets the http context accessor.
+        /// </summary>
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
         /// <param name="svc">The patient data service.</param>
-        public PatientController(IPatientService svc)
+        /// <param name="authorizationService">The injected authorization service.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        public PatientController(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IPatientService svc)
         {
             this.service = svc;
+            this.httpContextAccessor = httpContextAccessor;
+            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -48,15 +66,24 @@ namespace HealthGateway.PatientService.Controllers
         /// <returns>The patient record.</returns>
         /// <param name="hdid">The patient hdid.</param>
         /// <response code="200">Returns the patient record.</response>
-        /// <response code="401">The client is not authorzied to retrieve the record.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> GetPatient(string hdid)
         {
-            // @todo: check for UMA permission ticket, if none found, then assumed hdid in query must
-            // match what was found as 'sub' in the Json Web Token passed into this service call.
-            return await this.service.GetPatient(hdid).ConfigureAwait(true);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            var result = await this.service.GetPatient(hdid).ConfigureAwait(true);
+            return new JsonResult(result);
         }
     }
 }

@@ -29,6 +29,7 @@ namespace HealthGateway.Immunization
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -39,6 +40,7 @@ namespace HealthGateway.Immunization
         public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace HealthGateway.Immunization
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
-            this.startupConfig.ConfigureAuditServices(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Imms Service
@@ -63,7 +65,6 @@ namespace HealthGateway.Immunization
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseAuth(app);
-            this.startupConfig.UseAudit(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
         }
