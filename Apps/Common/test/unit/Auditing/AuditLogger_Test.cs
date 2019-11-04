@@ -41,7 +41,7 @@ namespace HealthGateway.CommonTests.Auditing
                 ApplicationType = AuditApplicationType.Configuration,
                 ClientIP = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
-                TransacationName = "",
+                TransactionName = "",
                 TransactionResultType = AuditTransactionResultType.Success,
                 TransactionVersion = ""
             };

@@ -86,7 +86,7 @@ namespace HealthGateway.Common.Auditing
             auditEvent.ApplicationType = this.GetApplicationType();
             auditEvent.TransactionResultType = this.GetTransactionResultType(context.Response.StatusCode);
             auditEvent.ApplicationSubject = hdid;
-            auditEvent.TransacationName = context.Request.Path;
+            auditEvent.TransactionName = context.Request.Path;
             auditEvent.Trace = context.TraceIdentifier;
             auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
             RouteData routeData = context.GetRouteData();
