@@ -70,7 +70,9 @@ namespace HealthGateway.Medication.Controllers
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="protectiveWord">The clients protective word for Pharmanet.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
@@ -81,7 +83,7 @@ namespace HealthGateway.Medication.Controllers
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
-               return new ForbidResult();
+                return new ForbidResult();
             }
 
             HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);

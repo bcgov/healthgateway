@@ -26,7 +26,8 @@ namespace HealthGateway.Immunization.Services
         /// <summary>
         /// Gets a list of immunization records.
         /// </summary>
-        /// <returns>Returns a list of immunizations .</returns>
-        IEnumerable<ImmsDataModel> GetImmunizations();
+        /// <param name="hdid">The health directed id for the subject.</param>
+        /// <returns>Returns a list of immunizations.</returns>
+        IEnumerable<ImmsDataModel> GetImmunizations(string hdid);
     }
 }
