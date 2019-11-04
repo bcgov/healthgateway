@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
@@ -100,9 +101,9 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-            #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuthorizationServices...");
-            #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
@@ -203,6 +204,32 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable jwt authentication
             app.UseAuthentication();
+        }
+
+        /// <summary>
+        /// Configures the app to use x-forwarded-for headers to obtain the real client IP.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void useForwardHeaders(IApplicationBuilder app)
+        {
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            bool enabled = section.GetValue<bool>("Enabled");
+            this.logger.LogInformation($"Forward Headers enabled: {enabled}");
+            if (enabled)
+            {
+                string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
+                ForwardedHeadersOptions options = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.All,
+                    RequireHeaderSymmetry = false,
+                    ForwardLimit = null,
+                };
+                foreach (string ip in proxyIPs)
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(ip));
+                }
+                app.UseForwardedHeaders(options);
+            }
         }
 
         /// <summary>
