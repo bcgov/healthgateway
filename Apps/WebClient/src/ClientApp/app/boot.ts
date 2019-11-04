@@ -9,6 +9,7 @@ import "@/assets/scss/bcgov/bootstrap-theme.scss";
 
 import BootstrapVue from "bootstrap-vue";
 import i18n from "@/i18n";
+import IdleVue from "idle-vue";
 
 import App from "@/app.vue";
 import router from "@/router";
@@ -26,7 +27,6 @@ import SERVICE_IDENTIFIER, {
 } from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
-import IdleVue from "idle-vue";
 
 Vue.use(IdleVue, {
   eventEmitter: new Vue(),

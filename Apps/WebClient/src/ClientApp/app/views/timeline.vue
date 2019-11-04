@@ -147,6 +147,7 @@ export default class TimelineComponent extends Vue {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
+    this.isLoading = true;
     medicationService
       .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
