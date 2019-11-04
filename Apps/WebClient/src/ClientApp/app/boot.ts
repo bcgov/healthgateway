@@ -28,12 +28,6 @@ import SERVICE_IDENTIFIER, {
 import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 
-Vue.use(IdleVue, {
-  eventEmitter: new Vue(),
-  idleTime: 300000,
-  store,
-  startAtIdle: false
-});
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
@@ -67,6 +61,13 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
 
+  Vue.use(IdleVue, {
+    eventEmitter: new Vue(),
+    idleTime: config.webClient.timeouts!.idle || 300000,
+    store,
+    startAtIdle: false
+  });
+  
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({
       el: "#app-root",
