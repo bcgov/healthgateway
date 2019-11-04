@@ -65,17 +65,17 @@ namespace HealthGateway.Immunization.Controllers
         /// <summary>
         /// Gets a json list of immunization records.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
+        /// <param name="patient">The hdid patient id.</param>
         /// <returns>a list of immunization records.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
+        [HttpGet("")]
         [Produces("application/json")]
-        [Route("items")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetImmunizations(string hdid)
+        public async Task<IActionResult> GetImmunizations([FromQuery]string patient)
         {
+            string hdid = patient; // actually what the patient ID parameter is, named patient for HL7 FHIR
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)

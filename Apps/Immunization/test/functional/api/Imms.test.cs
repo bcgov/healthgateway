@@ -27,14 +27,15 @@ namespace HealthGateway.WebClient.Test.Functional.Api
         {
             // arrange
             RestClient client = new RestClient(baseUrl);
-            RestRequest request = new RestRequest("/v1/api/Immunization/items/55696996", Method.GET);
-
+            RestRequest request = new RestRequest("/v1/api/Immunization", Method.GET);
+            request.AddQueryParameter("hdid", "8989897979");
+            System.Console.WriteLine(request.Resource.ToString());
             // act
             IRestResponse response = client.Execute(request);
 
             // assert
             Assert.False(response.IsSuccessful);
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+           //@TODO: Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 }
