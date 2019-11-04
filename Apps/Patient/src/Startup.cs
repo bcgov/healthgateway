@@ -52,6 +52,7 @@ namespace HealthGateway.PatientService
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
