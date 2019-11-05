@@ -8,6 +8,8 @@ main {
 }
 
 .btn-secondary {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-width: 0px;
   margin: 0.8em;
   width: 150px;
   font-weight: 500;
@@ -19,10 +21,6 @@ main {
   background-color: $bcgold;
 }
 
-.wrapper {
-  border-style: solid;
-  border-width: 1px;
-}
 .background-tint-light {
   background-color: rgba(0, 51, 102, 0.1); // Tint color
   background-blend-mode: multiply;
@@ -124,8 +122,6 @@ main {
     .title {
       @extend h2;
     }
-    .description {
-    }
   }
 }
 .secure {
@@ -155,7 +151,7 @@ main {
 </style>
 <template>
   <div class="container-fill wrapper">
-    <b-col class="wrapper">
+    <b-col>
       <b-row
         class="intro background-tint-dark"
         :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
