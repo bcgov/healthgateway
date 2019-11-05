@@ -1,5 +1,4 @@
 <style lang="scss">
-@import "bootstrap";
 @import "@/assets/scss/_variables.scss";
 // Overwrite for this page
 main {
@@ -7,153 +6,155 @@ main {
   padding-top: 0px;
 }
 
-.btn-secondary {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-width: 0px;
-  margin: 0.8em;
-  width: 150px;
-  font-weight: 500;
-  color: $primary;
-  background-color: $soft_background;
-}
-
-.btn-primary {
-  background-color: $bcgold;
-}
-
-.background-tint-light {
-  background-color: rgba(0, 51, 102, 0.1); // Tint color
-  background-blend-mode: multiply;
-}
-.background-tint-dark {
-  background-color: rgba(0, 51, 102, 0.4); // Tint color
-  background-blend-mode: multiply;
-}
-
-.intro {
-  height: 750px;
-  background-size: cover;
-  @extend .align-items-center;
-
-  .title-wrapper {
-    max-width: 390px;
-    margin-top: -100px;
-    padding: 1em;
-    margin-bottom: auto;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .logo {
-    width: 300px;
-    margin-bottom: 1em;
-  }
-
-  .title-text {
-    color: white;
-    font-size: 2.2em;
-  }
-}
-
-.devices-section {
-  @extend .mx-3;
-  @extend .align-items-center;
-  .devices-image {
-    margin-left: auto;
-    margin-right: auto;
-    padding: 2em;
-    margin-top: -75px;
-    margin-bottom: 20px;
-  }
-
-  .devices-text {
+.landing {
+  .btn-secondary-landing {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-width: 0px;
+    margin: 0.8em;
+    width: 150px;
+    font-weight: 500;
     color: $primary;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: -40px;
-    padding: 3em;
-  }
-}
-
-.circle-icons {
-  background-color: $primary;
-  color: white;
-  display: flex;
-  justify-content: center;
-
-  .icon-wrapper {
-    margin: 70px 65px 70px 65px;
-    @extend .text-center;
+    background-color: $soft_background;
   }
 
-  .icon {
+  .btn-primary-landing {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-width: 0px;
+    margin: 0.8em;
+    width: 150px;
+    font-weight: 500;
     color: $primary;
-    height: 110px;
-    width: 110px;
-    padding: 25px 25px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 10px;
-    @extend .rounded-circle;
-    @extend .bg-white;
+    background-color: $bcgold;
   }
-}
-.tile-section {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 70%;
 
-  .row {
-    max-width: 100%;
-    margin-top: 40px;
-    margin-left: 0px;
-    margin-right: 0px;
+  .background-tint-light {
+    background-color: rgba(0, 51, 102, 0.1); // Tint color
+    background-blend-mode: multiply;
   }
-  .col {
-    padding-left: 0px;
-    padding-right: 0px;
+  .background-tint-dark {
+    background-color: rgba(0, 51, 102, 0.4); // Tint color
+    background-blend-mode: multiply;
   }
-  .text-wrapper {
-    margin-top: 5em;
-    color: $primary;
 
-    .title {
-      @extend h2;
+  .intro {
+    height: 750px;
+    background-size: cover;
+
+    .title-wrapper {
+      max-width: 390px;
+      margin-top: -100px;
+      padding: 1em;
+      margin-bottom: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .logo {
+      width: 300px;
+      margin-bottom: 1em;
+    }
+
+    .title-text {
+      color: white;
+      font-size: 2.2em;
     }
   }
-}
-.secure {
-  height: 750px;
-  background-size: cover;
 
-  .secure-wrapper {
-    max-width: 600px;
-    margin-top: 130px;
-    margin-bottom: auto;
+  .devices-section {
+    .devices-image {
+      margin-left: auto;
+      margin-right: auto;
+      padding: 2em;
+      margin-top: -75px;
+      margin-bottom: 20px;
+    }
+
+    .devices-text {
+      color: $primary;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: -40px;
+      padding: 3em;
+    }
+  }
+
+  .circle-icons {
+    background-color: $primary;
+    color: white;
+    display: flex;
+    justify-content: center;
+
+    .icon-wrapper {
+      margin: 70px 65px 70px 65px;
+    }
+
+    .icon {
+      color: $primary;
+      height: 110px;
+      width: 110px;
+      padding: 25px 25px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 10px;
+    }
+  }
+  .tile-section {
+    margin-top: 50px;
+    margin-bottom: 50px;
     margin-left: auto;
     margin-right: auto;
-  }
+    max-width: 70%;
 
-  .title {
-    color: $primary;
-    font-size: 2.2em;
-  }
-  .description {
-    color: $primary;
-  }
+    .row {
+      max-width: 100%;
+      margin-top: 40px;
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+    .col {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    .text-wrapper {
+      margin-top: 5em;
+      color: $primary;
 
-  .secure-buttons {
-    margin-top: 1em;
+      .title {
+        font-size: 2.2rem;
+      }
+    }
+  }
+  .secure {
+    height: 750px;
+    background-size: cover;
+
+    .secure-wrapper {
+      max-width: 600px;
+      margin-top: 130px;
+      margin-bottom: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .title {
+      color: $primary;
+      font-size: 2.2em;
+    }
+    .description {
+      color: $primary;
+    }
+
+    .secure-buttons {
+      margin-top: 1em;
+    }
   }
 }
 </style>
 <template>
-  <div class="container-fill wrapper">
+  <div class="container-fill landing">
     <b-col>
       <b-row
-        class="intro background-tint-dark"
+        class="intro background-tint-dark align-items-center"
         :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
       >
         <b-col>
@@ -178,11 +179,14 @@ main {
               <b-button
                 id="btnStart"
                 to="cardInfo"
-                class="btn btn-primary"
+                class="btn btn-primary-landing"
                 role="button"
                 >Sign Up</b-button
               >
-              <b-button id="btnLogin" to="login" class="btn btn-secondary"
+              <b-button
+                id="btnLogin"
+                to="login"
+                class="btn btn-secondary-landing"
                 >Log In</b-button
               >
             </b-row>
@@ -190,7 +194,7 @@ main {
         </b-col>
         <b-col />
       </b-row>
-      <b-row class="devices-section">
+      <b-row class="devices-section align-items-center mx-3">
         <b-col>
           <img
             class="img-fluid d-none d-md-block devices-image"
@@ -210,8 +214,12 @@ main {
         </b-col>
       </b-row>
       <b-row class="circle-icons">
-        <div v-for="icon in icons" :key="icon.label" class="icon-wrapper">
-          <div class="icon">
+        <div
+          v-for="icon in icons"
+          :key="icon.label"
+          class="icon-wrapper text-center"
+        >
+          <div class="icon rounded-circle bg-white">
             <h3>
               <span class="fa fa-2x" :class="icon.classIcon"></span>
             </h3>
@@ -278,14 +286,14 @@ main {
                 <b-button
                   id="btnSecureStart"
                   to="cardInfo"
-                  class="btn btn-primary"
+                  class="btn btn-primary-landing"
                   role="button"
                   >Sign Up</b-button
                 >
                 <b-button
                   id="btnLearnMore"
                   to="learnMore"
-                  class="btn btn-secondary"
+                  class="btn btn-secondary-landing"
                   >Learn More</b-button
                 >
               </div>
@@ -309,6 +317,7 @@ import Image04 from "@/assets/images/landing/004_AdobeStock_216356596_Preview.jp
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557_Preview.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895_Preview.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_AdobeStock_263708116_Preview.jpg";
+import "@/assets/scss/bcgov/bootstrap-theme.scss";
 
 interface Icon {
   label: string;
