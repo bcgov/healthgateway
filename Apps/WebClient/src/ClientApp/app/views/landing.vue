@@ -317,7 +317,6 @@ import Image04 from "@/assets/images/landing/004_AdobeStock_216356596_Preview.jp
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557_Preview.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895_Preview.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_AdobeStock_263708116_Preview.jpg";
-import "@/assets/scss/bcgov/bootstrap-theme.scss";
 
 interface Icon {
   label: string;
