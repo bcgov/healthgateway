@@ -12,7 +12,7 @@ main {
     border-width: 0px;
     margin: 0.8em;
     width: 150px;
-    font-weight: 500;
+    font-weight: 600;
     color: $primary;
     background-color: $soft_background;
   }
@@ -22,7 +22,7 @@ main {
     border-width: 0px;
     margin: 0.8em;
     width: 150px;
-    font-weight: 500;
+    font-weight: 600;
     color: $primary;
     background-color: $bcgold;
   }
