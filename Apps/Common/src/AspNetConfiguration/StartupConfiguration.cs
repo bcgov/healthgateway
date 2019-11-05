@@ -16,15 +16,17 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
-    using HealthGateway.Common.Middleware;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -86,7 +88,9 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks();
 
             services
-                .AddMvc()
+                .AddMvc(options => {
+                    options.Filters.Add(typeof(AuditFilter));
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
@@ -100,9 +104,9 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-            #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuthorizationServices...");
-            #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
@@ -131,6 +135,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The injected services provider.</param>
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
+            IAuditLogger auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
             this.logger.LogDebug($"Debug configuration is {debugEnabled}");
 
@@ -156,7 +161,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = this.OnAuthenticationFailed,
+                    OnAuthenticationFailed = (ctx) => { return this.OnAuthenticationFailed(ctx, auditLogger); },
                 };
             });
         }
@@ -203,6 +208,32 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable jwt authentication
             app.UseAuthentication();
+        }
+
+        /// <summary>
+        /// Configures the app to use x-forwarded-for headers to obtain the real client IP.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseForwardHeaders(IApplicationBuilder app)
+        {
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            bool enabled = section.GetValue<bool>("Enabled");
+            this.logger.LogInformation($"Forward Headers enabled: {enabled}");
+            if (enabled)
+            {
+                string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
+                ForwardedHeadersOptions options = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.All,
+                    RequireHeaderSymmetry = false,
+                    ForwardLimit = null,
+                };
+                foreach (string ip in proxyIPs)
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(ip));
+                }
+                app.UseForwardedHeaders(options);
+            }
         }
 
         /// <summary>
@@ -256,19 +287,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
-        }
-
-        /// <summary>
-        /// Configures the app to use a custom audit.
-        /// </summary>
-        /// <param name="app">The application builder provider.</param>
-        public void UseAudit(IApplicationBuilder app)
-        {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-            this.logger.LogDebug("Use Audit...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-
-            app.UseMiddleware<AuditMiddleware>();
         }
 
         /// <summary>
@@ -329,8 +347,21 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// </summary>
         /// <param name="context">The authentication failed context.</param>
         /// <returns>An async task.</returns>
-        private Task OnAuthenticationFailed(AuthenticationFailedContext context)
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
+            AuditEvent auditEvent = new AuditEvent();
+            auditEvent.AuditEventId = Guid.NewGuid();
+            auditEvent.AuditEventDateTime = DateTime.UtcNow;
+            auditEvent.TransactionDuration = 0; // There's not a way to calculate the duration here.
+
+            auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);
+
+            auditEvent.TransactionResultType = Database.Constant.AuditTransactionResultType.Unauthorized;
+            auditEvent.CreatedBy = nameof(StartupConfiguration);
+            auditEvent.CreatedDateTime = DateTime.UtcNow;
+
+            auditLogger.WriteAuditEvent(auditEvent);
+
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(JsonConvert.SerializeObject(new

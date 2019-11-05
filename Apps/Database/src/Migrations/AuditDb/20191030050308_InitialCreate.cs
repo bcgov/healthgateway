@@ -20,7 +20,7 @@ namespace HealthGateway.Database.Migrations.AuditDb
                     ClientIP = table.Column<string>(maxLength: 15, nullable: false),
                     ApplicationSubject = table.Column<string>(maxLength: 100, nullable: true),
                     ApplicationType = table.Column<int>(maxLength: 100, nullable: false),
-                    TransacationName = table.Column<string>(maxLength: 100, nullable: false),
+                    TransactionName = table.Column<string>(maxLength: 100, nullable: false),
                     TransactionVersion = table.Column<string>(maxLength: 5, nullable: true),
                     Trace = table.Column<string>(maxLength: 200, nullable: true),
                     TransactionResultType = table.Column<int>(nullable: false),

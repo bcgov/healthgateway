@@ -72,20 +72,20 @@ class MedicationViewModel {
     if (model.federalData) {
       let federalModel = model.federalData;
 
-      this.form = federalModel.forms[0].pharmaceuticalForm
-        ? federalModel.forms[0].pharmaceuticalForm
+      this.form = federalModel.drugProduct!.form!.pharmaceuticalForm
+        ? federalModel.drugProduct!.form!.pharmaceuticalForm
         : "";
 
-      this.strength = federalModel.activeIngredients[0].strength
-        ? federalModel.activeIngredients[0].strength
+      this.strength = federalModel.drugProduct!.activeIngredient!.strength
+        ? federalModel.drugProduct!.activeIngredient!.strength
         : "";
 
-      this.strengthUnit = federalModel.activeIngredients[0].strengthUnit
-        ? federalModel.activeIngredients[0].strengthUnit
+      this.strengthUnit = federalModel.drugProduct!.activeIngredient!.strengthUnit
+        ? federalModel.drugProduct!.activeIngredient!.strengthUnit
         : "";
 
-      this.manufacturer = federalModel.companies[0].companyName
-        ? federalModel.companies[0].companyName
+      this.manufacturer = federalModel.drugProduct!.company!.companyName
+        ? federalModel.drugProduct!.company!.companyName
         : "";
     } else if (model.provincialData) {
       let provincialModel = model.provincialData;

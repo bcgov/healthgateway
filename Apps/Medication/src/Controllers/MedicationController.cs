@@ -79,9 +79,9 @@ namespace HealthGateway.Medication.Controllers
         /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">The client is not authorized to retrieve the record.</response>
-        [HttpGet]
+        [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<Dictionary<string, MedicationResult>> GetMedications(List<string> drugIdentifiers)
+        public RequestResult<Dictionary<string, MedicationResult>> GetMedications([FromQuery]List<string> drugIdentifiers)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();

@@ -16,11 +16,13 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System.Diagnostics;
+    using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// HomeController for Vue WebClient app.
     /// </summary>
+    [IgnoreAudit]
     public class HomeController : Controller
     {
         /// <summary>
