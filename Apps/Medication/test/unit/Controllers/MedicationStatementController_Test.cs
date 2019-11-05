@@ -69,11 +69,11 @@ namespace HealthGateway.Medication.Test
             IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(JsonResult), actual);
+            Assert.IsType<JsonResult>(actual);
 
             JsonResult jsonResult = (JsonResult)actual;
 
-            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), jsonResult.Value);
+            Assert.IsType<RequestResult<List<MedicationStatement>>>(jsonResult.Value);
 
             RequestResult<List<MedicationStatement>> result = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
 
@@ -121,10 +121,10 @@ namespace HealthGateway.Medication.Test
             IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(JsonResult), actual);
+            Assert.IsType<JsonResult>(actual);
 
             JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType(typeof(RequestResult<List<MedicationStatement>>), jsonResult.Value);
+            Assert.IsType<RequestResult<List<MedicationStatement>>>(jsonResult.Value);
 
             RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
             Assert.Null(requestResult.ResourcePayload);
@@ -168,7 +168,7 @@ namespace HealthGateway.Medication.Test
             IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.IsType(typeof(ForbidResult), actual);
+            Assert.IsType<ForbidResult>(actual);
             Assert.True(actual != null);
         }
     }

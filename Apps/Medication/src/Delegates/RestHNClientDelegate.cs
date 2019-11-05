@@ -41,7 +41,6 @@ namespace HealthGateway.Medication.Delegates
         private readonly IConfiguration configService;
         private readonly IAuthService authService;
         private readonly ISequenceDelegate sequenceDelegate;
-        private readonly IDrugLookupDelegate drugLookupDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestHNClientDelegate"/> class.

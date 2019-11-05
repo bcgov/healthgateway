@@ -26,7 +26,7 @@ namespace HealthGateway.Database.Delegates
         private readonly AuditDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of class <see cref="WriteAuditEventDelegate"/>.
+        /// Initializes a new instance of the <see cref="WriteAuditEventDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
         public WriteAuditEventDelegate(AuditDbContext dbContext)
