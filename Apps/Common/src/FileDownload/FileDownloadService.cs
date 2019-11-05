@@ -81,7 +81,9 @@ namespace HealthGateway.Common.FileDownload
                     }
                 }
             }
+#pragma warning disable CA1031
             catch (Exception exception)
+#pragma warning restore CA1031
             {
                 this.logger.LogCritical(exception.ToString());
                 File.Delete(filePath);

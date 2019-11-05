@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -61,8 +62,10 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
         {
+            Contract.Requires(drugIdentifiers != null);
+
             // Retrieve the brand names using the provincial data
-            List<PharmaCareDrug> pharmaCareDrugs = GetPharmaCareDrugsByDIN(drugIdentifiers);
+            List<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDIN(drugIdentifiers);
             Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(pcd => pcd.DINPIN, pcd => pcd.BrandName);
 
             if (drugIdentifiers.Count > provicialBrandNames.Count())
@@ -71,7 +74,7 @@ namespace HealthGateway.Database.Delegates
                 List<string> notFoundDins = drugIdentifiers.Where(din => !provicialBrandNames.Keys.Contains(din)).ToList();
 
                 // Retrieve the brand names using the federal data
-                List<DrugProduct> drugProducts = GetDrugProductsByDIN(notFoundDins);
+                List<DrugProduct> drugProducts = this.GetDrugProductsByDIN(notFoundDins);
                 Dictionary<string, string> federalBrandNames = drugProducts.ToDictionary(dp => dp.DrugIdentificationNumber, dp => dp.BrandName);
 
                 // Merge both data sets

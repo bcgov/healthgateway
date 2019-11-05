@@ -88,7 +88,8 @@ namespace HealthGateway.Database.Context
             string user = "System";
             DateTime utcnow = System.DateTime.UtcNow;
             modelBuilder.Entity<ProgramTypeCode>().HasData(
-                new ProgramTypeCode {
+                new ProgramTypeCode
+                {
                     Id = ProgramType.Federal,
                     Name = "Federal",
                     CreatedBy = user,
@@ -96,7 +97,8 @@ namespace HealthGateway.Database.Context
                     UpdatedBy = user,
                     UpdatedDateTime = utcnow,
                 },
-                new ProgramTypeCode {
+                new ProgramTypeCode
+                {
                     Id = ProgramType.Provincial,
                     Name = "Provincial",
                     CreatedBy = user,

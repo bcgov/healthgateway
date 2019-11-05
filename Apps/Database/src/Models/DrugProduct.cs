@@ -139,7 +139,7 @@ namespace HealthGateway.Database.Models
         public virtual ActiveIngredient ActiveIngredient { get; set; }
 
         /// <summary>
-        /// Gets or sets the Form. 
+        /// Gets or sets the Form.
         /// </summary>
         public virtual Form Form { get; set; }
 
@@ -154,20 +154,19 @@ namespace HealthGateway.Database.Models
         public virtual PharmaceuticalStd PharmaceuticalStd { get; set; }
 
         /// <summary>
-        /// Gets or sets the Route. 
+        /// Gets or sets the Route.
         /// </summary>
         public virtual Route Route { get; set; }
 
-
         /// <summary>
-        /// Gets or sets the related statuses
+        /// Gets the related statuses.
         /// </summary>
-        public virtual ICollection<Status> Statuses { get; set; }
+        public virtual ICollection<Status> Statuses { get; }
 
         /// <summary>
         /// Gets or sets the related TherapeuticClass.
         /// </summary>
-        public virtual TherapeuticClass TherapeuticClass {get; set;}
+        public virtual TherapeuticClass TherapeuticClass { get; set; }
 
         /// <summary>
         /// Gets or sets the related VeterinarySpecies.
