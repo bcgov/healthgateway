@@ -67,7 +67,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     store,
     startAtIdle: false
   });
-  
+
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({
       el: "#app-root",
