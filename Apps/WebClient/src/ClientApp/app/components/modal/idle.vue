@@ -1,5 +1,5 @@
 ﻿<style lang="scss">
-@import "../../assets/scss/_variables.scss";
+@import "@/assets/scss/_variables.scss";
 .text-large {
   font-size: 250%;
 }
