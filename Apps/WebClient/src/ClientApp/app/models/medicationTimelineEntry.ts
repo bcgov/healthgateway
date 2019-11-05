@@ -80,7 +80,8 @@ class MedicationViewModel {
         ? federalModel.drugProduct!.activeIngredient!.strength
         : "";
 
-      this.strengthUnit = federalModel.drugProduct!.activeIngredient!.strengthUnit
+      this.strengthUnit = federalModel.drugProduct!.activeIngredient!
+        .strengthUnit
         ? federalModel.drugProduct!.activeIngredient!.strengthUnit
         : "";
 

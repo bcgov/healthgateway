@@ -52,7 +52,6 @@ namespace HealthGateway.Medication.Controllers
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
@@ -81,7 +80,6 @@ namespace HealthGateway.Medication.Controllers
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet("")]
         [Produces("application/json")]
         public RequestResult<Dictionary<string, MedicationResult>> GetMedications([FromQuery]List<string> drugIdentifiers)
