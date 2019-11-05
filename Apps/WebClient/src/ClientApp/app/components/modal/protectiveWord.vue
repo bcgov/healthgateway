@@ -36,10 +36,7 @@
         <form ref="form" @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col cols="8">
-              <label
-                for="protectiveWord-input"
-              >Protective Word
-              </label>
+              <label for="protectiveWord-input">Protective Word </label>
               <b-form-input
                 id="protectiveWord-input"
                 v-model="protectiveWord"
@@ -50,7 +47,9 @@
           </b-row>
           <b-row v-if="error">
             <b-col>
-              <span class="text-danger">Invalid protective word. Try again.</span>
+              <span class="text-danger"
+                >Invalid protective word. Try again.</span
+              >
             </b-col>
           </b-row>
         </form>
@@ -61,7 +60,12 @@
         <b-col>
           <b-row>
             <b-col>
-              <b-button size="lg" variant="primary" @click="ok()" :disabled='!protectiveWord'>
+              <b-button
+                size="lg"
+                variant="primary"
+                :disabled="!protectiveWord"
+                @click="ok()"
+              >
                 Continue
               </b-button>
             </b-col>

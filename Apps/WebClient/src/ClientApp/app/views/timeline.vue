@@ -160,7 +160,7 @@ export default class TimelineComponent extends Vue {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
           this.protectiveWordFailed = 0;
-        } else if ((results.resultStatus == ResultType.Protected)) {
+        } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
           this.protectiveWordAttempts++;
         } else {
