@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
@@ -41,24 +42,28 @@ namespace HealthGateway.Common.Filters
         /// <inheritdoc/>
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            Contract.Requires(next != null);
+
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventId = Guid.NewGuid();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
 
             // Executes the action (Controller method)
-            await next();
+            await next().ConfigureAwait(true);
 
             // Check for ignored controllers
             if (context.Controller.GetType().GetCustomAttributes(typeof(IgnoreAuditAttribute), true).Length > 0)
+            {
                 return;
+            }
 
             auditEvent.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(auditEvent.AuditEventDateTime).TotalMilliseconds);
 
             // Write the event
-            auditService.PopulateWithHttpContext(context.HttpContext, auditEvent);
+            this.auditService.PopulateWithHttpContext(context.HttpContext, auditEvent);
             auditEvent.CreatedBy = nameof(AuditFilter);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
-            auditService.WriteAuditEvent(auditEvent);
+            this.auditService.WriteAuditEvent(auditEvent);
         }
     }
 }

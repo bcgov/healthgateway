@@ -215,6 +215,9 @@ namespace HealthGateway.HNClient.Delegates
 
         private string GetHostName()
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("GetHostName...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
             IPAddress address = IPAddress.Loopback;
             string localIP = address.ToString();
 
@@ -240,6 +243,9 @@ namespace HealthGateway.HNClient.Delegates
 
         private string InsertHeader(string message)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("InsertHeader...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
             string lengthOfMessage = message.Length.ToString(System.Globalization.CultureInfo.InvariantCulture);
             message = "DT" + TEN_ZEROS.Substring(0, TEN_ZEROS.Length - lengthOfMessage.Length) + lengthOfMessage + message;
             return message;
@@ -247,6 +253,9 @@ namespace HealthGateway.HNClient.Delegates
 
         private byte[] EncodeData(byte[] data, byte encodingSeed)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("EncodeData...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
             byte[] byteData = data.ToArray();
             byteData[0] ^= encodingSeed;
             for (int x = 1; x < byteData.Length; x++)
@@ -259,6 +268,9 @@ namespace HealthGateway.HNClient.Delegates
 
         private string DecodeData(byte[] data, byte encodingSeed)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("DecodeData...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
             byte[] encodedBytes = data.ToArray();
             byte prevByte = encodedBytes[0];
             encodedBytes[0] ^= encodingSeed;

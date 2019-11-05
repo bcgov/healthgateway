@@ -25,8 +25,7 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Writes a audit event to the database.
         /// </summary>
-        /// <param name="sequenceName">The sequence name</param>
-        /// <returns>The next sequence value</returns>
+        /// <param name="sequenceName">The sequence name.</param>
         void WriteAuditEvent(AuditEvent sequenceName);
     }
 }

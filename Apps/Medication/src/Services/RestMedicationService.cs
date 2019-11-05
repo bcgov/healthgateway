@@ -46,7 +46,7 @@ namespace HealthGateway.Medication.Services
             List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
-                MedicationResult.FederalDrugSource federalData = new MedicationResult.FederalDrugSource()
+                FederalDrugSource federalData = new FederalDrugSource()
                 {
                     UpdateDateTime = drugProduct.UpdatedDateTime,
                     DrugProduct = drugProduct,
@@ -58,7 +58,7 @@ namespace HealthGateway.Medication.Services
             List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
             foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
             {
-                MedicationResult.ProvincialDrugSource provincialData = new MedicationResult.ProvincialDrugSource()
+                ProvincialDrugSource provincialData = new ProvincialDrugSource()
                 {
                     UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
                     PharmaCareDrug = pharmaCareDrug,

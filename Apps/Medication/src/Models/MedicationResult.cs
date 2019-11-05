@@ -38,36 +38,5 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the Provincial Drug Data Source.
         /// </summary>
         public ProvincialDrugSource ProvincialData { get; set; }
-        /// <summary>
-        /// Federal Drug Source.
-        /// </summary>
-        public class FederalDrugSource
-        {
-            /// <summary>
-            /// Gets or sets the drug updated date/time.
-            /// </summary>
-            public DateTime UpdateDateTime;
-
-            /// <summary>
-            /// Gets or sets the drug product.
-            /// </summary>
-            public DrugProduct DrugProduct { get; set; }
-        }
-
-        /// <summary>
-        /// Provincial Drug information Source class.
-        /// </summary>
-        public class ProvincialDrugSource
-        {
-            /// <summary>
-            ///  The update date/time.
-            /// </summary>
-            public DateTime UpdateDateTime;
-
-            /// <summary>
-            ///  Gets or sets a <see cref="PharmaCareDrug"/> instance.
-            /// </summary>
-            public PharmaCareDrug PharmaCareDrug { get; set; }
-        }
     }
 }
