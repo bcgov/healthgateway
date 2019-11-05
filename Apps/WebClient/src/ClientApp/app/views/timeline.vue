@@ -91,6 +91,7 @@
     </b-row>
     <ProtectiveWordComponent
       ref="protectiveWordModal"
+      :error="protectiveWordAttempts > 1"
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
@@ -136,6 +137,7 @@ export default class TimelineComponent extends Vue {
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
+  private protectiveWordAttempts: number = 0;
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
 
@@ -157,8 +159,10 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-        } else if ((results.resultStatus = ResultType.Protected)) {
+          this.protectiveWordFailed = 0;
+        } else if ((results.resultStatus == ResultType.Protected)) {
           this.protectiveWordModal.showModal();
+          this.protectiveWordAttempts++;
         } else {
           console.log(
             "Error returned from the medication statements call: " +
