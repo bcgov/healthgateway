@@ -32,7 +32,7 @@ main {
     background-blend-mode: multiply;
   }
   .background-tint-dark {
-    background-color: rgba(0, 51, 102, 0.4); // Tint color
+    background-color: rgba(0, 51, 102, 0.3); // Tint color
     background-blend-mode: multiply;
   }
 
@@ -207,7 +207,7 @@ main {
           <div class="devices-text ">
             <h2>Browse your health records</h2>
             <p>
-              Visits to clinics, lab test results, prescription medication and
+              Visits to clinics, lab test results, dispensed medications and
               vaccinations.
             </p>
           </div>
@@ -280,7 +280,7 @@ main {
                 Securely access your information
               </div>
               <div class="description">
-                Use your BC Services Card with two-factor identification
+                Use your BC Services Card with two-factor authentication
               </div>
               <div class="secure-buttons">
                 <b-button
