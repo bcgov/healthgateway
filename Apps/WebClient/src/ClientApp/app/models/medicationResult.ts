@@ -5,11 +5,8 @@ export default class MedicationResult {
 }
 
 class FederalDrugSource {
-  public ppdateDateTime?: Date;
+  public updateDateTime?: Date;
   public drugProduct?: DrugProduct;
-  public activeIngredients: ActiveIngredient[] = [];
-  public forms: Form[] = [];
-  public companies: Company[] = [];
 }
 
 class DrugProduct {
@@ -30,6 +27,10 @@ class DrugProduct {
   public numberOfAis?: string;
   public pediatricFlag?: string;
   public productCategorization?: string;
+
+  public activeIngredient?: ActiveIngredient;
+  public form?: Form;
+  public company?: Company;
 }
 
 class ActiveIngredient {
