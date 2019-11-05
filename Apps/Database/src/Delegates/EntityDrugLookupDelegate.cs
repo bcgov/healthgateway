@@ -20,6 +20,7 @@ namespace HealthGateway.Database.Delegates
     using System.Linq;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
@@ -40,25 +41,11 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers)
         {
-            return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber)).ToList();
-        }
-
-        /// <inheritdoc/>
-        public List<Form> GetFormByDrugProductId(System.Guid drugProductId)
-        {
-            return this.dbContext.Form.Where(c => c.DrugProductId == drugProductId).ToList();
-        }
-
-        /// <inheritdoc/>
-        public List<ActiveIngredient> GetActiveIngredientByDrugProductId(System.Guid drugProductId)
-        {
-            return this.dbContext.ActiveIngredient.Where(c => c.DrugProductId == drugProductId).ToList();
-        }
-
-        /// <inheritdoc/>
-        public List<Company> GetCompanyByDrugProductId(System.Guid drugProductId)
-        {
-            return this.dbContext.Company.Where(c => c.DrugProductId == drugProductId).ToList();
+            return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber))
+                                        .Include(c => c.Company)
+                                        .Include(a => a.ActiveIngredient)
+                                        .Include(f => f.Form)
+                        .ToList();
         }
 
         /// <inheritdoc/>
