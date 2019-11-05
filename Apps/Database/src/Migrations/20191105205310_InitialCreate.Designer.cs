@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(DrugDbContext))]
-    [Migration("20191102041927_InitialCreate")]
+    [Migration("20191105205310_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -516,21 +516,48 @@ namespace HealthGateway.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 100,
+                            Id = 105,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050),
-                            Name = "Federal",
+                            CreatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480),
+                            Name = "FederalApproved",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050)
+                            UpdatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480)
+                        },
+                        new
+                        {
+                            Id = 110,
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480),
+                            Name = "FederalMarketed",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480)
+                        },
+                        new
+                        {
+                            Id = 115,
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480),
+                            Name = "FederalCancelled",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480)
+                        },
+                        new
+                        {
+                            Id = 120,
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480),
+                            Name = "FederalDormant",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480)
                         },
                         new
                         {
                             Id = 200,
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050),
+                            CreatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480),
                             Name = "Provincial",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050)
+                            UpdatedDateTime = new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480)
                         });
                 });
 

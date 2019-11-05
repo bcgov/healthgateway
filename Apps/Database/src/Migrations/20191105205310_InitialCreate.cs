@@ -416,8 +416,11 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { 100, "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050), "Federal", "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050) },
-                    { 200, "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050), "Provincial", "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050) }
+                    { 105, "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480), "FederalApproved", "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480) },
+                    { 110, "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480), "FederalMarketed", "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480) },
+                    { 115, "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480), "FederalCancelled", "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480) },
+                    { 120, "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480), "FederalDormant", "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480) },
+                    { 200, "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480), "Provincial", "System", new DateTime(2019, 11, 5, 20, 53, 9, 493, DateTimeKind.Utc).AddTicks(1480) }
                 });
 
             migrationBuilder.CreateIndex(
