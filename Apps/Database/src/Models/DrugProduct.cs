@@ -161,7 +161,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets the related statuses.
         /// </summary>
-        public virtual ICollection<Status> Statuses { get; }
+        public virtual ICollection<Status> Statuses { get; set; }
 
         /// <summary>
         /// Gets or sets the related TherapeuticClass.
