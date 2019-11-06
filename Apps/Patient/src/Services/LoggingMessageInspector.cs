@@ -55,7 +55,9 @@ namespace HealthGateway.PatientService
             using (var buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
                 var document = this.GetDocument(buffer.CreateMessage());
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
                 this.logger.LogDebug("Response received");
+#pragma warning restore CA1303
                 this.logger.LogDebug(document.OuterXml);
 
                 reply = buffer.CreateMessage();
@@ -79,7 +81,9 @@ namespace HealthGateway.PatientService
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
             {
                 var document = this.GetDocument(buffer.CreateMessage());
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
                 this.logger.LogDebug("Request to send");
+#pragma warning restore CA1303
                 this.logger.LogDebug(document.OuterXml);
 
                 request = buffer.CreateMessage();

@@ -4,26 +4,18 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:3005"
+      "applicationUrl": "http://localhost:4000"
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "HealthGateway.HNClient": {
+      "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "template": {
-      "commandName": "Project",
-      "launchBrowser": true,
-        "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:3005"
+      "applicationUrl": "http://localhost:4000;"
     }
   }
 }

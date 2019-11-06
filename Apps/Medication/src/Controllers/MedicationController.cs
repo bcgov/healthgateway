@@ -16,6 +16,8 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
@@ -45,21 +47,25 @@ namespace HealthGateway.Medication.Controllers
 
         /// <summary>
         /// Gets a list of medications that match the requested drug identifier.
+        /// The drug identifier must be either a Health Canada DIN or a BC Pharmanet PIN.
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
-        public RequestResult<List<Medication>> GetMedication(string drugIdentifier)
+        public RequestResult<MedicationResult> GetMedication(string drugIdentifier)
         {
-            List<Medication> medications = this.medicationService.GetMedications(new List<string>() { drugIdentifier });
+            Contract.Requires(drugIdentifier != null);
 
-            RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
+            // The database requires the dins to be the same size and padded with zeroes on the left
+            string paddedDin = drugIdentifier.PadLeft(8, '0');
+            Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
+
+            RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()
             {
-                ResourcePayload = medications,
+                ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
                 PageSize = medications.Count,
@@ -74,14 +80,15 @@ namespace HealthGateway.Medication.Controllers
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
-        [HttpGet]
+        [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<List<Medication>> GetMedications(List<string> drugIdentifiers)
+        public RequestResult<Dictionary<string, MedicationResult>> GetMedications([FromQuery]List<string> drugIdentifiers)
         {
-            List<Medication> medications = this.medicationService.GetMedications(drugIdentifiers);
+            // The database requires the dins to be the same size and padded with zeroes on the left
+            List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
+            Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(paddedDinList);
 
-            RequestResult<List<Medication>> result = new RequestResult<List<Medication>>()
+            RequestResult<Dictionary<string, MedicationResult>> result = new RequestResult<Dictionary<string, MedicationResult>>()
             {
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,

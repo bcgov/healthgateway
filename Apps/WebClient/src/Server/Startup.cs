@@ -59,7 +59,7 @@ namespace HealthGateway.WebClient
                     serviceProvider.GetService<IConfiguration>());
                 return service;
             });
-
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
         }
 
@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Contract.Requires(env != null);
-
+            this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseWebClient(app);

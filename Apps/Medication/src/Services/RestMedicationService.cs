@@ -15,21 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
-    using System;
-    using System.Linq;
     using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
-    using HealthGateway.Medication.Database;
-    using HealthGateway.Medication.Delegates;
+    using System.Linq;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;
-    using Microsoft.Extensions.Configuration;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -48,9 +38,43 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public List<Medication> GetMedications(List<string> medicationDinList)
+        public Dictionary<string, MedicationResult> GetMedications(List<string> medicationDinList)
         {
-            return this.drugLookupDelegate.FindMedicationsByDIN(medicationDinList);
+            Dictionary<string, MedicationResult> result = new Dictionary<string, MedicationResult>();
+
+            // Retrieve drug information from the Federal soruce
+            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
+            foreach (DrugProduct drugProduct in drugProducts)
+            {
+                FederalDrugSource federalData = new FederalDrugSource()
+                {
+                    UpdateDateTime = drugProduct.UpdatedDateTime,
+                    DrugProduct = drugProduct,
+                };
+                result[drugProduct.DrugIdentificationNumber] = new MedicationResult() { DIN = drugProduct.DrugIdentificationNumber, FederalData = federalData };
+            }
+
+            // Retrieve drug information from the Provincial source and append it to the result if previously added.
+            List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
+            foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
+            {
+                ProvincialDrugSource provincialData = new ProvincialDrugSource()
+                {
+                    UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
+                    PharmaCareDrug = pharmaCareDrug,
+                };
+
+                if (result.ContainsKey(pharmaCareDrug.DINPIN))
+                {
+                    result[pharmaCareDrug.DINPIN].ProvincialData = provincialData;
+                }
+                else
+                {
+                    result[pharmaCareDrug.DINPIN] = new MedicationResult() { DIN = pharmaCareDrug.DINPIN, ProvincialData = provincialData };
+                }
+            }
+
+            return result;
         }
     }
 }

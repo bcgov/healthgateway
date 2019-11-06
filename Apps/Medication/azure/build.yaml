@@ -16,9 +16,9 @@ trigger:
      - dev
  paths:
    include:
-     - Apps/Medication/src
-     - Apps/Medication/test
-     - Apps/Medication/azure/build.yml
+     - Apps/Medication
+     - Apps/Common
+     - Apps/Database
 
 pool:
   name: 'HealthGateway'

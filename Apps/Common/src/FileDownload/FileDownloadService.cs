@@ -16,11 +16,12 @@
 namespace HealthGateway.Common.FileDownload
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net.Http;
     using System.Security.Cryptography;
-    using System.Text;
     using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -32,10 +33,12 @@ namespace HealthGateway.Common.FileDownload
         private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
-        /// FileDownloadService constructor
+        /// Initializes a new instance of the <see cref="FileDownloadService"/> class.
+        /// FileDownloadService constructor.
         /// </summary>
-        /// <param name="logger">ILogger instance</param>
-        /// <param name="httpClientFactory">IHttpClientFactory instance</param>
+        /// <param name="logger">ILogger instance.</param>
+        /// <param name="httpClientFactory">The HTTP Client Factory.</param>
+        ///
         public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger;
@@ -43,66 +46,53 @@ namespace HealthGateway.Common.FileDownload
         }
 
         /// <inheritdoc/>
-        public async Task<DownloadedFile> GetFileFromUrl(Uri url, string targetFolder, bool isRelativePath)
+        public async Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
-            #pragma warning disable CA1303 // literal string check
-            Uri fileUrl = url ?? throw new ArgumentNullException(nameof(url), "URL for file to download must not be null");
-            #pragma warning restore CA1303 // literal string check
-            DownloadedFile df = new DownloadedFile();
+            Contract.Requires(fileUrl != null);
+            FileDownload fd = new FileDownload();
 
             if (isRelativePath)
             {
                 targetFolder = Path.Combine(Directory.GetCurrentDirectory(), targetFolder);
             }
 
-            df.FileName = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
-            df.LocalFilePath = targetFolder;
-
-            string filePath = Path.Combine(df.LocalFilePath, df.FileName);
-
+            fd.Name = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
+            fd.LocalFilePath = targetFolder;
+            string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
             {
                 using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    HttpResponseMessage response = await client.GetAsync(fileUrl).ConfigureAwait(true);
-
-                    if (response.IsSuccessStatusCode)
+                    using (Stream inStream = await client.GetStreamAsync(fileUrl).ConfigureAwait(true))
                     {
-                        HttpContent content = response.Content;
-                        using (Stream stream = await content.ReadAsStreamAsync().ConfigureAwait(true))
+                        using (Stream outStream = File.Open(filePath, FileMode.OpenOrCreate))
                         {
-                            using (FileStream fileStream = File.Open(filePath, FileMode.OpenOrCreate))
-                            {
-                                await stream.CopyToAsync(fileStream).ConfigureAwait(true);
-                                using (SHA256 mySHA256 = SHA256.Create())
-                                {
-                                    fileStream.Position = 0;
-                                    byte[] hashValue = mySHA256.ComputeHash(fileStream);
-                                    df.FileSHA256 = Encoding.UTF8.GetString(hashValue, 0, hashValue.Length);
-                                }
-
-                                fileStream.Close();
-                            }
-
-                            stream.Close();
+                            await inStream.CopyToAsync(outStream).ConfigureAwait(true);
                         }
                     }
-                    else
+                }
+
+                using (Stream hashStream = File.OpenRead(filePath))
+                {
+                    using (SHA256 mySHA256 = SHA256.Create())
                     {
-                        throw new FileNotFoundException();
+                        byte[] hashValue = mySHA256.ComputeHash(hashStream);
+                        fd.Hash = System.Convert.ToBase64String(hashValue);
                     }
                 }
             }
+#pragma warning disable CA1031
             catch (Exception exception)
+#pragma warning restore CA1031
             {
-                this.logger.LogDebug(exception.ToString());
+                this.logger.LogCritical(exception.ToString());
                 File.Delete(filePath);
-                df.FileName = string.Empty;
-                df.LocalFilePath = string.Empty;
-                df.FileSHA256 = string.Empty;
+                fd.Name = string.Empty;
+                fd.LocalFilePath = string.Empty;
+                fd.Hash = string.Empty;
             }
 
-            return df;
+            return fd;
         }
     }
 }

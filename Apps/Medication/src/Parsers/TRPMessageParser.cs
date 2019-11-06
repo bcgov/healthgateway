@@ -17,9 +17,9 @@ namespace HealthGateway.Medication.Parsers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -29,8 +29,16 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     public class TRPMessageParser : BaseMessageParser<List<MedicationStatement>>
     {
-        /// The minimun size of the expected TRF field length
-        public static readonly int MIN_TRF_FIELD_LENGTH = 23;
+        /// <summary>
+        /// The minimun size of the expected TRF field length.
+        /// </summary>
+        #pragma warning disable CA1707 // Identifiers should not contain underscores
+        #pragma warning disable SA1310 // Field names should not contain underscore
+        public const int MIN_TRF_FIELD_LENGTH = 23;
+        #pragma warning restore SA1310 // Field names should not contain underscore
+        #pragma warning restore CA1707 // Identifiers should not contain underscores
+
+        private const string PROTECTEDWORD = "17 Field KEYWORD contains invalid value";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
@@ -42,7 +50,7 @@ namespace HealthGateway.Medication.Parsers
         }
 
         /// <inheritdoc/>
-        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId)
+        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -51,12 +59,12 @@ namespace HealthGateway.Medication.Parsers
 
             // HNClient only accepts a 13 digit phn
             id = id.PadLeft(13, '0');
-            Message m = new Message();
+            Message message = new Message();
 
-            this.SetMessageHeader(m, userId, ipAddress, traceId);
-            this.SetTransactionControlSegment(m, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID,traceId);
-            this.SetClaimsStandardSegment(m, this.ClientConfig.ZCA.BIN);
-            this.SetProviderInfoSegment(m,traceId);
+            this.SetMessageHeader(message, userId, ipAddress, traceId);
+            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId, protectiveWord);
+            this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA.BIN);
+            this.SetProviderInfoSegment(message, traceId);
 
             // ZCC - Beneficiary Information
             Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, this.Encoding);
@@ -71,9 +79,9 @@ namespace HealthGateway.Medication.Parsers
             zcc.AddNewField(string.Empty); // Patient Last Name
             zcc.AddNewField(id); // Provincial Health Care ID
             zcc.AddNewField(string.Empty); // Patient Gender
-            m.AddNewSegment(zcc);
+            message.AddNewSegment(zcc);
 
-            return new HNMessage<string>(m.SerializeMessage(false));
+            return new HNMessage<string>(message.SerializeMessage(false));
         }
 
         /// <inheritdoc/>
@@ -85,21 +93,29 @@ namespace HealthGateway.Medication.Parsers
                 throw new ArgumentNullException(nameof(hl7Message));
             }
 
-            Message m = this.ParseRawMessage(hl7Message);
+            Message message = this.ParseRawMessage(hl7Message);
 
             // Checks the response status
-            Segment zzz = m.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
+            Segment zzz = message.Segments(HNClientConfiguration.SEGMENT_ZZZ).FirstOrDefault();
             Field status = zzz.Fields(2); // Status code
             Field statusMessage = zzz.Fields(7); // Status message
 
             if (status.Value != "0")
             {
-                // The request was not processed
-                return new HNMessage<List<MedicationStatement>>(true, statusMessage.Value);
+                if (statusMessage.Value == PROTECTEDWORD)
+                {
+                    // If the protected word - 17 Field Keyword contains invalid value
+                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, "Record protected by keyword");
+                }
+                else
+                {
+                    // The request was not processed
+                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, statusMessage.Value);
+                }
             }
 
             // ZPB patient history response
-            Segment zpb = m.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
+            Segment zpb = message.Segments(HNClientConfiguration.SEGMENT_ZPB).FirstOrDefault();
 
             // ZPB sub segments (fields)
             // ZPB1 clinical information block (clinical condition)
@@ -117,13 +133,13 @@ namespace HealthGateway.Medication.Parsers
                 {
                     string[] fields = record.Split('^');
                     MedicationStatement medicationStatement = new MedicationStatement();
-                    Medication medication = new Medication();
-                    medication.DIN = fields[1]; // DIN
-                    medication.ParseHL7V2GenericName(fields[2]); // Generic Name
+                    MedicationSumary medicationSumary = new MedicationSumary();
+                    medicationSumary.DIN = fields[1]; // DIN
+                    medicationSumary.GenericName = fields[2]; // Generic Name
 
                     // fields[3]; // Same Store Indicator
-                    medication.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
-                    medication.MaxDailyDosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
+                    medicationSumary.Quantity = float.Parse(fields[4], CultureInfo.CurrentCulture) / 10; // Quantity
+                    medicationSumary.MaxDailyDosage = float.Parse(fields[5], CultureInfo.CurrentCulture) / 1000; // Max Daily Dosage
 
                     // fields[6]; // Ingredient Code
                     // fields[7]; // Ingredient Name
@@ -134,7 +150,7 @@ namespace HealthGateway.Medication.Parsers
                     // fields[11]; // Practitioner ID Reference
                     // fields[12]; // Practitioner ID
                     medicationStatement.PractitionerSurname = fields[13]; // Practitioner Family Name
-                    medication.DrugDiscontinuedDate = this.ParseDate(fields[14]); // Drug Discontinued Date
+                    medicationSumary.DrugDiscontinuedDate = this.ParseDate(fields[14]); // Drug Discontinued Date
 
                     // fields[15]; // Drug Discontinued Source
                     medicationStatement.Directions = fields[16]; // Directions
@@ -155,7 +171,7 @@ namespace HealthGateway.Medication.Parsers
                         // fields[25].ToString(); // Clinical Service Codes
                     }
 
-                    medicationStatement.Medication = medication;
+                    medicationStatement.MedicationSumary = medicationSumary;
                     medicationStatements.Add(medicationStatement);
                 }
             }

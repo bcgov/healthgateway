@@ -15,31 +15,34 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
+    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Authorization.Infrastructure;
-    using Microsoft.AspNetCore.Http;
-    using HealthGateway.Common.Models;
     using Moq;
     using System.Collections.Generic;
-    using System.Net;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading.Tasks;
     using Xunit;
 
-
     public class MedicationStatementController_Test
     {
         [Fact]
-        public async Task ShouldGetMedicationStatemets()
+        public async Task ShouldGetMedicationStatements()
         {
+            // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string phn = "0009735353315";
             string userId = "1001";
-            string ipAddress = "10.0.0.1";
+
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("Authorization", "Bearer TestJWT");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
             Mock<IIdentity> identityMock = new Mock<IIdentity>();
             identityMock.Setup(s => s.Name).Returns(userId);
@@ -47,40 +50,34 @@ namespace HealthGateway.Medication.Test
             Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
             claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
 
-            Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
-            connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
+            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
             Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            svcMock.Setup(s => s.GetMedicationStatementsAsync(phn, userId, ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
 
-            Mock<ICustomAuthorizationService> authMock = new Mock<ICustomAuthorizationService>();
-            authMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>(), It.IsAny<OperationAuthorizationRequirement>())).ReturnsAsync(AuthorizationResult.Success());
+            svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
-            Mock<IPatientService> patientMock = new Mock<IPatientService>();
-            patientMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
-            MedicationStatementController controller = new MedicationStatementController(
-                svcMock.Object,
-                httpContextAccessorMock.Object,
-                authZService: authMock.Object,
-                patientService: patientMock.Object);
+            // Act
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
-            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
+            // Verify
+            Assert.IsType<JsonResult>(actual);
 
-            Assert.True(actual.ResourcePayload.Count == 0);
+            JsonResult jsonResult = (JsonResult)actual;
+
+            Assert.IsType<RequestResult<List<MedicationStatement>>>(jsonResult.Value);
+
+            RequestResult<List<MedicationStatement>> result = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
+
+            Assert.True(result.ResourcePayload.Count == 0);
         }
 
         [Fact]
@@ -89,9 +86,12 @@ namespace HealthGateway.Medication.Test
             // Setup
             string errorMessage = "The error message";
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string phn = "0009735353315";
             string userId = "1001";
-            string ipAddress = "10.0.0.1";
+
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("Authorization", "Bearer TestJWT");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
             Mock<IIdentity> identityMock = new Mock<IIdentity>();
             identityMock.Setup(s => s.Name).Returns(userId);
@@ -99,43 +99,77 @@ namespace HealthGateway.Medication.Test
             Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
             claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
 
-            Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
-            connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
             Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            svcMock.Setup(s => s.GetMedicationStatementsAsync(phn, userId, ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(true, errorMessage));
+            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
+            authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
-            Mock<ICustomAuthorizationService> authMock = new Mock<ICustomAuthorizationService>();
-            authMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>(), It.IsAny<OperationAuthorizationRequirement>())).ReturnsAsync(AuthorizationResult.Success());
+            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();            
+            svcMock
+                .Setup(s => s.GetMedicationStatements(hdid, null))
+                .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { Result = HealthGateway.Common.Constants.ResultType.Error, ResultMessage = errorMessage });
 
-            Mock<IPatientService> patientMock = new Mock<IPatientService>();
-            patientMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
-
-            MedicationStatementController controller = new MedicationStatementController(
-                svcMock.Object,
-                httpContextAccessorMock.Object,
-                authZService: authMock.Object,
-                patientService: patientMock.Object);
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
-            Assert.Null(actual.ResourcePayload);
-            Assert.Equal(errorMessage, actual.ErrorMessage);
+            Assert.IsType<JsonResult>(actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+            Assert.IsType<RequestResult<List<MedicationStatement>>>(jsonResult.Value);
+
+            RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
+            Assert.Null(requestResult.ResourcePayload);
+            Assert.Equal(errorMessage, requestResult.ResultMessage);
+        }
+
+        [Fact]
+        public async Task ShouldForbiddenMismatchPatient()
+        {
+            // Setup
+            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            string userId = "1001";
+
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("Authorization", "Bearer TestJWT");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+
+            Mock<IIdentity> identityMock = new Mock<IIdentity>();
+            identityMock.Setup(s => s.Name).Returns(userId);
+
+            Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+            claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
+
+            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
+            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+
+            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
+
+            svcMock.Setup(s => s.GetMedicationStatements(hdid,null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Failed);
+
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
+
+            // Act
+            IActionResult actual = await controller.GetMedicationStatements(hdid);
+
+            // Verify
+            Assert.IsType<ForbidResult>(actual);
+            Assert.True(actual != null);
         }
     }
 }

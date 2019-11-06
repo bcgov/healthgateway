@@ -16,16 +16,17 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using HealthGateway.Common.Authentication.Models;
 
     /// <summary>
     /// The Medication controller.
     /// </summary>
     // [Authorize]
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
@@ -34,22 +35,15 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Gets or sets the pharmacy data service.
         /// </summary>
-        private readonly IPharmacyService service;
-
-        /// <summary>
-        /// The http context provider.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IPharmacyService pharmacyService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PharmacyController"/> class.
         /// </summary>
-        /// <param name="svc">The injected pharmacy data service.</param>
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        public PharmacyController(IPharmacyService svc, IHttpContextAccessor httpAccessor)
+        /// <param name="pharmacyService">The injected pharmacy data service.</param>
+        public PharmacyController(IPharmacyService pharmacyService)
         {
-            this.service = svc;
-            this.httpContextAccessor = httpAccessor;
+            this.pharmacyService = pharmacyService;
         }
 
         /// <summary>
@@ -62,13 +56,23 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{pharmacyId}")]
-        public async Task<HNMessage<Pharmacy>> GetPharmacy(string pharmacyId)
+        public async Task<RequestResult<Pharmacy>> GetPharmacy(string pharmacyId)
         {
-            string userId = "1001"; // This should be the hdid from the token
-            string ipAddress = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            // TODO: This needs to have the JWT to be passed to the pharmacy service
-            JWTModel jwtModel = null;
-            return await this.service.GetPharmacyAsync(jwtModel, pharmacyId, userId, ipAddress).ConfigureAwait(true);
+            HNMessage<Pharmacy> pharmacyResult = await this.pharmacyService.GetPharmacyAsync(pharmacyId).ConfigureAwait(true);
+            RequestResult<Pharmacy> result = new RequestResult<Pharmacy>
+            {
+                ResultStatus = pharmacyResult.Result,
+                ResultMessage = pharmacyResult.ResultMessage,
+            };
+            if (pharmacyResult.Result == Common.Constants.ResultType.Sucess)
+            {
+                result.ResourcePayload = pharmacyResult.Message;
+                result.PageIndex = 0;
+                result.PageSize = 1;
+                result.TotalResultCount = 1;
+            }
+
+            return result;
         }
     }
 }

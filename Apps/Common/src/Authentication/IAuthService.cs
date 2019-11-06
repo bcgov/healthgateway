@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Authentication
     public interface IAuthService
     {
         /// <summary>
-        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard)
+        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard).
         /// </summary>
         ClientCredentialsTokenRequest TokenRequest { get; set; }
 
@@ -33,6 +33,12 @@ namespace HealthGateway.Common.Authentication
         /// Gets the OAuth2 Auth Token URI.
         /// </summary>
         Uri TokenUri { get; }
+
+        /// <summary>
+        /// Authenticates this service, using Client Credentials Grant.
+        /// </summary>
+        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
+        JWTModel AuthenticateService();
 
         /// <summary>
         /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.

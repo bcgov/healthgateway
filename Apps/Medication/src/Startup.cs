@@ -20,8 +20,8 @@ namespace HealthGateway.Medication
     using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Database;
-    using HealthGateway.Medication.Database;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
@@ -60,6 +60,7 @@ namespace HealthGateway.Medication
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
@@ -81,20 +82,18 @@ namespace HealthGateway.Medication
                 };
             });
 
-            var info = this.configuration.GetConnectionString("GatewayConnection");
-            services.AddDbContext<MedicationDBContext>(options => options.UseNpgsql(
+            services.AddDbContext<DrugDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
-            services.AddTransient<IPatientService, RestPatientService>();
+            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddTransient<IPharmacyService, RestPharmacyService>();
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
-            services.AddTransient<ICustomAuthorizationService, CustomAuthorizationService>();
             services.AddTransient<IDrugLookupDelegate, EntityDrugLookupDelegate>();
             services.AddTransient<ISequenceDelegate, EntitySequenceDelegate>();
-            services.AddTransient<IDBContextFactory, MedicationDBContextFactory>();
         }
 
         /// <summary>
@@ -103,6 +102,7 @@ namespace HealthGateway.Medication
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
+            this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);

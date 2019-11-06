@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;
@@ -27,6 +28,7 @@ namespace HealthGateway.Medication.Parsers
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
     public abstract class BaseMessageParser<T> : IHNMessageParser<T>
+        where T : class
     {
         private readonly TimeZoneInfo localTimeZone;
         private readonly IConfiguration configuration;
@@ -39,6 +41,11 @@ namespace HealthGateway.Medication.Parsers
         protected BaseMessageParser(IConfiguration config)
         {
             if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (config.GetSection("HNClient") is null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
@@ -67,7 +74,7 @@ namespace HealthGateway.Medication.Parsers
         protected HL7Encoding Encoding { get; set; }
 
         /// <inheritdoc/>
-        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId);
+        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord);
 
         /// <inheritdoc/>
         public abstract HNMessage<T> ParseResponseMessage(string hl7Message);
@@ -85,7 +92,9 @@ namespace HealthGateway.Medication.Parsers
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
+
+            string formattedTraceId = traceId.ToString(CultureInfo.InvariantCulture).PadLeft(6, '0');
+
             // MSH - Message Header
             message.AddSegmentMSH(
                 this.ClientConfig.SendingApplication,
@@ -107,13 +116,16 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="message">The message object.</param>
         /// <param name="transactionId">The message transaction id.</param>
         /// <param name="traceId">The trace ID of the Pharmanet message.</param>
-        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId)
+        /// <param name="protectiveWord">The protecitve word securing certain HL7 messages.</param>
+        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId, string protectiveWord)
         {
             if (message is null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
+
+            string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
+
             // ZZZ - Transaction Control
             Segment zzz = new Segment(HNClientConfiguration.SEGMENT_ZZZ, this.Encoding);
             zzz.AddNewField(transactionId); // Transaction ID
@@ -121,6 +133,12 @@ namespace HealthGateway.Medication.Parsers
             zzz.AddNewField(formattedTraceId); // Trace Number
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
             zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
+            zzz.AddNewField(string.Empty); // Transaction Segment Count
+            zzz.AddNewField(string.Empty); // Transaction Text
+            zzz.AddNewField(string.IsNullOrEmpty(protectiveWord) ? string.Empty : protectiveWord); // Current Patient Keyword
+            zzz.AddNewField(string.Empty); // New Patient Keyword
+            zzz.AddNewField(string.Empty); // Additional Transaction Text
+
             message.AddNewSegment(zzz);
         }
 
@@ -157,7 +175,9 @@ namespace HealthGateway.Medication.Parsers
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            string formattedTraceId = traceId.ToString().PadLeft(6, '0');
+
+            string formattedTraceId = traceId.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(6, '0');
+
             // ZCB - Provider Information
             Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, this.Encoding);
             zcb.AddNewField(this.ClientConfig.ZCB.PharmacyId); // Pharmacy ID Code

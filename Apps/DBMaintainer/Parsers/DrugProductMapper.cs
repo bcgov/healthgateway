@@ -16,11 +16,17 @@
 namespace HealthGateway.DrugMaintainer
 {
     using CsvHelper.Configuration;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Models;
 
+    /// <summary>
+    /// Mapping class to which maps the read file to the relavent model object.
+    /// </summary>
     public class DrugProductMapper : ClassMap<DrugProduct>
     {
-        public DrugProductMapper()
+        /// <summary>
+        /// Performs the mapping of the read file to the to the model.
+        /// </summary>
+        public DrugProductMapper(FileDownload filedownload)
         {
             // DRUG_CODE
             Map(m => m.DrugCode).Index(0);
@@ -50,7 +56,9 @@ namespace HealthGateway.DrugMaintainer
             Map(m => m.BrandNameFrench).Index(12);
             // DESCRIPTOR_F
             Map(m => m.DescriptorFrench).Index(13);
-            
+            // Map the Filedownload to each object
+            Map(m => m.FileDownload).ConvertUsing(row => filedownload);
+
         }
     }
 }

@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service
+namespace HealthGateway.Immunization.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Models;
+    using HealthGateway.Immunization.Models;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -24,11 +24,8 @@ namespace HealthGateway.Service
     /// </summary>
     public class MockImmsService : IImmsService
     {
-        /// <summary>
-        /// Gets a list of mock immunization records.
-        /// </summary>
-        /// <returns>A list of ImmsDataModel object.</returns>
-        public IEnumerable<ImmsDataModel> GetImmunizations()
+        /// <inheritdoc/>
+        public IEnumerable<ImmsDataModel> GetImmunizations(string hdid)
         {
             ImmsDataModel[] immunizations = new ImmsDataModel[17];
 

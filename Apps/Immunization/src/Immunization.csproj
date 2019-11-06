@@ -1,15 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-
-    <!-- SonarQube needs this -->
-    <ProjectGuid>{1842e377-23ad-4a52-881e-f0b82e7893a8}</ProjectGuid>
-    <RootNamespace>HealthGateway.ImmsService</RootNamespace>
-</PropertyGroup>
-
+    <RootNamespace>HealthGateway.Immunization</RootNamespace>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Optimize>true</Optimize>
     <DocumentationFile>bin\Debug\netcoreapp2.2\Immunization.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>

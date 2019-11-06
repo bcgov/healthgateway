@@ -16,36 +16,46 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Models;
     using CsvHelper;
     using System.IO;
     using System.Linq;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    /// Concrete implemention of the <see cref="IDrugProductParser"/>
+    /// </summary>
     public class FederalDrugProductParser : IDrugProductParser
     {
         private readonly ILogger logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FederalDrugProductParser"/> class.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
         public FederalDrugProductParser(ILogger<FederalDrugProductParser> logger)
         {
             this.logger = logger;
         }
 
-        public List<DrugProduct> ParseDrugFile(string filePath)
+        /// <inheritdoc/>
+        public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing Drug file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "drug.txt")))
+            using (var reader = new StreamReader(Path.Combine(sourceFolder, "drug.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
                     csv.Configuration.HasHeaderRecord = false;
-                    csv.Configuration.RegisterClassMap<DrugProductMapper>();
+                    DrugProductMapper mapper = new DrugProductMapper(filedownload);
+                    csv.Configuration.RegisterClassMap(mapper);
                     List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
                     return records;
                 }
             }
         }
 
+        /// <inheritdoc/>
         public List<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Ingredients file");
@@ -62,6 +72,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Company file");
@@ -78,6 +89,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Status file");
@@ -94,6 +106,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Form file");
@@ -110,6 +123,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Package file");
@@ -126,6 +140,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Pharmaceutical file");
@@ -142,6 +157,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Route file");
@@ -158,6 +174,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Schedule file");
@@ -174,6 +191,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Therapeutical file");
@@ -190,6 +208,7 @@ namespace HealthGateway.DrugMaintainer
             }
         }
 
+        /// <inheritdoc/>
         public List<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Veterinary file");

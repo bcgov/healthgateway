@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway
+namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Service;
+    using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -29,6 +29,7 @@ namespace HealthGateway
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -39,6 +40,7 @@ namespace HealthGateway
         public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace HealthGateway
         {
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Imms Service
@@ -61,6 +64,7 @@ namespace HealthGateway
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
+            this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);

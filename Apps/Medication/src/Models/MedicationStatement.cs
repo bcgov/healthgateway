@@ -56,13 +56,8 @@ namespace HealthGateway.Medication.Models
         public string PharmacyId { get; set; }
 
         /// <summary>
-        /// Gets or sets the pharmacy model.
-        /// </summary>
-        public Pharmacy Pharmacy { get; set; }
-
-        /// <summary>
         /// Gets or sets the medication for the current MedicationStatement.
         /// </summary>
-        public Medication Medication { get; set; }
+        public MedicationSumary MedicationSumary { get; set; }
     }
 }

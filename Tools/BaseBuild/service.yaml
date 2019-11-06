@@ -64,6 +64,11 @@ objects:
                 configMapKeyRef:
                   key: HealthGateway_OpenIdConnect__ClientId
                   name: ${COMMON_CONFIG}-config
+            - name: HealthGateway_ConnectionStrings__GatewayConnection
+              valueFrom:
+                configMapKeyRef:
+                  key: HealthGateway_ConnectionStrings__GatewayConnection
+                  name: ${COMMON_CONFIG}-config
           imagePullPolicy: Always
           name: ${NAME}
           ports:

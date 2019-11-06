@@ -16,9 +16,17 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Net;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Common.Swagger;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -29,6 +37,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.AspNetCore.SpaServices.Webpack;
     using Microsoft.AspNetCore.StaticFiles;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -75,13 +84,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                 options.EnableForHttps = true;
             });
 
-            // Inject HttpContextAccessor
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
 
             services
-                .AddMvc()
+                .AddMvc(options => options.Filters.Add(typeof(AuditFilter)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
@@ -96,22 +103,28 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
-            this.logger.LogDebug("ConfigureAuthoirzationServices...");
+            this.logger.LogDebug("ConfigureAuthorizationServices...");
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
+            // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ReadPolicy", policy =>
-                    policy.Requirements.Add(new UserIsPatientRequirement()));
+                options.AddPolicy(PolicyNameConstants.PatientOnly, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("hdid");
+                });
+                options.AddPolicy(PolicyNameConstants.UserIsPatient, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new UserIsPatientRequirement());
+                });
             });
 
             // Configuration Service
-            services.AddTransient<IAuthorizationHandler>(serviceProvider =>
-            {
-                IAuthorizationHandler service = new UserAuthorizationHandler(
-                    serviceProvider.GetService<ILogger<UserAuthorizationHandler>>());
-                return service;
-            });
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>
@@ -120,8 +133,9 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The injected services provider.</param>
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
+            IAuditLogger auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
-            this.logger.LogDebug($"Debug configuration is ${debugEnabled}");
+            this.logger.LogDebug($"Debug configuration is {debugEnabled}");
 
             // Displays sensitive data from the jwt if the environment is development only
             IdentityModelEventSource.ShowPII = debugEnabled;
@@ -145,18 +159,25 @@ namespace HealthGateway.Common.AspNetConfiguration
                 };
                 o.Events = new JwtBearerEvents()
                 {
-                    OnAuthenticationFailed = c =>
-                    {
-                        c.Response.StatusCode = 401;
-                        c.Response.ContentType = "application/json";
-                        return c.Response.WriteAsync(JsonConvert.SerializeObject(new
-                        {
-                            State = "AuthenticationFailed",
-                            Message = c.Exception.ToString(),
-                        }));
-                    },
+                    OnAuthenticationFailed = (ctx) => { return this.OnAuthenticationFailed(ctx, auditLogger); },
                 };
             });
+        }
+
+        /// <summary>
+        /// Configures the audit services.
+        /// </summary>
+        /// <param name="services">The services collection provider.</param>
+        public void ConfigureAuditServices(IServiceCollection services)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("ConfigureAuditServices...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
+                    this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddScoped<IAuditLogger, AuditLogger>();
+            services.AddTransient<IWriteAuditEventDelegate, WriteAuditEventDelegate>();
         }
 
         /// <summary>
@@ -185,6 +206,33 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable jwt authentication
             app.UseAuthentication();
+        }
+
+        /// <summary>
+        /// Configures the app to use x-forwarded-for headers to obtain the real client IP.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseForwardHeaders(IApplicationBuilder app)
+        {
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            bool enabled = section.GetValue<bool>("Enabled");
+            this.logger.LogInformation($"Forward Headers enabled: {enabled}");
+            if (enabled)
+            {
+                string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
+                ForwardedHeadersOptions options = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.All,
+                    RequireHeaderSymmetry = false,
+                    ForwardLimit = null,
+                };
+                foreach (string ip in proxyIPs)
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(ip));
+                }
+
+                app.UseForwardedHeaders(options);
+            }
         }
 
         /// <summary>
@@ -291,6 +339,40 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+        }
+
+        /// <summary>
+        /// Handles authentication failures.
+        /// </summary>
+        /// <param name="context">The authentication failed context.</param>
+        /// <param name="auditLogger">The audit logger provider.</param>
+        /// <returns>An async task.</returns>
+        private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
+        {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("OnAuthenticationFailed...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
+            AuditEvent auditEvent = new AuditEvent();
+            auditEvent.AuditEventId = Guid.NewGuid();
+            auditEvent.AuditEventDateTime = DateTime.UtcNow;
+            auditEvent.TransactionDuration = 0; // There's not a way to calculate the duration here.
+
+            auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);
+
+            auditEvent.TransactionResultType = Database.Constant.AuditTransactionResultType.Unauthorized;
+            auditEvent.CreatedBy = nameof(StartupConfiguration);
+            auditEvent.CreatedDateTime = DateTime.UtcNow;
+
+            auditLogger.WriteAuditEvent(auditEvent);
+
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new
+            {
+                State = "AuthenticationFailed",
+                Message = context.Exception.ToString(),
+            }));
         }
     }
 }

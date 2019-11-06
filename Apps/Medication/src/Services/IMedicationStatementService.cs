@@ -27,10 +27,9 @@ namespace HealthGateway.Medication.Services
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="phn">The patient phn.</param>
-        /// <param name="userId">The user id of the request.</param>
-        /// <param name="ipAddress">The ip address of the request.</param>
+        /// <param name="hdid">The hdid to retrieve records for.</param>
+        /// <param name="protectiveWord">The protective word.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string userId, string ipAddress);
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord);
     }
 }

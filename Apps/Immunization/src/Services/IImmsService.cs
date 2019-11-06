@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Service
+namespace HealthGateway.Immunization.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Models;
+    using HealthGateway.Immunization.Models;
 
     /// <summary>
     /// The Immunization data service.
@@ -26,7 +26,8 @@ namespace HealthGateway.Service
         /// <summary>
         /// Gets a list of immunization records.
         /// </summary>
-        /// <returns>Returns a list of immunizations .</returns>
-        IEnumerable<ImmsDataModel> GetImmunizations();
+        /// <param name="hdid">The health directed id for the subject.</param>
+        /// <returns>Returns a list of immunizations.</returns>
+        IEnumerable<ImmsDataModel> GetImmunizations(string hdid);
     }
 }

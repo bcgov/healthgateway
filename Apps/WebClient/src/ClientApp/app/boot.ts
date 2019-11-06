@@ -9,6 +9,7 @@ import "@/assets/scss/bcgov/bootstrap-theme.scss";
 
 import BootstrapVue from "bootstrap-vue";
 import i18n from "@/i18n";
+import IdleVue from "idle-vue";
 
 import App from "@/app.vue";
 import router from "@/router";
@@ -59,6 +60,13 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   immsService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
+
+  Vue.use(IdleVue, {
+    eventEmitter: new Vue(),
+    idleTime: config.webClient.timeouts!.idle || 300000,
+    store,
+    startAtIdle: false
+  });
 
   store.dispatch("auth/getOidcUser").then(() => {
     new Vue({

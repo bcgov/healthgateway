@@ -15,8 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using HealthGateway.Common.Constants;
+    using Microsoft.AspNetCore.Mvc;
+
     /// <summary>
-    /// Class that represents the result of a request. Contains members for handling pagination and error resolution
+    /// Class that represents the result of a request. Contains members for handling pagination and error resolution.
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
     public class RequestResult<T>
@@ -27,23 +30,29 @@ namespace HealthGateway.Common.Models
         public T ResourcePayload { get; set; }
 
         /// <summary>
-        /// The toal result count for the request for pagination.
+        /// Gets or sets the total result count for the request for pagination.
         /// </summary>
         public int TotalResultCount { get; set; }
 
         /// <summary>
-        /// The page being returned on this result for pagination.
+        /// Gets or sets the page being returned on this result for pagination.
         /// </summary>
         public int PageIndex { get; set; }
 
         /// <summary>
-        /// The page size for pagination.
+        /// Gets or sets the page size for pagination.
         /// </summary>
         public int PageSize { get; set; }
 
         /// <summary>
-        /// The error message if there was any.
+        /// Gets or sets the Result of the request.
         /// </summary>
-        public string ErrorMessage { get; set; }
+        public ResultType ResultStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the message depending on the result type.
+        /// Will always be set when ResultType is Error.
+        /// </summary>
+        public string ResultMessage { get; set; }
     }
 }

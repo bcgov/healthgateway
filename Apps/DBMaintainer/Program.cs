@@ -17,7 +17,8 @@ namespace HealthGateway.DrugMaintainer
 {
     using System;
     using System.IO;
-    using HealthGateway.Common.Database;
+    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.Database.Context;
     using HealthGateway.Common.FileDownload;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -29,9 +30,12 @@ namespace HealthGateway.DrugMaintainer
     {
         static void Main(string[] args)
         {
-            IHost host = CreateWebHostBuilder(args).Build();//.Run();
-            DrugMaintainerApp service = host.Services.GetService<DrugMaintainerApp>();
-            service.UpdateDrugProducts().Wait();
+            IHost host = CreateWebHostBuilder(args).Build();
+            FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
+            fedDrugApp.Process();
+
+            BCPProvDrugDBApp bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
+            bcDrugApp.Process();
         }
 
         public static IHostBuilder CreateWebHostBuilder(string[] args)
@@ -47,21 +51,23 @@ namespace HealthGateway.DrugMaintainer
                        .ConfigureServices((hostContext, services) =>
                        {
                            Console.WriteLine("Configuring Services...");
-                           services.AddDbContextPool<DrugDBContext>(options =>
+                           services.AddDbContextPool<DrugDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
                            services.AddDbContextPool<AuditDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
-                           // add httpclient
+                           // Add HTTP Client
                            services.AddHttpClient();
 
                            // Add services
                            services.AddTransient<IFileDownloadService, FileDownloadService>();
                            services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
+                           services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
 
                            // Add app
-                           services.AddTransient<DrugMaintainerApp>();
+                           services.AddTransient<FedDrugDBApp>();
+                           services.AddTransient<BCPProvDrugDBApp>();
                        })
                        .ConfigureLogging(logging =>
                        {

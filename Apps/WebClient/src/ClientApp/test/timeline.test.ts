@@ -11,29 +11,36 @@ import { injectable } from "inversify";
 import container from "@/inversify.config";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
-import Medication from "@/models/medication";
-import Pharmacy from "@/models/pharmacy";
 import RequestResult from "@/models/requestResult";
 
+const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
 var yesterday = new Date(today);
 yesterday.setDate(today.getDate() - 1);
-
 const medicationStatements: MedicationStatement[] = [
   {
-    medication: { brandName: "brand_name_A", genericName: "generic_name_A" },
+    medicationSumary: {
+      brandName: "brand_name_A",
+      genericName: "generic_name_A"
+    },
     dispensedDate: today,
-    pharmacy: new Pharmacy()
+    pharmacyId: "pharmacyId"
   },
   {
-    medication: { brandName: "brand_name_B", genericName: "generic_name_B" },
+    medicationSumary: {
+      brandName: "brand_name_B",
+      genericName: "generic_name_B"
+    },
     dispensedDate: today,
-    pharmacy: new Pharmacy()
+    pharmacyId: "pharmacyId"
   },
   {
-    medication: { brandName: "brand_name_C", genericName: "generic_name_C" },
+    medicationSumary: {
+      brandName: "brand_name_C",
+      genericName: "generic_name_C"
+    },
     dispensedDate: yesterday,
-    pharmacy: new Pharmacy()
+    pharmacyId: "pharmacyId"
   }
 ];
 
@@ -41,16 +48,17 @@ const medicationStatements: MedicationStatement[] = [
 class MockMedicationService implements IMedicationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
     // No need to implement for the mock
-    throw new Error("Method not implemented.");
+    throw new Error(METHOD_NOT_IMPLEMENTED);
   }
-  getPatientMedicationStatemens(hdid: string): Promise<RequestResult> {
+  getPatientMedicationStatements(hdid: string): Promise<RequestResult> {
     return new Promise<RequestResult>((resolve, reject) => {
       if (hdid === "hdid_with_results") {
         resolve({
           totalResultCount: medicationStatements.length,
           pageIndex: 0,
           pageSize: medicationStatements.length,
-          errorMessage: "",
+          resultStatus: 0,
+          resultMessage: "",
           resourcePayload: medicationStatements
         });
       } else if (hdid === "hdid_no_results") {
@@ -62,9 +70,14 @@ class MockMedicationService implements IMedicationService {
       }
     });
   }
+  getMedicationInformation(drugIdentifier: string): Promise<RequestResult> {
+    throw new Error(METHOD_NOT_IMPLEMENTED);
+  }
+  getPharmacyInfo(pharmacyId: string): Promise<RequestResult> {
+    // No need to implement for the mock
+    throw new Error(METHOD_NOT_IMPLEMENTED);
+  }
 }
-
-const pushMethod = jest.fn();
 
 let $router = {};
 let $route = {

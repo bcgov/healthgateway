@@ -16,16 +16,23 @@
 namespace HealthGateway.DrugMaintainer
 {
     using CsvHelper.Configuration;
-    using HealthGateway.Common.Database.Models;
+    using HealthGateway.Database.Models;
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Mapping class to which maps the read file to the relavent model object.
+    /// </summary>
     public class StatusMapper : ClassMap<Status>
     {
+        /// <summary>
+        /// Performs the mapping of the read file to the to the model.
+        /// </summary>
+        /// <param name="drugProducts">The DrugProduct to relate the object to.</param>
         public StatusMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            Map(m => m.Drug).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            Map(m => m.DrugProductId).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First().Id);
             // CURRENT_STATUS_FLAG
             Map(m => m.CurrentStatusFlag).Index(1);
             // STATUS
