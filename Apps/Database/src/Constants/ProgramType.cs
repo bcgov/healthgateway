@@ -21,9 +21,24 @@ namespace HealthGateway.Database.Constant
     public enum ProgramType
     {
         /// <summary>
-        /// The Federal Drug loading program.
+        /// The Federal Drug loading program for active drugs.
         /// </summary>
-        Federal = 100,
+        FederalApproved = 105,
+
+        /// <summary>
+        /// The Federal Drug loading program for marketed drugs.
+        /// </summary>
+        FederalMarketed = 110,
+
+        /// <summary>
+        /// The Federal Drug loading program for Cancelled drugs.
+        /// </summary>
+        FederalCancelled = 115,
+
+        /// <summary>
+        /// The Federal Drug loading program for dorman drugs.
+        /// </summary>
+        FederalDormant = 120,
 
         /// <summary>
         /// The Provincial Drug loading program.

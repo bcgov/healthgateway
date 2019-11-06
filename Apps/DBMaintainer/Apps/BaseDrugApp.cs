@@ -21,6 +21,7 @@ namespace HealthGateway.DrugMaintainer.Apps
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.FileDownload;
+    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
@@ -32,11 +33,6 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// <typeparam name="T">The parser to use to process files.</typeparam>
     public abstract class BaseDrugApp<T> : IDrugApp
     {
-        /// <summary>
-        /// Gets the congiguration name to use for IConfiguration lookup.
-        /// </summary>
-        protected abstract string configurationName { get; }
-
         /// <summary>
         /// Gets or sets the file parser.
         /// </summary>
@@ -153,17 +149,22 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// Performs the actual download of the file and verifies if it has been
         /// previously processed.
         /// </summary>
-        public void Process()
+        public void Process(string ConfigSectionName)
         {
-            this.logger.LogInformation("Reading configuration...");
-            Uri source = configuration.GetSection(this.configurationName).GetValue<Uri>("Url");
-            string targetFolder = configuration.GetSection(this.configurationName).GetValue<string>("TargetFolder");
+            this.logger.LogInformation($"Reading configuration for section {ConfigSectionName}");
+            IConfigurationSection section = configuration.GetSection(ConfigSectionName);
+            Uri source = section.GetValue<Uri>("Url");
+
+            ProgramType programType = section.GetValue<ProgramType>("DBCode");
+            this.logger.LogInformation($"Program Type Code = {programType}");
+            string targetFolder = configuration.GetSection(ConfigSectionName).GetValue<string>("TargetFolder");
 
             FileDownload downloadedFile = DownloadFile(source, targetFolder);
             if (!FileProcessed(downloadedFile))
             {
                 string sourceFolder = ExtractFiles(downloadedFile);
                 logger.LogInformation("File has not been processed - Attempting to process");
+                downloadedFile.ProgramTypeCodeId = programType;
                 ProcessDownload(sourceFolder, downloadedFile);
                 RemoveExtractedFiles(sourceFolder);
             }

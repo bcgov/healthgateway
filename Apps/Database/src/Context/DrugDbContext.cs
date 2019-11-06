@@ -90,8 +90,35 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<ProgramTypeCode>().HasData(
                 new ProgramTypeCode
                 {
-                    Id = ProgramType.Federal,
-                    Name = "Federal",
+                    Id = ProgramType.FederalApproved,
+                    Name = "FederalApproved",
+                    CreatedBy = user,
+                    CreatedDateTime = utcnow,
+                    UpdatedBy = user,
+                    UpdatedDateTime = utcnow,
+                },
+                new ProgramTypeCode
+                {
+                    Id = ProgramType.FederalMarketed,
+                    Name = "FederalMarketed",
+                    CreatedBy = user,
+                    CreatedDateTime = utcnow,
+                    UpdatedBy = user,
+                    UpdatedDateTime = utcnow,
+                },
+                new ProgramTypeCode
+                {
+                    Id = ProgramType.FederalCancelled,
+                    Name = "FederalCancelled",
+                    CreatedBy = user,
+                    CreatedDateTime = utcnow,
+                    UpdatedBy = user,
+                    UpdatedDateTime = utcnow,
+                },
+                new ProgramTypeCode
+                {
+                    Id = ProgramType.FederalDormant,
+                    Name = "FederalDormant",
                     CreatedBy = user,
                     CreatedDateTime = utcnow,
                     UpdatedBy = user,
