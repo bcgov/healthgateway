@@ -50,17 +50,13 @@ namespace HealthGateway.WebClient
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
-
-            // Configuration Service
-            services.AddTransient<IConfigurationService>(serviceProvider =>
-            {
-                IConfigurationService service = new ConfigurationService(
-                    serviceProvider.GetService<ILogger<ConfigurationService>>(),
-                    serviceProvider.GetService<IConfiguration>());
-                return service;
-            });
             this.startupConfig.ConfigureAuditServices(services);
+            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserProfileService, UserProfileService>();
         }
 
         /// <summary>

@@ -23,6 +23,7 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     public class ConfigurationController : Controller
     {
@@ -42,7 +43,6 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The Health Gatway Configuration.</returns>
         [HttpGet]
-        [Route("/api/[controller]")]
         public Models.ExternalConfiguration Index()
         {
             return this.configservice.GetConfiguration();
