@@ -5,13 +5,11 @@
 </style>
 
 <template>
-  <div class="row">
-    <div class="col d-flex justify-content-center">
-      <div class="error-template">
-        <h1>{{ error.code }}</h1>
-        <h2>{{ error.name }}</h2>
-        <p>{{ error.message }}</p>
-      </div>
+  <div class="col d-flex justify-content-center">
+    <div class="error-template">
+      <h1>{{ error.code }}</h1>
+      <h2>{{ error.name }}</h2>
+      <p>{{ error.message }}</p>
     </div>
   </div>
 </template>

@@ -26,9 +26,9 @@
 }
 </style>
 <template>
-  <b-container fluid>
+  <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <b-row>
+    <b-row class="my-3">
       <b-col class="col-3 column-wrapper"> </b-col>
       <b-col id="timeline" class="col-6 column-wrapper">
         <b-alert :show="hasErrors" dismissible variant="danger">
@@ -95,7 +95,7 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
-  </b-container>
+  </div>
 </template>
 
 <script lang="ts">
