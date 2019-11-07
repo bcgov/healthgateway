@@ -66,20 +66,27 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
+        [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> InsertUserProfile([FromBody] UserProfile userProfile)
+        public async Task<IActionResult> InsertUserProfile(string hdid, [FromBody] UserProfile userProfile)
         {
             Contract.Requires(userProfile != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService
                 .AuthorizeAsync(user, userProfile.Hdid, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
+
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
             }
 
-            UserProfile existingUserProfile = this.userProfileService.GetUserProfile(userProfile.Hdid);
+            if (!hdid.Equals(userProfile.Hdid, System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
+            }
+
+            UserProfile existingUserProfile = this.userProfileService.GetUserProfile(hdid);
             if (existingUserProfile != null)
             {
                 // User profile record was already created.
