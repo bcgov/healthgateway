@@ -49,6 +49,17 @@ namespace HealthGateway.Database.Context
         }
 
         /// <summary>
+        /// Gets the concurrency column that we use in our DB.
+        /// </summary>
+        protected virtual string ConcurrencyColumn
+        {
+            get
+            {
+                return "xmin";
+            }
+        }
+
+        /// <summary>
         /// Gets the initial seed date for loading data.
         /// The value returned is the first date of the Health Gateway Project.
         /// </summary>
@@ -98,7 +109,10 @@ namespace HealthGateway.Database.Context
                     // xmin is the Postgres system column that we use for concurrency,
                     // we set the original value regardless of load state to the value we have in our object
                     // which ensures that we're only updating the row we think we have.
-                    entityEntry.Property("xmin").OriginalValue = ((IConcurrencyGuard)entityEntry.Entity).Version;
+                    if (entityEntry.Property(this.ConcurrencyColumn).IsModified)
+                    {
+                        entityEntry.Property(this.ConcurrencyColumn).OriginalValue = entityEntry.Property(this.ConcurrencyColumn).CurrentValue;
+                    }
                 }
             }
 
