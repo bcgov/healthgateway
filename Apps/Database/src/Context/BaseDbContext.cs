@@ -104,7 +104,8 @@ namespace HealthGateway.Database.Context
                     auditEntity.UpdatedDateTime = now;
                     auditEntity.UpdatedBy = auditEntity.CreatedBy ?? this.DefaultUser;
                 }
-                else if (entityEntry.Entity is IConcurrencyGuard && entityEntry.State == EntityState.Modified)
+
+                if (entityEntry.Entity is IConcurrencyGuard && entityEntry.State == EntityState.Modified)
                 {
                     // xmin is the Postgres system column that we use for concurrency,
                     // we set the original value regardless of load state to the value we have in our object
