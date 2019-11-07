@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The User Profile service.

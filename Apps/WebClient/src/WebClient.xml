@@ -51,14 +51,16 @@
             <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.InsertUserProfile(HealthGateway.WebClient.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.InsertUserProfile(System.String,HealthGateway.Database.Models.UserProfile)">
             <summary>
             Posts a user profile json to be inserted into the database.
             </summary>
             <returns>The http status.</returns>
+            <param name="hdid">The resource hdid.</param>
             <param name="userProfile">The user profile model.</param>
-            <response code="200">Returns the medication statement bundle.</response>
-            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="200">The user profile record was saved.</response>
+            <response code="400">The user profile was already inserted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetUserProfile(System.String)">
@@ -67,7 +69,7 @@
             </summary>
             <returns>The user profile model.</returns>
             <param name="hdid">The user hdid.</param>
-            <response code="200">Returns the medication statement bundle.</response>
+            <response code="200">Returns the user profile json.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
@@ -175,26 +177,6 @@
             redirected from the logout page back to the home.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.UserProfile">
-            <summary>
-            The user profile model.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfile.Hdid">
-            <summary>
-            Gets or sets the user hdid.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfile.AcceptedTermsOfService">
-            <summary>
-            Gets or sets a value indicating whether the user accepted the terms of service.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfile.Email">
-            <summary>
-            Gets or sets the user email.
-            </summary>
-        </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
             <summary>
             Configuration data to be used by the Health Gateway Webclient.
@@ -274,7 +256,7 @@
             <param name="hdid">The requested user hdid.</param>
             <returns>The user profile.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.SaveUserProfile(HealthGateway.WebClient.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.SaveUserProfile(HealthGateway.Database.Models.UserProfile)">
             <summary>
             Saves the user profile to the database.
             </summary>
@@ -286,7 +268,7 @@
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.SaveUserProfile(HealthGateway.WebClient.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.SaveUserProfile(HealthGateway.Database.Models.UserProfile)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">

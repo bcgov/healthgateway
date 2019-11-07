@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -60,6 +61,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a user profile json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="hdid">The resource hdid.</param>
         /// <param name="userProfile">The user profile model.</param>
         /// <response code="200">The user profile record was saved.</response>
         /// <response code="400">The user profile was already inserted.</response>
@@ -70,6 +72,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> InsertUserProfile(string hdid, [FromBody] UserProfile userProfile)
         {
+            Contract.Requires(hdid != null);
             Contract.Requires(userProfile != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService
