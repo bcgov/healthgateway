@@ -1,10 +1,5 @@
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-// Overwrite for this page
-main {
-  padding-bottom: 0px;
-  padding-top: 0px;
-}
 
 .landing {
   .btn-secondary-landing {
@@ -151,158 +146,149 @@ main {
 }
 </style>
 <template>
-  <div class="container-fill landing">
-    <b-col>
-      <b-row
-        class="intro background-tint-dark align-items-center"
-        :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
-      >
-        <b-col>
-          <div class="title-wrapper">
-            <img
-              class="img-fluid d-none d-md-block logo"
-              :src="logo"
-              width="auto"
-              height="auto"
-              alt="B.C. Government Logo"
-            />
+  <div class="landing">
+    <b-row
+      class="intro background-tint-dark align-items-center"
+      :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
+    >
+      <b-col>
+        <div class="title-wrapper">
+          <img
+            class="img-fluid d-none d-md-block logo"
+            :src="logo"
+            width="auto"
+            height="auto"
+            alt="B.C. Government Logo"
+          />
 
-            <div class="title-text">
-              <div>
-                Empowering you
-              </div>
-              <div>
-                to manage your health
-              </div>
+          <div class="title-text">
+            <div>
+              Empowering you
             </div>
-            <b-row class="justify-content-around">
+            <div>
+              to manage your health
+            </div>
+          </div>
+          <b-row class="justify-content-around">
+            <b-button
+              id="btnStart"
+              to="cardInfo"
+              class="btn btn-primary-landing"
+              role="button"
+              >Sign Up</b-button
+            >
+            <b-button id="btnLogin" to="login" class="btn btn-secondary-landing"
+              >Log In</b-button
+            >
+          </b-row>
+        </div>
+      </b-col>
+      <b-col />
+    </b-row>
+    <b-row class="devices-section align-items-center mx-3">
+      <b-col>
+        <img
+          class="img-fluid d-none d-md-block devices-image"
+          :src="devices"
+          width="auto"
+          height="auto"
+          alt="B.C. Government Logo"
+      /></b-col>
+      <b-col>
+        <div class="devices-text ">
+          <h2>Browse your health records</h2>
+          <p>
+            Visits to clinics, lab test results, dispensed medications and
+            vaccinations.
+          </p>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row class="circle-icons">
+      <div
+        v-for="icon in icons"
+        :key="icon.label"
+        class="icon-wrapper text-center"
+      >
+        <div class="icon rounded-circle bg-white">
+          <h3>
+            <span class="fa fa-2x" :class="icon.classIcon"></span>
+          </h3>
+        </div>
+        <span>
+          {{ icon.label }}
+        </span>
+      </div>
+    </b-row>
+    <div>
+      <div class="tile-section">
+        <div v-for="(tile, index) in tiles" :key="tile.title" class="tile-row">
+          <b-row v-if="index % 2 === 0">
+            <b-col>
+              <div class="text-wrapper mr-5">
+                <div class="title">{{ tile.title }}</div>
+                <div class="small-text">{{ tile.description }}</div>
+              </div>
+            </b-col>
+            <b-col>
+              <img
+                class="img-fluid d-md-block"
+                :src="tile.imageSrc"
+                width="auto"
+                height="auto"
+                alt="B.C. Government Logo"
+            /></b-col>
+          </b-row>
+          <b-row v-else>
+            <b-col>
+              <img
+                class="img-fluid d-none d-md-block"
+                :src="tile.imageSrc"
+                width="auto"
+                height="auto"
+                alt="B.C. Government Logo"
+            /></b-col>
+            <b-col>
+              <div class="text-wrapper ml-5">
+                <div class="title">{{ tile.title }}</div>
+                <div class="small-text">{{ tile.description }}</div>
+              </div>
+            </b-col>
+          </b-row>
+        </div>
+      </div>
+      <b-row
+        class="secure background-tint-light"
+        :style="{ backgroundImage: 'url(\'' + bottomImage + '\')' }"
+      >
+        <b-col class="col-8">
+          <div class="secure-wrapper">
+            <div class="title">
+              Securely access your information
+            </div>
+            <div class="description">
+              Use your BC Services Card with two-factor authentication
+            </div>
+            <div class="secure-buttons">
               <b-button
-                id="btnStart"
+                id="btnSecureStart"
                 to="cardInfo"
                 class="btn btn-primary-landing"
                 role="button"
                 >Sign Up</b-button
               >
               <b-button
-                id="btnLogin"
-                to="login"
+                id="btnLearnMore"
+                to="learnMore"
                 class="btn btn-secondary-landing"
-                >Log In</b-button
+                >Learn More</b-button
               >
-            </b-row>
-          </div>
-        </b-col>
-        <b-col />
-      </b-row>
-      <b-row class="devices-section align-items-center mx-3">
-        <b-col>
-          <img
-            class="img-fluid d-none d-md-block devices-image"
-            :src="devices"
-            width="auto"
-            height="auto"
-            alt="B.C. Government Logo"
-        /></b-col>
-        <b-col>
-          <div class="devices-text ">
-            <h2>Browse your health records</h2>
-            <p>
-              Visits to clinics, lab test results, dispensed medications and
-              vaccinations.
-            </p>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row class="circle-icons">
-        <div
-          v-for="icon in icons"
-          :key="icon.label"
-          class="icon-wrapper text-center"
-        >
-          <div class="icon rounded-circle bg-white">
-            <h3>
-              <span class="fa fa-2x" :class="icon.classIcon"></span>
-            </h3>
-          </div>
-          <span>
-            {{ icon.label }}
-          </span>
-        </div>
-      </b-row>
-      <div>
-        <div class="tile-section">
-          <div
-            v-for="(tile, index) in tiles"
-            :key="tile.title"
-            class="tile-row"
-          >
-            <b-row v-if="index % 2 === 0">
-              <b-col>
-                <div class="text-wrapper mr-5">
-                  <div class="title">{{ tile.title }}</div>
-                  <div class="small-text">{{ tile.description }}</div>
-                </div>
-              </b-col>
-              <b-col>
-                <img
-                  class="img-fluid d-md-block"
-                  :src="tile.imageSrc"
-                  width="auto"
-                  height="auto"
-                  alt="B.C. Government Logo"
-              /></b-col>
-            </b-row>
-            <b-row v-else>
-              <b-col>
-                <img
-                  class="img-fluid d-none d-md-block"
-                  :src="tile.imageSrc"
-                  width="auto"
-                  height="auto"
-                  alt="B.C. Government Logo"
-              /></b-col>
-              <b-col>
-                <div class="text-wrapper ml-5">
-                  <div class="title">{{ tile.title }}</div>
-                  <div class="small-text">{{ tile.description }}</div>
-                </div>
-              </b-col>
-            </b-row>
-          </div>
-        </div>
-        <b-row
-          class="secure background-tint-light"
-          :style="{ backgroundImage: 'url(\'' + bottomImage + '\')' }"
-        >
-          <b-col class="col-8">
-            <div class="secure-wrapper">
-              <div class="title">
-                Securely access your information
-              </div>
-              <div class="description">
-                Use your BC Services Card with two-factor authentication
-              </div>
-              <div class="secure-buttons">
-                <b-button
-                  id="btnSecureStart"
-                  to="cardInfo"
-                  class="btn btn-primary-landing"
-                  role="button"
-                  >Sign Up</b-button
-                >
-                <b-button
-                  id="btnLearnMore"
-                  to="learnMore"
-                  class="btn btn-secondary-landing"
-                  >Learn More</b-button
-                >
-              </div>
             </div>
-          </b-col>
-          <b-col class="col-2" />
-        </b-row>
-      </div>
-    </b-col>
+          </div>
+        </b-col>
+        <b-col class="col-2" />
+      </b-row>
+    </div>
   </div>
 </template>
 
