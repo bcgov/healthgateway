@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,29 @@ namespace HealthGateway.Database.Context
         }
 
         /// <summary>
+        /// Gets the default user to be used when absent.
+        /// </summary>
+        protected virtual string DefaultUser
+        {
+            get
+            {
+                return "System";
+            }
+        }
+
+        /// <summary>
+        /// Gets the initial seed date for loading data.
+        /// The value returned is the first date of the Health Gateway Project.
+        /// </summary>
+        protected virtual DateTime DefaultSeedDate
+        {
+            get
+            {
+                return Convert.ToDateTime("5/1/2019", CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
         /// Executes a sql command.
         /// </summary>
         /// <param name="sql">The sql query script.</param>
@@ -50,22 +74,32 @@ namespace HealthGateway.Database.Context
         /// <inheritdoc />
         public override int SaveChanges()
         {
-            const string user = "System";
             DateTime now = System.DateTime.UtcNow;
-
-            IEnumerable<EntityEntry<IAuditable>> auditableEntries = this.ChangeTracker.Entries<IAuditable>()
-                   .Where(x => (x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified)));
-
-            foreach (EntityEntry<IAuditable> auditEntity in auditableEntries)
+            IEnumerable<EntityEntry> entities = this.ChangeTracker.Entries()
+                   .Where(x => ((x.Entity is IAuditable || x.Entity is IConcurrencyGuard) && (x.State == EntityState.Added || x.State == EntityState.Modified)));
+            foreach (EntityEntry entityEntry in entities)
             {
-                if (auditEntity.State == EntityState.Added)
+                if (entityEntry.Entity is IAuditable)
                 {
-                    auditEntity.Entity.CreatedDateTime = now;
-                    auditEntity.Entity.CreatedBy = auditEntity.Entity.CreatedBy ?? user;
-                }
+                    IAuditable auditEntity = (IAuditable)entityEntry.Entity;
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        // newly created records must have a createdby and date/time stamp associated to them
+                        auditEntity.CreatedDateTime = now;
+                        auditEntity.CreatedBy = auditEntity.CreatedBy ?? this.DefaultUser;
+                    }
 
-                auditEntity.Entity.UpdatedDateTime = now;
-                auditEntity.Entity.UpdatedBy = auditEntity.Entity.CreatedBy ?? user;
+                    // set the updated by and date/time columns for both created and updated rows
+                    auditEntity.UpdatedDateTime = now;
+                    auditEntity.UpdatedBy = auditEntity.CreatedBy ?? this.DefaultUser;
+                }
+                else if (entityEntry.Entity is IConcurrencyGuard && entityEntry.State == EntityState.Modified)
+                {
+                    // xmin is the Postgres system column that we use for concurrency,
+                    // we set the original value regardless of load state to the value we have in our object
+                    // which ensures that we're only updating the row we think we have.
+                    entityEntry.Property("xmin").OriginalValue = ((IConcurrencyGuard)entityEntry.Entity).Version;
+                }
             }
 
             return base.SaveChanges();

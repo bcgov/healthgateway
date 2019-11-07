@@ -15,24 +15,32 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     /// <summary>
     /// The user profile model.
     /// </summary>
-    public class UserProfile
+    public class UserProfile : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        public string Hdid { get; set; }
+        [Key]
+        [Column("UserProfileId")]
+        [MaxLength(52)]
+        public string HdId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user accepted the terms of service.
         /// </summary>
+        [Required]
         public bool AcceptedTermsOfService { get; set; }
 
         /// <summary>
         /// Gets or sets the user email.
         /// </summary>
+        [MaxLength(254)]
         public string Email { get; set; }
     }
 }
