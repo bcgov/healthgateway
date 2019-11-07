@@ -29,7 +29,7 @@ main {
     <header>
       <NavHeader />
     </header>
-    <main class="col portlet-container portlet-dropzone">
+    <main class="col">
       <router-view></router-view>
     </main>
     <footer class="footer">
