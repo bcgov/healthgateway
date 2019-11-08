@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Context
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Models;
@@ -85,53 +86,51 @@ namespace HealthGateway.Database.Context
                     .HasIndex(f => f.Hash)
                     .IsUnique();
 
-            string user = "System";
-            DateTime utcnow = System.DateTime.UtcNow;
             modelBuilder.Entity<ProgramTypeCode>().HasData(
                 new ProgramTypeCode
                 {
                     Id = ProgramType.FederalApproved,
                     Name = "FederalApproved",
-                    CreatedBy = user,
-                    CreatedDateTime = utcnow,
-                    UpdatedBy = user,
-                    UpdatedDateTime = utcnow,
+                    CreatedBy = this.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = this.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     Id = ProgramType.FederalMarketed,
                     Name = "FederalMarketed",
-                    CreatedBy = user,
-                    CreatedDateTime = utcnow,
-                    UpdatedBy = user,
-                    UpdatedDateTime = utcnow,
+                    CreatedBy = this.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = this.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     Id = ProgramType.FederalCancelled,
                     Name = "FederalCancelled",
-                    CreatedBy = user,
-                    CreatedDateTime = utcnow,
-                    UpdatedBy = user,
-                    UpdatedDateTime = utcnow,
+                    CreatedBy = this.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = this.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     Id = ProgramType.FederalDormant,
                     Name = "FederalDormant",
-                    CreatedBy = user,
-                    CreatedDateTime = utcnow,
-                    UpdatedBy = user,
-                    UpdatedDateTime = utcnow,
+                    CreatedBy = this.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = this.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     Id = ProgramType.Provincial,
                     Name = "Provincial",
-                    CreatedBy = user,
-                    CreatedDateTime = utcnow,
-                    UpdatedBy = user,
-                    UpdatedDateTime = utcnow,
+                    CreatedBy = this.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = this.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 });
         }
     }
