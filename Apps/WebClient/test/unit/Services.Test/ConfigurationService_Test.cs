@@ -22,13 +22,14 @@ namespace HealthGateway.WebClient.Test.Services
     using Microsoft.Extensions.Logging;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
-    public class ConfigurationServiceTest
+
+    public class ConfigurationService_Test
     {
         private IConfiguration config;
         private Mock<ILogger<ConfigurationService>> mockLog;
         private ConfigurationService service;
 
-        public ConfigurationServiceTest()
+        public ConfigurationService_Test()
         {
             this.config = new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json").Build();
