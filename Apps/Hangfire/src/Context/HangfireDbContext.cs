@@ -13,28 +13,22 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace Healthgateway.Hangfire.Context
 {
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// The User Profile service.
+    /// The empty Hanfgire DB Context for intiial DB migration.
     /// </summary>
-    public interface IUserProfileService
+    public class HangfireDbContext : DbContext
     {
         /// <summary>
-        /// Gets the user profile model.
+        /// Initializes a new instance of the <see cref="HangfireDbContext"/> class.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> GetUserProfile(string hdid);
-
-        /// <summary>
-        /// Saves the user profile to the database.
-        /// </summary>
-        /// <param name="userProfile">The user profile model to be saved.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> SaveUserProfile(UserProfile userProfile);
+        /// <param name="options">The passed in DB Options.</param>
+        public HangfireDbContext(DbContextOptions<HangfireDbContext> options)
+            : base(options)
+        {
+        }
     }
 }
