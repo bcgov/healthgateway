@@ -88,7 +88,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks();
 
             services
-                .AddMvc(options => options.Filters.Add(typeof(AuditFilter)))
+                .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
@@ -174,6 +174,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.logger.LogDebug("ConfigureAuditServices...");
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
+            services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
             services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
