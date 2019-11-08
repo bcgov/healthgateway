@@ -4,11 +4,22 @@
 #pageTitle {
   color: $primary;
 }
-#pageTitle hr {
-  border-top: 2px solid $primary;
-}
+
 input {
   max-width: 320px;
+}
+
+.accept label {
+  color: $primary;
+}
+
+.optout label {
+  color: $soft_text;
+}
+
+#termsOfService {
+  background-color: $light_background;
+  color: $soft_text;
 }
 </style>
 <template>
@@ -16,68 +27,73 @@ input {
     <b-row class="my-3">
       <b-col>
         <div id="pageTitle">
-          <h1 id="Subject">Registration</h1>
-          <hr />
+          <h1 id="Subject">
+            {{ user.firstName }}, you can provide your email to be informed
+            about changes in your records, notifications, ...
+          </h1>
         </div>
       </b-col>
     </b-row>
     <b-form ref="registrationForm" @submit="onSubmit">
-      <b-row>
+      <b-row class="mb-3">
         <b-col>
-          <b-form-group label="Email:" label-for="email">
-            <b-form-input
-              id="email"
-              v-model="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-            />
-          </b-form-group>
+          <b-form-input
+            id="email"
+            v-model="email"
+            type="email"
+            placeholder="Your email address"
+            :disabled="optout"
+          />
         </b-col>
       </b-row>
-      <b-row>
+      <b-row class="mb-5">
         <b-col>
-          <b-form-group
-            label="Email Confirmation:"
-            label-for="emailConfirmation"
+          <b-form-input
+            id="emailConfirmation"
+            v-model="emailConfirmation"
+            type="email"
+            placeholder="Confirm your email address"
+            :disabled="optout"
+          />
+        </b-col>
+      </b-row>
+      <b-row class="mb-5">
+        <b-col>
+          <b-form-checkbox id="optout" v-model="optout" class="optout">
+            No, I prefer not to receive any notifications about my health
+            records
+          </b-form-checkbox>
+        </b-col>
+      </b-row>
+      <b-row class="mb-3">
+        <b-col>
+          <b-form-textarea
+            id="termsOfService"
+            v-model="termsOfService"
+            class="px-3 py-5"
+            placeholder="Terms of service..."
+            readonly
+            rows="20"
+            max-rows="20"
+          />
+        </b-col>
+      </b-row>
+      <b-row class="mb-3">
+        <b-col>
+          <b-form-checkbox id="accept" v-model="accepted" class="accept">
+            I agree to the terms of service above.
+          </b-form-checkbox>
+        </b-col>
+      </b-row>
+      <b-row class="mb-5">
+        <b-col class="justify-content-right">
+          <b-button
+            class="px-5 float-right"
+            type="submit"
+            :disabled="!isValid()"
+            size="lg"
+            >Register</b-button
           >
-            <b-form-input
-              id="emailConfirmation"
-              v-model="emailConfirmation"
-              type="email"
-              placeholder="Reenter your email"
-              required
-            />
-            <b-form-invalid-feedback id="emailConfirmationFeedback">
-              This is a required field and must be at least 3 characters.
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-form-group label="Terms of Service:" label-for="textarea">
-            <b-form-textarea
-              id="textarea"
-              v-model="termsOfService"
-              placeholder="Terms of service..."
-              readonly
-              rows="10"
-              max-rows="10"
-            />
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-form-checkbox id="accept" v-model="accepted" required
-            >I accept the terms of service above.</b-form-checkbox
-          >
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-button type="submit" :disabled="!isValid()">Submit</b-button>
         </b-col>
       </b-row>
     </b-form>
@@ -86,19 +102,26 @@ input {
 
 <script lang="ts">
 import Vue from "vue";
+import { Getter } from "vuex-class";
 import { Component, Ref } from "vue-property-decorator";
+import User from "@/models/user";
 
-@Component()
+@Component
 export default class RegistrationComponent extends Vue {
   private termsOfService: string =
     "The personal information you provide will be used to connect your Health Gateway account to your BC Services Card account. This will be done through the BC Services Identity Assurance Service. Once your Health Gateway account is authenticated, you will be able to view your health records from various health information systems in one place. Health Gateway’s collection of your personal information is in compliance with BC Privacy legislation under section 26(c) of the Freedom of Information and Protection of Privacy Act. \n\n If you have any questions about our collection or use of personal information, please direct your inquiries to the Nino Samson. ";
+  private optout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
   @Ref("registrationForm") form!: HTMLFormElement;
+  @Getter("user", { namespace: "user" }) user: User;
 
   isValid() {
-    return this.accepted && this.email && this.email == this.emailConfirmation;
+    return (
+      this.accepted &&
+      ((this.email && this.email == this.emailConfirmation) || this.optout)
+    );
   }
 
   mounted() {
