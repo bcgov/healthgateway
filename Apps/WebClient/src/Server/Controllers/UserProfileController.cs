@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -89,14 +90,12 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            UserProfile existingUserProfile = this.userProfileService.GetUserProfile(hdid);
-            if (existingUserProfile != null)
+            DBResult<UserProfile> result = this.userProfileService.SaveUserProfile(userProfile);
+            if (result.Status != Database.Constant.DBStatusCode.Created)
             {
-                // User profile record was already created.
                 return new BadRequestResult();
             }
 
-            this.userProfileService.SaveUserProfile(userProfile);
             return new OkResult();
         }
 
@@ -123,8 +122,8 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            UserProfile existingUserProfile = this.userProfileService.GetUserProfile(hdid);
-            return new JsonResult(existingUserProfile);
+            DBResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid);
+            return new JsonResult(result.Payload);
         }
     }
 }

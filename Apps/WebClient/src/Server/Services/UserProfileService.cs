@@ -15,23 +15,34 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
-        /// <inheritdoc />
-        public UserProfile GetUserProfile(string hdid)
+        private readonly IProfileDelegate profileDelegate;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileService"/> class.
+        /// </summary>
+        /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+        public UserProfileService(IProfileDelegate profileDelegate)
         {
-            // TODO: call the delegate
-            throw new System.NotImplementedException();
+            this.profileDelegate = profileDelegate;
         }
 
         /// <inheritdoc />
-        public void SaveUserProfile(UserProfile userProfile)
+        public DBResult<UserProfile> GetUserProfile(string hdid)
         {
-            // TODO: call the delegate
-            throw new System.NotImplementedException();
+            return this.profileDelegate.GetUserProfile(hdid);
+        }
+
+        /// <inheritdoc />
+        public DBResult<UserProfile> SaveUserProfile(UserProfile userProfile)
+        {
+           return this.profileDelegate.CreateUserProfile(userProfile);
         }
     }
 }
