@@ -18,9 +18,12 @@ namespace HealthGateway.WebClient
 {
     using System.Diagnostics.Contracts;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -31,6 +34,7 @@ namespace HealthGateway.WebClient
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -41,6 +45,7 @@ namespace HealthGateway.WebClient
         public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -55,6 +60,9 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
+            services.AddDbContext<WebClientDbContext>(options => options.UseNpgsql(
+                this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddTransient<IProfileDelegate, ProfileDelegate>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
         }

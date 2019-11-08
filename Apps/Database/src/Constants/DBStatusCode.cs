@@ -13,28 +13,46 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.Database.Constant
 {
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
-
     /// <summary>
-    /// The User Profile service.
+    /// The set of programs.
     /// </summary>
-    public interface IUserProfileService
+    public enum DBStatusCode
     {
         /// <summary>
-        /// Gets the user profile model.
+        /// Represents that an object was created.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> GetUserProfile(string hdid);
+        Created = 10,
 
         /// <summary>
-        /// Saves the user profile to the database.
+        /// Represents that an object was read.
         /// </summary>
-        /// <param name="userProfile">The user profile model to be saved.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> SaveUserProfile(UserProfile userProfile);
+        Read = 20,
+
+        /// <summary>
+        /// Represents that an object was updated.
+        /// </summary>
+        Updated = 30,
+
+        /// <summary>
+        /// Represents than an object was deleted.
+        /// </summary>
+        Deleted = 40,
+
+        /// <summary>
+        /// Represents that an object was not found.
+        /// </summary>
+        NotFound = 50,
+
+        /// <summary>
+        /// Represents that a concurrency error occurred.
+        /// </summary>
+        Concurrency = 60,
+
+        /// <summary>
+        /// Represents that an error occurred
+        /// </summary>
+        Error = 0,
     }
 }
