@@ -77,7 +77,7 @@ router.beforeEach(async (to, from, next) => {
       if (!hasAccess) {
         next({ path: "/login", query: { redirect: to.path } });
       } else {
-        let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
+        let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
         // If the user is registerd and is attempting to go to registration re-route
         if (userIsRegistered && to.path === "/registration") {
           next({ path: "/timeline" });

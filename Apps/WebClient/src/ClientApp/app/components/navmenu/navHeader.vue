@@ -84,8 +84,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { Prop, Component } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
+import { Getter } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
+import { IAuthenticationService } from "@/services/interfaces";
+import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import container from "@/inversify.config";
 import User from "@/models/user";
 
 interface ILanguage {
@@ -98,18 +101,22 @@ const user: string = "user";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Getter("oidcIsAuthenticated", { namespace: auth })
+  @Getter("oidcIsAuthenticated", { namespace: "auth" })
   oidcIsAuthenticated: boolean;
-  @Getter("userIsRegistered", { namespace: auth })
-  userIsRegistered: boolean;
-  @Getter("oidcUser", { namespace: auth }) oidcUser: OidcUser;
   @Getter("user", { namespace: user }) user: User;
+  @Getter("userIsRegistered", { namespace: user })
+  userIsRegistered: boolean;
 
-  languages: { [code: string]: ILanguage } = {};
-  currentLanguage: ILanguage = null;
+  private languages: { [code: string]: ILanguage } = {};
+  private currentLanguage: ILanguage = null;
+  private oidcUser: OidcUser;
 
   created() {
     this.loadLanguages();
+  }
+
+  public getFullname(): string {
+    return this.oidcUser.firstName + " " + this.oidcUser.lastName;
   }
 
   get displayMenu(): boolean {
@@ -135,9 +142,23 @@ export default class HeaderComponent extends Vue {
   }
 
   get greeting(): string {
+    if (this.oidcIsAuthenticated && !this.oidcUser) {
+      var authenticationService: IAuthenticationService = container.get(
+        SERVICE_IDENTIFIER.AuthenticationService
+      );
+      console.log("start");
+      authenticationService.getUserProfile().then(oidcUser => {
+        console.log(oidcUser);
+        if (oidcUser && !oidcUser.expired) {
+          this.oidcUser = oidcUser;
+        }
+        console.log("end");
+      });
+    }
+
     console.log(this.user);
-    if (this.oidcIsAuthenticated && this.user !== undefined) {
-      return "Hi " + this.user.getFullname();
+    if (this.oidcIsAuthenticated && this.oidcUser !== undefined) {
+      return "Hi " + this.getFullname();
     } else {
       return "";
     }

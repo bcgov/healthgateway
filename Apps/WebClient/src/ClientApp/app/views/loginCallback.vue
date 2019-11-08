@@ -13,8 +13,8 @@ const namespace: string = "auth";
 
 @Component
 export default class LoginCallbackComponent extends Vue {
-  @Action("oidcSignInCallback", { namespace }) oidcSignInCallback;
-  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
+  @Action("oidcSignInCallback", { namespace: "auth" }) oidcSignInCallback;
+  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
   created() {
     this.oidcSignInCallback()
       .then(redirectPath => {

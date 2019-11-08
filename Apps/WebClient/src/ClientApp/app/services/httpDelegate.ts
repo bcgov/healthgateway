@@ -15,10 +15,11 @@ export default class HttpDelegate implements IHttpDelegate {
   }
   public get<T>(url: string, headers: Dictionary<string> = {}): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      headers["Access-Control-Allow-Origin"] = "*";
+      headers["Access-Control-Allow-Origin"] = "http://localhost:5000";
       let config: AxiosRequestConfig = {
         headers
       };
+      console.log(headers);
       Axios.get(url, config)
         .then(response => {
           if (response.data instanceof Object) {

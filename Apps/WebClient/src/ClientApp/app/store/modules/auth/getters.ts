@@ -35,10 +35,6 @@ export const getters: GetterTree<AuthState, RootState> = {
   oidcIsAuthenticated(state: AuthState): boolean {
     return state.isAuthenticated;
   },
-  oidcUser(state: AuthState): OidcUser | undefined {
-    const { authentication } = state;
-    return authentication.oidcUser;
-  },
   oidcAccessToken(state: AuthState): string | undefined {
     return tokenIsExpired(state.authentication.accessToken)
       ? undefined
@@ -63,11 +59,5 @@ export const getters: GetterTree<AuthState, RootState> = {
   },
   oidcError(state: AuthState): any {
     return state.error;
-  },
-  userIsRegistered(state: AuthState): boolean {
-    let authentication = state.authentication;
-    return authentication === undefined
-      ? false
-      : authentication.acceptedTermsOfService;
   }
 };

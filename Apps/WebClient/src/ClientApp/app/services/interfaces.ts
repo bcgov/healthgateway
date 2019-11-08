@@ -9,7 +9,7 @@ import HttpDelegate from "./httpDelegate";
 import RequestResult from "@/models/requestResult";
 
 export interface IAuthenticationService {
-  initialize(config: OpenIdConnectConfiguration): void;
+  initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
   getUser(): Promise<OidcUser | null>;
   logout(): Promise<void>;
   signinSilent(): Promise<OidcUser | null>;
@@ -18,6 +18,7 @@ export interface IAuthenticationService {
   getOidcConfig(): UserManagerSettings;
   removeUser(): Promise<void>;
   clearStaleState(): Promise<void>;
+  getUserProfile(): Promise<any>;
 }
 
 export interface IImmsService {

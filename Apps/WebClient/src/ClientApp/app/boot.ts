@@ -56,7 +56,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   );
 
   // Initialize services
-  authService.initialize(config.openIdConnect);
+  authService.initialize(config.openIdConnect, httpDelegate);
   immsService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);

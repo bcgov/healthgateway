@@ -6,5 +6,9 @@ export const getters: GetterTree<UserState, RootState> = {
   user(state: UserState): User {
     const { user } = state;
     return user;
+  },
+  userIsRegistered(state: UserState): boolean {
+    const { user } = state;
+    return user === undefined ? false : user.acceptedTermsOfService;
   }
 };
