@@ -76,7 +76,7 @@ namespace HealthGateway.WebClient.Controllers
             Contract.Requires(userProfile != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userProfile.Hdid, PolicyNameConstants.UserIsPatient)
+                .AuthorizeAsync(user, userProfile.HdId, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
 
             if (!isAuthorized.Succeeded)
@@ -84,7 +84,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            if (!hdid.Equals(userProfile.Hdid, System.StringComparison.CurrentCultureIgnoreCase))
+            if (!hdid.Equals(userProfile.HdId, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 return new BadRequestResult();
             }

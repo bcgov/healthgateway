@@ -159,9 +159,11 @@ namespace HealthGateway.Database.Models
         public virtual Route Route { get; set; }
 
         /// <summary>
-        /// Gets the related statuses.
+        /// Gets or sets the related statuses.
         /// </summary>
+#pragma warning disable CA2227
         public virtual ICollection<Status> Statuses { get; set; }
+#pragma warning restore CA2227
 
         /// <summary>
         /// Gets or sets the related TherapeuticClass.
