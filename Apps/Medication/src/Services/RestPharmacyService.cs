@@ -50,8 +50,7 @@ namespace HealthGateway.Medication.Services
         public RestPharmacyService(
             IHttpContextAccessor httpAccessor,
             IHNClientDelegate hnClientDelegate,
-            IPatientDelegate patientService
-)
+            IPatientDelegate patientService)
         {
             this.httpContextAccessor = httpAccessor;
             this.hnClientDelegate = hnClientDelegate;

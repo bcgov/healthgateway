@@ -23,13 +23,13 @@ namespace HealthGateway.WebClient.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
 
-    public class ConfigurationService_Test
+    public class ConfigurationServiceTest
     {
         private IConfiguration config;
         private Mock<ILogger<ConfigurationService>> mockLog;
         private ConfigurationService service;
 
-        public ConfigurationService_Test()
+        public ConfigurationServiceTest()
         {
             this.config = new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json").Build();

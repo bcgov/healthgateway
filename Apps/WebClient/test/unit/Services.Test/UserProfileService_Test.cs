@@ -20,24 +20,57 @@ namespace HealthGateway.WebClient.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
+    using HealthGateway.Database.Delegates;
 
-    public class UserProfileService_Test
+    public class UserProfileServiceTest
     {
-        private IUserProfileService service;
-
-        public UserProfileService_Test()
-        {
-            // Creates the service passing mocked dependencies
-            this.service = new UserProfileService();
-        }
-
         [Fact]
         public void ShouldGetUserProfile()
         {
             string hdid = "1234567890123456789012345678901234567890123456789012";
-            
-            UserProfile actualResult = service.GetUserProfile(hdid);
-            Assert.True(expectedResult.IsDeepEqual(actualResult)); 
+            UserProfile userProfile = new UserProfile
+            {
+                HdId = hdid,
+                AcceptedTermsOfService = true
+            };
+
+            DBResult<UserProfile> expected = new DBResult<UserProfile> {
+                Payload = userProfile,
+                Status = Database.Constant.DBStatusCode.Read
+            };
+
+            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(expected);
+            IUserProfileService service = new UserProfileService(profileDelegateMock.Object);
+            DBResult<UserProfile> actualResult = service.GetUserProfile(hdid);
+
+            Assert.Equal(Database.Constant.DBStatusCode.Read, actualResult.Status);
+            Assert.True(actualResult.IsDeepEqual(expected)); 
+        }
+
+        [Fact]
+        public void ShouldInsertUserProfile()
+        {
+            UserProfile userProfile = new UserProfile
+            {
+                HdId = "1234567890123456789012345678901234567890123456789012",
+                AcceptedTermsOfService = true
+            };
+
+            DBResult<UserProfile> expected = new DBResult<UserProfile>
+            {
+                Payload = userProfile,
+                Status = Database.Constant.DBStatusCode.Created
+            };
+
+            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            profileDelegateMock.Setup(s => s.CreateUserProfile(userProfile)).Returns(expected);
+            IUserProfileService service = new UserProfileService(profileDelegateMock.Object);
+            DBResult<UserProfile> actualResult = service.CreateUserProfile(userProfile);
+
+            Assert.Equal(Database.Constant.DBStatusCode.Created, actualResult.Status);
+            Assert.True(actualResult.IsDeepEqual(expected));
         }
     }
 }
