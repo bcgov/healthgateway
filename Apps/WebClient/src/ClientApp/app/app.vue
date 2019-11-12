@@ -20,12 +20,12 @@ main {
 
 <template>
   <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-    <environment v-if="!isProduction" exclude="Production">
+    <div v-if="!isProduction" exclude="Production">
       <div class="text-center bg-warning small">
         Non-production environment:
         <b>{{ host }}</b>
       </div>
-    </environment>
+    </div>
     <header>
       <NavHeader />
     </header>
