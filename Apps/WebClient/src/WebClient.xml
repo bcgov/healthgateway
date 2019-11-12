@@ -51,7 +51,7 @@
             <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.InsertUserProfile(System.String,HealthGateway.Database.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.Database.Models.UserProfile)">
             <summary>
             Posts a user profile json to be inserted into the database.
             </summary>
@@ -254,21 +254,28 @@
             Gets the user profile model.
             </summary>
             <param name="hdid">The requested user hdid.</param>
-            <returns>The user profile.</returns>
+            <returns>The wrappeed user profile.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.SaveUserProfile(HealthGateway.Database.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.Database.Models.UserProfile)">
             <summary>
             Saves the user profile to the database.
             </summary>
             <param name="userProfile">The user profile model to be saved.</param>
+            <returns>The wrappeed user profile.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
+            </summary>
+            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+        </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.SaveUserProfile(HealthGateway.Database.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.Database.Models.UserProfile)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">

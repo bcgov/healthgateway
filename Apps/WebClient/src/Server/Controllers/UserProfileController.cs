@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -70,13 +71,13 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> InsertUserProfile(string hdid, [FromBody] UserProfile userProfile)
+        public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] UserProfile userProfile)
         {
             Contract.Requires(hdid != null);
             Contract.Requires(userProfile != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userProfile.Hdid, PolicyNameConstants.UserIsPatient)
+                .AuthorizeAsync(user, userProfile.HdId, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
 
             if (!isAuthorized.Succeeded)
@@ -84,19 +85,17 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            if (!hdid.Equals(userProfile.Hdid, System.StringComparison.CurrentCultureIgnoreCase))
+            if (!hdid.Equals(userProfile.HdId, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 return new BadRequestResult();
             }
 
-            UserProfile existingUserProfile = this.userProfileService.GetUserProfile(hdid);
-            if (existingUserProfile != null)
+            DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile);
+            if (result.Status != Database.Constant.DBStatusCode.Created)
             {
-                // User profile record was already created.
                 return new BadRequestResult();
             }
 
-            this.userProfileService.SaveUserProfile(userProfile);
             return new OkResult();
         }
 
@@ -123,8 +122,8 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            UserProfile existingUserProfile = this.userProfileService.GetUserProfile(hdid);
-            return new JsonResult(existingUserProfile);
+            DBResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid);
+            return new JsonResult(result.Payload);
         }
     }
 }

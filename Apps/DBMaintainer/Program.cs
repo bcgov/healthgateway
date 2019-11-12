@@ -60,6 +60,9 @@ namespace HealthGateway.DrugMaintainer
                            services.AddDbContextPool<AuditDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
+                           services.AddDbContextPool<WebClientDbContext>(options =>
+                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
+
                            // Add HTTP Client
                            services.AddHttpClient();
 
