@@ -74,6 +74,8 @@ namespace HealthGateway.Medication.Services
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
             if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
             {
+                // Filter the results to return only Dispensed or Filled prescriptions.
+                hnClientMedicationResult.Message = hnClientMedicationResult.Message.Where(rx => rx.PrescriptionStatus == 'D' || rx.PrescriptionStatus == 'F').ToList<MedicationStatement>();
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
