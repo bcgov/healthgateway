@@ -35,6 +35,6 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="userProfile">The user profile model to be saved.</param>
         /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> SaveUserProfile(UserProfile userProfile);
+        DBResult<UserProfile> CreateUserProfile(UserProfile userProfile);
     }
 }

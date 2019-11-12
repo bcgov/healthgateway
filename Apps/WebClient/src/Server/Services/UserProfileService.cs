@@ -40,7 +40,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> SaveUserProfile(UserProfile userProfile)
+        public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile)
         {
            return this.profileDelegate.CreateUserProfile(userProfile);
         }

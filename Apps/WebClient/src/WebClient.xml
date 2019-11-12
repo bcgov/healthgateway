@@ -51,7 +51,7 @@
             <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.InsertUserProfile(System.String,HealthGateway.Database.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.Database.Models.UserProfile)">
             <summary>
             Posts a user profile json to be inserted into the database.
             </summary>
@@ -256,7 +256,7 @@
             <param name="hdid">The requested user hdid.</param>
             <returns>The wrappeed user profile.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.SaveUserProfile(HealthGateway.Database.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.Database.Models.UserProfile)">
             <summary>
             Saves the user profile to the database.
             </summary>
@@ -275,7 +275,7 @@
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.SaveUserProfile(HealthGateway.Database.Models.UserProfile)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.Database.Models.UserProfile)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">

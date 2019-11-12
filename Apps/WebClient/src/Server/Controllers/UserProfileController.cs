@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> InsertUserProfile(string hdid, [FromBody] UserProfile userProfile)
+        public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] UserProfile userProfile)
         {
             Contract.Requires(hdid != null);
             Contract.Requires(userProfile != null);
@@ -90,7 +90,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            DBResult<UserProfile> result = this.userProfileService.SaveUserProfile(userProfile);
+            DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile);
             if (result.Status != Database.Constant.DBStatusCode.Created)
             {
                 return new BadRequestResult();
