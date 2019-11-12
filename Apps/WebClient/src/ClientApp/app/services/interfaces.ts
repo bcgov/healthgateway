@@ -46,5 +46,6 @@ export interface IConfigService {
 export interface IHttpDelegate {
   unsetAuthorizationHeader(): void;
   setAuthorizationHeader(accessToken: string): void;
+  getWithCors<T>(url: string): Promise<T>;
   get<T>(url: string): Promise<T>;
 }

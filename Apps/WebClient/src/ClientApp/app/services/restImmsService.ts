@@ -1,8 +1,5 @@
-import { IImmsService, IHttpDelegate } from "@/services/interfaces";
-
 import { injectable } from "inversify";
-import "reflect-metadata";
-
+import { IImmsService, IHttpDelegate } from "@/services/interfaces";
 import ImmsData from "@/models/immsData";
 import { ExternalConfiguration } from "@/models/configData";
 
@@ -19,7 +16,7 @@ export class RestImmsService implements IImmsService {
   }
 
   public getItems(): Promise<ImmsData[]> {
-    return this.http.get<ImmsData[]>(
+    return this.http.getWithCors<ImmsData[]>(
       `${this.baseUri}${this.IMMS_BASE_URI}items`
     );
   }

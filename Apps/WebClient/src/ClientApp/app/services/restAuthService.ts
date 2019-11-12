@@ -10,7 +10,6 @@ import {
 } from "oidc-client";
 
 import { injectable } from "inversify";
-import "reflect-metadata";
 import { OpenIdConnectConfiguration } from "@/models/configData";
 
 @injectable()
@@ -74,8 +73,6 @@ export class RestAuthenticationService implements IAuthenticationService {
 
   public signinRedirect(idpHint: string, redirectPath: string): Promise<void> {
     var fullRedirectUrl = new URL(redirectPath, window.location.href);
-    console.log(fullRedirectUrl);
-    console.log(redirectPath);
     sessionStorage.setItem("vuex_oidc_active_route", redirectPath);
     return this.oidcUserManager.signinRedirect({
       extraQueryParams: {

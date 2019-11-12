@@ -83,7 +83,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component } from "vue-property-decorator";
+import { Prop, Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
 import { IAuthenticationService } from "@/services/interfaces";
@@ -101,30 +101,45 @@ const user: string = "user";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Getter("oidcIsAuthenticated", { namespace: "auth" })
+  @Getter("oidcIsAuthenticated", { namespace: auth })
   oidcIsAuthenticated: boolean;
+  @Getter("oidcAuthenticationIsChecked", { namespace: auth })
+  oidcAuthenticationIsChecked: boolean;
   @Getter("user", { namespace: user }) user: User;
   @Getter("userIsRegistered", { namespace: user })
   userIsRegistered: boolean;
 
   private languages: { [code: string]: ILanguage } = {};
   private currentLanguage: ILanguage = null;
-  private oidcUser: OidcUser;
+  private name: string = "";
+
+  @Watch("oidcAuthenticationIsChecked")
+  onPropertyChanged(newValue: string, oldValue: string) {
+    // If there is no name in the scope, retrieve it from the service.
+    if (newValue && this.oidcIsAuthenticated && !this.name) {
+      var authenticationService: IAuthenticationService = container.get(
+        SERVICE_IDENTIFIER.AuthenticationService
+      );
+      authenticationService.getUserProfile().then(oidcUser => {
+        if (oidcUser) {
+          this.name = this.getFullname(
+            oidcUser.given_name,
+            oidcUser.family_name
+          );
+        }
+      });
+    }
+  }
 
   created() {
     this.loadLanguages();
-  }
-
-  public getFullname(): string {
-    return this.oidcUser.firstName + " " + this.oidcUser.lastName;
   }
 
   get displayMenu(): boolean {
     let isLandingPage = this.$route.path === "/";
     if (
       this.oidcIsAuthenticated &&
-      this.oidcUser != undefined &&
-      this.oidcUser != undefined &&
+      this.name &&
       this.userIsRegistered &&
       !isLandingPage
     ) {
@@ -142,33 +157,22 @@ export default class HeaderComponent extends Vue {
   }
 
   get greeting(): string {
-    if (this.oidcIsAuthenticated && !this.oidcUser) {
-      var authenticationService: IAuthenticationService = container.get(
-        SERVICE_IDENTIFIER.AuthenticationService
-      );
-      console.log("start");
-      authenticationService.getUserProfile().then(oidcUser => {
-        console.log(oidcUser);
-        if (oidcUser && !oidcUser.expired) {
-          this.oidcUser = oidcUser;
-        }
-        console.log("end");
-      });
-    }
-
-    console.log(this.user);
-    if (this.oidcIsAuthenticated && this.oidcUser !== undefined) {
-      return "Hi " + this.getFullname();
+    if (this.oidcIsAuthenticated && this.name) {
+      return "Hi " + this.name;
     } else {
       return "";
     }
   }
 
-  onLanguageSelect(languageCode: string): void {
+  private getFullname(firstName: string, lastName: string): string {
+    return firstName + " " + lastName;
+  }
+
+  private onLanguageSelect(languageCode: string): void {
     this.currentLanguage = this.languages[languageCode];
   }
 
-  loadLanguages(): void {
+  private loadLanguages(): void {
     this.languages["en"] = { code: "en", description: "English" };
     this.languages["fr"] = { code: "fr", description: "French" };
     this.currentLanguage = this.languages["en"];

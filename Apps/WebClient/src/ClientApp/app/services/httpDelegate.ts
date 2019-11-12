@@ -8,14 +8,26 @@ export default class HttpDelegate implements IHttpDelegate {
   public unsetAuthorizationHeader(): void {
     Axios.defaults.headers.common = {};
   }
+
   public setAuthorizationHeader(accessToken: string): void {
     Axios.defaults.headers.common = {
       Authorization: `Bearer ${accessToken}`
     };
   }
-  public get<T>(url: string, headers: Dictionary<string> = {}): Promise<T> {
+
+  public getWithCors<T>(
+    url: string,
+    headers: Dictionary<string> = {}
+  ): Promise<T> {
+    headers["Access-Control-Allow-Origin"] = "*";
+    return this.get(url, headers);
+  }
+
+  public get<T>(
+    url: string,
+    headers: Dictionary<string> | undefined = undefined
+  ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      headers["Access-Control-Allow-Origin"] = "http://localhost:5000";
       let config: AxiosRequestConfig = {
         headers
       };
