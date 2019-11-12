@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Services
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
@@ -75,7 +76,10 @@ namespace HealthGateway.Medication.Services
             if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
             {
                 // Filter the results to return only Dispensed or Filled prescriptions.
-                hnClientMedicationResult.Message = hnClientMedicationResult.Message.Where(rx => rx.PrescriptionStatus == 'D' || rx.PrescriptionStatus == 'F').ToList<MedicationStatement>();
+                hnClientMedicationResult.Message = hnClientMedicationResult.Message
+                    .Where(rx => rx.PrescriptionStatus == PrescriptionStatus.Dispensed ||
+                                 rx.PrescriptionStatus == PrescriptionStatus.Filled)
+                    .ToList<MedicationStatement>();
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
