@@ -21,6 +21,7 @@ namespace HealthGateway.DrugMaintainer
     using System.IO;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using System;
 
     /// <summary>
     /// Concrete implemention of the <see cref="IDrugProductParser"/>
@@ -38,11 +39,27 @@ namespace HealthGateway.DrugMaintainer
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Searchs teh SourceFolder and returns a single file matching the pattern.
+        /// </summary>
+        /// <param name="SourceFolder">The source folder to search</param>
+        /// <param name="FileMatch">The file pattern to match</param>
+        /// <returns>The filename of the file matching.</returns>
+        private string GetFileMatching(string SourceFolder, string FileMatch)
+        {
+            string[] files = Directory.GetFiles(SourceFolder, FileMatch);
+            if (files.Length > 1 || files.Length == 0)
+            {
+                throw new ApplicationException($"The zip file contained {files.Length} CSV files, very confused.");
+            }
+            return files[0];
+        }
+
         /// <inheritdoc/>
         public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing Drug file");
-            using (var reader = new StreamReader(Path.Combine(sourceFolder, "drug.txt")))
+            using (var reader = new StreamReader(GetFileMatching(sourceFolder, "drug*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -59,7 +76,7 @@ namespace HealthGateway.DrugMaintainer
         public List<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Ingredients file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "ingred.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "ingred*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -76,7 +93,7 @@ namespace HealthGateway.DrugMaintainer
         public List<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Company file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "comp.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "comp*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -93,7 +110,7 @@ namespace HealthGateway.DrugMaintainer
         public List<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Status file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "status.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "status*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -110,7 +127,7 @@ namespace HealthGateway.DrugMaintainer
         public List<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Form file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "form.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "form*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -127,7 +144,7 @@ namespace HealthGateway.DrugMaintainer
         public List<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Package file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "package.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "package*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -144,7 +161,7 @@ namespace HealthGateway.DrugMaintainer
         public List<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Pharmaceutical file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "pharm.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "pharm*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -161,7 +178,7 @@ namespace HealthGateway.DrugMaintainer
         public List<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Route file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "route.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "route*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -178,7 +195,7 @@ namespace HealthGateway.DrugMaintainer
         public List<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Schedule file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "schedule.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "schedule*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -195,7 +212,7 @@ namespace HealthGateway.DrugMaintainer
         public List<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Therapeutical file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "ther.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "ther*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {
@@ -212,7 +229,7 @@ namespace HealthGateway.DrugMaintainer
         public List<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Veterinary file");
-            using (var reader = new StreamReader(Path.Combine(filePath, "vet.txt")))
+            using (var reader = new StreamReader(GetFileMatching(filePath, "vet*.txt")))
             {
                 using (var csv = new CsvReader(reader))
                 {

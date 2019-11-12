@@ -7,7 +7,7 @@ import HttpDelegate from "@/services/httpDelegate";
 
 @injectable()
 export class RestConfigService implements IConfigService {
-  private readonly CONFIG_BASE_URI: string = "api/configuration";
+  private readonly CONFIG_BASE_URI: string = "v1/api/configuration";
   private http!: HttpDelegate;
 
   public initialize(http: HttpDelegate): void {

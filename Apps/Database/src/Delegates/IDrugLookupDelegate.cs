@@ -31,27 +31,6 @@ namespace HealthGateway.Database.Delegates
         List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers);
 
         /// <summary>
-        /// Retrieves Form(s) that match a the drug product id.
-        /// </summary>
-        /// <param name="drugProductId">The id of the drug product.</param>
-        /// <returns>A request results with the outcome of the lookup.</returns>
-        List<Form> GetFormByDrugProductId(System.Guid drugProductId);
-
-        /// <summary>
-        /// Retrieves Active ingredient(s) that match a the drug product id.
-        /// </summary>
-        /// <param name="drugProductId">The id of the drug product.</param>
-        /// <returns>A request results with the outcome of the lookup.</returns>
-        List<ActiveIngredient> GetActiveIngredientByDrugProductId(System.Guid drugProductId);
-
-        /// <summary>
-        /// Retrieves Company(s) that match a the drug product id.
-        /// </summary>
-        /// <param name="drugProductId">The id of the drug product.</param>
-        /// <returns>A request results with the outcome of the lookup.</returns>
-        List<Company> GetCompanyByDrugProductId(System.Guid drugProductId);
-
-        /// <summary>
         /// Retrieves PharmaCareDrug(s) that match a the drug identifier numbers (DINs) or provincial identifier numbers (PINs).
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>

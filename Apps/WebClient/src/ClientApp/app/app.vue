@@ -1,21 +1,40 @@
 <style>
-.container,
-.container-fluid {
+html {
+  height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+
+#app-root {
   min-height: 100vh;
 }
 </style>
 
 <template>
-  <div id="app-root" class="fill-body">
+  <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
+    <div v-if="!isProduction" exclude="Production">
+      <div class="text-center bg-warning small">
+        Non-production environment:
+        <b>{{ host }}</b>
+      </div>
+    </div>
     <header>
       <NavHeader />
     </header>
-    <main>
-      <InfoPage/>
-      <!-- <router-view></router-view> -->
+    <main class="col">
+      <router-view></router-view>
     </main>
-    <NavFooter />
-    <IdleComponent ref="idleModal" />
+    <footer class="footer">
+      <NavFooter />
+    </footer>
   </div>
 </template>
 

@@ -9,7 +9,9 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
     "^.+\\.vue$": "vue-jest",
     ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$":
-      "jest-transform-stub"
+      "jest-transform-stub",
+    "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$":
+      "<rootDir>/test/mocks/mediaFileTransformer.js"
   },
   moduleNameMapper: {
     "@/(.*)$": "<rootDir>/app/$1",

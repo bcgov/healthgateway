@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\src\Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseTests", "Database\test\unit\DatabaseTests.csproj", "{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire", "Hangfire\src\Hangfire.csproj", "{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +225,18 @@ Global
 		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x64.Build.0 = Release|Any CPU
 		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x86.ActiveCfg = Release|Any CPU
 		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}.Release|x86.Build.0 = Release|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Debug|x64.Build.0 = Debug|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Debug|x86.Build.0 = Debug|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Release|x64.ActiveCfg = Release|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Release|x64.Build.0 = Release|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Release|x86.ActiveCfg = Release|Any CPU
+		{4D309EB8-A1B1-4C62-B12C-41F77FC9FE74}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

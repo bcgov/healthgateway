@@ -1,5 +1,5 @@
 ﻿<style lang="scss" scoped>
-@import "../../assets/scss/_variables.scss";
+@import "@/assets/scss/_variables.scss";
 .text-large {
   font-size: 250%;
 }
@@ -36,21 +36,20 @@
         <form ref="form" @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col cols="8">
-              <b-form-group
-                :state="state"
-                label="Protective Word"
-                class="font-weight-bold pt-2"
-                label-for="protectiveWord-input"
-                invalid-feedback="Protective word is required"
-              >
-              </b-form-group>
+              <label for="protectiveWord-input">Protective Word </label>
               <b-form-input
                 id="protectiveWord-input"
                 v-model="protectiveWord"
                 type="password"
-                :state="state"
                 required
               />
+            </b-col>
+          </b-row>
+          <b-row v-if="error">
+            <b-col>
+              <span class="text-danger"
+                >Invalid protective word. Try again.</span
+              >
             </b-col>
           </b-row>
         </form>
@@ -61,7 +60,12 @@
         <b-col>
           <b-row>
             <b-col>
-              <b-button size="lg" variant="primary" @click="ok()">
+              <b-button
+                size="lg"
+                variant="primary"
+                :disabled="!protectiveWord"
+                @click="ok()"
+              >
                 Continue
               </b-button>
             </b-col>
@@ -94,13 +98,13 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Ref, Emit, Component } from "vue-property-decorator";
+import { Ref, Emit, Prop, Component } from "vue-property-decorator";
 
 @Component
 export default class ProtectiveWordComponent extends Vue {
   @Ref("protectiveWord-modal") readonly modal!: HTMLElement;
   @Ref("form") readonly form!: HTMLElement;
-  private state!: string = "";
+  @Prop() error!: boolean;
   private protectiveWord!: string = "";
 
   @Emit()
@@ -120,13 +124,6 @@ export default class ProtectiveWordComponent extends Vue {
 
   private reset() {
     this.protectiveWord = "";
-    this.state = "";
-  }
-
-  private checkFormValidity() {
-    const valid = this.form.checkValidity();
-    this.state = valid ? "valid" : "invalid";
-    return valid;
   }
 
   private handleOk(bvModalEvt) {
@@ -138,10 +135,6 @@ export default class ProtectiveWordComponent extends Vue {
   }
 
   private handleSubmit() {
-    if (!this.checkFormValidity()) {
-      return;
-    }
-
     this.submit();
 
     // Hide the modal manually

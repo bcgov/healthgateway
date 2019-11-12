@@ -32,10 +32,13 @@ namespace HealthGateway.DrugMaintainer
         {
             IHost host = CreateWebHostBuilder(args).Build();
             FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
-            fedDrugApp.Process();
-
+            fedDrugApp.Process("FedApprovedDatabase");
+            fedDrugApp.Process("FedMarketedDatabase");
+            fedDrugApp.Process("FedCancelledDatabase");
+            fedDrugApp.Process("FedDormantDatabase");
+            
             BCPProvDrugDBApp bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
-            bcDrugApp.Process();
+            bcDrugApp.Process("PharmaCareDrugFile");
         }
 
         public static IHostBuilder CreateWebHostBuilder(string[] args)
@@ -55,6 +58,9 @@ namespace HealthGateway.DrugMaintainer
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
                            services.AddDbContextPool<AuditDbContext>(options =>
+                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
+
+                           services.AddDbContextPool<WebClientDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
                            // Add HTTP Client

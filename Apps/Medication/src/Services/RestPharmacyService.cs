@@ -37,26 +37,37 @@ namespace HealthGateway.Medication.Services
         private readonly IHNClientDelegate hnClientDelegate;
 
         /// <summary>
+        /// The patient delegate used to retrieve Personal Health Number for subject.
+        /// </summary>
+        private readonly IPatientDelegate patientDelegate;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
         /// </summary>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
-        public RestPharmacyService(IHttpContextAccessor httpAccessor, IHNClientDelegate hnClientDelegate)
+        /// <param name="patientService">The injected patientService patient registry provider.</param>
+        public RestPharmacyService(
+            IHttpContextAccessor httpAccessor,
+            IHNClientDelegate hnClientDelegate,
+            IPatientDelegate patientService)
         {
             this.httpContextAccessor = httpAccessor;
             this.hnClientDelegate = hnClientDelegate;
+            this.patientDelegate = patientService;
         }
 
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId)
         {
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            // string userId = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
-            string userId = "USER_ID";
+            string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
+            string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await this.hnClientDelegate.GetPharmacyAsync(pharmacyId, userId, ipv4Address).ConfigureAwait(true);
+            return await this.hnClientDelegate.GetPharmacyAsync(pharmacyId, phn, ipv4Address).ConfigureAwait(true);
         }
     }
 }

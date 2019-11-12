@@ -88,9 +88,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks();
 
             services
-                .AddMvc(options => {
-                    options.Filters.Add(typeof(AuditFilter));
-                })
+                .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
@@ -176,6 +174,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.logger.LogDebug("ConfigureAuditServices...");
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
+            services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
             services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
@@ -232,6 +231,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.KnownProxies.Add(IPAddress.Parse(ip));
                 }
+
                 app.UseForwardedHeaders(options);
             }
         }
@@ -346,9 +346,14 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Handles authentication failures.
         /// </summary>
         /// <param name="context">The authentication failed context.</param>
+        /// <param name="auditLogger">The audit logger provider.</param>
         /// <returns>An async task.</returns>
         private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+            this.logger.LogDebug("OnAuthenticationFailed...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventId = Guid.NewGuid();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;

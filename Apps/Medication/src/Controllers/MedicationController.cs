@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
@@ -51,12 +52,13 @@ namespace HealthGateway.Medication.Controllers
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
         public RequestResult<MedicationResult> GetMedication(string drugIdentifier)
         {
+            Contract.Requires(drugIdentifier != null);
+
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
@@ -78,7 +80,6 @@ namespace HealthGateway.Medication.Controllers
         /// <returns>The medication statement records.</returns>
         /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">The client is not authorized to retrieve the record.</response>
         [HttpGet("")]
         [Produces("application/json")]
         public RequestResult<Dictionary<string, MedicationResult>> GetMedications([FromQuery]List<string> drugIdentifiers)

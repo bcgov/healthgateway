@@ -17,9 +17,11 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
@@ -40,25 +42,11 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers)
         {
-            return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber)).ToList();
-        }
-
-        /// <inheritdoc/>
-        public List<Form> GetFormByDrugProductId(System.Guid drugProductId)
-        {
-            return this.dbContext.Form.Where(c => c.DrugProductId == drugProductId).ToList();
-        }
-
-        /// <inheritdoc/>
-        public List<ActiveIngredient> GetActiveIngredientByDrugProductId(System.Guid drugProductId)
-        {
-            return this.dbContext.ActiveIngredient.Where(c => c.DrugProductId == drugProductId).ToList();
-        }
-
-        /// <inheritdoc/>
-        public List<Company> GetCompanyByDrugProductId(System.Guid drugProductId)
-        {
-            return this.dbContext.Company.Where(c => c.DrugProductId == drugProductId).ToList();
+            return this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber))
+                                        .Include(c => c.Company)
+                                        .Include(a => a.ActiveIngredient)
+                                        .Include(f => f.Form)
+                        .ToList();
         }
 
         /// <inheritdoc/>
@@ -74,8 +62,10 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
         {
+            Contract.Requires(drugIdentifiers != null);
+
             // Retrieve the brand names using the provincial data
-            List<PharmaCareDrug> pharmaCareDrugs = GetPharmaCareDrugsByDIN(drugIdentifiers);
+            List<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDIN(drugIdentifiers);
             Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(pcd => pcd.DINPIN, pcd => pcd.BrandName);
 
             if (drugIdentifiers.Count > provicialBrandNames.Count())
@@ -84,7 +74,7 @@ namespace HealthGateway.Database.Delegates
                 List<string> notFoundDins = drugIdentifiers.Where(din => !provicialBrandNames.Keys.Contains(din)).ToList();
 
                 // Retrieve the brand names using the federal data
-                List<DrugProduct> drugProducts = GetDrugProductsByDIN(notFoundDins);
+                List<DrugProduct> drugProducts = this.GetDrugProductsByDIN(notFoundDins);
                 Dictionary<string, string> federalBrandNames = drugProducts.ToDictionary(dp => dp.DrugIdentificationNumber, dp => dp.BrandName);
 
                 // Merge both data sets

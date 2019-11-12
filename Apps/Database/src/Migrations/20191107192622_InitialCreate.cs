@@ -1,4 +1,20 @@
-﻿using System;
+﻿//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
+#pragma warning disable SA1118, SA1200, SA1205, SA1413, SA1600, SA1601, CA1062, CS1591, CA1812, CA1814
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HealthGateway.Database.Migrations
@@ -22,6 +38,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -38,6 +55,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     ScheduleDesc = table.Column<string>(maxLength: 40, nullable: true),
                     ScheduleDescFrench = table.Column<string>(maxLength: 80, nullable: true),
                     DrugProductId = table.Column<Guid>(nullable: false)
@@ -56,6 +74,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     Name = table.Column<string>(maxLength: 35, nullable: false),
                     Hash = table.Column<string>(maxLength: 44, nullable: false),
                     ProgramTypeCodeId = table.Column<int>(nullable: false)
@@ -80,6 +99,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     DrugCode = table.Column<string>(maxLength: 8, nullable: false),
                     ProductCategorization = table.Column<string>(maxLength: 80, nullable: true),
                     DrugClass = table.Column<string>(maxLength: 40, nullable: true),
@@ -116,6 +136,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     DINPIN = table.Column<string>(maxLength: 8, nullable: false),
                     Plan = table.Column<string>(maxLength: 2, nullable: true),
                     EffectiveDate = table.Column<DateTime>(type: "Date", nullable: false),
@@ -162,6 +183,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     ActiveIngredientCode = table.Column<int>(nullable: false),
                     Ingredient = table.Column<string>(maxLength: 240, nullable: true),
                     IngredientFrench = table.Column<string>(maxLength: 400, nullable: true),
@@ -198,6 +220,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     ManufacturerCode = table.Column<string>(maxLength: 5, nullable: true),
                     CompanyCode = table.Column<int>(nullable: false),
                     CompanyName = table.Column<string>(maxLength: 80, nullable: true),
@@ -237,6 +260,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     PharmaceuticalFormCode = table.Column<int>(nullable: false),
                     PharmaceuticalForm = table.Column<string>(maxLength: 40, nullable: true),
                     PharmaceuticalFormFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -262,6 +286,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     UPC = table.Column<string>(maxLength: 12, nullable: true),
                     PackageType = table.Column<string>(maxLength: 40, nullable: true),
                     PackageTypeFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -291,6 +316,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     PharmaceuticalStdDesc = table.Column<string>(nullable: true),
                     DrugProductId = table.Column<Guid>(nullable: false)
                 },
@@ -314,6 +340,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     AdministrationCode = table.Column<int>(nullable: false),
                     Administration = table.Column<string>(maxLength: 40, nullable: true),
                     AdministrationFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -339,6 +366,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     CurrentStatusFlag = table.Column<string>(maxLength: 1, nullable: true),
                     StatusDesc = table.Column<string>(maxLength: 40, nullable: true),
                     StatusDescFrench = table.Column<string>(maxLength: 80, nullable: true),
@@ -367,6 +395,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     AtcNumber = table.Column<string>(maxLength: 8, nullable: true),
                     Atc = table.Column<string>(maxLength: 120, nullable: true),
                     AtcFrench = table.Column<string>(maxLength: 240, nullable: true),
@@ -395,6 +424,7 @@ namespace HealthGateway.Database.Migrations
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
                     Species = table.Column<string>(maxLength: 80, nullable: true),
                     SpeciesFrench = table.Column<string>(maxLength: 160, nullable: true),
                     SubSpecies = table.Column<string>(maxLength: 80, nullable: true),
@@ -414,11 +444,27 @@ namespace HealthGateway.Database.Migrations
             migrationBuilder.InsertData(
                 table: "ProgramTypeCode",
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[,]
-                {
-                    { 100, "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050), "Federal", "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050) },
-                    { 200, "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050), "Provincial", "System", new DateTime(2019, 11, 2, 4, 19, 27, 340, DateTimeKind.Utc).AddTicks(5050) }
-                });
+                values: new object[] { 105, "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "FederalApproved", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "ProgramTypeCode",
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { 110, "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "FederalMarketed", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "ProgramTypeCode",
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { 115, "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "FederalCancelled", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "ProgramTypeCode",
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { 120, "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "FederalDormant", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "ProgramTypeCode",
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Name", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { 200, "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveIngredient_DrugProductId",

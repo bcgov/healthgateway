@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Test.Services
     using Microsoft.Extensions.Logging;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
+
     public class ConfigurationServiceTest
     {
         private IConfiguration config;

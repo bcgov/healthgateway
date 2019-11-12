@@ -800,6 +800,18 @@
       ],
       "value": ""
     }, {
+      "id": "27788aac-9ff8-431d-8b0a-26656fa3627a",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=h2", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/h2", "xpath:idRelative"],
+        ["xpath=//h2", "xpath:position"],
+        ["xpath=//h2[contains(.,'PHN: 9735353315')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
       "id": "7f492a60-1b0d-4ee2-9f3f-d9affd694f3c",
       "comment": "",
       "command": "assertTitle",
@@ -822,9 +834,14 @@
       "id": "8a721487-5b1c-4a05-9c24-3562f8cfe5ea",
       "comment": "",
       "command": "verifyElementPresent",
-      "target": "xpath=//*[starts-with(., 'PHN') and string-length() = 15]",
-      "targets": [],
-      "value": ""
+      "target": "css=h2",
+      "targets": [
+        ["css=h2", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/h2", "xpath:idRelative"],
+        ["xpath=//h2", "xpath:position"],
+        ["xpath=//h2[contains(.,'PHN: 9735353315')]", "xpath:innerText"]
+      ],
+      "value": "PHN: 9735353315"
     }]
   }, {
     "id": "31429eb6-c2c4-4282-8512-9f77cc9488c2",
@@ -965,7 +982,7 @@
       "id": "d9da2318-7e9f-463f-b238-cb2a0e8461ba",
       "comment": "",
       "command": "waitForElementNotVisible",
-      "target": "css=#menuBtndUser__BV_button_ > span",
+      "target": "css=.vld-icon > svg",
       "targets": [
         ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
         ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
@@ -1061,81 +1078,99 @@
       "id": "fcacfb86-1967-490b-9e1e-a14ff42fd62f",
       "comment": "",
       "command": "waitForElementPresent",
-      "target": "css=.row:nth-child(1) > .col .date",
+      "target": "css=#entryDetails-0-1548835200000 .ml-5",
       "targets": [
-        ["css=.row:nth-child(1) > .col .date", "css:finder"],
-        ["xpath=//div[@id='timeline']/div/div/div/div/div", "xpath:idRelative"],
-        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+        ["css=#entryDetails-0-1548835200000 .ml-5", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div/span", "xpath:idRelative"],
+        ["xpath=//div/div/div/span", "xpath:position"]
       ],
       "value": "30000"
     }, {
       "id": "1d9a9e74-d6ba-433a-afcd-9e6565424627",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(1) > .col .date",
+      "target": "css=.row:nth-child(1) .date",
       "targets": [
-        ["css=.row:nth-child(1) > .col .date", "css:finder"],
-        ["xpath=//div[@id='timeline']/div/div/div/div/div", "xpath:idRelative"],
-        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
       ],
       "value": "Jan 30, 2019"
     }, {
       "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(1) .row:nth-child(2) .entryTitle",
+      "target": "css=.row:nth-child(1) > .row:nth-child(3) .entryTitle",
       "targets": [
-        ["css=.row:nth-child(1) .row:nth-child(2) .entryTitle", "css:finder"],
-        ["xpath=//div[@id='timeline']/div/div/div[2]/div/div/div/div[2]", "xpath:idRelative"],
-        ["xpath=//div[2]/div/div/div/div[2]", "xpath:position"]
+        ["css=.row:nth-child(1) > .row:nth-child(3) .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]", "xpath:position"]
       ],
-      "value": "Test Brand Name"
+      "value": "Biaxin Bid"
     }, {
       "id": "b55dca54-e78b-48a7-ab44-8244c0544310",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(1) .row:nth-child(2) > .row .row .row:nth-child(1) > .col",
+      "target": "css=.row:nth-child(1) > .row:nth-child(3) .row .row:nth-child(1) > .col",
       "targets": [
-        ["css=.row:nth-child(1) .row:nth-child(2) > .row .row .row:nth-child(1) > .col", "css:finder"],
-        ["xpath=//div[@id='timeline']/div/div/div[2]/div/div/div[2]/div[2]/div/div", "xpath:idRelative"],
-        ["xpath=//div[2]/div[2]/div/div", "xpath:position"]
+        ["css=.row:nth-child(1) > .row:nth-child(3) .row .row:nth-child(1) > .col", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "CLARITHROMYCIN"
+      "value": "CLARITHROMYCIN BGP PHARMA ULC 500 MG TABLET"
     }, {
       "id": "e9d35420-6d19-4bab-a6fc-5c57ad0f7886",
       "comment": "",
       "command": "click",
-      "target": "css=.row:nth-child(1) .row:nth-child(2) > .row:nth-child(1) .btn:nth-child(1)",
+      "target": "css=.row:nth-child(1) > .row:nth-child(3) .btn",
       "targets": [
-        ["css=.row:nth-child(1) .row:nth-child(2) > .row:nth-child(1) .btn:nth-child(1)", "css:finder"],
+        ["css=.row:nth-child(1) > .row:nth-child(3) .btn", "css:finder"],
         ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
-        ["xpath=//div[@id='timeline']/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/div[2]/div[2]/div[2]/div/button", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div/button", "xpath:position"],
         ["xpath=//button[contains(.,' View Details')]", "xpath:innerText"]
       ],
       "value": ""
     }, {
+      "id": "dce2f99f-e1bb-4eda-825d-e3540f640eed",
+      "comment": "",
+      "command": "//waitForElementNotPresent",
+      "target": "css=.row:nth-child(2) > .row:nth-child(3) .when-opened:nth-child(1) path:nth-child(1)",
+      "targets": [],
+      "value": "30000"
+    }, {
       "id": "91d14cea-7271-4b8d-8556-aefbf561ab56",
       "comment": "",
       "command": "assertText",
-      "target": "css=#entryDetails-0-1548835200000 div:nth-child(2)",
+      "target": "css=#entryDetails-0-1548835200000 .detailSection:nth-child(1) > div:nth-child(2)",
       "targets": [
-        ["css=#entryDetails-0-1548835200000 div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[2]", "xpath:idRelative"],
-        ["xpath=//div[2]/div[2]/div/div/div/div[2]", "xpath:position"]
+        ["css=#entryDetails-0-1548835200000 .detailSection:nth-child(1) > div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div[2]/div/div/div/div/div[2]", "xpath:position"]
       ],
-      "value": "Prescription Number: 5790"
+      "value": "Prescription #: 5790"
     }, {
       "id": "3cd87878-95b3-4b1a-9b9f-4aeb9e807027",
       "comment": "",
       "command": "assertText",
-      "target": "css=#entryDetails-0-1548835200000 div:nth-child(6)",
+      "target": "css=#entryDetails-0-1548835200000 .detailSection:nth-child(2) > div:nth-child(4)",
       "targets": [
-        ["css=#entryDetails-0-1548835200000 div:nth-child(6)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[6]", "xpath:idRelative"],
-        ["xpath=//div/div[6]", "xpath:position"]
+        ["css=#entryDetails-0-1548835200000 .detailSection:nth-child(2) > div:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[2]/div[4]", "xpath:idRelative"],
+        ["xpath=//div[2]/div[4]", "xpath:position"]
       ],
       "value": "Manufacturer: BGP PHARMA ULC"
+    }, {
+      "id": "56b738b4-54ea-4811-ab29-fe2f86a4ec13",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#entryDetails-0-1548835200000 .detailSection:nth-child(4) > div:nth-child(2)",
+      "targets": [
+        ["css=#entryDetails-0-1548835200000 .detailSection:nth-child(4) > div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[4]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[4]/div[2]", "xpath:position"]
+      ],
+      "value": "ERX QA PHARMACY"
     }]
   }, {
     "id": "bef7c50b-f000-428e-a6d5-d074a4f2770f",
