@@ -134,8 +134,7 @@ $radius: 15px;
                     <div>
                       {{ entry.pharmacy.address }}
                     </div>
-                    <div>
-                      {{ entry.pharmacy.phoneType }}
+                    <div v-if="entry.pharmacy.phoneType != 'F'">
                       {{ formatPhoneNumber(entry.pharmacy.phoneNumber) }}
                     </div>
                   </div>
