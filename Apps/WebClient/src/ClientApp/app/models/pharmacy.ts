@@ -1,3 +1,8 @@
+export enum PhoneType {
+    Fax = 'F',
+    Normal = 'N'
+}
+
 // Pharmacy model
 export default class Pharmacy {
   // Pharmacy id.
@@ -16,6 +21,8 @@ export default class Pharmacy {
   public postalCode?: string;
   // Country code.
   public countryCode?: string;
+  // Phone type.
+  public phoneType?: PhoneType;
   // Phone number.
   public phoneNumber?: string;
 }
