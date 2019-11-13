@@ -1,0 +1,43 @@
+version: '3.5'
+services:
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak
+    ports:
+     - '8080:8080'
+    env_file:
+      - ./keycloak.env
+    environment:
+     - TAG=1 #Placeholder to keep environment section
+    depends_on:
+      - postgres
+    networks:
+      - web
+      - db
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - '5433:5432'
+    env_file:
+      - ./postgres.env
+    environment:
+      - TAG=1 #Placeholder to keep environment section
+    restart: unless-stopped
+    networks:
+      - db
+    volumes:
+      - ./backups:/backups
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+   pgdata:
+     name: keycloak
+
+networks:
+   web:
+     name: web
+   db:
+     name: db
