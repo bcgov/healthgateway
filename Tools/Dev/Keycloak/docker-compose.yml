@@ -13,31 +13,27 @@ services:
       - postgres
     networks:
       - web
-      - db
+      - keycloakdb
     restart: unless-stopped
 
   postgres:
     container_name: postgres
     image: postgres:latest
     ports:
-      - '5433:5432'
+      - '5433:5432' #Expose keycloak ports to the workstation
     env_file:
       - ./postgres.env
     environment:
       - TAG=1 #Placeholder to keep environment section
     restart: unless-stopped
     networks:
-      - db
+      - keycloakdb
     volumes:
       - ./backups:/backups
       - pgdata:/var/lib/postgresql/data
-
-volumes:
-   pgdata:
-     name: keycloak
 
 networks:
    web:
      name: web
    db:
-     name: db
+     name: keycloakdb
