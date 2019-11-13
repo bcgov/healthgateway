@@ -78,35 +78,36 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   console.log(to.path);
-  if (!to.meta.requiresAuth && !to.meta.requiresRegistration) {
-    // Route does not have any special authorization requirements
+  if (to.meta.requiresAuth || to.meta.requiresRegistration) {
+    store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
+      if (!hasAccess) {
+        next({ path: "/login", query: { redirect: to.path } });
+      } else {
+        let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
+        // If the user is registerd and is attempting to go to registration re-route
+        if (userIsRegistered && to.path === "/registration") {
+          next({ path: "/timeline" });
+        } else if (to.meta.requiresRegistration && !userIsRegistered) {
+          next({ path: "/unauthorized" });
+        } else {
+          /*if (to.meta.roles) {
+                          /*if (security.roles(to.meta.roles[0])) {
+                              next()
+                          }
+                          else {
+                              next({ name: 'unauthorized' })
+                          }
+                      }
+                      else {
+                          next()
+                      } */
+          next();
+        }
+      }
+    });
+  } else {
     next();
-    return;
   }
-
-  store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
-    if (!hasAccess) {
-      // If the user is not authenticated re-route to login
-      next({ path: "/login", query: { redirect: to.path } });
-      return;
-    }
-    let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
-    if (
-      userIsRegistered &&
-      (to.path === "/registration" || to.path === "/registrationInfo")
-    ) {
-      // If the user is registerd and is attempting to go to registration re-route to timeline
-      next({ path: "/timeline" });
-      return;
-    }
-
-    if (to.meta.requiresRegistration && !userIsRegistered) {
-      next({ path: "/unauthorized" });
-      return;
-    }
-
-    next();
-  });
 });
 
 export default router;
