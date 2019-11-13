@@ -10,14 +10,14 @@ services:
     environment:
      - TAG=1 #Placeholder to keep environment section
     depends_on:
-      - postgres
+      - keycloakdb
     networks:
       - web
       - keycloakdb
     restart: unless-stopped
 
-  postgres:
-    container_name: postgres
+  keycloakdb:
+    container_name: keycloakdb
     image: postgres:latest
     ports:
       - '5433:5432' #Expose keycloak ports to the workstation
@@ -30,10 +30,10 @@ services:
       - keycloakdb
     volumes:
       - ./backups:/backups
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
 
 networks:
    web:
      name: web
-   db:
+   keycloakdb:
      name: keycloakdb
