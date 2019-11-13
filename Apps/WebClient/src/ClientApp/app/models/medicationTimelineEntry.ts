@@ -69,7 +69,6 @@ class MedicationViewModel {
 
   public populateFromModel(model: MedicationResult): void {
     //console.log(model);
-    this.isPin = !model.federalData;
     if (model.federalData) {
       let federalModel = model.federalData;
 
@@ -91,6 +90,7 @@ class MedicationViewModel {
         : "";
     } else if (model.provincialData) {
       let provincialModel = model.provincialData;
+      this.isPin = true;
       this.form = provincialModel.pharmaCareDrug
         ? provincialModel.pharmaCareDrug.dosageForm
         : "";

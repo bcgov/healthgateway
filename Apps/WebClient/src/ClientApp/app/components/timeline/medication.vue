@@ -134,7 +134,7 @@ $radius: 15px;
                     <div>
                       {{ entry.pharmacy.address }}
                     </div>
-                    <div v-if="entry.pharmacy.phoneType != 'F'">
+                    <div v-if="entry.pharmacy.phoneType != taxPhoneType">
                       {{ formatPhoneNumber(entry.pharmacy.phoneNumber) }}
                     </div>
                   </div>
@@ -156,6 +156,7 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
+import { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
@@ -167,7 +168,7 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
-
+  private taxPhoneType: PhoneType = PhoneType.Fax;
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
 
