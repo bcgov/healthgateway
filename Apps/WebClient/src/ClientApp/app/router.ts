@@ -12,6 +12,7 @@ import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
+import RegistrationInfoComponent from "@/views/registrationInfo.vue";
 import TimelineComponent from "@/views/timeline.vue";
 
 Vue.use(VueRouter);
@@ -21,6 +22,11 @@ const routes = [
     path: "/",
     component: LandingComponent,
     meta: { requiresAuth: false }
+  },
+  {
+    path: "/registrationInfo",
+    component: RegistrationInfoComponent,
+    meta: { requiresAuth: true }
   },
   {
     path: "/registration",
@@ -85,16 +91,16 @@ router.beforeEach(async (to, from, next) => {
           next({ path: "/unauthorized" });
         } else {
           /*if (to.meta.roles) {
-                /*if (security.roles(to.meta.roles[0])) {
-                    next()
-                }
-                else {
-                    next({ name: 'unauthorized' })
-                }
-            }
-            else {
-                next()
-            } */
+                          /*if (security.roles(to.meta.roles[0])) {
+                              next()
+                          }
+                          else {
+                              next({ name: 'unauthorized' })
+                          }
+                      }
+                      else {
+                          next()
+                      } */
           next();
         }
       }
