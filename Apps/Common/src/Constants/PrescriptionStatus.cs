@@ -26,8 +26,18 @@ namespace HealthGateway.Common.Constants
         public const char Filled = 'F';
 
         /// <summary>
-        /// The status code for Dispensed prescriptions.
+        /// The status code for Discontinued prescriptions.
         /// </summary>
-        public const char Dispensed = 'D';
+        public const char Discontinued = 'D';
+
+        /// <summary>
+        /// The status code for refused to fill.
+        /// </summary>
+        public const char NotDispensed = 'N';
+
+        /// <summary>
+        /// Teh status code for reversed prescriptions.
+        /// </summary>
+        public const char Reversed = 'R';
     }
 }

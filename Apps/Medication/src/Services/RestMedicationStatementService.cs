@@ -77,8 +77,8 @@ namespace HealthGateway.Medication.Services
             {
                 // Filter the results to return only Dispensed or Filled prescriptions.
                 hnClientMedicationResult.Message = hnClientMedicationResult.Message
-                    .Where(rx => rx.PrescriptionStatus == PrescriptionStatus.Dispensed ||
-                                 rx.PrescriptionStatus == PrescriptionStatus.Filled)
+                    .Where(rx => rx.PrescriptionStatus == PrescriptionStatus.Filled ||
+                                 rx.PrescriptionStatus == PrescriptionStatus.Discontinued)
                     .ToList<MedicationStatement>();
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
