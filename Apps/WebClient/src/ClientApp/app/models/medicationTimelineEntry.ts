@@ -8,7 +8,7 @@ import MedicationResult from "./medicationResult";
 export default class MedicationTimelineEntry extends TimelineEntry {
   public pharmacy: PharmacyViewModel;
   public medication: MedicationViewModel;
-
+  public directions: string;
   public practitionerSurname: string;
   public prescriptionIdentifier: string;
 
@@ -17,12 +17,9 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     this.pharmacy = new PharmacyViewModel(model.pharmacyId);
     this.medication = new MedicationViewModel(model.medicationSumary);
 
-    this.practitionerSurname = model.practitionerSurname
-      ? model.practitionerSurname
-      : "N/A";
-    this.prescriptionIdentifier = model.prescriptionIdentifier
-      ? model.prescriptionIdentifier
-      : "N/A";
+    this.practitionerSurname = model.practitionerSurname || "N/A";
+    this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
+    this.directions = model.directions || "N/A";
   }
 }
 
@@ -30,6 +27,7 @@ class PharmacyViewModel {
   public id: string;
   public name?: string;
   public address?: string;
+  public phoneType?: string;
   public phoneNumber?: string;
 
   constructor(id: string | undefined) {
@@ -38,6 +36,7 @@ class PharmacyViewModel {
 
   public populateFromModel(model: Pharmacy): void {
     this.name = model.name;
+    this.phoneType = model.phoneType;
     this.phoneNumber = model.phoneNumber;
 
     this.address =
@@ -60,6 +59,7 @@ class MedicationViewModel {
   public strength?: string;
   public strengthUnit?: string;
   public manufacturer?: string;
+  public isPin!: boolean;
   constructor(model: MedicationSumary) {
     this.din = model.din ? model.din : "";
     this.brandName = model.brandName;
@@ -69,6 +69,7 @@ class MedicationViewModel {
 
   public populateFromModel(model: MedicationResult): void {
     //console.log(model);
+    this.isPin = !model.federalData;
     if (model.federalData) {
       let federalModel = model.federalData;
 

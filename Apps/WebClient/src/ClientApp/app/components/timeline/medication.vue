@@ -115,8 +115,14 @@ $radius: 15px;
                     </div>
                   </div>
                   <div class="detailSection">
-                    <strong>DIN/PIN:</strong>
+                    <strong
+                      >{{ entry.medication.isPin ? "PIN" : "DIN" }}:</strong
+                    >
                     {{ entry.medication.din }}
+                  </div>
+                  <div class="detailSection">
+                    <strong>Directions:</strong>
+                    {{ entry.directions }}
                   </div>
                   <div class="detailSection">
                     <div>
@@ -129,6 +135,7 @@ $radius: 15px;
                       {{ entry.pharmacy.address }}
                     </div>
                     <div>
+                      {{ entry.pharmacy.phoneType }}
                       {{ formatPhoneNumber(entry.pharmacy.phoneNumber) }}
                     </div>
                   </div>

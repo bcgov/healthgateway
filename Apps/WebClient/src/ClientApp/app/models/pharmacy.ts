@@ -16,6 +16,8 @@ export default class Pharmacy {
   public postalCode?: string;
   // Country code.
   public countryCode?: string;
+  // Phone type.
+  public phoneType?: string;
   // Phone number.
   public phoneNumber?: string;
 }
