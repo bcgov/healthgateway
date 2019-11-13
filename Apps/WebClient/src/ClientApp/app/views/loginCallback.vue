@@ -22,7 +22,7 @@ export default class LoginCallbackComponent extends Vue {
         if (this.userIsRegistered) {
           this.$router.push({ path: redirectPath });
         } else {
-          this.$router.push({ path: "/registration" });
+          this.$router.push({ path: "/registrationInfo" });
         }
         console.log(redirectPath);
         console.log("here");

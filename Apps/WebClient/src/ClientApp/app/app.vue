@@ -31,7 +31,6 @@ main {
     </header>
     <main class="col">
       <router-view></router-view>
-      
     </main>
     <footer class="footer">
       <NavFooter />
@@ -48,10 +47,8 @@ import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import Process, { EnvironmentType } from "@/constants/process.ts";
 
-
 @Component({
   components: {
-   
     NavHeader: HeaderComponent,
     NavFooter: FooterComponent,
     IdleComponent

@@ -16,6 +16,10 @@
       "webpack-env",
       "jest"
     ],
+    "typeRoots": [
+      "node_modules/@types",
+      "app/@types"
+    ],
     "emitDecoratorMetadata": true,
     "paths": {
       "@/*": [
