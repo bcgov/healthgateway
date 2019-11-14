@@ -121,10 +121,6 @@ $radius: 15px;
                     {{ entry.medication.din }}
                   </div>
                   <div class="detailSection">
-                    <strong>Directions:</strong>
-                    {{ entry.directions }}
-                  </div>
-                  <div class="detailSection">
                     <div>
                       <strong>Filled At:</strong>
                     </div>
@@ -136,6 +132,14 @@ $radius: 15px;
                     </div>
                     <div v-if="entry.pharmacy.phoneType != faxPhoneType">
                       {{ formatPhoneNumber(entry.pharmacy.phoneNumber) }}
+                    </div>
+                    <div class="detailSection border border-dark p-2 small">
+                      <div>
+                        <strong>Directions for Use:</strong>
+                      </div>
+                      <div class="pt-2">
+                        {{ entry.directions }}
+                      </div>
                     </div>
                   </div>
                 </div>
