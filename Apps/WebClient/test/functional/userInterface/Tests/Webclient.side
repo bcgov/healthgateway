@@ -9,6 +9,13 @@
     "commands": [{
       "id": "89692e23-4ba5-4861-9b13-5221e1e45a12",
       "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "72d5d32d-0298-4f80-9b97-0750aef5f3cf",
+      "comment": "",
       "command": "open",
       "target": "/",
       "targets": [],
@@ -355,73 +362,8 @@
     "commands": [{
       "id": "4d0978e4-80d3-4393-8b09-583a4d790df6",
       "comment": "",
-      "command": "open",
-      "target": "/",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "9882aace-327f-4f03-b6af-bd5ae8b35089",
-      "comment": "",
-      "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
-      "targets": [],
-      "value": "loggedin"
-    }, {
-      "id": "9fa37743-8ada-4d97-9b9c-8344377c2d94",
-      "comment": "",
-      "command": "if",
-      "target": "${loggedin} > 0",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "ab3345cb-b18b-4317-9ec8-6aecb6a9cdcc",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtndUser__BV_button_",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "1c55c4e9-bdfd-49fc-b134-53169c93c12a",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "1e4b4780-a355-4f48-92be-4e1059ebc044",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=strong",
-      "targets": [
-        ["css=strong", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
-        ["xpath=//strong", "xpath:position"],
-        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
-      ],
-      "value": "You signed out of your account"
-    }, {
-      "id": "c29466ea-0904-47c2-826a-115bb68b95a0",
-      "comment": "",
-      "command": "end",
-      "target": "",
+      "command": "run",
+      "target": "Logout",
       "targets": [],
       "value": ""
     }, {
