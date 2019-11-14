@@ -12,6 +12,7 @@ import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
+import RegistrationInfoComponent from "@/views/registrationInfo.vue";
 import TimelineComponent from "@/views/timeline.vue";
 import User from "./models/user";
 
@@ -22,6 +23,11 @@ const routes = [
     path: "/",
     component: LandingComponent,
     meta: { requiresAuth: false }
+  },
+  {
+    path: "/registrationInfo",
+    component: RegistrationInfoComponent,
+    meta: { requiresAuth: true }
   },
   {
     path: "/registration",

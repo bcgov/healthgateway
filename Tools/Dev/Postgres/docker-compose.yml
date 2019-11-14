@@ -9,5 +9,5 @@ services:
       - ./postgres.env
     restart: unless-stopped
     volumes:
-      - ${PWD}/backups:/backups
-      - ${PWD}/pgdata:/var/lib/postgresql/data
+      - ./backups:/backups
+      - ./pgdata:/var/lib/postgresql/data
