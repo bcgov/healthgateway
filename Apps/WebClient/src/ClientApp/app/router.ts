@@ -14,7 +14,6 @@ import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
 import RegistrationInfoComponent from "@/views/registrationInfo.vue";
 import TimelineComponent from "@/views/timeline.vue";
-import User from "./models/user";
 
 Vue.use(VueRouter);
 
@@ -84,20 +83,27 @@ router.beforeEach(async (to, from, next) => {
       if (!hasAccess) {
         next({ path: "/login", query: { redirect: to.path } });
       } else {
-        // If the user is registerd and is attempting to go to registration re-route
-        let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-        if (userIsRegistered && to.path === "/registration") {
-          next({ path: "/timeline" });
-        } else if (to.meta.requiresRegistration && !userIsRegistered) {
-          next({ path: "/unauthorized" });
-        } else {
-          next();
-        }
+        handleUserHasAccess(to, from, next);
       }
     });
   } else {
     next();
   }
 });
+
+function handleUserHasAccess(to: Route, from: Route, next: any) {
+  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
+  let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+  if (
+    userIsRegistered &&
+    (to.path === "/registration" || to.path === "/registrationInfo")
+  ) {
+    next({ path: "/timeline" });
+  } else if (to.meta.requiresRegistration && !userIsRegistered) {
+    next({ path: "/unauthorized" });
+  } else {
+    next();
+  }
+}
 
 export default router;
