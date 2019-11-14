@@ -89,7 +89,7 @@ describe("Login view", () => {
       userIsRegistered: (): boolean => false
     };
     let wrapper = createWrapper();
-    expect(wrapper.vm.$data.redirectPath).toBe("/registration");
+    expect(wrapper.vm.$data.redirectPath).toBe("/registrationInfo");
     expect(pushMethod).toHaveBeenCalledWith({
       path: wrapper.vm.$data.redirectPath
     });

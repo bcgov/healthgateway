@@ -158,6 +158,13 @@
     "id": "c033b379-f96e-48f6-bd75-39e6e4ec1302",
     "name": "Profile page - unauthorized redirects",
     "commands": [{
+      "id": "88945532-4fa5-43a3-844e-8b7b7cefbc9e",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
       "id": "499b33ee-801e-4212-8977-5910d2027386",
       "comment": "",
       "command": "open",
@@ -854,21 +861,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "834d0923-ec67-49d0-b3b5-c7b255614f40",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
       "id": "a2a91491-6d76-4328-a5aa-2e0ab30f1233",
       "comment": "",
       "command": "assertText",
@@ -957,21 +949,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "841a4c41-7e07-474b-90c8-c966a9616cfd",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
       "id": "78c67b4a-caab-46a6-965c-27cd398554c2",
       "comment": "",
       "command": "assertText",
@@ -1032,21 +1009,6 @@
       "command": "run",
       "target": "Keycloak Login",
       "targets": [],
-      "value": ""
-    }, {
-      "id": "d93f7ee4-147c-47fb-9e79-b1d196264795",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
       "value": ""
     }, {
       "id": "8c2ea1c2-5c7b-4c2d-b058-6ddb74a07202",
@@ -1150,7 +1112,7 @@
       ],
       "value": "Prescription #: 5788"
     }, {
-      "id": "3cd87878-95b3-4b1a-9b9f-4aeb9e807027",
+      "id": "ec1b15cc-5107-4ed0-b908-fb8e095e522b",
       "comment": "",
       "command": "assertText",
       "target": "css=.detailSection:nth-child(2) > div:nth-child(4)",
@@ -1161,16 +1123,30 @@
       ],
       "value": "Manufacturer: ODAN LABORATORIES LTD"
     }, {
-      "id": "56b738b4-54ea-4811-ab29-fe2f86a4ec13",
+      "id": "3f2e246b-304a-470f-8d8c-0349999eed9d",
       "comment": "",
       "command": "assertText",
       "target": "css=.detailSection:nth-child(4) > div:nth-child(2)",
+      "targets": [],
+      "value": "ADAPTED RX AND DISCONTINUED"
+    }, {
+      "id": "56b738b4-54ea-4811-ab29-fe2f86a4ec13",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.detailSection:nth-child(5) > div:nth-child(2)",
       "targets": [
-        ["css=.detailSection:nth-child(4) > div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]/div[2]", "xpath:idRelative"],
-        ["xpath=//div[4]/div[2]", "xpath:position"]
+        ["css=.detailSection:nth-child(5) > div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[5]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]", "xpath:position"]
       ],
       "value": "ERX QA PHARMACY"
+    }, {
+      "id": "94384e52-d53a-4681-9339-f726b05d0780",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
     }]
   }, {
     "id": "bef7c50b-f000-428e-a6d5-d074a4f2770f",
@@ -1356,21 +1332,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "d8f63bfc-4a56-4c73-8173-947cbdf86e68",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
       "id": "6d4fe278-2ad2-4ae8-943b-3a43fcdade48",
       "comment": "",
       "command": "assertText",
@@ -1424,6 +1385,82 @@
         ["xpath=//label[contains(.,'Protective Word')]", "xpath:innerText"]
       ],
       "value": "Protective Word"
+    }]
+  }, {
+    "id": "bcc6fc9a-fa06-48b8-8a47-5f18abee6a6c",
+    "name": "Logout",
+    "commands": [{
+      "id": "d7e8dffe-363b-48a2-acde-305cd96304b5",
+      "comment": "",
+      "command": "open",
+      "target": "/profile",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "65d48656-2a78-4d0e-b579-5be5729fa1c1",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//li[@id='menuBtndUser']",
+      "targets": [],
+      "value": "loggedin"
+    }, {
+      "id": "a567eef1-45a3-4c63-b95b-a9f3e11857cf",
+      "comment": "",
+      "command": "if",
+      "target": "${loggedin} > 0",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1553708d-65a9-4805-bd82-71718f8d7e64",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtndUser__BV_button_",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "20bed1ce-40a1-416e-8964-9db200734ff9",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogin", "id"],
+        ["linkText=Login", "linkText"],
+        ["css=#menuBtnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "65c0274c-8b1f-4510-bae3-0b31fd1ee350",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [
+        ["css=strong", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": "You signed out of your account"
+    }, {
+      "id": "409761ad-6043-4a03-b0d5-156be0cf22d4",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
     }]
   }],
   "suites": [{

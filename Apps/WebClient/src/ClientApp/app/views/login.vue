@@ -12,7 +12,7 @@
           <h3 slot="header">Log In</h3>
           <p slot="footer">
             Not yet registered?
-            <b-link to="/registration">Sign up</b-link>
+            <b-link to="/registrationInfo">Sign up</b-link>
           </p>
           <b-card-body>
             <div v-for="provider in identityProviders" :key="provider.id">
@@ -84,7 +84,7 @@ export default class LoginComponent extends Vue {
     if (this.oidcIsAuthenticated && this.userIsRegistered) {
       this.routeHandler.push({ path: this.redirectPath });
     } else if (this.oidcIsAuthenticated) {
-      this.redirectPath = "/registration";
+      this.redirectPath = "/registrationInfo";
       this.routeHandler.push({ path: this.redirectPath });
     }
   }

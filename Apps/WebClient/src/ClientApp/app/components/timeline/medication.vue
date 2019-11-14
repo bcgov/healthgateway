@@ -122,6 +122,14 @@ $radius: 15px;
                   </div>
                   <div class="detailSection">
                     <div>
+                      <strong>Directions:</strong>
+                    </div>
+                    <div>
+                      {{ entry.directions }}
+                    </div>
+                  </div>
+                  <div class="detailSection">
+                    <div>
                       <strong>Filled At:</strong>
                     </div>
                     <div>
