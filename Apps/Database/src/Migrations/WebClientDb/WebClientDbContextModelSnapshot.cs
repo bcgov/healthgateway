@@ -45,7 +45,7 @@ namespace HealthGateway.Database.Migrations.WebClientDb
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -54,7 +54,7 @@ namespace HealthGateway.Database.Migrations.WebClientDb
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 

@@ -41,50 +41,52 @@
           </h1>
           <hr />
         </div>
-        <div id="listControlls">
-          <b-row>
-            <b-col>
-              Displaying {{ getVisibleCount() }} out of
-              {{ getTotalCount() }} records
-            </b-col>
-            <b-col cols="auto">
-              <b-row
-                :class="{ descending: sortDesc, ascending: !sortDesc }"
-                class="text-right sortContainer"
-              >
-                <b-btn variant="link" @click="toggleSort()">
-                  Date
-                  <span v-show="sortDesc" name="descending">
-                    (Newest)
-                    <i class="fa fa-chevron-down" aria-hidden="true"></i
-                  ></span>
-                  <span v-show="!sortDesc" name="ascending">
-                    (Oldest)
-                    <i class="fa fa-chevron-up" aria-hidden="true"></i
-                  ></span>
-                </b-btn>
-              </b-row>
-            </b-col>
-          </b-row>
-        </div>
-        <div id="timeData">
-          <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
-            <b-col cols="auto">
-              <div class="date">
-                {{ getHeadingDate(dateGroup.date) }}
-              </div>
-            </b-col>
-            <b-col>
-              <hr class="dateBreakLine" />
-            </b-col>
-            <MedicationComponent
-              v-for="(entry, index) in dateGroup.entries"
-              :key="entry.id"
-              :datekey="dateGroup.key"
-              :entry="entry"
-              :index="index"
-            />
-          </b-row>
+        <div v-if="!isLoading">
+          <div id="listControlls">
+            <b-row>
+              <b-col>
+                Displaying {{ getVisibleCount() }} out of
+                {{ getTotalCount() }} records
+              </b-col>
+              <b-col cols="auto">
+                <b-row
+                  :class="{ descending: sortDesc, ascending: !sortDesc }"
+                  class="text-right sortContainer"
+                >
+                  <b-btn variant="link" @click="toggleSort()">
+                    Date
+                    <span v-show="sortDesc" name="descending">
+                      (Newest)
+                      <i class="fa fa-chevron-down" aria-hidden="true"></i
+                    ></span>
+                    <span v-show="!sortDesc" name="ascending">
+                      (Oldest)
+                      <i class="fa fa-chevron-up" aria-hidden="true"></i
+                    ></span>
+                  </b-btn>
+                </b-row>
+              </b-col>
+            </b-row>
+          </div>
+          <div id="timeData">
+            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
+              <b-col cols="auto">
+                <div class="date">
+                  {{ getHeadingDate(dateGroup.date) }}
+                </div>
+              </b-col>
+              <b-col>
+                <hr class="dateBreakLine" />
+              </b-col>
+              <MedicationComponent
+                v-for="(entry, index) in dateGroup.entries"
+                :key="entry.id"
+                :datekey="dateGroup.key"
+                :entry="entry"
+                :index="index"
+              />
+            </b-row>
+          </div>
         </div>
       </b-col>
       <b-col class="col-3 column-wrapper"> </b-col>
@@ -153,13 +155,13 @@ export default class TimelineComponent extends Vue {
     medicationService
       .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
-        console.log(results);
         if (results.resultStatus == ResultType.Success) {
+          this.protectiveWordAttempts = 0;
+
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-          this.protectiveWordFailed = 0;
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
           this.protectiveWordAttempts++;

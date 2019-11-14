@@ -1,6 +1,6 @@
 import { ActionTree, Commit } from "vuex";
 
-import { IPatientService } from "@/services/interfaces";
+import { IPatientService, IUserProfileService } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
@@ -15,6 +15,10 @@ const patientService: IPatientService = container.get<IPatientService>(
   SERVICE_IDENTIFIER.PatientService
 );
 
+const userProfileService: IUserProfileService = container.get<
+  IUserProfileService
+>(SERVICE_IDENTIFIER.UserProfileService);
+
 export const actions: ActionTree<UserState, RootState> = {
   getPatientData({ commit }, { hdid }): Promise<PatientData> {
     return new Promise((resolve, reject) => {
@@ -24,6 +28,29 @@ export const actions: ActionTree<UserState, RootState> = {
           console.log("Patient Data: ", patientData);
           commit("setPatientData", patientData);
           resolve(patientData);
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+
+  checkRegistration({ commit }, { hdid }): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .getProfile(hdid)
+        .then(userProfile => {
+          console.log("User Profile: ", userProfile);
+          var isRegistered: boolean;
+          if (userProfile) {
+            isRegistered = userProfile.acceptedTermsOfService;
+          } else {
+            isRegistered = false;
+          }
+
+          commit("setIsRegistered", isRegistered);
+          resolve(isRegistered);
         })
         .catch(error => {
           handleError(commit, error);
