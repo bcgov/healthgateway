@@ -1150,7 +1150,7 @@
       ],
       "value": "Prescription #: 5788"
     }, {
-      "id": "3cd87878-95b3-4b1a-9b9f-4aeb9e807027",
+      "id": "ec1b15cc-5107-4ed0-b908-fb8e095e522b",
       "comment": "",
       "command": "assertText",
       "target": "css=.detailSection:nth-child(2) > div:nth-child(4)",
@@ -1161,14 +1161,25 @@
       ],
       "value": "Manufacturer: ODAN LABORATORIES LTD"
     }, {
+      "id": "3cd87878-95b3-4b1a-9b9f-4aeb9e807027",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.detailSection:nth-child(4)",
+      "targets": [
+        ["css=.detailSection:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]", "xpath:idRelative"],
+        ["xpath=//div[4]", "xpath:position"]
+      ],
+      "value": "ADAPTED RX AND DISCONTINUED"
+    }, {
       "id": "56b738b4-54ea-4811-ab29-fe2f86a4ec13",
       "comment": "",
       "command": "assertText",
-      "target": "css=.detailSection:nth-child(4) > div:nth-child(2)",
+      "target": "css=.detailSection:nth-child(5) > div:nth-child(2)",
       "targets": [
-        ["css=.detailSection:nth-child(4) > div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]/div[2]", "xpath:idRelative"],
-        ["xpath=//div[4]/div[2]", "xpath:position"]
+        ["css=.detailSection:nth-child(5) > div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[5]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]", "xpath:position"]
       ],
       "value": "ERX QA PHARMACY"
     }]
