@@ -118,6 +118,18 @@
       "targets": [],
       "value": ""
     }, {
+      "id": "fd93d883-8d01-4546-8fcf-d1742bc682df",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'404')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
       "id": "8be70103-f8a5-454c-bdf2-817d4f6589c0",
       "comment": "",
       "command": "assertText",
