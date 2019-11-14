@@ -38,7 +38,11 @@ export default class LoginComponent extends Vue {
 
   created() {
     setTimeout(
-      () => this.$router.push({ path: "/" }),
+      () => {
+        if (this.$route.path == "/logout") {
+          this.$router.push({ path: "/" })
+        }
+      },
       Number(this.config.timeouts!.logoutRedirect)
     );
   }
