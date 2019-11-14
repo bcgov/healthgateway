@@ -121,8 +121,12 @@ $radius: 15px;
                     {{ entry.medication.din }}
                   </div>
                   <div class="detailSection">
-                    <strong>Directions:</strong>
-                    {{ entry.directions }}
+                    <div>
+                      <strong>Directions:</strong>
+                    </div>
+                    <div>
+                      {{ entry.directions }}
+                    </div>
                   </div>
                   <div class="detailSection">
                     <div>
