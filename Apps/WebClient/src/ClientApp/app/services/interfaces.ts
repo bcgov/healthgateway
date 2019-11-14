@@ -5,11 +5,11 @@ import {
 } from "@/models/configData";
 import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
-import HttpDelegate from "./httpDelegate";
 import RequestResult from "@/models/requestResult";
+import UserProfile from "@/models/userProfile";
 
 export interface IAuthenticationService {
-  initialize(config: OpenIdConnectConfiguration): void;
+  initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
   getUser(): Promise<OidcUser | null>;
   logout(): Promise<void>;
   signinSilent(): Promise<OidcUser | null>;
@@ -18,6 +18,7 @@ export interface IAuthenticationService {
   getOidcConfig(): UserManagerSettings;
   removeUser(): Promise<void>;
   clearStaleState(): Promise<void>;
+  getOidcUserProfile(): Promise<any>;
 }
 
 export interface IImmsService {
@@ -38,12 +39,20 @@ export interface IMedicationService {
 }
 
 export interface IConfigService {
-  initialize(http: HttpDelegate): void;
+  initialize(http: IHttpDelegate): void;
   getConfiguration(): Promise<ExternalConfiguration>;
+}
+
+export interface IUserProfileService {
+  initialize(http: IHttpDelegate): void;
+  createProfile(profile: UserProfile): Promise<boolean>;
+  getProfile(hdid: string): Promise<UserProfile>;
 }
 
 export interface IHttpDelegate {
   unsetAuthorizationHeader(): void;
   setAuthorizationHeader(accessToken: string): void;
+  getWithCors<T>(url: string): Promise<T>;
   get<T>(url: string): Promise<T>;
+  post<T>(url: string, payload: Object): Promise<T>;
 }

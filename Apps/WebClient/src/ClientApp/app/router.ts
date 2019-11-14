@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 // Routes
-import VueRouter from "vue-router";
+import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import ProfileComponent from "@/views/profile.vue";
 import CardInfoComponent from "@/views/cardInfo.vue";
@@ -83,31 +83,27 @@ router.beforeEach(async (to, from, next) => {
       if (!hasAccess) {
         next({ path: "/login", query: { redirect: to.path } });
       } else {
-        let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
-        // If the user is registerd and is attempting to go to registration re-route
-        if (userIsRegistered && to.path === "/registration") {
-          next({ path: "/timeline" });
-        } else if (to.meta.requiresRegistration && !userIsRegistered) {
-          next({ path: "/unauthorized" });
-        } else {
-          /*if (to.meta.roles) {
-                          /*if (security.roles(to.meta.roles[0])) {
-                              next()
-                          }
-                          else {
-                              next({ name: 'unauthorized' })
-                          }
-                      }
-                      else {
-                          next()
-                      } */
-          next();
-        }
+        handleUserHasAccess(to, from, next);
       }
     });
   } else {
     next();
   }
 });
+
+function handleUserHasAccess(to: Route, from: Route, next: any) {
+  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
+  let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+  if (
+    userIsRegistered &&
+    (to.path === "/registration" || to.path === "/registrationInfo")
+  ) {
+    next({ path: "/timeline" });
+  } else if (to.meta.requiresRegistration && !userIsRegistered) {
+    next({ path: "/unauthorized" });
+  } else {
+    next();
+  }
+}
 
 export default router;

@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Models
         /// This is generally set by the baseDbContext.
         /// </summary>
         [Required]
-        [MaxLength(30)]
+        [MaxLength(60)]
         [IgnoreDataMember]
         public string CreatedBy { get; set; }
 
@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Models
         /// This is generally set by the baseDbContext.
         /// </summary>
         [Required]
-        [MaxLength(30)]
+        [MaxLength(60)]
         [IgnoreDataMember]
         public string UpdatedBy { get; set; }
 

@@ -12,10 +12,15 @@ import container from "@/inversify.config";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
+import { ResultType } from "@/constants/resulttype";
 
 const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
 var yesterday = new Date(today);
+
+var userWithResults = new User();
+userWithResults.hdid = "hdid_with_results";
+
 yesterday.setDate(today.getDate() - 1);
 const medicationStatements: MedicationStatement[] = [
   {
@@ -57,7 +62,7 @@ class MockMedicationService implements IMedicationService {
           totalResultCount: medicationStatements.length,
           pageIndex: 0,
           pageSize: medicationStatements.length,
-          resultStatus: 0,
+          resultStatus: ResultType.Success,
           resultMessage: "",
           resourcePayload: medicationStatements
         });
@@ -143,65 +148,68 @@ describe("Timeline view", () => {
   test("Has entries", () => {
     userGetters = {
       user: (): User => {
-        let user = new User();
-
-        user.firstName = "First Name";
-        user.lastName = "Last Name";
-        user.email = "test@test.com";
-        user.hdid = "hdid_with_results";
-        user.phn = "";
-        return user;
+        return userWithResults;
       }
     };
 
     let wrapper = createWrapper();
     // Verify the number of records
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.findAll(".entryCard").length).toEqual(3);
-      expect(wrapper.findAll(".date").length).toEqual(2);
-    });
+    var unwatch = wrapper.vm.$watch(
+      () => {
+        return wrapper.vm.$data.isLoading;
+      },
+      () => {
+        expect(wrapper.findAll(".entryCard").length).toEqual(3);
+        expect(wrapper.findAll(".entryCard").length).toEqual(3);
+        expect(wrapper.findAll(".date").length).toEqual(2);
+        unwatch();
+      }
+    );
   });
 
   test("sort button toggles", () => {
     userGetters = {
       user: (): User => {
         let user = new User();
-
-        user.firstName = "Another Name";
-        user.lastName = "Last Name";
-        user.email = "test@test.com";
         user.hdid = "hdid_with_results";
-        user.phn = "";
         return user;
       }
     };
 
     let wrapper = createWrapper();
-    wrapper.vm.$nextTick(() => {
-      expect(
-        wrapper.find(".sortContainer button [name='descending']").isVisible()
-      ).toBe(true);
-      expect(
-        wrapper.find(".sortContainer button [name='ascending']").isVisible()
-      ).toBe(false);
-      var dates = wrapper.findAll(".date");
-      var topDate = new Date(dates.at(0).text());
-      var bottomDate = new Date(dates.at(1).text());
-      expect(topDate > bottomDate).toBe(true);
+    var unwatch = wrapper.vm.$watch(
+      () => {
+        return wrapper.vm.$data.isLoading;
+      },
+      () => {
+        expect(
+          wrapper.find(".sortContainer button [name='descending']").isVisible()
+        ).toBe(true);
+        expect(
+          wrapper.find(".sortContainer button [name='ascending']").isVisible()
+        ).toBe(false);
+        var dates = wrapper.findAll(".date");
+        var topDate = new Date(dates.at(0).text());
+        var bottomDate = new Date(dates.at(1).text());
+        expect(topDate > bottomDate).toBe(true);
 
-      wrapper.find(".sortContainer button").trigger("click");
-
-      expect(
-        wrapper.find(".sortContainer button [name='descending']").isVisible()
-      ).toBe(false);
-      expect(
-        wrapper.find(".sortContainer button [name='ascending']").isVisible()
-      ).toBe(true);
-
-      dates = wrapper.findAll(".date");
-      topDate = new Date(dates.at(0).text());
-      bottomDate = new Date(dates.at(1).text());
-      expect(topDate > bottomDate).toBe(false);
-    });
+        wrapper.find(".sortContainer button").trigger("click");
+        wrapper.vm.$nextTick(() => {
+          expect(
+            wrapper
+              .find(".sortContainer button [name='descending']")
+              .isVisible()
+          ).toBe(false);
+          expect(
+            wrapper.find(".sortContainer button [name='ascending']").isVisible()
+          ).toBe(true);
+          dates = wrapper.findAll(".date");
+          topDate = new Date(dates.at(0).text());
+          bottomDate = new Date(dates.at(1).text());
+          expect(topDate > bottomDate).toBe(false);
+        });
+        unwatch();
+      }
+    );
   });
 });

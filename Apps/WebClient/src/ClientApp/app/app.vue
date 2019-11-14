@@ -31,6 +31,7 @@ main {
     </header>
     <main class="col">
       <router-view></router-view>
+      <IdleComponent ref="idleModal" />
     </main>
     <footer class="footer">
       <NavFooter />
@@ -61,7 +62,8 @@ export default class AppComponent extends Vue {
 
   private readonly host: string = window.location.hostname.toLocaleUpperCase();
   private readonly isProduction: boolean =
-    Process.NODE_ENV == EnvironmentType.production;
+    Process.NODE_ENV == EnvironmentType.production &&
+    !this.host.startsWith("healthgateway");
 
   constructor() {
     super();

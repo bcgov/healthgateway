@@ -89,11 +89,13 @@ namespace HealthGateway.WebClient.Controllers
             {
                 return new BadRequestResult();
             }
-
+            
+            userProfile.CreatedBy = hdid;
+            userProfile.UpdatedBy = hdid;
             DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile);
             if (result.Status != Database.Constant.DBStatusCode.Created)
             {
-                return new BadRequestResult();
+                return new ConflictResult();
             }
 
             return new OkResult();
@@ -109,7 +111,6 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> GetUserProfile(string hdid)
         {
             Contract.Requires(hdid != null);
