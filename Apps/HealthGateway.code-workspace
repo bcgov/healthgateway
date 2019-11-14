@@ -7,9 +7,6 @@
 			"path": "Immunization"
 		},
 		{
-			"path": "WebClient"
-		},
-		{
 			"path": "Patient"
 		},
 		{
@@ -29,6 +26,9 @@
 		},
 		{
 			"path": "Database"
+		},
+		{
+			"path": "WebClient"
 		}
 	],
 	"settings": {}

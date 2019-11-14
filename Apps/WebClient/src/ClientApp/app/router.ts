@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 // Routes
-import VueRouter from "vue-router";
+import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import ProfileComponent from "@/views/profile.vue";
 import CardInfoComponent from "@/views/cardInfo.vue";
@@ -13,6 +13,7 @@ import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
 import TimelineComponent from "@/views/timeline.vue";
+import User from "./models/user";
 
 Vue.use(VueRouter);
 
@@ -77,24 +78,13 @@ router.beforeEach(async (to, from, next) => {
       if (!hasAccess) {
         next({ path: "/login", query: { redirect: to.path } });
       } else {
-        let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
         // If the user is registerd and is attempting to go to registration re-route
+        let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
         if (userIsRegistered && to.path === "/registration") {
           next({ path: "/timeline" });
         } else if (to.meta.requiresRegistration && !userIsRegistered) {
           next({ path: "/unauthorized" });
         } else {
-          /*if (to.meta.roles) {
-                /*if (security.roles(to.meta.roles[0])) {
-                    next()
-                }
-                else {
-                    next({ name: 'unauthorized' })
-                }
-            }
-            else {
-                next()
-            } */
           next();
         }
       }

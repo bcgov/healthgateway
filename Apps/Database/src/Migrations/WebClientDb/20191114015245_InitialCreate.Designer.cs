@@ -25,7 +25,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations.WebClientDb
 {
     [DbContext(typeof(WebClientDbContext))]
-    [Migration("20191107230146_InitialCreate")]
+    [Migration("20191114015245_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Migrations.WebClientDb
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Migrations.WebClientDb
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 

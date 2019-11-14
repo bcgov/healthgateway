@@ -103,31 +103,30 @@ const user: string = "user";
 export default class HeaderComponent extends Vue {
   @Getter("oidcIsAuthenticated", { namespace: auth })
   oidcIsAuthenticated: boolean;
-  @Getter("oidcAuthenticationIsChecked", { namespace: auth })
-  oidcAuthenticationIsChecked: boolean;
   @Getter("user", { namespace: user }) user: User;
   @Getter("userIsRegistered", { namespace: user })
   userIsRegistered: boolean;
+
+  private authenticationService: IAuthenticationService;
 
   private languages: { [code: string]: ILanguage } = {};
   private currentLanguage: ILanguage = null;
   private name: string = "";
 
-  @Watch("oidcAuthenticationIsChecked")
-  onPropertyChanged(newValue: string, oldValue: string) {
+  @Watch("oidcIsAuthenticated")
+  onPropertyChanged() {
     // If there is no name in the scope, retrieve it from the service.
-    if (newValue && this.oidcIsAuthenticated && !this.name) {
-      var authenticationService: IAuthenticationService = container.get(
-        SERVICE_IDENTIFIER.AuthenticationService
-      );
-      authenticationService.getUserProfile().then(oidcUser => {
-        if (oidcUser) {
-          this.name = this.getFullname(
-            oidcUser.given_name,
-            oidcUser.family_name
-          );
-        }
-      });
+    if (this.oidcIsAuthenticated && !this.name) {
+      this.loadName();
+    }
+  }
+
+  mounted() {
+    this.authenticationService = container.get(
+      SERVICE_IDENTIFIER.AuthenticationService
+    );
+    if (this.oidcIsAuthenticated) {
+      this.loadName();
     }
   }
 
@@ -150,6 +149,7 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayRegistration(): boolean {
+    console.log(this.userIsRegistered);
     if (this.oidcIsAuthenticated && !this.userIsRegistered) {
       return true;
     }
@@ -162,6 +162,14 @@ export default class HeaderComponent extends Vue {
     } else {
       return "";
     }
+  }
+
+  private loadName(): void {
+    this.authenticationService.getOidcUserProfile().then(oidcUser => {
+      if (oidcUser) {
+        this.name = this.getFullname(oidcUser.given_name, oidcUser.family_name);
+      }
+    });
   }
 
   private getFullname(firstName: string, lastName: string): string {

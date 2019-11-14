@@ -31,6 +31,7 @@ main {
     </header>
     <main class="col">
       <router-view></router-view>
+      <IdleComponent ref="idleModal" />
     </main>
     <footer class="footer">
       <NavFooter />

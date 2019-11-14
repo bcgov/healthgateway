@@ -1,11 +1,8 @@
+import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
 import { IMedicationService, IHttpDelegate } from "@/services/interfaces";
-
-import { injectable } from "inversify";
-
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
-
 
 @injectable()
 export class RestMedicationService implements IMedicationService {

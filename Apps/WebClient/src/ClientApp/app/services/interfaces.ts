@@ -5,8 +5,8 @@ import {
 } from "@/models/configData";
 import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
-import HttpDelegate from "./httpDelegate";
 import RequestResult from "@/models/requestResult";
+import UserProfile from "@/models/userProfile";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -18,7 +18,7 @@ export interface IAuthenticationService {
   getOidcConfig(): UserManagerSettings;
   removeUser(): Promise<void>;
   clearStaleState(): Promise<void>;
-  getUserProfile(): Promise<any>;
+  getOidcUserProfile(): Promise<any>;
 }
 
 export interface IImmsService {
@@ -39,8 +39,14 @@ export interface IMedicationService {
 }
 
 export interface IConfigService {
-  initialize(http: HttpDelegate): void;
+  initialize(http: IHttpDelegate): void;
   getConfiguration(): Promise<ExternalConfiguration>;
+}
+
+export interface IUserProfileService {
+  initialize(http: IHttpDelegate): void;
+  createProfile(profile: UserProfile): Promise<boolean>;
+  getProfile(hdid: string): Promise<UserProfile>;
 }
 
 export interface IHttpDelegate {
@@ -48,4 +54,5 @@ export interface IHttpDelegate {
   setAuthorizationHeader(accessToken: string): void;
   getWithCors<T>(url: string): Promise<T>;
   get<T>(url: string): Promise<T>;
+  post<T>(url: string, payload: Object): Promise<T>;
 }

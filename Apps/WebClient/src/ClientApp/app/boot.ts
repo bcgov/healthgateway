@@ -10,6 +10,8 @@ import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import BootstrapVue from "bootstrap-vue";
 import i18n from "@/i18n";
 import IdleVue from "idle-vue";
+import Vuelidate from "vuelidate";
+import "@/registerComponentHooks";
 
 import App from "@/app.vue";
 import router from "@/router";
@@ -20,16 +22,19 @@ import {
   IPatientService,
   IMedicationService,
   IHttpDelegate,
-  IConfigService
+  IConfigService,
+  IUserProfileService
 } from "@/services/interfaces";
 import SERVICE_IDENTIFIER, {
   DELEGATE_IDENTIFIER
 } from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
+import User from "./models/user";
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
+Vue.use(Vuelidate);
 
 const httpDelegate: IHttpDelegate = container.get(
   DELEGATE_IDENTIFIER.HttpDelegate
@@ -54,12 +59,16 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const medicationService: IMedicationService = container.get(
     SERVICE_IDENTIFIER.MedicationService
   );
+  const userProfileService: IUserProfileService = container.get(
+    SERVICE_IDENTIFIER.UserProfileService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
   immsService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
+  userProfileService.initialize(httpDelegate);
 
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
@@ -69,12 +78,23 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   });
 
   store.dispatch("auth/getOidcUser").then(() => {
-    new Vue({
-      el: "#app-root",
-      i18n: i18n,
-      store,
-      router,
-      render: h => h(App)
-    });
+    let user: User = store.getters["user/user"];
+    if (user.hdid) {
+      store.dispatch("user/checkRegistration", { hdid: user.hdid }).then(() => {
+        initializeVue();
+      });
+    } else {
+      initializeVue();
+    }
   });
 });
+
+function initializeVue() {
+  new Vue({
+    el: "#app-root",
+    i18n: i18n,
+    store,
+    router,
+    render: h => h(App)
+  });
+}

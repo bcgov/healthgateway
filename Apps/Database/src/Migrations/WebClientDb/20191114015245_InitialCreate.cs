@@ -28,9 +28,9 @@ namespace HealthGateway.Database.Migrations.WebClientDb
                 columns: table => new
                 {
                     UserProfileId = table.Column<string>(maxLength: 52, nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     AcceptedTermsOfService = table.Column<bool>(nullable: false),

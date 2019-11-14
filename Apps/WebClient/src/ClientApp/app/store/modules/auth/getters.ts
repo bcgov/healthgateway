@@ -1,5 +1,4 @@
 import { GetterTree } from "vuex";
-import { User as OidcUser } from "oidc-client";
 import { RootState, AuthState } from "@/models/storeState";
 
 export const parseJwt = (token: string) => {

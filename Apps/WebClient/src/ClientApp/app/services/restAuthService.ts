@@ -1,7 +1,4 @@
-import {
-  IAuthenticationService,
-  IHttpDelegate
-} from "@/services/interfaces";
+import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
 import {
   UserManager,
   WebStorageStateStore,
@@ -14,8 +11,7 @@ import { OpenIdConnectConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-  private readonly AUTHORITY_BASE_URI: string =
-    "/protocol/openid-connect/userinfo";
+  private readonly USER_INFO_PATH: string = "/protocol/openid-connect/userinfo";
 
   private oidcUserManager!: UserManager;
   private authorityUri = "";
@@ -59,8 +55,8 @@ export class RestAuthenticationService implements IAuthenticationService {
     });
   }
 
-  public getUserProfile(): Promise<OidcUser | null> {
-    return this.http.get<any>(`${this.authorityUri}${this.AUTHORITY_BASE_URI}`);
+  public getOidcUserProfile(): Promise<OidcUser | null> {
+    return this.http.get<any>(`${this.authorityUri}${this.USER_INFO_PATH}`);
   }
 
   public logout(): Promise<void> {
@@ -72,7 +68,6 @@ export class RestAuthenticationService implements IAuthenticationService {
   }
 
   public signinRedirect(idpHint: string, redirectPath: string): Promise<void> {
-    var fullRedirectUrl = new URL(redirectPath, window.location.href);
     sessionStorage.setItem("vuex_oidc_active_route", redirectPath);
     return this.oidcUserManager.signinRedirect({
       extraQueryParams: {

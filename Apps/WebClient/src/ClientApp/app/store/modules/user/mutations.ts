@@ -19,16 +19,8 @@ export const mutations: MutationTree<UserState> = {
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;
   },
-  setUserProfile(state: UserState, userProfile: UserProfile) {
-    if (state.user === undefined) {
-      Vue.set(state.user, "acceptedTermsOfService", false);
-    } else {
-      Vue.set(
-        state.user,
-        "acceptedTermsOfService",
-        userProfile.acceptedTermsOfService
-      );
-    }
+  setIsRegistered(state: UserState, isRegistered: boolean) {
+    Vue.set(state.user, "acceptedTermsOfService", isRegistered);
   },
   clearUserData(state: UserState) {
     state.user = new User();

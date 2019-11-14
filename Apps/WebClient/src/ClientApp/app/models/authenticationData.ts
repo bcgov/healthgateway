@@ -1,5 +1,3 @@
-import { User as OidcUser } from "oidc-client";
-
 export default class AuthenticationData {
   public accessToken?: string;
   public idToken?: string;
