@@ -31,9 +31,36 @@
       "id": "7f8ac8cd-cb9c-413f-bcd6-9f2a601fd4c4",
       "comment": "",
       "command": "assertText",
-      "target": "css=.title-text",
-      "targets": [],
-      "value": "Empowering you\\nto manage your health"
+      "target": "id=btnLogin",
+      "targets": [
+        ["id=btnLogin", "id"],
+        ["linkText=Log In", "linkText"],
+        ["css=#btnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Log In')]", "xpath:link"],
+        ["xpath=//a[@id='btnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a[2]", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/login')])[2]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Log In')]", "xpath:innerText"]
+      ],
+      "value": "Log In"
+    }, {
+      "id": "3f720218-7061-4a05-8ab5-07f994ce6864",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Sign Up", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/cardInfo')]", "xpath:href"],
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+      ],
+      "value": "Sign Up"
     }]
   }, {
     "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
