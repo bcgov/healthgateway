@@ -21,7 +21,6 @@ export default class LoginCallbackComponent extends Vue {
       .then(redirectPath => {
         console.log(this.user);
         this.checkRegistration({ hdid: this.user.hdid }).then(() => {
-          console.log(this.userIsRegistered);
           if (this.userIsRegistered) {
             this.$router.push({ path: redirectPath });
           } else {

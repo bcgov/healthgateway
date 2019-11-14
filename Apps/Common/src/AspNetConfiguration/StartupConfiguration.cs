@@ -113,7 +113,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    //policy.RequireClaim("hdid");
+                    policy.RequireClaim("hdid");
                 });
                 options.AddPolicy(PolicyNameConstants.UserIsPatient, policy =>
                 {
