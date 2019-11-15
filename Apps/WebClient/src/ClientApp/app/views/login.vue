@@ -1,6 +1,5 @@
 <template>
-  <div class="container" align="center">
-    <b-row style="height: 3rem;"></b-row>
+  <div class="container my-5" align="center">
     <b-row>
       <b-col>
         <b-card

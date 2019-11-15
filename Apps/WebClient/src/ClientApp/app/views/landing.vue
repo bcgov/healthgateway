@@ -172,7 +172,7 @@
           <b-row class="justify-content-around">
             <b-button
               id="btnStart"
-              to="cardInfo"
+              to="registrationInfo"
               class="btn btn-primary-landing"
               role="button"
               >Sign Up</b-button
@@ -272,14 +272,14 @@
             <div class="secure-buttons">
               <b-button
                 id="btnSecureStart"
-                to="cardInfo"
+                to="registrationInfo"
                 class="btn btn-primary-landing"
                 role="button"
                 >Sign Up</b-button
               >
               <b-button
                 id="btnLearnMore"
-                to="learnMore"
+                href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
                 class="btn btn-secondary-landing"
                 >Learn More</b-button
               >
