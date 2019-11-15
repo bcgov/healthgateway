@@ -1,11 +1,11 @@
-import router from "../app/router";
-import ProfileComponent from "../app/views/profile.vue";
-import RegistrationComponent from "../app/views/registration.vue";
-import LandingComponent from "../app/views/landing.vue";
-import NotFoundComponent from "../app/views/errors/notFound.vue";
-import LoginComponent from "../app/views/login.vue";
-import LogoutComponent from "../app/views/logout.vue";
-import UnauthorizedComponent from "../app/views/errors/unauthorized.vue";
+import router from "@/router";
+import ProfileComponent from "@/views/profile.vue";
+import RegistrationComponent from "@/views/registration.vue";
+import LandingComponent from "@/views/landing.vue";
+import NotFoundComponent from "@/views/errors/notFound.vue";
+import LoginComponent from "@/views/login.vue";
+import LogoutComponent from "@/views/logout.vue";
+import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 
 describe("Router", () => {
   test("has landing route", () => {
