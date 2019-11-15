@@ -7,7 +7,7 @@ import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import UserProfile from "@/models/userProfile";
-import UserFeedback from "../models/userFeedback";
+import UserFeedback from "@/models/userFeedback";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
