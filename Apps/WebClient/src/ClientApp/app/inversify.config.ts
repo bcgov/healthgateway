@@ -11,7 +11,8 @@ import {
   IHttpDelegate,
   IPatientService,
   IMedicationService,
-  IUserProfileService
+  IUserProfileService,
+  IUserFeedbackService
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "@/services/restImmsService";
@@ -20,6 +21,7 @@ import { RestPatientService } from "./services/restPatientService";
 import { RestMedicationService } from "./services/restMedicationService";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestUserProfileService } from "./services/restUserProfileService";
+import { RestUserFeedbackService } from "./services/restUserFeedback";
 
 let container = new Container();
 container
@@ -45,6 +47,10 @@ container
 container
   .bind<IUserProfileService>(SERVICE_IDENTIFIER.UserProfileService)
   .to(RestUserProfileService)
+  .inSingletonScope();
+container
+  .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
+  .to(RestUserFeedbackService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

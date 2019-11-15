@@ -23,7 +23,8 @@ import {
   IMedicationService,
   IHttpDelegate,
   IConfigService,
-  IUserProfileService
+  IUserProfileService,
+  IUserFeedbackService
 } from "@/services/interfaces";
 import SERVICE_IDENTIFIER, {
   DELEGATE_IDENTIFIER
@@ -62,6 +63,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userProfileService: IUserProfileService = container.get(
     SERVICE_IDENTIFIER.UserProfileService
   );
+  const userFeedbackService: IUserFeedbackService = container.get(
+    SERVICE_IDENTIFIER.UserFeedbackService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -69,6 +73,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
+  userFeedbackService.initialize(httpDelegate);
 
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),

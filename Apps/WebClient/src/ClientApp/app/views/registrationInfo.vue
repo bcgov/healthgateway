@@ -120,7 +120,9 @@
                   </b-row>
                   <b-row>
                     <b-col>
-                      <span class="pl-4">Download the app</span>
+                      <span class="pl-4"
+                        >Download the BC Services Card app</span
+                      >
                     </b-col>
                   </b-row>
                 </b-col>
