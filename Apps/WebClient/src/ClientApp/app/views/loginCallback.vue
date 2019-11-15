@@ -8,24 +8,28 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-
-const namespace: string = "auth";
+import User from "@/models/user";
 
 @Component
 export default class LoginCallbackComponent extends Vue {
-  @Action("oidcSignInCallback", { namespace }) oidcSignInCallback;
-  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
+  @Action("oidcSignInCallback", { namespace: "auth" }) oidcSignInCallback;
+  @Action("checkRegistration", { namespace: "user" }) checkRegistration;
+  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
+  @Getter("user", { namespace: "user" }) user: User;
   created() {
     this.oidcSignInCallback()
       .then(redirectPath => {
-        console.log(this.userIsRegistered);
-        if (this.userIsRegistered) {
-          this.$router.push({ path: redirectPath });
-        } else {
-          this.$router.push({ path: "/registration" });
-        }
-        console.log(redirectPath);
-        console.log("here");
+        console.log(this.user);
+        this.checkRegistration({ hdid: this.user.hdid }).then(() => {
+          if (this.userIsRegistered) {
+            this.$router.push({ path: redirectPath });
+          } else {
+            this.$router.push({ path: "/registration" });
+          }
+
+          console.log(redirectPath);
+          console.log("here");
+        });
       })
       .catch(err => {
         console.error(err);

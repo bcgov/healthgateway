@@ -18,11 +18,13 @@ namespace HealthGateway.WebClient
 {
     using System.Diagnostics.Contracts;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authentication;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -60,11 +62,16 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddDbContext<GatewayDbContext>(options => options.UseNpgsql(
+            services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
                 this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IProfileDelegate, ProfileDelegate>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         /// <summary>
@@ -77,6 +84,7 @@ namespace HealthGateway.WebClient
             Contract.Requires(env != null);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
+            this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseWebClient(app);
         }

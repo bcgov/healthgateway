@@ -98,6 +98,7 @@ namespace HealthGateway.Medication.Test
                 CountryCode = "CA",
                 Name = "Gateway",
                 PharmacyId = "123456",
+                PhoneType = "F",
                 PhoneNumber = "2500008888",
                 PostalCode = "V0V0X0",
                 Province = "BC"
@@ -118,7 +119,8 @@ namespace HealthGateway.Medication.Test
             sb.Append($"{expectedPharmacy.City}|");
             sb.Append($"{expectedPharmacy.Province}|");
             sb.Append($"{expectedPharmacy.PostalCode}|");
-            sb.Append($"{expectedPharmacy.CountryCode}|||");
+            sb.Append($"{expectedPharmacy.CountryCode}|");
+            sb.Append($"{expectedPharmacy.PhoneType}||");
             sb.Append($"{expectedPharmacy.PhoneNumber.Substring(0, 3)}|");
             sb.Append($"{expectedPharmacy.PhoneNumber.Substring(3, 7)}|||");
             sb.Append($"{expectedPharmacy.PharmacyId}|\r");

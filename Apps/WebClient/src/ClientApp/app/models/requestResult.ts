@@ -1,3 +1,5 @@
+import { ResultType } from "@/constants/resulttype";
+
 export default interface RequestResult {
   // The request resource payload
   resourcePayload: any;
@@ -8,7 +10,7 @@ export default interface RequestResult {
   // The current page size for pagnation
   pageSize: number;
   //The status of the request
-  resultStatus: number;
+  resultStatus: ResultType;
   // The message associated to the request (could be empty)
   resultMessage: string;
 }

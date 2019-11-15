@@ -35,9 +35,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     ResultCode = table.Column<string>(maxLength: 10, nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     Description = table.Column<string>(maxLength: 30, nullable: false)
@@ -52,9 +52,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     FormatCode = table.Column<string>(maxLength: 4, nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false)
                 },
@@ -68,9 +68,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     ProgramCode = table.Column<string>(maxLength: 10, nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     Description = table.Column<string>(maxLength: 50, nullable: false)
@@ -85,9 +85,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     ScheduleId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     ScheduleDesc = table.Column<string>(maxLength: 40, nullable: true),
@@ -104,9 +104,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     UserProfileId = table.Column<string>(maxLength: 52, nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     AcceptedTermsOfService = table.Column<bool>(nullable: false),
@@ -122,9 +122,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     EmailId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     From = table.Column<string>(maxLength: 254, nullable: false),
@@ -153,9 +153,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     EmailTemplateId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     Name = table.Column<string>(maxLength: 30, nullable: false),
@@ -181,9 +181,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     AuditEventId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     AuditEventDateTime = table.Column<DateTime>(nullable: false),
@@ -218,9 +218,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     FileDownloadId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     Name = table.Column<string>(maxLength: 35, nullable: false),
@@ -243,9 +243,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     DrugProductId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     DrugCode = table.Column<string>(maxLength: 8, nullable: false),
@@ -280,9 +280,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     PharmaCareDrugId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     DINPIN = table.Column<string>(maxLength: 8, nullable: false),
@@ -327,9 +327,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     ActiveIngredientId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     ActiveIngredientCode = table.Column<int>(nullable: false),
@@ -364,9 +364,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     CompanyId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     ManufacturerCode = table.Column<string>(maxLength: 5, nullable: true),
@@ -404,9 +404,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     FormId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     PharmaceuticalFormCode = table.Column<int>(nullable: false),
@@ -430,9 +430,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     PackagingId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     UPC = table.Column<string>(maxLength: 12, nullable: true),
@@ -460,9 +460,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     PharmaceuticalStdId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     PharmaceuticalStdDesc = table.Column<string>(nullable: true),
@@ -484,9 +484,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     RouteId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     AdministrationCode = table.Column<int>(nullable: false),
@@ -510,9 +510,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     StatusId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     CurrentStatusFlag = table.Column<string>(maxLength: 1, nullable: true),
@@ -539,9 +539,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     TherapeuticClassId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     AtcNumber = table.Column<string>(maxLength: 8, nullable: true),
@@ -568,9 +568,9 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     VeterinarySpeciesId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 30, nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
                     Species = table.Column<string>(maxLength: 80, nullable: true),

@@ -1,12 +1,8 @@
-import { IMedicationService } from "@/services/interfaces";
-
 import { injectable } from "inversify";
-import "reflect-metadata";
-
-import { ExternalConfiguration } from "@/models/configData";
-import HttpDelegate from "@/services/httpDelegate";
-import RequestResult from "@/models/requestResult";
 import { Dictionary } from "vue-router/types/router";
+import { IMedicationService, IHttpDelegate } from "@/services/interfaces";
+import { ExternalConfiguration } from "@/models/configData";
+import RequestResult from "@/models/requestResult";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -15,10 +11,10 @@ export class RestMedicationService implements IMedicationService {
   private readonly MEDICATION_BASE_URI: string = "v1/api/Medication/";
   private readonly PHARMACY_BASE_URI: string = "v1/api/Pharmacy/";
   private baseUri: string = "";
-  private http!: HttpDelegate;
+  private http!: IHttpDelegate;
   constructor() {}
 
-  public initialize(config: ExternalConfiguration, http: HttpDelegate): void {
+  public initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
     this.baseUri = config.serviceEndpoints["Medication"];
     this.http = http;
   }
@@ -31,22 +27,21 @@ export class RestMedicationService implements IMedicationService {
     if (protectiveWord) {
       headers["protectiveWord"] = protectiveWord;
     }
-    return this.http.get<RequestResult>(
-      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
-      headers
+    return this.http.getWithCors<RequestResult>(
+      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`
     );
   }
 
   public getMedicationInformation(
     drugIdentifier: string
   ): Promise<RequestResult> {
-    return this.http.get<RequestResult>(
+    return this.http.getWithCors<RequestResult>(
       `${this.baseUri}${this.MEDICATION_BASE_URI}${drugIdentifier}`
     );
   }
 
   public getPharmacyInfo(pharmacyId: string): Promise<RequestResult> {
-    return this.http.get<RequestResult>(
+    return this.http.getWithCors<RequestResult>(
       `${this.baseUri}${this.PHARMACY_BASE_URI}${pharmacyId}`
     );
   }

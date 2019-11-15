@@ -1,10 +1,9 @@
 import Vue from "vue";
 
 // Routes
-import VueRouter from "vue-router";
+import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import ProfileComponent from "@/views/profile.vue";
-import CardInfoComponent from "@/views/cardInfo.vue";
 import LandingComponent from "@/views/landing.vue";
 import NotFoundComponent from "@/views/errors/notFound.vue";
 import LoginComponent from "@/views/login.vue";
@@ -12,6 +11,7 @@ import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
+import RegistrationInfoComponent from "@/views/registrationInfo.vue";
 import TimelineComponent from "@/views/timeline.vue";
 
 Vue.use(VueRouter);
@@ -23,6 +23,11 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: "/registrationInfo",
+    component: RegistrationInfoComponent,
+    meta: { requiresAuth: false }
+  },
+  {
     path: "/registration",
     component: RegistrationComponent,
     meta: { requiresAuth: true }
@@ -31,11 +36,6 @@ const routes = [
     path: "/profile",
     component: ProfileComponent,
     meta: { requiresRegistration: true, roles: ["user"] }
-  },
-  {
-    path: "/cardInfo",
-    component: CardInfoComponent,
-    meta: { requiresAuth: false, roles: ["user"] }
   },
   {
     path: "/timeline",
@@ -77,31 +77,24 @@ router.beforeEach(async (to, from, next) => {
       if (!hasAccess) {
         next({ path: "/login", query: { redirect: to.path } });
       } else {
-        let userIsRegistered: boolean = store.getters["auth/userIsRegistered"];
-        // If the user is registerd and is attempting to go to registration re-route
-        if (userIsRegistered && to.path === "/registration") {
-          next({ path: "/timeline" });
-        } else if (to.meta.requiresRegistration && !userIsRegistered) {
-          next({ path: "/unauthorized" });
-        } else {
-          /*if (to.meta.roles) {
-                /*if (security.roles(to.meta.roles[0])) {
-                    next()
-                }
-                else {
-                    next({ name: 'unauthorized' })
-                }
-            }
-            else {
-                next()
-            } */
-          next();
-        }
+        handleUserHasAccess(to, from, next);
       }
     });
   } else {
     next();
   }
 });
+
+function handleUserHasAccess(to: Route, from: Route, next: any) {
+  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
+  let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+  if (userIsRegistered && to.path === "/registration") {
+    next({ path: "/timeline" });
+  } else if (to.meta.requiresRegistration && !userIsRegistered) {
+    next({ path: "/unauthorized" });
+  } else {
+    next();
+  }
+}
 
 export default router;

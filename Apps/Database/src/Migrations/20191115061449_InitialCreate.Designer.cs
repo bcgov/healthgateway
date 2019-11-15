@@ -26,7 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20191115052601_InitialCreate")]
+    [Migration("20191115061449_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,7 +51,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -95,7 +95,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -133,7 +133,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -155,7 +155,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -181,7 +181,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -191,7 +191,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -285,7 +285,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -314,7 +314,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -352,7 +352,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -390,7 +390,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -419,7 +419,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -449,7 +449,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -473,13 +473,13 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -526,7 +526,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -548,7 +548,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -618,7 +618,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -636,7 +636,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -664,7 +664,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -680,7 +680,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -706,7 +706,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -735,7 +735,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -770,7 +770,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -840,7 +840,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -865,7 +865,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -875,7 +875,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -900,7 +900,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -910,7 +910,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -1043,7 +1043,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -1051,7 +1051,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -1077,7 +1077,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -1091,7 +1091,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -1114,7 +1114,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -1138,7 +1138,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -1181,7 +1181,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -1189,7 +1189,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -1218,7 +1218,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -1227,7 +1227,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
@@ -1250,7 +1250,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
 
@@ -1267,7 +1267,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasMaxLength(30);
+                        .HasMaxLength(60);
 
                     b.Property<DateTime>("UpdatedDateTime");
 
