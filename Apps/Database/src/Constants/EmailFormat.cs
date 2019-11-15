@@ -13,36 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Constants
 {
     /// <summary>
-    /// The set of programs.
+    /// Represents the format of emails.
     /// </summary>
-    public static class ProgramType
+    public static class EmailFormat
     {
         /// <summary>
-        /// The Federal Drug loading program for active drugs.
+        /// Constant value to represent Text email.
         /// </summary>
-        public const string FederalApproved = "FED-DRUG-A";
+        public const string Text = "Text";
 
         /// <summary>
-        /// The Federal Drug loading program for marketed drugs.
+        /// Constant value to represent HTML email.
         /// </summary>
-        public const string FederalMarketed = "FED-DRUG-M";
-
-        /// <summary>
-        /// The Federal Drug loading program for Cancelled drugs.
-        /// </summary>
-        public const string FederalCancelled = "FED-DRUG-C";
-
-        /// <summary>
-        /// The Federal Drug loading program for dorman drugs.
-        /// </summary>
-        public const string FederalDormant = "FED-DRUG-D";
-
-        /// <summary>
-        /// The Provincial Drug loading program.
-        /// </summary>
-        public const string Provincial = "PROV-DRUG";
+        public const string HTML = "HTML";
     }
 }

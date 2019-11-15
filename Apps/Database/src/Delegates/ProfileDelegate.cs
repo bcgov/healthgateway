@@ -25,13 +25,13 @@ namespace HealthGateway.Database.Delegates
     /// <inheritdoc />
     public class ProfileDelegate : IProfileDelegate
     {
-        private readonly WebClientDbContext dbContext;
+        private readonly GatewayDbContext dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public ProfileDelegate(WebClientDbContext dbContext)
+        public ProfileDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

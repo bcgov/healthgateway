@@ -19,7 +19,7 @@ namespace HealthGateway.Hangfire
     using global::Hangfire;
     using global::Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
-    using Healthgateway.Hangfire.Context;
+    using HealthGateway.Database.Context;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.StaticFiles;
@@ -57,10 +57,10 @@ namespace HealthGateway.Hangfire
         {
             this.startupConfig.ConfigureHttpServices(services);
 
-            services.AddDbContextPool<HangfireDbContext>(options =>
-                 options.UseNpgsql(this.configuration.GetConnectionString("HangfireConnection")));
+            services.AddDbContextPool<GatewayDbContext>(options =>
+                 options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection")));
 
-            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("HangfireConnection")));
+            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
         }
 
         /// <summary>

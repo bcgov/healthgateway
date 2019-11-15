@@ -26,7 +26,7 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The common database context to be used by all other HealthGateway contexts.
     /// </summary>
-    public class BaseDbContext : DbContext
+    public abstract class BaseDbContext : DbContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDbContext"/> class.

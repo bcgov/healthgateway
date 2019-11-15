@@ -62,8 +62,6 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddDbContext<WebClientDbContext>(options => options.UseNpgsql(
-                this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IProfileDelegate, ProfileDelegate>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();

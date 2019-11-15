@@ -23,13 +23,13 @@ namespace HealthGateway.Database.Delegates
     /// <inheritdoc/>
     public class WriteAuditEventDelegate : IWriteAuditEventDelegate
     {
-        private readonly AuditDbContext dbContext;
+        private readonly GatewayDbContext dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WriteAuditEventDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public WriteAuditEventDelegate(AuditDbContext dbContext)
+        public WriteAuditEventDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

@@ -30,7 +30,7 @@ namespace HealthGateway.DrugMaintainer.Apps
     public class BCPProvDrugDBApp : BaseDrugApp<IPharmaCareDrugParser>
     {
         /// <inheritdoc/>
-        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }

@@ -18,42 +18,55 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constant;
 
-    /// <inheritdoc />
-    public class FileDownload : AuditableEntity
+    /// <summary>
+    /// Represents a text message template.
+    /// </summary>
+    public class EmailTemplate : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the unique id.
+        /// Gets or sets the email template unique id.
         /// </summary>
-        [Column("FileDownloadId")]
+        [Key]
+        [Column("EmailTemplateId")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the downloaded zip file.
+        /// Gets or sets the name of the template.
         /// </summary>
         [Required]
-        [MaxLength(35)]
+        [MaxLength(30)]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the SHA256 hash of the downloaded file.
+        /// Gets or sets the subject line.
         /// </summary>
         [Required]
-        [MaxLength(44)]
-        public string Hash { get; set; }
+        [MaxLength(100)]
+        public string Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the id representing the program processing the file.
+        /// Gets or sets the Body.
         /// </summary>
         [Required]
-        [MaxLength(10)]
-        public string ProgramCode { get; set; }
+        [Column(TypeName = "text")]
+        public string Body { get; set; }
 
         /// <summary>
-        /// Gets or sets the local file path to store the downloaded file.
+        /// Gets or sets the template effective date.
         /// </summary>
-        [NotMapped]
-        public string LocalFilePath { get; set; }
+        public DateTime EffectiveDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the template expiry date.
+        /// </summary>
+        public DateTime? ExpiryDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email format.
+        /// </summary>
+        [Required]
+        [MaxLength(4)]
+        public string FormatCode { get; set; }
     }
 }

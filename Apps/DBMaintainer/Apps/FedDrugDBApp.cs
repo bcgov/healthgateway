@@ -30,7 +30,7 @@ namespace HealthGateway.DrugMaintainer.Apps
     public class FedDrugDBApp : BaseDrugApp<IDrugProductParser>
     {
         /// <inheritdoc/>
-        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }
