@@ -36,7 +36,6 @@ namespace HealthGateway.Common.Auditing
     /// </summary>
     public class AuditLogger : IAuditLogger
     {
-        private const string TESTHOSTNAME = "testhost";
         private readonly ILogger<IAuditLogger> logger;
 
         private readonly IConfiguration configuration;
@@ -84,7 +83,7 @@ namespace HealthGateway.Common.Auditing
             string hdid = hdidClaim?.Value;
 
             auditEvent.ApplicationType = this.GetApplicationType();
-            auditEvent.TransactionResultType = this.GetTransactionResultType(context.Response.StatusCode);
+            auditEvent.TransactionResultCode = this.GetTransactionResultType(context.Response.StatusCode);
             auditEvent.ApplicationSubject = hdid;
             auditEvent.TransactionName = context.Request.Path;
             auditEvent.Trace = context.TraceIdentifier;
@@ -101,51 +100,53 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="statusCode">The http context status code.</param>
         /// <returns>The mapped transaction result.</returns>
-        private AuditTransactionResultType GetTransactionResultType(int statusCode)
+        private string GetTransactionResultType(int statusCode)
         {
             // Success codes (1xx, 2xx, 3xx)
             if (statusCode < 400)
             {
-                return AuditTransactionResultType.Success;
+                return AuditTransactionResult.Success;
             }
 
             // Unauthorized and forbidden (401, 403)
             if (statusCode == 401 || statusCode == 403)
             {
-                return AuditTransactionResultType.Unauthorized;
+                return AuditTransactionResult.Unauthorized;
             }
 
             // Client/Request errors codes other than unauthorized and forbidden (4xx)
             if (statusCode >= 400 && statusCode < 500)
             {
-                return AuditTransactionResultType.Failure;
+                return AuditTransactionResult.Failure;
             }
 
             // System error codes (5xx)
-            return AuditTransactionResultType.SystemError;
+            return AuditTransactionResult.SystemError;
         }
 
         /// <summary>
         /// Gets the current audit application type from the assembly name.
         /// </summary>
         /// <returns>The mapped application type.</returns>
-        private AuditApplicationType GetApplicationType()
+        private string GetApplicationType()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-            object returnValue;
-            if (Enum.TryParse(typeof(AuditApplicationType), assemblyName.Name, true, out returnValue))
+            switch (assemblyName.Name)
             {
-                return (AuditApplicationType)returnValue;
-            }
-            else
-            {
-                // This is used by unit tests
-                if (assemblyName.Name == TESTHOSTNAME)
-                {
-                    return AuditApplicationType.Configuration;
-                }
-
-                throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
+                case "Configuration":
+                    return AuditApplication.Configuration;
+                case "testhost":
+                    return AuditApplication.Configuration;
+                case "WebClient":
+                    return AuditApplication.WebClient;
+                case "Immunization":
+                    return AuditApplication.Immunization;
+                case "Patient":
+                    return AuditApplication.Patient;
+                case "Medication":
+                    return AuditApplication.Medication;
+                default:
+                    throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
         }
     }

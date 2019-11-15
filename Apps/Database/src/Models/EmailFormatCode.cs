@@ -13,28 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Context
+namespace HealthGateway.Database.Models
 {
-    using HealthGateway.Database.Models;
-    using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constant;
 
-    /// <summary>
-    /// The database context used to interact with the audit DB.
-    /// </summary>
-    public class AuditDbContext : BaseDbContext
+    #pragma warning disable CS1591 // self explanatory simple model
+    #pragma warning disable SA1600 // self explanatory simple model
+    public class EmailFormatCode : AuditableEntity
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuditDbContext"/> class.
-        /// </summary>
-        /// <param name="options">The DB Context options.</param>
-        public AuditDbContext(DbContextOptions<AuditDbContext> options)
-            : base(options)
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the set of Audit Events.
-        /// </summary>
-        public DbSet<AuditEvent> AuditEvent { get; set; }
+        [Key]
+        [Required]
+        [MaxLength(4)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string FormatCode { get; set; }
     }
 }

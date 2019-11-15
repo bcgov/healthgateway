@@ -82,7 +82,7 @@ namespace HealthGateway.Medication
                 };
             });
 
-            services.AddDbContext<DrugDbContext>(options => options.UseNpgsql(
+            services.AddDbContext<GatewayDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();

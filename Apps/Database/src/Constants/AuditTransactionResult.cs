@@ -18,26 +18,26 @@ namespace HealthGateway.Database.Constant
     /// <summary>
     /// Transaction Result Types for the audit entity.
     /// </summary>
-    public enum AuditTransactionResultType
+    public static class AuditTransactionResult
     {
         /// <summary>
         /// Represents a successful transaction.
         /// </summary>
-        Success = 1,
+        public const string Success = "Ok";
 
         /// <summary>
         /// Represents a failed transaction.
         /// </summary>
-        Failure = 2,
+        public const string Failure = "Fail";
 
         /// <summary>
         /// Represents an unauthorized transaction.
         /// </summary>
-        Unauthorized = 3,
+        public const string Unauthorized = "NotAuth";
 
         /// <summary>
         /// Represents that a system error occurred.
         /// </summary>
-        SystemError = 4,
+        public const string SystemError = "Err";
     }
 }

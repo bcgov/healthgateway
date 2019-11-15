@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using HealthGateway.Database.Constant;
 
     /// <summary>
@@ -36,7 +37,8 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the surrogate key for the AuditEvent.
         /// </summary>
         [Required]
-        public Guid AuditEventId { get; set; }
+        [Column("AuditEventId")]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the date/time the audit event occurred.
@@ -60,9 +62,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the application name recording the event.
         /// </summary>
-        [MaxLength(100)]
-        [Required]
-        public AuditApplicationType ApplicationType { get; set; }
+        [MaxLength(10)]
+        public string ApplicationType { get; set; }
 
         /// <summary>
         /// Gets or sets the transacation within the application causing the event.
@@ -88,7 +89,8 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the result code/status code from the transaction.
         /// </summary>
         [Required]
-        public AuditTransactionResultType TransactionResultType { get; set; }
+        [MaxLength(10)]
+        public string TransactionResultCode { get; set; }
 
         /// <summary>
         /// Gets or sets the duration of the transaction in milliseconds.

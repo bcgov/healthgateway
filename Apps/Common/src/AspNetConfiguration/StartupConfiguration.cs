@@ -175,7 +175,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
-            services.AddDbContext<AuditDbContext>(options => options.UseNpgsql(
+            services.AddDbContext<GatewayDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
             services.AddTransient<IWriteAuditEventDelegate, WriteAuditEventDelegate>();
@@ -355,13 +355,12 @@ namespace HealthGateway.Common.AspNetConfiguration
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             AuditEvent auditEvent = new AuditEvent();
-            auditEvent.AuditEventId = Guid.NewGuid();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
             auditEvent.TransactionDuration = 0; // There's not a way to calculate the duration here.
 
             auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);
 
-            auditEvent.TransactionResultType = Database.Constant.AuditTransactionResultType.Unauthorized;
+            auditEvent.TransactionResultCode = Database.Constant.AuditTransactionResult.Unauthorized;
             auditEvent.CreatedBy = nameof(StartupConfiguration);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
 

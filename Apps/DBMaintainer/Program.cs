@@ -54,13 +54,7 @@ namespace HealthGateway.DrugMaintainer
                        .ConfigureServices((hostContext, services) =>
                        {
                            Console.WriteLine("Configuring Services...");
-                           services.AddDbContextPool<DrugDbContext>(options =>
-                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
-
-                           services.AddDbContextPool<AuditDbContext>(options =>
-                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
-
-                           services.AddDbContextPool<WebClientDbContext>(options =>
+                           services.AddDbContextPool<GatewayDbContext>(options =>
                                 options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
                            // Add HTTP Client

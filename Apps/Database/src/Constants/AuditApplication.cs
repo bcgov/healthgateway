@@ -18,31 +18,31 @@ namespace HealthGateway.Database.Constant
     /// <summary>
     /// The application type being recorded in the DB.
     /// </summary>
-    public enum AuditApplicationType
+    public static class AuditApplication
     {
         /// <summary>
         /// Represents the Configuration application.
         /// </summary>
-        Configuration = 100,
+        public const string Configuration = "CFG";
 
         /// <summary>
         /// Represents the WebClient application.
         /// </summary>
-        WebClient = 200,
+        public const string WebClient = "WEB";
 
         /// <summary>
         /// Represents the Immunization application.
         /// </summary>
-        Immunization = 300,
+        public const string Immunization = "IMM";
 
         /// <summary>
         /// Represents the Patient application.
         /// </summary>
-        Patient = 400,
+        public const string Patient = "PAT";
 
         /// <summary>
         /// Represents the Medication application.
         /// </summary>
-        Medication = 500,
+        public const string Medication = "MED";
     }
 }

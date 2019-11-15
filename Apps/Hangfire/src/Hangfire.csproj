@@ -36,6 +36,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
+    <ProjectReference Include="..\..\Database\src\Database.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />

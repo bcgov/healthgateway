@@ -56,7 +56,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <summary>
         /// The database contect to use to to interact with the DB.
         /// </summary>
-        protected DrugDbContext drugDbContext { get; set; }
+        protected GatewayDbContext drugDbContext { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDrugApp{T}"/> class.
@@ -66,7 +66,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
         /// <param name="drugDBContext">The database context to interact with./</param>
-        public BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
@@ -139,7 +139,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="downloadedFile">Search for all download files not matching this one.</param>
         protected void RemoveOldFiles(FileDownload downloadedFile)
         {
-            var oldIds = this.drugDbContext.FileDownload.Where(p => p.ProgramTypeCodeId == downloadedFile.ProgramTypeCodeId &&
+            var oldIds = this.drugDbContext.FileDownload.Where(p => p.ProgramCode == downloadedFile.ProgramCode &&
                                           p.Hash != downloadedFile.Hash).Select(f => f.Id).ToList();
             oldIds.ForEach(s => logger.LogInformation($"Deleting old Download file with hash: {s}"));
             this.drugDbContext.RemoveRange(oldIds.Select(id => new FileDownload { Id = id }));
@@ -155,8 +155,8 @@ namespace HealthGateway.DrugMaintainer.Apps
             IConfigurationSection section = configuration.GetSection(ConfigSectionName);
             Uri source = section.GetValue<Uri>("Url");
 
-            ProgramType programType = section.GetValue<ProgramType>("DBCode");
-            this.logger.LogInformation($"Program Type Code = {programType}");
+            string programType = section.GetValue<string>("AppName");
+            this.logger.LogInformation($"Program Type = {programType}");
             string targetFolder = configuration.GetSection(ConfigSectionName).GetValue<string>("TargetFolder");
 
             FileDownload downloadedFile = DownloadFile(source, targetFolder);
@@ -164,7 +164,7 @@ namespace HealthGateway.DrugMaintainer.Apps
             {
                 string sourceFolder = ExtractFiles(downloadedFile);
                 logger.LogInformation("File has not been processed - Attempting to process");
-                downloadedFile.ProgramTypeCodeId = programType;
+                downloadedFile.ProgramCode = programType;
                 ProcessDownload(sourceFolder, downloadedFile);
                 RemoveExtractedFiles(sourceFolder);
             }
