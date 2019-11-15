@@ -209,7 +209,7 @@ namespace HealthGateway.Database.Migrations
                     AuditEventDateTime = table.Column<DateTime>(nullable: false),
                     ClientIP = table.Column<string>(maxLength: 15, nullable: false),
                     ApplicationSubject = table.Column<string>(maxLength: 100, nullable: true),
-                    ApplicationType = table.Column<string>(maxLength: 10, nullable: true),
+                    ApplicationType = table.Column<string>(maxLength: 10, nullable: false),
                     TransactionName = table.Column<string>(maxLength: 100, nullable: false),
                     TransactionVersion = table.Column<string>(maxLength: 5, nullable: true),
                     Trace = table.Column<string>(maxLength: 200, nullable: true),
@@ -225,7 +225,7 @@ namespace HealthGateway.Database.Migrations
                         principalSchema: "gateway",
                         principalTable: "ProgramTypeCode",
                         principalColumn: "ProgramCode",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AuditEvent_AuditTransactionResultCode_TransactionResultCode",
                         column: x => x.TransactionResultCode,
@@ -675,31 +675,31 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "ProgramTypeCode",
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("38861a8b-d46d-4a05-a9b8-7f3a05790652"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Approved Drug Load", "FAPP", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("38861a8b-d46d-4a05-a9b8-7f3a05790652"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Approved Drug Load", "FED-DRUG-A", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("33e37a49-e59b-4c26-8375-66195e4e36ed"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Marketed Drug Load", "FMARK", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("33e37a49-e59b-4c26-8375-66195e4e36ed"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Marketed Drug Load", "FED-DRUG-M", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("7e1b1f43-db55-4a0d-bc33-a53e740999d0"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Cancelled Drug Load", "FCANC", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("7e1b1f43-db55-4a0d-bc33-a53e740999d0"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Cancelled Drug Load", "FED-DRUG-C", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("02606989-b30b-40cd-ac51-03ca2e4e9242"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Dormant Drug Load", "FDORM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("02606989-b30b-40cd-ac51-03ca2e4e9242"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Dormant Drug Load", "FED-DRUG-D", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
                 columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("ddc05e78-c0cd-4f77-879f-d2a55b84b20a"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial Pharmacare Drug Load", "PROV", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("ddc05e78-c0cd-4f77-879f-d2a55b84b20a"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial Pharmacare Drug Load", "PROV-DRUG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",

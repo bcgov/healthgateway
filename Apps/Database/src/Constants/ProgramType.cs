@@ -23,26 +23,26 @@ namespace HealthGateway.Database.Constant
         /// <summary>
         /// The Federal Drug loading program for active drugs.
         /// </summary>
-        public const string FederalApproved = "FAPP";
+        public const string FederalApproved = "FED-DRUG-A";
 
         /// <summary>
         /// The Federal Drug loading program for marketed drugs.
         /// </summary>
-        public const string FederalMarketed = "FMARK";
+        public const string FederalMarketed = "FED-DRUG-M";
 
         /// <summary>
         /// The Federal Drug loading program for Cancelled drugs.
         /// </summary>
-        public const string FederalCancelled = "FCANC";
+        public const string FederalCancelled = "FED-DRUG-C";
 
         /// <summary>
         /// The Federal Drug loading program for dorman drugs.
         /// </summary>
-        public const string FederalDormant = "FDORM";
+        public const string FederalDormant = "FED-DRUG-D";
 
         /// <summary>
         /// The Provincial Drug loading program.
         /// </summary>
-        public const string Provincial = "PROV";
+        public const string Provincial = "PROV-DRUG";
     }
 }

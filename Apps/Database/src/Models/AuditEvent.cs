@@ -63,6 +63,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the application name recording the event.
         /// </summary>
         [MaxLength(10)]
+        [Required]
         public string ApplicationType { get; set; }
 
         /// <summary>

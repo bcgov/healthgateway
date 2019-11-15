@@ -26,7 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20191115075326_InitialCreate")]
+    [Migration("20191115183006_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -124,6 +124,7 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(100);
 
                     b.Property<string>("ApplicationType")
+                        .IsRequired()
                         .HasMaxLength(10);
 
                     b.Property<DateTime>("AuditEventDateTime");
@@ -960,7 +961,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Approved Drug Load",
-                            ProgramCode = "FAPP",
+                            ProgramCode = "FED-DRUG-A",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -971,7 +972,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Marketed Drug Load",
-                            ProgramCode = "FMARK",
+                            ProgramCode = "FED-DRUG-M",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -982,7 +983,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Cancelled Drug Load",
-                            ProgramCode = "FCANC",
+                            ProgramCode = "FED-DRUG-C",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -993,7 +994,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Dormant Drug Load",
-                            ProgramCode = "FDORM",
+                            ProgramCode = "FED-DRUG-D",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1004,7 +1005,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Provincial Pharmacare Drug Load",
-                            ProgramCode = "PROV",
+                            ProgramCode = "PROV-DRUG",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1337,7 +1338,8 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.ProgramTypeCode")
                         .WithMany()
                         .HasForeignKey("ApplicationType")
-                        .HasPrincipalKey("ProgramCode");
+                        .HasPrincipalKey("ProgramCode")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("HealthGateway.Database.Models.AuditTransactionResultCode")
                         .WithMany()
