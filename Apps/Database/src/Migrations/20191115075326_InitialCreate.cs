@@ -24,64 +24,78 @@ namespace HealthGateway.Database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "gateway");
+
             migrationBuilder.CreateSequence(
                 name: "trace_seq",
+                schema: "gateway",
                 minValue: 1L,
                 maxValue: 999999L,
                 cyclic: true);
 
             migrationBuilder.CreateTable(
                 name: "AuditTransactionResultCode",
+                schema: "gateway",
                 columns: table => new
                 {
-                    ResultCode = table.Column<string>(maxLength: 10, nullable: false),
+                    AuditTransactionResultCodeId = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
+                    ResultCode = table.Column<string>(maxLength: 10, nullable: false),
                     Description = table.Column<string>(maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditTransactionResultCode", x => x.ResultCode);
+                    table.PrimaryKey("PK_AuditTransactionResultCode", x => x.AuditTransactionResultCodeId);
+                    table.UniqueConstraint("AK_AuditTransactionResultCode_ResultCode", x => x.ResultCode);
                 });
 
             migrationBuilder.CreateTable(
                 name: "EmailFormatCode",
+                schema: "gateway",
                 columns: table => new
                 {
-                    FormatCode = table.Column<string>(maxLength: 4, nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
-                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    xmin = table.Column<uint>(type: "xid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmailFormatCode", x => x.FormatCode);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProgramTypeCode",
-                columns: table => new
-                {
-                    ProgramCode = table.Column<string>(maxLength: 10, nullable: false),
+                    EmailFormatCodeId = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
+                    FormatCode = table.Column<string>(maxLength: 4, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailFormatCode", x => x.EmailFormatCodeId);
+                    table.UniqueConstraint("AK_EmailFormatCode_FormatCode", x => x.FormatCode);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProgramTypeCode",
+                schema: "gateway",
+                columns: table => new
+                {
+                    ProgramTypeCodeId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
+                    ProgramCode = table.Column<string>(maxLength: 10, nullable: false),
                     Description = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProgramTypeCode", x => x.ProgramCode);
+                    table.PrimaryKey("PK_ProgramTypeCode", x => x.ProgramTypeCodeId);
+                    table.UniqueConstraint("AK_ProgramTypeCode_ProgramCode", x => x.ProgramCode);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Schedule",
+                schema: "gateway",
                 columns: table => new
                 {
                     ScheduleId = table.Column<Guid>(nullable: false),
@@ -101,6 +115,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserProfile",
+                schema: "gateway",
                 columns: table => new
                 {
                     UserProfileId = table.Column<string>(maxLength: 52, nullable: false),
@@ -119,6 +134,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Email",
+                schema: "gateway",
                 columns: table => new
                 {
                     EmailId = table.Column<Guid>(nullable: false),
@@ -143,6 +159,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Email_EmailFormatCode_FormatCode",
                         column: x => x.FormatCode,
+                        principalSchema: "gateway",
                         principalTable: "EmailFormatCode",
                         principalColumn: "FormatCode",
                         onDelete: ReferentialAction.Cascade);
@@ -150,6 +167,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "EmailTemplate",
+                schema: "gateway",
                 columns: table => new
                 {
                     EmailTemplateId = table.Column<Guid>(nullable: false),
@@ -171,6 +189,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_EmailTemplate_EmailFormatCode_FormatCode",
                         column: x => x.FormatCode,
+                        principalSchema: "gateway",
                         principalTable: "EmailFormatCode",
                         principalColumn: "FormatCode",
                         onDelete: ReferentialAction.Cascade);
@@ -178,6 +197,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AuditEvent",
+                schema: "gateway",
                 columns: table => new
                 {
                     AuditEventId = table.Column<Guid>(nullable: false),
@@ -202,12 +222,14 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AuditEvent_ProgramTypeCode_ApplicationType",
                         column: x => x.ApplicationType,
+                        principalSchema: "gateway",
                         principalTable: "ProgramTypeCode",
                         principalColumn: "ProgramCode",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AuditEvent_AuditTransactionResultCode_TransactionResultCode",
                         column: x => x.TransactionResultCode,
+                        principalSchema: "gateway",
                         principalTable: "AuditTransactionResultCode",
                         principalColumn: "ResultCode",
                         onDelete: ReferentialAction.Restrict);
@@ -215,6 +237,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "FileDownload",
+                schema: "gateway",
                 columns: table => new
                 {
                     FileDownloadId = table.Column<Guid>(nullable: false),
@@ -233,6 +256,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_FileDownload_ProgramTypeCode_ProgramCode",
                         column: x => x.ProgramCode,
+                        principalSchema: "gateway",
                         principalTable: "ProgramTypeCode",
                         principalColumn: "ProgramCode",
                         onDelete: ReferentialAction.Cascade);
@@ -240,6 +264,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "DrugProduct",
+                schema: "gateway",
                 columns: table => new
                 {
                     DrugProductId = table.Column<Guid>(nullable: false),
@@ -270,6 +295,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_DrugProduct_FileDownload_FileDownloadId",
                         column: x => x.FileDownloadId,
+                        principalSchema: "gateway",
                         principalTable: "FileDownload",
                         principalColumn: "FileDownloadId",
                         onDelete: ReferentialAction.Cascade);
@@ -277,6 +303,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "PharmaCareDrug",
+                schema: "gateway",
                 columns: table => new
                 {
                     PharmaCareDrugId = table.Column<Guid>(nullable: false),
@@ -317,6 +344,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_PharmaCareDrug_FileDownload_FileDownloadId",
                         column: x => x.FileDownloadId,
+                        principalSchema: "gateway",
                         principalTable: "FileDownload",
                         principalColumn: "FileDownloadId",
                         onDelete: ReferentialAction.Cascade);
@@ -324,6 +352,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ActiveIngredient",
+                schema: "gateway",
                 columns: table => new
                 {
                     ActiveIngredientId = table.Column<Guid>(nullable: false),
@@ -354,6 +383,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_ActiveIngredient_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -361,6 +391,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Company",
+                schema: "gateway",
                 columns: table => new
                 {
                     CompanyId = table.Column<Guid>(nullable: false),
@@ -394,6 +425,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Company_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -401,6 +433,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Form",
+                schema: "gateway",
                 columns: table => new
                 {
                     FormId = table.Column<Guid>(nullable: false),
@@ -420,6 +453,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Form_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -427,6 +461,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Packaging",
+                schema: "gateway",
                 columns: table => new
                 {
                     PackagingId = table.Column<Guid>(nullable: false),
@@ -450,6 +485,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Packaging_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -457,6 +493,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "PharmaceuticalStd",
+                schema: "gateway",
                 columns: table => new
                 {
                     PharmaceuticalStdId = table.Column<Guid>(nullable: false),
@@ -474,6 +511,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_PharmaceuticalStd_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -481,6 +519,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Route",
+                schema: "gateway",
                 columns: table => new
                 {
                     RouteId = table.Column<Guid>(nullable: false),
@@ -500,6 +539,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Route_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -507,6 +547,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Status",
+                schema: "gateway",
                 columns: table => new
                 {
                     StatusId = table.Column<Guid>(nullable: false),
@@ -529,6 +570,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Status_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -536,6 +578,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "TherapeuticClass",
+                schema: "gateway",
                 columns: table => new
                 {
                     TherapeuticClassId = table.Column<Guid>(nullable: false),
@@ -558,6 +601,7 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_TherapeuticClass_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -565,6 +609,7 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "VeterinarySpecies",
+                schema: "gateway",
                 columns: table => new
                 {
                     VeterinarySpeciesId = table.Column<Guid>(nullable: false),
@@ -584,92 +629,110 @@ namespace HealthGateway.Database.Migrations
                     table.ForeignKey(
                         name: "FK_VeterinarySpecies_DrugProduct_DrugProductId",
                         column: x => x.DrugProductId,
+                        principalSchema: "gateway",
                         principalTable: "DrugProduct",
                         principalColumn: "DrugProductId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Ok", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Success", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("ea5fe1d0-2c08-4ba7-b061-dff536bb2085"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Success", "Ok", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Fail", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Failure", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("43710083-fdc4-4401-ab59-2de9dcc1db7c"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Failure", "Fail", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "NotAuth", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Unauthorized", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("d25dac06-bd1e-4048-abfc-2a1f6103364b"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Unauthorized", "NotAuth", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Err", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System Error", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("4c173b2b-1774-48fa-bc3a-6f3c9b2cd363"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System Error", "Err", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "EmailFormatCode",
-                columns: new[] { "FormatCode", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Text", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "EmailFormatCodeId", "CreatedBy", "CreatedDateTime", "FormatCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("d809db40-5034-4d37-8b6f-d02c17a87c8d"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Text", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "EmailFormatCode",
-                columns: new[] { "FormatCode", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "HTML", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "EmailFormatCodeId", "CreatedBy", "CreatedDateTime", "FormatCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("99b4c85a-aa21-4742-9898-8172933e31a3"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "HTML", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "FAPP", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Approved Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("38861a8b-d46d-4a05-a9b8-7f3a05790652"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Approved Drug Load", "FAPP", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "FMARK", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Marketed Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("33e37a49-e59b-4c26-8375-66195e4e36ed"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Marketed Drug Load", "FMARK", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "FCANC", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Cancelled Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("7e1b1f43-db55-4a0d-bc33-a53e740999d0"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Cancelled Drug Load", "FCANC", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "FDORM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Dormant Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("02606989-b30b-40cd-ac51-03ca2e4e9242"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Dormant Drug Load", "FDORM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "PROV", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial Pharmacare Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("ddc05e78-c0cd-4f77-879f-d2a55b84b20a"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial Pharmacare Drug Load", "PROV", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "CFG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Configuration Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("83fc7381-d57c-4c13-9173-1f0a01e0f543"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Configuration Service", "CFG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "WEB", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Web Client", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("d1175a3e-aafb-4895-b7ee-358500775a7e"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Web Client", "WEB", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "IMM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Immunization Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("5135cdf7-59ec-4c03-9499-38c3ccd6ecb8"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Immunization Service", "IMM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "PAT", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Patient Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("4a1db4fe-f91b-4902-941c-68dbadd9d243"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Patient Service", "PAT", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "MED", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Medication Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("c0b7962a-9f66-4aa8-9864-5259bee6cedd"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Medication Service", "MED", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "EmailTemplate",
                 columns: new[] { "EmailTemplateId", "Body", "CreatedBy", "CreatedDateTime", "EffectiveDate", "ExpiryDate", "FormatCode", "Name", "Subject", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[] { new Guid("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"), @"<!doctype html>
@@ -705,94 +768,126 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveIngredient_DrugProductId",
+                schema: "gateway",
                 table: "ActiveIngredient",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditEvent_ApplicationType",
+                schema: "gateway",
                 table: "AuditEvent",
                 column: "ApplicationType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditEvent_TransactionResultCode",
+                schema: "gateway",
                 table: "AuditEvent",
                 column: "TransactionResultCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuditTransactionResultCode_ResultCode",
+                schema: "gateway",
+                table: "AuditTransactionResultCode",
+                column: "ResultCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Company_DrugProductId",
+                schema: "gateway",
                 table: "Company",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DrugProduct_FileDownloadId",
+                schema: "gateway",
                 table: "DrugProduct",
                 column: "FileDownloadId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Email_FormatCode",
+                schema: "gateway",
                 table: "Email",
                 column: "FormatCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmailFormatCode_FormatCode",
+                schema: "gateway",
+                table: "EmailFormatCode",
+                column: "FormatCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmailTemplate_FormatCode",
+                schema: "gateway",
                 table: "EmailTemplate",
                 column: "FormatCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileDownload_Hash",
+                schema: "gateway",
                 table: "FileDownload",
                 column: "Hash",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileDownload_ProgramCode",
+                schema: "gateway",
                 table: "FileDownload",
-                column: "ProgramCode");
+                column: "ProgramCode",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Form_DrugProductId",
+                schema: "gateway",
                 table: "Form",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Packaging_DrugProductId",
+                schema: "gateway",
                 table: "Packaging",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PharmaCareDrug_FileDownloadId",
+                schema: "gateway",
                 table: "PharmaCareDrug",
                 column: "FileDownloadId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PharmaceuticalStd_DrugProductId",
+                schema: "gateway",
                 table: "PharmaceuticalStd",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Route_DrugProductId",
+                schema: "gateway",
                 table: "Route",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Status_DrugProductId",
+                schema: "gateway",
                 table: "Status",
                 column: "DrugProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TherapeuticClass_DrugProductId",
+                schema: "gateway",
                 table: "TherapeuticClass",
                 column: "DrugProductId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_VeterinarySpecies_DrugProductId",
+                schema: "gateway",
                 table: "VeterinarySpecies",
                 column: "DrugProductId",
                 unique: true);
@@ -801,67 +896,88 @@ namespace HealthGateway.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActiveIngredient");
+                name: "ActiveIngredient",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "AuditEvent");
+                name: "AuditEvent",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Company");
+                name: "Company",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Email");
+                name: "Email",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "EmailTemplate");
+                name: "EmailTemplate",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Form");
+                name: "Form",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Packaging");
+                name: "Packaging",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "PharmaCareDrug");
+                name: "PharmaCareDrug",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "PharmaceuticalStd");
+                name: "PharmaceuticalStd",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Route");
+                name: "Route",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Schedule");
+                name: "Schedule",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "Status");
+                name: "Status",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "TherapeuticClass");
+                name: "TherapeuticClass",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "UserProfile");
+                name: "UserProfile",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "VeterinarySpecies");
+                name: "VeterinarySpecies",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "AuditTransactionResultCode");
+                name: "AuditTransactionResultCode",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "EmailFormatCode");
+                name: "EmailFormatCode",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "DrugProduct");
+                name: "DrugProduct",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "FileDownload");
+                name: "FileDownload",
+                schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "ProgramTypeCode");
+                name: "ProgramTypeCode",
+                schema: "gateway");
 
             migrationBuilder.DropSequence(
-                name: "trace_seq");
+                name: "trace_seq",
+                schema: "gateway");
         }
     }
 }

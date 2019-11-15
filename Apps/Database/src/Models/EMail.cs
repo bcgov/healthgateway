@@ -86,10 +86,5 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(4)]
         public string FormatCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the EmailFormatCode object.
-        /// </summary>
-        public virtual EmailFormatCode Format { get; set; }
     }
 }

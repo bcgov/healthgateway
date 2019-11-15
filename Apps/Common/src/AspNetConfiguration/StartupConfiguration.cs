@@ -175,7 +175,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
-            services.AddDbContext<GatewayDbContext>(options => options.UseNpgsql(
+            services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
             services.AddTransient<IWriteAuditEventDelegate, WriteAuditEventDelegate>();

@@ -26,13 +26,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20191115061449_InitialCreate")]
+    [Migration("20191115075326_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("gateway")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
@@ -176,8 +177,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.AuditTransactionResultCode", b =>
                 {
-                    b.Property<string>("ResultCode")
-                        .HasMaxLength(10);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("AuditTransactionResultCodeId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -188,6 +190,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(30);
+
+                    b.Property<string>("ResultCode")
+                        .IsRequired()
+                        .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -201,47 +207,54 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin")
                         .HasColumnType("xid");
 
-                    b.HasKey("ResultCode");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResultCode")
+                        .IsUnique();
 
                     b.ToTable("AuditTransactionResultCode");
 
                     b.HasData(
                         new
                         {
-                            ResultCode = "Ok",
+                            Id = new Guid("ea5fe1d0-2c08-4ba7-b061-dff536bb2085"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Success",
+                            ResultCode = "Ok",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ResultCode = "Fail",
+                            Id = new Guid("43710083-fdc4-4401-ab59-2de9dcc1db7c"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Failure",
+                            ResultCode = "Fail",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ResultCode = "NotAuth",
+                            Id = new Guid("d25dac06-bd1e-4048-abfc-2a1f6103364b"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Unauthorized",
+                            ResultCode = "NotAuth",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ResultCode = "Err",
+                            Id = new Guid("4c173b2b-1774-48fa-bc3a-6f3c9b2cd363"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "System Error",
+                            ResultCode = "Err",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -468,14 +481,19 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailFormatCode", b =>
                 {
-                    b.Property<string>("FormatCode")
-                        .HasMaxLength(4);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("EmailFormatCodeId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
+
+                    b.Property<string>("FormatCode")
+                        .IsRequired()
+                        .HasMaxLength(4);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -489,25 +507,30 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin")
                         .HasColumnType("xid");
 
-                    b.HasKey("FormatCode");
+                    b.HasKey("Id");
+
+                    b.HasIndex("FormatCode")
+                        .IsUnique();
 
                     b.ToTable("EmailFormatCode");
 
                     b.HasData(
                         new
                         {
-                            FormatCode = "Text",
+                            Id = new Guid("d809db40-5034-4d37-8b6f-d02c17a87c8d"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "Text",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            FormatCode = "HTML",
+                            Id = new Guid("99b4c85a-aa21-4742-9898-8172933e31a3"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -651,7 +674,8 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("Hash")
                         .IsUnique();
 
-                    b.HasIndex("ProgramCode");
+                    b.HasIndex("ProgramCode")
+                        .IsUnique();
 
                     b.ToTable("FileDownload");
                 });
@@ -895,8 +919,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ProgramTypeCode", b =>
                 {
-                    b.Property<string>("ProgramCode")
-                        .HasMaxLength(10);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ProgramTypeCodeId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -907,6 +932,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50);
+
+                    b.Property<string>("ProgramCode")
+                        .IsRequired()
+                        .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -920,107 +949,117 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin")
                         .HasColumnType("xid");
 
-                    b.HasKey("ProgramCode");
+                    b.HasKey("Id");
 
                     b.ToTable("ProgramTypeCode");
 
                     b.HasData(
                         new
                         {
-                            ProgramCode = "FAPP",
+                            Id = new Guid("38861a8b-d46d-4a05-a9b8-7f3a05790652"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Approved Drug Load",
+                            ProgramCode = "FAPP",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "FMARK",
+                            Id = new Guid("33e37a49-e59b-4c26-8375-66195e4e36ed"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Marketed Drug Load",
+                            ProgramCode = "FMARK",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "FCANC",
+                            Id = new Guid("7e1b1f43-db55-4a0d-bc33-a53e740999d0"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Cancelled Drug Load",
+                            ProgramCode = "FCANC",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "FDORM",
+                            Id = new Guid("02606989-b30b-40cd-ac51-03ca2e4e9242"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Federal Dormant Drug Load",
+                            ProgramCode = "FDORM",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "PROV",
+                            Id = new Guid("ddc05e78-c0cd-4f77-879f-d2a55b84b20a"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Provincial Pharmacare Drug Load",
+                            ProgramCode = "PROV",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "CFG",
+                            Id = new Guid("83fc7381-d57c-4c13-9173-1f0a01e0f543"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Configuration Service",
+                            ProgramCode = "CFG",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "WEB",
+                            Id = new Guid("d1175a3e-aafb-4895-b7ee-358500775a7e"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Web Client",
+                            ProgramCode = "WEB",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "IMM",
+                            Id = new Guid("5135cdf7-59ec-4c03-9499-38c3ccd6ecb8"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Immunization Service",
+                            ProgramCode = "IMM",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "PAT",
+                            Id = new Guid("4a1db4fe-f91b-4902-941c-68dbadd9d243"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Patient Service",
+                            ProgramCode = "PAT",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         },
                         new
                         {
-                            ProgramCode = "MED",
+                            Id = new Guid("c0b7962a-9f66-4aa8-9864-5259bee6cedd"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Medication Service",
+                            ProgramCode = "MED",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1297,11 +1336,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.HasOne("HealthGateway.Database.Models.ProgramTypeCode")
                         .WithMany()
-                        .HasForeignKey("ApplicationType");
+                        .HasForeignKey("ApplicationType")
+                        .HasPrincipalKey("ProgramCode");
 
                     b.HasOne("HealthGateway.Database.Models.AuditTransactionResultCode")
                         .WithMany()
                         .HasForeignKey("TransactionResultCode")
+                        .HasPrincipalKey("ResultCode")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -1323,25 +1364,28 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.Email", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode", "Format")
+                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode")
                         .WithMany()
                         .HasForeignKey("FormatCode")
+                        .HasPrincipalKey("FormatCode")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailTemplate", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode", "Format")
+                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode")
                         .WithMany()
                         .HasForeignKey("FormatCode")
+                        .HasPrincipalKey("FormatCode")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.FileDownload", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode", "ProgramTypeCode")
+                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode")
                         .WithMany()
                         .HasForeignKey("ProgramCode")
+                        .HasPrincipalKey("ProgramCode")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

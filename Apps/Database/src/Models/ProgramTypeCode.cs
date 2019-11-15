@@ -25,9 +25,11 @@ namespace HealthGateway.Database.Models
     public class ProgramTypeCode : AuditableEntity
     {
         [Key]
+        [Column("ProgramTypeCodeId")]
+        public Guid Id { get; set; }
+
         [Required]
         [MaxLength(10)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string ProgramCode { get; set; }
 
         [Required]

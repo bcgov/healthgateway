@@ -51,12 +51,6 @@ namespace HealthGateway.Database.Models
         public string ProgramCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the Program Type Code
-        /// Used to define the foreign key in code first.
-        /// </summary>
-        public virtual ProgramTypeCode ProgramTypeCode { get; set; }
-
-        /// <summary>
         /// Gets or sets the local file path to store the downloaded file.
         /// </summary>
         [NotMapped]

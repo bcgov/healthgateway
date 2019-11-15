@@ -67,12 +67,6 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(4)]
-        [ForeignKey("EmailFormatCode")]
         public string FormatCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the EmailFormatCode.
-        /// </summary>
-        public virtual EmailFormatCode Format { get; set; }
     }
 }
