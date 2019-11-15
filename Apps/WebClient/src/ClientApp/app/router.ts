@@ -4,7 +4,6 @@ import Vue from "vue";
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import ProfileComponent from "@/views/profile.vue";
-import CardInfoComponent from "@/views/cardInfo.vue";
 import LandingComponent from "@/views/landing.vue";
 import NotFoundComponent from "@/views/errors/notFound.vue";
 import LoginComponent from "@/views/login.vue";
@@ -26,7 +25,7 @@ const routes = [
   {
     path: "/registrationInfo",
     component: RegistrationInfoComponent,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: false }
   },
   {
     path: "/registration",
@@ -37,11 +36,6 @@ const routes = [
     path: "/profile",
     component: ProfileComponent,
     meta: { requiresRegistration: true, roles: ["user"] }
-  },
-  {
-    path: "/cardInfo",
-    component: CardInfoComponent,
-    meta: { requiresAuth: false, roles: ["user"] }
   },
   {
     path: "/timeline",
@@ -94,10 +88,7 @@ router.beforeEach(async (to, from, next) => {
 function handleUserHasAccess(to: Route, from: Route, next: any) {
   // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-  if (
-    userIsRegistered &&
-    (to.path === "/registration" || to.path === "/registrationInfo")
-  ) {
+  if (userIsRegistered && to.path === "/registration") {
     next({ path: "/timeline" });
   } else if (to.meta.requiresRegistration && !userIsRegistered) {
     next({ path: "/unauthorized" });
