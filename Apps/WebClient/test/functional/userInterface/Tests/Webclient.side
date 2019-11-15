@@ -64,7 +64,7 @@
     }]
   }, {
     "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
-    "name": "Redirect to registration landing page",
+    "name": "Landing page - Sign up button",
     "commands": [{
       "id": "255cc728-fec0-4135-8bb9-9610aa1a5639",
       "comment": "",
@@ -93,17 +93,13 @@
       "id": "dc5d4516-920a-4660-b429-000ffaba9c82",
       "comment": "",
       "command": "assertElementPresent",
-      "target": "id=btnCreateAccount",
+      "target": "css=.btn-primary",
       "targets": [
-        ["id=btnStart", "id"],
-        ["linkText=Create Health Gateway Account", "linkText"],
-        ["css=#btnStart", "css:finder"],
-        ["xpath=//a[contains(text(),'Create Health Gateway Account')]", "xpath:link"],
-        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/div/div/div/div/div[3]/div/a", "xpath:idRelative"],
-        ["xpath=(//a[contains(@href, '#')])[2]", "xpath:href"],
-        ["xpath=//div/a", "xpath:position"],
-        ["xpath=//a[contains(.,'Create Health Gateway Account')]", "xpath:innerText"]
+        ["css=.btn-primary", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[2]/div[2]/div/div/a/button", "xpath:idRelative"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Register for Health Gateway')]", "xpath:innerText"]
       ],
       "value": ""
     }]
@@ -1136,6 +1132,336 @@
       "target": "",
       "targets": [],
       "value": ""
+    }]
+  }, {
+    "id": "fc6f8e24-0d80-4e7d-8eb1-1b1ea3160392",
+    "name": "Registration Info - To login",
+    "commands": [{
+      "id": "712f7c8d-36a4-4bf6-b6e2-cf8c4cff2b30",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c4b59e14-72d7-4081-85f8-4fb1f75d98ce",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3f773caa-3167-4320-a128-4e3d0059b0b1",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Sign Up", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registrationInfo')]", "xpath:href"],
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7c5194f7-f240-42df-acc4-a32a709c61ba",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-primary",
+      "targets": [
+        ["css=.btn-primary", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[2]/div[2]/div/div/a/button", "xpath:idRelative"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Register for Health Gateway')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "64b5b6f7-78f1-4779-8a3c-0e46cf454996",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.card-header > h3",
+      "targets": [
+        ["css=.card-header > h3", "css:finder"],
+        ["xpath=//div[@id='loginPicker']/div/h3", "xpath:idRelative"],
+        ["xpath=//div/div/h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'Log In')]", "xpath:innerText"]
+      ],
+      "value": "Log In"
+    }]
+  }, {
+    "id": "7a24e4e2-cdc3-4710-b0cf-ca8b0bb96a79",
+    "name": "Landing page - Learn more button",
+    "commands": [{
+      "id": "acc71271-646a-44c1-a7c8-383d69211518",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3abc19f5-0a51-4f2c-b420-9f492a3c4637",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnLearnMore",
+      "targets": [
+        ["id=btnLearnMore", "id"],
+        ["linkText=Learn More", "linkText"],
+        ["css=#btnLearnMore", "css:finder"],
+        ["xpath=//a[contains(text(),'Learn More')]", "xpath:link"],
+        ["xpath=//a[@id='btnLearnMore']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[4]/div[2]/div/div/div[3]/a[2]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card')]", "xpath:href"],
+        ["xpath=//div[3]/a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Learn More')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "15ced6f3-8c86-472c-b743-4c1bdd8a065e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='main-content']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'BC Services Card')]", "xpath:innerText"]
+      ],
+      "value": "BC Services Card"
+    }]
+  }, {
+    "id": "09e7c520-e54c-47c3-92fd-cadc93da5bcd",
+    "name": "Registration - Field Validation",
+    "commands": [{
+      "id": "db190bff-7d8b-4205-a50a-aef3b463d590",
+      "comment": "",
+      "command": "Keycloak Login Unregistered",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8bda1c2c-2040-46d9-836d-cc2b25026059",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7b80e760-6b8b-4055-bf6a-dfeedd501cf8",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('CARDSERIALNUMBER');",
+      "targets": [],
+      "value": "username"
+    }, {
+      "id": "ba89655d-bd7d-4a98-aeb0-1c6501c99285",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('PASSCODE');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "7e108bf4-994c-4a3a-ab84-ff36d3bb2e31",
+      "comment": "",
+      "command": "click",
+      "target": "id=BCSCBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e8c1029f-2390-4370-b425-3ce27f919dcc",
+      "comment": "",
+      "command": "click",
+      "target": "id=tile_btn_virtual_device_div_id",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "982a9e5e-7ad6-4f86-a000-e6c01b6d07b4",
+      "comment": "",
+      "command": "type",
+      "target": "id=csn",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${username}"
+    }, {
+      "id": "f09a714a-b90f-4de7-9a5b-ba28a9c6be5b",
+      "comment": "",
+      "command": "click",
+      "target": "id=continue",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a14ac040-025c-4941-91b8-f067df2e136e",
+      "comment": "",
+      "command": "type",
+      "target": "id=passcode",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "93ba5db0-1fbd-4713-99af-bde3ac543dfa",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnSubmit",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a82369ad-d0f4-4d33-aa2a-cc243c5b0234",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnSubmit",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "71568caf-cf9d-46d6-b590-282bc9bba1d1",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
+      ],
+      "value": "Health Care Timeline"
+    }]
+  }, {
+    "id": "33183695-5326-4add-b770-06af382e3cb3",
+    "name": "Keycloak Login Unregistered",
+    "commands": [{
+      "id": "881a9bcd-a45a-43e1-b82f-29bd01b81309",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c6618813-a974-4395-8b30-5aa9cc132859",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9177bc68-ead2-44cb-a769-5e9bce07d5b7",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('Unregistered User');",
+      "targets": [],
+      "value": "protectedusername"
+    }, {
+      "id": "b5824544-4ff2-4ce6-b41e-fc4792361e88",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('PASSWORD');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "77424fb9-18fe-4b44-adb7-f044fa160cda",
+      "comment": "",
+      "command": "click",
+      "target": "id=KeyCloakBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "da826d8b-d4a7-4c8e-a1ea-f4f2b3d26b1b",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${protectedusername}"
+    }, {
+      "id": "7422288d-9a64-4330-a524-81031b49213a",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "be0718cc-93be-4dc1-83b0-d27b7569f037",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "e632fc87-b1a3-45b8-be1e-8e531cf5d6ee",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
+      ],
+      "value": "Health Care Timeline"
     }]
   }],
   "suites": [{
