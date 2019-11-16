@@ -64,6 +64,7 @@
         <b-row>
           <b-col class="text-left mt-5">
             <b-button
+              id="servicesCardBtn"
               :class="signupProcessVisible ? 'collapsed' : null"
               :aria-expanded="signupProcessVisible ? 'true' : 'false'"
               aria-controls="collapse-1"
@@ -155,6 +156,7 @@
         <b-row class="mb-5">
           <b-col>
             <b-button
+              id="moreOptionsBtn"
               :class="dongleVisible ? 'collapsed' : null"
               :aria-expanded="dongleVisible ? 'true' : 'false'"
               aria-controls="collapse-4"

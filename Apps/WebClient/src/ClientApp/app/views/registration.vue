@@ -39,8 +39,9 @@ input {
               Terms of Service
             </h1>
             <h3 id="Description">
-              {{ fullName }}, you can provide your email to be informed about
-              changes in your records, notifications, ...(TODO)
+              {{ fullName }}, provide your email address to receive
+              notifications about updates to the Health Gateway, such as new
+              features and changes.
             </h3>
           </div>
         </b-col>
@@ -61,7 +62,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-5">
+        <b-row class="mb-1">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -84,22 +85,13 @@ input {
               class="optout"
               @change="optOutChanged($event)"
             >
-              No, I prefer not to receive any notifications about my health
-              records
+              No, I prefer not to receive any notifications
             </b-form-checkbox>
           </b-col>
         </b-row>
         <b-row class="mb-3">
           <b-col>
-            <b-form-textarea
-              id="termsOfService"
-              v-model="termsOfService"
-              class="px-3 py-5"
-              placeholder="Terms of service..."
-              readonly
-              rows="20"
-              max-rows="20"
-            />
+            <HtmlTextAreaComponent :input="termsOfService" />
           </b-col>
         </b-row>
         <b-row class="mb-3">
@@ -142,18 +134,20 @@ import container from "@/inversify.config";
 import User from "@/models/user";
 import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
 import LoadingComponent from "@/components/loading.vue";
+import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
+import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
 
 @Component({
   components: {
-    LoadingComponent
+    LoadingComponent,
+    HtmlTextAreaComponent
   }
 })
 export default class RegistrationComponent extends Vue {
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
 
-  private termsOfService: string =
-    "The personal information you provide will be used to connect your Health Gateway account to your BC Services Card account. This will be done through the BC Services Identity Assurance Service. Once your Health Gateway account is authenticated, you will be able to view your health records from various health information systems in one place. Health Gateway’s collection of your personal information is in compliance with BC Privacy legislation under section 26(c) of the Freedom of Information and Protection of Privacy Act. \n\n If you have any questions about our collection or use of personal information, please direct your inquiries to the Nino Samson. ";
+  private termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
@@ -166,7 +160,7 @@ export default class RegistrationComponent extends Vue {
   private hasErrors: boolean = false;
 
   mounted() {
-    this.isLoading = true;
+    //this.isLoading = true;
     this.validate = false;
 
     this.userProfileService = container.get(
