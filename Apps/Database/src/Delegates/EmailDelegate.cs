@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Database.Constants;
@@ -49,6 +50,16 @@ namespace HealthGateway.Database.Delegates
             return this.dbContext.Email.Where(p => p.Id == emailId &&
                                               p.EmailStatusCode == EmailStatus.New &&
                                               p.Priority >= EmailPriority.Standard).SingleOrDefault();
+        }
+
+        /// <inheritdoc />
+        public List<Email> GetNewLow(int maxRows)
+        {
+            return this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+                                                   p.Priority < EmailPriority.Standard)
+                                        .OrderByDescending(s => s.Priority)
+                                        .Take(maxRows)
+                                        .ToList();
         }
 
         /// <inheritdoc />

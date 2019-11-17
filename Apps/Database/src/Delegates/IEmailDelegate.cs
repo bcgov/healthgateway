@@ -39,6 +39,13 @@ namespace HealthGateway.Database.Delegates
         Email GetNewEmail(Guid emailId);
 
         /// <summary>
+        /// Gets a list of New low priority emails to process.
+        /// </summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of new low priority emails.</returns>
+        List<Email> GetNewLow(int maxRows);
+
+        /// <summary>
         /// Inserts an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>

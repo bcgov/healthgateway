@@ -16,6 +16,7 @@
 namespace HealthGateway.Hangfire.Jobs
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Constants;
@@ -34,6 +35,7 @@ namespace HealthGateway.Hangfire.Jobs
         private readonly IEmailDelegate emailDelegate;
         private readonly string host;
         private readonly int port;
+        private readonly int retryFetchSize;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailJob"/> class.
@@ -50,6 +52,8 @@ namespace HealthGateway.Hangfire.Jobs
             IConfigurationSection section = configuration.GetSection("Smtp");
             this.host = section.GetValue<string>("Host");
             this.port = section.GetValue<int>("Port");
+            section = configuration.GetSection("EmailJob");
+            this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 100);
         }
 
         /// <inheritdoc />
@@ -64,6 +68,31 @@ namespace HealthGateway.Hangfire.Jobs
             else
             {
                 this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
+            }
+        }
+
+        /// <inheritdoc />
+        public void SendNewLow()
+        {
+            this.logger.LogInformation($"Looking for up to {this.retryFetchSize} low priority emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetNewLow(this.retryFetchSize);
+            if (resendEmails.Count > 0)
+            {
+                this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
+                foreach (Email email in resendEmails)
+                {
+#pragma warning disable CA1031 //We want to catch exception.
+                    try
+                    {
+                        this.SendEmail(email);
+                    }
+                    catch (Exception e)
+                    {
+                        // log the exception as a warning but we can continue
+                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now", e);
+                    }
+#pragma warning restore CA1031 // Restore warnings.
+                }
             }
         }
 

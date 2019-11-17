@@ -69,8 +69,6 @@ namespace HealthGateway.Hangfire
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
-
-            // Schedule Hangfire Jobs
         }
 
         /// <summary>
@@ -83,6 +81,10 @@ namespace HealthGateway.Hangfire
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
             app.UseHangfireDashboard();
             app.UseHangfireServer();
+
+            // Schedule Hangfire Jobs
+            RecurringJob.AddOrUpdate<IEmailJob>("SlowNewEmail", j => j.SendNewLow(), Cron.Hourly);
+
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             app.UseStaticFiles(new StaticFileOptions

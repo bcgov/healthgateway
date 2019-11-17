@@ -27,5 +27,10 @@ namespace HealthGateway.Common.Jobs
         /// </summary>
         /// <param name="emailId">The stored emailId to send.</param>
         void SendEmail(Guid emailId);
+
+        /// <summary>
+        /// Attempts to send low priority emails.
+        /// </summary>
+        void SendNewLow();
     }
 }

@@ -90,7 +90,7 @@ namespace HealthGateway.WebClient.Controllers
             {
                 return new BadRequestResult();
             }
-            
+
             userProfile.CreatedBy = hdid;
             userProfile.UpdatedBy = hdid;
             DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile);
@@ -126,23 +126,6 @@ namespace HealthGateway.WebClient.Controllers
 
             DBResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid);
             return new JsonResult(result.Payload);
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("test")]
-        public async void TestEmail()
-        {
-            try
-            {
-                this.userProfileService.CreateUserProfile(null);
-            }
-            catch(Exception e)
-            {
-                System.Console.WriteLine(e);
-                // do nothing.
-            }
-            //return new OkObjectResult("");
         }
     }
 }
