@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Services
     using System.Collections.Generic;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using Moq;
     using Xunit;
@@ -37,12 +38,14 @@ namespace HealthGateway.CommonTests.Services
             {
                 Subject = "Subject=${SUBJECT}",
                 Body = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}",
+                FormatCode = EmailFormat.Text,
+                Priority = EmailPriority.Standard,
             };
             Email expected = new Email()
             {
                 To = emailTo,
                 Subject = "Subject=Test Subject",
-                Body = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3",
+                Body = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3"
             };
             IEmailQueueService emailService = new EmailQueueService(null);
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
