@@ -53,6 +53,5 @@
     <Folder Include="Constants\" />
     <Folder Include="Services\" />
     <Folder Include="Jobs\" />
-    <Folder Include="Delegates\" />
   </ItemGroup>
 </Project>

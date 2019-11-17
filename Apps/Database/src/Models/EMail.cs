@@ -94,7 +94,7 @@ namespace HealthGateway.Database.Models
         public int SmtpStatusCode { get; set; }
 
         /// <summary>
-        /// The state of the Email (New, Pending, Processed, Error).
+        /// Gets or sets the state of the Email (New, Pending ...).
         /// </summary>
         [Required]
         [MaxLength(10)]

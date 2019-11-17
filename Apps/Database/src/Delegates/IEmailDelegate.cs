@@ -25,11 +25,18 @@ namespace HealthGateway.Database.Delegates
     public interface IEmailDelegate
     {
         /// <summary>
-        /// Fetches the email object from the database;
+        /// Fetches the email object from the database.
         /// </summary>
-        /// <param name="emailId"></param>
-        /// <returns></returns>
+        /// <param name="emailId">The Email ID to retrieve.</param>
+        /// <returns>The found Email object.</returns>
         Email GetEmail(Guid emailId);
+
+        /// <summary>
+        /// Gets an email in the new state with standard priority or higher.
+        /// </summary>
+        /// <param name="emailId">The Email ID to retrieve.</param>
+        /// <returns>The found Email object.</returns>
+        Email GetNewEmail(Guid emailId);
 
         /// <summary>
         /// Inserts an email using a populated Email object.
@@ -42,7 +49,6 @@ namespace HealthGateway.Database.Delegates
         /// Updates an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
-        /// <returns>Returns the guid of the saved email.</returns>
         void UpdateEmail(Email email);
 
         /// <summary>

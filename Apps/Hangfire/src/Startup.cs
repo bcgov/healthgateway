@@ -18,9 +18,7 @@ namespace HealthGateway.Hangfire
     using System;
     using global::Hangfire;
     using global::Hangfire.PostgreSql;
-    using Healthgateway.Hangfire.Delegates;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
@@ -41,6 +39,7 @@ namespace HealthGateway.Hangfire
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
@@ -65,7 +64,6 @@ namespace HealthGateway.Hangfire
             services.AddDbContextPool<GatewayDbContext>(options =>
                  options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection")));
 
-            services.AddTransient<ISmtpDelegate, SmtpDelegate>();
             services.AddTransient<IEmailDelegate, EmailDelegate>();
             services.AddTransient<IEmailJob, EmailJob>();
 

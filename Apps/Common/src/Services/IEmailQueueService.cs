@@ -19,6 +19,10 @@ namespace HealthGateway.Common.Services
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
 
+    /// <summary>
+    /// Provides a mechanism to store an email to the dabase and queue it for delivery.
+    /// The batch scheduler will pickup the queued email and process it.
+    /// </summary>
     public interface IEmailQueueService
     {
         /// <summary>
@@ -28,7 +32,6 @@ namespace HealthGateway.Common.Services
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        /// <returns>Returns the guid of the saved email.</returns>
         void QueueEmail(string toEmail, string templateName, Dictionary<string, string> keyValues);
 
         /// <summary>
@@ -37,14 +40,12 @@ namespace HealthGateway.Common.Services
         /// <param name="toEmail">The To email address.</param>
         /// <param name="emailTemplate">The resolved Email Template.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        /// <returns>Returns the guid of the saved email.</returns>
         void QueueEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
 
         /// <summary>
         /// Queues an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
-        /// <returns>Returns the guid of the saved email.</returns>
         void QueueEmail(Email email);
 
         /// <summary>

@@ -45,7 +45,6 @@
     <Folder Include="Context\" />
     <Folder Include="Controllers\" />
     <Folder Include="Views\" />
-    <Folder Include="Delegates\" />
     <Folder Include="Jobs\" />
   </ItemGroup>
   <ItemGroup>

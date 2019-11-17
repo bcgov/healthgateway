@@ -16,9 +16,9 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -44,6 +44,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public Email GetNewEmail(Guid emailId)
+        {
+            return this.dbContext.Email.Where(p => p.Id == emailId &&
+                                              p.EmailStatusCode == EmailStatus.New &&
+                                              p.Priority >= EmailPriority.Standard).SingleOrDefault();
+        }
+
+        /// <inheritdoc />
         public Guid InsertEmail(Email email)
         {
             Contract.Requires(email != null);
@@ -57,15 +65,7 @@ namespace HealthGateway.Database.Delegates
         {
             Contract.Requires(email != null);
             this.dbContext.Update<Email>(email);
-            try
-            {
-                this.dbContext.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-
-            }
-
+            this.dbContext.SaveChanges();
         }
 
         /// <inheritdoc />
