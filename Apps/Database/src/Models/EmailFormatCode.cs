@@ -25,9 +25,6 @@ namespace HealthGateway.Database.Models
     public class EmailFormatCode : AuditableEntity
     {
         [Key]
-        [Column("EmailFormatCodeId")]
-        public Guid Id { get; set; }
-
         [Required]
         [MaxLength(4)]
         public string FormatCode { get; set; }

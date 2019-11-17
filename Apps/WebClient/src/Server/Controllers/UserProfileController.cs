@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System;
     using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -125,6 +126,23 @@ namespace HealthGateway.WebClient.Controllers
 
             DBResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid);
             return new JsonResult(result.Payload);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("test")]
+        public async void TestEmail()
+        {
+            try
+            {
+                this.userProfileService.CreateUserProfile(null);
+            }
+            catch(Exception e)
+            {
+                System.Console.WriteLine(e);
+                // do nothing.
+            }
+            //return new OkObjectResult("");
         }
     }
 }

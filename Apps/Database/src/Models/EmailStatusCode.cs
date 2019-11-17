@@ -22,15 +22,15 @@ namespace HealthGateway.Database.Models
 
     #pragma warning disable CS1591 // self explanatory simple model
     #pragma warning disable SA1600 // self explanatory simple model
-    public class ProgramTypeCode : AuditableEntity
+    public class EmailStatusCode : AuditableEntity
     {
         [Key]
         [Required]
         [MaxLength(10)]
-        public string ProgramCode { get; set; }
+        public string StatusCode { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(30)]
         public string Description { get; set; }
     }
 }

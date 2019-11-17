@@ -13,17 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+using System;
+namespace HealthGateway.Common.Services
 {
-    /// <summary>
-    /// Represents the priority when sending emails.
-    /// </summary>
-    public static class EmailPriority
+    public interface IEmailSender
     {
-#pragma warning disable CS1591, SA1600
-        public const int Low = 1;
-        public const int Standard = 10;
-        public const int High = 100;
-        public const int Urgent = 1000;
     }
 }

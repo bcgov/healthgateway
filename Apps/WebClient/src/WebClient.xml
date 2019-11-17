@@ -266,7 +266,7 @@
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.IEmailQueueService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
             </summary>

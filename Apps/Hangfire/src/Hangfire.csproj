@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.6.3" />
+    <PackageReference Include="mailkit" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.App">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
@@ -44,6 +45,8 @@
     <Folder Include="Context\" />
     <Folder Include="Controllers\" />
     <Folder Include="Views\" />
+    <Folder Include="Delegates\" />
+    <Folder Include="Jobs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\_ViewImports.cshtml" />

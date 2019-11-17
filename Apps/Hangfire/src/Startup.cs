@@ -18,8 +18,13 @@ namespace HealthGateway.Hangfire
     using System;
     using global::Hangfire;
     using global::Hangfire.PostgreSql;
+    using Healthgateway.Hangfire.Delegates;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Hangfire.Jobs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.StaticFiles;
@@ -60,7 +65,14 @@ namespace HealthGateway.Hangfire
             services.AddDbContextPool<GatewayDbContext>(options =>
                  options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection")));
 
+            services.AddTransient<ISmtpDelegate, SmtpDelegate>();
+            services.AddTransient<IEmailDelegate, EmailDelegate>();
+            services.AddTransient<IEmailJob, EmailJob>();
+
+            // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+
+            // Schedule Hangfire Jobs
         }
 
         /// <summary>

@@ -39,19 +39,17 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    AuditTransactionResultCodeId = table.Column<Guid>(nullable: false),
+                    ResultCode = table.Column<string>(maxLength: 10, nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
-                    ResultCode = table.Column<string>(maxLength: 10, nullable: false),
                     Description = table.Column<string>(maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditTransactionResultCode", x => x.AuditTransactionResultCodeId);
-                    table.UniqueConstraint("AK_AuditTransactionResultCode_ResultCode", x => x.ResultCode);
+                    table.PrimaryKey("PK_AuditTransactionResultCode", x => x.ResultCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,18 +57,34 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    EmailFormatCodeId = table.Column<Guid>(nullable: false),
+                    FormatCode = table.Column<string>(maxLength: 4, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailFormatCode", x => x.FormatCode);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailStatusCode",
+                schema: "gateway",
+                columns: table => new
+                {
+                    StatusCode = table.Column<string>(maxLength: 10, nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
-                    FormatCode = table.Column<string>(maxLength: 4, nullable: false)
+                    Description = table.Column<string>(maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmailFormatCode", x => x.EmailFormatCodeId);
-                    table.UniqueConstraint("AK_EmailFormatCode_FormatCode", x => x.FormatCode);
+                    table.PrimaryKey("PK_EmailStatusCode", x => x.StatusCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,19 +92,17 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    ProgramTypeCodeId = table.Column<Guid>(nullable: false),
+                    ProgramCode = table.Column<string>(maxLength: 10, nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
-                    ProgramCode = table.Column<string>(maxLength: 10, nullable: false),
                     Description = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProgramTypeCode", x => x.ProgramTypeCodeId);
-                    table.UniqueConstraint("AK_ProgramTypeCode_ProgramCode", x => x.ProgramCode);
+                    table.PrimaryKey("PK_ProgramTypeCode", x => x.ProgramCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -133,6 +145,38 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmailTemplate",
+                schema: "gateway",
+                columns: table => new
+                {
+                    EmailTemplateId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
+                    Name = table.Column<string>(maxLength: 30, nullable: false),
+                    From = table.Column<string>(maxLength: 254, nullable: false),
+                    Subject = table.Column<string>(maxLength: 100, nullable: false),
+                    Body = table.Column<string>(type: "text", nullable: false),
+                    Priority = table.Column<int>(nullable: false),
+                    EffectiveDate = table.Column<DateTime>(nullable: false),
+                    ExpiryDate = table.Column<DateTime>(nullable: true),
+                    FormatCode = table.Column<string>(maxLength: 4, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailTemplate", x => x.EmailTemplateId);
+                    table.ForeignKey(
+                        name: "FK_EmailTemplate_EmailFormatCode_FormatCode",
+                        column: x => x.FormatCode,
+                        principalSchema: "gateway",
+                        principalTable: "EmailFormatCode",
+                        principalColumn: "FormatCode",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Email",
                 schema: "gateway",
                 columns: table => new
@@ -147,47 +191,26 @@ namespace HealthGateway.Database.Migrations
                     To = table.Column<string>(maxLength: 254, nullable: false),
                     Subject = table.Column<string>(maxLength: 100, nullable: false),
                     Body = table.Column<string>(type: "text", nullable: false),
+                    FormatCode = table.Column<string>(maxLength: 4, nullable: false),
                     Priority = table.Column<int>(nullable: false),
                     SentDateTime = table.Column<DateTime>(nullable: true),
                     LastRetryDateTime = table.Column<DateTime>(nullable: true),
-                    Retries = table.Column<int>(nullable: false),
-                    FormatCode = table.Column<string>(maxLength: 4, nullable: false)
+                    Attempts = table.Column<int>(nullable: false),
+                    SmtpStatusCode = table.Column<int>(nullable: false),
+                    EmailStatusCode = table.Column<string>(maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Email", x => x.EmailId);
                     table.ForeignKey(
-                        name: "FK_Email_EmailFormatCode_FormatCode",
-                        column: x => x.FormatCode,
+                        name: "FK_Email_EmailStatusCode_EmailStatusCode",
+                        column: x => x.EmailStatusCode,
                         principalSchema: "gateway",
-                        principalTable: "EmailFormatCode",
-                        principalColumn: "FormatCode",
+                        principalTable: "EmailStatusCode",
+                        principalColumn: "StatusCode",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EmailTemplate",
-                schema: "gateway",
-                columns: table => new
-                {
-                    EmailTemplateId = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(nullable: false),
-                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
-                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
-                    xmin = table.Column<uint>(type: "xid", nullable: false),
-                    Name = table.Column<string>(maxLength: 30, nullable: false),
-                    Subject = table.Column<string>(maxLength: 100, nullable: false),
-                    Body = table.Column<string>(type: "text", nullable: false),
-                    EffectiveDate = table.Column<DateTime>(nullable: false),
-                    ExpiryDate = table.Column<DateTime>(nullable: true),
-                    FormatCode = table.Column<string>(maxLength: 4, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmailTemplate", x => x.EmailTemplateId);
                     table.ForeignKey(
-                        name: "FK_EmailTemplate_EmailFormatCode_FormatCode",
+                        name: "FK_Email_EmailFormatCode_FormatCode",
                         column: x => x.FormatCode,
                         principalSchema: "gateway",
                         principalTable: "EmailFormatCode",
@@ -638,103 +661,127 @@ namespace HealthGateway.Database.Migrations
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("ea5fe1d0-2c08-4ba7-b061-dff536bb2085"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Success", "Ok", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Ok", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Success", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("43710083-fdc4-4401-ab59-2de9dcc1db7c"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Failure", "Fail", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Fail", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Failure", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("d25dac06-bd1e-4048-abfc-2a1f6103364b"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Unauthorized", "NotAuth", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "NotAuth", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Unauthorized", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "AuditTransactionResultCode",
-                columns: new[] { "AuditTransactionResultCodeId", "CreatedBy", "CreatedDateTime", "Description", "ResultCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("4c173b2b-1774-48fa-bc3a-6f3c9b2cd363"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System Error", "Err", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Err", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System Error", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "EmailFormatCode",
-                columns: new[] { "EmailFormatCodeId", "CreatedBy", "CreatedDateTime", "FormatCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("d809db40-5034-4d37-8b6f-d02c17a87c8d"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Text", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "FormatCode", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Text", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "EmailFormatCode",
-                columns: new[] { "EmailFormatCodeId", "CreatedBy", "CreatedDateTime", "FormatCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("99b4c85a-aa21-4742-9898-8172933e31a3"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "HTML", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "FormatCode", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "HTML", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
+                table: "EmailStatusCode",
+                columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Processed", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "An email that has been sent", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
+                table: "EmailStatusCode",
+                columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Error", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "An Email that will not be sent", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
+                table: "EmailStatusCode",
+                columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "New", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A newly created email", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
+                table: "EmailStatusCode",
+                columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "Pending", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "An email pending batch pickup", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("38861a8b-d46d-4a05-a9b8-7f3a05790652"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Approved Drug Load", "FED-DRUG-A", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "PAT", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Patient Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("33e37a49-e59b-4c26-8375-66195e4e36ed"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Marketed Drug Load", "FED-DRUG-M", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "FED-DRUG-A", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Approved Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("7e1b1f43-db55-4a0d-bc33-a53e740999d0"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Cancelled Drug Load", "FED-DRUG-C", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "FED-DRUG-M", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Marketed Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("02606989-b30b-40cd-ac51-03ca2e4e9242"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Dormant Drug Load", "FED-DRUG-D", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "FED-DRUG-C", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Cancelled Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("ddc05e78-c0cd-4f77-879f-d2a55b84b20a"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial Pharmacare Drug Load", "PROV-DRUG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "FED-DRUG-D", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Federal Dormant Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("83fc7381-d57c-4c13-9173-1f0a01e0f543"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Configuration Service", "CFG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "PROV-DRUG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Provincial Pharmacare Drug Load", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("d1175a3e-aafb-4895-b7ee-358500775a7e"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Web Client", "WEB", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "CFG", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Configuration Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("5135cdf7-59ec-4c03-9499-38c3ccd6ecb8"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Immunization Service", "IMM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "WEB", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Web Client", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("4a1db4fe-f91b-4902-941c-68dbadd9d243"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Patient Service", "PAT", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "IMM", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Immunization Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "ProgramTypeCode",
-                columns: new[] { "ProgramTypeCodeId", "CreatedBy", "CreatedDateTime", "Description", "ProgramCode", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("c0b7962a-9f66-4aa8-9864-5259bee6cedd"), "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Medication Service", "MED", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { "MED", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Medication Service", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "EmailTemplate",
-                columns: new[] { "EmailTemplateId", "Body", "CreatedBy", "CreatedDateTime", "EffectiveDate", "ExpiryDate", "FormatCode", "Name", "Subject", "UpdatedBy", "UpdatedDateTime" },
+                columns: new[] { "EmailTemplateId", "Body", "CreatedBy", "CreatedDateTime", "EffectiveDate", "ExpiryDate", "FormatCode", "From", "Name", "Priority", "Subject", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[] { new Guid("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"), @"<!doctype html>
 <html lang=""en"">
 <head></head>
@@ -764,7 +811,7 @@ namespace HealthGateway.Database.Migrations
         </tr>
     </table>
 </body>
-</html>", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Text", "Registration", "{ENVIRONMENT} Health Gateway Email Verification", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+</html>", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "HTML", "donotreply@gov.bc.ca", "Registration", 10, "{ENVIRONMENT} Health Gateway Email Verification", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveIngredient_DrugProductId",
@@ -786,13 +833,6 @@ namespace HealthGateway.Database.Migrations
                 column: "TransactionResultCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuditTransactionResultCode_ResultCode",
-                schema: "gateway",
-                table: "AuditTransactionResultCode",
-                column: "ResultCode",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Company_DrugProductId",
                 schema: "gateway",
                 table: "Company",
@@ -806,17 +846,16 @@ namespace HealthGateway.Database.Migrations
                 column: "FileDownloadId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Email_EmailStatusCode",
+                schema: "gateway",
+                table: "Email",
+                column: "EmailStatusCode");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Email_FormatCode",
                 schema: "gateway",
                 table: "Email",
                 column: "FormatCode");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EmailFormatCode_FormatCode",
-                schema: "gateway",
-                table: "EmailFormatCode",
-                column: "FormatCode",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmailTemplate_FormatCode",
@@ -957,6 +996,10 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "AuditTransactionResultCode",
+                schema: "gateway");
+
+            migrationBuilder.DropTable(
+                name: "EmailStatusCode",
                 schema: "gateway");
 
             migrationBuilder.DropTable(
