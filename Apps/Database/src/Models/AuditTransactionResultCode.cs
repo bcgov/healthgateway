@@ -25,9 +25,6 @@ namespace HealthGateway.Database.Models
     public class AuditTransactionResultCode : AuditableEntity
     {
         [Key]
-        [Column("AuditTransactionResultCodeId")]
-        public Guid Id { get; set; }
-
         [Required]
         [MaxLength(10)]
         public string ResultCode { get; set; }

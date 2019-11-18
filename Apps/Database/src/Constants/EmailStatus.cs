@@ -16,18 +16,28 @@
 namespace HealthGateway.Database.Constants
 {
     /// <summary>
-    /// Represents the priority when sending emails.
-    /// These values represent priorities that the application will use.
-    /// The email priority is stored in the model and the DB as an integer
-    /// without any constraints.  When writing batch jobs or other items ranges
-    /// should be utilized to ensure that non-compliant priorities are processed.
+    /// Represents the status of an email.
     /// </summary>
-    public static class EmailPriority
+    public static class EmailStatus
     {
-#pragma warning disable CS1591, SA1600
-        public const int Low = 1;
-        public const int Standard = 10;
-        public const int High = 100;
-        public const int Urgent = 1000;
+        /// <summary>
+        /// Constant value to a new Email.
+        /// </summary>
+        public const string New = "New";
+
+        /// <summary>
+        /// Constant value to represent a Pending email.
+        /// </summary>
+        public const string Pending = "Pending";
+
+        /// <summary>
+        /// Constant value to represent an email that has errored out.
+        /// </summary>
+        public const string Error = "Error";
+
+        /// <summary>
+        /// Constant value to represent an email that has been sent.
+        /// </summary>
+        public const string Processed = "Processed";
     }
 }

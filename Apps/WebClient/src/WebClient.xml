@@ -266,11 +266,12 @@
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.IEmailQueueService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
             </summary>
             <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="emailQueueService">The email service to queue emails.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String)">
             <inheritdoc />

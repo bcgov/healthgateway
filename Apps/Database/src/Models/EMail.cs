@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Represents an Email to send from the system.
@@ -60,10 +61,17 @@ namespace HealthGateway.Database.Models
         public string Body { get; set; }
 
         /// <summary>
+        /// Gets or sets the Email Format (HTML/Text).
+        /// </summary>
+        [Required]
+        [MaxLength(4)]
+        public string FormatCode { get; set; } = EmailFormat.Text;
+
+        /// <summary>
         /// Gets or sets the priority of the email.
         /// The lower the value the lower the priority.
         /// </summary>
-        public int Priority { get; set; }
+        public int Priority { get; set; } = EmailPriority.Standard;
 
         /// <summary>
         /// Gets or sets the Date/Time the email was sent.
@@ -76,15 +84,20 @@ namespace HealthGateway.Database.Models
         public DateTime? LastRetryDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of times we have tried sending this email.
+        /// Gets or sets the number of attempts in sending this email.
         /// </summary>
-        public int Retries { get; set; }
+        public int Attempts { get; set; }
 
         /// <summary>
-        /// Gets or sets the Email Format (HTML/Text).
+        /// Gets or sets the SMTP Status code from the last send attempt.
+        /// </summary>
+        public int SmtpStatusCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the state of the Email (New, Pending ...).
         /// </summary>
         [Required]
-        [MaxLength(4)]
-        public string FormatCode { get; set; }
+        [MaxLength(10)]
+        public string EmailStatusCode { get; set; } = EmailStatus.New;
     }
 }

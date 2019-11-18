@@ -18,19 +18,41 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constant;
 
     #pragma warning disable CS1591 // self explanatory simple model
     #pragma warning disable SA1600 // self explanatory simple model
-    public class ProgramTypeCode : AuditableEntity
+    public class EmailInvite : AuditableEntity
     {
+        /// <summary>
+        /// Gets or sets the user hdid.
+        /// </summary>
         [Key]
-        [Required]
-        [MaxLength(10)]
-        public string ProgramCode { get; set; }
+        [Column("EmailInviteId")]
+        public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the users directed identifier.
+        /// </summary>
+        [MaxLength(52)]
         [Required]
-        [MaxLength(50)]
-        public string Description { get; set; }
+        public string HdId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the invite was validated.
+        /// </summary>
+        [Required]
+        public bool Validated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the associated email that was sent for this invite.
+        /// </summary>
+        [Required]
+        public Guid EmailId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the associated email that was sent for this invite.
+        /// </summary>
+        [Required]
+        public virtual Email Email { get; set; }
     }
 }

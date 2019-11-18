@@ -13,21 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Jobs
 {
+    using System;
+
     /// <summary>
-    /// Represents the priority when sending emails.
-    /// These values represent priorities that the application will use.
-    /// The email priority is stored in the model and the DB as an integer
-    /// without any constraints.  When writing batch jobs or other items ranges
-    /// should be utilized to ensure that non-compliant priorities are processed.
+    /// A Job to send/retry sending emails.
     /// </summary>
-    public static class EmailPriority
+    public interface IEmailJob
     {
-#pragma warning disable CS1591, SA1600
-        public const int Low = 1;
-        public const int Standard = 10;
-        public const int High = 100;
-        public const int Urgent = 1000;
+        /// <summary>
+        /// Sends an email immediately if Priority is standard or higher.
+        /// </summary>
+        /// <param name="emailId">The stored emailId to send.</param>
+        void SendEmail(Guid emailId);
+
+        /// <summary>
+        /// Attempts to send low priority emails.
+        /// </summary>
+        void SendLowPriorityEmails();
     }
 }

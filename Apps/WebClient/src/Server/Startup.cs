@@ -17,15 +17,16 @@
 namespace HealthGateway.WebClient
 {
     using System.Diagnostics.Contracts;
+    using Hangfire;
+    using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
-    using HealthGateway.Database.Context;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -70,6 +71,10 @@ namespace HealthGateway.WebClient
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
+            services.AddTransient<IEmailDelegate, EmailDelegate>();
+            services.AddTransient<IEmailQueueService, EmailQueueService>();
         }
 
         /// <summary>

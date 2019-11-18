@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System;
     using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -89,7 +90,7 @@ namespace HealthGateway.WebClient.Controllers
             {
                 return new BadRequestResult();
             }
-            
+
             userProfile.CreatedBy = hdid;
             userProfile.UpdatedBy = hdid;
             DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile);

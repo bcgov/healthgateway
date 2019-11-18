@@ -110,9 +110,9 @@ namespace HealthGateway.Database.Context
                     // xmin is the Postgres system column that we use for concurrency,
                     // we set the original value regardless of load state to the value we have in our object
                     // which ensures that we're only updating the row we think we have.
-                    if (entityEntry.Property(this.ConcurrencyColumn).IsModified)
+                    if (entityEntry.Property(nameof(IConcurrencyGuard.Version)).IsModified)
                     {
-                        entityEntry.Property(this.ConcurrencyColumn).OriginalValue = entityEntry.Property(this.ConcurrencyColumn).CurrentValue;
+                        entityEntry.Property(nameof(IConcurrencyGuard.Version)).OriginalValue = entityEntry.Property(nameof(IConcurrencyGuard.Version)).CurrentValue;
                     }
                 }
             }

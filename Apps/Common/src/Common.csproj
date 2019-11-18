@@ -10,6 +10,7 @@
     <DocumentationFile>bin\Debug\netcoreapp2.2\Common.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
     <PackageReference Include="Microsoft.AspNetCore.App">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
@@ -50,5 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Constants\" />
+    <Folder Include="Services\" />
+    <Folder Include="Jobs\" />
   </ItemGroup>
 </Project>

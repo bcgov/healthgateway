@@ -13,6 +13,8 @@
   </PropertyGroup>  
 
   <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
+    <PackageReference Include="Hangfire.Postgresql" Version="1.6.3" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.All">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>

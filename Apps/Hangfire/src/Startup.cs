@@ -19,7 +19,10 @@ namespace HealthGateway.Hangfire
     using global::Hangfire;
     using global::Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Hangfire.Jobs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.StaticFiles;
@@ -36,6 +39,7 @@ namespace HealthGateway.Hangfire
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
@@ -60,6 +64,10 @@ namespace HealthGateway.Hangfire
             services.AddDbContextPool<GatewayDbContext>(options =>
                  options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection")));
 
+            services.AddTransient<IEmailDelegate, EmailDelegate>();
+            services.AddTransient<IEmailJob, EmailJob>();
+
+            // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
         }
 
@@ -73,6 +81,10 @@ namespace HealthGateway.Hangfire
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
             app.UseHangfireDashboard();
             app.UseHangfireServer();
+
+            // Schedule Hangfire Jobs
+            RecurringJob.AddOrUpdate<IEmailJob>("SlowNewEmail", j => j.SendLowPriorityEmails(), Cron.Hourly);
+
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             app.UseStaticFiles(new StaticFileOptions

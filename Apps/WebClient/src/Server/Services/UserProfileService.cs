@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -23,14 +24,17 @@ namespace HealthGateway.WebClient.Services
     public class UserProfileService : IUserProfileService
     {
         private readonly IProfileDelegate profileDelegate;
+        private readonly IEmailQueueService emailQueueService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        public UserProfileService(IProfileDelegate profileDelegate)
+        /// <param name="emailQueueService">The email service to queue emails.</param>
+        public UserProfileService(IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
         {
             this.profileDelegate = profileDelegate;
+            this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc />
@@ -42,7 +46,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile)
         {
-           return this.profileDelegate.CreateUserProfile(userProfile);
+            return this.profileDelegate.CreateUserProfile(userProfile);
         }
     }
 }
