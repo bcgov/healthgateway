@@ -7,6 +7,7 @@ import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import UserProfile from "@/models/userProfile";
+import UserFeedback from "@/models/userFeedback";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -47,6 +48,11 @@ export interface IUserProfileService {
   initialize(http: IHttpDelegate): void;
   createProfile(profile: UserProfile): Promise<boolean>;
   getProfile(hdid: string): Promise<UserProfile>;
+}
+
+export interface IUserFeedbackService {
+  initialize(http: IHttpDelegate): void;
+  submitFeedback(feedback: UserFeedback): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

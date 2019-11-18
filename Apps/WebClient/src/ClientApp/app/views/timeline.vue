@@ -97,6 +97,7 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
+    <FeedbackComponent />
   </div>
 </template>
 
@@ -116,6 +117,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import { ResultType } from "@/constants/resulttype.ts";
 import moment from "moment";
+import FeedbackComponent from "@/components/feedback.vue";
 
 const namespace: string = "user";
 
@@ -128,7 +130,8 @@ interface DateGroup {
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
-    MedicationComponent: MedicationTimelineComponent
+    MedicationComponent: MedicationTimelineComponent,
+    FeedbackComponent
   }
 })
 export default class TimelineComponent extends Vue {
