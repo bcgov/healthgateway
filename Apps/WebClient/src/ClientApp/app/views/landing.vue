@@ -148,7 +148,7 @@
 <template>
   <div class="landing">
     <b-row
-      class="intro background-tint-dark align-items-center"
+      class="intro align-items-center"
       :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
     >
       <b-col>
@@ -258,7 +258,7 @@
         </div>
       </div>
       <b-row
-        class="secure background-tint-light"
+        class="secure"
         :style="{ backgroundImage: 'url(\'' + bottomImage + '\')' }"
       >
         <b-col class="col-8">
@@ -296,13 +296,13 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";
-import Image01 from "@/assets/images/landing/001_Hero-01_AdobeStock_251665472_Preview.jpg";
+import Image01 from "@/assets/images/landing/001_Hero-01_Duotone.png";
 import Image02 from "@/assets/images/landing/002_Devices.png";
-import Image03 from "@/assets/images/landing/003_AdobeStock_143856492_Preview.jpeg";
-import Image04 from "@/assets/images/landing/004_AdobeStock_216356596_Preview.jpeg";
-import Image05 from "@/assets/images/landing/005_AdobeStock_243861557_Preview.jpeg";
-import Image06 from "@/assets/images/landing/006_AdobeStock_223963895_Preview.jpeg";
-import Image07 from "@/assets/images/landing/007_Hero-02_AdobeStock_263708116_Preview.jpg";
+import Image03 from "@/assets/images/landing/003_AdobeStock_143856492-edited_shoes.jpg";
+import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
+import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
+import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
+import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
 
 interface Icon {
   label: string;
