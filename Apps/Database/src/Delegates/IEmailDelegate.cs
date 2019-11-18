@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        List<Email> GeLowPriorityEmail(int maxRows);
+        List<Email> GetLowPriorityEmail(int maxRows);
 
         /// <summary>
         /// Inserts an email using a populated Email object.

@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Email> GeLowPriorityEmail(int maxRows)
+        public List<Email> GetLowPriorityEmail(int maxRows)
         {
             return this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority < EmailPriority.Standard)

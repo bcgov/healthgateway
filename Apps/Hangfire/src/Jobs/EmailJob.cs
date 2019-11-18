@@ -77,7 +77,7 @@ namespace HealthGateway.Hangfire.Jobs
         public void SendLowPriorityEmails()
         {
             this.logger.LogInformation($"Looking for up to {this.retryFetchSize} low priority emails to send");
-            List<Email> resendEmails = this.emailDelegate.GeLowPriorityEmail(this.retryFetchSize);
+            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             if (resendEmails.Count > 0)
             {
                 this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
