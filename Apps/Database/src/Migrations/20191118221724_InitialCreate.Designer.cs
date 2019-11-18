@@ -26,7 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20191118215255_InitialCreate")]
+    [Migration("20191118221724_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1349,7 +1349,8 @@ namespace HealthGateway.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("UserFeedbackId");
 
-                    b.Property<string>("Comment");
+                    b.Property<string>("Comment")
+                        .HasMaxLength(300);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()

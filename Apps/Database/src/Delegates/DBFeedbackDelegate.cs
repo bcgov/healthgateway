@@ -24,15 +24,15 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc />
-    public class EntityFeedbackDelegate : IFeedbackDelegate
+    public class DBFeedbackDelegate : IFeedbackDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityFeedbackDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBFeedbackDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public EntityFeedbackDelegate(GatewayDbContext dbContext)
+        public DBFeedbackDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

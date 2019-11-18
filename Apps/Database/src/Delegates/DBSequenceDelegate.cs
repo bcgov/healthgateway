@@ -22,15 +22,15 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the sequence delegate.
     /// </summary>
-    public class EntitySequenceDelegate : ISequenceDelegate
+    public class DBSequenceDelegate : ISequenceDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntitySequenceDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBSequenceDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public EntitySequenceDelegate(GatewayDbContext dbContext)
+        public DBSequenceDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

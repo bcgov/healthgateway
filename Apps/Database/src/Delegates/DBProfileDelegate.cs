@@ -23,15 +23,15 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc />
-    public class EntityProfileDelegate : IProfileDelegate
+    public class DBProfileDelegate : IProfileDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityProfileDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBProfileDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public EntityProfileDelegate(GatewayDbContext dbContext)
+        public DBProfileDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

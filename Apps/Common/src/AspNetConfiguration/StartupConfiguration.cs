@@ -178,7 +178,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
-            services.AddTransient<IWriteAuditEventDelegate, EntityWriteAuditEventDelegate>();
+            services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
         }
 
         /// <summary>

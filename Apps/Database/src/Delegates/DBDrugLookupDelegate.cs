@@ -26,15 +26,15 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
     /// </summary>
-    public class EntityDrugLookupDelegate : IDrugLookupDelegate
+    public class DBDrugLookupDelegate : IDrugLookupDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityDrugLookupDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBDrugLookupDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the databaase.</param>
-        public EntityDrugLookupDelegate(GatewayDbContext dbContext)
+        public DBDrugLookupDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

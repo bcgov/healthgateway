@@ -1331,7 +1331,8 @@ namespace HealthGateway.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("UserFeedbackId");
 
-                    b.Property<string>("Comment");
+                    b.Property<string>("Comment")
+                        .HasMaxLength(300);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
