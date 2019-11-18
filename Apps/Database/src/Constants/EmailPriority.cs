@@ -17,6 +17,10 @@ namespace HealthGateway.Database.Constants
 {
     /// <summary>
     /// Represents the priority when sending emails.
+    /// These values represent priorities that the application will use.
+    /// The email priority is stored in the model and the DB as an integer
+    /// without any constraints.  When writing batch jobs or other items ranges
+    /// should be utilized to ensure that non-compliant priorities are processed.
     /// </summary>
     public static class EmailPriority
     {
