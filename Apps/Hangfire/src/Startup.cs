@@ -83,7 +83,7 @@ namespace HealthGateway.Hangfire
             app.UseHangfireServer();
 
             // Schedule Hangfire Jobs
-            RecurringJob.AddOrUpdate<IEmailJob>("SlowNewEmail", j => j.SendNewLow(), Cron.Hourly);
+            RecurringJob.AddOrUpdate<IEmailJob>("SlowNewEmail", j => j.SendLowPriorityEmails(), Cron.Hourly);
 
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);

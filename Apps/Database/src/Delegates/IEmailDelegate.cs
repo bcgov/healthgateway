@@ -39,11 +39,16 @@ namespace HealthGateway.Database.Delegates
         Email GetNewEmail(Guid emailId);
 
         /// <summary>
-        /// Gets a list of New low priority emails to process.
-        /// </summary>
+        /// Gets a sorted list of New low priority emails to process.
+        /// Low priority for this job is anything less than EmailPriority.Standard
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.Low
+        /// but below the ordinal value of EmailPriority.Standard will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
-        /// <returns>The list of new low priority emails.</returns>
-        List<Email> GetNewLow(int maxRows);
+        /// <returns>The list of emails.</returns>
+        List<Email> GeLowPriorityEmail(int maxRows);
 
         /// <summary>
         /// Inserts an email using a populated Email object.
@@ -61,7 +66,7 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Inserts an email invite and the associated email.
         /// </summary>
-        /// <param name="invite"></param>
+        /// <param name="invite">The invite to insert.</param>
         /// <returns>Returns the guid of the saved email invite.</returns>
         Guid InsertEmailInvite(EmailInvite invite);
 

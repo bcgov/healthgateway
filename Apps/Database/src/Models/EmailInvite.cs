@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Models
         public string HdId { get; set; }
 
         /// <summary>
-        /// Gets or sets whether this invite was validated.
+        /// Gets or sets a value indicating whether the invite was validated.
         /// </summary>
         [Required]
         public bool Validated { get; set; }

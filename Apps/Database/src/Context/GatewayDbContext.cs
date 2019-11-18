@@ -50,6 +50,7 @@ namespace HealthGateway.Database.Context
         public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
         public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
         public DbSet<Email> Email { get; set; }
+        public DbSet<EmailInvite> EmailInvite { get; set; }
         public DbSet<EmailTemplate> EmailTemplate { get; set; }
         public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
         public DbSet<FileDownload> FileDownload { get; set; }

@@ -36,6 +36,7 @@ namespace HealthGateway.Hangfire.Jobs
         private readonly string host;
         private readonly int port;
         private readonly int retryFetchSize;
+        private readonly int maxRetries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailJob"/> class.
@@ -53,7 +54,8 @@ namespace HealthGateway.Hangfire.Jobs
             this.host = section.GetValue<string>("Host");
             this.port = section.GetValue<int>("Port");
             section = configuration.GetSection("EmailJob");
-            this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 100);
+            this.maxRetries = section.GetValue<int>("MaxRetries", 9);
+            this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 250);
         }
 
         /// <inheritdoc />
@@ -72,10 +74,10 @@ namespace HealthGateway.Hangfire.Jobs
         }
 
         /// <inheritdoc />
-        public void SendNewLow()
+        public void SendLowPriorityEmails()
         {
             this.logger.LogInformation($"Looking for up to {this.retryFetchSize} low priority emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetNewLow(this.retryFetchSize);
+            List<Email> resendEmails = this.emailDelegate.GeLowPriorityEmail(this.retryFetchSize);
             if (resendEmails.Count > 0)
             {
                 this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
@@ -153,7 +155,7 @@ namespace HealthGateway.Hangfire.Jobs
             if (caught != null)
             {
                 email.LastRetryDateTime = DateTime.UtcNow;
-                email.EmailStatusCode = email.Attempts < 9 ? EmailStatus.Pending : EmailStatus.Error;
+                email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
                 if (caught is SmtpCommandException)
                 {
                     email.SmtpStatusCode = (int)((SmtpCommandException)caught).StatusCode;

@@ -524,6 +524,45 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.EmailInvite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("EmailInviteId");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime");
+
+                    b.Property<Guid>("EmailId");
+
+                    b.Property<string>("HdId")
+                        .IsRequired()
+                        .HasMaxLength(52);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime");
+
+                    b.Property<bool>("Validated");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.ToTable("EmailInvite");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.EmailStatusCode", b =>
                 {
                     b.Property<string>("StatusCode")
@@ -1427,6 +1466,14 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.EmailFormatCode")
                         .WithMany()
                         .HasForeignKey("FormatCode")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.EmailInvite", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
