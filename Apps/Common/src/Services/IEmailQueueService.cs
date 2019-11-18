@@ -49,6 +49,31 @@ namespace HealthGateway.Common.Services
         void QueueEmail(Email email);
 
         /// <summary>
+        /// Queues an email invite based on a template name.
+        /// Template will be looked up in the DB.
+        /// </summary>
+        /// <param name="hdid">The users hdid to associate the invite with.</param>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="templateName">The template to search the database for.</param>
+        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
+        void QueueInviteEmail(string hdid, string toEmail, string templateName, Dictionary<string, string> keyValues);
+
+        /// <summary>
+        /// Queues an email invite using a resolved template.
+        /// </summary>
+        /// <param name="hdid">The users hdid to associate the invite with.</param>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="emailTemplate">The resolved Email Template.</param>
+        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
+        void QueueInviteEmail(string hdid, string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
+
+        /// <summary>
+        /// Queues an email using a populated Email object.
+        /// </summary>
+        /// <param name="invite">The populated invite with associated email to send.</param>
+        void QueueInviteEmail(EmailInvite invite);
+
+        /// <summary>
         /// Looks up an Email Template in the database.
         /// </summary>
         /// <param name="templateName">The name of the template.</param>

@@ -63,6 +63,28 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
+        public void QueueInviteEmail(string hdid, string toEmail, string templateName, Dictionary<string, string> keyValues)
+        {
+            this.QueueInviteEmail(hdid, toEmail, this.GetEmailTemplate(templateName), keyValues);
+        }
+
+        /// <inheritdoc />
+        public void QueueInviteEmail(string hdid, string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        {
+            EmailInvite invite = new EmailInvite();
+            invite.HdId = hdid;
+            invite.Email = this.ProcessTemplate(toEmail, emailTemplate, keyValues);
+            this.QueueInviteEmail(invite);
+        }
+
+        /// <inheritdoc />
+        public void QueueInviteEmail(EmailInvite invite)
+        {
+            this.emailDelegate.InsertEmailInvite(invite);
+            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
+        }
+
+        /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
             return this.emailDelegate.GetEmailTemplate(templateName);

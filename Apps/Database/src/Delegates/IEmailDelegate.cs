@@ -59,6 +59,13 @@ namespace HealthGateway.Database.Delegates
         void UpdateEmail(Email email);
 
         /// <summary>
+        /// Inserts an email invite and the associated email.
+        /// </summary>
+        /// <param name="invite"></param>
+        /// <returns>Returns the guid of the saved email invite.</returns>
+        Guid InsertEmailInvite(EmailInvite invite);
+
+        /// <summary>
         /// Looks up an Email Template in the database.
         /// </summary>
         /// <param name="templateName">The name of the template.</param>

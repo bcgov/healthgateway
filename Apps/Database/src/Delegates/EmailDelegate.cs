@@ -80,6 +80,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public Guid InsertEmailInvite(EmailInvite invite)
+        {
+            Contract.Requires(invite != null);
+            this.dbContext.Add<EmailInvite>(invite);
+            this.dbContext.SaveChanges();
+            return invite.Id;
+        }
+
+        /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
             EmailTemplate emailTemplate = this.dbContext.EmailTemplate.Where(p => p.Name == templateName)
