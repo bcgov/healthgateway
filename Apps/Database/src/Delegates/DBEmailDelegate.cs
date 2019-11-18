@@ -90,9 +90,23 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
-            EmailTemplate emailTemplate = this.dbContext.EmailTemplate.Where(p => p.Name == templateName)
+            return this.dbContext.EmailTemplate.Where(p => p.Name == templateName)
                              .FirstOrDefault<EmailTemplate>();
-            return emailTemplate;
+        }
+
+        /// <inheritdoc />
+        public EmailInvite GetEmailInvite(string hdid, Guid inviteKey)
+        {
+            return this.dbContext.EmailInvite.Where(p => p.HdId == hdid && p.InviteKey == inviteKey)
+                            .FirstOrDefault<EmailInvite>();
+        }
+
+        /// <inheritdoc />
+        public void UpdateEmailInvite(EmailInvite emailInvite)
+        {
+            Contract.Requires(emailInvite != null);
+            this.dbContext.Update<EmailInvite>(emailInvite);
+            this.dbContext.SaveChanges();
         }
     }
 }
