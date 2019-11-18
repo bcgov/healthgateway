@@ -17,19 +17,17 @@ namespace HealthGateway.Database.Delegates
 {
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using Npgsql;
-    using NpgsqlTypes;
 
     /// <inheritdoc/>
-    public class WriteAuditEventDelegate : IWriteAuditEventDelegate
+    public class DBWriteAuditEventDelegate : IWriteAuditEventDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WriteAuditEventDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBWriteAuditEventDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public WriteAuditEventDelegate(GatewayDbContext dbContext)
+        public DBWriteAuditEventDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

@@ -1,8 +1,5 @@
 ﻿import { injectable } from "inversify";
-import {
-  IHttpDelegate,
-  IUserFeedbackService
-} from "@/services/interfaces";
+import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
 import UserFeedback from "@/models/userFeedback";
 
 @injectable()

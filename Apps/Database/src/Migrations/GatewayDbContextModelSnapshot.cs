@@ -1341,6 +1341,38 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("TherapeuticClass");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("UserFeedbackId");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserFeedback");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
                     b.Property<string>("HdId")

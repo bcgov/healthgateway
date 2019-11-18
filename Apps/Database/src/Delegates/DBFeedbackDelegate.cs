@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Diagnostics.Contracts;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
@@ -23,24 +24,24 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc />
-    public class ProfileDelegate : IProfileDelegate
+    public class DBFeedbackDelegate : IFeedbackDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProfileDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBFeedbackDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public ProfileDelegate(GatewayDbContext dbContext)
+        public DBFeedbackDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> CreateUserProfile(UserProfile profile)
+        public DBResult<UserFeedback> CreateUserFeedback(UserFeedback feedback)
         {
-            DBResult<UserProfile> result = new DBResult<UserProfile>();
-            this.dbContext.Add<UserProfile>(profile);
+            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+            this.dbContext.Add<UserFeedback>(feedback);
             try
             {
                 this.dbContext.SaveChanges();
@@ -56,17 +57,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> UpdateUserProfile(UserProfile profile)
+        public DBResult<UserFeedback> UpdateUserFeedback(UserFeedback feedback)
         {
-            Contract.Requires(profile != null);
-            DBResult<UserProfile> result = this.GetUserProfile(profile.HdId);
+            Contract.Requires(feedback != null);
+            DBResult<UserFeedback> result = this.GetUserFeedback(feedback.Id);
             if (result.Status == DBStatusCode.Read)
             {
-                // Copy certain attributes into the fetched User Profile
-                result.Payload.Email = profile.Email;
-                result.Payload.AcceptedTermsOfService = profile.AcceptedTermsOfService;
-                result.Payload.UpdatedBy = profile.UpdatedBy;
-                result.Payload.Version = profile.Version;
+                // Copy certain attributes into the fetched User Feedback
+                result.Payload.Comment = feedback.Comment;
+                result.Payload.UpdatedBy = feedback.UpdatedBy;
+                result.Payload.Version = feedback.Version;
                 try
                 {
                     this.dbContext.SaveChanges();
@@ -83,12 +83,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> GetUserProfile(string hdId)
+        public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
-            DBResult<UserProfile> result = new DBResult<UserProfile>();
-            UserProfile profile = this.dbContext.UserProfile.Find(hdId);
-            result.Payload = profile;
-            result.Status = profile != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            UserFeedback feedback = this.dbContext.UserFeedback.Find(feedbackId);
+            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+            result.Payload = feedback;
+            result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
     }

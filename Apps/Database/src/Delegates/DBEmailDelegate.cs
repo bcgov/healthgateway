@@ -22,18 +22,17 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc />
-    public class EmailDelegate : IEmailDelegate
+    public class DBEmailDelegate : IEmailDelegate
     {
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmailDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBEmailDelegate"/> class.
         /// </summary>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public EmailDelegate(GatewayDbContext dbContext)
+        public DBEmailDelegate(GatewayDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

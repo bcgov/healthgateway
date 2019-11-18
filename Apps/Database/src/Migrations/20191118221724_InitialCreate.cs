@@ -126,6 +126,24 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserFeedback",
+                schema: "gateway",
+                columns: table => new
+                {
+                    UserFeedbackId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
+                    Comment = table.Column<string>(maxLength: 300, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserFeedback", x => x.UserFeedbackId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserProfile",
                 schema: "gateway",
                 columns: table => new
@@ -1017,6 +1035,10 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "TherapeuticClass",
+                schema: "gateway");
+
+            migrationBuilder.DropTable(
+                name: "UserFeedback",
                 schema: "gateway");
 
             migrationBuilder.DropTable(

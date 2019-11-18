@@ -55,6 +55,7 @@ namespace HealthGateway.Database.Context
         public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
         public DbSet<FileDownload> FileDownload { get; set; }
         public DbSet<UserProfile> UserProfile { get; set; }
+        public DbSet<UserFeedback> UserFeedback { get; set; }
         #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />

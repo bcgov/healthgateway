@@ -1,4 +1,4 @@
-# Datbase setup
+# Database setup
 
 ## Create Migrations
 
