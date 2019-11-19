@@ -39,6 +39,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public bool ValidateEmail(string hdid, Guid inviteKey)
         {
+            bool retVal = false;
             EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(hdid, inviteKey);
             if (emailInvite != null)
             {
@@ -48,10 +49,10 @@ namespace HealthGateway.WebClient.Services
                     this.emailDelegate.UpdateEmailInvite(emailInvite);
                 }
 
-                return true;
+                retVal = true;
             }
 
-            return false;
+            return retVal;
         }
     }
 }

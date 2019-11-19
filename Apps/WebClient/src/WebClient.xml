@@ -313,6 +313,7 @@
             </summary>
             <param name="hdid">The requested user hdid.</param>
             <param name="inviteKey">The email invite key.</param>
+            <returns>returns true if the email invite was found.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IUserFeedbackService">
             <summary>

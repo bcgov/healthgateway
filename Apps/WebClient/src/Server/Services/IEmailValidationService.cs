@@ -13,10 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-using System;
-
 namespace HealthGateway.WebClient.Services
 {
+    using System;
+
     /// <summary>
     /// The Email Validation service.
     /// </summary>
@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
+        /// <returns>returns true if the email invite was found.</returns>
         bool ValidateEmail(string hdid, Guid inviteKey);
     }
 }
