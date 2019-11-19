@@ -26,7 +26,9 @@ namespace HealthGateway.Database.Models
         [Column("UserFeedbackId")]
         public Guid Id { get; set; }
 
-        [MaxLength(300)]
+        public bool IsSatisfied { get; set; }
+
+        [MaxLength(500)]
         public string Comment { get; set; }
     }
 }

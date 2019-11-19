@@ -28,6 +28,8 @@ namespace HealthGateway.WebClient.Test.Controllers
     using HealthGateway.Common.Authorization;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using System;
+    using Microsoft.AspNetCore.Http.Headers;
 
     public class UserProfileControllerTest
     {
@@ -114,8 +116,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             };
 
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
-
+            HttpRequest request = new DefaultHttpContext().Request;
+            request.Headers["referer"] = "http://localhost/";
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext.Request).Returns(request);
             httpContextAccessorMock.Setup(s => s.HttpContext.User).Returns(claimsPrincipal);
 
             Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
@@ -124,7 +128,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(AuthorizationResult.Success);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(userProfile)).Returns(expected);
+            userProfileServiceMock.Setup(s => s.CreateUserProfile(userProfile, It.IsAny<Uri>())).Returns(expected);
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,

@@ -82,14 +82,18 @@ namespace HealthGateway.Medication
                 };
             });
 
+            // Add services
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
             services.AddTransient<IPharmacyService, RestPharmacyService>();
+
+            // Add parsers
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
+            // Add delegates
+            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
             services.AddTransient<ISequenceDelegate, DBSequenceDelegate>();
         }

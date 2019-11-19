@@ -60,6 +60,30 @@
             </summary>
             <returns>The default view.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.UserFeedbackController">
+            <summary>
+            Web API to handle user feedback interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.#ctor(HealthGateway.WebClient.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserFeedbackController"/> class.
+            </summary>
+            <param name="userFeedbackService">The injected user feedback service.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserProfile(HealthGateway.Database.Models.UserFeedback)">
+            <summary>
+            Posts a user feedback json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="userFeedback">The user feedback model.</param>
+            <response code="200">The user feedback record was saved.</response>
+            <response code="400">The user feedback was already inserted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.UserProfileController">
             <summary>
             Web API to handle user profile interactions.
@@ -290,6 +314,18 @@
             <param name="hdid">The requested user hdid.</param>
             <param name="inviteKey">The email invite key.</param>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserFeedbackService">
+            <summary>
+            The User Feedback service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
+            <summary>
+            Saves the user feedback to the database.
+            </summary>
+            <param name="userFeedback">The user feedback model to be saved.</param>
+            <returns>The wrappeed user feedback.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserProfileService">
             <summary>
             The User Profile service.
@@ -309,6 +345,18 @@
             <param name="userProfile">The user profile model to be saved.</param>
             <param name="hostUri">The host of the email validation endpoint.</param>
             <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.UserFeedbackService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.#ctor(HealthGateway.Database.Delegates.IFeedbackDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserFeedbackService"/> class.
+            </summary>
+            <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
