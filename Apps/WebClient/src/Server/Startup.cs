@@ -66,6 +66,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
+            services.AddTransient<IEmailValidationService, EmailValidationService>();
             services.AddTransient<IAuthService, AuthService>();
             services.Configure<ApiBehaviorOptions>(options =>
             {

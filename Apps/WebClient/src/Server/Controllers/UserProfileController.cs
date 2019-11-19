@@ -77,6 +77,10 @@ namespace HealthGateway.WebClient.Controllers
             Contract.Requires(hdid != null);
             Contract.Requires(userProfile != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string referer = this.httpContextAccessor.HttpContext.Request
+                .GetTypedHeaders()
+                .Referer
+                .GetLeftPart(UriPartial.Authority);
             var isAuthorized = await this.authorizationService
                 .AuthorizeAsync(user, userProfile.HdId, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
@@ -86,14 +90,14 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            if (!hdid.Equals(userProfile.HdId, System.StringComparison.CurrentCultureIgnoreCase))
+            if (!hdid.Equals(userProfile.HdId, StringComparison.CurrentCultureIgnoreCase))
             {
                 return new BadRequestResult();
             }
 
             userProfile.CreatedBy = hdid;
             userProfile.UpdatedBy = hdid;
-            DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile);
+            DBResult<UserProfile> result = this.userProfileService.CreateUserProfile(userProfile, new Uri(referer));
             if (result.Status != Database.Constant.DBStatusCode.Created)
             {
                 return new ConflictResult();

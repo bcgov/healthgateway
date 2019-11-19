@@ -18,29 +18,35 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Net.Mail;
     using System.Text.RegularExpressions;
     using Hangfire;
     using HealthGateway.Common.Jobs;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Logging;
+    using Microsoft.AspNetCore.Hosting;
 
     /// <summary>
     /// A simple service to queue and send email.
     /// </summary>
     public class EmailQueueService : IEmailQueueService
     {
+        private const string INVITE_KEY_VARIABLE = "InviteKey";
+        private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
+        private const string ENVIRONMENT_VARIABLE = "Environment";
+        private const string REGISTRATION_TEMPLATE = "Registration";
+
         private readonly IEmailDelegate emailDelegate;
+        private readonly IHostingEnvironment enviroment;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="emailDelegate">The delegate to be used.</param>
-        public EmailQueueService(IEmailDelegate emailDelegate)
+        /// <param name="enviroment">The injected environment configuration.</param>
+        public EmailQueueService(IEmailDelegate emailDelegate, IHostingEnvironment enviroment)
         {
             this.emailDelegate = emailDelegate;
+            this.enviroment = enviroment;
         }
 
         /// <inheritdoc />
@@ -63,17 +69,18 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueInviteEmail(string hdid, string toEmail, string templateName, Dictionary<string, string> keyValues)
+        public void QueueInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
-            this.QueueInviteEmail(hdid, toEmail, this.GetEmailTemplate(templateName), keyValues);
-        }
-
-        /// <inheritdoc />
-        public void QueueInviteEmail(string hdid, string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
-        {
+            Dictionary<string, string> keyValues = new Dictionary<string, string>();
             EmailInvite invite = new EmailInvite();
+            invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
-            invite.Email = this.ProcessTemplate(toEmail, emailTemplate, keyValues);
+
+            keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
+            keyValues.Add(ACTIVATION_HOST_VARIABLE, activationHost.ToString());
+
+            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(REGISTRATION_TEMPLATE), keyValues);
+
             this.QueueInviteEmail(invite);
         }
 
@@ -98,9 +105,14 @@ namespace HealthGateway.Common.Services
             return email;
         }
 
-        private static Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             Contract.Requires(emailTemplate != null);
+            if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
+            {
+                keyValues.Add(ENVIRONMENT_VARIABLE, this.enviroment.IsProduction() ? string.Empty : this.enviroment.EnvironmentName);
+            }
+
             Email email = new Email();
             email.From = emailTemplate.From;
             email.Priority = emailTemplate.Priority;

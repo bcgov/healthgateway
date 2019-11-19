@@ -328,7 +328,7 @@ namespace HealthGateway.Database.Context
                     Id = Guid.Parse("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"),
                     Name = "Registration",
                     From = "donotreply@gov.bc.ca",
-                    Subject = "{ENVIRONMENT} Health Gateway Email Verification",
+                    Subject = "Health Gateway Email Verification ${Environment}",
                     Body = string.Join(
                                         Environment.NewLine,
                                         "<!doctype html>",
@@ -354,7 +354,7 @@ namespace HealthGateway.Database.Context
                                         "                <h1 style = \"font-size:18px;\">Almost there!</h1>",
                                         "                <p>We've received a request to register your email address for a Ministry of Health Gateway account.</p>",
                                         "                <p>To activate your account, please verify your email by clicking the link:</p>",
-                                        "                <a style = \"color:#1292c5;font-weight:600;\" href = \"\" > Health Gateway account verification </a>",
+                                        "                <a style = \"color:#1292c5;font-weight:600;\" href = \"${ActivationHost}/ValidateEmail/${InviteKey}\" > Health Gateway account verification </a>",
                                         "            </td>",
                                         "            <td></td>",
                                         "        </tr>",
