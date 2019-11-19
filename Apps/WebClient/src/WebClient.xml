@@ -302,7 +302,6 @@
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
-<<<<<<< HEAD
         <member name="T:HealthGateway.WebClient.Services.IEmailValidationService">
             <summary>
             The Email Validation service.
@@ -314,7 +313,7 @@
             </summary>
             <param name="hdid">The requested user hdid.</param>
             <param name="inviteKey">The email invite key.</param>
-=======
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserFeedbackService">
             <summary>
             The User Feedback service.
@@ -326,7 +325,6 @@
             </summary>
             <param name="userFeedback">The user feedback model to be saved.</param>
             <returns>The wrappeed user feedback.</returns>
->>>>>>> dev
         </member>
         <member name="T:HealthGateway.WebClient.Services.IUserProfileService">
             <summary>
