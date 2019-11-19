@@ -37,7 +37,7 @@
         </router-link>
       </b-navbar-nav>
       <b-navbar-nav v-if="displayRegistration">
-        <router-link class="nav-link" to="/registrationInfo">
+        <router-link class="nav-link" to="/registration">
           <span class="fa fa-key"></span> Register
         </router-link>
       </b-navbar-nav>
