@@ -63,9 +63,10 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            // Add services            
+            // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
+            services.AddTransient<IEmailValidationService, EmailValidationService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IAuthService, AuthService>();
@@ -74,13 +75,13 @@ namespace HealthGateway.WebClient
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
-            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));            
+            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         /// <summary>

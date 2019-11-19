@@ -54,5 +54,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public virtual Email Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the invite key.
+        /// </summary>
+        [Required]
+        public Guid InviteKey { get; set; }
     }
 }

@@ -40,12 +40,16 @@
     <ProjectReference Include="..\..\Database\src\Database.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\..\DBMaintainer\DBMaintainer.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Controllers\" />
     <Folder Include="Views\" />
     <Folder Include="Jobs\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\_ViewImports.cshtml" />

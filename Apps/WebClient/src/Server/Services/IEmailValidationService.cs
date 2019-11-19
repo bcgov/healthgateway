@@ -16,27 +16,18 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
 
     /// <summary>
-    /// The User Profile service.
+    /// The Email Validation service.
     /// </summary>
-    public interface IUserProfileService
+    public interface IEmailValidationService
     {
         /// <summary>
         /// Gets the user profile model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> GetUserProfile(string hdid);
-
-        /// <summary>
-        /// Saves the user profile to the database.
-        /// </summary>
-        /// <param name="userProfile">The user profile model to be saved.</param>
-        /// <param name="hostUri">The host of the email validation endpoint.</param>
-        /// <returns>The wrapped user profile.</returns>
-        DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri);
+        /// <param name="inviteKey">The email invite key.</param>
+        /// <returns>returns true if the email invite was found.</returns>
+        bool ValidateEmail(string hdid, Guid inviteKey);
     }
 }

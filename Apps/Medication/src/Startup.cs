@@ -92,7 +92,6 @@ namespace HealthGateway.Medication
 
             // Add parsers
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
-
             // Add delegates
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();

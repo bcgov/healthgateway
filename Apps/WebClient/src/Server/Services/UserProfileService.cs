@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
+    using System.Diagnostics.Contracts;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -44,9 +46,18 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile)
+        public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri)
         {
-            return this.profileDelegate.CreateUserProfile(userProfile);
+            Contract.Requires(userProfile != null && hostUri != null);
+            DBResult<UserProfile> result = this.profileDelegate.CreateUserProfile(userProfile);
+
+            if (result.Status == Database.Constant.DBStatusCode.Created &&
+                !string.IsNullOrEmpty(userProfile.Email))
+            {
+                this.emailQueueService.QueueInviteEmail(userProfile.HdId, userProfile.Email, hostUri);
+            }
+
+            return result;
         }
     }
 }

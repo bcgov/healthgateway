@@ -13,30 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace Healthgateway.Hangfire.Models
 {
-    using System;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
-
     /// <summary>
-    /// The User Profile service.
+    /// Represents configuration for a job instance.
     /// </summary>
-    public interface IUserProfileService
+    public class JobConfiguration
     {
         /// <summary>
-        /// Gets the user profile model.
+        /// Gets or sets the Job Id.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> GetUserProfile(string hdid);
+        public string Id { get; set; }
 
         /// <summary>
-        /// Saves the user profile to the database.
+        /// Gets or sets the CRON schedule for the job.
         /// </summary>
-        /// <param name="userProfile">The user profile model to be saved.</param>
-        /// <param name="hostUri">The host of the email validation endpoint.</param>
-        /// <returns>The wrapped user profile.</returns>
-        DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri);
+        public string Schedule { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the job should be run near immediately after scheduling.
+        /// </summary>
+        public bool Immediate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delay when queueing the immediate job.
+        /// This value is required as the jobs are schedued async and the DB may not be setup yet.
+        /// </summary>
+        public int Delay { get; set; }
     }
 }
