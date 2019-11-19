@@ -45,6 +45,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="appsettings.json" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Controllers\" />
     <Folder Include="Views\" />
@@ -80,4 +83,8 @@
     <Content Remove="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
   </ItemGroup>
+
+  <Target Name="CreateResourcesFolder" AfterTargets="Build">
+   <MakeDir Directories="$(OutDir)Resources" />
+</Target>
 </Project>

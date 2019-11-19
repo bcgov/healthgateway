@@ -63,7 +63,9 @@ steps:
 
 - script: |
     set -e
+    cat $(App.Home)/src/appsettings.json
     cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+    cat $(Build.BinariesDirectory)/appsettings.json
     oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
     oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)

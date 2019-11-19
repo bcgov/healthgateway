@@ -282,7 +282,7 @@
         <member name="T:HealthGateway.WebClient.Services.EmailValidationService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.EmailValidationService.#ctor(HealthGateway.Database.Delegates.IEmailDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.EmailValidationService.#ctor(HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IProfileDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.EmailValidationService"/> class.
             </summary>

@@ -26,7 +26,7 @@ namespace HealthGateway.Database.Constant
         /// <summary>
         /// The DB name for the Pharmanet Trace ID Sequence.
         /// </summary>
-        public const string PHARMANET_TRACE = @"trace_seq";
+        public const string PHARMANET_TRACE = @"gateway.trace_seq";
     }
     #pragma warning restore SA1310
     #pragma warning restore CA1707
