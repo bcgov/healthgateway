@@ -26,6 +26,9 @@
 		},
 		{
 			"path": "WebClient"
+		},
+		{
+			"path": "Hangfire"
 		}
 	],
 	"settings": {}
