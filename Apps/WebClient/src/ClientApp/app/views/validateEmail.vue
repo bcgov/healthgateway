@@ -9,14 +9,8 @@
   <b-container>
     <b-row class="pt-5">
       <b-col class="text-center mb-5">
-        <h4 v-if="isLoading" class="title">
-          We are verifying your email...
-        </h4>
-        <h4 v-if="!isLoading && success === true" class="text-success">
-          Your email was successfully verified!
-        </h4>
-        <h4 v-if="!isLoading && success === false" class="text-danger">
-          Something is not right, are you sure this is the correct link?
+        <h4 class="title">
+          Email Validation
         </h4>
       </b-col>
     </b-row>
@@ -24,10 +18,10 @@
       <b-col class="text-center mb-5">
         <b-spinner v-if="isLoading"></b-spinner>
         <span v-if="!isLoading && success === true" class="text-success"
-          ><i class="fa fa-check-circle fa-10x"></i
+          ><i class="fa fa-check-circle"></i
         ></span>
         <span v-if="!isLoading && success === false" class="text-danger"
-          ><i class="fa fa-times-circle fa-10x"></i
+          ><i class="fa fa-times-circle"></i
         ></span>
       </b-col>
     </b-row>

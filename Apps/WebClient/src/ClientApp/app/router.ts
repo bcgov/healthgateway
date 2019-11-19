@@ -34,9 +34,8 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: "/validateEmail/:inviteKey",
+    path: "/validateEmail",
     component: ValidateEmailComponent,
-    props: true,
     meta: { requiresAuth: true }
   },
   {
