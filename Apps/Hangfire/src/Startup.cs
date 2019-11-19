@@ -16,13 +16,18 @@
 namespace HealthGateway.Hangfire
 {
     using System;
+    using System.Diagnostics.Contracts;
     using global::Hangfire;
     using global::Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.DrugMaintainer;
+    using HealthGateway.DrugMaintainer.Apps;
     using HealthGateway.Hangfire.Jobs;
+    using Healthgateway.Hangfire.Utils;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.StaticFiles;
@@ -62,10 +67,21 @@ namespace HealthGateway.Hangfire
             this.startupConfig.ConfigureHttpServices(services);
 
             services.AddDbContextPool<GatewayDbContext>(options =>
-                 options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection")));
+                options.UseNpgsql(
+                    this.configuration.GetConnectionString("GatewayConnection"),
+                    b => b.MigrationsAssembly(nameof(Database))));
 
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IEmailJob, EmailJob>();
+
+            // DB Maintainer Services
+            services.AddTransient<IFileDownloadService, FileDownloadService>();
+            services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
+            services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+
+            // Add app
+            services.AddTransient<FedDrugDBApp>();
+            services.AddTransient<BCPProvDrugDBApp>();
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
@@ -78,12 +94,19 @@ namespace HealthGateway.Hangfire
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
             app.UseHangfireDashboard();
             app.UseHangfireServer();
 
-            // Schedule Hangfire Jobs
-            RecurringJob.AddOrUpdate<IEmailJob>("SlowNewEmail", j => j.SendLowPriorityEmails(), Cron.Hourly);
+            // Schedule Health Gateway Jobs
+            BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Process());
+            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedApprovedDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedMarketedDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedCancelledDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedDormantDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<BCPProvDrugDBApp>(this.configuration, "PharmaCareDrugFile");
 
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
