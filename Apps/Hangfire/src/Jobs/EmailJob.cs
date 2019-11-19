@@ -121,7 +121,7 @@ namespace HealthGateway.Hangfire.Jobs
                 {
                     try
                     {
-                        smtpClient.Connect(this.host, this.port);
+                        smtpClient.Connect(this.host, this.port, false);
                         try
                         {
                             smtpClient.Send(EmailJob.PrepareMessage(email));
