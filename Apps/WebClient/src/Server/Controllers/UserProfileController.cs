@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Controllers
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
-                .Referer
+                .Referer?
                 .GetLeftPart(UriPartial.Authority);
             var isAuthorized = await this.authorizationService
                 .AuthorizeAsync(user, userProfile.HdId, PolicyNameConstants.UserIsPatient)
