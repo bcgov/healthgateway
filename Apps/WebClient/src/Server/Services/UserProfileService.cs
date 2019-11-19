@@ -49,12 +49,15 @@ namespace HealthGateway.WebClient.Services
         public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri)
         {
             Contract.Requires(userProfile != null && hostUri != null);
+            string email = userProfile.Email;
+            userProfile.Email = string.Empty;
+
             DBResult<UserProfile> result = this.profileDelegate.CreateUserProfile(userProfile);
 
             if (result.Status == Database.Constant.DBStatusCode.Created &&
-                !string.IsNullOrEmpty(userProfile.Email))
+                !string.IsNullOrEmpty(email))
             {
-                this.emailQueueService.QueueInviteEmail(userProfile.HdId, userProfile.Email, hostUri);
+                this.emailQueueService.QueueInviteEmail(userProfile.HdId, email, hostUri);
             }
 
             return result;

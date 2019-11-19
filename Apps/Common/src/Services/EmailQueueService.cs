@@ -78,8 +78,11 @@ namespace HealthGateway.Common.Services
             invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
 
+            string hostUrl = activationHost.ToString();
+            hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash
+
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
-            keyValues.Add(ACTIVATION_HOST_VARIABLE, activationHost.ToString());
+            keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
             invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(REGISTRATION_TEMPLATE), keyValues);
 

@@ -26,14 +26,16 @@ namespace HealthGateway.WebClient.Services
     public class EmailValidationService : IEmailValidationService
     {
         private readonly IEmailDelegate emailDelegate;
+        private readonly IProfileDelegate profileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailValidationService"/> class.
         /// </summary>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
-        public EmailValidationService(IEmailDelegate emailDelegate)
+        public EmailValidationService(IEmailDelegate emailDelegate, IProfileDelegate profileDelegate)
         {
             this.emailDelegate = emailDelegate;
+            this.profileDelegate = profileDelegate;
         }
 
         /// <inheritdoc />
@@ -47,6 +49,9 @@ namespace HealthGateway.WebClient.Services
                 {
                     emailInvite.Validated = true;
                     this.emailDelegate.UpdateEmailInvite(emailInvite);
+                    UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+                    userProfile.Email = emailInvite.Email.To; // Gets the user email from the email sent.
+                    this.profileDelegate.UpdateUserProfile(userProfile);
                 }
 
                 retVal = true;

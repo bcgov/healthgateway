@@ -22,6 +22,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc />
     public class DBEmailDelegate : IEmailDelegate
@@ -97,8 +98,11 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public EmailInvite GetEmailInvite(string hdid, Guid inviteKey)
         {
-            return this.dbContext.EmailInvite.Where(p => p.HdId == hdid && p.InviteKey == inviteKey)
-                            .FirstOrDefault<EmailInvite>();
+            return this.dbContext
+                .EmailInvite
+                .Include(email => email.Email)
+                .Where(p => p.HdId == hdid && p.InviteKey == inviteKey)
+                .FirstOrDefault<EmailInvite>();
         }
 
         /// <inheritdoc />
