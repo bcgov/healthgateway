@@ -91,7 +91,7 @@ namespace HealthGateway.Hangfire.Jobs
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
-                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now", e);
+                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now\n{e.ToString()}");
                     }
 #pragma warning restore CA1031 // Restore warnings.
                 }
@@ -132,7 +132,7 @@ namespace HealthGateway.Hangfire.Jobs
                         catch (SmtpCommandException e)
                         {
                             caught = e;
-                            this.logger.LogError($"Unexpected error while sending email {email.Id}, SMTP Error = {email.SmtpStatusCode}", e);
+                            this.logger.LogError($"Unexpected error while sending email {email.Id}, SMTP Error = {email.SmtpStatusCode}\n{e.ToString()}");
                         }
 
                         smtpClient.Disconnect(true);
@@ -140,7 +140,7 @@ namespace HealthGateway.Hangfire.Jobs
                     catch (SmtpCommandException e)
                     {
                         caught = e;
-                        this.logger.LogError($"Unexpected error while connecting to SMTP Server to send email {email.Id}, SMTP Error = {email.SmtpStatusCode}", e);
+                        this.logger.LogError($"Unexpected error while connecting to SMTP Server to send email {email.Id}, SMTP Error = {email.SmtpStatusCode}\n{e.ToString()}");
                     }
                 }
             }
