@@ -100,7 +100,7 @@ namespace HealthGateway.Hangfire
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
-            BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Process());
+            BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedApprovedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedMarketedDatabase");

@@ -45,7 +45,7 @@ namespace HealthGateway.Hangfire.Jobs
         /// <summary>
         /// Runs the Database migrations.
         /// </summary>
-        public void Process()
+        public void Migrate()
         {
             this.dbContext.Database.Migrate();
         }
