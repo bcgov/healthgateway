@@ -55,6 +55,11 @@ export interface IUserFeedbackService {
   submitFeedback(feedback: UserFeedback): Promise<boolean>;
 }
 
+export interface IEmailValidationService {
+    initialize(http: IHttpDelegate): void;
+    validateEmail(inviteKey: string): Promise<boolean>;
+}
+
 export interface IHttpDelegate {
   unsetAuthorizationHeader(): void;
   setAuthorizationHeader(accessToken: string): void;
