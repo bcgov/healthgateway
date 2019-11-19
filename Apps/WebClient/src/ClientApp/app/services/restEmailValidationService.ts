@@ -3,7 +3,7 @@ import { IHttpDelegate, IEmailValidationService } from "@/services/interfaces";
 
 @injectable()
 export class RestEmailValidationService implements IEmailValidationService {
-  private readonly VALIDATE_EMAIL_BASE_URI: string = "v1/api/ValidateEmail";
+  private readonly VALIDATE_EMAIL_BASE_URI: string = "v1/api/EmailValidation";
   private http!: IHttpDelegate;
 
   public initialize(http: IHttpDelegate): void {

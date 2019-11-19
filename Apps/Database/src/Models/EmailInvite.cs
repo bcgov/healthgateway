@@ -60,6 +60,5 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public Guid InviteKey { get; set; }
-
     }
 }

@@ -5,6 +5,10 @@
   color: $primary;
 }
 
+#Description {
+  font-size: 1.2em;
+}
+
 input {
   max-width: 320px;
 }
@@ -38,11 +42,11 @@ input {
             <h1 id="Subject">
               Terms of Service
             </h1>
-            <h3 id="Description">
-              {{ fullName }}, provide your email address to receive
-              notifications about updates to the Health Gateway, such as new
-              features and changes.
-            </h3>
+            <div id="Description">
+              <strong>{{ fullName }}</strong>
+              , please provide your email address to receive notifications about
+              updates to the Health Gateway, such as new features and changes.
+            </div>
           </div>
         </b-col>
       </b-row>
@@ -156,11 +160,10 @@ export default class RegistrationComponent extends Vue {
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
   private validate: boolean;
-  private isLoading: boolean = false;
+  private isLoading: boolean = true;
   private hasErrors: boolean = false;
 
   mounted() {
-    //this.isLoading = true;
     this.validate = false;
 
     this.userProfileService = container.get(

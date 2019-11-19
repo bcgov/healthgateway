@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.CreateUserProfile(userProfile)).Returns(expected);
             IUserProfileService service = new UserProfileService(profileDelegateMock.Object, emailer.Object);
-            DBResult<UserProfile> actualResult = service.CreateUserProfile(userProfile);
+            DBResult<UserProfile> actualResult = service.CreateUserProfile(userProfile, new System.Uri("http://localhost/"));
 
             Assert.Equal(Database.Constant.DBStatusCode.Created, actualResult.Status);
             Assert.True(actualResult.IsDeepEqual(expected));
