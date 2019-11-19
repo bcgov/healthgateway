@@ -45,6 +45,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="appsettings.json" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Controllers\" />
     <Folder Include="Views\" />
