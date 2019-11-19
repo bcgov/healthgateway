@@ -136,7 +136,8 @@ namespace HealthGateway.Database.Migrations
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
-                    Comment = table.Column<string>(maxLength: 300, nullable: true)
+                    IsSatisfied = table.Column<bool>(nullable: false),
+                    Comment = table.Column<string>(maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {

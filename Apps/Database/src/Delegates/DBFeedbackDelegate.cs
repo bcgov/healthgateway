@@ -64,6 +64,7 @@ namespace HealthGateway.Database.Delegates
             if (result.Status == DBStatusCode.Read)
             {
                 // Copy certain attributes into the fetched User Feedback
+                result.Payload.IsSatisfied = feedback.IsSatisfied;
                 result.Payload.Comment = feedback.Comment;
                 result.Payload.UpdatedBy = feedback.UpdatedBy;
                 result.Payload.Version = feedback.Version;

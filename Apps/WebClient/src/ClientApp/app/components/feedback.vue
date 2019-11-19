@@ -23,7 +23,7 @@
 #collapse {
   background-color: $soft_background;
 }
-#comments {
+#comment {
   resize: none;
 }
 </style>
@@ -85,12 +85,13 @@
           <b-row class="px-1">
             <b-col>
               <b-form-textarea
-                id="comments"
-                v-model="comments"
+                id="comment"
+                v-model="comment"
                 size="sm"
                 placeholder="Comments..."
                 rows="3"
                 max-rows="3"
+                maxlength="500"
                 :disabled="isSuccess || isLoading"
               />
             </b-col>
@@ -133,7 +134,7 @@ import { IUserFeedbackService } from "@/services/interfaces";
 @Component
 export default class FeedbackComponent extends Vue {
   private visible: boolean = false;
-  private comments: string = "";
+  private comment: string = "";
   private isSatisfied: boolean | null = null;
   private isSuccess: boolean = false;
   private hasErrors: boolean = false;
@@ -150,7 +151,7 @@ export default class FeedbackComponent extends Vue {
     this.userFeedbackService
       .submitFeedback({
         isSatisfied: this.isSatisfied!,
-        comments: this.comments
+        comment: this.comment
       })
       .then(result => {
         this.isSuccess = result;

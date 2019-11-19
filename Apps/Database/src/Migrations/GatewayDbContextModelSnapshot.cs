@@ -1348,13 +1348,15 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("UserFeedbackId");
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(300);
+                        .HasMaxLength(500);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(60);
 
                     b.Property<DateTime>("CreatedDateTime");
+
+                    b.Property<bool>("IsSatisfied");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()

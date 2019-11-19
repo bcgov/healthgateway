@@ -8,7 +8,7 @@ $border-color: #00000070;
 </style>
 
 <template>
-  <div class="textArea p-3" @input="updateHTML"></div>
+  <div class="textArea p-4" @input="updateHTML"></div>
 </template>
 
 <script lang="ts">
