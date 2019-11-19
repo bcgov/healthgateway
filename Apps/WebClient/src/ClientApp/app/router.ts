@@ -13,7 +13,7 @@ import LoginCallback from "@/views/loginCallback.vue";
 import RegistrationComponent from "@/views/registration.vue";
 import RegistrationInfoComponent from "@/views/registrationInfo.vue";
 import TimelineComponent from "@/views/timeline.vue";
-import ValidateEmailComponent from '@/views/validateEmail.vue';
+import ValidateEmailComponent from "@/views/validateEmail.vue";
 
 Vue.use(VueRouter);
 
@@ -33,11 +33,11 @@ const routes = [
     component: RegistrationComponent,
     meta: { requiresAuth: true }
   },
-    {
-        path: "/validateEmail",
-        component: ValidateEmailComponent,
-        meta: { requiresAuth: true }
-    },
+  {
+    path: "/validateEmail",
+    component: ValidateEmailComponent,
+    meta: { requiresAuth: true }
+  },
   {
     path: "/profile",
     component: ProfileComponent,

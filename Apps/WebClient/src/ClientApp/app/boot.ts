@@ -67,9 +67,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userFeedbackService: IUserFeedbackService = container.get(
     SERVICE_IDENTIFIER.UserFeedbackService
   );
-    const emailValidationService: IEmailValidationService = container.get(
-        SERVICE_IDENTIFIER.EmailValidationService
-    );
+  const emailValidationService: IEmailValidationService = container.get(
+    SERVICE_IDENTIFIER.EmailValidationService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -78,7 +78,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
-    emailValidationService.initialize(httpDelegate);
+  emailValidationService.initialize(httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,

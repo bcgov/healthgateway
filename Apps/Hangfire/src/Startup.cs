@@ -64,7 +64,7 @@ namespace HealthGateway.Hangfire
             services.AddDbContextPool<GatewayDbContext>(options =>
                  options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection")));
 
-            services.AddTransient<IEmailDelegate, EmailDelegate>();
+            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IEmailJob, EmailJob>();
 
             // Enable Hangfire

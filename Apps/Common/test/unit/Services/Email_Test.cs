@@ -20,6 +20,7 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Hosting;
     using Moq;
     using Xunit;
 
@@ -47,7 +48,7 @@ namespace HealthGateway.CommonTests.Services
                 Subject = "Subject=Test Subject",
                 Body = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3"
             };
-            IEmailQueueService emailService = new EmailQueueService(null);
+            IEmailQueueService emailService = new EmailQueueService(null, new Mock<IHostingEnvironment>().Object);
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             Assert.True(expected.IsDeepEqual(actual));
         }

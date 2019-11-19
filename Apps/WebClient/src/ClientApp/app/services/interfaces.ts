@@ -56,8 +56,8 @@ export interface IUserFeedbackService {
 }
 
 export interface IEmailValidationService {
-    initialize(http: IHttpDelegate): void;
-    validateEmail(inviteKey: string): Promise<boolean>;
+  initialize(http: IHttpDelegate): void;
+  validateEmail(inviteKey: string): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

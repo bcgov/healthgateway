@@ -53,7 +53,7 @@ namespace HealthGateway.WebClient.Services
             if (result.Status == Database.Constant.DBStatusCode.Created &&
                 !string.IsNullOrEmpty(userProfile.Email))
             {
-                this.emailQueueService.QueueInviteEmail(userProfile.HdId, userProfile.Email, hostUri)
+                this.emailQueueService.QueueInviteEmail(userProfile.HdId, userProfile.Email, hostUri);
             }
             return result;
         }
