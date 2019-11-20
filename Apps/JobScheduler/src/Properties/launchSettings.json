@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "Healthgateway.Hangfire": {
+    "Healthgateway.JobScheduler": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "hangfire",

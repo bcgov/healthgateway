@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire", ".\src\Hangfire.csproj", "{DA717494-97F2-41E4-9219-84A1F1DA0BAC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobScheduler", ".\src\JobScheduler.csproj", "{DA717494-97F2-41E4-9219-84A1F1DA0BAC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\src\Common.csproj", "{F5DE53A6-214B-479C-8B6F-140685EA9985}"
 EndProject

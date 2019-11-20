@@ -3,15 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <RootNamespace>Healthgateway.Hangfire</RootNamespace>
+    <RootNamespace>Healthgateway.JobScheduler</RootNamespace>
   </PropertyGroup>
 
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DocumentationFile>bin\Debug\netcoreapp2.2\Hangfire.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp2.2\JobScheduler.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
+    <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.6.3" />
     <PackageReference Include="mailkit" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.App">
@@ -45,12 +46,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="appsettings.json" CopyToPublishDirectory="Always" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Context\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Views\" />
     <Folder Include="Jobs\" />
     <Folder Include="Utils\" />
   </ItemGroup>
@@ -82,5 +78,6 @@
     <Content Remove="wwwroot\lib\jquery-validation\dist\additional-methods.js" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
+    <Content Remove="Views\Home\Index.cshtml" />
   </ItemGroup>
 </Project>

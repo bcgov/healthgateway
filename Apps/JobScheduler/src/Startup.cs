@@ -13,21 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Hangfire
+namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Diagnostics.Contracts;
-    using global::Hangfire;
-    using global::Hangfire.PostgreSql;
+    using Hangfire;
+    using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
-    using HealthGateway.DrugMaintainer.Apps;
-    using HealthGateway.Hangfire.Jobs;
-    using Healthgateway.Hangfire.Utils;
+    using Healthgateway.JobScheduler.Jobs;
+    using Healthgateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.StaticFiles;
@@ -35,9 +34,6 @@ namespace HealthGateway.Hangfire
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json.Linq;
-    using System.Linq;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The startup class.
@@ -83,8 +79,8 @@ namespace HealthGateway.Hangfire
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
 
             // Add app
-            services.AddTransient<FedDrugDBApp>();
-            services.AddTransient<BCPProvDrugDBApp>();
+            services.AddTransient<FedDrugJob>();
+            services.AddTransient<ProvincialDrugJob>();
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
@@ -99,18 +95,17 @@ namespace HealthGateway.Hangfire
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-            this.logConfiguration();
             app.UseHangfireDashboard();
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedApprovedDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedMarketedDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedCancelledDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugDBApp>(this.configuration, "FedDormantDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<BCPProvDrugDBApp>(this.configuration, "PharmaCareDrugFile");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
+            SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
 
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
@@ -135,62 +130,7 @@ namespace HealthGateway.Hangfire
                 },
             });
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
-            });
-        }
-
-        void logConfiguration()
-        {
-            this.logger.LogDebug("Starting Service Configuration...");
-            //bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
-            //this.logger.LogDebug(this.configuration.ToString());
-
-            var enumerator1 = this.configuration.GetChildren().GetEnumerator();
-
-            var jsonObject = new JObject();
-            while (enumerator1.MoveNext())
-            {
-                //this.logger.LogDebug($"{enumerator1.Current.Key,5}:{enumerator1.Current.Value,3}");
-                if (enumerator1.Current.GetChildren() != null && enumerator1.Current.GetChildren().Any())
-                {
-                    var sub1 = new JObject();
-                    var enumerator2 = enumerator1.Current.GetChildren().GetEnumerator();
-                    while (enumerator2.MoveNext())
-                    {
-                        if (enumerator2.Current.GetChildren() != null && enumerator2.Current.GetChildren().Any())
-                        {
-                            var sub2 = new JObject();
-                            var enumerator3 = enumerator2.Current.GetChildren().GetEnumerator();
-                            while (enumerator3.MoveNext())
-                            {
-                                sub2[enumerator3.Current.Key] = enumerator3.Current.Value;
-                            }
-                            sub1[enumerator2.Current.Key] = sub2;
-                        }
-                        else
-                        {
-                            sub1[enumerator2.Current.Key] = enumerator2.Current.Value;
-                        }
-                    }
-
-                    jsonObject[enumerator1.Current.Key] = sub1;
-                }
-                else
-                {
-                    jsonObject[enumerator1.Current.Key] = enumerator1.Current.Value;
-                }
-            }
-
-
-            this.logger.LogDebug(JsonConvert.SerializeObject(jsonObject));
+            app.UseMvc();
         }
     }
 }
