@@ -149,7 +149,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// Performs the actual download of the file and verifies if it has been
         /// previously processed.
         /// </summary>
-        public void Process(string ConfigSectionName)
+        public virtual void Process(string ConfigSectionName)
         {
             this.logger.LogInformation($"Reading configuration for section {ConfigSectionName}");
             IConfigurationSection section = configuration.GetSection(ConfigSectionName);

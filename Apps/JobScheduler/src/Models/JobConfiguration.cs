@@ -13,22 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.Hangfire.Context
+namespace Healthgateway.JobScheduler.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
     /// <summary>
-    /// The empty Hanfgire DB Context for intiial DB migration.
+    /// Represents configuration for a job instance.
     /// </summary>
-    public class HangfireDbContext : DbContext
+    public class JobConfiguration
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HangfireDbContext"/> class.
+        /// Gets or sets the Job Id.
         /// </summary>
-        /// <param name="options">The passed in DB Options.</param>
-        public HangfireDbContext(DbContextOptions<HangfireDbContext> options)
-            : base(options)
-        {
-        }
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the CRON schedule for the job.
+        /// </summary>
+        public string Schedule { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the job should be run near immediately after scheduling.
+        /// </summary>
+        public bool Immediate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delay when queueing the immediate job.
+        /// This value is required as the jobs are schedued async and the DB may not be setup yet.
+        /// </summary>
+        public int Delay { get; set; }
     }
 }

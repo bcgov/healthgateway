@@ -13,8 +13,9 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Hangfire.Jobs
+namespace Healthgateway.JobScheduler.Jobs
 {
+    using Hangfire;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -25,6 +26,7 @@ namespace HealthGateway.Hangfire.Jobs
     /// </summary>
     public class DBMigrationsJob
     {
+        private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
@@ -45,6 +47,7 @@ namespace HealthGateway.Hangfire.Jobs
         /// <summary>
         /// Runs the Database migrations.
         /// </summary>
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Migrate()
         {
             this.dbContext.Database.Migrate();

@@ -13,11 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Hangfire.Jobs
+namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using Hangfire;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -31,6 +32,7 @@ namespace HealthGateway.Hangfire.Jobs
     /// <inheritdoc />
     public class EmailJob : IEmailJob
     {
+        private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
         private readonly IConfiguration configuration;
         private readonly ILogger<EmailJob> logger;
         private readonly IEmailDelegate emailDelegate;
@@ -75,6 +77,7 @@ namespace HealthGateway.Hangfire.Jobs
         }
 
         /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendLowPriorityEmails()
         {
             this.logger.LogInformation($"Looking for up to {this.retryFetchSize} low priority emails to send");
