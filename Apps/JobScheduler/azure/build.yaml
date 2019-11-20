@@ -2,7 +2,7 @@ name: 1.0.0$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/Hangfire
+  App.Home: $(Build.SourcesDirectory)/Apps/JobScheduler
   App.Name: hangfire
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
@@ -28,31 +28,31 @@ steps:
   displayName: Run dotnet Tests
   inputs:
     command: 'test'
-    projects: '$(App.UnitTests)/HangfireTests.csproj'
-    testRunTitle: 'Hangfire Tests'
+    projects: '$(App.UnitTests)/JobSchedulerTests.csproj'
+    testRunTitle: 'JobScheduler Tests'
   enabled: 'false'
 
 - script: |
     set -e
-    dotnet test test/unit/HangfireTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
+    dotnet test test/unit/JobScheduler.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
     dotnet sonarscanner begin /d:sonar.verbose=false /k:"hangfire_dev" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
     echo "$@" >&2
   displayName: 'Perform Static Code Analysis'
   continueOnError: 'false'
-  workingDirectory: $(Build.SourcesDirectory)/Apps/Hangfire
+  workingDirectory: $(App.Home)
   enabled: 'false'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '$(App.UnitTests)/HangfireTests.csproj'
-    testRunTitle: 'Build Hangfire Tests'
+    projects: '$(App.UnitTests)/JobSchedulerTests.csproj'
+    testRunTitle: 'Build JobScheduler Tests'
   enabled: 'false'
 
 - task: DotNetCoreCLI@2
-  displayName: Publish dotnet code
+  displayName: Building and Publishing JobScheduler
   inputs:
     modifyOutputPath: false
     command: 'publish'
