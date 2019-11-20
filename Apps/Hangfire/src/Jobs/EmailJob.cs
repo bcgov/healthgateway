@@ -23,6 +23,7 @@ namespace HealthGateway.Hangfire.Jobs
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using MailKit.Net.Smtp;
+    using MailKit.Security;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using MimeKit;
@@ -121,7 +122,7 @@ namespace HealthGateway.Hangfire.Jobs
                 {
                     try
                     {
-                        smtpClient.Connect(this.host, this.port, false);
+                        smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
                         try
                         {
                             smtpClient.Send(EmailJob.PrepareMessage(email));
