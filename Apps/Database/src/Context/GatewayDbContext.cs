@@ -327,7 +327,7 @@ namespace HealthGateway.Database.Context
                 {
                     Id = Guid.Parse("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"),
                     Name = "Registration",
-                    From = "donotreply@gov.bc.ca",
+                    From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Email Verification ${Environment}",
                     Body = string.Join(
                                         Environment.NewLine,
