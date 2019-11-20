@@ -16,7 +16,7 @@ namespace HealthGateway.WebClient.Test.Functional.Api
         {
             // arrange
             RestClient client = new RestClient(baseUrl);
-            RestRequest request = new RestRequest("api/Configuration", Method.GET);
+            RestRequest request = new RestRequest("v1/api/Configuration", Method.GET);
 
             // act
             IRestResponse response = client.Execute(request);

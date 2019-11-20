@@ -18,16 +18,31 @@ namespace HealthGateway.Database.Constant
     /// <summary>
     /// The set of programs.
     /// </summary>
-    public enum ProgramType
+    public static class ProgramType
     {
         /// <summary>
-        /// The Federal Drug loading program.
+        /// The Federal Drug loading program for active drugs.
         /// </summary>
-        Federal = 100,
+        public const string FederalApproved = "FED-DRUG-A";
+
+        /// <summary>
+        /// The Federal Drug loading program for marketed drugs.
+        /// </summary>
+        public const string FederalMarketed = "FED-DRUG-M";
+
+        /// <summary>
+        /// The Federal Drug loading program for Cancelled drugs.
+        /// </summary>
+        public const string FederalCancelled = "FED-DRUG-C";
+
+        /// <summary>
+        /// The Federal Drug loading program for dorman drugs.
+        /// </summary>
+        public const string FederalDormant = "FED-DRUG-D";
 
         /// <summary>
         /// The Provincial Drug loading program.
         /// </summary>
-        Provincial = 200,
+        public const string Provincial = "PROV-DRUG";
     }
 }

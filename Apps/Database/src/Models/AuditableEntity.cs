@@ -17,19 +17,20 @@ namespace HealthGateway.Database.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Runtime.Serialization;
 
     /// <summary>
     /// Base class for all DB entities to ensure audit data is saved.
     /// </summary>
-    public abstract class AuditableEntity : IAuditable
+    public abstract class AuditableEntity : IAuditable, IConcurrencyGuard
     {
         /// <summary>
         /// Gets or sets the user/system that created the entity.
         /// This is generally set by the baseDbContext.
         /// </summary>
         [Required]
-        [MaxLength(30)]
+        [MaxLength(60)]
         [IgnoreDataMember]
         public string CreatedBy { get; set; }
 
@@ -46,7 +47,7 @@ namespace HealthGateway.Database.Models
         /// This is generally set by the baseDbContext.
         /// </summary>
         [Required]
-        [MaxLength(30)]
+        [MaxLength(60)]
         [IgnoreDataMember]
         public string UpdatedBy { get; set; }
 
@@ -57,5 +58,11 @@ namespace HealthGateway.Database.Models
         [Required]
         [IgnoreDataMember]
         public DateTime UpdatedDateTime { get; set; }
+
+        /// <inheritdoc/>
+        [ConcurrencyCheck]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Column("xmin", TypeName = "xid")]
+        public uint Version { get; set; }
     }
 }

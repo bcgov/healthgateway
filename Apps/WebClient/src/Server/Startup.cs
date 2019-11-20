@@ -17,10 +17,16 @@
 namespace HealthGateway.WebClient
 {
     using System.Diagnostics.Contracts;
+    using Hangfire;
+    using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -31,6 +37,7 @@ namespace HealthGateway.WebClient
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -41,6 +48,7 @@ namespace HealthGateway.WebClient
         public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -50,17 +58,30 @@ namespace HealthGateway.WebClient
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
-
-            // Configuration Service
-            services.AddTransient<IConfigurationService>(serviceProvider =>
-            {
-                IConfigurationService service = new ConfigurationService(
-                    serviceProvider.GetService<ILogger<ConfigurationService>>(),
-                    serviceProvider.GetService<IConfiguration>());
-                return service;
-            });
             this.startupConfig.ConfigureAuditServices(services);
+            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+
+            // Add services
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserProfileService, UserProfileService>();
+            services.AddTransient<IEmailValidationService, EmailValidationService>();
+            services.AddTransient<IEmailQueueService, EmailQueueService>();
+            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
+            services.AddTransient<IAuthService, AuthService>();
+
+            // Add delegates
+            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
+            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         /// <summary>
@@ -73,6 +94,7 @@ namespace HealthGateway.WebClient
             Contract.Requires(env != null);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
+            this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseWebClient(app);
         }

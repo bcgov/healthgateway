@@ -20,7 +20,6 @@ namespace HealthGateway.Common.Filters
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Filters;
 
     /// <summary>
@@ -45,7 +44,6 @@ namespace HealthGateway.Common.Filters
             Contract.Requires(next != null);
 
             AuditEvent auditEvent = new AuditEvent();
-            auditEvent.AuditEventId = Guid.NewGuid();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
 
             // Executes the action (Controller method)

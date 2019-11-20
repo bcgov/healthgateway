@@ -1,0 +1,13 @@
+version: '3.5'
+services:
+  gatewaydb:
+    container_name: gatewaydb
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    env_file:
+      - ./postgres.env
+    restart: unless-stopped
+    volumes:
+      - ./backups:/backups
+      - ./pgdata:/var/lib/postgresql/data

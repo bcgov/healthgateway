@@ -1,20 +1,16 @@
-import { IPatientService } from "@/services/interfaces";
-
 import { injectable } from "inversify";
-import "reflect-metadata";
-
+import { IPatientService, IHttpDelegate } from "@/services/interfaces";
 import PatientData from "@/models/patientData";
 import { ExternalConfiguration } from "@/models/configData";
-import HttpDelegate from "@/services/httpDelegate";
 
 @injectable()
 export class RestPatientService implements IPatientService {
   private readonly PATIENT_BASE_URI: string = "v1/api/Patient/";
   private baseUri: string = "";
-  private http!: HttpDelegate;
+  private http!: IHttpDelegate;
   constructor() {}
 
-  public initialize(config: ExternalConfiguration, http: HttpDelegate): void {
+  public initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
     this.baseUri = config.serviceEndpoints["Patient"];
     this.http = http;
   }

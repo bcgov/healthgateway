@@ -26,6 +26,7 @@ module.exports = env => {
         noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
         rules: [
           { test: /\.vue$/, include: /app/, use: "vue-loader" },
+          { test: /\.html$/, use: "raw-loader" },
           {
             test: /\.ts$/,
             include: /app/,

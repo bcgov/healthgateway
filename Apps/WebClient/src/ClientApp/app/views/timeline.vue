@@ -26,9 +26,9 @@
 }
 </style>
 <template>
-  <b-container fluid>
+  <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <b-row>
+    <b-row class="my-3">
       <b-col class="col-3 column-wrapper"> </b-col>
       <b-col id="timeline" class="col-6 column-wrapper">
         <b-alert :show="hasErrors" dismissible variant="danger">
@@ -41,50 +41,52 @@
           </h1>
           <hr />
         </div>
-        <div id="listControlls">
-          <b-row>
-            <b-col>
-              Displaying {{ getVisibleCount() }} out of
-              {{ getTotalCount() }} records
-            </b-col>
-            <b-col cols="auto">
-              <b-row
-                :class="{ descending: sortDesc, ascending: !sortDesc }"
-                class="text-right sortContainer"
-              >
-                <b-btn variant="link" @click="toggleSort()">
-                  Date
-                  <span v-show="sortDesc" name="descending">
-                    (Newest)
-                    <i class="fa fa-chevron-down" aria-hidden="true"></i
-                  ></span>
-                  <span v-show="!sortDesc" name="ascending">
-                    (Oldest)
-                    <i class="fa fa-chevron-up" aria-hidden="true"></i
-                  ></span>
-                </b-btn>
-              </b-row>
-            </b-col>
-          </b-row>
-        </div>
-        <div id="timeData">
-          <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
-            <b-col cols="auto">
-              <div class="date">
-                {{ getHeadingDate(dateGroup.date) }}
-              </div>
-            </b-col>
-            <b-col>
-              <hr class="dateBreakLine" />
-            </b-col>
-            <MedicationComponent
-              v-for="(entry, index) in dateGroup.entries"
-              :key="entry.id"
-              :datekey="dateGroup.key"
-              :entry="entry"
-              :index="index"
-            />
-          </b-row>
+        <div v-if="!isLoading">
+          <div id="listControlls">
+            <b-row>
+              <b-col>
+                Displaying {{ getVisibleCount() }} out of
+                {{ getTotalCount() }} records
+              </b-col>
+              <b-col cols="auto">
+                <b-row
+                  :class="{ descending: sortDesc, ascending: !sortDesc }"
+                  class="text-right sortContainer"
+                >
+                  <b-btn variant="link" @click="toggleSort()">
+                    Date
+                    <span v-show="sortDesc" name="descending">
+                      (Newest)
+                      <i class="fa fa-chevron-down" aria-hidden="true"></i
+                    ></span>
+                    <span v-show="!sortDesc" name="ascending">
+                      (Oldest)
+                      <i class="fa fa-chevron-up" aria-hidden="true"></i
+                    ></span>
+                  </b-btn>
+                </b-row>
+              </b-col>
+            </b-row>
+          </div>
+          <div id="timeData">
+            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
+              <b-col cols="auto">
+                <div class="date">
+                  {{ getHeadingDate(dateGroup.date) }}
+                </div>
+              </b-col>
+              <b-col>
+                <hr class="dateBreakLine" />
+              </b-col>
+              <MedicationComponent
+                v-for="(entry, index) in dateGroup.entries"
+                :key="entry.id"
+                :datekey="dateGroup.key"
+                :entry="entry"
+                :index="index"
+              />
+            </b-row>
+          </div>
         </div>
       </b-col>
       <b-col class="col-3 column-wrapper"> </b-col>
@@ -95,7 +97,8 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
-  </b-container>
+    <FeedbackComponent />
+  </div>
 </template>
 
 <script lang="ts">
@@ -114,6 +117,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import { ResultType } from "@/constants/resulttype.ts";
 import moment from "moment";
+import FeedbackComponent from "@/components/feedback.vue";
 
 const namespace: string = "user";
 
@@ -126,7 +130,8 @@ interface DateGroup {
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
-    MedicationComponent: MedicationTimelineComponent
+    MedicationComponent: MedicationTimelineComponent,
+    FeedbackComponent
   }
 })
 export default class TimelineComponent extends Vue {
@@ -153,13 +158,13 @@ export default class TimelineComponent extends Vue {
     medicationService
       .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
-        console.log(results);
         if (results.resultStatus == ResultType.Success) {
+          this.protectiveWordAttempts = 0;
+
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-          this.protectiveWordFailed = 0;
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
           this.protectiveWordAttempts++;

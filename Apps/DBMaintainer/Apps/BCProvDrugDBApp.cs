@@ -29,30 +29,15 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// </summary>
     public class BCPProvDrugDBApp : BaseDrugApp<IPharmaCareDrugParser>
     {
-        /// <summary>
-        /// The name used to lookup configuration.
-        /// </summary>
-        private const string CONFIG_SECTION = "PharmaCareDrugFile";
-
         /// <inheritdoc/>
-        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }
 
         /// <inheritdoc/>
-        protected override string configurationName
-        {
-            get
-            {
-                return CONFIG_SECTION;
-            }
-        }
-
-        /// <inheritdoc/>
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
-            downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Provincial;
             string[] files = Directory.GetFiles(sourceFolder, "pddf*.csv");
             if (files.Length > 1)
             {

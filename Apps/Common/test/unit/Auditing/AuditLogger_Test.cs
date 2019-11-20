@@ -38,11 +38,11 @@ namespace HealthGateway.CommonTests.Auditing
             ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
             AuditEvent expected = new AuditEvent()
             {
-                ApplicationType = AuditApplicationType.Configuration,
+                ApplicationType = AuditApplication.Configuration,
                 ClientIP = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = "",
-                TransactionResultType = AuditTransactionResultType.Success,
+                TransactionResultCode = AuditTransactionResult.Success,
                 TransactionVersion = ""
             };
 

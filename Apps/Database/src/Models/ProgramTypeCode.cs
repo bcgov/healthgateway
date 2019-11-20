@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using HealthGateway.Database.Constant;
@@ -23,11 +24,13 @@ namespace HealthGateway.Database.Models
     #pragma warning disable SA1600 // self explanatory simple model
     public class ProgramTypeCode : AuditableEntity
     {
-        [Column("ProgramTypeCodeId")]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public ProgramType Id { get; set; }
+        [Key]
+        [Required]
+        [MaxLength(10)]
+        public string ProgramCode { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        [MaxLength(50)]
+        public string Description { get; set; }
     }
 }

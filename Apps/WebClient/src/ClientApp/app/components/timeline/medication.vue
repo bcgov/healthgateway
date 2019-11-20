@@ -115,7 +115,9 @@ $radius: 15px;
                     </div>
                   </div>
                   <div class="detailSection">
-                    <strong>DIN/PIN:</strong>
+                    <strong
+                      >{{ entry.medication.isPin ? "PIN" : "DIN" }}:</strong
+                    >
                     {{ entry.medication.din }}
                   </div>
                   <div class="detailSection">
@@ -128,8 +130,16 @@ $radius: 15px;
                     <div>
                       {{ entry.pharmacy.address }}
                     </div>
-                    <div>
+                    <div v-if="entry.pharmacy.phoneType != faxPhoneType">
                       {{ formatPhoneNumber(entry.pharmacy.phoneNumber) }}
+                    </div>
+                    <div class="detailSection border border-dark p-2 small">
+                      <div>
+                        <strong>Directions for Use:</strong>
+                      </div>
+                      <div class="pt-2">
+                        {{ entry.directions }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -150,6 +160,7 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
+import { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
@@ -161,7 +172,7 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
-
+  private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
 

@@ -7,9 +7,6 @@
 			"path": "Immunization"
 		},
 		{
-			"path": "WebClient"
-		},
-		{
 			"path": "Patient"
 		},
 		{
@@ -19,9 +16,6 @@
 			"path": "Medication"
 		},
 		{
-			"path": "DrugMaintainer"
-		},
-		{
 			"path": "DBMaintainer"
 		},
 		{
@@ -29,6 +23,12 @@
 		},
 		{
 			"path": "Database"
+		},
+		{
+			"path": "WebClient"
+		},
+		{
+			"path": "Hangfire"
 		}
 	],
 	"settings": {}

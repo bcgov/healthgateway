@@ -27,6 +27,6 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <summary>
         /// Processes the downloaded files.
         /// </summary>
-        void Process();
+        void Process(string ConfigSectionName);
     }
 }

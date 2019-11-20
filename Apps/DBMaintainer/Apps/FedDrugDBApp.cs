@@ -29,30 +29,15 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// </summary>
     public class FedDrugDBApp : BaseDrugApp<IDrugProductParser>
     {
-        /// <summary>
-        /// The name used to lookup configuration.
-        /// </summary>
-        private const string CONFIG_SECTION = "DrugProductDatabase";
-
         /// <inheritdoc/>
-        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }
 
         /// <inheritdoc/>
-        protected override string configurationName
-        {
-            get
-            {
-                return CONFIG_SECTION;
-            }
-        }
-
-        /// <inheritdoc/>
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
-            downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
             this.logger.LogInformation("Parsing Drug File and adding to DB Context");
             List<DrugProduct> drugProducts = this.parser.ParseDrugFile(sourceFolder, downloadedFile);
             this.drugDbContext.DrugProduct.AddRange(drugProducts);
@@ -67,7 +52,6 @@ namespace HealthGateway.DrugMaintainer.Apps
             this.drugDbContext.Schedule.AddRange(this.parser.ParseScheduleFile(sourceFolder, drugProducts));
             this.drugDbContext.TherapeuticClass.AddRange(this.parser.ParseTherapeuticFile(sourceFolder, drugProducts));
             this.drugDbContext.VeterinarySpecies.AddRange(this.parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
-            downloadedFile.ProgramTypeCodeId = Database.Constant.ProgramType.Federal;
             this.AddFileToDB(downloadedFile);
             this.RemoveOldFiles(downloadedFile);
             this.logger.LogInformation("Saving Entities to the database");

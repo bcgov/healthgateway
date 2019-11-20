@@ -64,5 +64,10 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the phone number.
         /// </summary>
         public string PhoneNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the telephone type.
+        /// </summary>
+        public string PhoneType { get; set; }
     }
 }

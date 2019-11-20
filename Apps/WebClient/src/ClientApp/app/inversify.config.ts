@@ -10,14 +10,20 @@ import {
   IConfigService,
   IHttpDelegate,
   IPatientService,
-  IMedicationService
+  IMedicationService,
+  IUserProfileService,
+  IUserFeedbackService,
+  IEmailValidationService
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "@/services/restImmsService";
 import { RestConfigService } from "@/services/restConfigService";
-import { RestPatientService } from "./services/restPatientService";
-import { RestMedicationService } from "./services/restMedicationService";
+import { RestPatientService } from "@/services/restPatientService";
+import { RestMedicationService } from "@/services/restMedicationService";
 import HttpDelegate from "@/services/httpDelegate";
+import { RestUserProfileService } from "@/services/restUserProfileService";
+import { RestUserFeedbackService } from "@/services/restUserFeedback";
+import { RestEmailValidationService } from "@/services/restEmailValidationService";
 
 let container = new Container();
 container
@@ -39,6 +45,18 @@ container
 container
   .bind<IMedicationService>(SERVICE_IDENTIFIER.MedicationService)
   .to(RestMedicationService)
+  .inSingletonScope();
+container
+  .bind<IUserProfileService>(SERVICE_IDENTIFIER.UserProfileService)
+  .to(RestUserProfileService)
+  .inSingletonScope();
+container
+  .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
+  .to(RestUserFeedbackService)
+  .inSingletonScope();
+container
+  .bind<IEmailValidationService>(SERVICE_IDENTIFIER.EmailValidationService)
+  .to(RestEmailValidationService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

@@ -2,12 +2,19 @@
   "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
   "version": "2.0",
   "name": "Webclient",
-  "url": "https://dev-gateway.pathfinder.gov.bc.ca",
+  "url": "https://dev-gateway.pathfinder.gov.bc.ca/",
   "tests": [{
     "id": "5623a813-676e-42d2-9fc8-4117f3206bf6",
     "name": "Health Gateway Landing Page",
     "commands": [{
       "id": "89692e23-4ba5-4861-9b13-5221e1e45a12",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "72d5d32d-0298-4f80-9b97-0750aef5f3cf",
       "comment": "",
       "command": "open",
       "target": "/",
@@ -21,21 +28,43 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "db8fdb27-b6fe-431f-9dc4-268eccdf1a10",
+      "id": "7f8ac8cd-cb9c-413f-bcd6-9f2a601fd4c4",
       "comment": "",
       "command": "assertText",
-      "target": "css=h1",
+      "target": "id=btnLogin",
       "targets": [
-        ["css=h1", "css:finder"],
-        ["xpath=//div[@id='app-root']/div/div/div/div/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Health Gateway')]", "xpath:innerText"]
+        ["id=btnLogin", "id"],
+        ["linkText=Log In", "linkText"],
+        ["css=#btnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Log In')]", "xpath:link"],
+        ["xpath=//a[@id='btnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a[2]", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/login')])[2]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Log In')]", "xpath:innerText"]
       ],
-      "value": "Health Gateway"
+      "value": "Log In"
+    }, {
+      "id": "3f720218-7061-4a05-8ab5-07f994ce6864",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Sign Up", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/cardInfo')]", "xpath:href"],
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+      ],
+      "value": "Sign Up"
     }]
   }, {
     "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
-    "name": "Redirect to registration landing page",
+    "name": "Landing page - Sign up button",
     "commands": [{
       "id": "255cc728-fec0-4135-8bb9-9610aa1a5639",
       "comment": "",
@@ -64,17 +93,13 @@
       "id": "dc5d4516-920a-4660-b429-000ffaba9c82",
       "comment": "",
       "command": "assertElementPresent",
-      "target": "id=btnCreateAccount",
+      "target": "css=.btn-primary",
       "targets": [
-        ["id=btnStart", "id"],
-        ["linkText=Create Health Gateway Account", "linkText"],
-        ["css=#btnStart", "css:finder"],
-        ["xpath=//a[contains(text(),'Create Health Gateway Account')]", "xpath:link"],
-        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/div/div/div/div/div[3]/div/a", "xpath:idRelative"],
-        ["xpath=(//a[contains(@href, '#')])[2]", "xpath:href"],
-        ["xpath=//div/a", "xpath:position"],
-        ["xpath=//a[contains(.,'Create Health Gateway Account')]", "xpath:innerText"]
+        ["css=.btn-primary", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[2]/div[2]/div/div/a/button", "xpath:idRelative"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Register for Health Gateway')]", "xpath:innerText"]
       ],
       "value": ""
     }]
@@ -88,6 +113,18 @@
       "target": "/nonexistingpage",
       "targets": [],
       "value": ""
+    }, {
+      "id": "fd93d883-8d01-4546-8fcf-d1742bc682df",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'404')]", "xpath:innerText"]
+      ],
+      "value": "30000"
     }, {
       "id": "8be70103-f8a5-454c-bdf2-817d4f6589c0",
       "comment": "",
@@ -118,6 +155,13 @@
     "id": "7d26e647-6f0a-4ccd-a741-e1bdc477e5e7",
     "name": "Login from Landing",
     "commands": [{
+      "id": "38eae6fc-9afe-45d1-9d83-f0add00d0cb6",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
       "id": "93a3db58-12e0-420f-947c-a5fab202406a",
       "comment": "",
       "command": "open",
@@ -158,6 +202,13 @@
     "id": "c033b379-f96e-48f6-bd75-39e6e4ec1302",
     "name": "Profile page - unauthorized redirects",
     "commands": [{
+      "id": "88945532-4fa5-43a3-844e-8b7b7cefbc9e",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
       "id": "499b33ee-801e-4212-8977-5910d2027386",
       "comment": "",
       "command": "open",
@@ -176,75 +227,10 @@
     "id": "6420586f-660b-44ef-be23-d2e3c4d161e7",
     "name": "Keycloak Login Protected",
     "commands": [{
-      "id": "94b48685-4b56-4c67-9432-ab725c6cfbb0",
+      "id": "10e57f15-50b9-4d15-b851-2a7a75955910",
       "comment": "",
-      "command": "open",
-      "target": "/",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "60f70152-2e32-4b51-9997-bc7c46fdc005",
-      "comment": "",
-      "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
-      "targets": [],
-      "value": "loggedin"
-    }, {
-      "id": "6d621f03-eb86-4196-8770-0496b8b3f3e9",
-      "comment": "",
-      "command": "if",
-      "target": "${loggedin} > 0",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "05fc84e4-1608-449a-9587-fbf4ac72f99d",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtndUser__BV_button_",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "0242d305-6942-454c-a580-36b40b98fd93",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "a8e234c2-2c36-446e-8771-7e33d6ca48b3",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=strong",
-      "targets": [
-        ["css=strong", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
-        ["xpath=//strong", "xpath:position"],
-        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
-      ],
-      "value": "You signed out of your account"
-    }, {
-      "id": "7ead1ced-568d-4168-b7ee-bb4135f77d2d",
-      "comment": "",
-      "command": "end",
-      "target": "",
+      "command": "run",
+      "target": "Logout",
       "targets": [],
       "value": ""
     }, {
@@ -349,200 +335,18 @@
     "id": "429ebd39-0f63-48f6-886b-e24d135a63d1",
     "name": "Verify Logout with Redirect",
     "commands": [{
-      "id": "7fe2408a-9e18-4560-9447-693c64f98cba",
+      "id": "5eb30aa8-5ab0-4d8e-ba0d-eac63b1dd46d",
       "comment": "",
-      "command": "open",
-      "target": "/",
+      "command": "run",
+      "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
-      "id": "9eb254d7-571e-4ef3-a077-827d908264fd",
+      "id": "5a0b689a-f911-4cea-820b-bc88a2e78431",
       "comment": "",
-      "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
+      "command": "run",
+      "target": "Logout",
       "targets": [],
-      "value": "loggedin"
-    }, {
-      "id": "cf38d082-c017-4ccc-b9c2-5459390850fa",
-      "comment": "",
-      "command": "if",
-      "target": "${loggedin} > 0",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "a9756bf3-8d6d-497d-b4dd-cd3e2c66b857",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtndUser__BV_button_",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "21699def-3134-4777-9e62-d6740beb0acb",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "c28cd87c-9dcc-4a50-a4a3-a3b2e4453f89",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=strong",
-      "targets": [
-        ["css=strong", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
-        ["xpath=//strong", "xpath:position"],
-        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
-      ],
-      "value": "You signed out of your account"
-    }, {
-      "id": "9c2c2ee3-3bd1-45ad-a1a2-b01714502e72",
-      "comment": "",
-      "command": "end",
-      "target": "",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "779a00c9-b479-4188-aaa6-ba575afd99c2",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogin",
-      "targets": [
-        ["linkText=Login", "linkText"],
-        ["css=.ml-auto > .nav-link", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "e35b55b0-1376-4d26-bb3b-a63f15b55991",
-      "comment": "",
-      "command": "executeScript",
-      "target": "return prompt('USERNAME');",
-      "targets": [],
-      "value": "username"
-    }, {
-      "id": "0a0b4e77-7a5d-436a-bf1c-b74ed4e28507",
-      "comment": "",
-      "command": "executeScript",
-      "target": "return prompt('PASSWORD');",
-      "targets": [],
-      "value": "password"
-    }, {
-      "id": "2a9cc7f1-a45e-48fb-a78f-e68a0f1c1337",
-      "comment": "",
-      "command": "click",
-      "target": "id=KeyCloakBtn",
-      "targets": [
-        ["css=#gitBtn td:nth-child(2)", "css:finder"],
-        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
-        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
-        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "9933e1a9-c489-4717-bcdc-6245f32d46e0",
-      "comment": "",
-      "command": "type",
-      "target": "id=username",
-      "targets": [
-        ["id=user", "id"],
-        ["name=user", "name"],
-        ["css=#user", "css:finder"],
-        ["xpath=//input[@id='user']", "xpath:attributes"],
-        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
-        ["xpath=//div/input", "xpath:position"]
-      ],
-      "value": "${username}"
-    }, {
-      "id": "61480770-d300-4b98-a15d-dd6cac97a237",
-      "comment": "",
-      "command": "type",
-      "target": "id=password",
-      "targets": [
-        ["id=password", "id"],
-        ["name=password", "name"],
-        ["css=#password", "css:finder"],
-        ["xpath=//input[@id='password']", "xpath:attributes"],
-        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
-        ["xpath=//div[2]/input", "xpath:position"]
-      ],
-      "value": "${password}"
-    }, {
-      "id": "c9aeb429-d108-4632-9513-09b853192595",
-      "comment": "",
-      "command": "sendKeys",
-      "target": "id=password",
-      "targets": [
-        ["id=password", "id"],
-        ["name=password", "name"],
-        ["css=#password", "css:finder"],
-        ["xpath=//input[@id='password']", "xpath:attributes"],
-        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
-        ["xpath=//div[2]/input", "xpath:position"]
-      ],
-      "value": "${KEY_ENTER}"
-    }, {
-      "id": "0897ef7d-a650-4ef8-a9c9-9e8236f7152c",
-      "comment": "",
-      "command": "assertText",
-      "target": "id=subject",
-      "targets": [
-        ["id=subject", "id"],
-        ["css=#subject", "css:finder"],
-        ["xpath=//h1[@id='subject']", "xpath:attributes"],
-        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
-      ],
-      "value": "Health Care Timeline"
-    }, {
-      "id": "034b552f-1bb2-46e7-a889-6788de4de49e",
-      "comment": "",
-      "command": "click",
-      "target": "css=#menuBtndUser__BV_button_ > span",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi undefined')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "bd2f4801-bf0f-4f15-9d9e-787b25ecb80b",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
       "value": ""
     }, {
       "id": "30d69335-02f7-454c-a195-00864693cf9a",
@@ -560,7 +364,7 @@
       "id": "a5742cf0-7cee-4f46-a22d-da03666a278c",
       "comment": "",
       "command": "waitForElementPresent",
-      "target": "css=.col-lg-12",
+      "target": "css=.title-text",
       "targets": [
         ["css=.col-lg-12", "css:finder"],
         ["xpath=//div[@id='app-root']/main/div/div/div/div", "xpath:idRelative"],
@@ -593,73 +397,8 @@
     "commands": [{
       "id": "4d0978e4-80d3-4393-8b09-583a4d790df6",
       "comment": "",
-      "command": "open",
-      "target": "/",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "9882aace-327f-4f03-b6af-bd5ae8b35089",
-      "comment": "",
-      "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
-      "targets": [],
-      "value": "loggedin"
-    }, {
-      "id": "9fa37743-8ada-4d97-9b9c-8344377c2d94",
-      "comment": "",
-      "command": "if",
-      "target": "${loggedin} > 0",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "ab3345cb-b18b-4317-9ec8-6aecb6a9cdcc",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtndUser__BV_button_",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "1c55c4e9-bdfd-49fc-b134-53169c93c12a",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "1e4b4780-a355-4f48-92be-4e1059ebc044",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=strong",
-      "targets": [
-        ["css=strong", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
-        ["xpath=//strong", "xpath:position"],
-        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
-      ],
-      "value": "You signed out of your account"
-    }, {
-      "id": "c29466ea-0904-47c2-826a-115bb68b95a0",
-      "comment": "",
-      "command": "end",
-      "target": "",
+      "command": "run",
+      "target": "Logout",
       "targets": [],
       "value": ""
     }, {
@@ -785,6 +524,18 @@
       "targets": [],
       "value": ""
     }, {
+      "id": "27788aac-9ff8-431d-8b0a-26656fa3627a",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=h2", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/h2", "xpath:idRelative"],
+        ["xpath=//h2", "xpath:position"],
+        ["xpath=//h2[contains(.,'PHN: 9735353315')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
       "id": "ebc86c93-5b81-4a28-9b4a-d25e0c374fc3",
       "comment": "",
       "command": "click",
@@ -799,18 +550,6 @@
         ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
       ],
       "value": ""
-    }, {
-      "id": "27788aac-9ff8-431d-8b0a-26656fa3627a",
-      "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=h2", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div[2]/div/h2", "xpath:idRelative"],
-        ["xpath=//h2", "xpath:position"],
-        ["xpath=//h2[contains(.,'PHN: 9735353315')]", "xpath:innerText"]
-      ],
-      "value": "30000"
     }, {
       "id": "7f492a60-1b0d-4ee2-9f3f-d9affd694f3c",
       "comment": "",
@@ -833,14 +572,9 @@
     }, {
       "id": "8a721487-5b1c-4a05-9c24-3562f8cfe5ea",
       "comment": "",
-      "command": "verifyElementPresent",
+      "command": "assertText",
       "target": "css=h2",
-      "targets": [
-        ["css=h2", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div[2]/div/h2", "xpath:idRelative"],
-        ["xpath=//h2", "xpath:position"],
-        ["xpath=//h2[contains(.,'PHN: 9735353315')]", "xpath:innerText"]
-      ],
+      "targets": [],
       "value": "PHN: 9735353315"
     }]
   }, {
@@ -852,21 +586,6 @@
       "command": "run",
       "target": "Keycloak Login",
       "targets": [],
-      "value": ""
-    }, {
-      "id": "834d0923-ec67-49d0-b3b5-c7b255614f40",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
       "value": ""
     }, {
       "id": "a2a91491-6d76-4328-a5aa-2e0ab30f1233",
@@ -957,21 +676,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "841a4c41-7e07-474b-90c8-c966a9616cfd",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
       "id": "78c67b4a-caab-46a6-965c-27cd398554c2",
       "comment": "",
       "command": "assertText",
@@ -1000,7 +704,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 23 out of 23 records"
+      "value": "Displaying 17 out of 17 records"
     }, {
       "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
       "comment": "",
@@ -1021,7 +725,7 @@
       "command": "assert",
       "target": "countCards",
       "targets": [],
-      "value": "23"
+      "value": "17"
     }]
   }, {
     "id": "7a8e3e70-67ba-49e8-94a7-241c2f407c4b",
@@ -1032,21 +736,6 @@
       "command": "run",
       "target": "Keycloak Login",
       "targets": [],
-      "value": ""
-    }, {
-      "id": "d93f7ee4-147c-47fb-9e79-b1d196264795",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
       "value": ""
     }, {
       "id": "8c2ea1c2-5c7b-4c2d-b058-6ddb74a07202",
@@ -1078,11 +767,11 @@
       "id": "fcacfb86-1967-490b-9e1e-a14ff42fd62f",
       "comment": "",
       "command": "waitForElementPresent",
-      "target": "css=#entryDetails-0-1548835200000 .ml-5",
+      "target": "css=.row:nth-child(1) .date",
       "targets": [
-        ["css=#entryDetails-0-1548835200000 .ml-5", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div/span", "xpath:idRelative"],
-        ["xpath=//div/div/div/span", "xpath:position"]
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
       ],
       "value": "30000"
     }, {
@@ -1095,7 +784,7 @@
         ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
         ["xpath=//div[3]/div/div/div", "xpath:position"]
       ],
-      "value": "Jan 30, 2019"
+      "value": "Jan 29, 2019"
     }, {
       "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
       "comment": "",
@@ -1106,7 +795,7 @@
         ["xpath=//div[@id='timeData']/div/div[3]/div/div/div[2]", "xpath:idRelative"],
         ["xpath=//div[3]/div/div/div[2]", "xpath:position"]
       ],
-      "value": "Biaxin Bid"
+      "value": "Colchicine Tab 0.6mg"
     }, {
       "id": "b55dca54-e78b-48a7-ab44-8244c0544310",
       "comment": "",
@@ -1117,7 +806,7 @@
         ["xpath=//div[@id='timeData']/div/div[3]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
         ["xpath=//div[3]/div/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "CLARITHROMYCIN BGP PHARMA ULC 500 MG TABLET"
+      "value": "COLCHICINE ODAN LABS 0.6 MG TABLET"
     }, {
       "id": "e9d35420-6d19-4bab-a6fc-5c57ad0f7886",
       "comment": "",
@@ -1142,109 +831,62 @@
       "id": "91d14cea-7271-4b8d-8556-aefbf561ab56",
       "comment": "",
       "command": "assertText",
-      "target": "css=#entryDetails-0-1548835200000 .detailSection:nth-child(1) > div:nth-child(2)",
+      "target": "css=.detailSection:nth-child(1) > div:nth-child(2)",
       "targets": [
-        ["css=#entryDetails-0-1548835200000 .detailSection:nth-child(1) > div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div/div[2]", "xpath:idRelative"],
+        ["css=.detailSection:nth-child(1) > div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div/div[2]", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div/div/div/div[2]", "xpath:position"]
       ],
-      "value": "Prescription #: 5790"
+      "value": "Prescription #: 5788"
     }, {
-      "id": "3cd87878-95b3-4b1a-9b9f-4aeb9e807027",
+      "id": "ec1b15cc-5107-4ed0-b908-fb8e095e522b",
       "comment": "",
       "command": "assertText",
-      "target": "css=#entryDetails-0-1548835200000 .detailSection:nth-child(2) > div:nth-child(4)",
+      "target": "css=.detailSection:nth-child(2) > div:nth-child(4)",
       "targets": [
-        ["css=#entryDetails-0-1548835200000 .detailSection:nth-child(2) > div:nth-child(4)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[2]/div[4]", "xpath:idRelative"],
+        ["css=.detailSection:nth-child(2) > div:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[2]/div[4]", "xpath:idRelative"],
         ["xpath=//div[2]/div[4]", "xpath:position"]
       ],
-      "value": "Manufacturer: BGP PHARMA ULC"
+      "value": "Manufacturer: ODAN LABORATORIES LTD"
+    }, {
+      "id": "3f2e246b-304a-470f-8d8c-0349999eed9d",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.pt-2",
+      "targets": [
+        ["css=.pt-2", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]/div[5]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]", "xpath:position"]
+      ],
+      "value": "ADAPTED RX AND DISCONTINUED"
     }, {
       "id": "56b738b4-54ea-4811-ab29-fe2f86a4ec13",
       "comment": "",
       "command": "assertText",
-      "target": "css=#entryDetails-0-1548835200000 .detailSection:nth-child(4) > div:nth-child(2)",
+      "target": "css=.detailSection:nth-child(4) > div:nth-child(2)",
       "targets": [
-        ["css=#entryDetails-0-1548835200000 .detailSection:nth-child(4) > div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548835200000']/div/div[4]/div[2]", "xpath:idRelative"],
+        ["css=.detailSection:nth-child(4) > div:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]/div[2]", "xpath:idRelative"],
         ["xpath=//div[4]/div[2]", "xpath:position"]
       ],
       "value": "ERX QA PHARMACY"
+    }, {
+      "id": "94384e52-d53a-4681-9339-f726b05d0780",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
     }]
   }, {
     "id": "bef7c50b-f000-428e-a6d5-d074a4f2770f",
     "name": "Keycloak Login",
     "commands": [{
-      "id": "4b1c6d24-8ba5-4e2e-beff-d2faf81193be",
+      "id": "cdfa8311-94e3-47b7-bd18-9fb171a893bf",
       "comment": "",
-      "command": "open",
-      "target": "/",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "932e8d96-662a-49fd-90f8-034ace80fbab",
-      "comment": "",
-      "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
-      "targets": [],
-      "value": "loggedin"
-    }, {
-      "id": "b0b352fe-7427-42c6-98a7-586bc72bb028",
-      "comment": "",
-      "command": "if",
-      "target": "${loggedin} > 0",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "82202c42-1eda-43a6-b991-05f29ce0459b",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtndUser__BV_button_",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "2518ba89-6ca1-4ec4-9b80-23e8334543e1",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "93342a4f-9d61-4362-9888-e78249c1207d",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=strong",
-      "targets": [
-        ["css=strong", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
-        ["xpath=//strong", "xpath:position"],
-        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
-      ],
-      "value": "You signed out of your account"
-    }, {
-      "id": "a4c134dc-b67e-4410-a505-14ad782c2840",
-      "comment": "",
-      "command": "end",
-      "target": "",
+      "command": "run",
+      "target": "Logout",
       "targets": [],
       "value": ""
     }, {
@@ -1356,21 +998,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "d8f63bfc-4a56-4c73-8173-947cbdf86e68",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Timeline",
-      "targets": [
-        ["linkText=Timeline", "linkText"],
-        ["css=#nav-collapse .nav-link:nth-child(3)", "css:finder"],
-        ["xpath=//a[contains(text(),'Timeline')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/timeLine')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"],
-        ["xpath=//a[contains(.,' Timeline')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
       "id": "6d4fe278-2ad2-4ae8-943b-3a43fcdade48",
       "comment": "",
       "command": "assertText",
@@ -1399,8 +1026,8 @@
     }, {
       "id": "f0c3bc8e-0b53-4984-a350-bf59443e20ba",
       "comment": "",
-      "command": "waitForElementPresent",
-      "target": "id=__BVID__46___BV_modal_title_",
+      "command": "waitForElementEditable",
+      "target": "id=protectiveWord-input",
       "targets": [
         ["id=__BVID__46___BV_modal_title_", "id"],
         ["css=#\\__BVID__46___BV_modal_title_", "css:finder"],
@@ -1411,19 +1038,568 @@
       ],
       "value": "30000"
     }, {
-      "id": "fef824f6-0c88-4d18-9381-6959341991b2",
+      "id": "4cfb1f59-0803-43e9-a600-10dc394113ff",
       "comment": "",
       "command": "assertText",
-      "target": "id=__BVID__50__BV_label_",
+      "target": "css=label",
       "targets": [
-        ["id=__BVID__50__BV_label_", "id"],
-        ["css=#\\__BVID__50__BV_label_", "css:finder"],
-        ["xpath=//label[@id='__BVID__50__BV_label_']", "xpath:attributes"],
-        ["xpath=//div[@id='__BVID__50']/label", "xpath:idRelative"],
+        ["css=label", "css:finder"],
+        ["xpath=//div[@id='__BVID__44___BV_modal_body_']/div/div/form/div/div/label", "xpath:idRelative"],
         ["xpath=//label", "xpath:position"],
         ["xpath=//label[contains(.,'Protective Word')]", "xpath:innerText"]
       ],
       "value": "Protective Word"
+    }]
+  }, {
+    "id": "bcc6fc9a-fa06-48b8-8a47-5f18abee6a6c",
+    "name": "Logout",
+    "commands": [{
+      "id": "d7e8dffe-363b-48a2-acde-305cd96304b5",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "247bd563-f06e-4d8a-ba14-670fc44b559a",
+      "comment": "",
+      "command": "pause",
+      "target": "3000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "65d48656-2a78-4d0e-b579-5be5729fa1c1",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//li[@id='menuBtndUser']",
+      "targets": [],
+      "value": "loggedin"
+    }, {
+      "id": "a567eef1-45a3-4c63-b95b-a9f3e11857cf",
+      "comment": "",
+      "command": "if",
+      "target": "${loggedin} > 0",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1553708d-65a9-4805-bd82-71718f8d7e64",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtndUser__BV_button_",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "20bed1ce-40a1-416e-8964-9db200734ff9",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogin", "id"],
+        ["linkText=Login", "linkText"],
+        ["css=#menuBtnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "65c0274c-8b1f-4510-bae3-0b31fd1ee350",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [
+        ["css=strong", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+      ],
+      "value": "You signed out of your account"
+    }, {
+      "id": "409761ad-6043-4a03-b0d5-156be0cf22d4",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "fc6f8e24-0d80-4e7d-8eb1-1b1ea3160392",
+    "name": "Registration Info - To login",
+    "commands": [{
+      "id": "712f7c8d-36a4-4bf6-b6e2-cf8c4cff2b30",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c4b59e14-72d7-4081-85f8-4fb1f75d98ce",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3f773caa-3167-4320-a128-4e3d0059b0b1",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Sign Up", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registrationInfo')]", "xpath:href"],
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7c5194f7-f240-42df-acc4-a32a709c61ba",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-primary",
+      "targets": [
+        ["css=.btn-primary", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[2]/div[2]/div/div/a/button", "xpath:idRelative"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Register for Health Gateway')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "64b5b6f7-78f1-4779-8a3c-0e46cf454996",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.card-header > h3",
+      "targets": [
+        ["css=.card-header > h3", "css:finder"],
+        ["xpath=//div[@id='loginPicker']/div/h3", "xpath:idRelative"],
+        ["xpath=//div/div/h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'Log In')]", "xpath:innerText"]
+      ],
+      "value": "Log In"
+    }]
+  }, {
+    "id": "7a24e4e2-cdc3-4710-b0cf-ca8b0bb96a79",
+    "name": "Landing page - Learn more button",
+    "commands": [{
+      "id": "acc71271-646a-44c1-a7c8-383d69211518",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3abc19f5-0a51-4f2c-b420-9f492a3c4637",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnLearnMore",
+      "targets": [
+        ["id=btnLearnMore", "id"],
+        ["linkText=Learn More", "linkText"],
+        ["css=#btnLearnMore", "css:finder"],
+        ["xpath=//a[contains(text(),'Learn More')]", "xpath:link"],
+        ["xpath=//a[@id='btnLearnMore']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[4]/div[2]/div/div/div[3]/a[2]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card')]", "xpath:href"],
+        ["xpath=//div[3]/a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Learn More')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "15ced6f3-8c86-472c-b743-4c1bdd8a065e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h1",
+      "targets": [
+        ["css=h1", "css:finder"],
+        ["xpath=//div[@id='main-content']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'BC Services Card')]", "xpath:innerText"]
+      ],
+      "value": "BC Services Card"
+    }]
+  }, {
+    "id": "09e7c520-e54c-47c3-92fd-cadc93da5bcd",
+    "name": "Registration - Field Validation",
+    "commands": [{
+      "id": "db190bff-7d8b-4205-a50a-aef3b463d590",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login Unregistered",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5ce76ea5-2870-4d0f-9040-1edebe3c83b7",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "css=.row:nth-child(5)",
+      "targets": [],
+      "value": ".invalid-feedback"
+    }, {
+      "id": "1f364044-689e-4ca1-880b-7e5418d45ba4",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[6]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Register')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "34f4e23c-0161-4bd5-85b4-0da5a5814886",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "test@email.com"
+    }, {
+      "id": "5e83b580-0860-4b2f-9aad-9366d3d3e79f",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ".form-control is-valid"
+    }, {
+      "id": "67cd934a-49e1-4520-b125-86eb05ef6414",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "id=emailConfirmation",
+      "targets": [
+        ["id=emailConfirmation", "id"],
+        ["css=#emailConfirmation", "css:finder"],
+        ["xpath=//input[@id='emailConfirmation']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": ".invalid-feedback"
+    }, {
+      "id": "36a4cd4a-49e6-46cd-b38a-9b24c926afa6",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=emailConfirmation",
+      "targets": [
+        ["id=emailConfirmation", "id"],
+        ["css=#emailConfirmation", "css:finder"],
+        ["xpath=//input[@id='emailConfirmation']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": "test@email.com"
+    }, {
+      "id": "ddce82c7-e7b3-4f16-b04c-60cea69904f1",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "id=emailConfirmation",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ".form-control is-valid"
+    }, {
+      "id": "461b8d1d-d05c-4870-8b86-82c2998a2d99",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "id=emailConfirmation",
+      "targets": [
+        ["id=email", "id"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ".form-control is-valid"
+    }, {
+      "id": "09bc5348-fec3-45dd-bb7f-f7179544a193",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.accept > .custom-control-label",
+      "targets": [
+        ["css=.accept > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[5]/div/div/label", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'I agree to the terms of service above.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d6e4ff3d-5ad7-4695-88ac-72108ec27a85",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "css=.accept",
+      "targets": [
+        ["css=.accept", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[5]/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div", "xpath:position"]
+      ],
+      "value": ".form-control is-valid"
+    }, {
+      "id": "9820d6a2-4de6-4f50-8784-2243ef715863",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.optout > .custom-control-label",
+      "targets": [
+        ["css=.optout > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[3]/div/div/label", "xpath:idRelative"],
+        ["xpath=//label", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "787ebdad-cb8f-4c72-ba6a-ae190a861fd4",
+      "comment": "",
+      "command": "verifyNotEditable",
+      "target": "id=email",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "83ccfce7-2a57-4264-abe9-a355c9f59da8",
+      "comment": "",
+      "command": "verifyNotEditable",
+      "target": "id=emailConfirmation",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "33183695-5326-4add-b770-06af382e3cb3",
+    "name": "Keycloak Login Unregistered",
+    "commands": [{
+      "id": "881a9bcd-a45a-43e1-b82f-29bd01b81309",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c6618813-a974-4395-8b30-5aa9cc132859",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9177bc68-ead2-44cb-a769-5e9bce07d5b7",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('Unregistered User');",
+      "targets": [],
+      "value": "protectedusername"
+    }, {
+      "id": "b5824544-4ff2-4ce6-b41e-fc4792361e88",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('PASSWORD');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "77424fb9-18fe-4b44-adb7-f044fa160cda",
+      "comment": "",
+      "command": "click",
+      "target": "id=KeyCloakBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "da826d8b-d4a7-4c8e-a1ea-f4f2b3d26b1b",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${protectedusername}"
+    }, {
+      "id": "7422288d-9a64-4330-a524-81031b49213a",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "be0718cc-93be-4dc1-83b0-d27b7569f037",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "c43f5c5a-de9c-4d36-ada8-15696ffc4c7c",
+      "comment": "",
+      "command": "waitForElementVisible",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/form/div[6]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Register')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }]
+  }, {
+    "id": "9dfb86e7-652f-4831-af4a-275b58c38cbf",
+    "name": "Registration Info - Fields",
+    "commands": [{
+      "id": "63f45543-cbce-4584-9612-442fd5bb4ee9",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "47a566e3-ceb1-40e8-a79b-20c8ae34d336",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7945a01c-c7a8-4ea5-83db-160e010a9d07",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnStart",
+      "targets": [
+        ["id=btnStart", "id"],
+        ["linkText=Sign Up", "linkText"],
+        ["css=#btnStart", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=//a[@id='btnStart']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registrationInfo')]", "xpath:href"],
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "91ce841d-d518-464a-8336-8fe8392980cc",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div/div/h4", "xpath:idRelative"],
+        ["xpath=//h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Register securely to access your health records using BC Services Card')]", "xpath:innerText"]
+      ],
+      "value": "Register securely to access your health records using BC Services Card"
+    }, {
+      "id": "1cf600c6-530a-49e4-aef0-e75312cdd887",
+      "comment": "",
+      "command": "click",
+      "target": "id=servicesCardBtn",
+      "targets": [
+        ["css=.text-left > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,' I have a BC Services Card, but how do I use it?')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "2bd64969-6792-4904-9796-d31e5c677994",
+      "comment": "",
+      "command": "waitForElementVisible",
+      "target": "css=.col:nth-child(1) > .row:nth-child(1) > .col",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "7bbabe93-edf6-4d5f-9dc4-faa50d2cc048",
+      "comment": "",
+      "command": "click",
+      "target": "id=moreOptionsBtn",
+      "targets": [
+        ["css=.mb-5 .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[4]/div/button", "xpath:idRelative"],
+        ["xpath=//div[4]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Is there another option?')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "755cd165-850e-4801-b19e-ef49e395ffab",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "id=moreOptionsBtn",
+      "targets": [
+        ["css=.mb-5 .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div[4]/div/button", "xpath:idRelative"],
+        ["xpath=//div[4]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Is there another option?')]", "xpath:innerText"]
+      ],
+      "value": "collapsed"
+    }, {
+      "id": "d7f87413-bdfc-4dc5-ad6a-c3cbef1f5284",
+      "comment": "",
+      "command": "waitForElementVisible",
+      "target": "css=.m-5 > .row:nth-child(1) > .col",
+      "targets": [
+        ["css=.m-5 > .row:nth-child(1) > .col", "css:finder"],
+        ["xpath=//div[@id='collapse-4']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": "30000"
     }]
   }],
   "suites": [{
@@ -1454,6 +1630,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87"]
+  }, {
+    "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
+    "name": "Registration",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["09e7c520-e54c-47c3-92fd-cadc93da5bcd", "9dfb86e7-652f-4831-af4a-275b58c38cbf", "fc6f8e24-0d80-4e7d-8eb1-1b1ea3160392"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []

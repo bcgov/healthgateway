@@ -21,6 +21,7 @@ namespace HealthGateway.DrugMaintainer.Apps
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.FileDownload;
+    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
@@ -32,11 +33,6 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// <typeparam name="T">The parser to use to process files.</typeparam>
     public abstract class BaseDrugApp<T> : IDrugApp
     {
-        /// <summary>
-        /// Gets the congiguration name to use for IConfiguration lookup.
-        /// </summary>
-        protected abstract string configurationName { get; }
-
         /// <summary>
         /// Gets or sets the file parser.
         /// </summary>
@@ -60,7 +56,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <summary>
         /// The database contect to use to to interact with the DB.
         /// </summary>
-        protected DrugDbContext drugDbContext { get; set; }
+        protected GatewayDbContext drugDbContext { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDrugApp{T}"/> class.
@@ -70,7 +66,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
         /// <param name="drugDBContext">The database context to interact with./</param>
-        public BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, DrugDbContext drugDBContext)
+        public BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
         {
             this.logger = logger;
             this.parser = parser;
@@ -143,7 +139,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="downloadedFile">Search for all download files not matching this one.</param>
         protected void RemoveOldFiles(FileDownload downloadedFile)
         {
-            var oldIds = this.drugDbContext.FileDownload.Where(p => p.ProgramTypeCodeId == downloadedFile.ProgramTypeCodeId &&
+            var oldIds = this.drugDbContext.FileDownload.Where(p => p.ProgramCode == downloadedFile.ProgramCode &&
                                           p.Hash != downloadedFile.Hash).Select(f => f.Id).ToList();
             oldIds.ForEach(s => logger.LogInformation($"Deleting old Download file with hash: {s}"));
             this.drugDbContext.RemoveRange(oldIds.Select(id => new FileDownload { Id = id }));
@@ -153,17 +149,22 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// Performs the actual download of the file and verifies if it has been
         /// previously processed.
         /// </summary>
-        public void Process()
+        public void Process(string ConfigSectionName)
         {
-            this.logger.LogInformation("Reading configuration...");
-            Uri source = configuration.GetSection(this.configurationName).GetValue<Uri>("Url");
-            string targetFolder = configuration.GetSection(this.configurationName).GetValue<string>("TargetFolder");
+            this.logger.LogInformation($"Reading configuration for section {ConfigSectionName}");
+            IConfigurationSection section = configuration.GetSection(ConfigSectionName);
+            Uri source = section.GetValue<Uri>("Url");
+
+            string programType = section.GetValue<string>("AppName");
+            this.logger.LogInformation($"Program Type = {programType}");
+            string targetFolder = configuration.GetSection(ConfigSectionName).GetValue<string>("TargetFolder");
 
             FileDownload downloadedFile = DownloadFile(source, targetFolder);
             if (!FileProcessed(downloadedFile))
             {
                 string sourceFolder = ExtractFiles(downloadedFile);
                 logger.LogInformation("File has not been processed - Attempting to process");
+                downloadedFile.ProgramCode = programType;
                 ProcessDownload(sourceFolder, downloadedFile);
                 RemoveExtractedFiles(sourceFolder);
             }
