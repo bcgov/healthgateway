@@ -16,8 +16,11 @@ export interface IAuthenticationService {
   signinSilent(): Promise<OidcUser | null>;
   signinRedirect(idphint: string, redirectPath: string): Promise<void>;
   signinRedirectCallback(): Promise<OidcUser>;
+  checkOidcUserSize(user: OidcUser): number;
+
   getOidcConfig(): UserManagerSettings;
   removeUser(): Promise<void>;
+  storeUser(user: OidcUser): Promise<void>;
   clearStaleState(): Promise<void>;
   getOidcUserProfile(): Promise<any>;
 }
