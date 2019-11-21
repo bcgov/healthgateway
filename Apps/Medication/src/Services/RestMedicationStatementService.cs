@@ -18,9 +18,11 @@ namespace HealthGateway.Medication.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
@@ -88,13 +90,25 @@ namespace HealthGateway.Medication.Services
 
         private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string protectiveWord)
         {
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+            HNMessage<List<MedicationStatement>> retMessage = null;
+            // Protective words are not allowed to contain any of the following: |~^\&
+            Regex regex = new Regex(@"^[|~^\\&]+$");
+            bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
+            if (okProtectiveWord)
+            {
+                string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+                string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
-            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-            string ipv4Address = address.MapToIPv4().ToString();
+                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+                string ipv4Address = address.MapToIPv4().ToString();
 
-            return await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, phn, ipv4Address).ConfigureAwait(true);
+                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, phn, ipv4Address).ConfigureAwait(true);
+            }
+            else
+            {
+                return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
+            }
+            return retMessage;
         }
 
         private void PopulateBrandName(List<MedicationStatement> statements)
