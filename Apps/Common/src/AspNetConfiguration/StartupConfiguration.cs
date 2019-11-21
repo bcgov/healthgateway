@@ -248,6 +248,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true,
+                    HotModuleReplacementEndpoint = "/dist/dist/__webpack_hmr",
                     ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"),
                 });
             }

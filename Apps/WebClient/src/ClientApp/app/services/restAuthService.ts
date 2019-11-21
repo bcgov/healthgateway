@@ -106,10 +106,20 @@ export class RestAuthenticationService implements IAuthenticationService {
     return this.oidcUserManager.clearStaleState();
   }
 
+  public checkOidcUserSize(user: OidcUser): number {
+    var key = `user:${this.oidcUserManager.settings.authority}:${this.oidcUserManager.settings.client_id}`;
+    var completString = key + "=" + user.toStorageString();
+    return this.stringbyteCount(completString);
+  }
+
   //TODO: Do we still need this?
   public expireSiteMinderCookie() {
     // This expires the siteminder cookie preventing the app from login in using the cache.
     var d = new Date();
     document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
+  }
+
+  private stringbyteCount(s: string): number {
+    return encodeURIComponent("" + s).length;
   }
 }

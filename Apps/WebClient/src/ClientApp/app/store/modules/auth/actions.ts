@@ -69,6 +69,12 @@ export const actions: ActionTree<AuthState, RootState> = {
       authService
         .signinRedirectCallback()
         .then(oidcUser => {
+          // Verify that the user info retrieved by the auth service is not large enough than a cookie can store.
+          var cookieToStoreSize = authService.checkOidcUserSize(oidcUser);
+          if (cookieToStoreSize > 4000) {
+            console.log("Warning: User info is too big:", cookieToStoreSize);
+          }
+
           context.dispatch("oidcWasAuthenticated", oidcUser).then(() => {
             resolve(sessionStorage.getItem("vuex_oidc_active_route") || "/");
           });
