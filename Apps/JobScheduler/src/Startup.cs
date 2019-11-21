@@ -27,6 +27,10 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.DrugMaintainer;
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.StaticFiles;
@@ -34,6 +38,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
     /// <summary>
     /// The startup class.
@@ -43,6 +48,37 @@ namespace HealthGateway.JobScheduler
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
+
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            string authorityEndPoint = this.configuration.GetValue<string>("OpenIdConnect:Authority");
+            bool requireHttpsMetadata = this.configuration.GetValue<bool>("OpenIdConnect:RequireHttpsMetadata");
+            string clientId = this.configuration.GetValue<string>("OpenIdConnect:ClientId");
+            string clientSecret = this.configuration.GetValue<string>("OpenIdConnect:ClientSecret");
+            string callBackUrl = this.configuration.GetValue<string>("OpenIdConnect:CallBackUrl");
+            string audience = this.configuration.GetValue<string>("OpenIdConnect:Audience");
+
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.Authority = authorityEndPoint;
+                options.SignedOutRedirectUri = callBackUrl;
+                options.SaveTokens = true;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.RequireHttpsMetadata = requireHttpsMetadata;
+                options.ClientId = clientId;
+                options.ClientSecret = clientSecret;
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+            });
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -64,6 +100,7 @@ namespace HealthGateway.JobScheduler
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
+            this.ConfigureAuthentication(services);
 
             services.AddDbContextPool<GatewayDbContext>(options =>
                 options.UseNpgsql(
