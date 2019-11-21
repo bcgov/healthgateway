@@ -220,6 +220,17 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.logger.LogInformation($"Forward Headers enabled: {enabled}");
             if (enabled)
             {
+                string basePath = section.GetValue<string>("BasePath");
+                if (!string.IsNullOrEmpty(basePath))
+                {
+                    this.logger.LogInformation($"Forward BasePath is set to ${basePath}, setting PathBase for app");
+                    app.Use(async (context, next) =>
+                    {
+                        context.Request.PathBase = basePath;
+                        await next.Invoke();
+                    });
+                }
+
                 string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
                 ForwardedHeadersOptions options = new ForwardedHeadersOptions
                 {
@@ -231,7 +242,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.KnownProxies.Add(IPAddress.Parse(ip));
                 }
-
+                logger.LogInformation($"Enabling Use Forward Header");
                 app.UseForwardedHeaders(options);
             }
         }
