@@ -20,6 +20,7 @@ namespace HealthGateway.Medication.Parsers
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
@@ -105,7 +106,7 @@ namespace HealthGateway.Medication.Parsers
                 if (statusMessage.Value == PROTECTEDWORD)
                 {
                     // If the protected word - 17 Field Keyword contains invalid value
-                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, "Record protected by keyword");
+                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
                 }
                 else
                 {

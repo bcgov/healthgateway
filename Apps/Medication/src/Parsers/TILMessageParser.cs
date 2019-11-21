@@ -105,6 +105,7 @@ namespace HealthGateway.Medication.Parsers
             pharmacy.CountryCode = zpl.Fields(9).Value; // Country Code
 
             pharmacy.PhoneType = zpl.Fields(10).Value; // Telecom Type Code
+
             // zpl.Fields(11).Value; // Effective Date
             pharmacy.PhoneNumber = $"{zpl.Fields(12).Value}{zpl.Fields(13).Value}"; // Area Code and Telephone Number
 
