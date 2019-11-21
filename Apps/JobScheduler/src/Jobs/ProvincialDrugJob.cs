@@ -46,9 +46,11 @@ namespace Healthgateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public override void Process(string ConfigSectionName)
+        public override void Process(string configSectionName)
         {
-            base.Process(ConfigSectionName);
+            this.logger.LogDebug($"Finished processing provincial drug files {configSectionName}");
+            base.Process(configSectionName);
+            this.logger.LogDebug($"Finished processing provincial drug files {configSectionName}");
         }
     }
 }

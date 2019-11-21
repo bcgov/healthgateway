@@ -48,9 +48,11 @@ namespace Healthgateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [MaximumConcurrentExecutions(MaxConcurrency, ConcurrencyTimeout)]
-        public override void Process(string ConfigSectionName)
+        public override void Process(string configSectionName)
         {
-            base.Process(ConfigSectionName);
+            this.logger.LogDebug($"Processing federal drug files {configSectionName}");
+            base.Process(configSectionName);
+            this.logger.LogDebug($"Finished processing federal drug files {configSectionName}");
         }
     }
 }

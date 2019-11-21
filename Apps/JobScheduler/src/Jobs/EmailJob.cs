@@ -64,7 +64,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <inheritdoc />
         public void SendEmail(Guid emailId)
         {
-            this.logger.LogTrace($"Starting send of email {emailId}");
+            this.logger.LogDebug($"Sending email... {emailId}");
             Email email = this.emailDelegate.GetNewEmail(emailId);
             if (email != null)
             {
@@ -74,13 +74,15 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
             }
+
+            this.logger.LogDebug($"Finished sending email... {emailId}");
         }
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendLowPriorityEmails()
         {
-            this.logger.LogInformation($"Looking for up to {this.retryFetchSize} low priority emails to send");
+            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
             List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             if (resendEmails.Count > 0)
             {
@@ -100,6 +102,8 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning restore CA1031 // Restore warnings.
                 }
             }
+
+            this.logger.LogDebug($"Finished sending low priority emails. {resendEmails.Count}");
         }
 
         private static MimeMessage PrepareMessage(Email email)
