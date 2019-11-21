@@ -162,7 +162,7 @@ namespace HealthGateway.Medication.Test
 
             // Run and Verify
             HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, protectiveWord);
-            Assert.True(actual.Result == Common.Constants.ResultType.Sucess);
+            Assert.True(actual.Result == Common.Constants.ResultType.Success);
         }
 
         [Fact]

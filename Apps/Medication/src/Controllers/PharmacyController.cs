@@ -64,7 +64,7 @@ namespace HealthGateway.Medication.Controllers
                 ResultStatus = pharmacyResult.Result,
                 ResultMessage = pharmacyResult.ResultMessage,
             };
-            if (pharmacyResult.Result == Common.Constants.ResultType.Sucess)
+            if (pharmacyResult.Result == Common.Constants.ResultType.Success)
             {
                 result.ResourcePayload = pharmacyResult.Message;
                 result.PageIndex = 0;

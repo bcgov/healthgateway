@@ -92,7 +92,7 @@ namespace HealthGateway.Medication.Controllers
                 ResultMessage = medicationStatements.ResultMessage,
             };
 
-            if (result.ResultStatus == Common.Constants.ResultType.Sucess)
+            if (result.ResultStatus == Common.Constants.ResultType.Success)
             {
                 result.ResourcePayload = medicationStatements.Message;
                 result.PageIndex = 0;

@@ -75,7 +75,7 @@ namespace HealthGateway.Medication.Services
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
+            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Success)
             {
                 // Filter the results to return only Dispensed or Filled prescriptions.
                 hnClientMedicationResult.Message = hnClientMedicationResult.Message

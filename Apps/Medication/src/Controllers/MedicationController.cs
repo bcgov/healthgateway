@@ -65,7 +65,7 @@ namespace HealthGateway.Medication.Controllers
 
             RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()
             {
-                ResultStatus = Common.Constants.ResultType.Sucess,
+                ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
@@ -91,7 +91,7 @@ namespace HealthGateway.Medication.Controllers
 
             RequestResult<Dictionary<string, MedicationResult>> result = new RequestResult<Dictionary<string, MedicationResult>>()
             {
-                ResultStatus = Common.Constants.ResultType.Sucess,
+                ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
