@@ -164,8 +164,6 @@
           <div class="title-text">
             <div>
               Empowering you
-            </div>
-            <div>
               to manage your health
             </div>
           </div>
@@ -196,7 +194,7 @@
       /></b-col>
       <b-col>
         <div class="devices-text ">
-          <h2>Browse your health records</h2>
+          <h4>Browse your health records</h4>
           <p>
             Visits to clinics, lab test results, dispensed medications and
             vaccinations.
