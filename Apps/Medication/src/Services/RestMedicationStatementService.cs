@@ -107,7 +107,7 @@ namespace HealthGateway.Medication.Services
             }
             else
             {
-                return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
+                retMessage = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
             }
 
             return retMessage;
