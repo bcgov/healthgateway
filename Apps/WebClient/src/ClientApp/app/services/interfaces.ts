@@ -18,6 +18,7 @@ export interface IAuthenticationService {
   signinRedirectCallback(): Promise<OidcUser>;
   getOidcConfig(): UserManagerSettings;
   removeUser(): Promise<void>;
+  storeUser(user: OidcUser): Promise<void>;
   clearStaleState(): Promise<void>;
   getOidcUserProfile(): Promise<any>;
 }
