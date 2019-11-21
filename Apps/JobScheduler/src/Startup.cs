@@ -25,6 +25,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
+    using HealthGateway.JobScheduler.Authorization;
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -132,7 +133,10 @@ namespace HealthGateway.JobScheduler
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/jobs", new DashboardOptions
+            {
+                Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
+            });
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
