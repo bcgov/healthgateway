@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -29,16 +30,22 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class RestPatientDelegate : IPatientDelegate
     {
+        private readonly ILogger logger;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPatientDelegate"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public RestPatientDelegate(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public RestPatientDelegate(
+            ILogger<RestPatientDelegate> logger,
+            IHttpClientFactory httpClientFactory,
+            IConfiguration configuration)
         {
+            this.logger = logger;
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
         }
@@ -46,6 +53,8 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
+            string retVal;
+            this.logger.LogDebug($"Getting patient phn... {hdid}");
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -56,26 +65,21 @@ namespace HealthGateway.Medication.Delegates
 
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
                 {
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                         Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                        return responseMessage.PersonalHealthNumber;
+                        retVal = responseMessage.PersonalHealthNumber;
                     }
                     else
                     {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                            Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                            return responseMessage.PersonalHealthNumber;
-                        }
-                        else
-                        {
-                            throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
-                        }
+                        this.logger.LogError($"Error getting patient phn... {hdid}, {payload}");
+                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                     }
                 }
+
+                this.logger.LogDebug($"Finished getting patient phn. {hdid}");
+                return retVal;
             }
         }
     }

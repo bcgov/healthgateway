@@ -19,6 +19,8 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -43,9 +45,12 @@ namespace HealthGateway.Medication.Test
             this.culture = CultureInfo.CreateSpecificCulture("en-CA");
             this.culture.DateTimeFormat.DateSeparator = "/";
 
-            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("UnitTest.json").Build();
             configuration.GetSection("HNClient").Bind(hnClientConfig);
-            this.parser = new TRPMessageParser(configuration);
+            this.parser = new TRPMessageParser(
+                new Mock<ILogger<TRPMessageParser>>().Object,
+                configuration);
         }
 
         [Fact]

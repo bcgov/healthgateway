@@ -16,28 +16,37 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
     /// </summary>
     public class TILMessageParser : BaseMessageParser<Pharmacy>
     {
+        private readonly ILogger logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TILMessageParser"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="config">The configuration provider.</param>
-        public TILMessageParser(IConfiguration config)
+        public TILMessageParser(
+            ILogger<TILMessageParser> logger,
+            IConfiguration config)
             : base(config)
         {
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
         public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord)
         {
+            this.logger.LogDebug($"Creating TIL request message... {traceId}");
             Message m = new Message();
 
             this.SetMessageHeader(m, userId, ipAddress, traceId);
@@ -65,16 +74,16 @@ namespace HealthGateway.Medication.Parsers
 
             this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID, traceId, null);
 
-            return new HNMessage<string>(m.SerializeMessage(false));
+            HNMessage<string> retVal = new HNMessage<string>(m.SerializeMessage(false));
+            this.logger.LogDebug($"Finished creating TIL request message... {traceId}");
+            return retVal;
         }
 
         /// <inheritdoc/>
         public override HNMessage<Pharmacy> ParseResponseMessage(string hl7Message)
         {
-            if (string.IsNullOrEmpty(hl7Message))
-            {
-                throw new ArgumentNullException(nameof(hl7Message));
-            }
+            Contract.Requires(hl7Message != null);
+            this.logger.LogDebug($"Parsing TIL response message... {hl7Message.Substring(0, 10)}");
 
             Message message = this.ParseRawMessage(hl7Message);
 
@@ -111,7 +120,10 @@ namespace HealthGateway.Medication.Parsers
 
             // zpl.Fields(14).Value; // Termination Date
             // zpl.Fields(1)5.Value; // Transaction Reason Code
-            return new HNMessage<Pharmacy>(pharmacy);
+            HNMessage<Pharmacy> retVal = new HNMessage<Pharmacy>(pharmacy);
+            this.logger.LogDebug($"Finished parsing TIL response message... {hl7Message.Substring(0, 10)}, {retVal.Result.ToString()}");
+
+            return retVal;
         }
     }
 }

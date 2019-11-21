@@ -82,7 +82,8 @@ namespace HealthGateway.PatientService
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
             this.logger.LogDebug($"Getting patient... {hdid}");
-            Patient retVal = new Patient();
+            Patient retVal;
+
             // Create request
             HCIM_IN_GetDemographics request = this.CreateRequest(hdid);
 
@@ -93,6 +94,7 @@ namespace HealthGateway.PatientService
             string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
+                retVal = new Patient();
                 this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
                 this.logger.LogDebug($"Finished getting patient. {retVal}");
                 return retVal;
