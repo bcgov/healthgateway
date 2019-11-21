@@ -37,25 +37,26 @@
         <router-link class="nav-link" to="/registration">
           <span class="fa fa-key"></span> Register
         </router-link>
+        
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
+        
         <b-nav-item-dropdown
           v-if="oidcIsAuthenticated"
           id="menuBtndUser"
           :text="greeting"
           right
         >
-          <b-dropdown-item>
-            <router-link id="menuBtnLogout" to="/logout">
-              <span class="fa fa-user"></span> Logout
-            </router-link>
-          </b-dropdown-item>
+         
         </b-nav-item-dropdown>
         <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
           <span class="fa fa-user"></span> Login
         </router-link>
+        <router-link id="menuBtnLogout" to="/logout"  v-if="oidcIsAuthenticated">
+              <span class="fa fa-user" color="white--text" ></span> {{this.name}}/Logout
+            </router-link>
        
       </b-navbar-nav>
     </b-collapse>
