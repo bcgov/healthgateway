@@ -2,7 +2,7 @@
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
     <b-navbar-brand>
-      <router-link to="/">
+      <router-link  to="/timeLine">
         <img
           class="img-fluid d-none d-md-block"
           src="@/assets/images/gov/bcid-logo-rev-en.svg"
@@ -17,23 +17,19 @@
           height="44"
           alt="B.C. Government Logo"
         />
+          <b-navbar-brand>
+      <h4 class="nav-link" to="/timeLine">HealthGateway</h4>
+    </b-navbar-brand>
       </router-link>
     </b-navbar-brand>
-    <b-navbar-brand>
-      <h4>HealthGateway</h4>
-    </b-navbar-brand>
+  
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
     <!-- Navbar links -->
     <b-collapse id="nav-collapse" is-nav>
       <!-- Menu -->
-      <b-navbar-nav v-if="displayMenu">
-        <router-link class="nav-link" to="/timeLine">
-          <span class="fa fa-stream"></span> Timeline
-        </router-link>
-       
-      </b-navbar-nav>
+ 
       <b-navbar-nav v-if="displayRegistration">
         <router-link class="nav-link" to="/registration">
           <span class="fa fa-key"></span> Register
@@ -47,9 +43,14 @@
           id="menuBtndUser"
           :text="greeting"
           right
+          variant="dark"
         >
           <b-dropdown-item>
-            <router-link id="menuBtnLogout" to="/logout">
+             <router-link  variant="primary"  to="/timeLine">
+                <span  class="fa fa-stream" ></span> Timeline
+             </router-link>
+             <br></br>
+            <router-link variant="primary" id="menuBtnLogout" to="/logout">
               <span class="fa fa-user"></span> Logout
             </router-link>
           </b-dropdown-item>
@@ -111,9 +112,7 @@ export default class HeaderComponent extends Vue {
     }
   }
 
-  created() {
-    this.loadLanguages();
-  }
+  
 
   get displayMenu(): boolean {
     let isLandingPage = this.$route.path === "/";
