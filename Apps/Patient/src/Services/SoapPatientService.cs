@@ -17,6 +17,7 @@ namespace HealthGateway.PatientService
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
@@ -45,11 +46,7 @@ namespace HealthGateway.PatientService
         /// <param name="loggingEndpointBehaviour">Endpoint behaviour for logging purposes.</param>
         public SoapPatientService(ILogger<SoapPatientService> logger, IConfiguration configuration, IEndpointBehavior loggingEndpointBehaviour)
         {
-            if (configuration is null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
+            Contract.Requires(configuration != null);
             this.loggingEndpointBehaviour = loggingEndpointBehaviour;
             this.logger = logger;
 
@@ -84,6 +81,8 @@ namespace HealthGateway.PatientService
         /// <returns>The patient model.</returns>
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
+            this.logger.LogDebug($"Getting patient... {hdid}");
+            Patient retVal = new Patient();
             // Create request
             HCIM_IN_GetDemographics request = this.CreateRequest(hdid);
 
@@ -92,38 +91,41 @@ namespace HealthGateway.PatientService
 
             // Verify that the reply contains a result
             string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
-            if (responseCode.Contains("BCHCIM.GD.0.0013", System.StringComparison.InvariantCulture))
+            if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
-                HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
+                this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
+                this.logger.LogDebug($"Finished getting patient. {retVal}");
+                return retVal;
+            }
 
-                // Extract the subject names
-                List<string> givenNameList = new List<string>();
-                List<string> lastNameList = new List<string>();
-                for (int i = 0; i < retrievedPerson.identifiedPerson.name[0].Items.Length; i++)
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
+
+            // Extract the subject names
+            List<string> givenNameList = new List<string>();
+            List<string> lastNameList = new List<string>();
+            for (int i = 0; i < retrievedPerson.identifiedPerson.name[0].Items.Length; i++)
+            {
+                ENXP name = retrievedPerson.identifiedPerson.name[0].Items[i];
+
+                if (name.GetType() == typeof(engiven))
                 {
-                    ENXP name = retrievedPerson.identifiedPerson.name[0].Items[i];
-
-                    if (name.GetType() == typeof(engiven))
-                    {
-                        givenNameList.Add(name.Text[0]);
-                    }
-                    else if (name.GetType() == typeof(enfamily))
-                    {
-                        lastNameList.Add(name.Text[0]);
-                    }
+                    givenNameList.Add(name.Text[0]);
                 }
+                else if (name.GetType() == typeof(enfamily))
+                {
+                    lastNameList.Add(name.Text[0]);
+                }
+            }
 
-                string delimiter = " ";
-                string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
-                string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-                string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
-                return new Patient(hdid, phn, givenNames, lastNames);
-            }
-            else
-            {
-                this.logger.LogInformation("Client Registry did not return a person. Returned message code: " + responseCode);
-                return new Patient();
-            }
+            string delimiter = " ";
+            string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
+            string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
+            string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
+            retVal = new Patient(hdid, phn, givenNames, lastNames);
+
+            this.logger.LogDebug($"Finished getting patient. {hdid}, {retVal}");
+
+            return retVal;
         }
 
         private HCIM_IN_GetDemographics CreateRequest(string hdid)
