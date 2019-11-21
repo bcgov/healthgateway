@@ -223,12 +223,14 @@ namespace HealthGateway.Common.AspNetConfiguration
                 string basePath = section.GetValue<string>("BasePath");
                 if (!string.IsNullOrEmpty(basePath))
                 {
-                    this.logger.LogInformation($"Forward BasePath is set to ${basePath}, setting PathBase for app");
+                    this.logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
+                    app.UsePathBase(basePath);
                     app.Use(async (context, next) =>
                     {
                         context.Request.PathBase = basePath;
                         await next.Invoke();
                     });
+                    app.UsePathBase(basePath);
                 }
 
                 string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
