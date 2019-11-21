@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Services
             HNMessage<List<MedicationStatement>> retMessage = null;
 
             // Protective words are not allowed to contain any of the following: |~^\&
-            Regex regex = new Regex(@"^[|~^\\&]+$");
+            Regex regex = new Regex(@"[|~^\\&]+");
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
             if (okProtectiveWord)
             {
@@ -107,6 +107,7 @@ namespace HealthGateway.Medication.Services
             }
             else
             {
+                // Protective word had invalid characters
                 retMessage = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
             }
 

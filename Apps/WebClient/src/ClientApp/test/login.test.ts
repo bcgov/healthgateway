@@ -1,8 +1,9 @@
-import { shallowMount, createLocalVue, Wrapper, config } from "@vue/test-utils";
+import { shallowMount, createLocalVue, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
+import BootstrapVue from "bootstrap-vue";
 import LoginComponent from "@/views/login.vue";
 import { auth as authModule } from "@/store/modules/auth/auth";
-import BootstrapVue from "bootstrap-vue";
+import { user as userModule } from "@/store/modules/user/user";
 import { IdentityProviderConfiguration } from "@/models/configData";
 
 const pushMethod = jest.fn();
@@ -16,7 +17,10 @@ let $route = {
 };
 
 let authGetters = {
-  oidcIsAuthenticated: (): boolean => false,
+  oidcIsAuthenticated: (): boolean => false
+};
+
+let userGetters = {
   userIsRegistered: (): boolean => false
 };
 
@@ -34,6 +38,11 @@ function createWrapper(): Wrapper<LoginComponent> {
       auth: {
         namespaced: true,
         getters: authGetters,
+        actions: userModule.actions
+      },
+      user: {
+        namespaced: true,
+        getters: userGetters,
         actions: authModule.actions
       },
       config: {
@@ -85,7 +94,9 @@ describe("Login view", () => {
 
   test("if authenticated but not registered sets router path to registration", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => true,
+      oidcIsAuthenticated: (): boolean => true
+    };
+    userGetters = {
       userIsRegistered: (): boolean => false
     };
     let wrapper = createWrapper();
@@ -97,7 +108,9 @@ describe("Login view", () => {
 
   test("if authenticated and registered sets router path", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => true,
+      oidcIsAuthenticated: (): boolean => true
+    };
+    userGetters = {
       userIsRegistered: (): boolean => true
     };
     let wrapper = createWrapper();
@@ -109,7 +122,9 @@ describe("Login view", () => {
 
   test("if not authenticated does not set router path", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => false,
+      oidcIsAuthenticated: (): boolean => false
+    };
+    userGetters = {
       userIsRegistered: (): boolean => false
     };
     let wrapper = createWrapper();
