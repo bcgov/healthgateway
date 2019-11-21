@@ -56,9 +56,9 @@ namespace HealthGateway.Common.FileDownload
                 targetFolder = Path.Combine(Directory.GetCurrentDirectory(), targetFolder);
             }
 
-            if(!Directory.Exists(targetFolder)) 
+            if (!Directory.Exists(targetFolder))
             {
-                System.IO.Directory.CreateDirectory(targetFolder);
+                Directory.CreateDirectory(targetFolder);
             }
 
             fd.Name = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());

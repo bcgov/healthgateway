@@ -21,20 +21,24 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
+        private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        public UserProfileService(IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
+        public UserProfileService(ILogger<UserProfileService> logger, IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
         {
+            this.logger = logger;
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
         }
@@ -42,13 +46,18 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public DBResult<UserProfile> GetUserProfile(string hdid)
         {
-            return this.profileDelegate.GetUserProfile(hdid);
+            this.logger.LogDebug($"Getting user profile... {hdid}");
+            DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
+            this.logger.LogDebug($"Finished getting user profile. {hdid}, {retVal.Status.ToString()}");
+
+            return retVal;
         }
 
         /// <inheritdoc />
         public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri)
         {
             Contract.Requires(userProfile != null && hostUri != null);
+            this.logger.LogDebug($"Creating user profile... {userProfile.HdId}");
             string email = userProfile.Email;
             userProfile.Email = string.Empty;
 
@@ -60,6 +69,7 @@ namespace HealthGateway.WebClient.Services
                 this.emailQueueService.QueueInviteEmail(userProfile.HdId, email, hostUri);
             }
 
+            this.logger.LogDebug($"Finished creating user profile. {userProfile.HdId}, {result.Status.ToString()}");
             return result;
         }
     }

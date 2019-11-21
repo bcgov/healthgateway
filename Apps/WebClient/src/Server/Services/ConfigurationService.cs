@@ -44,8 +44,7 @@ namespace HealthGateway.WebClient.Services
         /// <returns>The external configuration data.</returns>
         public Models.ExternalConfiguration GetConfiguration()
         {
-            #pragma warning disable CA1303 //disable should not return arrays
-            this.logger.LogDebug("Returning configuration data");
+            this.logger.LogDebug($"Getting configuration data... {this.config}");
             return this.config;
         }
     }

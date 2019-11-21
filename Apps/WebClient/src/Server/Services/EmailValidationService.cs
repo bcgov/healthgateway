@@ -16,24 +16,26 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using System.Collections.Generic;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class EmailValidationService : IEmailValidationService
     {
+        private readonly ILogger logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly IProfileDelegate profileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailValidationService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
-        public EmailValidationService(IEmailDelegate emailDelegate, IProfileDelegate profileDelegate)
+        /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+        public EmailValidationService(ILogger<EmailValidationService> logger, IEmailDelegate emailDelegate, IProfileDelegate profileDelegate)
         {
+            this.logger = logger;
             this.emailDelegate = emailDelegate;
             this.profileDelegate = profileDelegate;
         }
@@ -41,6 +43,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public bool ValidateEmail(string hdid, Guid inviteKey)
         {
+            this.logger.LogDebug($"Validating email... {inviteKey}");
             bool retVal = false;
             EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(hdid, inviteKey);
             if (emailInvite != null)
@@ -57,6 +60,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
             }
 
+            this.logger.LogDebug($"Finished validating email: {inviteKey}, {retVal}");
             return retVal;
         }
     }
