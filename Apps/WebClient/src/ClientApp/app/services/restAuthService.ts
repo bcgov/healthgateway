@@ -10,9 +10,6 @@ import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { CookieStorage } from "cookie-storage";
 
-Oidc.Log.logger = console;
-Oidc.Log.level = Oidc.Log.DEBUG;
-
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
   private readonly USER_INFO_PATH: string = "/protocol/openid-connect/userinfo";
