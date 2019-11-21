@@ -91,6 +91,7 @@ namespace HealthGateway.Medication.Services
         private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string protectiveWord)
         {
             HNMessage<List<MedicationStatement>> retMessage = null;
+
             // Protective words are not allowed to contain any of the following: |~^\&
             Regex regex = new Regex(@"^[|~^\\&]+$");
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
@@ -108,6 +109,7 @@ namespace HealthGateway.Medication.Services
             {
                 return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
             }
+
             return retMessage;
         }
 

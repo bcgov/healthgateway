@@ -18,7 +18,7 @@ namespace HealthGateway.Medication.Constants
     /// <summary>
     /// Common area for error messages.
     /// </summary>
-    public class ErrorMessages
+    public static class ErrorMessages
     {
         /// <summary>
         /// Error message to return when a Pharmanet record is protected.
