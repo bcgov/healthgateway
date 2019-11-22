@@ -157,7 +157,8 @@ namespace HealthGateway.Medication.Test
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             IMedicationStatementService service = new RestMedicationStatementService(
-                 httpContextAccessorMock.Object,
+                new Mock<ILogger<RestMedicationStatementService>>().Object,
+                httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
                 drugLookupDelegateMock.Object);
