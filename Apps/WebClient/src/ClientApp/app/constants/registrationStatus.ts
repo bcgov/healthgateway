@@ -1,5 +1,5 @@
 export enum RegistrationStatus {
   Closed = "closed",
   Open = "open",
-  InviteOnly = "inviteOnly"
+  InviteOnly = "invite_only"
 }

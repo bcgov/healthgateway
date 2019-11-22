@@ -83,8 +83,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,
-    registrationStatus:
-      config.webClient.registrationStatus || RegistrationStatus.Closed,
     store,
     startAtIdle: false
   });

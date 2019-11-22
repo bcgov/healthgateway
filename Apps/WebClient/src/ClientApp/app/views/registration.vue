@@ -43,8 +43,12 @@ input {
               Terms of Service
             </h1>
             <b-alert :show="limitedRegistration" variant="info">
-              <h4>Registration status</h4>
-              <span>Currently the registration is limited.</span>
+              <h4>Limited registration</h4>
+              <span
+                >Currently the registration is
+                <strong>{{ config.registrationStatus }}</strong
+                >.</span
+              >
             </b-alert>
             <div id="Description">
               <strong>{{ fullName }}</strong>
@@ -145,6 +149,7 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
+import { WebClientConfiguration } from "@/models/configData";
 
 @Component({
   components: {
@@ -153,6 +158,7 @@ import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
   }
 })
 export default class RegistrationComponent extends Vue {
+  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
 
@@ -169,7 +175,7 @@ export default class RegistrationComponent extends Vue {
   private limitedRegistration: boolean = false;
 
   mounted() {
-    if (this.$registrationStatus !== RegistrationStatus.Open) {
+    if (this.config.registrationStatus !== RegistrationStatus.Open) {
       this.limitedRegistration = true;
     }
 
