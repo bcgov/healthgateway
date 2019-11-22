@@ -33,6 +33,7 @@ namespace HealthGateway.Medication.Test
     using System.Text;
     using Newtonsoft.Json;
     using Xunit;
+    using Microsoft.Extensions.Logging;
 
     public class HNClientDelegate_Test
     {
@@ -69,9 +70,10 @@ namespace HealthGateway.Medication.Test
             authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
 
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
-            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
+            sequenceDelegateMock.Setup(s => s.GetNextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             IHNClientDelegate hnclientDelegate = new RestHNClientDelegate(
+                new Mock<ILogger<RestHNClientDelegate>>().Object,
                 medicationParserMock.Object,
                 pharmacyParserMock.Object,
                 httpMock.Object,
@@ -105,6 +107,7 @@ namespace HealthGateway.Medication.Test
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.BadRequest,
+                Content = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
@@ -113,9 +116,10 @@ namespace HealthGateway.Medication.Test
             authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
 
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
-            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
+            sequenceDelegateMock.Setup(s => s.GetNextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             IHNClientDelegate hnclientDelegate = new RestHNClientDelegate(
+                new Mock<ILogger<RestHNClientDelegate>>().Object,
                 medicationParserMock.Object,
                 pharmacyParserMock.Object,
                 httpMock.Object,

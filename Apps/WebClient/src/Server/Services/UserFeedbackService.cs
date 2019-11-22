@@ -15,29 +15,39 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using HealthGateway.Common.Services;
+    using System.Diagnostics.Contracts;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserFeedbackService : IUserFeedbackService
     {
+        private readonly ILogger logger;
         private readonly IFeedbackDelegate feedbackDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
-        public UserFeedbackService(IFeedbackDelegate feedbackDelegate)
+        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate)
         {
+            this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
         }
 
         /// <inheritdoc />
         public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
-            return this.feedbackDelegate.CreateUserFeedback(userFeedback);
+            Contract.Requires(userFeedback != null);
+            this.logger.LogTrace($"Creating user feedback... {JsonConvert.SerializeObject(userFeedback)}");
+            DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
+            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");
+
+            return retVal;
         }
     }
 }

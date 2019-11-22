@@ -16,30 +16,37 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
     public class RestMedicationService : IMedicationService
     {
+        private readonly ILogger logger;
         private readonly IDrugLookupDelegate drugLookupDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
-        public RestMedicationService(IDrugLookupDelegate drugLookupDelegate)
+        public RestMedicationService(
+            ILogger<RestMedicationService> logger,
+            IDrugLookupDelegate drugLookupDelegate)
         {
+            this.logger = logger;
             this.drugLookupDelegate = drugLookupDelegate;
         }
 
         /// <inheritdoc/>
         public Dictionary<string, MedicationResult> GetMedications(List<string> medicationDinList)
         {
+            this.logger.LogTrace($"Getting list of medications... {JsonConvert.SerializeObject(medicationDinList)}");
             Dictionary<string, MedicationResult> result = new Dictionary<string, MedicationResult>();
 
             // Retrieve drug information from the Federal soruce
@@ -74,6 +81,7 @@ namespace HealthGateway.Medication.Services
                 }
             }
 
+            this.logger.LogDebug($"Finished getting list of medications. {JsonConvert.SerializeObject(result)}");
             return result;
         }
     }

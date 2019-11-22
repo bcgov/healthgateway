@@ -37,7 +37,10 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
-        public DBMigrationsJob(IConfiguration configuration, ILogger<DBMigrationsJob> logger, GatewayDbContext dbContext)
+        public DBMigrationsJob(
+            IConfiguration configuration,
+            ILogger<DBMigrationsJob> logger,
+            GatewayDbContext dbContext)
         {
             this.configuration = configuration;
             this.logger = logger;
@@ -50,7 +53,9 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Migrate()
         {
+            this.logger.LogTrace($"Migrating database... {ConcurrencyTimeout}");
             this.dbContext.Database.Migrate();
+            this.logger.LogTrace($"Finished migrating database. {ConcurrencyTimeout}");
         }
     }
 }

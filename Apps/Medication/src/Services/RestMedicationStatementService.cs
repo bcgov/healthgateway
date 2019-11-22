@@ -26,45 +26,36 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
     public class RestMedicationStatementService : IMedicationStatementService
     {
-        /// <summary>
-        /// The http context provider.
-        /// </summary>
+        private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// The patient delegate used to retrieve Personal Health Number for subject.
-        /// </summary>
         private readonly IPatientDelegate patientDelegate;
-
-        /// <summary>
-        /// Delegate to interact with hnclient.
-        /// </summary>
         private readonly IHNClientDelegate hnClientDelegate;
-
-        /// <summary>
-        /// Delegate to retrieve drug information.
-        /// </summary>
         private readonly IDrugLookupDelegate drugLookupDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         public RestMedicationStatementService(
+            ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientService,
             IHNClientDelegate hnClientDelegate,
             IDrugLookupDelegate drugLookupDelegate)
         {
+            this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientService;
             this.hnClientDelegate = hnClientDelegate;
@@ -74,6 +65,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
+            this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
             if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Success)
             {
@@ -85,6 +77,7 @@ namespace HealthGateway.Medication.Services
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
+            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(hnClientMedicationResult)}");
             return hnClientMedicationResult;
         }
 
@@ -97,6 +90,7 @@ namespace HealthGateway.Medication.Services
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
             if (okProtectiveWord)
             {
+                this.logger.LogInformation($"Protective word found. {hdid}");
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
@@ -107,8 +101,8 @@ namespace HealthGateway.Medication.Services
             }
             else
             {
-                // Protective word had invalid characters
-                retMessage = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
+                this.logger.LogInformation($"Invalid protective word. {hdid}");
+                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
             }
 
             return retMessage;
@@ -120,18 +114,15 @@ namespace HealthGateway.Medication.Services
 
             Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
 
+            this.logger.LogTrace($"Populating brand name... {statements.Count} records");
             foreach (MedicationStatement medicationStatement in statements)
             {
                 string din = medicationStatement.MedicationSumary.DIN.PadLeft(8, '0');
-                if (brandNameMap.ContainsKey(din))
-                {
-                    medicationStatement.MedicationSumary.BrandName = brandNameMap[din];
-                }
-                else
-                {
-                    medicationStatement.MedicationSumary.BrandName = "Unknown brand name";
-                }
+                medicationStatement.MedicationSumary.BrandName =
+                    brandNameMap.ContainsKey(din) ? brandNameMap[din] : "Unknown brand name";
             }
+
+            this.logger.LogDebug($"Finished populating brand name. {statements.Count} records");
         }
     }
 }

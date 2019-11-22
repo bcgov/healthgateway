@@ -29,7 +29,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="feedback">The feedback to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedback> CreateUserFeedback(UserFeedback feedback);
+        DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback);
 
         /// <summary>
         /// Updates the UserFeedback object in the DB.

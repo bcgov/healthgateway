@@ -26,6 +26,10 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Database\" />

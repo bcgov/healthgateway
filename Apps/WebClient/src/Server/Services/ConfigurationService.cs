@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides external configuration data.
@@ -31,7 +32,9 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
-        public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
+        public ConfigurationService(
+            ILogger<ConfigurationService> logger,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.config = new Models.ExternalConfiguration();
@@ -44,8 +47,7 @@ namespace HealthGateway.WebClient.Services
         /// <returns>The external configuration data.</returns>
         public Models.ExternalConfiguration GetConfiguration()
         {
-            #pragma warning disable CA1303 //disable should not return arrays
-            this.logger.LogDebug("Returning configuration data");
+            this.logger.LogTrace($"Getting configuration data... {JsonConvert.SerializeObject(this.config)}");
             return this.config;
         }
     }

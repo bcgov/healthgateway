@@ -26,7 +26,7 @@ namespace HealthGateway.Medication.Test
     using System.Text;
     using Newtonsoft.Json;
     using Xunit;
-
+    using Microsoft.Extensions.Logging;
 
     public class PatientDelegate_Test
     {
@@ -50,7 +50,10 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
 
-            IPatientDelegate service = new RestPatientDelegate(httpMock.Object, configuration);
+            IPatientDelegate service = new RestPatientDelegate(
+                new Mock<ILogger<RestPatientDelegate>>().Object,
+                httpMock.Object,
+                configuration);
             string phn = await service.GetPatientPHNAsync(expected.HdId, "Bearer TheTestToken");
 
             Assert.Equal(expected.PersonalHealthNumber, phn);
@@ -63,11 +66,15 @@ namespace HealthGateway.Medication.Test
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.BadRequest,
+                Content = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json),
             });
 
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IPatientDelegate service = new RestPatientDelegate(httpMock.Object, configuration);
+            IPatientDelegate service = new RestPatientDelegate(
+                new Mock<ILogger<RestPatientDelegate>>().Object,
+                httpMock.Object,
+                configuration);
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));
         }
     }

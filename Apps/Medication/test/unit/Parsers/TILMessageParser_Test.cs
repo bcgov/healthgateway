@@ -19,6 +19,8 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using System;
     using System.Globalization;
     using System.Runtime.InteropServices;
@@ -41,9 +43,12 @@ namespace HealthGateway.Medication.Test
             this.culture = CultureInfo.CreateSpecificCulture("en-CA");
             this.culture.DateTimeFormat.DateSeparator = "/";
 
-            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("UnitTest.json").Build();
             configuration.GetSection("HNClient").Bind(hnClientConfig);
-            this.parser = new TILMessageParser(configuration);
+            this.parser = new TILMessageParser(
+                new Mock<ILogger<TILMessageParser>>().Object,
+                configuration);
         }
 
         [Fact]
@@ -52,7 +57,13 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:", this.culture); // Skips seconds to avoid time mismatching
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage<string> request = this.parser.CreateRequestMessage(pharmacyId, userId, ipAddress, 101010, null);
+            HNMessage<string> request = this.parser.CreateRequestMessage(new HNMessageRequest
+            {
+                PharmacyId = pharmacyId,
+                UserId = userId,
+                IpAddress = ipAddress,
+                TraceId = 101010
+            });
 
             Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Success);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);
