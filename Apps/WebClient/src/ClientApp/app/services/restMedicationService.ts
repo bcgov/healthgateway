@@ -28,7 +28,8 @@ export class RestMedicationService implements IMedicationService {
       headers["protectiveWord"] = protectiveWord;
     }
     return this.http.getWithCors<RequestResult>(
-      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`
+      `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
+      headers
     );
   }
 

@@ -8,6 +8,7 @@ import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import UserProfile from "@/models/userProfile";
 import UserFeedback from "@/models/userFeedback";
+import { Dictionary } from "vue-router/types/router";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -66,7 +67,7 @@ export interface IEmailValidationService {
 export interface IHttpDelegate {
   unsetAuthorizationHeader(): void;
   setAuthorizationHeader(accessToken: string): void;
-  getWithCors<T>(url: string): Promise<T>;
-  get<T>(url: string): Promise<T>;
+  getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
+  get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   post<T>(url: string, payload: Object): Promise<T>;
 }
