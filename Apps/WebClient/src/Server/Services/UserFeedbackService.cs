@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserFeedbackService : IUserFeedbackService
@@ -42,9 +43,9 @@ namespace HealthGateway.WebClient.Services
         public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
             Contract.Requires(userFeedback != null);
-            this.logger.LogDebug($"Creating user feedback... {userFeedback.IsSatisfied}");
+            this.logger.LogTrace($"Creating user feedback... {JsonConvert.SerializeObject(userFeedback)}");
             DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
-            this.logger.LogDebug($"Finished creating user feedback. {retVal.Status.ToString()}");
+            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");
 
             return retVal;
         }

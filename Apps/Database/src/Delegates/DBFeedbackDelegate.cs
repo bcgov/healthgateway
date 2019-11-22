@@ -23,6 +23,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class DBFeedbackDelegate : IFeedbackDelegate
@@ -46,7 +47,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
         {
-            this.logger.LogDebug($"Inserting user feedback to DB... {feedback}");
+            this.logger.LogTrace($"Inserting user feedback to DB... {JsonConvert.SerializeObject(feedback)}");
             DBResult<UserFeedback> result = new DBResult<UserFeedback>();
             this.dbContext.Add<UserFeedback>(feedback);
             try
@@ -60,7 +61,7 @@ namespace HealthGateway.Database.Delegates
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug($"Finished inserting user feedback to DB... {result.Status.ToString()}");
+            this.logger.LogDebug($"Finished inserting user feedback to DB... {JsonConvert.SerializeObject(result)}");
             return result;
         }
 
@@ -68,7 +69,7 @@ namespace HealthGateway.Database.Delegates
         public DBResult<UserFeedback> UpdateUserFeedback(UserFeedback feedback)
         {
             Contract.Requires(feedback != null);
-            this.logger.LogDebug($"Updating user feedback in DB... {feedback.Id}");
+            this.logger.LogTrace($"Updating user feedback in DB... {JsonConvert.SerializeObject(feedback)}");
             DBResult<UserFeedback> result = this.GetUserFeedback(feedback.Id);
             if (result.Status == DBStatusCode.Read)
             {
@@ -89,19 +90,19 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished updating user feedback in DB. {result.Status.ToString()}");
+            this.logger.LogDebug($"Finished updating user feedback in DB. {JsonConvert.SerializeObject(result)}");
             return result;
         }
 
         /// <inheritdoc />
         public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
-            this.logger.LogDebug($"Getting user feedback from DB... {feedbackId}");
+            this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
             UserFeedback feedback = this.dbContext.UserFeedback.Find(feedbackId);
             DBResult<UserFeedback> result = new DBResult<UserFeedback>();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
-            this.logger.LogDebug($"Finished getting user feedback from DB... {feedbackId}, {result.Status.ToString()}");
+            this.logger.LogDebug($"Finished getting user feedback from DB... {JsonConvert.SerializeObject(result)}");
             return result;
         }
     }

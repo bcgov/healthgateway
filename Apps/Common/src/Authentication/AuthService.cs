@@ -61,11 +61,11 @@ namespace HealthGateway.Common.Authentication
         /// <inheritdoc/>
         public JWTModel AuthenticateService()
         {
-            this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
+            this.logger.LogTrace($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
             JWTModel jwtModel = authenticating.Result as JWTModel;
-            this.logger.LogDebug($"Finished authenticating Service... {this.TokenRequest.ClientId}");
+            this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
 

@@ -57,7 +57,7 @@ namespace HealthGateway.Medication.Delegates
             string retVal;
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogDebug($"Getting patient phn... {hdid}");
+            this.logger.LogTrace($"Getting patient phn... {hdid}");
 
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
@@ -77,13 +77,13 @@ namespace HealthGateway.Medication.Delegates
                     }
                     else
                     {
-                        this.logger.LogError($"Error getting patient phn... {hdid}, {payload}");
+                        this.logger.LogError($"Error getting patient phn. {hdid}, {payload}");
                         throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                     }
                 }
 
                 timer.Stop();
-                this.logger.LogDebug($"Finished getting patient phn. {hdid}, Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
+                this.logger.LogDebug($"Finished getting patient phn. {hdid}, {retVal.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
                 return retVal;
             }
         }

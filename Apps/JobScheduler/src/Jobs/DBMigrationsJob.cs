@@ -53,9 +53,9 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Migrate()
         {
-            this.logger.LogDebug($"Migrating database... {ConcurrencyTimeout}");
+            this.logger.LogTrace($"Migrating database... {ConcurrencyTimeout}");
             this.dbContext.Database.Migrate();
-            this.logger.LogDebug($"Finished migrating database. {ConcurrencyTimeout}");
+            this.logger.LogTrace($"Finished migrating database. {ConcurrencyTimeout}");
         }
     }
 }

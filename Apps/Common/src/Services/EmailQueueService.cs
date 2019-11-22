@@ -25,6 +25,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// A simple service to queue and send email.
@@ -73,10 +74,10 @@ namespace HealthGateway.Common.Services
         public void QueueEmail(Email email)
         {
             Contract.Requires(email != null);
-            this.logger.LogDebug($"Queueing email... {email.Id}");
+            this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
             this.emailDelegate.InsertEmail(email);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
-            this.logger.LogDebug($"Finished queueing email... {email.Id}");
+            this.logger.LogDebug($"Finished queueing email. {email.Id}");
         }
 
         /// <inheritdoc />
@@ -103,18 +104,18 @@ namespace HealthGateway.Common.Services
         public void QueueInviteEmail(EmailInvite invite)
         {
             Contract.Requires(invite != null);
-            this.logger.LogDebug($"Queueing invite email... {invite.Id}");
+            this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(invite)}");
             this.emailDelegate.InsertEmailInvite(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
-            this.logger.LogDebug($"Finished queueing invite email... {invite.Id}");
+            this.logger.LogDebug($"Finished queueing invite email. {invite.Id}");
         }
 
         /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
-            this.logger.LogDebug($"Getting email template... {templateName}");
+            this.logger.LogTrace($"Getting email template... {templateName}");
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug($"Finished getting email template... {templateName}");
+            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
@@ -122,10 +123,10 @@ namespace HealthGateway.Common.Services
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             Contract.Requires(toEmail != null && emailTemplate != null && keyValues != null);
-            this.logger.LogDebug($"Processing template... {emailTemplate.Name}");
+            this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
-            this.logger.LogDebug($"Finished processing template. {emailTemplate.Name}, {email.Subject}");
+            this.logger.LogDebug($"Finished processing template. {JsonConvert.SerializeObject(email)}");
             return email;
         }
 

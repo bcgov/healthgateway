@@ -27,6 +27,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -64,7 +65,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
-            this.logger.LogDebug($"Getting list of medication statements... {hdid}");
+            this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
             if (hnClientMedicationResult.Result == ResultType.Sucess)
             {
@@ -76,7 +77,7 @@ namespace HealthGateway.Medication.Services
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
-            this.logger.LogDebug($"Finished getting list of medication statements... {hdid}, {hnClientMedicationResult}");
+            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(hnClientMedicationResult)}");
             return hnClientMedicationResult;
         }
 
@@ -89,7 +90,7 @@ namespace HealthGateway.Medication.Services
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
             if (okProtectiveWord)
             {
-                this.logger.LogDebug($"Protective word found... {hdid}");
+                this.logger.LogInformation($"Protective word found. {hdid}");
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
@@ -100,7 +101,7 @@ namespace HealthGateway.Medication.Services
             }
             else
             {
-                this.logger.LogDebug($"Invalid protective word... {hdid}");
+                this.logger.LogInformation($"Invalid protective word. {hdid}");
                 retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
             }
 
@@ -113,13 +114,15 @@ namespace HealthGateway.Medication.Services
 
             Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
 
-            this.logger.LogDebug($"Populating brand name... {statements.Count} records");
+            this.logger.LogTrace($"Populating brand name... {statements.Count} records");
             foreach (MedicationStatement medicationStatement in statements)
             {
                 string din = medicationStatement.MedicationSumary.DIN.PadLeft(8, '0');
                 medicationStatement.MedicationSumary.BrandName =
                     brandNameMap.ContainsKey(din) ? brandNameMap[din] : "Unknown brand name";
             }
+
+            this.logger.LogDebug($"Finished populating brand name. {statements.Count} records");
         }
     }
 }

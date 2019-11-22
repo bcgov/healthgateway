@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
@@ -46,9 +47,9 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public DBResult<UserProfile> GetUserProfile(string hdid)
         {
-            this.logger.LogDebug($"Getting user profile... {hdid}");
+            this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
-            this.logger.LogDebug($"Finished getting user profile. {hdid}, {retVal.Status.ToString()}");
+            this.logger.LogDebug($"Finished getting user profile. {JsonConvert.SerializeObject(retVal)}");
 
             return retVal;
         }
@@ -57,7 +58,7 @@ namespace HealthGateway.WebClient.Services
         public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri)
         {
             Contract.Requires(userProfile != null && hostUri != null);
-            this.logger.LogDebug($"Creating user profile... {userProfile.HdId}");
+            this.logger.LogTrace($"Creating user profile... {JsonConvert.SerializeObject(userProfile)}");
             string email = userProfile.Email;
             userProfile.Email = string.Empty;
 
@@ -69,7 +70,7 @@ namespace HealthGateway.WebClient.Services
                 this.emailQueueService.QueueInviteEmail(userProfile.HdId, email, hostUri);
             }
 
-            this.logger.LogDebug($"Finished creating user profile. {userProfile.HdId}, {result.Status.ToString()}");
+            this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(result)}");
             return result;
         }
     }

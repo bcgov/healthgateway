@@ -21,6 +21,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -54,7 +55,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId)
         {
-            this.logger.LogDebug($"Getting pharmacy... {pharmacyId}");
+            this.logger.LogTrace($"Getting pharmacy... {pharmacyId}");
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
@@ -64,7 +65,7 @@ namespace HealthGateway.Medication.Services
 
             HNMessage<Pharmacy> retVal = await this.hnClientDelegate.GetPharmacyAsync(pharmacyId, phn, ipv4Address).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting pharmacy... {pharmacyId}, {retVal}");
+            this.logger.LogDebug($"Finished getting pharmacy. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
     }

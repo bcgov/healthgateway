@@ -24,6 +24,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class DBEmailDelegate : IEmailDelegate
@@ -47,61 +48,61 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public Email GetEmail(Guid emailId)
         {
-            this.logger.LogDebug($"Getting email from DB... {emailId}");
+            this.logger.LogTrace($"Getting email from DB... {emailId}");
             Email retVal = this.dbContext.Find<Email>(emailId);
-            this.logger.LogDebug($"Finished getting email from DB. {emailId}");
+            this.logger.LogDebug($"Finished getting email from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc />
         public Email GetNewEmail(Guid emailId)
         {
-            this.logger.LogDebug($"Getting new email from DB... {emailId}");
+            this.logger.LogTrace($"Getting new email from DB... {emailId}");
             Email retVal = this.dbContext.Email.Where(p => p.Id == emailId &&
                                               p.EmailStatusCode == EmailStatus.New &&
                                               p.Priority >= EmailPriority.Standard).SingleOrDefault();
-            this.logger.LogDebug($"Finished getting new email from DB. {emailId}");
+            this.logger.LogDebug($"Finished getting new email from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc />
         public List<Email> GetLowPriorityEmail(int maxRows)
         {
-            this.logger.LogDebug($"Getting list of low priority emails from DB... {maxRows}");
+            this.logger.LogTrace($"Getting list of low priority emails from DB... {maxRows}");
             List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority < EmailPriority.Standard)
                                         .OrderByDescending(s => s.Priority)
                                         .Take(maxRows)
                                         .ToList();
-            this.logger.LogDebug($"Finished getting list of low priority emails from DB. {retVal.Count}");
+            this.logger.LogDebug($"Finished getting list of low priority emails from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc />
         public Guid InsertEmail(Email email)
         {
-            this.logger.LogDebug($"Inserting email to DB... {email}");
+            this.logger.LogTrace($"Inserting email to DB... {email}");
             Contract.Requires(email != null);
             this.dbContext.Add<Email>(email);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished inserting email to DB. {email.Id}");
+            this.logger.LogDebug($"Finished inserting email to DB. {JsonConvert.SerializeObject(email)}");
             return email.Id;
         }
 
         /// <inheritdoc />
         public void UpdateEmail(Email email)
         {
-            this.logger.LogDebug($"Updating email in DB... {email}");
+            this.logger.LogTrace($"Updating email in DB... {email}");
             Contract.Requires(email != null);
             this.dbContext.Update<Email>(email);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email in DB. {email.Id}");
+            this.logger.LogDebug($"Finished updating email in DB. {JsonConvert.SerializeObject(email)}");
         }
 
         /// <inheritdoc />
         public Guid InsertEmailInvite(EmailInvite invite)
         {
-            this.logger.LogDebug($"Inserting email invite to DB... {invite}");
+            this.logger.LogTrace($"Inserting email invite to DB... {JsonConvert.SerializeObject(invite)}");
             Contract.Requires(invite != null);
             this.dbContext.Add<EmailInvite>(invite);
             this.dbContext.SaveChanges();
@@ -112,12 +113,12 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
-            this.logger.LogDebug($"Getting email template from DB... {templateName}");
+            this.logger.LogTrace($"Getting email template from DB... {templateName}");
             EmailTemplate retVal = this.dbContext
                 .EmailTemplate
                 .Where(p => p.Name == templateName)
                 .FirstOrDefault<EmailTemplate>();
-            this.logger.LogDebug($"Finished getting email template from DB... {templateName}, {retVal.Id}");
+            this.logger.LogDebug($"Finished getting email template from DB. {JsonConvert.SerializeObject(retVal)}");
 
             return retVal;
         }
@@ -125,14 +126,14 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public EmailInvite GetEmailInvite(string hdid, Guid inviteKey)
         {
-            this.logger.LogDebug($"Getting email invite from DB... {hdid}, {inviteKey}");
+            this.logger.LogTrace($"Getting email invite from DB... {hdid}, {inviteKey}");
             EmailInvite retVal = this.dbContext
                 .EmailInvite
                 .Include(email => email.Email)
                 .Where(p => p.HdId == hdid && p.InviteKey == inviteKey)
                 .FirstOrDefault<EmailInvite>();
 
-            this.logger.LogDebug($"Finished getting email invite from DB... {hdid}, {inviteKey}, {retVal.Id}");
+            this.logger.LogDebug($"Finished getting email invite from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
@@ -140,10 +141,10 @@ namespace HealthGateway.Database.Delegates
         public void UpdateEmailInvite(EmailInvite emailInvite)
         {
             Contract.Requires(emailInvite != null);
-            this.logger.LogDebug($"Updating email invite in DB... {emailInvite.Id}");
+            this.logger.LogTrace($"Updating email invite in DB... {JsonConvert.SerializeObject(emailInvite)}");
             this.dbContext.Update<EmailInvite>(emailInvite);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email invite in DB... {emailInvite.Id}");
+            this.logger.LogDebug($"Finished updating email invite in DB. {emailInvite.Id}");
         }
     }
 }

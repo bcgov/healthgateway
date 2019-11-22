@@ -23,6 +23,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
@@ -48,21 +49,21 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers)
         {
-            this.logger.LogDebug($"Getting list of drug products from DB... {drugIdentifiers}");
+            this.logger.LogTrace($"Getting list of drug products from DB... {JsonConvert.SerializeObject(drugIdentifiers)}");
             List<DrugProduct> retVal = this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber))
                                         .Include(c => c.Company)
                                         .Include(a => a.ActiveIngredient)
                                         .Include(f => f.Form)
                         .ToList();
 
-            this.logger.LogDebug($"Finished getting list of drug products from DB. {drugIdentifiers}");
+            this.logger.LogDebug($"Finished getting list of drug products from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc/>
         public List<PharmaCareDrug> GetPharmaCareDrugsByDIN(List<string> drugIdentifiers)
         {
-            this.logger.LogDebug($"Getting list of pharmacare drug products from DB... {drugIdentifiers}");
+            this.logger.LogTrace($"Getting list of pharmacare drug products from DB... {JsonConvert.SerializeObject(drugIdentifiers)}");
 
             DateTime now = DateTime.UtcNow;
             List<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
@@ -70,7 +71,7 @@ namespace HealthGateway.Database.Delegates
                 .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).FirstOrDefault())
                 .ToList();
 
-            this.logger.LogDebug($"Finished getting list of pharmacare drug products from DB. {drugIdentifiers}");
+            this.logger.LogDebug($"Finished getting list of pharmacare drug products from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
@@ -78,7 +79,7 @@ namespace HealthGateway.Database.Delegates
         public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
         {
             Contract.Requires(drugIdentifiers != null);
-            this.logger.LogDebug($"Getting drug brand names from DB... {drugIdentifiers}");
+            this.logger.LogTrace($"Getting drug brand names from DB... {JsonConvert.SerializeObject(drugIdentifiers)}");
 
             // Retrieve the brand names using the provincial data
             List<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDIN(drugIdentifiers);
@@ -97,7 +98,7 @@ namespace HealthGateway.Database.Delegates
                 federalBrandNames.ToList().ForEach(x => provicialBrandNames.Add(x.Key, x.Value));
             }
 
-            this.logger.LogDebug($"Finished getting drug brand names from DB. {drugIdentifiers}");
+            this.logger.LogDebug($"Finished getting drug brand names from DB. {JsonConvert.SerializeObject(provicialBrandNames)}");
             return provicialBrandNames;
         }
     }

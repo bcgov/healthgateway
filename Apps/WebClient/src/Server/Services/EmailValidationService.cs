@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class EmailValidationService : IEmailValidationService
@@ -43,7 +44,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public bool ValidateEmail(string hdid, Guid inviteKey)
         {
-            this.logger.LogDebug($"Validating email... {inviteKey}");
+            this.logger.LogTrace($"Validating email... {inviteKey}");
             bool retVal = false;
             EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(hdid, inviteKey);
             if (emailInvite != null)
@@ -60,7 +61,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
             }
 
-            this.logger.LogDebug($"Finished validating email: {inviteKey}, {retVal}");
+            this.logger.LogDebug($"Finished validating email: {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
     }

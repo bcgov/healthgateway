@@ -60,9 +60,14 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress, 101010, null);
+            HNMessage<string> request = this.parser.CreateRequestMessage(new HNMessageRequest {
+                Phn = phn,
+                UserId = userId,
+                IpAddress =ipAddress,
+                TraceId = 101010
+            });
 
-            Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Sucess);
+            Assert.True(request.Result == ResultType.Sucess);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);
             Assert.Contains($"|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA|{hnClientConfig.ZCA.BIN}|{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
@@ -85,7 +90,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Error);
+            Assert.True(actual.Result == ResultType.Error);
             Assert.Equal(expectedErrorMessage, actual.ResultMessage);
             Assert.Null(actual.Message);
         }

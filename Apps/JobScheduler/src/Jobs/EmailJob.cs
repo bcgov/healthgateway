@@ -28,6 +28,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using MimeKit;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class EmailJob : IEmailJob
@@ -64,7 +65,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <inheritdoc />
         public void SendEmail(Guid emailId)
         {
-            this.logger.LogDebug($"Sending email... {emailId}");
+            this.logger.LogTrace($"Sending email... {emailId}");
             Email email = this.emailDelegate.GetNewEmail(emailId);
             if (email != null)
             {
@@ -75,7 +76,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
             }
 
-            this.logger.LogDebug($"Finished sending email... {emailId}");
+            this.logger.LogDebug($"Finished sending email. {JsonConvert.SerializeObject(email)}");
         }
 
         /// <inheritdoc />
@@ -103,7 +104,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 }
             }
 
-            this.logger.LogDebug($"Finished sending low priority emails. {resendEmails.Count}");
+            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
 
         private static MimeMessage PrepareMessage(Email email)

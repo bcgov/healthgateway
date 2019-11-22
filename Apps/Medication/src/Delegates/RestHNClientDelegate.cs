@@ -80,7 +80,7 @@ namespace HealthGateway.Medication.Delegates
             Contract.Requires(phn != null);
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogDebug($"Getting medication statements... {phn.Substring(0, 3)}");
+            this.logger.LogTrace($"Getting medication statements... {phn.Substring(0, 3)}");
 
             JWTModel jwtModel = this.authService.AuthenticateService();
             HNMessage<List<MedicationStatement>> retVal;
@@ -93,7 +93,14 @@ namespace HealthGateway.Medication.Delegates
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId, protectiveWord);
+                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(new HNMessageRequest
+                {
+                    Phn = phn,
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    TraceId = traceId,
+                    ProtectiveWord = protectiveWord,
+                });
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
@@ -109,14 +116,14 @@ namespace HealthGateway.Medication.Delegates
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {retVal.Result.ToString()}, Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
+            this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
         {
-            this.logger.LogDebug($"Getting pharmacy... {pharmacyId}");
+            this.logger.LogTrace($"Getting pharmacy... {pharmacyId}");
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
@@ -131,7 +138,13 @@ namespace HealthGateway.Medication.Delegates
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId, null);
+                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(new HNMessageRequest
+                {
+                    PharmacyId = pharmacyId,
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    TraceId = traceId,
+                });
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
@@ -141,13 +154,13 @@ namespace HealthGateway.Medication.Delegates
                 }
                 else
                 {
-                    this.logger.LogError($"Error getting pharmacy... {pharmacyId}, {payload}");
+                    this.logger.LogError($"Error getting pharmacy: {pharmacyId}, {payload}");
                     retVal = new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting pharmacy. {pharmacyId}, {retVal.Result.ToString()}, Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
+            this.logger.LogDebug($"Finished getting pharmacy. {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
     }

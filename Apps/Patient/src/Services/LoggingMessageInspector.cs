@@ -49,7 +49,7 @@ namespace HealthGateway.PatientService
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
             Contract.Requires(reply != null);
-            this.logger.LogDebug($"Getting the reply response... {reply.State}");
+            this.logger.LogTrace($"Getting the reply response... {reply.State}");
             using (MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
                 XmlDocument document = this.GetDocument(buffer.CreateMessage());
@@ -68,7 +68,7 @@ namespace HealthGateway.PatientService
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
             Contract.Requires(request != null);
-            this.logger.LogDebug($"Getting the reply request... {request.State}");
+            this.logger.LogTrace($"Getting the reply request... {request.State}");
 
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
             {

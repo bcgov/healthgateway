@@ -27,6 +27,7 @@ namespace HealthGateway.PatientService
     using HealthGateway.PatientService.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using ServiceReference;
 
     /// <summary>
@@ -84,7 +85,7 @@ namespace HealthGateway.PatientService
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogDebug($"Getting patient... {hdid}");
+            this.logger.LogTrace($"Getting patient... {hdid}");
             Patient retVal;
 
             // Create request
@@ -99,7 +100,7 @@ namespace HealthGateway.PatientService
             {
                 retVal = new Patient();
                 this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
-                this.logger.LogDebug($"Finished getting patient. {retVal}");
+                this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)}");
                 return retVal;
             }
 
@@ -129,7 +130,7 @@ namespace HealthGateway.PatientService
             retVal = new Patient(hdid, phn, givenNames, lastNames);
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting patient. {hdid}, {retVal} Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
+            this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)} Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
 
