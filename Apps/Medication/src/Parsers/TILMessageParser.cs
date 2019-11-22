@@ -82,7 +82,10 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public override HNMessage<Pharmacy> ParseResponseMessage(string hl7Message)
         {
-            Contract.Requires(hl7Message != null);
+            if (string.IsNullOrEmpty(hl7Message))
+            {
+                throw new ArgumentNullException(nameof(hl7Message));
+            }
             this.logger.LogDebug($"Parsing TIL response message... {hl7Message.Substring(0, 10)}");
 
             Message message = this.ParseRawMessage(hl7Message);

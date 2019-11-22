@@ -87,7 +87,7 @@ namespace HealthGateway.Medication.Services
             // Protective words are not allowed to contain any of the following: |~^\&
             Regex regex = new Regex(@"^[|~^\\&]+$");
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
-            if (!okProtectiveWord)
+            if (okProtectiveWord)
             {
                 this.logger.LogDebug($"Protective word found... {hdid}");
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];

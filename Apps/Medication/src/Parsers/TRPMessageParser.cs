@@ -95,7 +95,10 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public override HNMessage<List<MedicationStatement>> ParseResponseMessage(string hl7Message)
         {
-            Contract.Requires(hl7Message != null);
+            if (string.IsNullOrEmpty(hl7Message))
+            {
+                throw new ArgumentNullException(nameof(hl7Message));
+            }
             this.logger.LogDebug($"Parsing TRP response message... {hl7Message.Substring(0, 10)}");
             List<MedicationStatement> medicationStatements = new List<MedicationStatement>();
 

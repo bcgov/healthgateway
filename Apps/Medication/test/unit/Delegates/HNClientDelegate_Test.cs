@@ -107,6 +107,7 @@ namespace HealthGateway.Medication.Test
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.BadRequest,
+                Content = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);

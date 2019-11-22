@@ -134,7 +134,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Sucess);
+            Assert.True(actual.Result == Common.Constants.ResultType.Sucess);
             Assert.True(expectedPharmacy.IsDeepEqual(actual.Message));
         }
 

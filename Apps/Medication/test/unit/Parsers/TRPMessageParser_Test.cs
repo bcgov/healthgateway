@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Test
 {
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
@@ -154,7 +155,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Sucess);
+            Assert.True(actual.Result == ResultType.Sucess);
             Assert.Equal(3, actual.Message.Count);
             Assert.True(expectedMedicationStatement.IsDeepEqual(actual.Message.First()));
         }
