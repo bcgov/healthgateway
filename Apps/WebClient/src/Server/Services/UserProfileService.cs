@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Services
             string email = userProfile.Email;
             userProfile.Email = string.Empty;
 
-            DBResult<UserProfile> result = this.profileDelegate.CreateUserProfile(userProfile);
+            DBResult<UserProfile> result = this.profileDelegate.InsertUserProfile(userProfile);
 
             if (result.Status == Database.Constant.DBStatusCode.Created &&
                 !string.IsNullOrEmpty(email))

@@ -19,8 +19,10 @@ namespace HealthGateway.CommonTests.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -48,7 +50,10 @@ namespace HealthGateway.CommonTests.Services
                 Subject = "Subject=Test Subject",
                 Body = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3"
             };
-            IEmailQueueService emailService = new EmailQueueService(null, new Mock<IHostingEnvironment>().Object);
+            IEmailQueueService emailService = new EmailQueueService(
+                new Mock<ILogger<EmailQueueService>>().Object,
+                new Mock<IEmailDelegate>().Object,
+                new Mock<IHostingEnvironment>().Object);
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             Assert.True(expected.IsDeepEqual(actual));
         }

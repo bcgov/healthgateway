@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Services
         {
             Contract.Requires(userFeedback != null);
             this.logger.LogDebug($"Creating user feedback... {userFeedback.IsSatisfied}");
-            DBResult<UserFeedback> retVal = this.feedbackDelegate.CreateUserFeedback(userFeedback);
+            DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
             this.logger.LogDebug($"Finished creating user feedback. {retVal.Status.ToString()}");
 
             return retVal;

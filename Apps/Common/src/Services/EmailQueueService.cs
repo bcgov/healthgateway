@@ -24,6 +24,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A simple service to queue and send email.
@@ -38,14 +39,20 @@ namespace HealthGateway.Common.Services
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
         private readonly IHostingEnvironment enviroment;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
+        /// <param name="logger">The injected logger provider.</param>
         /// <param name="emailDelegate">The delegate to be used.</param>
         /// <param name="enviroment">The injected environment configuration.</param>
-        public EmailQueueService(IEmailDelegate emailDelegate, IHostingEnvironment enviroment)
+        public EmailQueueService(
+            ILogger<EmailQueueService> logger,
+            IEmailDelegate emailDelegate,
+            IHostingEnvironment enviroment)
         {
+            this.logger = logger;
             this.emailDelegate = emailDelegate;
             this.enviroment = enviroment;
         }
@@ -65,8 +72,11 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueEmail(Email email)
         {
+            Contract.Requires(email != null);
+            this.logger.LogDebug($"Queueing email... {email.Id}");
             this.emailDelegate.InsertEmail(email);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+            this.logger.LogDebug($"Finished queueing email... {email.Id}");
         }
 
         /// <inheritdoc />
@@ -92,22 +102,30 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueInviteEmail(EmailInvite invite)
         {
+            Contract.Requires(invite != null);
+            this.logger.LogDebug($"Queueing invite email... {invite.Id}");
             this.emailDelegate.InsertEmailInvite(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
+            this.logger.LogDebug($"Finished queueing invite email... {invite.Id}");
         }
 
         /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
-            return this.emailDelegate.GetEmailTemplate(templateName);
+            this.logger.LogDebug($"Getting email template... {templateName}");
+            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
+            this.logger.LogDebug($"Finished getting email template... {templateName}");
+            return retVal;
         }
 
         /// <inheritdoc />
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             Contract.Requires(toEmail != null && emailTemplate != null && keyValues != null);
+            this.logger.LogDebug($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
+            this.logger.LogDebug($"Finished processing template. {emailTemplate.Name}, {email.Subject}");
             return email;
         }
 

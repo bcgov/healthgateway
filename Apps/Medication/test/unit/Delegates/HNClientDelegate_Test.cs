@@ -70,7 +70,7 @@ namespace HealthGateway.Medication.Test
             authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
 
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
-            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
+            sequenceDelegateMock.Setup(s => s.GetNextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             IHNClientDelegate hnclientDelegate = new RestHNClientDelegate(
                 new Mock<ILogger<RestHNClientDelegate>>().Object,
@@ -115,7 +115,7 @@ namespace HealthGateway.Medication.Test
             authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
 
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
-            sequenceDelegateMock.Setup(s => s.NextValueForSequence(It.IsAny<string>())).Returns(101010);
+            sequenceDelegateMock.Setup(s => s.GetNextValueForSequence(It.IsAny<string>())).Returns(101010);
 
             IHNClientDelegate hnclientDelegate = new RestHNClientDelegate(
                 new Mock<ILogger<RestHNClientDelegate>>().Object,

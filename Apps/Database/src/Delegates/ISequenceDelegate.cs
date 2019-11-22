@@ -25,6 +25,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="sequenceName">The sequence name.</param>
         /// <returns>The next sequence value.</returns>
-        long NextValueForSequence(string sequenceName);
+        long GetNextValueForSequence(string sequenceName);
     }
 }

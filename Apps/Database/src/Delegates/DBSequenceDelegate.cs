@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using HealthGateway.Database.Context;
+    using Microsoft.Extensions.Logging;
     using Npgsql;
     using NpgsqlTypes;
 
@@ -24,14 +25,19 @@ namespace HealthGateway.Database.Delegates
     /// </summary>
     public class DBSequenceDelegate : ISequenceDelegate
     {
+        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBSequenceDelegate"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DBSequenceDelegate(GatewayDbContext dbContext)
+        public DBSequenceDelegate(
+            ILogger<DBSequenceDelegate> logger,
+            GatewayDbContext dbContext)
         {
+            this.logger = logger;
             this.dbContext = dbContext;
         }
 
@@ -40,8 +46,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="sequenceName">The sequence name.</param>
         /// <returns>The next sequence value.</returns>
-        public long NextValueForSequence(string sequenceName)
+        public long GetNextValueForSequence(string sequenceName)
         {
+            this.logger.LogDebug($"Getting next value for sequence from DB... {sequenceName}");
             NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
             {
                 Direction = System.Data.ParameterDirection.Output,
@@ -50,6 +57,7 @@ namespace HealthGateway.Database.Delegates
 
             // code below is to be used when updating to EF 3
             // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);
+            this.logger.LogDebug($"Finished getting next value for sequence from DB... {sequenceName}, {result.Value}");
             return (long)result.Value;
         }
     }

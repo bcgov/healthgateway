@@ -73,7 +73,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             // emailer.Setup(s => s.QueueEmail(
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.CreateUserProfile(userProfile)).Returns(expected);
+            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(expected);
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
