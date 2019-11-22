@@ -81,7 +81,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-5">
+        <b-row class="mb-3">
           <b-col>
             <b-form-checkbox
               id="optout"
@@ -91,6 +91,20 @@ input {
             >
               No, I prefer not to receive any notifications
             </b-form-checkbox>
+          </b-col>
+        </b-row>
+        <b-row class="mb-2">
+          <b-col>
+            <b-form-input
+              id="inviteKey"
+              v-model="inviteKey"
+              placeholder="Invitation Key"
+              v-validate="'required'"
+              :state="isValid($v.inviteKey)"
+            />
+            <b-form-invalid-feedback :state="isValid($v.inviteKey)">
+              Invitation key is required.
+            </b-form-invalid-feedback>
           </b-col>
         </b-row>
         <b-row class="mb-3">
@@ -109,7 +123,7 @@ input {
               I agree to the terms of service above.
             </b-form-checkbox>
             <b-form-invalid-feedback :state="isValid($v.accepted)">
-              Field is required.
+              You must accept the terms of service.
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
@@ -156,6 +170,7 @@ export default class RegistrationComponent extends Vue {
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
+  private inviteKey: string = "";
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
@@ -204,7 +219,8 @@ export default class RegistrationComponent extends Vue {
         sameAsEmail: sameAs("email"),
         email
       },
-      accepted: { isChecked: sameAs(() => true) }
+      accepted: { isChecked: sameAs(() => true) },
+      inviteKey: { required: requiredIf(() => true) }
     };
   }
 
@@ -233,7 +249,8 @@ export default class RegistrationComponent extends Vue {
         .createProfile({
           hdid: this.oidcUser.hdid,
           acceptedTermsOfService: this.accepted,
-          email: this.email
+          email: this.email,
+          inviteKey: this.inviteKey
         })
         .then(result => {
           console.log(result);

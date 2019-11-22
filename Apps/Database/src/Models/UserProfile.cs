@@ -42,5 +42,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(254)]
         public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the invite key.
+        /// </summary>
+        [MaxLength(32)]
+        public string InviteKey { get; set; }
     }
 }
