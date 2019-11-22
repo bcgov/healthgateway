@@ -133,10 +133,12 @@ namespace HealthGateway.JobScheduler
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-            app.UseHangfireDashboard("/jobs", new DashboardOptions
+        
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
             });
+           // app.UseHangfireDashboard();
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
