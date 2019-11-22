@@ -57,7 +57,7 @@ export default class ValidateEmailComponent extends Vue {
       .then(isValid => {
         this.success = isValid;
         if (isValid) {
-          setTimeout(() => this.$router.push({ path: "/" }), 2000);
+          setTimeout(() => this.$router.push({ path: "/timeline" }), 2000);
         }
       })
       .finally(() => {

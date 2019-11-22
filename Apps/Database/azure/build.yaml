@@ -8,16 +8,16 @@ variables:
 
 pr: none
 
-trigger:
- batch: 'true'
- branches:
-   include:
-     - dev
- paths:
-   include:
-     - Apps/Database/src
-     - Apps/Database/test
-     - Apps/Database/azure/build.yml
+trigger: none
+#  batch: 'true'
+#  branches:
+#    include:
+#      - dev
+#  paths:
+#    include:
+#      - Apps/Database/src
+#      - Apps/Database/test
+#      - Apps/Database/azure/build.yml
 
 pool:
   name: 'HealthGateway'

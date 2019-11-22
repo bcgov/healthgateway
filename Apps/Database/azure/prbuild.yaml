@@ -11,15 +11,15 @@ pool:
 
 trigger: none
 
-pr:
-  branches:
-   include:
-   - dev  
-  paths:
-   include:
-   - Apps/Database/src
-   - Apps/Database/test
-   - Apps/Database/azure/prbuild.yml
+pr: none
+  # branches:
+  #  include:
+  #  - dev  
+  # paths:
+  #  include:
+  #  - Apps/Database/src
+  #  - Apps/Database/test
+  #  - Apps/Database/azure/prbuild.yml
    
 steps:
 - task: DotNetCoreCLI@2

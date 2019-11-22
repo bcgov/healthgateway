@@ -67,7 +67,7 @@ namespace HealthGateway.Medication.Services
         {
             this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (hnClientMedicationResult.Result == ResultType.Sucess)
+            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Success)
             {
                 // Filter the results to return only Dispensed or Filled prescriptions.
                 hnClientMedicationResult.Message = hnClientMedicationResult.Message
@@ -86,7 +86,7 @@ namespace HealthGateway.Medication.Services
             HNMessage<List<MedicationStatement>> retMessage = null;
 
             // Protective words are not allowed to contain any of the following: |~^\&
-            Regex regex = new Regex(@"^[|~^\\&]+$");
+            Regex regex = new Regex(@"[|~^\\&]+");
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
             if (okProtectiveWord)
             {

@@ -65,7 +65,7 @@ namespace HealthGateway.Medication.Test
                 TraceId = 101010
             });
 
-            Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Sucess);
+            Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Success);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);
             Assert.Contains($"|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA||{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
@@ -140,7 +140,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<Pharmacy> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.Result == Common.Constants.ResultType.Sucess);
+            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Success);
             Assert.True(expectedPharmacy.IsDeepEqual(actual.Message));
         }
 

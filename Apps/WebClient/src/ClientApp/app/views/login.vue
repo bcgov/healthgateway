@@ -65,7 +65,7 @@ const namespace: string = "auth";
 export default class LoginComponent extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc: any;
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
-  @Getter("userIsRegistered", { namespace }) userIsRegistered: boolean;
+  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
   @Getter("identityProviders", { namespace: "config" })
   identityProviders: IdentityProviderConfiguration[];
 
