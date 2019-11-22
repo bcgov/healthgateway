@@ -17,6 +17,7 @@ namespace HealthGateway.PatientService
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
@@ -81,6 +82,8 @@ namespace HealthGateway.PatientService
         /// <returns>The patient model.</returns>
         public async System.Threading.Tasks.Task<Patient> GetPatient(string hdid)
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             this.logger.LogDebug($"Getting patient... {hdid}");
             Patient retVal;
 
@@ -125,8 +128,8 @@ namespace HealthGateway.PatientService
             string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
             retVal = new Patient(hdid, phn, givenNames, lastNames);
 
-            this.logger.LogDebug($"Finished getting patient. {hdid}, {retVal}");
-
+            timer.Stop();
+            this.logger.LogDebug($"Finished getting patient. {hdid}, {retVal} Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
             return retVal;
         }
 

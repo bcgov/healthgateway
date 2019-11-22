@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -77,7 +78,10 @@ namespace HealthGateway.Medication.Delegates
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
         {
             Contract.Requires(phn != null);
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             this.logger.LogDebug($"Getting medication statements... {phn.Substring(0, 3)}");
+
             JWTModel jwtModel = this.authService.AuthenticateService();
             HNMessage<List<MedicationStatement>> retVal;
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
@@ -102,16 +106,20 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogError($"Error getting medication statements. {phn.Substring(0, 3)}, {payload}");
                     retVal = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
-
-                this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {retVal.Result.ToString()}");
-                return retVal;
             }
+
+            timer.Stop();
+            this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {retVal.Result.ToString()}, Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
         {
             this.logger.LogDebug($"Getting pharmacy... {pharmacyId}");
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
             HNMessage<Pharmacy> retVal;
             JWTModel jwtModel = this.authService.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
@@ -138,7 +146,8 @@ namespace HealthGateway.Medication.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished getting pharmacy. {pharmacyId}, {retVal.Result.ToString()}");
+            timer.Stop();
+            this.logger.LogDebug($"Finished getting pharmacy. {pharmacyId}, {retVal.Result.ToString()}, Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
             return retVal;
         }
     }

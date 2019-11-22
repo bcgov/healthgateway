@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System;
+    using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
@@ -54,7 +55,10 @@ namespace HealthGateway.Medication.Delegates
         public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
             string retVal;
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             this.logger.LogDebug($"Getting patient phn... {hdid}");
+
             using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -78,7 +82,8 @@ namespace HealthGateway.Medication.Delegates
                     }
                 }
 
-                this.logger.LogDebug($"Finished getting patient phn. {hdid}");
+                timer.Stop();
+                this.logger.LogDebug($"Finished getting patient phn. {hdid}, Time Elapsed: {timer.Elapsed.ToString("hh:mm:ss")}");
                 return retVal;
             }
         }
