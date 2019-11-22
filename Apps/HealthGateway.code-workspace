@@ -28,7 +28,7 @@
 			"path": "WebClient"
 		},
 		{
-			"path": "Hangfire"
+			"path": "JobScheduler"
 		}
 	],
 	"settings": {}

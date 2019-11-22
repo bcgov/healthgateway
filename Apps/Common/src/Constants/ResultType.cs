@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Represents a successful result.
         /// </summary>
-        Sucess = 1,
+        Success = 1,
 
         /// <summary>
         /// Represents that the transactions requires a protective word.
