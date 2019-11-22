@@ -44,6 +44,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+    #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
     /// The startup configuration class.
@@ -73,9 +74,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection provider.</param>
         public void ConfigureHttpServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("Configure Http Services...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddHttpClient();
             services.AddResponseCompression(options =>
@@ -102,9 +101,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuthorizationServices...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
@@ -170,9 +167,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuditServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuditServices...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
             services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
@@ -201,9 +196,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseAuth(IApplicationBuilder app)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("Use Auth...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Enable jwt authentication
             app.UseAuthentication();
@@ -244,7 +237,8 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.KnownProxies.Add(IPAddress.Parse(ip));
                 }
-                logger.LogInformation($"Enabling Use Forward Header");
+
+                this.logger.LogInformation("Enabling Use Forward Header");
                 app.UseForwardedHeaders(options);
             }
         }
@@ -331,12 +325,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                     .AllowAnyHeader();
             });
 
-            // forwarded Header middleware required for apps behind proxies and load balancers
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto,
-            });
-
             app.UseResponseCompression();
             app.UseHttpsRedirection();
             app.UseMvc();
@@ -348,9 +336,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseSwagger(IApplicationBuilder app)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("Use Swagger...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
@@ -364,9 +350,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <returns>An async task.</returns>
         private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("OnAuthenticationFailed...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
