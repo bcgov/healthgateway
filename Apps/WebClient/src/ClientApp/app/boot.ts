@@ -33,6 +33,7 @@ import SERVICE_IDENTIFIER, {
 import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
+import { RegistrationStatus } from "./constants/registrationStatus";
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
@@ -82,6 +83,8 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,
+    registrationStatus:
+      config.webClient.registrationStatus || RegistrationStatus.Closed,
     store,
     startAtIdle: false
   });
