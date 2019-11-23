@@ -66,12 +66,8 @@ namespace HealthGateway.JobScheduler
             })
             .AddCookie(options =>
             {
-                //options.Cookie.HttpOnly = false; // Controls whether JavaScript can read this cookie.
-                //options.Cookie.SameSite = SameSiteMode.None; // required otherwise auth middleware does endless redirect.
-                //options.Cookie.IsEssential = true;
-                //options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.None;
                 options.Cookie.Name = "HealthGateway_JobScheduler";
-            }) 
+            })
             .AddOpenIdConnect(options =>
             {
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -90,8 +86,6 @@ namespace HealthGateway.JobScheduler
                     ValidateIssuer = true
                 };
             });
-
-            //services.AddAuthorization();
         }
 
         /// <summary>
@@ -153,7 +147,8 @@ namespace HealthGateway.JobScheduler
                 MinimumSameSitePolicy = SameSiteMode.None
             });
 
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            // Empty string signifies the root URL
+            app.UseHangfireDashboard("", new DashboardOptions
             {
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
             });

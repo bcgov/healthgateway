@@ -30,12 +30,6 @@ namespace HealthGateway.JobScheduler.Controllers
         /// Index.
         /// </summary>
 
-        [HttpGet("/")]
-        public IActionResult Index()
-        {
-            return RedirectToAction("Hello");
-        }
-
         /// <summary>
         /// Login.
         /// </summary>
