@@ -39,16 +39,15 @@ namespace HealthGateway.JobScheduler.Controllers
         /// <summary>
         /// Login.
         /// </summary>
-        [Authorize]
         [HttpGet("/login")]
         public IActionResult Login()
         {
-            /*
+            
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return new ChallengeResult();
-            }*/
-            return RedirectToAction("Hello");
+            }
+            return new EmptyResult();
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace HealthGateway.JobScheduler.Controllers
         /// hello.
         /// </summary>
         [HttpGet("/hello")]
-        // [Authorize]
+        [Authorize]
         public string Hello()
         {
             return "Hello World!";
