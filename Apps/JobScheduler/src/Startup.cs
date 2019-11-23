@@ -61,30 +61,30 @@ namespace HealthGateway.JobScheduler
             services.AddAuthentication(auth =>
             {
                 auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
             {
-                options.Cookie.HttpOnly = false; // Controls whether JavaScript can read this cookie.
-                options.Cookie.SameSite = SameSiteMode.None; // required otherwise auth middleware does endless redirect.
-                options.Cookie.IsEssential = true;
-                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
-                //options.Cookie.Name = "HealthGateway_JobScheduler";
-            })
+                //options.Cookie.HttpOnly = false; // Controls whether JavaScript can read this cookie.
+                //options.Cookie.SameSite = SameSiteMode.None; // required otherwise auth middleware does endless redirect.
+                //options.Cookie.IsEssential = true;
+                //options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.None;
+                options.Cookie.Name = "HealthGateway_JobScheduler";
+            }) 
             .AddOpenIdConnect(options =>
             {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.Authority = authorityEndPoint;
-                options.ResponseMode = OpenIdConnectResponseMode.Query;
+                //options.ResponseMode = OpenIdConnectResponseMode.FormPost;
                 options.ResponseType = OpenIdConnectResponseType.Code;
-                //options.UseTokenLifetime = true;
                 options.ClientId = clientId;
+                options.SaveTokens = false;
                 options.ClientSecret = clientSecret;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = requireHttpsMetadata;
-                //options.CallbackPath = "/signin-oidc";
                 options.Scope.Add("openid");
-                options.Scope.Add("profile");
+                //options.Scope.Add("id_token");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true
@@ -147,6 +147,12 @@ namespace HealthGateway.JobScheduler
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
 
+            app.UseAuthentication();
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.None
+            });
+
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
@@ -193,11 +199,7 @@ namespace HealthGateway.JobScheduler
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseAuthentication();
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.None
-            });
+            app.UseCors();
 
             app.UseMvc(routes =>
             {
