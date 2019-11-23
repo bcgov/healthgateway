@@ -24,6 +24,8 @@ namespace HealthGateway.Medication.Parsers
     using HealthGateway.Medication.Models;
     using HL7.Dotnetcore;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Parser of TRP (Patient Profile) messages.
@@ -33,39 +35,42 @@ namespace HealthGateway.Medication.Parsers
         /// <summary>
         /// The minimun size of the expected TRF field length.
         /// </summary>
-        #pragma warning disable CA1707 // Identifiers should not contain underscores
-        #pragma warning disable SA1310 // Field names should not contain underscore
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable SA1310 // Field names should not contain underscore
         public const int MIN_TRF_FIELD_LENGTH = 23;
         #pragma warning restore SA1310 // Field names should not contain underscore
         #pragma warning restore CA1707 // Identifiers should not contain underscores
 
         private const string PROTECTEDWORD = "17 Field KEYWORD contains invalid value";
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TRPMessageParser"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="config">The injected configuration provider.</param>
-        public TRPMessageParser(IConfiguration config)
+        public TRPMessageParser(
+            ILogger<TRPMessageParser> logger,
+            IConfiguration config)
             : base(config)
         {
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public override HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord)
+        public override HNMessage<string> CreateRequestMessage(HNMessageRequest request)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            Contract.Requires(request != null);
+            this.logger.LogTrace($"Creating TRP request message... {JsonConvert.SerializeObject(request)}");
 
             // HNClient only accepts a 13 digit phn
-            id = id.PadLeft(13, '0');
+            request.Phn = request.Phn.PadLeft(13, '0');
             Message message = new Message();
 
-            this.SetMessageHeader(message, userId, ipAddress, traceId);
-            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, traceId, protectiveWord);
+            this.SetMessageHeader(message, request.UserId, request.IpAddress, request.TraceId);
+            this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, request.TraceId, request.ProtectiveWord);
             this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA.BIN);
-            this.SetProviderInfoSegment(message, traceId);
+            this.SetProviderInfoSegment(message, request.TraceId);
 
             // ZCC - Beneficiary Information
             Segment zcc = new Segment(HNClientConfiguration.SEGMENT_ZCC, this.Encoding);
@@ -78,21 +83,25 @@ namespace HealthGateway.Medication.Parsers
             zcc.AddNewField(string.Empty); // Relationship
             zcc.AddNewField(string.Empty); // Patient First Name
             zcc.AddNewField(string.Empty); // Patient Last Name
-            zcc.AddNewField(id); // Provincial Health Care ID
+            zcc.AddNewField(request.Phn); // Provincial Health Care ID
             zcc.AddNewField(string.Empty); // Patient Gender
             message.AddNewSegment(zcc);
 
-            return new HNMessage<string>(message.SerializeMessage(false));
+            HNMessage<string> retVal = new HNMessage<string>(message.SerializeMessage(false));
+            this.logger.LogDebug($"Finished creating TRP request message. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
 
         /// <inheritdoc/>
         public override HNMessage<List<MedicationStatement>> ParseResponseMessage(string hl7Message)
         {
-            List<MedicationStatement> medicationStatements = new List<MedicationStatement>();
             if (string.IsNullOrEmpty(hl7Message))
             {
                 throw new ArgumentNullException(nameof(hl7Message));
             }
+
+            this.logger.LogTrace($"Parsing TRP response message... {hl7Message}");
+            List<MedicationStatement> medicationStatements = new List<MedicationStatement>();
 
             Message message = this.ParseRawMessage(hl7Message);
 
@@ -177,7 +186,10 @@ namespace HealthGateway.Medication.Parsers
                 }
             }
 
-            return new HNMessage<List<MedicationStatement>>(medicationStatements);
+            HNMessage<List<MedicationStatement>> retVal = new HNMessage<List<MedicationStatement>>(medicationStatements);
+
+            this.logger.LogDebug($"Finished parsing TRP response message. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
     }
 }

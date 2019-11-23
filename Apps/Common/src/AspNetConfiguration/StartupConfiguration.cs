@@ -221,7 +221,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                     app.Use(async (context, next) =>
                     {
                         context.Request.PathBase = basePath;
-                        await next.Invoke();
+                        await next.Invoke().ConfigureAwait(true);
                     });
                     app.UsePathBase(basePath);
                 }

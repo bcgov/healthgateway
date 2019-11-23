@@ -29,6 +29,7 @@ namespace HealthGateway.Medication.Test
     using Microsoft.AspNetCore.Http;
     using Moq;
     using Xunit;
+    using Microsoft.Extensions.Logging;
 
     public class PharmacyService_Test
     {
@@ -81,6 +82,7 @@ namespace HealthGateway.Medication.Test
                 .ReturnsAsync(new HNMessage<Pharmacy>(new Pharmacy { PharmacyId = pharmacyId }));
 
             IPharmacyService service = new RestPharmacyService(
+                new Mock<ILogger<RestPharmacyService>>().Object,
                 httpContextAccessorMock.Object,
                 hnClientDelegateMock.Object,
                 patientDelegateMock.Object);

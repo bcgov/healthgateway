@@ -40,12 +40,7 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="config">The configuration provider.</param>
         protected BaseMessageParser(IConfiguration config)
         {
-            if (config is null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            if (config.GetSection("HNClient") is null)
+            if (config is null || config.GetSection("HNClient") is null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
@@ -74,7 +69,7 @@ namespace HealthGateway.Medication.Parsers
         protected HL7Encoding Encoding { get; set; }
 
         /// <inheritdoc/>
-        public abstract HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord);
+        public abstract HNMessage<string> CreateRequestMessage(HNMessageRequest request);
 
         /// <inheritdoc/>
         public abstract HNMessage<T> ParseResponseMessage(string hl7Message);

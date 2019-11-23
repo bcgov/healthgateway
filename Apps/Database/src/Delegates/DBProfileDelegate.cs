@@ -21,24 +21,33 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class DBProfileDelegate : IProfileDelegate
     {
+        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBProfileDelegate"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBProfileDelegate(GatewayDbContext dbContext)
+        public DBProfileDelegate(
+            ILogger<DBProfileDelegate> logger,
+            GatewayDbContext dbContext)
         {
+            this.logger = logger;
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> CreateUserProfile(UserProfile profile)
+        public DBResult<UserProfile> InsertUserProfile(UserProfile profile)
         {
+            Contract.Requires(profile != null);
+            this.logger.LogTrace($"Inserting user profile to DB... {JsonConvert.SerializeObject(profile)}");
             DBResult<UserProfile> result = new DBResult<UserProfile>();
             this.dbContext.Add<UserProfile>(profile);
             try
@@ -52,6 +61,7 @@ namespace HealthGateway.Database.Delegates
                 result.Message = e.Message;
             }
 
+            this.logger.LogDebug($"Finished inserting user profile to DB. {JsonConvert.SerializeObject(result)}");
             return result;
         }
 
@@ -59,6 +69,7 @@ namespace HealthGateway.Database.Delegates
         public DBResult<UserProfile> UpdateUserProfile(UserProfile profile)
         {
             Contract.Requires(profile != null);
+            this.logger.LogTrace($"Updating user profile in DB... {JsonConvert.SerializeObject(profile)}");
             DBResult<UserProfile> result = this.GetUserProfile(profile.HdId);
             if (result.Status == DBStatusCode.Read)
             {
@@ -79,16 +90,19 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
+            this.logger.LogDebug($"Finished updating user profile in DB. {JsonConvert.SerializeObject(result)}");
             return result;
         }
 
         /// <inheritdoc />
         public DBResult<UserProfile> GetUserProfile(string hdId)
         {
+            this.logger.LogTrace($"Getting user profile from DB... {hdId}");
             DBResult<UserProfile> result = new DBResult<UserProfile>();
             UserProfile profile = this.dbContext.UserProfile.Find(hdId);
             result.Payload = profile;
             result.Status = profile != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            this.logger.LogDebug($"Finished getting user profile from DB. {JsonConvert.SerializeObject(result)}");
             return result;
         }
     }
