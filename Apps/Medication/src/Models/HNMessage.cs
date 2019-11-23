@@ -28,7 +28,7 @@ namespace HealthGateway.Medication.Models
         /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
         /// </summary>
         public HNMessage()
-            : this(null, ResultType.Sucess, null)
+            : this(null, ResultType.Success, null)
         {
         }
 
@@ -37,7 +37,7 @@ namespace HealthGateway.Medication.Models
         /// </summary>
         /// <param name="response">The response message object.</param>
         public HNMessage(T response)
-            : this(response, ResultType.Sucess, null)
+            : this(response, ResultType.Success, null)
         {
         }
 

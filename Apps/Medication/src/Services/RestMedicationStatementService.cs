@@ -75,7 +75,7 @@ namespace HealthGateway.Medication.Services
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
         {
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Sucess)
+            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Success)
             {
                 // Filter the results to return only Dispensed or Filled prescriptions.
                 hnClientMedicationResult.Message = hnClientMedicationResult.Message
@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Services
             HNMessage<List<MedicationStatement>> retMessage = null;
 
             // Protective words are not allowed to contain any of the following: |~^\&
-            Regex regex = new Regex(@"^[|~^\\&]+$");
+            Regex regex = new Regex(@"[|~^\\&]+");
             bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
             if (okProtectiveWord)
             {
@@ -107,6 +107,7 @@ namespace HealthGateway.Medication.Services
             }
             else
             {
+                // Protective word had invalid characters
                 retMessage = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
             }
 

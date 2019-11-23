@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
+ARG APP=Medication
+ARG USERNAME=build
+USER root
+
+RUN adduser --disabled-password --gecos "Build User" ${USERNAME}
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+#Copy Required Projects
+COPY --chown=${USERNAME}:${USERNAME} Common Common
+COPY --chown=${USERNAME}:${USERNAME} Database Database
+COPY --chown=${USERNAME}:${USERNAME} $APP $APP	
+
+WORKDIR /home/${USERNAME}/$APP
+RUN dotnet publish -o ../../out
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
+ARG USERNAME=build
+
+ENV ASPNETCORE_URLS=http://+:8080
+WORKDIR /app
+COPY --from=build /home/${USERNAME}/out ./
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Medication.dll"]
