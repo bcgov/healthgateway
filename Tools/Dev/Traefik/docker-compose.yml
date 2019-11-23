@@ -1,0 +1,89 @@
+version: '3.5'
+services:
+  reverse-proxy:
+    image: traefik:v2.0 # The official Traefik docker image
+    container_name: traefik
+    command:
+      - "--configfile=/etc/traefik/config/traefik.yaml"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks: 
+      - web
+      - internal
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.yaml:/etc/traefik/config/traefik.yaml"
+    labels:
+      - "traefik.enable=false"
+
+  whoami:
+    image: containous/whoami
+    container_name: whoami
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`healthgateway.localhost`) && Path(`/whoami`)"
+      - "traefik.http.routers.whoami.entrypoints=http"
+
+  medication:
+    image: "medication:dev"
+    container_name: "medication"
+    env_file:
+      - config/common.env
+      - config/medication.env
+    depends_on: 
+      - gatewaydb
+    networks:
+      - internal
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.medication.rule=Host(`healthgateway.localhost`) && PathPrefix(`/api/medicationservice/`)"
+      - "traefik.http.routers.medication.entrypoints=http"
+
+  webclient:
+    image: "webclient:dev"
+    container_name: "webclient"
+    env_file:
+      - config/common.env
+      - config/webclient.env
+    depends_on: 
+      - gatewaydb
+    networks:
+      - internal
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclient.rule=Host(`healthgateway.localhost`)"
+      - "traefik.http.routers.webclient.entrypoints=http"
+  
+  gatewaydb:
+    image: postgres:latest
+    container_name: gatewaydb
+#    ports
+#      - '5432:5432'
+    env_file:
+      - config/postgres.env
+    depends_on:
+      - reverse-proxy
+    networks:
+      - internal
+    restart: unless-stopped
+    # labels:
+    #   - "traefik.enable=false"
+    volumes:
+      - ./data/backups:/backups
+      - ./data/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gateway"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  web: 
+    name: web
+  internal:
+    name: internal
