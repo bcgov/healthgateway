@@ -58,12 +58,16 @@
   <ItemGroup>
     <None Remove="ClientApp\app\app.vue" />
     <None Remove="WebClient.xml" />
+    <None Remove="ClientApp\app\constants\registrationStatus.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ClientApp\app\components\modal\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Server\Controllers\ProfileController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\constants\registrationStatus.ts" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />

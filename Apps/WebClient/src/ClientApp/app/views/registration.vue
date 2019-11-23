@@ -66,7 +66,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-1">
+        <b-row class="mb-3">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -93,13 +93,12 @@ input {
             </b-form-checkbox>
           </b-col>
         </b-row>
-        <b-row class="mb-2">
+        <b-row class="mb-3" v-if="webClientConfig.registrationStatus == inviteOnlyRegistration">
           <b-col>
             <b-form-input
               id="inviteKey"
               v-model="inviteKey"
               placeholder="Invitation Key"
-              v-validate="'required'"
               :state="isValid($v.inviteKey)"
             />
             <b-form-invalid-feedback :state="isValid($v.inviteKey)">
@@ -154,6 +153,7 @@ import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 
 @Component({
   components: {
@@ -164,6 +164,8 @@ import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
 export default class RegistrationComponent extends Vue {
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
+  @Getter("webClient", { namespace: "config" })
+  webClientConfig: WebClientConfiguration;
 
   private termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
@@ -177,7 +179,7 @@ export default class RegistrationComponent extends Vue {
   private validate: boolean;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
-
+  private inviteOnlyRegistration: RegistrationStatus = RegistrationStatus.InviteOnly;
   mounted() {
     this.validate = false;
 
@@ -220,7 +222,11 @@ export default class RegistrationComponent extends Vue {
         email
       },
       accepted: { isChecked: sameAs(() => true) },
-      inviteKey: { required: requiredIf(() => true) }
+      inviteKey: {
+        required: requiredIf(() => {
+          return this.webClientConfig.registrationStatus == this.inviteOnlyRegistration
+        })
+      }
     };
   }
 

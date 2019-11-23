@@ -29,12 +29,7 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: "/registration/",
-    component: RegistrationComponent,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: "/registration/:inviteKey",
+    path: "/registration/:inviteKey?",
     component: RegistrationComponent,
     props: true,
     meta: { requiresAuth: true }
