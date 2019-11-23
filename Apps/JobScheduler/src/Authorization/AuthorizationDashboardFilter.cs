@@ -48,7 +48,7 @@ namespace HealthGateway.JobScheduler.Authorization
             var httpContext = context.GetHttpContext();
             if (!httpContext.User.Identity.IsAuthenticated)
             {
-                httpContext.Response.Redirect("/Login");
+                httpContext.Response.Redirect("/login");
             }
 
             return true;

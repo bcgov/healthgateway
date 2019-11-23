@@ -16,7 +16,8 @@
 namespace HealthGateway.JobScheduler.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -26,12 +27,51 @@ namespace HealthGateway.JobScheduler.Controllers
     {
 
         /// <summary>
-        /// Login Challenge.
+        /// Index.
         /// </summary>
-        [HttpGet("/Login")]
+
+        [HttpGet("/")]
+        public IActionResult Index()
+        {
+            return RedirectToAction("Hello");
+        }
+
+        /// <summary>
+        /// Login.
+        /// </summary>
+        [Authorize]
+        [HttpGet("/login")]
         public IActionResult Login()
         {
-            return new ChallengeResult();
+            /*
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return new ChallengeResult();
+            }*/
+            return RedirectToAction("Hello");
+        }
+
+        /// <summary>
+        /// Logout Challenge.
+        /// </summary>
+        [HttpGet("/logout")]
+        public IActionResult Logout()
+        {
+            return new SignOutResult(new[]
+            {
+                OpenIdConnectDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            });
+        }
+
+        /// <summary>
+        /// hello.
+        /// </summary>
+        [HttpGet("/hello")]
+        // [Authorize]
+        public string Hello()
+        {
+            return "Hello World!";
         }
     }
 }

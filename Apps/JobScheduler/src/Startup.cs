@@ -29,16 +29,17 @@ namespace HealthGateway.JobScheduler
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
     /// <summary>
@@ -56,29 +57,41 @@ namespace HealthGateway.JobScheduler
             bool requireHttpsMetadata = this.configuration.GetValue<bool>("OpenIdConnect:RequireHttpsMetadata");
             string clientId = this.configuration.GetValue<string>("OpenIdConnect:ClientId");
             string clientSecret = this.configuration.GetValue<string>("OpenIdConnect:ClientSecret");
-            string callBackUrl = this.configuration.GetValue<string>("OpenIdConnect:CallBackUrl");
-            string audience = this.configuration.GetValue<string>("OpenIdConnect:Audience");
 
             services.AddAuthentication(auth =>
             {
                 auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = false; // Controls whether JavaScript can read this cookie.
+                options.Cookie.SameSite = SameSiteMode.None; // required otherwise auth middleware does endless redirect.
+                options.Cookie.IsEssential = true;
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+                //options.Cookie.Name = "HealthGateway_JobScheduler";
+            })
             .AddOpenIdConnect(options =>
             {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.Authority = authorityEndPoint;
-                options.SignedOutRedirectUri = callBackUrl;
-                options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.RequireHttpsMetadata = requireHttpsMetadata;
+                options.ResponseMode = OpenIdConnectResponseMode.Query;
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                //options.UseTokenLifetime = true;
                 options.ClientId = clientId;
                 options.ClientSecret = clientSecret;
-                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.RequireHttpsMetadata = requireHttpsMetadata;
+                //options.CallbackPath = "/signin-oidc";
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true
+                };
             });
+
+            //services.AddAuthorization();
         }
 
         /// <summary>
@@ -133,12 +146,11 @@ namespace HealthGateway.JobScheduler
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-        
+
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
             });
-           // app.UseHangfireDashboard();
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
@@ -173,7 +185,24 @@ namespace HealthGateway.JobScheduler
                 },
             });
 
-            app.UseMvc();
+            // This is needed if running behind a reverse proxy
+            // like ngrok which is great for testing while developing
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                RequireHeaderSymmetry = false,
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
+            app.UseAuthentication();
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.None
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=JobScheduler}/{action=Index}/{id?}");
+            });
         }
     }
 }
