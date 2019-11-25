@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Swagger
     using System.Linq;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -27,19 +28,22 @@ namespace HealthGateway.Common.Swagger
     {
         private readonly IApiVersionDescriptionProvider provider;
         private readonly SwaggerSettings settings;
+        private readonly ILogger<ConfigureSwaggerUiOptions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigureSwaggerUiOptions"/> class.
         /// </summary>
         /// <param name="versionDescriptionProvider">versionDescriptionProvider.</param>
         /// <param name="settings">settings.</param>
-        public ConfigureSwaggerUiOptions(IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> settings)
+        public ConfigureSwaggerUiOptions(IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> settings, ILogger<ConfigureSwaggerUiOptions> logger)
         {
             Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
             Debug.Assert(settings != null, $"{nameof(versionDescriptionProvider)} != null");
-
+            this.logger = logger;
             this.provider = versionDescriptionProvider;
+            logger.LogDebug($"Need to instantiate setting: {settings?.Value == null}");
             this.settings = settings?.Value ?? new SwaggerSettings();
+            
         }
 
         /// <summary>
@@ -48,6 +52,7 @@ namespace HealthGateway.Common.Swagger
         /// <param name="options">options.</param>
         public void Configure(SwaggerUIOptions options)
         {
+            this.logger.LogDebug($"Route Prefix: {this.settings.RoutePrefixWithSlash}");
             if (options != null)
             {
                 this.provider
