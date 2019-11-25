@@ -33,7 +33,6 @@ import SERVICE_IDENTIFIER, {
 import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
-import { RegistrationStatus } from "./constants/registrationStatus";
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
