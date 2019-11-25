@@ -33,6 +33,11 @@ namespace HealthGateway.WebClient.Models
         public TimeOutsConfiguration Timeouts { get; set; }
 
         /// <summary>
+        /// Gets or sets the Webclient registration status.
+        /// </summary>
+        public string RegistrationStatus { get; set; }
+
+        /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         #pragma warning disable CA2227 //disable read-only Dictionary

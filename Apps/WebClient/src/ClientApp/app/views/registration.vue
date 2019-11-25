@@ -42,6 +42,14 @@ input {
             <h1 id="Subject">
               Terms of Service
             </h1>
+            <b-alert :show="limitedRegistration" variant="info">
+              <h4>Limited registration</h4>
+              <span
+                >Currently the registration is
+                <strong>{{ config.registrationStatus }}</strong
+                >.</span
+              >
+            </b-alert>
             <div id="Description">
               <strong>{{ fullName }}</strong>
               , please provide your email address to receive notifications about
@@ -137,9 +145,11 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import User from "@/models/user";
 import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
+import { WebClientConfiguration } from "@/models/configData";
 
 @Component({
   components: {
@@ -148,6 +158,7 @@ import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
   }
 })
 export default class RegistrationComponent extends Vue {
+  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
 
@@ -159,12 +170,14 @@ export default class RegistrationComponent extends Vue {
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
-  private validate: boolean;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
+  private limitedRegistration: boolean = false;
 
   mounted() {
-    this.validate = false;
+    if (this.config.registrationStatus !== RegistrationStatus.Open) {
+      this.limitedRegistration = true;
+    }
 
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
