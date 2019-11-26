@@ -24,6 +24,10 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Models;
+    using System;
+    using HealthGateway.WebClient.Models;
+    using HealthGateway.WebClient.Constant;
 
     public class UserProfileServiceTest
     {
@@ -37,7 +41,8 @@ namespace HealthGateway.WebClient.Test.Services
                 AcceptedTermsOfService = true
             };
 
-            DBResult<UserProfile> expected = new DBResult<UserProfile> {
+            DBResult<UserProfile> expected = new DBResult<UserProfile>
+            {
                 Payload = userProfile,
                 Status = Database.Constant.DBStatusCode.Read
             };
@@ -45,14 +50,23 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(expected);
+
+            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
+            emailDelegateMock.Setup(s => s.GetEmailInvite(hdid, It.IsAny<Guid>())).Returns(new EmailInvite());
+
+            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
+
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
+                emailDelegateMock.Object,
+                configServiceMock.Object,
                 emailer.Object);
-            DBResult<UserProfile> actualResult = service.GetUserProfile(hdid);
+            RequestResult<UserProfile> actualResult = service.GetUserProfile(hdid);
 
-            Assert.Equal(Database.Constant.DBStatusCode.Read, actualResult.Status);
-            Assert.True(actualResult.IsDeepEqual(expected)); 
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected.Payload));
         }
 
         [Fact]
@@ -64,7 +78,7 @@ namespace HealthGateway.WebClient.Test.Services
                 AcceptedTermsOfService = true
             };
 
-            DBResult<UserProfile> expected = new DBResult<UserProfile>
+            DBResult<UserProfile> insertResult = new DBResult<UserProfile>
             {
                 Payload = userProfile,
                 Status = Database.Constant.DBStatusCode.Created
@@ -73,15 +87,25 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             // emailer.Setup(s => s.QueueEmail(
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(expected);
+            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
+
+            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
+            emailDelegateMock.Setup(s => s.GetEmailInvite(userProfile.HdId, It.IsAny<Guid>())).Returns(new EmailInvite());
+
+            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = RegistrationStatus.Open } });
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
+                emailDelegateMock.Object,
+                configServiceMock.Object,
                 emailer.Object);
-            DBResult<UserProfile> actualResult = service.CreateUserProfile(userProfile, new System.Uri("http://localhost/"));
 
-            Assert.Equal(Database.Constant.DBStatusCode.Created, actualResult.Status);
-            Assert.True(actualResult.IsDeepEqual(expected));
+
+            RequestResult<UserProfile> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"));
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(insertResult.Payload));
         }
     }
 }

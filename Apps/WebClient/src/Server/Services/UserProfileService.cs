@@ -103,10 +103,13 @@ namespace HealthGateway.WebClient.Services
 
                 DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(createProfileRequest.Profile);
 
-                if (insertResult.Status == Database.Constant.DBStatusCode.Created &&
-                    !string.IsNullOrEmpty(email))
+                if (insertResult.Status == Database.Constant.DBStatusCode.Created)
                 {
-                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
+                    if (!string.IsNullOrEmpty(email))
+                    {
+                        this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
+                    }
+
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
                 }
