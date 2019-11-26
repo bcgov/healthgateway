@@ -60,6 +60,11 @@ namespace HealthGateway.Medication.Services
             string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
+            if (string.IsNullOrEmpty(phn))
+            {
+                return new HNMessage<Pharmacy>() { Result = Common.Constants.ResultType.Error, ResultMessage = "PHN could not be retrieved" };
+            }
+
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 

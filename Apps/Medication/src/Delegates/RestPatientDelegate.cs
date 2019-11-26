@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
-            string retVal;
+            string retrievedPhn;
             Stopwatch timer = new Stopwatch();
             timer.Start();
             this.logger.LogTrace($"Getting patient phn... {hdid}");
@@ -73,7 +73,7 @@ namespace HealthGateway.Medication.Delegates
                     if (response.IsSuccessStatusCode)
                     {
                         Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                        retVal = responseMessage.PersonalHealthNumber;
+                        retrievedPhn = responseMessage.PersonalHealthNumber;
                     }
                     else
                     {
@@ -83,8 +83,15 @@ namespace HealthGateway.Medication.Delegates
                 }
 
                 timer.Stop();
-                this.logger.LogDebug($"Finished getting patient phn. {hdid}, {retVal.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
-                return retVal;
+                if (string.IsNullOrEmpty(retrievedPhn))
+                {
+                    this.logger.LogDebug($"Finished getting patient phn. {hdid}, PHN not found, Time Elapsed: {timer.Elapsed}");
+                }
+                else
+                {
+                    this.logger.LogDebug($"Finished getting patient phn. {hdid}, {retrievedPhn.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
+                }
+                return retrievedPhn;
             }
         }
     }
