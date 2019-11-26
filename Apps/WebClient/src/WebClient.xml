@@ -238,6 +238,11 @@
             Gets or sets the Webclient timeout values.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.RegistrationStatus">
+            <summary>
+            Gets or sets the Webclient registration status.
+            </summary>
+        </member>
         <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.ExternalURLs">
             <summary>
             Gets or sets the ExternalURLs used by the Webclient.
