@@ -96,7 +96,7 @@ namespace HealthGateway.Medication.Services
 
                 if (string.IsNullOrEmpty(phn))
                 {
-                    return new HNMessage<List<MedicationStatement>>() { Result = Common.Constants.ResultType.Error, ResultMessage = "PHN could not be retrieved" };
+                    return new HNMessage<List<MedicationStatement>>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
                 }
 
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;

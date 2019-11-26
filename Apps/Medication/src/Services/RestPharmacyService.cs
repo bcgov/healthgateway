@@ -17,6 +17,8 @@ namespace HealthGateway.Medication.Services
 {
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
@@ -62,7 +64,7 @@ namespace HealthGateway.Medication.Services
 
             if (string.IsNullOrEmpty(phn))
             {
-                return new HNMessage<Pharmacy>() { Result = Common.Constants.ResultType.Error, ResultMessage = "PHN could not be retrieved" };
+                return new HNMessage<Pharmacy>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
             }
 
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
