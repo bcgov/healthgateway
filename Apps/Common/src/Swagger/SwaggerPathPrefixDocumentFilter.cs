@@ -17,31 +17,46 @@ namespace HealthGateway.Common.Swagger
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using Microsoft.Extensions.Logging;
     using Swashbuckle.AspNetCore.Swagger;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
+    /// <summary>
+    /// Experimental: Processes the Swagger docs and updates the path with a static path prefix.
+    /// </summary>
     public class SwaggerPathPrefixDocumentFilter : IDocumentFilter
     {
-        private readonly string _pathPrefix;
+        private readonly string pathPrefix;
         private readonly ILogger<SwaggerPathPrefixDocumentFilter> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SwaggerPathPrefixDocumentFilter"/> class.
+        /// </summary>
+        /// <param name="prefix">The prefix to use.</param>
+        /// <param name="logger">The logger to use.</param>
         public SwaggerPathPrefixDocumentFilter(string prefix, ILogger<SwaggerPathPrefixDocumentFilter> logger)
         {
-            this._pathPrefix = prefix;
+            this.pathPrefix = prefix;
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Applies the document filter to the Swagger document.
+        /// </summary>
+        /// <param name="swaggerDoc">The swagger document.</param>
+        /// <param name="context">The document filter context.</param>
         public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
         {
+            Contract.Requires(swaggerDoc != null);
             IEnumerator<string> e = swaggerDoc.Paths.Keys.GetEnumerator();
-            while(e.MoveNext())
+            while (e.MoveNext())
             {
                 string path = e.Current;
                 this.logger.LogInformation($"Path: {path}");
                 var pathToChange = swaggerDoc.Paths[path];
                 swaggerDoc.Paths.Remove(path);
-                swaggerDoc.Paths.Add(new KeyValuePair<string, PathItem>("/" + _pathPrefix + path, pathToChange));
+                swaggerDoc.Paths.Add(new KeyValuePair<string, PathItem>("/" + this.pathPrefix + path, pathToChange));
             }
         }
     }

@@ -33,6 +33,7 @@ namespace HealthGateway.Common.Swagger
     /// </summary>
     public sealed class ConfigureSwaggerGenOptions : IConfigureOptions<SwaggerGenOptions>
     {
+#pragma warning disable CA1303 //Disable literals
         private readonly IApiVersionDescriptionProvider provider;
         private readonly SwaggerSettings settings;
         private readonly ILogger<ConfigureSwaggerGenOptions> logger;
@@ -42,6 +43,7 @@ namespace HealthGateway.Common.Swagger
         /// </summary>
         /// <param name="versionDescriptionProvider">IApiVersionDescriptionProvider.</param>
         /// <param name="swaggerSettings">App Settings for Swagger.</param>
+        /// <param name="logger">The logger to use.</param>
         public ConfigureSwaggerGenOptions(
             IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> swaggerSettings, ILogger<ConfigureSwaggerGenOptions> logger)
         {
@@ -58,7 +60,7 @@ namespace HealthGateway.Common.Swagger
         /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
         {
-            logger.LogDebug("In ConfigureSwaggerGenOptions.Configure");
+            this.logger.LogDebug("In ConfigureSwaggerGenOptions.Configure");
             options.OperationFilter<SwaggerDefaultValues>();
             options.DescribeAllEnumsAsStrings();
             options.IgnoreObsoleteActions();
@@ -77,7 +79,7 @@ namespace HealthGateway.Common.Swagger
 
         private void AddSwaggerDocumentForEachDiscoveredApiVersion(SwaggerGenOptions options)
         {
-            logger.LogDebug("In AddSwaggerDocumentForEachDiscoveredApiVersion");
+            this.logger.LogDebug("In AddSwaggerDocumentForEachDiscoveredApiVersion");
             foreach (var description in this.provider.ApiVersionDescriptions)
             {
                 this.settings.Info.Version = description.ApiVersion.ToString();
@@ -86,8 +88,11 @@ namespace HealthGateway.Common.Swagger
                 {
                     this.settings.Info.Description = $"{this.settings.Info.Description} - DEPRECATED";
                 }
+
                 options.SwaggerDoc(description.GroupName, this.settings.Info);
-                //options.DocumentFilter<SwaggerPathPrefixDocumentFilter>("api/medicationservice");
+
+                // Experimenting with the document filter - this code may be removed if it doesn't pan out.
+                // options.DocumentFilter<SwaggerPathPrefixDocumentFilter>("api/medicationservice");
             }
         }
     }

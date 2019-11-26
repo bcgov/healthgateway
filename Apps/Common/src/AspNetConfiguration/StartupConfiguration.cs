@@ -233,11 +233,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                     RequireHeaderSymmetry = false,
                     ForwardLimit = null,
                 };
-                //foreach (string ip in proxyIPs)
-                //{
-                //    options.KnownProxies.Add(IPAddress.Parse(ip));
-                //}
 
+                // foreach (string ip in proxyIPs)
+                // {
+                //     options.KnownProxies.Add(IPAddress.Parse(ip));
+                // }
                 this.logger.LogInformation("Enabling Use Forward Header");
                 app.UseForwardedHeaders(options);
             }
@@ -326,7 +326,8 @@ namespace HealthGateway.Common.AspNetConfiguration
             });
 
             app.UseResponseCompression();
-            //app.UseHttpsRedirection();
+
+            // app.UseHttpsRedirection();
             app.UseMvc();
         }
 

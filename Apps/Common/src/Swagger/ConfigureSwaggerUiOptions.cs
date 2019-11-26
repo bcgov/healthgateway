@@ -35,6 +35,7 @@ namespace HealthGateway.Common.Swagger
         /// </summary>
         /// <param name="versionDescriptionProvider">versionDescriptionProvider.</param>
         /// <param name="settings">settings.</param>
+        /// <param name="logger">The logger to use.</param>
         public ConfigureSwaggerUiOptions(IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> settings, ILogger<ConfigureSwaggerUiOptions> logger)
         {
             Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
@@ -43,7 +44,6 @@ namespace HealthGateway.Common.Swagger
             this.provider = versionDescriptionProvider;
             logger.LogDebug($"Need to instantiate setting: {settings?.Value == null}");
             this.settings = settings?.Value ?? new SwaggerSettings();
-            
         }
 
         /// <summary>

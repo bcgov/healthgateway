@@ -22,6 +22,7 @@ namespace HealthGateway.Common.Swagger
     /// <inheritdoc />
     public sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerOptions>
     {
+#pragma warning disable CA1303 //Disable literals
         private readonly SwaggerSettings settings;
         private readonly ILogger<ConfigureSwaggerOptions> logger;
 
@@ -29,6 +30,7 @@ namespace HealthGateway.Common.Swagger
         /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
         /// </summary>
         /// <param name="settings">settings.</param>
+        /// <param name="logger">The logger to use.</param>
         public ConfigureSwaggerOptions(IOptions<SwaggerSettings> settings, ILogger<ConfigureSwaggerOptions> logger)
         {
             this.settings = settings?.Value ?? new SwaggerSettings();
