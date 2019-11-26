@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -25,46 +25,33 @@ namespace HealthGateway.JobScheduler.Controllers
     /// </summary>
     public class JobSchedulerController : ControllerBase
     {
-
-        /// <summary>
-        /// Index.
-        /// </summary>
-
-        /// <summary>
-        /// Login.
-        /// </summary>
-        [HttpGet("/login")]
-        public IActionResult Login()
-        {
-            
-            if (!HttpContext.User.Identity.IsAuthenticated)
-            {
-                return new ChallengeResult();
-            }
-            return new EmptyResult();
-        }
-
         /// <summary>
         /// Logout Challenge.
         /// </summary>
+        /// <returns>ActionResult.</returns>
         [HttpGet("/logout")]
-        public IActionResult Logout()
+        public static IActionResult Logout()
         {
             return new SignOutResult(new[]
             {
                 OpenIdConnectDefaults.AuthenticationScheme,
-                CookieAuthenticationDefaults.AuthenticationScheme
+                CookieAuthenticationDefaults.AuthenticationScheme,
             });
         }
 
         /// <summary>
-        /// hello.
+        /// Login.
         /// </summary>
-        [HttpGet("/hello")]
-        [Authorize]
-        public string Hello()
+        /// <returns>EmptyResult if authenticated; otherwise a ChallengeResult.</returns>
+        [HttpGet("/login")]
+        public IActionResult Login()
         {
-            return "Hello World!";
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return new ChallengeResult();
+            }
+
+            return new EmptyResult();
         }
     }
 }

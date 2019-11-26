@@ -39,8 +39,8 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+    using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
     /// The startup class.
@@ -50,43 +50,6 @@ namespace HealthGateway.JobScheduler
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
-
-        private void ConfigureAuthentication(IServiceCollection services)
-        {
-            string authorityEndPoint = this.configuration.GetValue<string>("OpenIdConnect:Authority");
-            bool requireHttpsMetadata = this.configuration.GetValue<bool>("OpenIdConnect:RequireHttpsMetadata");
-            string clientId = this.configuration.GetValue<string>("OpenIdConnect:ClientId");
-            string clientSecret = this.configuration.GetValue<string>("OpenIdConnect:ClientSecret");
-
-            services.AddAuthentication(auth =>
-            {
-                auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                //auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = "HealthGateway_JobScheduler";
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = authorityEndPoint;
-                //options.ResponseMode = OpenIdConnectResponseMode.FormPost;
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.ClientId = clientId;
-                options.SaveTokens = false;
-                options.ClientSecret = clientSecret;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.RequireHttpsMetadata = requireHttpsMetadata;
-                options.Scope.Add("openid");
-                //options.Scope.Add("id_token");
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true
-                };
-            });
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -144,11 +107,11 @@ namespace HealthGateway.JobScheduler
             app.UseAuthentication();
             app.UseCookiePolicy(new CookiePolicyOptions
             {
-                MinimumSameSitePolicy = SameSiteMode.None
+                MinimumSameSitePolicy = SameSiteMode.None,
             });
 
             // Empty string signifies the root URL
-            app.UseHangfireDashboard("", new DashboardOptions
+            app.UseHangfireDashboard(string.Empty, new DashboardOptions
             {
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
             });
@@ -191,7 +154,7 @@ namespace HealthGateway.JobScheduler
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 RequireHeaderSymmetry = false,
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
             });
 
             app.UseCors();
@@ -199,6 +162,44 @@ namespace HealthGateway.JobScheduler
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=JobScheduler}/{action=Index}/{id?}");
+            });
+        }
+
+        /// <summary>
+        /// This sets up the OIDC authentication for Hangfire.
+        /// </summary>
+        /// <param name="services">The passed in IServiceCollection.</param>
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            string authorityEndPoint = this.configuration.GetValue<string>("OpenIdConnect:Authority");
+            bool requireHttpsMetadata = this.configuration.GetValue<bool>("OpenIdConnect:RequireHttpsMetadata");
+            string clientId = this.configuration.GetValue<string>("OpenIdConnect:ClientId");
+            string clientSecret = this.configuration.GetValue<string>("OpenIdConnect:ClientSecret");
+
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "HealthGateway_JobScheduler";
+            })
+            .AddOpenIdConnect(options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.Authority = authorityEndPoint;
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.ClientId = clientId;
+                options.SaveTokens = false;
+                options.ClientSecret = clientSecret;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.RequireHttpsMetadata = requireHttpsMetadata;
+                options.Scope.Add("openid");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                };
             });
         }
     }
