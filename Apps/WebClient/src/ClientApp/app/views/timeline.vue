@@ -171,8 +171,9 @@ export default class TimelineComponent extends Vue {
         } else {
           console.log(
             "Error returned from the medication statements call: " +
-              results.errorMessage
+              results.resultMessage
           );
+          this.hasErrors = true;
         }
       })
       .catch(err => {
