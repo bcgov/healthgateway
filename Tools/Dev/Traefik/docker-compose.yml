@@ -62,8 +62,8 @@ services:
   gatewaydb:
     image: postgres:latest
     container_name: gatewaydb
-#    ports
-#      - '5432:5432'
+    ports:
+      - '5432:5432'
     env_file:
       - config/postgres.env
     depends_on:
