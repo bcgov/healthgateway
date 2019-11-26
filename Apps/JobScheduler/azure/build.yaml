@@ -16,7 +16,7 @@ trigger:
      - dev
  paths:
    include:
-     - Apps/Hangfire
+     - Apps/JobScheduler
      - Apps/Common
      - Apps/Database
 

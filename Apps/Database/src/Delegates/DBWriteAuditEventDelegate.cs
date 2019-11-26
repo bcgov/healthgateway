@@ -15,28 +15,39 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Diagnostics.Contracts;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc/>
     public class DBWriteAuditEventDelegate : IWriteAuditEventDelegate
     {
+        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBWriteAuditEventDelegate"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DBWriteAuditEventDelegate(GatewayDbContext dbContext)
+        public DBWriteAuditEventDelegate(
+            ILogger<DBWriteAuditEventDelegate> logger,
+            GatewayDbContext dbContext)
         {
+            this.logger = logger;
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
+            Contract.Requires(auditEvent != null);
+            this.logger.LogTrace($"Writing audit event to DB... {JsonConvert.SerializeObject(auditEvent)}");
             this.dbContext.AuditEvent.Add(auditEvent);
             this.dbContext.SaveChanges();
+            this.logger.LogDebug($"Finished writing audit event to DB... {auditEvent.Id}");
         }
     }
 }

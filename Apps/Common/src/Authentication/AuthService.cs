@@ -34,9 +34,11 @@ namespace HealthGateway.Common.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthService"/> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
+        /// <param name="logger">The injected logger provider.</param>
         /// <param name="config">The configuration.</param>
-        public AuthService(ILogger<AuthService> logger, IConfiguration config)
+        public AuthService(
+            ILogger<AuthService> logger,
+            IConfiguration config)
         {
             this.logger = logger;
             IConfigurationSection configSection = config?.GetSection("AuthService");
@@ -59,14 +61,15 @@ namespace HealthGateway.Common.Authentication
         /// <inheritdoc/>
         public JWTModel AuthenticateService()
         {
+            this.logger.LogTrace($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
             JWTModel jwtModel = authenticating.Result as JWTModel;
+            this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
 
-        /// <inheritdoc/>
-        public async Task<IAuthModel> ClientCredentialsAuth()
+        private async Task<IAuthModel> ClientCredentialsAuth()
         {
             JWTModel authModel = new JWTModel();
             try
@@ -97,10 +100,7 @@ namespace HealthGateway.Common.Authentication
             }
             catch (HttpRequestException e)
             {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                this.logger.LogDebug($"Error Message ${e.Message}");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-                Console.WriteLine($"Error Message ${e.Message}");
+                this.logger.LogError($"Error Message ${e.Message}");
             }
 
             return authModel;

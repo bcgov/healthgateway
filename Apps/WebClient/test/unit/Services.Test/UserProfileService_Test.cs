@@ -23,6 +23,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Wrapper;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Common.Services;
+    using Microsoft.Extensions.Logging;
 
     public class UserProfileServiceTest
     {
@@ -44,7 +45,10 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(expected);
-            IUserProfileService service = new UserProfileService(profileDelegateMock.Object, emailer.Object);
+            IUserProfileService service = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                profileDelegateMock.Object,
+                emailer.Object);
             DBResult<UserProfile> actualResult = service.GetUserProfile(hdid);
 
             Assert.Equal(Database.Constant.DBStatusCode.Read, actualResult.Status);
@@ -69,8 +73,11 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             // emailer.Setup(s => s.QueueEmail(
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.CreateUserProfile(userProfile)).Returns(expected);
-            IUserProfileService service = new UserProfileService(profileDelegateMock.Object, emailer.Object);
+            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(expected);
+            IUserProfileService service = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                profileDelegateMock.Object,
+                emailer.Object);
             DBResult<UserProfile> actualResult = service.CreateUserProfile(userProfile, new System.Uri("http://localhost/"));
 
             Assert.Equal(Database.Constant.DBStatusCode.Created, actualResult.Status);

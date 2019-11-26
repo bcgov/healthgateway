@@ -1,5 +1,5 @@
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import {
+import Oidc, {
   UserManager,
   WebStorageStateStore,
   User as OidcUser,
@@ -8,6 +8,7 @@ import {
 
 import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
+import { CookieStorage } from "cookie-storage";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
@@ -17,12 +18,21 @@ export class RestAuthenticationService implements IAuthenticationService {
   private authorityUri = "";
   private http!: IHttpDelegate;
 
+  private cookieStorage: CookieStorage = new CookieStorage({
+    domain: null,
+    expires: null,
+    path: "/",
+    secure: false,
+    sameSite: "Strict"
+  });
+
   public initialize(
     config: OpenIdConnectConfiguration,
     httpDelegate: IHttpDelegate
   ): void {
     const oidcConfig = {
-      userStore: new WebStorageStateStore({ store: window.localStorage }),
+      userStore: new WebStorageStateStore({ store: this.cookieStorage }),
+      stateStore: new WebStorageStateStore({ store: this.cookieStorage }),
       authority: config.authority,
       client_id: config.clientId,
       redirect_uri: config.callbacks["Logon"],
@@ -49,7 +59,8 @@ export class RestAuthenticationService implements IAuthenticationService {
         .then(user => {
           resolve(user);
         })
-        .catch(() => {
+        .catch(err => {
+          console.log(err);
           resolve(null);
         });
     });
@@ -84,8 +95,18 @@ export class RestAuthenticationService implements IAuthenticationService {
     return this.oidcUserManager!.removeUser();
   }
 
+  public storeUser(user: OidcUser): Promise<void> {
+    return this.oidcUserManager.storeUser(user);
+  }
+
   public clearStaleState(): Promise<void> {
     return this.oidcUserManager.clearStaleState();
+  }
+
+  public checkOidcUserSize(user: OidcUser): number {
+    var key = `user:${this.oidcUserManager.settings.authority}:${this.oidcUserManager.settings.client_id}`;
+    var completString = key + "=" + user.toStorageString();
+    return this.stringbyteCount(completString);
   }
 
   //TODO: Do we still need this?
@@ -93,5 +114,9 @@ export class RestAuthenticationService implements IAuthenticationService {
     // This expires the siteminder cookie preventing the app from login in using the cache.
     var d = new Date();
     document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
+  }
+
+  private stringbyteCount(s: string): number {
+    return encodeURIComponent("" + s).length;
   }
 }

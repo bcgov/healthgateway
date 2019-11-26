@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="profile">The profile to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserProfile> CreateUserProfile(UserProfile profile);
+        DBResult<UserProfile> InsertUserProfile(UserProfile profile);
 
         /// <summary>
         /// Updates the UserProfile object in the DB.

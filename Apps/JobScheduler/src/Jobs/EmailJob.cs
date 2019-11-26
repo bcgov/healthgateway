@@ -28,6 +28,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using MimeKit;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class EmailJob : IEmailJob
@@ -64,7 +65,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <inheritdoc />
         public void SendEmail(Guid emailId)
         {
-            this.logger.LogTrace($"Starting send of email {emailId}");
+            this.logger.LogTrace($"Sending email... {emailId}");
             Email email = this.emailDelegate.GetNewEmail(emailId);
             if (email != null)
             {
@@ -74,13 +75,15 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
             }
+
+            this.logger.LogDebug($"Finished sending email. {JsonConvert.SerializeObject(email)}");
         }
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendLowPriorityEmails()
         {
-            this.logger.LogInformation($"Looking for up to {this.retryFetchSize} low priority emails to send");
+            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
             List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             if (resendEmails.Count > 0)
             {
@@ -100,6 +103,8 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning restore CA1031 // Restore warnings.
                 }
             }
+
+            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
 
         private static MimeMessage PrepareMessage(Email email)

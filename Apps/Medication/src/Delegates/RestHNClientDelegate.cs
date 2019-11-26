@@ -17,6 +17,8 @@ namespace HealthGateway.Medication.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
@@ -28,6 +30,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -35,6 +38,7 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class RestHNClientDelegate : IHNClientDelegate
     {
+        private readonly ILogger logger;
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
         private readonly IHttpClientFactory httpClientFactory;
@@ -45,6 +49,7 @@ namespace HealthGateway.Medication.Delegates
         /// <summary>
         /// Initializes a new instance of the <see cref="RestHNClientDelegate"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="medicationParser">The injected medication hn parser.</param>
         /// <param name="pharmacyParser">The injected pharmacy hn parser.</param>
         /// <param name="httpClientFactory">The injected http client factory.</param>
@@ -52,6 +57,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
         /// <param name="sequenceDelegate">The injected sequence delegate.</param>
         public RestHNClientDelegate(
+            ILogger<RestHNClientDelegate> logger,
             IHNMessageParser<List<MedicationStatement>> medicationParser,
             IHNMessageParser<Pharmacy> pharmacyParser,
             IHttpClientFactory httpClientFactory,
@@ -59,6 +65,7 @@ namespace HealthGateway.Medication.Delegates
             IAuthService authService,
             ISequenceDelegate sequenceDelegate)
         {
+            this.logger = logger;
             this.medicationParser = medicationParser;
             this.pharmacyParser = pharmacyParser;
             this.httpClientFactory = httpClientFactory;
@@ -70,7 +77,13 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
         {
+            Contract.Requires(phn != null);
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            this.logger.LogTrace($"Getting medication statements... {phn.Substring(0, 3)}");
+
             JWTModel jwtModel = this.authService.AuthenticateService();
+            HNMessage<List<MedicationStatement>> retVal;
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -79,25 +92,42 @@ namespace HealthGateway.Medication.Delegates
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
-                long traceId = this.sequenceDelegate.NextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(phn, userId, ipAddress, traceId, protectiveWord);
+                long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
+                HNMessage<string> requestMessage = this.medicationParser.CreateRequestMessage(new HNMessageRequest
+                {
+                    Phn = phn,
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    TraceId = traceId,
+                    ProtectiveWord = protectiveWord,
+                });
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    return this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    retVal = this.medicationParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {
-                    return new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
+                    this.logger.LogError($"Error getting medication statements. {phn.Substring(0, 3)}, {payload}");
+                    retVal = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
+
+            timer.Stop();
+            this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
         {
+            this.logger.LogTrace($"Getting pharmacy... {pharmacyId}");
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
+            HNMessage<Pharmacy> retVal;
             JWTModel jwtModel = this.authService.AuthenticateService();
             using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
             {
@@ -107,20 +137,31 @@ namespace HealthGateway.Medication.Delegates
                 client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
-                long traceId = this.sequenceDelegate.NextValueForSequence(Sequence.PHARMANET_TRACE);
-                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(pharmacyId, userId, ipAddress, traceId, null);
+                long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
+                HNMessage<string> requestMessage = this.pharmacyParser.CreateRequestMessage(new HNMessageRequest
+                {
+                    PharmacyId = pharmacyId,
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    TraceId = traceId,
+                });
                 HttpResponseMessage response = await client.PostAsJsonAsync("v1/api/HNClient", requestMessage).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    return this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
+                    retVal = this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
                 }
                 else
                 {
-                    return new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
+                    this.logger.LogError($"Error getting pharmacy: {pharmacyId}, {payload}");
+                    retVal = new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
                 }
             }
+
+            timer.Stop();
+            this.logger.LogDebug($"Finished getting pharmacy. {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
+            return retVal;
         }
     }
 }

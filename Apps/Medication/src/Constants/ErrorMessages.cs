@@ -13,26 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.Medication.Constants
 {
     /// <summary>
-    /// An enum representing the possible results for our transactions.
+    /// Common area for error messages.
     /// </summary>
-    public enum ResultType
+    public static class ErrorMessages
     {
         /// <summary>
-        /// Represents an error condition.
+        /// Error message to return when a Pharmanet record is protected.
         /// </summary>
-        Error = 0,
-
-        /// <summary>
-        /// Represents a successful result.
-        /// </summary>
-        Success = 1,
-
-        /// <summary>
-        /// Represents that the transactions requires a protective word.
-        /// </summary>
-        Protected = 99,
+        public const string ProtectiveWordErrorMessage = "Record protected by keyword";
     }
 }

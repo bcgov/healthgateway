@@ -1,3 +1,5 @@
+import { RegistrationStatus } from "@/constants/registrationStatus";
+
 // A collection of configuration items for use by Health Gateway and approved applications.
 export class ExternalConfiguration {
   // Gets or sets the OpenIdConnect configuration.
@@ -51,6 +53,8 @@ export class WebClientConfiguration {
   public logLevel?: string;
   // Gets or sets the Webclient timeout values.
   public timeouts?: TimeOutsConfiguration;
+  // Gets or sets the Webclient timeout values.
+  public registrationStatus?: RegistrationStatus;
   // Gets or sets the ExternalURLs used by the Webclient.
   public externalURLs?: { [id: string]: string };
 }

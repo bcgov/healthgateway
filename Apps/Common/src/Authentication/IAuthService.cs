@@ -39,11 +39,5 @@ namespace HealthGateway.Common.Authentication
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
         JWTModel AuthenticateService();
-
-        /// <summary>
-        /// Connects to the Auth Server to get the OAuth2 Token (OAuth Client Credentials Grant) to use to authenticate with the HNClient API.
-        /// </summary>
-        /// <returns>The instance of an IAuthModel.</returns>
-        Task<IAuthModel> ClientCredentialsAuth();
     }
 }

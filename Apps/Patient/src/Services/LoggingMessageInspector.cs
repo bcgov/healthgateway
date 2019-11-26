@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientService
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.ServiceModel;
     using System.ServiceModel.Channels;
@@ -47,19 +48,12 @@ namespace HealthGateway.PatientService
         /// <param name="correlationState">Correlation State.</param>
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
-            if (reply is null)
+            Contract.Requires(reply != null);
+            this.logger.LogTrace($"Getting the reply response... {reply.State}");
+            using (MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
-                throw new ArgumentNullException(nameof(reply));
-            }
-
-            using (var buffer = reply.CreateBufferedCopy(int.MaxValue))
-            {
-                var document = this.GetDocument(buffer.CreateMessage());
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                this.logger.LogDebug("Response received");
-#pragma warning restore CA1303
-                this.logger.LogDebug(document.OuterXml);
-
+                XmlDocument document = this.GetDocument(buffer.CreateMessage());
+                this.logger.LogDebug($"Finished getting the reply response. {document.OuterXml}");
                 reply = buffer.CreateMessage();
             }
         }
@@ -73,19 +67,13 @@ namespace HealthGateway.PatientService
         /// <returns>The object that is returned as the correlationState argument of the AfterReceiveReply(Message, Object) method.</returns>
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            Contract.Requires(request != null);
+            this.logger.LogTrace($"Getting the reply request... {request.State}");
 
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
             {
                 var document = this.GetDocument(buffer.CreateMessage());
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                this.logger.LogDebug("Request to send");
-#pragma warning restore CA1303
-                this.logger.LogDebug(document.OuterXml);
-
+                this.logger.LogDebug($"Finished getting the reply request. {document.OuterXml}");
                 request = buffer.CreateMessage();
                 return null;
             }

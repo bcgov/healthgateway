@@ -13,26 +13,41 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.Medication.Models
 {
     /// <summary>
-    /// An enum representing the possible results for our transactions.
+    /// The HNClient message request.
     /// </summary>
-    public enum ResultType
+    public class HNMessageRequest
     {
         /// <summary>
-        /// Represents an error condition.
+        /// Gets or sets the patient PHN.
         /// </summary>
-        Error = 0,
+        public string Phn { get; set; }
 
         /// <summary>
-        /// Represents a successful result.
+        /// Gets or sets the pharmacy id.
         /// </summary>
-        Success = 1,
+        public string PharmacyId { get; set; }
 
         /// <summary>
-        /// Represents that the transactions requires a protective word.
+        /// Gets or sets the requester Id.
         /// </summary>
-        Protected = 99,
+        public string UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the requester ip address.
+        /// </summary>
+        public string IpAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transaction trace Id.
+        /// </summary>
+        public long TraceId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the patient protective word.
+        /// </summary>
+        public string ProtectiveWord { get; set; }
     }
 }

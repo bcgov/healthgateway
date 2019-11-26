@@ -5,6 +5,7 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { RootState, MedicationState } from "@/models/storeState";
 import MedicationResult from "@/models/medicationResult";
+import { ResultType } from "@/constants/resulttype";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -21,14 +22,20 @@ export const actions: ActionTree<MedicationState, RootState> = {
       var medicationResult = getters.getStoredMedication(din);
       if (medicationResult) {
         console.log("Medication found stored, not quering!");
+        console.log("Medication Data: ", medicationResult);
         resolve(medicationResult);
       } else {
+        console.log("Retrieving Medication info");
         medicationService
           .getMedicationInformation(din)
           .then(requestResult => {
             console.log("Medication Data: ", requestResult);
-            commit("addMedicationData", requestResult.resourcePayload);
-            resolve(requestResult.resourcePayload);
+            if (requestResult.resultStatus === ResultType.Success) {
+              commit("addMedicationData", requestResult.resourcePayload);
+              resolve(requestResult.resourcePayload);
+            } else {
+              reject(requestResult.resultMessage);
+            }
           })
           .catch(error => {
             handleError(commit, error);

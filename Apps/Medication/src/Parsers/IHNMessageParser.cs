@@ -27,13 +27,9 @@ namespace HealthGateway.Medication.Parsers
         /// <summary>
         /// Creates a request message to HNClient.
         /// </summary>
-        /// <param name="id">The lookup id.</param>
-        /// <param name="userId">The requester user id.</param>
-        /// <param name="ipAddress">The requester ip address.</param>
-        /// <param name="traceId">The unique trace id for pharmanet transactions.</param>
-        /// <param name="protectiveWord">The protected word required for certain HL7 messages.</param>
+        /// <param name="request">The HNClient request.</param>
         /// <returns>The HL7 message.</returns>
-        HNMessage<string> CreateRequestMessage(string id, string userId, string ipAddress, long traceId, string protectiveWord);
+        HNMessage<string> CreateRequestMessage(HNMessageRequest request);
 
         /// <summary>
         /// Parses a response message from HNClient.
