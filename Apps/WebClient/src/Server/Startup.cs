@@ -39,6 +39,7 @@ namespace HealthGateway.WebClient
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger<Startup> logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
