@@ -5,10 +5,13 @@ import {
 } from "@/models/configData";
 import ImmsData from "@/models/immsData";
 import PatientData from "@/models/patientData";
-import RequestResult from "@/models/requestResult";
-import UserProfile from "@/models/userProfile";
+import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserFeedback from "@/models/userFeedback";
 import { Dictionary } from "vue-router/types/router";
+import Pharmacy from "@/models/pharmacy";
+import MedicationResult from "@/models/medicationResult";
+import MedicationStatement from "@/models/medicationStatement";
+import RequestResult from "@/models/requestResult";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -38,9 +41,11 @@ export interface IPatientService {
 
 export interface IMedicationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getPatientMedicationStatements(hdid: string): Promise<RequestResult>;
-  getMedicationInformation(drugIdentifier: string): Promise<RequestResult>;
-  getPharmacyInfo(pharmacyId: string): Promise<RequestResult>;
+  getPatientMedicationStatements(
+    hdid: string
+  ): Promise<RequestResult<MedicationStatement[]>>;
+  getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;
+  getPharmacyInfo(pharmacyId: string): Promise<Pharmacy>;
 }
 
 export interface IConfigService {
@@ -50,7 +55,7 @@ export interface IConfigService {
 
 export interface IUserProfileService {
   initialize(http: IHttpDelegate): void;
-  createProfile(profile: UserProfile): Promise<boolean>;
+  createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
   getProfile(hdid: string): Promise<UserProfile>;
 }
 

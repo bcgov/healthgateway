@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 ﻿export enum RegistrationStatus {
-    Closed = "closed",
-    Open = "open",
-    InviteOnly = "invite_only"
+=======
+export enum RegistrationStatus {
+>>>>>>> dev
+  Closed = "closed",
+  Open = "open",
+  InviteOnly = "invite_only"
 }

@@ -22,19 +22,16 @@ export const actions: ActionTree<PharmacyState, RootState> = {
       var pharmacy = getters.getStoredPharmacy(pharmacyId);
       if (pharmacy) {
         console.log("Pharmacy found stored, not quering!");
+        //console.log("Pharmacy Data: ", requestResult);
         resolve(pharmacy);
       } else {
         console.log("Retrieving Pharmacy info");
         medicationService
           .getPharmacyInfo(pharmacyId)
-          .then(requestResult => {
-            console.log("Pharmacy Data: ", requestResult);
-            if (requestResult.resultStatus === ResultType.Success) {
-              commit("addPharmacyData", requestResult.resourcePayload);
-              resolve(requestResult.resourcePayload);
-            } else {
-              reject(requestResult.resultMessage);
-            }
+          .then(pharmacy => {
+            //console.log("Pharmacy Data: ", requestResult);
+            commit("addPharmacyData", pharmacy);
+            resolve(pharmacy);
           })
           .catch(error => {
             handleError(commit, error);

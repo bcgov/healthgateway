@@ -16,8 +16,9 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Models;
 
     /// <summary>
     /// The User Profile service.
@@ -29,14 +30,14 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrappeed user profile.</returns>
-        DBResult<UserProfile> GetUserProfile(string hdid);
+        RequestResult<UserProfile> GetUserProfile(string hdid);
 
         /// <summary>
         /// Saves the user profile to the database.
         /// </summary>
-        /// <param name="userProfile">The user profile model to be saved.</param>
+        /// <param name="createProfileRequest">The request to create a user profile model.</param>
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
-        DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri);
+        RequestResult<UserProfile> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri);
     }
 }

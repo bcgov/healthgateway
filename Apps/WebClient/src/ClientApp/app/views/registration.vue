@@ -42,6 +42,14 @@ input {
             <h1 id="Subject">
               Terms of Service
             </h1>
+            <b-alert :show="limitedRegistration" variant="info">
+              <h4>Limited registration</h4>
+              <span
+                >Currently the registration is
+                <strong>{{ config.registrationStatus }}</strong
+                >.</span
+              >
+            </b-alert>
             <div id="Description">
               <strong>{{ fullName }}</strong>
               , please provide your email address to receive notifications about
@@ -81,7 +89,10 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-3">
+        <b-row
+          v-if="webClientConfig.registrationStatus == openRegistration"
+          class="mb-3"
+        >
           <b-col>
             <b-form-checkbox
               id="optout"
@@ -93,7 +104,10 @@ input {
             </b-form-checkbox>
           </b-col>
         </b-row>
-        <b-row class="mb-3" v-if="webClientConfig.registrationStatus == inviteOnlyRegistration">
+        <b-row
+          v-if="webClientConfig.registrationStatus == inviteOnlyRegistration"
+          class="mb-3"
+        >
           <b-col>
             <b-form-input
               id="inviteKey"
@@ -141,7 +155,7 @@ input {
 <script lang="ts">
 import Vue from "vue";
 import { Getter, Action } from "vuex-class";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Ref, Prop } from "vue-property-decorator";
 import {
   IUserProfileService,
   IAuthenticationService
@@ -150,10 +164,15 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import User from "@/models/user";
 import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
+<<<<<<< HEAD
 import { RegistrationStatus } from "@/constants/registrationStatus";
+=======
+import { WebClientConfiguration } from "@/models/configData";
+>>>>>>> dev
 
 @Component({
   components: {
@@ -162,26 +181,35 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
   }
 })
 export default class RegistrationComponent extends Vue {
+  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;
+  @Prop() inviteKey?: string;
 
   private termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
-  private inviteKey: string = "";
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
-  private validate: boolean;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
-  private inviteOnlyRegistration: RegistrationStatus = RegistrationStatus.InviteOnly;
+<<<<<<< HEAD
+  private inviteOnlyRegistration: RegistrationStatus =
+    RegistrationStatus.InviteOnly;
+  private openRegistration: RegistrationStatus = RegistrationStatus.Open;
+=======
+  private limitedRegistration: boolean = false;
+
+>>>>>>> dev
   mounted() {
-    this.validate = false;
+    if (this.config.registrationStatus !== RegistrationStatus.Open) {
+      this.limitedRegistration = true;
+    }
 
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
@@ -224,7 +252,10 @@ export default class RegistrationComponent extends Vue {
       accepted: { isChecked: sameAs(() => true) },
       inviteKey: {
         required: requiredIf(() => {
-          return this.webClientConfig.registrationStatus == this.inviteOnlyRegistration
+          return (
+            this.webClientConfig.registrationStatus ==
+            this.inviteOnlyRegistration
+          );
         })
       }
     };
@@ -253,10 +284,19 @@ export default class RegistrationComponent extends Vue {
       this.isLoading = true;
       this.userProfileService
         .createProfile({
+<<<<<<< HEAD
           hdid: this.oidcUser.hdid,
           acceptedTermsOfService: this.accepted,
           email: this.email,
           inviteKey: this.inviteKey
+=======
+          profile: {
+            hdid: this.oidcUser.hdid,
+            acceptedTermsOfService: this.accepted,
+            email: this.email
+          },
+          inviteCode: undefined
+>>>>>>> dev
         })
         .then(result => {
           console.log(result);
@@ -270,8 +310,9 @@ export default class RegistrationComponent extends Vue {
             }
           );
         })
-        .catch(() => {
+        .catch(err => {
           this.hasErrors = true;
+          console.log(err);
         })
         .finally(() => {
           this.isLoading = false;

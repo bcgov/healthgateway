@@ -17,6 +17,8 @@ namespace HealthGateway.Medication.Services
 {
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
@@ -59,6 +61,11 @@ namespace HealthGateway.Medication.Services
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+
+            if (string.IsNullOrEmpty(phn))
+            {
+                return new HNMessage<Pharmacy>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
+            }
 
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();

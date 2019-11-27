@@ -25,15 +25,22 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
+    using HealthGateway.JobScheduler.Authorization;
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+    using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
     /// The startup class.
@@ -64,6 +71,13 @@ namespace HealthGateway.JobScheduler
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
+            this.ConfigureAuthentication(services);
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(this.configuration.GetValue<string>("UserRole"), policy =>
+                    policy.RequireClaim(this.configuration.GetValue<string>("OpenIdConnect:UserRole")));
+            });
 
             services.AddDbContextPool<GatewayDbContext>(options =>
                 options.UseNpgsql(
@@ -95,7 +109,19 @@ namespace HealthGateway.JobScheduler
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-            app.UseHangfireDashboard();
+
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseForwardHeaders(app);
+            this.startupConfig.UseHttp(app);
+
+            // Empty string signifies the root URL
+            app.UseHangfireDashboard(string.Empty, new DashboardOptions
+            {
+                DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
+                Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
+                AppPath = AuthorizationConstants.LogoutPath,
+            });
+
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
@@ -107,8 +133,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
 
-            this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseHttp(app);
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = (content) =>
@@ -129,8 +153,38 @@ namespace HealthGateway.JobScheduler
                     }
                 },
             });
+        }
 
-            app.UseMvc();
+        /// <summary>
+        /// This sets up the OIDC authentication for Hangfire.
+        /// </summary>
+        /// <param name="services">The passed in IServiceCollection.</param>
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = AuthorizationConstants.CookieName;
+                options.LoginPath = AuthorizationConstants.LoginPath;
+                options.LogoutPath = AuthorizationConstants.LogoutPath;
+            })
+            .AddOpenIdConnect(options =>
+            {
+                this.configuration.GetSection("OpenIdConnect").Bind(options);
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.SaveTokens = false;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.Scope.Add("openid");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                };
+            });
         }
     }
 }

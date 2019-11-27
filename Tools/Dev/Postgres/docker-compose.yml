@@ -10,4 +10,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./backups:/backups
-      - ./pgdata:/var/lib/postgresql/data
+      - ./data/pgdata:/var/lib/postgresql
+volumes:
+  backups:
+  pgdata:

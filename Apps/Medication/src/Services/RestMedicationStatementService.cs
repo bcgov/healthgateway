@@ -94,6 +94,11 @@ namespace HealthGateway.Medication.Services
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
+                if (string.IsNullOrEmpty(phn))
+                {
+                    return new HNMessage<List<MedicationStatement>>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
+                }
+
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
 
