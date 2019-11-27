@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Authentication
         /// <inheritdoc/>
         public JWTModel AuthenticateService()
         {
-            this.logger.LogTrace($"Authenticating Service... {this.TokenRequest.ClientId}");
+            this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
             JWTModel jwtModel = authenticating.Result as JWTModel;
@@ -91,8 +91,9 @@ namespace HealthGateway.Common.Authentication
 
                         using (HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
                         {
+                            string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                            this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
                             response.EnsureSuccessStatusCode();
-                            var jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                             authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
                         }
                     }
