@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Authorization
 {
+    using System.Security.Claims;
     using Hangfire.Dashboard;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -27,6 +28,8 @@ namespace HealthGateway.JobScheduler.Authorization
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
 
+        private readonly string requiredUserRole;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationDashboardFilter"/> class.
         /// </summary>
@@ -35,6 +38,7 @@ namespace HealthGateway.JobScheduler.Authorization
         public AuthorizationDashboardFilter(IConfiguration configuration, ILogger logger)
         {
             this.configuration = configuration;
+            this.requiredUserRole = this.configuration.GetValue<string>("UserRole");
             this.logger = logger;
         }
 
@@ -46,7 +50,18 @@ namespace HealthGateway.JobScheduler.Authorization
         public bool Authorize(DashboardContext context)
         {
             var httpContext = context.GetHttpContext();
-            if (!httpContext.User.Identity.IsAuthenticated)
+            var user = httpContext.User;
+
+            ClaimsPrincipal principal = user as ClaimsPrincipal;
+            if (principal != null)
+            {
+                foreach (Claim claim in principal.Claims)
+                {
+                    System.Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
+                }
+            }
+
+            if (!user.Identity.IsAuthenticated || !principal.IsInRole(this.requiredUserRole))
             {
                 httpContext.Response.Redirect(AuthorizationConstants.LoginPath);
             }

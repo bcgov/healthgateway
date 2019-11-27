@@ -73,6 +73,12 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(this.configuration.GetValue<string>("UserRole"), policy =>
+                    policy.RequireClaim(this.configuration.GetValue<string>("OpenIdConnect:UserRole")));
+            });
+
             services.AddDbContextPool<GatewayDbContext>(options =>
                 options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection"),
@@ -108,17 +114,10 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
 
-            /* app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=JobScheduler}/{action=Index}/{id?}");
-            }); */
-
             // Empty string signifies the root URL
             app.UseHangfireDashboard(string.Empty, new DashboardOptions
             {
-                DashboardTitle = "HealthGateway JobScheduler Dashboard",
+                DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
                 AppPath = AuthorizationConstants.LogoutPath,
             });
