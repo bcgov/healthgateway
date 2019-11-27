@@ -244,9 +244,12 @@ export default class RegistrationComponent extends Vue {
       this.isLoading = true;
       this.userProfileService
         .createProfile({
-          hdid: this.oidcUser.hdid,
-          acceptedTermsOfService: this.accepted,
-          email: this.email
+          profile: {
+            hdid: this.oidcUser.hdid,
+            acceptedTermsOfService: this.accepted,
+            email: this.email
+          },
+          inviteCode: undefined
         })
         .then(result => {
           console.log(result);
@@ -260,8 +263,9 @@ export default class RegistrationComponent extends Vue {
             }
           );
         })
-        .catch(() => {
+        .catch(err => {
           this.hasErrors = true;
+          console.log(err);
         })
         .finally(() => {
           this.isLoading = false;

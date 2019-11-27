@@ -22,20 +22,16 @@ export const actions: ActionTree<MedicationState, RootState> = {
       var medicationResult = getters.getStoredMedication(din);
       if (medicationResult) {
         console.log("Medication found stored, not quering!");
-        console.log("Medication Data: ", medicationResult);
+        //console.log("Medication Data: ", medicationResult);
         resolve(medicationResult);
       } else {
         console.log("Retrieving Medication info");
         medicationService
           .getMedicationInformation(din)
-          .then(requestResult => {
-            console.log("Medication Data: ", requestResult);
-            if (requestResult.resultStatus === ResultType.Success) {
-              commit("addMedicationData", requestResult.resourcePayload);
-              resolve(requestResult.resourcePayload);
-            } else {
-              reject(requestResult.resultMessage);
-            }
+          .then(medicationData => {
+            //console.log("Medication Data: ", requestResult);
+            commit("addMedicationData", medicationData);
+            resolve(medicationData);
           })
           .catch(error => {
             handleError(commit, error);
