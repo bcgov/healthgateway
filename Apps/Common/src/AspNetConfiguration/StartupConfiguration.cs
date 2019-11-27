@@ -322,8 +322,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             });
 
             app.UseResponseCompression();
-
-            // app.UseHttpsRedirection();
             app.UseMvc();
         }
 
