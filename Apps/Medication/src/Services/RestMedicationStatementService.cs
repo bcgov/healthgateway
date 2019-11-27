@@ -116,7 +116,6 @@ namespace HealthGateway.Medication.Services
             bool okProtectiveWord = validationResult.Item1;
             if (okProtectiveWord)
             {
-                this.logger.LogInformation($"Protective word found. {hdid}");
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
