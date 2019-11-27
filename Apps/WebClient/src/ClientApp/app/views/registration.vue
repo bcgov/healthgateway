@@ -81,10 +81,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row
-          v-if="webClientConfig.registrationStatus == openRegistration"
-          class="mb-3"
-        >
+        <b-row class="mb-3">
           <b-col>
             <b-form-checkbox
               id="optout"
@@ -96,10 +93,7 @@ input {
             </b-form-checkbox>
           </b-col>
         </b-row>
-        <b-row
-          v-if="webClientConfig.registrationStatus == inviteOnlyRegistration"
-          class="mb-3"
-        >
+        <b-row class="mb-3" v-if="webClientConfig.registrationStatus == inviteOnlyRegistration">
           <b-col>
             <b-form-input
               id="inviteKey"
@@ -147,7 +141,7 @@ input {
 <script lang="ts">
 import Vue from "vue";
 import { Getter, Action } from "vuex-class";
-import { Component, Ref, Prop } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import {
   IUserProfileService,
   IAuthenticationService
@@ -172,22 +166,20 @@ export default class RegistrationComponent extends Vue {
   @Ref("registrationForm") form!: HTMLFormElement;
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;
-  @Prop() inviteKey?: string;
 
   private termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
+  private inviteKey: string = "";
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
   private validate: boolean;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
-  private inviteOnlyRegistration: RegistrationStatus =
-    RegistrationStatus.InviteOnly;
-  private openRegistration: RegistrationStatus = RegistrationStatus.Open;
+  private inviteOnlyRegistration: RegistrationStatus = RegistrationStatus.InviteOnly;
   mounted() {
     this.validate = false;
 
@@ -232,10 +224,7 @@ export default class RegistrationComponent extends Vue {
       accepted: { isChecked: sameAs(() => true) },
       inviteKey: {
         required: requiredIf(() => {
-          return (
-            this.webClientConfig.registrationStatus ==
-            this.inviteOnlyRegistration
-          );
+          return this.webClientConfig.registrationStatus == this.inviteOnlyRegistration
         })
       }
     };
