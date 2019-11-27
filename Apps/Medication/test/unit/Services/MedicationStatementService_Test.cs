@@ -86,31 +86,35 @@ namespace HealthGateway.Medication.Test
                 hnClientDelegateMock.Object,
                 drugLookupDelegateMock.Object);
 
-            // Run and Verify
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, "|");
+            // Run and Verify protective word too long
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, "PROTECTED");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
-            // Run and Verify
+            // Run and Verify invalid char
+            actual = await service.GetMedicationStatements(hdid, "|");
+            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+
+            // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "~");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
-            // Run and Verify
+            // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "^");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
-            // Run and Verify
+            // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "\\");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
-            // Run and Verify
+            // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "&");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
-            // Run and Verify
+            // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "Test|");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
-            // Run and Verify
+            // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "Test|string");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
         }
