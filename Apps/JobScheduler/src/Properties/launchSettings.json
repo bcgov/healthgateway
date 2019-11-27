@@ -4,18 +4,18 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:5005"
+      "applicationUrl": "http://localhost:5005"
     }
   },
   "profiles": {
     "Healthgateway.JobScheduler": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "hangfire",
+      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:5005"
+      "applicationUrl": "http://localhost:5005"
     }
   }
 }

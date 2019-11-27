@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Authorization
 {
-    using global::Hangfire.Dashboard;
+    using Hangfire.Dashboard;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -48,7 +48,7 @@ namespace HealthGateway.JobScheduler.Authorization
             var httpContext = context.GetHttpContext();
             if (!httpContext.User.Identity.IsAuthenticated)
             {
-                httpContext.Response.Redirect("/login");
+                httpContext.Response.Redirect(AuthorizationConstants.LoginPath);
             }
 
             return true;

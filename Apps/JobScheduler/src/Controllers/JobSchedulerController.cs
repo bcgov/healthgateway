@@ -15,43 +15,56 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Controllers
 {
+    using HealthGateway.JobScheduler.Authorization;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The JobSchedulerController controller enabling secure web access to JobScheduler.
     /// </summary>
-    public class JobSchedulerController : ControllerBase
+    public class JobSchedulerController : Controller
     {
         /// <summary>
-        /// Logout Challenge.
+        /// hello.
         /// </summary>
-        /// <returns>ActionResult.</returns>
-        [HttpGet("/logout")]
-        public static IActionResult Logout()
+        /// <returns>hello world message.</returns>
+        [HttpGet("/hello")]
+        [Authorize]
+        public string Hello()
         {
-            return new SignOutResult(new[]
-            {
-                OpenIdConnectDefaults.AuthenticationScheme,
-                CookieAuthenticationDefaults.AuthenticationScheme,
-            });
+            return @"Hello, World!";
         }
 
         /// <summary>
-        /// Login.
+        /// Login Challenge.
         /// </summary>
         /// <returns>EmptyResult if authenticated; otherwise a ChallengeResult.</returns>
-        [HttpGet("/login")]
-        public IActionResult Login()
+        [HttpGet(AuthorizationConstants.LoginPath)]
+        public IActionResult Login(string origin = "/")
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return new ChallengeResult();
             }
 
-            return new EmptyResult();
+            return new RedirectResult(origin);
+        }
+        /// <summary>
+        /// Logout action.
+        /// </summary>
+        /// <returns>Redirect to main page.</returns>
+        [HttpGet(AuthorizationConstants.LogoutPath)]
+        public IActionResult Logout()
+        {
+            return new SignOutResult(new[]
+            {
+                OpenIdConnectDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            });
         }
     }
 }

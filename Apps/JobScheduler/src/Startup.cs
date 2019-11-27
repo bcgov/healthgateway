@@ -104,16 +104,23 @@ namespace HealthGateway.JobScheduler
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
 
-            app.UseAuthentication();
-            app.UseCookiePolicy(new CookiePolicyOptions
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseForwardHeaders(app);
+            this.startupConfig.UseHttp(app);
+
+            /* app.UseMvc(routes =>
             {
-                MinimumSameSitePolicy = SameSiteMode.None,
-            });
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=JobScheduler}/{action=Index}/{id?}");
+            }); */
 
             // Empty string signifies the root URL
             app.UseHangfireDashboard(string.Empty, new DashboardOptions
             {
+                DashboardTitle = "HealthGateway JobScheduler Dashboard",
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
+                AppPath =  "/logout",
             });
             app.UseHangfireServer();
 
@@ -126,8 +133,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
 
-            this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseHttp(app);
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = (content) =>
@@ -148,21 +153,6 @@ namespace HealthGateway.JobScheduler
                     }
                 },
             });
-
-            // This is needed if running behind a reverse proxy
-            // like ngrok which is great for testing while developing
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                RequireHeaderSymmetry = false,
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-            });
-
-            app.UseCors();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute("default", "{controller=JobScheduler}/{action=Index}/{id?}");
-            });
         }
 
         /// <summary>
@@ -171,11 +161,6 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in IServiceCollection.</param>
         private void ConfigureAuthentication(IServiceCollection services)
         {
-            string authorityEndPoint = this.configuration.GetValue<string>("OpenIdConnect:Authority");
-            bool requireHttpsMetadata = this.configuration.GetValue<bool>("OpenIdConnect:RequireHttpsMetadata");
-            string clientId = this.configuration.GetValue<string>("OpenIdConnect:ClientId");
-            string clientSecret = this.configuration.GetValue<string>("OpenIdConnect:ClientSecret");
-
             services.AddAuthentication(auth =>
             {
                 auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -183,18 +168,17 @@ namespace HealthGateway.JobScheduler
             })
             .AddCookie(options =>
             {
-                options.Cookie.Name = "HealthGateway_JobScheduler";
+                options.Cookie.Name = AuthorizationConstants.CookieName;
+                options.LoginPath = AuthorizationConstants.LoginPath;
+                options.LogoutPath = AuthorizationConstants.LogoutPath;
             })
             .AddOpenIdConnect(options =>
             {
+                this.configuration.GetSection("OpenIdConnect").Bind(options);
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = authorityEndPoint;
                 options.ResponseType = OpenIdConnectResponseType.Code;
-                options.ClientId = clientId;
                 options.SaveTokens = false;
-                options.ClientSecret = clientSecret;
                 options.GetClaimsFromUserInfoEndpoint = true;
-                options.RequireHttpsMetadata = requireHttpsMetadata;
                 options.Scope.Add("openid");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
