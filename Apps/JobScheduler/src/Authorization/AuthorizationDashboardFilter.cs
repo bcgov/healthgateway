@@ -57,13 +57,17 @@ namespace HealthGateway.JobScheduler.Authorization
             {
                 foreach (Claim claim in principal.Claims)
                 {
-                    System.Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
+                    System.Console.WriteLine("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value);
                 }
             }
 
-            if (!user.Identity.IsAuthenticated || !principal.IsInRole(this.requiredUserRole))
+            if (!user.Identity.IsAuthenticated)
             {
                 httpContext.Response.Redirect(AuthorizationConstants.LoginPath);
+            }
+            if (!principal.IsInRole(this.requiredUserRole))
+            {
+                    System.Console.WriteLine(@"USER IN ROLE");
             }
 
             return true;
