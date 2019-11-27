@@ -76,7 +76,8 @@ namespace HealthGateway.JobScheduler
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(this.configuration.GetValue<string>("UserRole"), policy =>
-                    policy.RequireClaim(this.configuration.GetValue<string>("OpenIdConnect:UserRole")));
+                    policy.RequireClaim(this.configuration.GetValue<string>("OpenIdConnect:UserRoleClaim"),
+                        this.configuration.GetValue<string>("OpenIdConnect:UserRole")));
             });
 
             services.AddDbContextPool<GatewayDbContext>(options =>
@@ -110,8 +111,8 @@ namespace HealthGateway.JobScheduler
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
 
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseForwardHeaders(app);
+            this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
 
             // Empty string signifies the root URL
@@ -174,7 +175,6 @@ namespace HealthGateway.JobScheduler
             })
             .AddOpenIdConnect(options =>
             {
-                this.configuration.GetSection("OpenIdConnect").Bind(options);
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = false;
@@ -184,6 +184,8 @@ namespace HealthGateway.JobScheduler
                 {
                     ValidateIssuer = true,
                 };
+                this.configuration.GetSection("OpenIdConnect").Bind(options);
+
             });
         }
     }

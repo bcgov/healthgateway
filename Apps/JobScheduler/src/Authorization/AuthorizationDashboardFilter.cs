@@ -65,7 +65,7 @@ namespace HealthGateway.JobScheduler.Authorization
             {
                 httpContext.Response.Redirect(AuthorizationConstants.LoginPath);
             }
-            if (!principal.IsInRole(this.requiredUserRole))
+            if (principal.IsInRole(this.requiredUserRole))
             {
                     System.Console.WriteLine(@"USER IN ROLE");
             }
