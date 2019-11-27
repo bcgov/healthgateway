@@ -11,7 +11,7 @@
     "Healthgateway.JobScheduler": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "hangfire",
+      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
