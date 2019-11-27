@@ -91,6 +91,7 @@ namespace HealthGateway.Common.Swagger
 
                 options.SwaggerDoc(description.GroupName, this.settings.Info);
 
+                // TODO: Decide what we are going to do
                 // Experimenting with the document filter - this code may be removed if it doesn't pan out.
                 // options.DocumentFilter<SwaggerPathPrefixDocumentFilter>("api/medicationservice");
             }
