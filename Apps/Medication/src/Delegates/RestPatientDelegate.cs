@@ -91,6 +91,7 @@ namespace HealthGateway.Medication.Delegates
                 {
                     this.logger.LogDebug($"Finished getting patient phn. {hdid}, {retrievedPhn.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
                 }
+
                 return retrievedPhn;
             }
         }
