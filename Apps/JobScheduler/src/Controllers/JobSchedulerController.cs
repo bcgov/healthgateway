@@ -21,7 +21,6 @@ namespace HealthGateway.JobScheduler.Controllers
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The JobSchedulerController controller enabling secure web access to JobScheduler.
@@ -29,42 +28,36 @@ namespace HealthGateway.JobScheduler.Controllers
     public class JobSchedulerController : Controller
     {
         /// <summary>
-        /// hello.
-        /// </summary>
-        /// <returns>hello world message.</returns>
-        [HttpGet("/hello")]
-        [Authorize]
-        public string Hello()
-        {
-            return @"Hello, World!";
-        }
-
-        /// <summary>
         /// Login Challenge.
         /// </summary>
         /// <returns>EmptyResult if authenticated; otherwise a ChallengeResult.</returns>
         [HttpGet(AuthorizationConstants.LoginPath)]
-        public IActionResult Login(string origin = "/")
+        public IActionResult Login()
         {
-            if (!HttpContext.User.Identity.IsAuthenticated)
+            if (!this.HttpContext.User.Identity.IsAuthenticated)
             {
                 return new ChallengeResult();
             }
 
-            return new RedirectResult(origin);
+            return new RedirectResult("/");
         }
+
         /// <summary>
         /// Logout action.
         /// </summary>
         /// <returns>Redirect to main page.</returns>
+        #pragma warning disable CA1822 //  does not access instance data and can be marked as static
+
         [HttpGet(AuthorizationConstants.LogoutPath)]
         public IActionResult Logout()
         {
             return new SignOutResult(new[]
             {
                 OpenIdConnectDefaults.AuthenticationScheme,
-                CookieAuthenticationDefaults.AuthenticationScheme
+                CookieAuthenticationDefaults.AuthenticationScheme,
             });
         }
+        #pragma warning restore CA1822 //  does not access instance data and can be marked as static
+
     }
 }

@@ -120,8 +120,9 @@ namespace HealthGateway.JobScheduler
             {
                 DashboardTitle = "HealthGateway JobScheduler Dashboard",
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
-                AppPath =  "/logout",
+                AppPath = AuthorizationConstants.LogoutPath,
             });
+
             app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
