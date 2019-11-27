@@ -114,6 +114,7 @@ input {
               v-model="inviteKey"
               placeholder="Invitation Key"
               :state="isValid($v.inviteKey)"
+              readonly
             />
             <b-form-invalid-feedback :state="isValid($v.inviteKey)">
               Invitation key is required.
@@ -168,11 +169,8 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
-<<<<<<< HEAD
 import { RegistrationStatus } from "@/constants/registrationStatus";
-=======
 import { WebClientConfiguration } from "@/models/configData";
->>>>>>> dev
 
 @Component({
   components: {
@@ -198,14 +196,11 @@ export default class RegistrationComponent extends Vue {
   private submitStatus: string = "";
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
-<<<<<<< HEAD
   private inviteOnlyRegistration: RegistrationStatus =
     RegistrationStatus.InviteOnly;
   private openRegistration: RegistrationStatus = RegistrationStatus.Open;
-=======
   private limitedRegistration: boolean = false;
 
->>>>>>> dev
   mounted() {
     if (this.config.registrationStatus !== RegistrationStatus.Open) {
       this.limitedRegistration = true;
@@ -284,19 +279,12 @@ export default class RegistrationComponent extends Vue {
       this.isLoading = true;
       this.userProfileService
         .createProfile({
-<<<<<<< HEAD
-          hdid: this.oidcUser.hdid,
-          acceptedTermsOfService: this.accepted,
-          email: this.email,
-          inviteKey: this.inviteKey
-=======
           profile: {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email
           },
-          inviteCode: undefined
->>>>>>> dev
+          inviteCode: this.inviteKey
         })
         .then(result => {
           console.log(result);
