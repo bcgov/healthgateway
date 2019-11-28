@@ -103,10 +103,14 @@ namespace HealthGateway.WebClient.Services
                 emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
 
                 // Fails if...
-                if (emailInvite == null || // Email invite not found or
-                    emailInvite.Validated || // Email invite was already validated or
-                    !string.IsNullOrEmpty(emailInvite.HdId) || // Email invite must have a blank/null HDID or
-                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase)) // Email address doesn't match the invite
+                // Email invite not found or
+                // Email invite was already validated or
+                // Email invite must have a blank/null HDID or
+                // Email address doesn't match the invite
+                if (emailInvite == null || 
+                    emailInvite.Validated || 
+                    !string.IsNullOrEmpty(emailInvite.HdId) || 
+                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase)) 
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
