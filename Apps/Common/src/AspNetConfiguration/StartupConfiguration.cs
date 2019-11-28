@@ -41,10 +41,11 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
-    #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
     /// The startup configuration class.
@@ -208,6 +209,9 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseForwardHeaders(IApplicationBuilder app)
         {
+            const string XForwardedPathBase = "X-Forwarded-PathBase";
+            const string XForwardedProto = "X-Forwarded-Proto";
+
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
             this.logger.LogInformation($"Forward Headers enabled: {enabled}");
@@ -233,6 +237,23 @@ namespace HealthGateway.Common.AspNetConfiguration
                     RequireHeaderSymmetry = false,
                     ForwardLimit = null,
                 };
+
+                // Supports forwarded headers options to ensure works behind reverse proxies, nginx in containers, etc.
+                app.Use((context, next) =>
+                {
+                    if (context.Request.Headers.TryGetValue(XForwardedPathBase, out StringValues pathBase))
+                    {
+                        context.Request.PathBase = new PathString(pathBase);
+                    }
+
+                    // IF this is not done, identity provider redirect urls drop to http:// which is undesirable.
+                    if (context.Request.Headers.TryGetValue(XForwardedProto, out StringValues proto))
+                    {
+                        context.Request.Protocol = proto;
+                    }
+
+                    return next();
+                });
 
                 this.logger.LogInformation("Enabling Use Forward Header");
                 app.UseForwardedHeaders(options);
