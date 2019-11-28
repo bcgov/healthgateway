@@ -80,49 +80,67 @@ namespace HealthGateway.WebClient.Services
 
             RequestResult<UserProfile> requestResult = new RequestResult<UserProfile>();
 
-            if (registrationStatus != RegistrationStatus.Closed)
-            {
-                string hdid = createProfileRequest.Profile.HdId;
-                if (registrationStatus == RegistrationStatus.InviteOnly)
-                {
-                    EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(hdid, createProfileRequest.InviteCode);
-
-                    if (emailInvite == null)
-                    {
-                        requestResult.ResultStatus = ResultType.Error;
-                        requestResult.ResultMessage = "Invalid email invite";
-                        return requestResult;
-                    }
-                }
-
-                string email = createProfileRequest.Profile.Email;
-                createProfileRequest.Profile.Email = string.Empty;
-
-                createProfileRequest.Profile.CreatedBy = hdid;
-                createProfileRequest.Profile.UpdatedBy = hdid;
-
-                DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(createProfileRequest.Profile);
-
-                if (insertResult.Status == Database.Constant.DBStatusCode.Created)
-                {
-                    if (!string.IsNullOrEmpty(email))
-                    {
-                        this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
-                    }
-
-                    requestResult.ResourcePayload = insertResult.Payload;
-                    requestResult.ResultStatus = ResultType.Success;
-                }
-
-                this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(insertResult)}");
-                return requestResult;
-            }
-            else
+            if (registrationStatus == RegistrationStatus.Closed)
             {
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultMessage = "Registration is closed";
+                this.logger.LogWarning($"Registration is closed. {JsonConvert.SerializeObject(createProfileRequest)}");
                 return requestResult;
             }
+
+            string hdid = createProfileRequest.Profile.HdId;
+            EmailInvite emailInvite = null;
+            if (registrationStatus == RegistrationStatus.InviteOnly)
+            {
+                if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
+                {
+                    requestResult.ResultStatus = ResultType.Error;
+                    requestResult.ResultMessage = "Invalid email invite";
+                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    return requestResult;
+                }
+
+                emailInvite = this.emailDelegate.GetEmailInvite(hdid, inviteKey);
+
+                if (emailInvite == null ||
+                    emailInvite.Validated ||
+                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    requestResult.ResultStatus = ResultType.Error;
+                    requestResult.ResultMessage = "Invalid email invite";
+                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    return requestResult;
+                }
+            }
+
+            string email = createProfileRequest.Profile.Email;
+            createProfileRequest.Profile.Email = string.Empty;
+
+            createProfileRequest.Profile.CreatedBy = hdid;
+            createProfileRequest.Profile.UpdatedBy = hdid;
+
+            DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(createProfileRequest.Profile);
+
+            if (insertResult.Status == DBStatusCode.Created)
+            {
+                if (emailInvite != null)
+                {
+                    // Validates the invite email
+                    emailInvite.Validated = true;
+                    this.emailDelegate.UpdateEmailInvite(emailInvite);
+                }
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
+                }
+
+                requestResult.ResourcePayload = insertResult.Payload;
+                requestResult.ResultStatus = ResultType.Success;
+            }
+
+            this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(insertResult)}");
+            return requestResult;
         }
     }
 }
