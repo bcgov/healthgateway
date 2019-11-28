@@ -125,7 +125,7 @@ namespace HealthGateway.Medication.Parsers
             pharmacy.PhoneNumber = $"{zpl.Fields(12).Value}{zpl.Fields(13).Value}"; // Area Code and Telephone Number
 
             // zpl.Fields(14).Value; // Termination Date
-            // zpl.Fields(1)5.Value; // Transaction Reason Code
+            // zpl.Fields(15).Value; // Transaction Reason Code
             HNMessage<Pharmacy> retVal = new HNMessage<Pharmacy>(pharmacy);
             this.logger.LogDebug($"Finished parsing TIL response message... {JsonConvert.SerializeObject(retVal)}");
 
