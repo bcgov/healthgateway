@@ -218,10 +218,11 @@ export default class RegistrationComponent extends Vue {
     if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
       this.email = "";
       this.inviteKey = "";
+    } else {
+      this.emailConfirmation = this.email || "";
+      this.predefinedEmail = !!this.email;
     }
 
-    this.emailConfirmation = this.email || "";
-    this.predefinedEmail = !!this.email;
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
     );
