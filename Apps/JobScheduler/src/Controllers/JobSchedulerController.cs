@@ -16,10 +16,8 @@
 namespace HealthGateway.JobScheduler.Controllers
 {
     using HealthGateway.JobScheduler.Authorization;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -46,7 +44,7 @@ namespace HealthGateway.JobScheduler.Controllers
         /// Logout action.
         /// </summary>
         /// <returns>Redirect to main page.</returns>
-        #pragma warning disable CA1822 //  does not access instance data and can be marked as static
+#pragma warning disable CA1822 //  does not access instance data and can be marked as static
 
         [HttpGet(AuthorizationConstants.LogoutPath)]
         public IActionResult Logout()
@@ -57,7 +55,7 @@ namespace HealthGateway.JobScheduler.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
             });
         }
-        #pragma warning restore CA1822 //  does not access instance data and can be marked as static
+#pragma warning restore CA1822 //  does not access instance data and can be marked as static
 
     }
 }

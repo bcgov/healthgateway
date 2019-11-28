@@ -29,6 +29,7 @@ namespace HealthGateway.JobScheduler.Authorization
         private readonly ILogger logger;
 
         private readonly string requiredUserRole;
+        private readonly string userRoleClaim;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationDashboardFilter"/> class.
@@ -38,7 +39,8 @@ namespace HealthGateway.JobScheduler.Authorization
         public AuthorizationDashboardFilter(IConfiguration configuration, ILogger logger)
         {
             this.configuration = configuration;
-            this.requiredUserRole = this.configuration.GetValue<string>("UserRole");
+            this.requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
+            this.userRoleClaim = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
             this.logger = logger;
         }
 
@@ -53,21 +55,17 @@ namespace HealthGateway.JobScheduler.Authorization
             var user = httpContext.User;
 
             ClaimsPrincipal principal = user as ClaimsPrincipal;
-            if (principal != null)
-            {
-                foreach (Claim claim in principal.Claims)
-                {
-                    System.Console.WriteLine("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value);
-                }
-            }
 
             if (!user.Identity.IsAuthenticated)
             {
                 httpContext.Response.Redirect(AuthorizationConstants.LoginPath);
+                return true;
             }
-            if (principal.IsInRole(this.requiredUserRole))
+
+            if (!principal.HasClaim(this.userRoleClaim, this.requiredUserRole))
             {
-                    System.Console.WriteLine(@"USER IN ROLE");
+                this.logger.LogInformation($"User is not authorized. This usually means user is not in the proper user role: {this.requiredUserRole}");
+                return false;
             }
 
             return true;
