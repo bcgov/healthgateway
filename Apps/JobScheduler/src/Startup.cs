@@ -71,12 +71,6 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(this.configuration.GetValue<string>("UserRole"), policy =>
-                policy.RequireClaim(this.configuration.GetValue<string>("OpenIdConnect:RolesClaim"), "[" + this.configuration.GetValue<string>("OpenIdConnect:UserRole") + "]"));
-            });
-
             services.AddDbContextPool<GatewayDbContext>(options =>
                 options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection"),
