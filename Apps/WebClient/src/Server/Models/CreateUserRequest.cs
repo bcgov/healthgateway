@@ -31,6 +31,6 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the code used to validate if the user has an invite.
         /// </summary>
-        public Guid InviteCode { get; set; }
+        public string InviteCode { get; set; }
     }
 }

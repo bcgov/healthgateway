@@ -30,35 +30,65 @@ input {
   <b-container>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <div v-if="!isLoading">
-      <b-row class="my-3">
+      <b-row
+        v-if="webClientConfig.registrationStatus == closedRegistration"
+        class="my-3"
+      >
         <b-col>
-          <b-alert :show="hasErrors" dismissible variant="danger">
-            <h4>Error</h4>
-            <span
-              >An unexpected error occured while processing the request.</span
-            >
-          </b-alert>
           <div id="pageTitle">
             <h1 id="Subject">
-              Terms of Service
+              Closed Registration
             </h1>
-            <b-alert :show="limitedRegistration" variant="info">
-              <h4>Limited registration</h4>
-              <span
-                >Currently the registration is
-                <strong>{{ config.registrationStatus }}</strong
-                >.</span
-              >
-            </b-alert>
             <div id="Description">
-              <strong>{{ fullName }}</strong>
-              , please provide your email address to receive notifications about
-              updates to the Health Gateway, such as new features and changes.
+              Thank you for your interest in the Health Gateway service. At this
+              time, the registration is closed.
             </div>
           </div>
         </b-col>
       </b-row>
-      <b-form ref="registrationForm" @submit.prevent="onSubmit">
+      <b-row
+        v-else-if="
+          webClientConfig.registrationStatus == inviteOnlyRegistration &&
+            !inviteKey
+        "
+        class="my-3"
+      >
+        <b-col>
+          <div id="pageTitle">
+            <h1 id="Subject">
+              Restricted Registration
+            </h1>
+            <div id="Description">
+              Thank you for your interest in the Health Gateway service. At this
+              time, the registration is invite only. As we will be launching
+              more broadly in the coming months, please visit the site again. If
+              you are one of our patient partners, check your email for your
+              unique registration link.
+            </div>
+          </div>
+        </b-col>
+      </b-row>
+      <b-form v-else ref="registrationForm" @submit.prevent="onSubmit">
+        <b-row class="my-3">
+          <b-col>
+            <b-alert :show="hasErrors" dismissible variant="danger">
+              <h4>Error</h4>
+              <p>An unexpected error occured while processing the request:</p>
+              <span>{{ errorMessage }}</span>
+            </b-alert>
+            <div id="pageTitle">
+              <h1 id="Subject">
+                Terms of Service
+              </h1>
+              <div id="Description">
+                <strong>{{ fullName }}</strong>
+                , please provide your email address to receive notifications
+                about updates to the Health Gateway, such as new features and
+                changes.
+              </div>
+            </div>
+          </b-col>
+        </b-row>
         <b-row class="mb-3">
           <b-col>
             <b-form-input
@@ -66,7 +96,7 @@ input {
               v-model="$v.email.$model"
               type="email"
               placeholder="Your email address"
-              :disabled="emailOptout"
+              :disabled="emailOptout || preDefinedEmail"
               :state="isValid($v.email)"
             />
             <b-form-invalid-feedback :state="isValid($v.email)">
@@ -74,7 +104,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-3">
+        <b-row v-if="!preDefinedEmail" class="mb-3">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -102,23 +132,6 @@ input {
             >
               No, I prefer not to receive any notifications
             </b-form-checkbox>
-          </b-col>
-        </b-row>
-        <b-row
-          v-if="webClientConfig.registrationStatus == inviteOnlyRegistration"
-          class="mb-3"
-        >
-          <b-col>
-            <b-form-input
-              id="inviteKey"
-              v-model="inviteKey"
-              placeholder="Invitation Key"
-              :state="isValid($v.inviteKey)"
-              readonly
-            />
-            <b-form-invalid-feedback :state="isValid($v.inviteKey)">
-              Invitation key is required.
-            </b-form-invalid-feedback>
           </b-col>
         </b-row>
         <b-row class="mb-3">
@@ -178,33 +191,37 @@ import { WebClientConfiguration } from "@/models/configData";
   }
 })
 export default class RegistrationComponent extends Vue {
-  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;
   @Prop() inviteKey?: string;
+  @Prop() email?: string;
 
   private termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
-  private email: string = "";
   private emailConfirmation: string = "";
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
+  private errorMessage: string = "";
+  private preDefinedEmail: boolean = false;
   private inviteOnlyRegistration: RegistrationStatus =
     RegistrationStatus.InviteOnly;
   private openRegistration: RegistrationStatus = RegistrationStatus.Open;
-  private limitedRegistration: boolean = false;
+  private closedRegistration: RegistrationStatus = RegistrationStatus.Closed;
 
   mounted() {
-    if (this.config.registrationStatus !== RegistrationStatus.Open) {
-      this.limitedRegistration = true;
+    if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
+      this.email = "";
+      this.inviteKey = "";
     }
 
+    this.emailConfirmation = this.email || "";
+    this.preDefinedEmail = !!this.email;
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
     );
@@ -243,15 +260,7 @@ export default class RegistrationComponent extends Vue {
         sameAsEmail: sameAs("email"),
         email
       },
-      accepted: { isChecked: sameAs(() => true) },
-      inviteKey: {
-        required: requiredIf(() => {
-          return (
-            this.webClientConfig.registrationStatus ==
-            this.inviteOnlyRegistration
-          );
-        })
-      }
+      accepted: { isChecked: sameAs(() => true) }
     };
   }
 
@@ -281,9 +290,9 @@ export default class RegistrationComponent extends Vue {
           profile: {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
-            email: this.email
+            email: this.email || ""
           },
-          inviteCode: this.inviteKey
+          inviteCode: this.inviteKey || ""
         })
         .then(result => {
           console.log(result);
@@ -299,6 +308,7 @@ export default class RegistrationComponent extends Vue {
         })
         .catch(err => {
           this.hasErrors = true;
+          this.errorMessage = err;
           console.log(err);
         })
         .finally(() => {
