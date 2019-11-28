@@ -298,7 +298,7 @@ export default class RegistrationComponent extends Vue {
         .then(result => {
           console.log(result);
           this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
-            isRegistered => {
+            (isRegistered: boolean) => {
               if (isRegistered) {
                 this.$router.push({ path: "/timeline" });
               } else {
