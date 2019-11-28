@@ -13,6 +13,9 @@ import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import MedicationSumary from '../app/models/medicationSumary';
+import MedicationResult from '../app/models/medicationResult';
+import Pharmacy from '../app/models/pharmacy';
 
 const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
@@ -55,8 +58,8 @@ class MockMedicationService implements IMedicationService {
     // No need to implement for the mock
     throw new Error(METHOD_NOT_IMPLEMENTED);
   }
-  getPatientMedicationStatements(hdid: string): Promise<RequestResult> {
-    return new Promise<RequestResult>((resolve, reject) => {
+  getPatientMedicationStatements(hdid: string): Promise<RequestResult<MedicationStatement[]>> {
+    return new Promise<RequestResult<MedicationStatement[]>>((resolve, reject) => {
       if (hdid === "hdid_with_results") {
         resolve({
           totalResultCount: medicationStatements.length,
@@ -75,10 +78,10 @@ class MockMedicationService implements IMedicationService {
       }
     });
   }
-  getMedicationInformation(drugIdentifier: string): Promise<RequestResult> {
+  getMedicationInformation(drugIdentifier: string): Promise<MedicationResult> {
     throw new Error(METHOD_NOT_IMPLEMENTED);
   }
-  getPharmacyInfo(pharmacyId: string): Promise<RequestResult> {
+  getPharmacyInfo(pharmacyId: string): Promise<Pharmacy> {
     // No need to implement for the mock
     throw new Error(METHOD_NOT_IMPLEMENTED);
   }

@@ -26,7 +26,7 @@ const routes = [
   {
     path: "/registrationInfo",
     component: RegistrationInfoComponent,
-    props: route => ({
+    props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
       email: route.query.email
     }),
@@ -35,7 +35,7 @@ const routes = [
   {
     path: "/registration",
     component: RegistrationComponent,
-    props: route => ({
+    props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
       email: route.query.email
     }),
