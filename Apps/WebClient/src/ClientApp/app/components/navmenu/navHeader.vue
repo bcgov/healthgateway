@@ -49,7 +49,7 @@
              <router-link  variant="primary"  to="/timeLine">
                 <span  class="fa fa-stream" ></span> Timeline
              </router-link>
-             <br></br>
+            <br/>
             <router-link variant="primary" id="menuBtnLogout" to="/logout">
               <span class="fa fa-user"></span> Logout
             </router-link>

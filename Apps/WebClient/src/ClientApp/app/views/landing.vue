@@ -1,6 +1,5 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
 .landing {
   .btn-secondary-landing {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -11,7 +10,6 @@
     color: $primary;
     background-color: $soft_background;
   }
-
   .btn-primary-landing {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-width: 0px;
@@ -21,7 +19,6 @@
     color: $primary;
     background-color: $bcgold;
   }
-
   .background-tint-light {
     background-color: rgba(0, 51, 102, 0.1); // Tint color
     background-blend-mode: multiply;
@@ -30,11 +27,9 @@
     background-color: rgba(0, 51, 102, 0.3); // Tint color
     background-blend-mode: multiply;
   }
-
   .intro {
     height: 750px;
     background-size: cover;
-
     .title-wrapper {
       max-width: 390px;
       margin-top: -100px;
@@ -43,18 +38,15 @@
       margin-left: auto;
       margin-right: auto;
     }
-
     .logo {
       width: 300px;
       margin-bottom: 1em;
     }
-
     .title-text {
       color: white;
       font-size: 2.2em;
     }
   }
-
   .devices-section {
     .devices-image {
       margin-left: auto;
@@ -63,7 +55,6 @@
       margin-top: -75px;
       margin-bottom: 20px;
     }
-
     .devices-text {
       color: $primary;
       margin-left: auto;
@@ -72,17 +63,14 @@
       padding: 3em;
     }
   }
-
   .circle-icons {
     background-color: $primary;
     color: white;
     display: flex;
     justify-content: center;
-
     .icon-wrapper {
       margin: 70px 65px 70px 65px;
     }
-
     .icon {
       color: $primary;
       height: 110px;
@@ -99,7 +87,6 @@
     margin-left: auto;
     margin-right: auto;
     max-width: 70%;
-
     .row {
       max-width: 100%;
       margin-top: 40px;
@@ -113,7 +100,6 @@
     .text-wrapper {
       margin-top: 5em;
       color: $primary;
-
       .title {
         font-size: 2.2rem;
       }
@@ -122,7 +108,6 @@
   .secure {
     height: 750px;
     background-size: cover;
-
     .secure-wrapper {
       max-width: 600px;
       margin-top: 130px;
@@ -130,7 +115,6 @@
       margin-left: auto;
       margin-right: auto;
     }
-
     .title {
       color: $primary;
       font-size: 2.2em;
@@ -138,7 +122,6 @@
     .description {
       color: $primary;
     }
-
     .secure-buttons {
       margin-top: 1em;
     }
@@ -164,6 +147,8 @@
           <div class="title-text">
             <div>
               Empowering you
+            </div>
+            <div>
               to manage your health
             </div>
           </div>
@@ -194,7 +179,7 @@
       /></b-col>
       <b-col>
         <div class="devices-text ">
-          <h4>Browse your health records</h4>
+          <h2>Browse your health records</h2>
           <p>
             Visits to clinics, lab test results, dispensed medications and
             vaccinations.
@@ -301,18 +286,15 @@ import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
-
 interface Icon {
   label: string;
   classIcon: string;
 }
-
 interface Tile {
   title: string;
   description: string;
   imageSrc: string;
 }
-
 @Component
 export default class LandingComponent extends Vue {
   private icons: Icon[] = [
@@ -333,7 +315,6 @@ export default class LandingComponent extends Vue {
       label: "Vaccinations"
     }
   ];
-
   private tiles: Tile[] = [
     {
       title: "All in one place",
@@ -359,7 +340,6 @@ export default class LandingComponent extends Vue {
       imageSrc: Image06
     }
   ];
-
   private logo: string = Image00;
   private introBackground: string = Image01;
   private devices: string = Image02;
