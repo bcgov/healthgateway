@@ -23,12 +23,12 @@ namespace HealthGateway.JobScheduler.Authorization
         /// <summary>
         /// Represents the relative redirect to initiate authentication and authorization challenge.
         /// </summary>
-        public const string LoginPath = "login";
+        public const string LoginPath = "/login";
 
         /// <summary>
         /// Represents the relative redirect to end authentication and authorization.
         /// </summary>
-        public const string LogoutPath = "logout";
+        public const string LogoutPath = "/logout";
 
         /// <summary>
         /// Represents the name of the auth cookie.
