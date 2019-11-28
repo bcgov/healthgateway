@@ -96,7 +96,7 @@ input {
               v-model="$v.email.$model"
               type="email"
               placeholder="Your email address"
-              :disabled="emailOptout || preDefinedEmail"
+              :disabled="emailOptout || predefinedEmail"
               :state="isValid($v.email)"
             />
             <b-form-invalid-feedback :state="isValid($v.email)">
@@ -104,7 +104,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row v-if="!preDefinedEmail" class="mb-3">
+        <b-row v-if="!predefinedEmail" class="mb-3">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -208,7 +208,7 @@ export default class RegistrationComponent extends Vue {
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
-  private preDefinedEmail: boolean = false;
+  private predefinedEmail: boolean = false;
   private inviteOnlyRegistration: RegistrationStatus =
     RegistrationStatus.InviteOnly;
   private openRegistration: RegistrationStatus = RegistrationStatus.Open;
@@ -221,7 +221,7 @@ export default class RegistrationComponent extends Vue {
     }
 
     this.emailConfirmation = this.email || "";
-    this.preDefinedEmail = !!this.email;
+    this.predefinedEmail = !!this.email;
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
     );
