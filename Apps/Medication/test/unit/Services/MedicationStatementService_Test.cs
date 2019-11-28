@@ -87,31 +87,39 @@ namespace HealthGateway.Medication.Test
                 drugLookupDelegateMock.Object);
 
             // Run and Verify protective word too long
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, "PROTECTED");
+            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, "TOOLONG4U");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
-            actual = await service.GetMedicationStatements(hdid, "|");
+            actual = await service.GetMedicationStatements(hdid, "SHORT");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
-            actual = await service.GetMedicationStatements(hdid, "~");
+            actual = await service.GetMedicationStatements(hdid, "SHORT|");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
-            actual = await service.GetMedicationStatements(hdid, "^");
+            actual = await service.GetMedicationStatements(hdid, "SHORT~");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
-            actual = await service.GetMedicationStatements(hdid, "\\");
+            actual = await service.GetMedicationStatements(hdid, "SHORT^");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
-            actual = await service.GetMedicationStatements(hdid, "&");
+            actual = await service.GetMedicationStatements(hdid, "SHORT\\");
+            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+
+            // Run and Verify invalid char
+            actual = await service.GetMedicationStatements(hdid, "SHORT&");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "Test|");
+            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+
+            // Run and Verify invalid char
+            actual = await service.GetMedicationStatements(hdid, "      ");
             Assert.True(actual.Result == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char

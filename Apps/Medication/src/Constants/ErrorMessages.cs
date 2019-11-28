@@ -31,6 +31,11 @@ namespace HealthGateway.Medication.Constants
         public const string ProtectiveWordTooLong = "Protective word must be <= 8 characters";
 
         /// <summary>
+        /// Error message to return when a protective word is too short.
+        /// </summary>
+        public const string ProtectiveWordTooShort = "Protective word must be >= 6 characters";
+
+        /// <summary>
         /// Error message to return when a protective word contains invalid characters.
         /// </summary>
         public const string ProtectiveWordInvalidChars = "Protective word must not contain any of: |~^\\&";

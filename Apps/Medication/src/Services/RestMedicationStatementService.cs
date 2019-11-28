@@ -36,6 +36,7 @@ namespace HealthGateway.Medication.Services
     public class RestMedicationStatementService : IMedicationStatementService
     {
         private const int MaxLengthProtectiveWord = 8;
+        private const int MinLengthProtectiveWord = 6;
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientDelegate patientDelegate;
@@ -89,12 +90,12 @@ namespace HealthGateway.Medication.Services
             string errMsg = null;
             if (!string.IsNullOrEmpty(protectiveWord))
             {
-                if (protectiveWord.Length <= MaxLengthProtectiveWord)
+                if (protectiveWord.Length >= MinLengthProtectiveWord && protectiveWord.Length <= MaxLengthProtectiveWord)
                 {
-                    Regex regex = new Regex(@"[|~^\\&]+");
-                    if (regex.IsMatch(protectiveWord))
+                    // Regex regex = new Regex(@"[|~^\\&]+");
+                    Regex regex = new Regex(@"^[0-9A-Za-z_]+$");
+                    if (!regex.IsMatch(protectiveWord))
                     {
-                        // The protective word passed all edits
                         valid = false;
                         errMsg = ErrorMessages.ProtectiveWordInvalidChars;
                     }
@@ -102,7 +103,15 @@ namespace HealthGateway.Medication.Services
                 else
                 {
                     valid = false;
-                    errMsg = ErrorMessages.ProtectiveWordTooLong;
+                    if (protectiveWord.Length > MaxLengthProtectiveWord)
+                    {
+                        errMsg = ErrorMessages.ProtectiveWordTooLong;
+                    }
+                    else
+                    {
+                        //protective word is too short
+                        errMsg = ErrorMessages.ProtectiveWordTooShort;
+                    }
                 }
             }
 
@@ -127,7 +136,7 @@ namespace HealthGateway.Medication.Services
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
 
-                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, phn, ipv4Address).ConfigureAwait(true);
+                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord?.ToUpper(), phn, ipv4Address).ConfigureAwait(true);
             }
             else
             {
