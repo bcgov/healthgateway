@@ -209,7 +209,6 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseForwardHeaders(IApplicationBuilder app)
         {
-            const string XForwardedPathBase = "X-Forwarded-PathBase";
             const string XForwardedProto = "X-Forwarded-Proto";
 
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
@@ -241,11 +240,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 // Supports forwarded headers options to ensure works behind reverse proxies, nginx in containers, etc.
                 app.Use((context, next) =>
                 {
-                    if (context.Request.Headers.TryGetValue(XForwardedPathBase, out StringValues pathBase))
-                    {
-                        context.Request.PathBase = new PathString(pathBase);
-                    }
-
                     // IF this is not done, identity provider redirect urls drop to http:// which is undesirable.
                     if (context.Request.Headers.TryGetValue(XForwardedProto, out StringValues proto))
                     {
