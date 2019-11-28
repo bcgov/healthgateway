@@ -1,10 +1,18 @@
 export default interface UserProfile {
-  // Gets or sets the user hdid.
+  // The user hdid.
   hdid: string;
 
-  // Gets or sets a value indicating whether the user accepted the terms of service.
+  // Value indicating whether the user accepted the terms of service.
   acceptedTermsOfService: boolean;
 
-  // Gets or sets the user email.
+  // The user email.
   email: string;
+}
+
+export interface CreateUserRequest {
+  // User profile to create.
+  profile: UserProfile;
+
+  // Code used to validate if the user has an invite.
+  inviteCode: string;
 }

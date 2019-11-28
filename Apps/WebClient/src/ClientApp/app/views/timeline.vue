@@ -2,7 +2,7 @@
 @import "@/assets/scss/_variables.scss";
 
 .column-wrapper {
-  border: 1px;
+  border: 1px; //red solid;
 }
 
 #pageTitle {
@@ -28,9 +28,9 @@
 <template>
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <b-row class="my-3">
+    <b-row class="my-3 fluid justify-content-md-center">
       <b-col class="col-3 column-wrapper"> </b-col>
-      <b-col id="timeline" class="col-6 column-wrapper">
+      <b-col id="timeline" class="col-12 col-lg-6 column-wrapper">
         <b-alert :show="hasErrors" dismissible variant="danger">
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
@@ -171,8 +171,9 @@ export default class TimelineComponent extends Vue {
         } else {
           console.log(
             "Error returned from the medication statements call: " +
-              results.errorMessage
+              results.resultMessage
           );
+          this.hasErrors = true;
         }
       })
       .catch(err => {

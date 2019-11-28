@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -34,6 +35,7 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class RestMedicationStatementService : IMedicationStatementService
     {
+        private const int MaxLengthProtectiveWord = 8;
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientDelegate patientDelegate;
@@ -81,18 +83,46 @@ namespace HealthGateway.Medication.Services
             return hnClientMedicationResult;
         }
 
+        private static Tuple<bool, string> ValidateProtectiveWord(string protectiveWord)
+        {
+            bool valid = true;
+            string errMsg = null;
+            if (!string.IsNullOrEmpty(protectiveWord))
+            {
+                if (protectiveWord.Length <= MaxLengthProtectiveWord)
+                {
+                    Regex regex = new Regex(@"[|~^\\&]+");
+                    if (regex.IsMatch(protectiveWord))
+                    {
+                        // The protective word passed all edits
+                        valid = false;
+                        errMsg = ErrorMessages.ProtectiveWordInvalidChars;
+                    }
+                }
+                else
+                {
+                    valid = false;
+                    errMsg = ErrorMessages.ProtectiveWordTooLong;
+                }
+            }
+
+            return Tuple.Create(valid, errMsg);
+        }
+
         private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string protectiveWord)
         {
             HNMessage<List<MedicationStatement>> retMessage = null;
-
-            // Protective words are not allowed to contain any of the following: |~^\&
-            Regex regex = new Regex(@"[|~^\\&]+");
-            bool okProtectiveWord = string.IsNullOrEmpty(protectiveWord) ? true : !regex.IsMatch(protectiveWord);
+            var validationResult = ValidateProtectiveWord(protectiveWord);
+            bool okProtectiveWord = validationResult.Item1;
             if (okProtectiveWord)
             {
-                this.logger.LogInformation($"Protective word found. {hdid}");
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+
+                if (string.IsNullOrEmpty(phn))
+                {
+                    return new HNMessage<List<MedicationStatement>>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
+                }
 
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
@@ -102,7 +132,7 @@ namespace HealthGateway.Medication.Services
             else
             {
                 this.logger.LogInformation($"Invalid protective word. {hdid}");
-                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, ErrorMessages.ProtectiveWordErrorMessage);
+                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, validationResult.Item2);
             }
 
             return retMessage;

@@ -13,26 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.JobScheduler.Authorization
+namespace HealthGateway.WebClient.Models
 {
+    using System;
+    using HealthGateway.Database.Models;
+
     /// <summary>
-    /// A class with constants representing the various authorization settings not needing to be comfigurable.
+    /// Object that defines the request for creating a User.
     /// </summary>
-    public static class AuthorizationConstants
+    public class CreateUserRequest
     {
         /// <summary>
-        /// Represents the relative redirect to initiate authentication and authorization challenge.
+        /// Gets or sets the user profile.
         /// </summary>
-        public const string LoginPath = "login";
+        public UserProfile Profile { get; set; }
 
         /// <summary>
-        /// Represents the relative redirect to end authentication and authorization.
+        /// Gets or sets the code used to validate if the user has an invite.
         /// </summary>
-        public const string LogoutPath = "logout";
-
-        /// <summary>
-        /// Represents the name of the auth cookie.
-        /// </summary>
-        public const string CookieName = "HealthGateway_JobScheduler";
+        public Guid InviteCode { get; set; }
     }
 }

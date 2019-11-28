@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Models
 {
     using HealthGateway.Common.Constants;
-    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// Class that represents the result of a request. Contains members for handling pagination and error resolution.

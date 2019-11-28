@@ -30,6 +30,8 @@ namespace HealthGateway.WebClient.Test.Controllers
     using System.Threading.Tasks;
     using System;
     using Microsoft.AspNetCore.Http.Headers;
+    using HealthGateway.Common.Models;
+    using HealthGateway.WebClient.Models;
 
     public class UserProfileControllerTest
     {
@@ -43,9 +45,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 AcceptedTermsOfService = true
             };
 
-            DBResult<UserProfile> expected = new DBResult<UserProfile> {
-                Payload = userProfile,
-                Status = Database.Constant.DBStatusCode.Read
+            RequestResult<UserProfile> expected = new RequestResult<UserProfile> {
+                ResourcePayload = userProfile,
+                ResultStatus = Common.Constants.ResultType.Success
             };
 
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
@@ -69,7 +71,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected.Payload)); 
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected)); 
         }
 
         [Fact]
@@ -109,10 +111,15 @@ namespace HealthGateway.WebClient.Test.Controllers
                 AcceptedTermsOfService = true
             };
 
-            DBResult<UserProfile> expected = new DBResult<UserProfile>
+            CreateUserRequest createUserRequest = new CreateUserRequest
             {
-                Payload = userProfile,
-                Status = Database.Constant.DBStatusCode.Created
+                Profile = userProfile
+            };
+
+            RequestResult<UserProfile> expected = new RequestResult<UserProfile>
+            {
+                ResourcePayload = userProfile,
+                ResultStatus = Common.Constants.ResultType.Success
             };
 
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
@@ -128,16 +135,17 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(AuthorizationResult.Success);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(userProfile, It.IsAny<Uri>())).Returns(expected);
+            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>())).Returns(expected);
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object
             );
-            IActionResult actualResult = await service.CreateUserProfile(hdid, userProfile).ConfigureAwait(true);
+            IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest).ConfigureAwait(true);
 
-            Assert.IsType<OkResult>(actualResult);
+            Assert.IsType<JsonResult>(actualResult);
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected)); 
         }
     }
 }

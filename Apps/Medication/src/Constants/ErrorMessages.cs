@@ -24,5 +24,20 @@ namespace HealthGateway.Medication.Constants
         /// Error message to return when a Pharmanet record is protected.
         /// </summary>
         public const string ProtectiveWordErrorMessage = "Record protected by keyword";
+
+        /// <summary>
+        /// Error message to return when a protective word is too long.
+        /// </summary>
+        public const string ProtectiveWordTooLong = "Protective word must be <= 8 characters";
+
+        /// <summary>
+        /// Error message to return when a protective word contains invalid characters.
+        /// </summary>
+        public const string ProtectiveWordInvalidChars = "Protective word must not contain any of: |~^\\&";
+
+        /// <summary>
+        /// Error message to return when a patient phn was not found.
+        /// </summary>
+        public const string PhnNotFoundErrorMessage = "PHN could not be retrieved";
     }
 }

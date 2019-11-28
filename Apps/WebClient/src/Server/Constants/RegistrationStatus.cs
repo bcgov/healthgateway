@@ -13,26 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.JobScheduler.Authorization
+namespace HealthGateway.WebClient.Constant
 {
     /// <summary>
-    /// A class with constants representing the various authorization settings not needing to be comfigurable.
+    /// Registration status modes.
     /// </summary>
-    public static class AuthorizationConstants
+    public static class RegistrationStatus
     {
         /// <summary>
-        /// Represents the relative redirect to initiate authentication and authorization challenge.
+        /// Registration is open.
         /// </summary>
-        public const string LoginPath = "login";
+        public const string Open = "open";
 
         /// <summary>
-        /// Represents the relative redirect to end authentication and authorization.
+        /// Registration is closed.
         /// </summary>
-        public const string LogoutPath = "logout";
+        public const string Closed = "closed";
 
         /// <summary>
-        /// Represents the name of the auth cookie.
+        /// Registration is on Invite only mode.
         /// </summary>
-        public const string CookieName = "HealthGateway_JobScheduler";
+        public const string InviteOnly = "invite_only";
     }
 }

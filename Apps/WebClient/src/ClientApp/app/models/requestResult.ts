@@ -1,8 +1,8 @@
 import { ResultType } from "@/constants/resulttype";
 
-export default interface RequestResult {
+export default interface RequestResult<T> {
   // The request resource payload
-  resourcePayload: any;
+  resourcePayload: T;
   // The total number of records for pagination
   totalResultCount: number;
   // The current page index for pagination
