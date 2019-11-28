@@ -106,6 +106,16 @@ namespace HealthGateway.PatientService
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
 
+            // If the deceased indicator is set and true, return an empty person.
+            bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value == true;
+            if (deceasedInd)
+            {
+                retVal = new Patient();
+                this.logger.LogWarning($"Client Registry returned a person with the deceasedIndicator set to true. No PHN was populated.");
+                this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)}");
+                return retVal;
+            }
+
             // Extract the subject names
             List<string> givenNameList = new List<string>();
             List<string> lastNameList = new List<string>();

@@ -31,6 +31,7 @@ $radius: 15px;
 
 .leftPane {
   width: 60px;
+  max-width: 60px;
 }
 
 .detailsButton {
@@ -51,7 +52,7 @@ $radius: 15px;
   <b-row class="entryCard">
     <b-col>
       <b-row class="entryHeading">
-        <b-col class="icon leftPane" cols="0">
+        <b-col class="icon leftPane">
           <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
         </b-col>
         <b-col class="entryTitle">
@@ -59,7 +60,7 @@ $radius: 15px;
         </b-col>
       </b-row>
       <b-row>
-        <b-col class="leftPane" cols="0"> </b-col>
+        <b-col class="leftPane"></b-col>
         <b-col>
           <b-row>
             <b-col>
