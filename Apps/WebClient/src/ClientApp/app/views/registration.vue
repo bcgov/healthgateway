@@ -120,7 +120,7 @@ input {
           </b-col>
         </b-row>
         <b-row
-          v-if="webClientConfig.registrationStatus == openRegistration"
+          v-if="webClientConfig.registrationStatus != inviteOnlyRegistration"
           class="mb-3"
         >
           <b-col>
@@ -211,12 +211,12 @@ export default class RegistrationComponent extends Vue {
   private predefinedEmail: boolean = false;
   private inviteOnlyRegistration: RegistrationStatus =
     RegistrationStatus.InviteOnly;
-  private openRegistration: RegistrationStatus = RegistrationStatus.Open;
   private closedRegistration: RegistrationStatus = RegistrationStatus.Closed;
 
   mounted() {
     if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
       this.email = "";
+      this.emailConfirmation = "";
       this.inviteKey = "";
     } else {
       this.emailConfirmation = this.email || "";
