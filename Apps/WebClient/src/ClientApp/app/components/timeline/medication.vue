@@ -91,10 +91,6 @@ $radius: 15px;
                       <strong>Practitioner:</strong>
                       {{ entry.practitionerSurname }}
                     </div>
-                    <div>
-                      <strong>Prescription #:</strong>
-                      {{ entry.prescriptionIdentifier }}
-                    </div>
                   </div>
                   <div class="detailSection">
                     <div>
