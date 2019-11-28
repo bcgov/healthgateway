@@ -26,11 +26,19 @@ const routes = [
   {
     path: "/registrationInfo",
     component: RegistrationInfoComponent,
+    props: (route: Route) => ({
+      inviteKey: route.query.inviteKey,
+      email: route.query.email
+    }),
     meta: { requiresAuth: false }
   },
   {
     path: "/registration",
     component: RegistrationComponent,
+    props: (route: Route) => ({
+      inviteKey: route.query.inviteKey,
+      email: route.query.email
+    }),
     meta: { requiresAuth: true }
   },
   {
@@ -95,7 +103,7 @@ router.beforeEach(async (to, from, next) => {
 function handleUserHasAccess(to: Route, from: Route, next: any) {
   // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-  if (userIsRegistered && to.path === "/registration") {
+  if (userIsRegistered && to.path.startsWith("/registration")) {
     next({ path: "/timeline" });
   } else if (to.meta.requiresRegistration && !userIsRegistered) {
     next({ path: "/unauthorized" });

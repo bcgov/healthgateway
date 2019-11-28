@@ -48,7 +48,7 @@
           <b-col fluid>
             <b-row class="mt-5">
               <b-col>
-                <router-link to="/registration">
+                <router-link :to="registrationLink">
                   <b-button size="lg" variant="primary">
                     <img
                       class="mr-3"
@@ -225,7 +225,9 @@ import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
 import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
 import Vue from "vue";
 import { Getter } from "vuex-class";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
+import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 
 @Component
 export default class RegistrationInfoComponent extends Vue {
@@ -237,5 +239,21 @@ export default class RegistrationInfoComponent extends Vue {
   private mobileCardImg: string = Image05;
   private signupProcessVisible: boolean = false;
   private dongleVisible: boolean = false;
+  private registrationLink: string = "/registration/";
+  @Prop() inviteKey?: string;
+  @Prop() email?: string;
+  @Getter("webClient", { namespace: "config" })
+  webClientConfig: WebClientConfiguration;
+
+  mounted() {
+    if (
+      this.webClientConfig.registrationStatus ==
+        RegistrationStatus.InviteOnly &&
+      this.inviteKey
+    ) {
+      this.registrationLink += `?inviteKey=${this.inviteKey}`;
+      this.registrationLink += this.email ? `&email=${this.email}` : "";
+    }
+  }
 }
 </script>
