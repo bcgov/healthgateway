@@ -21,11 +21,13 @@ namespace HealthGateway.Medication.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// The Medication controller.
     /// </summary>
+    [EnableCors("allowAny")]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]

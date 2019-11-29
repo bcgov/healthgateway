@@ -333,13 +333,17 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseHealthChecks("/health");
 
             // Enable CORS
-            app.UseCors(builder =>
+            string enableCors = this.configuration.GetValue<string>("AllowOrigins", string.Empty);
+            if (!string.IsNullOrEmpty(enableCors))
             {
-                builder
-                    .WithOrigins(this.configuration.GetValue<string>("AllowOrigins", "*"))
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            });
+                app.UseCors(builder =>
+                {
+                    builder
+                        .WithOrigins(enableCors)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            }
 
             app.UseResponseCompression();
             app.UseHttpsRedirection();

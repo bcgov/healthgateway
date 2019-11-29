@@ -65,6 +65,16 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
+            services.AddCors(options => {
+                options.AddPolicy("allowAny", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
             services.AddHttpClient("medicationService").ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new HttpClientHandler
