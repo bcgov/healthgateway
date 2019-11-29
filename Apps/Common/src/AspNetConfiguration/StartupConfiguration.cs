@@ -237,13 +237,17 @@ namespace HealthGateway.Common.AspNetConfiguration
                     ForwardLimit = null,
                 };
 
-                // Supports forwarded headers options to ensure works behind reverse proxies, nginx in containers, etc.
                 app.Use((context, next) =>
                 {
                     // IF this is not done, identity provider redirect urls drop to http:// which is undesirable.
                     if (context.Request.Headers.TryGetValue(XForwardedProto, out StringValues proto))
                     {
+                        this.logger.LogInformation($"Client using protocol: {proto}, assigning to request protocol");
                         context.Request.Protocol = proto;
+                    }
+                    else
+                    {
+                        this.logger.LogInformation("No header XforwardProto was found in request context")
                     }
 
                     return next();
