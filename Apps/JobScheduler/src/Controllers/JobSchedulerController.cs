@@ -19,12 +19,24 @@ namespace HealthGateway.JobScheduler.Controllers
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The JobSchedulerController controller enabling secure web access to JobScheduler.
     /// </summary>
     public class JobSchedulerController : Controller
     {
+        private readonly ILogger<JobSchedulerController> logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobSchedulerController"/> class.
+        /// </summary>
+        /// <param name="logger">The injected logger provider.</param>
+        public JobSchedulerController(ILogger<JobSchedulerController> logger)
+        {
+            this.logger = logger;
+        }
+
         /// <summary>
         /// Login Challenge.
         /// </summary>
@@ -32,12 +44,16 @@ namespace HealthGateway.JobScheduler.Controllers
         [HttpGet(AuthorizationConstants.LoginPath)]
         public IActionResult Login()
         {
+#pragma warning disable CA1303 //Disable literals
             if (!this.HttpContext.User.Identity.IsAuthenticated)
             {
-                return new ChallengeResult();
+                this.logger.LogDebug("Issuing Challenge result");
+                return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
-            return new RedirectResult("/");
+            this.logger.LogDebug("Redirecting to dashboard");
+            return new RedirectResult("/admin/jobscheduler");
+#pragma warning restore CA1303 //Restore literal warning
         }
 
         /// <summary>

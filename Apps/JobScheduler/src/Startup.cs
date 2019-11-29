@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -155,7 +156,8 @@ namespace HealthGateway.JobScheduler
         {
             services.AddAuthentication(auth =>
             {
-                auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
@@ -176,6 +178,14 @@ namespace HealthGateway.JobScheduler
                     ValidateIssuer = true,
                 };
                 this.configuration.GetSection("OpenIdConnect").Bind(options);
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnRedirectToIdentityProvider = ctx =>
+                    {
+                        this.logger.LogDebug("Redirecting to identity provider");
+                        return Task.FromResult(0);
+                    },
+                };
             });
         }
     }
