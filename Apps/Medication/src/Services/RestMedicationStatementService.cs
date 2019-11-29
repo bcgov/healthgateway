@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Text.RegularExpressions;
@@ -109,7 +110,7 @@ namespace HealthGateway.Medication.Services
                     }
                     else
                     {
-                        //protective word is too short
+                        // Protective word is too short
                         errMsg = ErrorMessages.ProtectiveWordTooShort;
                     }
                 }
@@ -136,7 +137,7 @@ namespace HealthGateway.Medication.Services
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
 
-                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord?.ToUpper(), phn, ipv4Address).ConfigureAwait(true);
+                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord?.ToUpper(CultureInfo.CurrentCulture), phn, ipv4Address).ConfigureAwait(true);
             }
             else
             {

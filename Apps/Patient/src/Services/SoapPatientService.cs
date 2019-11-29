@@ -111,7 +111,7 @@ namespace HealthGateway.PatientService
             if (deceasedInd)
             {
                 retVal = new Patient();
-                this.logger.LogWarning($"Client Registry returned a person with the deceasedIndicator set to true. No PHN was populated.");
+                this.logger.LogWarning($"Client Registry returned a person with the deceasedIndicator set to true. No PHN was populated. {deceasedInd}");
                 this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)}");
                 return retVal;
             }

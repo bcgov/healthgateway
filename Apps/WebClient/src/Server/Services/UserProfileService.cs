@@ -100,11 +100,17 @@ namespace HealthGateway.WebClient.Services
                     return requestResult;
                 }
 
-                emailInvite = this.emailDelegate.GetEmailInvite(hdid, inviteKey);
+                emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
 
-                if (emailInvite == null ||
-                    emailInvite.Validated ||
-                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
+                // Fails if...
+                // Email invite not found or
+                // Email invite was already validated or
+                // Email invite must have a blank/null HDID or
+                // Email address doesn't match the invite
+                if (emailInvite == null || 
+                    emailInvite.Validated || 
+                    !string.IsNullOrEmpty(emailInvite.HdId) || 
+                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase)) 
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
@@ -127,6 +133,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     // Validates the invite email
                     emailInvite.Validated = true;
+                    emailInvite.HdId = hdid;
                     this.emailDelegate.UpdateEmailInvite(emailInvite);
                 }
 

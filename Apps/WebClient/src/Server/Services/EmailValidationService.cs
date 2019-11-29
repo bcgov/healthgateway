@@ -46,8 +46,9 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
             bool retVal = false;
-            EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(hdid, inviteKey);
-            if (emailInvite != null)
+            EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
+
+            if (emailInvite != null && emailInvite.HdId == hdid)
             {
                 if (!emailInvite.Validated)
                 {

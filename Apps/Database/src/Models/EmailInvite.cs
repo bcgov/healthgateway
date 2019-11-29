@@ -34,7 +34,6 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the users directed identifier.
         /// </summary>
         [MaxLength(52)]
-        [Required]
         public string HdId { get; set; }
 
         /// <summary>

@@ -124,14 +124,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public EmailInvite GetEmailInvite(string hdid, Guid inviteKey)
+        public EmailInvite GetEmailInvite(Guid inviteKey)
         {
-            this.logger.LogTrace($"Getting email invite from DB... {hdid}, {inviteKey}");
+            this.logger.LogTrace($"Getting email invite from DB... {inviteKey}");
             EmailInvite retVal = this.dbContext
                 .EmailInvite
                 .Include(email => email.Email)
-                .Where(p => p.HdId == hdid && p.InviteKey == inviteKey)
-                .FirstOrDefault<EmailInvite>();
+                .Where(p => p.InviteKey == inviteKey)
+                .FirstOrDefault();
 
             this.logger.LogDebug($"Finished getting email invite from DB. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
