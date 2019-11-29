@@ -328,7 +328,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseHealthChecks("/health");
 
             // Enable CORS
-            string enableCors = this.configuration.GetValue<string>("AllowOrigins", "");
+            string enableCors = this.configuration.GetValue<string>("AllowOrigins", string.Empty);
             if (!string.IsNullOrEmpty(enableCors))
             {
                 app.UseCors(builder =>
