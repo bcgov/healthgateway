@@ -247,7 +247,8 @@ namespace HealthGateway.Common.AspNetConfiguration
                     }
                     else
                     {
-                        this.logger.LogInformation("No header XforwardProto was found in request context");
+                        this.logger.LogInformation($"No header XforwardProto was found in request context - defaulting to {Uri.UriSchemeHttps}");
+                        context.Request.Protocol = Uri.UriSchemeHttps;
                     }
 
                     return next();
