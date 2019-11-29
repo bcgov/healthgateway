@@ -247,7 +247,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                     }
                     else
                     {
-                        this.logger.LogInformation("No header XforwardProto was found in request context")
+                        this.logger.LogInformation("No header XforwardProto was found in request context");
                     }
 
                     return next();
