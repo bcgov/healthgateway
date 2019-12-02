@@ -191,6 +191,8 @@ namespace HealthGateway.JobScheduler
                     OnRedirectToIdentityProvider = ctx =>
                     {
                         this.logger.LogDebug("Redirecting to identity provider");
+                        ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps);
+                        this.logger.LogDebug($"Sending Redirect URI: {ctx.ProtocolMessage.RedirectUri}");
                         return Task.FromResult(0);
                     },
                 };
