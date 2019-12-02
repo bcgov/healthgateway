@@ -107,6 +107,14 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
 
+            app.Use(async (context, next) =>
+            {
+                this.logger.LogDebug($"Current Protocol: {context.Request.Protocol}");
+                context.Request.Scheme = Uri.UriSchemeHttps;
+                this.logger.LogDebug($"New Protocol: {context.Request.Protocol}");
+                await next.Invoke().ConfigureAwait(true);
+            });
+
             // Empty string signifies the root URL
             app.UseHangfireDashboard(string.Empty, new DashboardOptions
             {
