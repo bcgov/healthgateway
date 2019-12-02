@@ -52,7 +52,7 @@ namespace HealthGateway.JobScheduler.Controllers
             }
 
             this.logger.LogDebug("Redirecting to dashboard");
-            return new RedirectResult("/admin/jobscheduler");
+            return new RedirectResult("/");
 #pragma warning restore CA1303 //Restore literal warning
         }
 
