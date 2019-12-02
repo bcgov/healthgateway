@@ -1,0 +1,8 @@
+@{
+    ViewData["Title"] = "Dump Headers";
+    foreach (var key in Context.Request.Headers.Keys)
+    {
+        var val = Context.Request.Headers[key];
+        @:@key: @val <br />
+    }
+}
