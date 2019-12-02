@@ -35,6 +35,13 @@
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
+        <b-alert :show="!user.verifiedEmail" dismissible variant="info">
+          <h4>Unverified email</h4>
+          <span
+            >Your email has not been verified. Please check your inbox or junk
+            folder for an email from Health Gateway.</span
+          >
+        </b-alert>
         <div id="pageTitle">
           <h1 id="subject">
             Health Care Timeline
@@ -143,11 +150,13 @@ export default class TimelineComponent extends Vue {
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
+
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
     this.fechMedicationStatements();
+    console.log(this.user);
   }
 
   private fechMedicationStatements(protectiveWord?: string) {

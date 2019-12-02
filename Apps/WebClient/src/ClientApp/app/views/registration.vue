@@ -30,10 +30,7 @@ input {
   <b-container>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <div v-if="!isLoading">
-      <b-row
-        v-if="webClientConfig.registrationStatus == closedRegistration"
-        class="my-3"
-      >
+      <b-row v-if="isRegistrationClosed" class="my-3">
         <b-col>
           <div id="pageTitle">
             <h1 id="Subject">
@@ -46,13 +43,7 @@ input {
           </div>
         </b-col>
       </b-row>
-      <b-row
-        v-else-if="
-          webClientConfig.registrationStatus == inviteOnlyRegistration &&
-            !inviteKey
-        "
-        class="my-3"
-      >
+      <b-row v-else-if="isRegistrationInviteOnly && !inviteKey" class="my-3">
         <b-col>
           <div id="pageTitle">
             <h1 id="Subject">
@@ -96,7 +87,7 @@ input {
               v-model="$v.email.$model"
               type="email"
               placeholder="Your email address"
-              :disabled="emailOptout || predefinedEmail"
+              :disabled="emailOptout || isPredefinedEmail"
               :state="isValid($v.email)"
             />
             <b-form-invalid-feedback :state="isValid($v.email)">
@@ -104,7 +95,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row v-if="!predefinedEmail" class="mb-3">
+        <b-row v-if="!isPredefinedEmail" class="mb-3">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -119,10 +110,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row
-          v-if="webClientConfig.registrationStatus != inviteOnlyRegistration"
-          class="mb-3"
-        >
+        <b-row v-if="!isRegistrationInviteOnly" class="mb-3">
           <b-col>
             <b-form-checkbox
               id="optout"
@@ -196,31 +184,28 @@ export default class RegistrationComponent extends Vue {
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;
   @Prop() inviteKey?: string;
-  @Prop() email?: string;
+  @Prop() inviteEmail?: string;
 
-  private termsOfService: string = termsAndConditionsHTML;
+  private readonly termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
+  private email: string = "";
   private emailConfirmation: string = "";
+
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
-  private predefinedEmail: boolean = false;
-  private inviteOnlyRegistration: RegistrationStatus =
-    RegistrationStatus.InviteOnly;
-  private closedRegistration: RegistrationStatus = RegistrationStatus.Closed;
 
   mounted() {
     if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
       this.email = "";
       this.emailConfirmation = "";
-      this.inviteKey = "";
     } else {
-      this.emailConfirmation = this.email || "";
-      this.predefinedEmail = !!this.email;
+      this.email = this.inviteEmail || "";
+      this.emailConfirmation = this.email;
     }
 
     this.userProfileService = container.get(
@@ -265,6 +250,27 @@ export default class RegistrationComponent extends Vue {
     };
   }
 
+  get fullName(): string {
+    return this.oidcUser.given_name + " " + this.oidcUser.family_name;
+  }
+
+  get isRegistrationClosed(): boolean {
+    return this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
+  }
+
+  get isRegistrationInviteOnly(): boolean {
+    return (
+      this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly
+    );
+  }
+
+  get isPredefinedEmail() {
+    if (this.webClientConfig.registrationStatus != RegistrationStatus.Open) {
+      return !!this.inviteEmail;
+    }
+    return false;
+  }
+
   private isValid(param: any): boolean | undefined {
     return param.$dirty ? !param.$invalid : undefined;
   }
@@ -277,8 +283,6 @@ export default class RegistrationComponent extends Vue {
   }
 
   private onSubmit(event: any) {
-    console.log("submit!");
-    console.log(this.$v);
     this.$v.$touch();
     if (this.$v.$invalid) {
       this.submitStatus = "ERROR";
@@ -318,10 +322,6 @@ export default class RegistrationComponent extends Vue {
     }
 
     event.preventDefault();
-  }
-
-  get fullName(): string {
-    return this.oidcUser.given_name + " " + this.oidcUser.family_name;
   }
 }
 </script>

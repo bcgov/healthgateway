@@ -49,7 +49,7 @@ export const actions: ActionTree<UserState, RootState> = {
             isRegistered = false;
           }
 
-          commit("setIsRegistered", isRegistered);
+          commit("setProfileUserData", userProfile);
           resolve(isRegistered);
         })
         .catch(error => {
