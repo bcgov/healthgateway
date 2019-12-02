@@ -107,9 +107,9 @@ namespace HealthGateway.WebClient.Services
                 // Email invite was already validated or
                 // Email invite must have a blank/null HDID or
                 // Email address doesn't match the invite
-                if (emailInvite == null |
-                    emailInvite.Validated |
-                    !string.IsNullOrEmpty(emailInvite.HdId) |
+                if (emailInvite == null ||
+                    emailInvite.Validated ||
+                    !string.IsNullOrEmpty(emailInvite.HdId) ||
                     !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
                 {
                     requestResult.ResultStatus = ResultType.Error;
