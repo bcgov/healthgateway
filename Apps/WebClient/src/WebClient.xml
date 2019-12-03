@@ -52,28 +52,6 @@
             </summary>
             <returns>The default view.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Controllers.EmailValidationController">
-            <summary>
-            Web API to handle user profile interactions.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.EmailValidationController.#ctor(HealthGateway.WebClient.Services.IEmailValidationService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.EmailValidationController"/> class.
-            </summary>
-            <param name="emailValidationService">The injected email validation service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.EmailValidationController.ValidateEmail(System.Guid)">
-            <summary>
-            Validates an email invite.
-            </summary>
-            <returns>The an empty response.</returns>
-            <param name="inviteKey">The email invite key.</param>
-            <response code="200">The email was validated.</response>
-            <response code="401">The client must authenticate itself to get the requested response.</response>
-            <response code="404">The invite key was not found.</response>
-        </member>
         <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
@@ -164,8 +142,8 @@
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserProfileController"/> class.
             </summary>
             <param name="userProfileService">The injected user profile service.</param>
-            <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.WebClient.Models.CreateUserRequest)">
             <summary>
@@ -369,20 +347,6 @@
             </summary>
             <returns>The external configuration data.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Services.EmailValidationService">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.EmailValidationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.EmailValidationService},HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IProfileDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.EmailValidationService"/> class.
-            </summary>
-            <param name="logger">Injected Logger Provider.</param>
-            <param name="emailDelegate">The email delegate to interact with the DB.</param>
-            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.EmailValidationService.ValidateEmail(System.String,System.Guid)">
-            <inheritdoc />
-        </member>
         <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
             <summary>
             Webclient configuration.
@@ -393,19 +357,6 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Services.IEmailValidationService">
-            <summary>
-            The Email Validation service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IEmailValidationService.ValidateEmail(System.String,System.Guid)">
-            <summary>
-            Gets the user profile model.
-            </summary>
-            <param name="hdid">The requested user hdid.</param>
-            <param name="inviteKey">The email invite key.</param>
-            <returns>returns true if the email invite was found.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IUserEmailService">
             <summary>

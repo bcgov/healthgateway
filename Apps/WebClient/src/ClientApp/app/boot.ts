@@ -69,6 +69,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   );
   const userEmailService: IUserEmailService = container.get(
     SERVICE_IDENTIFIER.UserEmailService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);

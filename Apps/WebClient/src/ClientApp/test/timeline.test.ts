@@ -79,7 +79,8 @@ class MockMedicationService implements IMedicationService {
             error: "User with " + hdid + " not found."
           });
         }
-    });
+      }
+    );
   }
   getMedicationInformation(drugIdentifier: string): Promise<MedicationResult> {
     throw new Error(METHOD_NOT_IMPLEMENTED);

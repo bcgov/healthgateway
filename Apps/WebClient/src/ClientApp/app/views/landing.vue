@@ -140,7 +140,7 @@
       color: $primary;
       font-size: 2.2em;
     }
-    
+
     .description {
       color: $primary;
     }

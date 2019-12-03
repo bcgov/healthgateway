@@ -198,7 +198,7 @@ export default class RegistrationComponent extends Vue {
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
-  
+
   mounted() {
     if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
       this.email = "";
