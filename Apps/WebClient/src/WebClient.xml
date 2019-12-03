@@ -41,7 +41,18 @@
             </summary>
             <returns>The Health Gatway Configuration.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Controllers.HomeController">
+        <member name="T:HealthGateway.WebClient.Controllers.DumpHeadersController">
+            <summary>
+            HomeController for Vue WebClient app.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.DumpHeadersController.Index">
+            <summary>
+            The default page for the home controller.
+            </summary>
+            <returns>The default view.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.EmailValidationController">
             <summary>
             HomeController for Vue WebClient app.
             </summary>

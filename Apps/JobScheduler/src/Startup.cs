@@ -107,6 +107,14 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
 
+            app.Use(async (context, next) =>
+            {
+                this.logger.LogDebug($"Current Protocol: {context.Request.Protocol}");
+                context.Request.Scheme = Uri.UriSchemeHttps;
+                this.logger.LogDebug($"New Protocol: {context.Request.Protocol}");
+                await next.Invoke().ConfigureAwait(true);
+            });
+
             // Empty string signifies the root URL
             app.UseHangfireDashboard(string.Empty, new DashboardOptions
             {
@@ -183,6 +191,8 @@ namespace HealthGateway.JobScheduler
                     OnRedirectToIdentityProvider = ctx =>
                     {
                         this.logger.LogDebug("Redirecting to identity provider");
+                        ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps);
+                        this.logger.LogDebug($"Sending Redirect URI: {ctx.ProtocolMessage.RedirectUri}");
                         return Task.FromResult(0);
                     },
                 };
