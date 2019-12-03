@@ -35,7 +35,7 @@
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
-        <b-alert :show="!user.verifiedEmail" dismissible variant="info">
+        <b-alert :show="unverifiedEmail" dismissible variant="info">
           <h4>Unverified email</h4>
           <span
             >Your email has not been verified. Please check your inbox or junk
@@ -157,6 +157,10 @@ export default class TimelineComponent extends Vue {
   mounted() {
     this.fechMedicationStatements();
     console.log(this.user);
+  }
+
+  get unverifiedEmail(): boolean {
+    return !this.user.verifiedEmail && this.user.hasEmail;
   }
 
   private fechMedicationStatements(protectiveWord?: string) {

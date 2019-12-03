@@ -23,11 +23,6 @@ export const mutations: MutationTree<UserState> = {
   setProfileUserData(state: UserState, userProfile: UserProfile) {
     Vue.set(
       state.user,
-      "verifiedEmail",
-      userProfile ? userProfile.email !== "" : false
-    );
-    Vue.set(
-      state.user,
       "acceptedTermsOfService",
       userProfile ? userProfile.acceptedTermsOfService : false
     );
@@ -37,12 +32,14 @@ export const mutations: MutationTree<UserState> = {
   },
   setValidatedEmail(state: UserState, emailInvite: EmailInvite) {
     console.log("setValidatedEmail", emailInvite);
-    Vue.set(
-      state.user,
-      "verifiedEmail",
-      emailInvite ? emailInvite.validated : false
-    );
-    Vue.set(state.user, "hasEmail", emailInvite ? true : false);
+    if (emailInvite) {
+      Vue.set(state.user, "hasEmail", true);
+      Vue.set(state.user, "verifiedEmail", emailInvite.validated);
+    } else {
+      Vue.set(state.user, "hasEmail", false);
+      Vue.set(state.user, "verifiedEmail", false);
+    }
+
     state.error = false;
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;

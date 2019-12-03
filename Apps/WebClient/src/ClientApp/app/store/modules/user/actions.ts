@@ -72,6 +72,7 @@ export const actions: ActionTree<UserState, RootState> = {
                 reject(error);
               });
           } else {
+            commit("setValidatedEmail", undefined);
             resolve(isRegistered);
           }
         })

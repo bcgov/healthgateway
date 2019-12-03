@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { IHttpDelegate, IUserEmailService } from "@/services/interfaces";
+import EmailInvite from "@/models/emailInvite";
 
 @injectable()
 export class RestUserEmailService implements IUserEmailService {
@@ -27,7 +28,7 @@ export class RestUserEmailService implements IUserEmailService {
   public getLatestInvite(hdid: string): Promise<EmailInvite> {
     return new Promise(resolve => {
       this.http
-        .get(`${this.USER_EMAIL_BASE_URI}/${hdid}`)
+        .get<EmailInvite>(`${this.USER_EMAIL_BASE_URI}/${hdid}`)
         .then(emailInvite => {
           return resolve(emailInvite);
         })
