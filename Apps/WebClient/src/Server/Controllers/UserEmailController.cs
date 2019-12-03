@@ -15,64 +15,90 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Diagnostics.Contracts;
+    using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to handle user feedback interactions.
+    /// Web API to handle user email interactions.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    public class UserFeedbackController
+    public class UserEmailController
     {
-        private readonly IUserFeedbackService userFeedbackService;
-
+        private readonly IUserEmailService userEmailService;
         private readonly IHttpContextAccessor httpContextAccessor;
-
         private readonly IAuthorizationService authorizationService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
+        /// Initializes a new instance of the <see cref="UserEmailController"/> class.
         /// </summary>
-        /// <param name="userFeedbackService">The injected user feedback service.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
+        /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        public UserFeedbackController(
-            IUserFeedbackService userFeedbackService,
+        /// <param name="authorizationService">The injected authorization service.</param>
+        public UserEmailController(
+            IUserEmailService userEmailService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            this.userFeedbackService = userFeedbackService;
+            this.userEmailService = userEmailService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
         }
 
         /// <summary>
-        /// Posts a user feedback json to be inserted into the database.
+        /// Validates an email invite.
         /// </summary>
-        /// <returns>The http status.</returns>
-        /// <param name="userFeedback">The user feedback model.</param>
-        /// <response code="200">The user feedback record was saved.</response>
-        /// <response code="400">The user feedback was already inserted.</response>
+        /// <returns>The an empty response.</returns>
+        /// <param name="inviteKey">The email invite key.</param>
+        /// <response code="200">The email was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPost]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateUserProfile([FromBody] UserFeedback userFeedback)
+        /// <response code="404">The invite key was not found.</response>
+        [HttpGet]
+        [Route("Validate/{inviteKey}")]
+        public IActionResult ValidateEmail(Guid inviteKey)
         {
-            Contract.Requires(userFeedback != null);
+            string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
+            if (this.userEmailService.ValidateEmail(hdid, inviteKey))
+            {
+                return new OkResult();
+            }
+            else
+            {
+                return new NotFoundResult();
+            }
+        }
+
+        /// <summary>
+        /// Validates an email invite.
+        /// </summary>
+        /// <returns>The invite email.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the user email invite json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}")]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> GetUserEmailInvite(string hdid)
+        {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
+
+            // Validate that the query parameter matches the user claims
+            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
+            }
+            
             var isAuthorized = await this.authorizationService
                 .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
@@ -82,15 +108,9 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            userFeedback.CreatedBy = userHdid;
-            userFeedback.UpdatedBy = userHdid;
-            DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
-            if (result.Status != Database.Constant.DBStatusCode.Created)
-            {
-                return new ConflictResult();
-            }
+            EmailInvite result = this.userEmailService.RetrieveLastInvite(hdid);
 
-            return new OkResult();
+            return new JsonResult(result);
         }
     }
 }

@@ -16,18 +16,26 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The Email Validation service.
+    /// The User Email service.
     /// </summary>
-    public interface IEmailValidationService
+    public interface IUserEmailService
     {
         /// <summary>
-        /// Gets the user profile model.
+        /// Validates the email that matches the given invite key.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
         /// <returns>returns true if the email invite was found.</returns>
         bool ValidateEmail(string hdid, Guid inviteKey);
+
+        /// <summary>
+        /// Retrieves the last invite email.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>returns the last email invite if found.</returns>
+        EmailInvite RetrieveLastInvite(string hdid);
     }
 }

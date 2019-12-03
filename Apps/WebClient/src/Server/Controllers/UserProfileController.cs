@@ -48,8 +48,8 @@ namespace HealthGateway.WebClient.Controllers
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
         /// </summary>
         /// <param name="userProfileService">The injected user profile service.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        /// <param name="authorizationService">The injected authorization service.</param>
         public UserProfileController(
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,

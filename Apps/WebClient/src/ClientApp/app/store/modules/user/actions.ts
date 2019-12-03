@@ -1,6 +1,10 @@
 import { ActionTree, Commit } from "vuex";
 
-import { IPatientService, IUserProfileService } from "@/services/interfaces";
+import {
+  IPatientService,
+  IUserProfileService,
+  IUserEmailService
+} from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
@@ -18,6 +22,10 @@ const patientService: IPatientService = container.get<IPatientService>(
 const userProfileService: IUserProfileService = container.get<
   IUserProfileService
 >(SERVICE_IDENTIFIER.UserProfileService);
+
+const userEmailService: IUserEmailService = container.get<IUserEmailService>(
+  SERVICE_IDENTIFIER.UserEmailService
+);
 
 export const actions: ActionTree<UserState, RootState> = {
   getPatientData({ commit }, { hdid }): Promise<PatientData> {
@@ -49,8 +57,24 @@ export const actions: ActionTree<UserState, RootState> = {
             isRegistered = false;
           }
 
-          commit("setIsRegistered", isRegistered);
-          resolve(isRegistered);
+          commit("setProfileUserData", userProfile);
+
+          // If registered retrieve the invite as well
+          if (isRegistered) {
+            userEmailService
+              .getLatestInvite(hdid)
+              .then(emailInvite => {
+                commit("setValidatedEmail", emailInvite);
+                resolve(isRegistered);
+              })
+              .catch(error => {
+                handleError(commit, error);
+                reject(error);
+              });
+          } else {
+            commit("setValidatedEmail", undefined);
+            resolve(isRegistered);
+          }
         })
         .catch(error => {
           handleError(commit, error);
