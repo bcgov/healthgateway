@@ -52,7 +52,7 @@
             </summary>
             <returns>The default view.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Controllers.EmailValidationController">
+        <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
             </summary>
