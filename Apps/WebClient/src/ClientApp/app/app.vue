@@ -20,7 +20,7 @@ main {
 
 <template>
   <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-    <div v-if="!isProduction" exclude="Production">
+    <div v-if="!isProduction">
       <div class="text-center bg-warning small">
         Non-production environment:
         <b>{{ host }}</b>
@@ -63,15 +63,16 @@ export default class AppComponent extends Vue {
   private readonly host: string = window.location.hostname.toLocaleUpperCase();
   private readonly isProduction: boolean =
     Process.NODE_ENV == EnvironmentType.production &&
-    !this.host.startsWith("healthgateway");
+    this.host.startsWith("healthgateway");
 
   constructor() {
     super();
+    console.log("Node ENV", Process.NODE_ENV);
+    console.log("host", this.host);
   }
 
   @Watch("isAppIdle")
   public onIsAppIdleChanged(idle: boolean) {
-    console.log(`isAppIdle ${idle}`);
     if (idle && this.oidcIsAuthenticated) {
       this.idleModal.show();
     }

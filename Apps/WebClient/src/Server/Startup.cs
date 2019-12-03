@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
-            services.AddTransient<IEmailValidationService, EmailValidationService>();
+            services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IAuthService, AuthService>();

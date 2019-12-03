@@ -26,6 +26,7 @@
     background-color: rgba(0, 51, 102, 0.1); // Tint color
     background-blend-mode: multiply;
   }
+
   .background-tint-dark {
     background-color: rgba(0, 51, 102, 0.3); // Tint color
     background-blend-mode: multiply;
@@ -93,6 +94,7 @@
       margin-bottom: 10px;
     }
   }
+
   .tile-section {
     margin-top: 50px;
     margin-bottom: 50px;
@@ -106,10 +108,12 @@
       margin-left: 0px;
       margin-right: 0px;
     }
+
     .col {
       padding-left: 0px;
       padding-right: 0px;
     }
+
     .text-wrapper {
       margin-top: 5em;
       color: $primary;
@@ -119,6 +123,7 @@
       }
     }
   }
+
   .secure {
     height: 750px;
     background-size: cover;
@@ -135,6 +140,7 @@
       color: $primary;
       font-size: 2.2em;
     }
+    
     .description {
       color: $primary;
     }

@@ -64,8 +64,9 @@ export interface IUserFeedbackService {
   submitFeedback(feedback: UserFeedback): Promise<boolean>;
 }
 
-export interface IEmailValidationService {
+export interface IUserEmailService {
   initialize(http: IHttpDelegate): void;
+  getLatestInvite(hdid: string): Promise<UserEmail>;
   validateEmail(inviteKey: string): Promise<boolean>;
 }
 

@@ -37,7 +37,7 @@ const routes = [
     component: RegistrationComponent,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
-      email: route.query.email
+      inviteEmail: route.query.email
     }),
     meta: { requiresAuth: true }
   },

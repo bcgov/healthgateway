@@ -37,7 +37,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import { IEmailValidationService } from "@/services/interfaces";
+import { IUserEmailService } from "@/services/interfaces";
 import container from "@/inversify.config";
 
 @Component
@@ -48,11 +48,11 @@ export default class ValidateEmailComponent extends Vue {
 
   mounted() {
     this.isLoading = true;
-    const emailValidationService: IEmailValidationService = container.get(
-      SERVICE_IDENTIFIER.EmailValidationService
+    const userEmailService: IUserEmailService = container.get(
+      SERVICE_IDENTIFIER.userEmailService
     );
 
-    emailValidationService
+    userEmailService
       .validateEmail(this.inviteKey)
       .then(isValid => {
         this.success = isValid;
