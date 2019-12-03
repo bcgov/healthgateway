@@ -138,6 +138,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public EmailInvite GetLastEmailInviteForUser(string hdid)
+        {
+            this.logger.LogTrace($"Getting last email invite from DB for user... {hdid}");
+            EmailInvite retVal = this.dbContext
+                .EmailInvite
+                .Where(p => p.HdId == hdid)
+                .OrderByDescending(p => p.UpdatedBy)
+                .FirstOrDefault();
+
+            this.logger.LogDebug($"Finished getting email invite from DB. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
+        }
+
+        /// <inheritdoc />
         public void UpdateEmailInvite(EmailInvite emailInvite)
         {
             Contract.Requires(emailInvite != null);

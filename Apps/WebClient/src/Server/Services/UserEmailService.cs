@@ -22,19 +22,19 @@ namespace HealthGateway.WebClient.Services
     using Newtonsoft.Json;
 
     /// <inheritdoc />
-    public class EmailValidationService : IEmailValidationService
+    public class UserEmailService : IUserEmailService
     {
         private readonly ILogger logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly IProfileDelegate profileDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmailValidationService"/> class.
+        /// Initializes a new instance of the <see cref="UserEmailService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        public EmailValidationService(ILogger<EmailValidationService> logger, IEmailDelegate emailDelegate, IProfileDelegate profileDelegate)
+        public UserEmailService(ILogger<UserEmailService> logger, IEmailDelegate emailDelegate, IProfileDelegate profileDelegate)
         {
             this.logger = logger;
             this.emailDelegate = emailDelegate;
@@ -64,6 +64,15 @@ namespace HealthGateway.WebClient.Services
 
             this.logger.LogDebug($"Finished validating email: {JsonConvert.SerializeObject(retVal)}");
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public EmailInvite RetrieveLastInvite(string hdid)
+        {
+            this.logger.LogTrace($"Retrieving last invite for {hdid}");
+            EmailInvite emailInvite = this.emailDelegate.GetLastEmailInviteForUser(hdid);
+            this.logger.LogDebug($"Finished retrieving email: {JsonConvert.SerializeObject(emailInvite)}");
+            return emailInvite;
         }
     }
 }

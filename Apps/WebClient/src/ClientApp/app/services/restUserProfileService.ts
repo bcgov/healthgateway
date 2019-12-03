@@ -46,6 +46,9 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
+  public retrieveEmailInvite()
+  {}
+
   private handleResult(
     requestResult: RequestResult<any>,
     resolve: any,
