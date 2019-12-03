@@ -340,7 +340,7 @@ namespace HealthGateway.Database.Context
                                         "            <th width=\"45\" ></th>",
                                         "            <th width=\"450\" align=\"left\" style=\"text-align:left;\">",
                                         "                <div role=\"img\" aria - label=\"Health Gateway Logo\">",
-                                        "                    <img src=\"\" alt=\"Health Gateway Logo\"/>",
+                                        "                    <img src=\"${ActivationHost}/Logo\" alt=\"Health Gateway Logo\"/>",
                                         "                </div>",
                                         "            </th>",
                                         "            <th width=\"\"></th>",
