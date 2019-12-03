@@ -3,15 +3,17 @@ using System;
 using HealthGateway.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    partial class GatewayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191203205658_UpdateEmailTemplates")]
+    partial class UpdateEmailTemplates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -683,36 +685,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"),
-                            Body = @"<!doctype html>
-<html lang=""en"">
-<head></head>
-<body style = ""margin:0"">
-    <table cellspacing = ""0"" align = ""left"" width = ""100%"" style = ""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style = ""background:#003366;"">
-            <th width=""45"" ></th>
-            <th width=""450"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria - label=""Health Gateway Logo"">
-                    <img src=""${ActivationHost}/Logo"" alt=""Health Gateway Logo""/>
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style = ""font-size:18px;"">Almost there!</h1>
-                <p>We've received a request to register your email address for a Ministry of Health Gateway account.</p>
-                <p>To activate your account, please verify your email by clicking the link:</p>
-                <a style = ""color:#1292c5;font-weight:600;"" href = ""${ActivationHost}/ValidateEmail/${InviteKey}"" > Health Gateway account verification </a>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),

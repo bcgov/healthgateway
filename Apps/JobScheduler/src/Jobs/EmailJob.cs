@@ -134,7 +134,6 @@ namespace Healthgateway.JobScheduler.Jobs
                         try
                         {
                             smtpClient.Send(EmailJob.PrepareMessage(email));
-                            email.SentDateTime = DateTime.UtcNow;
                             email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
                             email.EmailStatusCode = EmailStatus.Processed;
                             this.emailDelegate.UpdateEmail(email);
@@ -165,7 +164,7 @@ namespace Healthgateway.JobScheduler.Jobs
             if (caught != null)
             {
                 email.LastRetryDateTime = DateTime.UtcNow;
-                email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.New : EmailStatus.Error;
+                email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
                 if (caught is SmtpCommandException)
                 {
                     email.SmtpStatusCode = (int)((SmtpCommandException)caught).StatusCode;
