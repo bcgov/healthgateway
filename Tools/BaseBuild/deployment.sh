@@ -25,7 +25,7 @@ echo "DEMO ended"
 echo "TRAINING started"
 oc project q6qfzk-prod
 oc delete route webclient
-oc process -f ./webclient.yaml -p ENV=training  | oc apply -f -
+oc process -f ./webclient.yaml -p ENV=production  | oc apply -f -
 echo "TRAINING ended"
 
 read -p "Deployment is DONE. Press [Enter] to exit..."
