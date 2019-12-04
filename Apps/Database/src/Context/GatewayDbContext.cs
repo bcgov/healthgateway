@@ -41,13 +41,13 @@ namespace HealthGateway.Database.Context
             : base(options)
         {
             Assembly assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
-            Stream resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.Docs.EmailValidationTemplate.html");
+            Stream resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
             using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
                 this.emailValidationTemplate = reader.ReadToEnd();
             }
 
-            resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.Docs.EmailInviteTemplate.html");
+            resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
             using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
                 this.emailInviteTemplate = reader.ReadToEnd();
