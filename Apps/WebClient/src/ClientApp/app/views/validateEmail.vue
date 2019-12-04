@@ -49,7 +49,7 @@ export default class ValidateEmailComponent extends Vue {
   mounted() {
     this.isLoading = true;
     const userEmailService: IUserEmailService = container.get(
-      SERVICE_IDENTIFIER.userEmailService
+      SERVICE_IDENTIFIER.UserEmailService
     );
 
     userEmailService
