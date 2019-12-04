@@ -15,8 +15,7 @@
   .btn-primary-landing {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-width: 0px;
-    margin: 0.8em;
-    width: 150px;
+    min-width: 150px;
     font-weight: 600;
     color: $primary;
     background-color: $bcgold;
@@ -42,7 +41,7 @@
       margin-right: auto;
 
       border-radius: 25px;
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: rgba(0, 0, 0, 0.5);
     }
 
     .logo {
@@ -116,6 +115,62 @@
         font-size: 2.2rem;
       }
     }
+
+    /* Large Devices, Wide Screens */
+    @media (max-width: 767px) {
+      /* your desktop css */
+      .text-wrapper {
+        color: white;
+        bottom: 0;
+        .title {
+          font-size: 2.2rem;
+          color: white;
+        }
+        .small-text {
+          font-size: 1.5rem;
+        }
+      }
+
+      .background-tint {
+        background: -moz-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(0, 0, 0, 0.8) 100%
+        ); /* FF3.6+ */
+        background: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          color-stop(0%, rgba(255, 255, 255, 0)),
+          color-stop(100%, rgba(0, 0, 0, 0.65))
+        ); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(0, 0, 0, 0.8) 100%
+        ); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(0, 0, 0, 0.8) 100%
+        ); /* Opera 11.10+ */
+        background: -ms-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(0, 0, 0, 0.8) 100%
+        ); /* IE10+ */
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(0, 0, 0, 0.8) 100%
+        ); /* W3C */
+
+        background-blend-mode: multiply;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+      }
+    }
   }
 
   .secure {
@@ -152,8 +207,8 @@
       :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
     >
       <!--Empty Column for  fitting reasons-->
-      <b-col class="d-none d-md-block col-12 col-md-5" />
-      <b-col class="col-12 col-md-7 p-5">
+      <b-col class="col-12 col-md-4 d-none d-md-block" />
+      <b-col class="col-12 col-md-8 p-5">
         <div class="title-wrapper p-3 p-md-5">
           <img
             class="img-fluid d-md-block logo py-4"
@@ -165,18 +220,15 @@
 
           <div class="title-text">
             <div>
-              Empowering you
-            </div>
-            <div>
-              to manage your health
+              Empowering you to manage your health
             </div>
           </div>
-          <b-row class=" py-4">
-            <b-col class="justify-content-around">
+          <b-row class=" p-5">
+            <b-col class="justify-content-center">
               <b-button
                 id="btnStart"
                 to="registrationInfo"
-                class="btn btn-primary-landing w-100 mx-2"
+                class="btn btn-primary-landing w-100"
                 role="button"
                 >Register</b-button
               >
@@ -233,27 +285,28 @@
         </span>
       </div>
     </b-row>
-    <b-row class="tile-section my-1 my-md-0">
+    <b-row class="tile-section my-0 my-md-1">
       <div>
         <b-row
           v-for="(tile, index) in tiles"
           :key="tile.title"
           class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
         >
-          <b-col class="col-12 col-md-5" :class="getTileClass(index)">
-            <div class="text-wrapper m-4">
-              <div class="title">{{ tile.title }}</div>
-              <div class="small-text">{{ tile.description }}</div>
-            </div>
-          </b-col>
           <b-col class="col-12 col-md-5" :class="getTileClass(index + 1)">
+            <div class="background-tint"></div>
             <img
-              class="img-fluid d-md-block"
+              class="img-fluid d-md-block "
               :src="tile.imageSrc"
               width="auto"
               height="auto"
               alt="B.C. Government Logo"
           /></b-col>
+          <b-col class="col-12 col-md-5" :class="getTileClass(index)">
+            <div class="text-wrapper m-4 position-absolute">
+              <div class="title">{{ tile.title }}</div>
+              <div class="small-text">{{ tile.description }}</div>
+            </div>
+          </b-col>
         </b-row>
       </div>
     </b-row>
