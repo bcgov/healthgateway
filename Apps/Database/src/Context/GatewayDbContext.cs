@@ -44,12 +44,13 @@ namespace HealthGateway.Database.Context
             Stream resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.Docs.EmailValidationTemplate.html");
             using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
-                emailValidationTemplate = reader.ReadToEnd();
+                this.emailValidationTemplate = reader.ReadToEnd();
             }
+
             resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.Docs.EmailInviteTemplate.html");
             using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
-                emailInviteTemplate = reader.ReadToEnd();
+                this.emailInviteTemplate = reader.ReadToEnd();
             }
         }
 
@@ -346,7 +347,7 @@ namespace HealthGateway.Database.Context
                     Name = "Registration",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Email Verification ${Environment}",
-                    Body = emailValidationTemplate,
+                    Body = this.emailValidationTemplate,
                     Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -362,7 +363,7 @@ namespace HealthGateway.Database.Context
                     Name = "Invite",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Private Invitation",
-                    Body = emailInviteTemplate,
+                    Body = this.emailInviteTemplate,
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
