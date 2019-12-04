@@ -44,12 +44,13 @@
     <Folder Include="Wrapper\" />
   </ItemGroup>
 
+
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Docs\EmailInviteTemplate.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Docs\EmailValidationTemplate.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <Content Remove="Assets\Docs\EmailInviteTemplate.html" />
+    <Content Remove="Assets\Docs\EmailValidationTemplate.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Docs\EmailInviteTemplate.html" />
+    <EmbeddedResource Include="Assets\Docs\EmailValidationTemplate.html" />
   </ItemGroup>
 </Project>
