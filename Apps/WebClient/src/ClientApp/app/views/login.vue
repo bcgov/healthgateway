@@ -85,6 +85,8 @@ export default class LoginComponent extends Vue {
     } else if (this.oidcIsAuthenticated) {
       this.redirectPath = "/registrationInfo";
       this.routeHandler.push({ path: this.redirectPath });
+    } else if (!this.oidcIsAuthenticated && (this.identityProviders.length == 1)) {
+      this.oidcLogin(this.identityProviders[0]);
     }
   }
 
