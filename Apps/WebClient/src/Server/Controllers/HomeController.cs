@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient.Controllers
                 "assets",
                 "images",
                 "gov",
-                "bcid-logo-en.svg");
+                "bcid-logo-rev-en.svg");
 
             return this.PhysicalFile(file, "image/svg+xml");
         }
