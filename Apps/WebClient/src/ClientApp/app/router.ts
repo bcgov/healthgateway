@@ -86,11 +86,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.path);
+  console.log(to.fullPath);
   if (to.meta.requiresAuth || to.meta.requiresRegistration) {
     store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
       if (!hasAccess) {
-        next({ path: "/login", query: { redirect: to.path } });
+        next({ path: "/login", query: { redirect: to.fullPath } });
       } else {
         handleUserHasAccess(to, from, next);
       }
