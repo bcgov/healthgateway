@@ -1,9 +1,7 @@
 <template>
-  <b-navbar toggleable="lg" type="dark" >
-    
+  <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
     <b-navbar-brand>
-      
       <router-link to="/timeLine">
         <img
           class="img-fluid d-none d-md-block mx-2"
@@ -12,7 +10,7 @@
           height="44"
           alt="Go to healthgateway timeline"
         />
-        
+
         <img
           class="img-fluid d-md-none"
           src="@/assets/images/gov/bcid-symbol-rev.svg"
@@ -20,15 +18,12 @@
           height="44"
           alt="Go to healthgateway timeline"
         />
-         
-      
       </router-link>
-      
     </b-navbar-brand>
 
-   <b-navbar-brand  >
-          <h4  class="nav-link mt-4 " to="/timeLine">HealthGateway</h4>
-        </b-navbar-brand>
+    <b-navbar-brand>
+      <h4 class="nav-link mt-4 " to="/timeLine">HealthGateway</h4>
+    </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -43,7 +38,6 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        
         <b-nav-item-dropdown
           v-if="oidcIsAuthenticated"
           id="menuBtndUser"
