@@ -5,7 +5,6 @@
   .btn-secondary-landing {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-width: 0px;
-    margin: 0.8em;
     width: 150px;
     font-weight: 600;
     color: $primary;
@@ -19,16 +18,6 @@
     font-weight: 600;
     color: $primary;
     background-color: $bcgold;
-  }
-
-  .background-tint-light {
-    background-color: rgba(0, 51, 102, 0.1); // Tint color
-    background-blend-mode: multiply;
-  }
-
-  .background-tint-dark {
-    background-color: rgba(0, 51, 102, 0.3); // Tint color
-    background-blend-mode: multiply;
   }
 
   .intro {
@@ -62,7 +51,6 @@
     .devices-image {
       margin-left: auto;
       margin-right: auto;
-      padding: 2em;
       margin-top: -75px;
       margin-bottom: 20px;
     }
@@ -123,11 +111,11 @@
         color: white;
         bottom: 0;
         .title {
-          font-size: 2.2rem;
+          font-size: 2rem;
           color: white;
         }
         .small-text {
-          font-size: 1.5rem;
+          font-size: 1.2rem;
         }
       }
 
@@ -178,7 +166,6 @@
     background-size: cover;
 
     .secure-wrapper {
-      max-width: 600px;
       margin-top: 130px;
       margin-bottom: auto;
       margin-left: auto;
@@ -207,11 +194,11 @@
       :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
     >
       <!--Empty Column for  fitting reasons-->
-      <b-col class="col-12 col-md-4 d-none d-md-block" />
-      <b-col class="col-12 col-md-8 p-5">
-        <div class="title-wrapper p-3 p-md-5">
+      <b-col class="col-12 col-md-4 col-xl-5 d-none d-md-block" />
+      <b-col class="col-12 col-md-8 col-xl-6">
+        <div class="title-wrapper m-2 m-sm-5 p-5 p-md-5">
           <img
-            class="img-fluid d-md-block logo py-4"
+            class="img-fluid logo py-4"
             :src="logo"
             width="auto"
             height="auto"
@@ -223,7 +210,7 @@
               Empowering you to manage your health
             </div>
           </div>
-          <b-row class=" p-5">
+          <b-row class=" p-3 p-md-5">
             <b-col class="justify-content-center">
               <b-button
                 id="btnStart"
@@ -244,8 +231,10 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="devices-section align-items-center mx-3">
-      <b-col class="d-none d-md-block">
+    <b-row
+      class="devices-section justify-content-center align-items-center mx-5"
+    >
+      <b-col class="d-none d-md-block text-center col-6 col-xl-4 m-auto">
         <img
           class="img-fluid devices-image"
           :src="devices"
@@ -253,7 +242,7 @@
           height="auto"
           alt="Devices"
       /></b-col>
-      <b-col>
+      <b-col class="col-12 col-md-6">
         <div class="devices-text my-5 my-md-5 mx-md-5">
           <h3>Browse your health records</h3>
           <div>
@@ -269,11 +258,11 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="circle-icons justify-content-around">
+    <b-row class="circle-icons justify-content-center">
       <div
         v-for="icon in icons"
         :key="icon.label"
-        class="icon-wrapper text-center"
+        class="icon-wrapper text-center px-xl-5"
       >
         <div class="icon rounded-circle bg-white">
           <h3>
@@ -326,14 +315,14 @@
             <b-button
               id="btnSecureStart"
               to="registrationInfo"
-              class="btn btn-primary-landing"
+              class="btn btn-primary-landing m-2"
               role="button"
               >Sign Up</b-button
             >
             <b-button
               id="btnLearnMore"
               href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
-              class="btn btn-secondary-landing"
+              class="btn btn-secondary-landing m-2"
               >Learn More</b-button
             >
           </div>
