@@ -45,7 +45,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Docs\EmailInviteTemplate.html" />
-    <EmbeddedResource Include="Assets\Docs\EmailValidationTemplate.html" />
+    <EmbeddedResource Include="Assets\Docs\EmailInviteTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Docs\EmailValidationTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
