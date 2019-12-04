@@ -84,7 +84,7 @@ namespace HealthGateway.Database.Delegates
         /// <returns>The EmailInvite that was fetched.</returns>
         EmailInvite GetEmailInvite(Guid inviteKey);
 
-         /// <summary>
+        /// <summary>
         /// Gets the last EmailInvite based on the users HDID.
         /// </summary>
         /// <param name="hdid">The users hdid.</param>

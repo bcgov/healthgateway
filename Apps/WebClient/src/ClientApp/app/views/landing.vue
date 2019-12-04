@@ -302,15 +302,18 @@ import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
+
 interface Icon {
   label: string;
   classIcon: string;
 }
+
 interface Tile {
   title: string;
   description: string;
   imageSrc: string;
 }
+
 @Component
 export default class LandingComponent extends Vue {
   private icons: Icon[] = [
@@ -331,6 +334,7 @@ export default class LandingComponent extends Vue {
       label: "Vaccinations"
     }
   ];
+
   private tiles: Tile[] = [
     {
       title: "All in one place",
@@ -356,6 +360,7 @@ export default class LandingComponent extends Vue {
       imageSrc: Image06
     }
   ];
+
   private logo: string = Image00;
   private introBackground: string = Image01;
   private devices: string = Image02;

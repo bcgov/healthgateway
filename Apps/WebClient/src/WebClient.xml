@@ -63,6 +63,12 @@
             </summary>
             <returns>The default view.</returns>
         </member>
+        <member name="M:HealthGateway.WebClient.Controllers.HomeController.Logo">
+            <summary>
+            The bc gov logo image.
+            </summary>
+            <returns>The logo image.</returns>
+        </member>
         <member name="M:HealthGateway.WebClient.Controllers.HomeController.Error">
             <summary>
             The default page for error.

@@ -98,7 +98,7 @@ namespace HealthGateway.WebClient.Controllers
             {
                 return new BadRequestResult();
             }
-            
+
             var isAuthorized = await this.authorizationService
                 .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);

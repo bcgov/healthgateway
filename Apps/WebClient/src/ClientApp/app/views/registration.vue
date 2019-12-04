@@ -253,17 +253,14 @@ export default class RegistrationComponent extends Vue {
   get fullName(): string {
     return this.oidcUser.given_name + " " + this.oidcUser.family_name;
   }
-
   get isRegistrationClosed(): boolean {
     return this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
   }
-
   get isRegistrationInviteOnly(): boolean {
     return (
       this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly
     );
   }
-
   get isPredefinedEmail() {
     if (this.webClientConfig.registrationStatus != RegistrationStatus.Open) {
       return !!this.inviteEmail;

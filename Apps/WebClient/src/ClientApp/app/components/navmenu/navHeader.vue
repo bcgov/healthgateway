@@ -28,7 +28,6 @@
     <!-- Navbar links -->
     <b-collapse id="nav-collapse" is-nav>
       <!-- Menu -->
-
       <b-navbar-nav v-if="displayRegistration">
         <router-link class="nav-link" to="/registration">
           <span class="fa fa-key"></span> Register

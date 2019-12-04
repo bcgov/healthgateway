@@ -65,7 +65,8 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddCors(options => {
+            services.AddCors(options =>
+            {
                 options.AddPolicy("allowAny", policy =>
                 {
                     policy
