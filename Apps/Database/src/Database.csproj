@@ -46,11 +46,11 @@
 
 
   <ItemGroup>
-    <Content Remove="Assets\Docs\EmailInviteTemplate.html" />
-    <Content Remove="Assets\Docs\EmailValidationTemplate.html" />
+    <Content Remove="Assets\docs\EmailInviteTemplate.html" />
+    <Content Remove="Assets\docs\EmailValidationTemplate.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Docs\EmailInviteTemplate.html" />
-    <EmbeddedResource Include="Assets\Docs\EmailValidationTemplate.html" />
+    <EmbeddedResource Include="Assets\docs\EmailInviteTemplate.html" />
+    <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
   </ItemGroup>
 </Project>
