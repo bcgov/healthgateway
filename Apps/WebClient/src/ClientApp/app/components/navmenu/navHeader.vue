@@ -1,27 +1,34 @@
 <template>
-  <b-navbar toggleable="lg" type="dark">
+  <b-navbar toggleable="lg" type="dark" >
+    
     <!-- Brand -->
     <b-navbar-brand>
+      
       <router-link to="/timeLine">
         <img
-          class="img-fluid d-none d-md-block"
+          class="img-fluid d-none d-md-block mx-2"
           src="@/assets/images/gov/bcid-logo-rev-en.svg"
           width="181"
           height="44"
-          alt="B.C. Government Logo"
+          alt="Go to healthgateway timeline"
         />
+        
         <img
           class="img-fluid d-md-none"
           src="@/assets/images/gov/bcid-symbol-rev.svg"
           width="64"
           height="44"
-          alt="B.C. Government Logo"
+          alt="Go to healthgateway timeline"
         />
-        <b-navbar-brand>
-          <h4 class="nav-link " to="/timeLine">HealthGateway</h4>
-        </b-navbar-brand>
+         
+      
       </router-link>
+      
     </b-navbar-brand>
+
+   <b-navbar-brand  >
+          <h4  class="nav-link mt-4 " to="/timeLine">HealthGateway</h4>
+        </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -36,6 +43,7 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
+        
         <b-nav-item-dropdown
           v-if="oidcIsAuthenticated"
           id="menuBtndUser"
