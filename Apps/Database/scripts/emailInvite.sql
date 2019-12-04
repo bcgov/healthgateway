@@ -13,7 +13,7 @@ BEGIN
 	RAISE NOTICE 'Inserting %', emailTo;
 
     emailBody := REPLACE(emailBody, '${host}', host);
-    emailBody := REPLACE(emailBody, '${inviteKey}', CAST (inviteKey AS VARCHAR(32) ));
+    emailBody := REPLACE(emailBody, '${inviteKey}', CAST (inviteKey AS VARCHAR(36) ));
     emailBody := REPLACE(emailBody, '${emailTo}', emailTo);
 
 	INSERT INTO gateway."Email"(
@@ -28,4 +28,3 @@ BEGIN
 
 	RAISE NOTICE 'Finished Inserting %', emailTo;
 END $$;
-

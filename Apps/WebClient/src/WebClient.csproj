@@ -57,6 +57,14 @@
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="ClientApp\app\assets\images\gov\bcid-logo-en.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ClientApp\app\assets\images\gov\bcid-logo-en.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
   </Target>
