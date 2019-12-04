@@ -43,4 +43,9 @@
   <ItemGroup>
     <Folder Include="Wrapper\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Docs\EmailInviteTemplate.html" />
+    <EmbeddedResource Include="Assets\Docs\EmailValidationTemplate.html" />
+  </ItemGroup>
 </Project>

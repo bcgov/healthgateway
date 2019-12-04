@@ -17,6 +17,9 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -27,6 +30,9 @@ namespace HealthGateway.Database.Context
     /// </summary>
     public class GatewayDbContext : BaseDbContext
     {
+        private string emailValidationTemplate;
+        private string emailInviteTemplate;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
         /// </summary>
@@ -34,6 +40,17 @@ namespace HealthGateway.Database.Context
         public GatewayDbContext(DbContextOptions<GatewayDbContext> options)
             : base(options)
         {
+            Assembly assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
+            Stream resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.Docs.EmailValidationTemplate.html");
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            {
+                emailValidationTemplate = reader.ReadToEnd();
+            }
+            resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.Docs.EmailInviteTemplate.html");
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            {
+                emailInviteTemplate = reader.ReadToEnd();
+            }
         }
 
         #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
@@ -329,7 +346,7 @@ namespace HealthGateway.Database.Context
                     Name = "Registration",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Email Verification ${Environment}",
-                    Body = System.IO.File.ReadAllText("../Database/src/Assets/Docs/EmailValidationTemplate.html"),
+                    Body = emailValidationTemplate,
                     Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -345,7 +362,7 @@ namespace HealthGateway.Database.Context
                     Name = "Invite",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Private Invitation",
-                    Body = System.IO.File.ReadAllText("../Database/src/Assets/Docs/EmailInviteTemplate.html"),
+                    Body = emailInviteTemplate,
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
