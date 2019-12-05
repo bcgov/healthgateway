@@ -144,7 +144,12 @@ input {
         </b-row>
         <b-row class="mb-5">
           <b-col class="justify-content-right">
-            <b-button class="px-5 float-right" type="submit" size="lg"
+            <b-button
+              class="px-5 float-right"
+              type="submit"
+              size="lg"
+              variant="primary"
+              :class="{ disabled: !accepted }"
               >Register</b-button
             >
           </b-col>
