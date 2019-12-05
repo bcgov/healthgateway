@@ -2,7 +2,7 @@
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
     <b-navbar-brand>
-      <router-link to="/timeLine">
+      <router-link to="/timeline">
         <img
           class="img-fluid d-none d-md-block mx-2"
           src="@/assets/images/gov/bcid-logo-rev-en.svg"
@@ -29,13 +29,6 @@
 
     <!-- Navbar links -->
     <b-collapse id="nav-collapse" is-nav>
-      <!-- Menu -->
-      <b-navbar-nav v-if="displayRegistration">
-        <router-link class="nav-link" to="/registration">
-          <span class="fa fa-key"></span> Register
-        </router-link>
-      </b-navbar-nav>
-
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown
@@ -46,10 +39,10 @@
           variant="dark"
         >
           <b-dropdown-item>
-            <router-link variant="primary" to="/timeLine">
+            <router-link v-if="displayMenu" variant="primary" to="/timeline">
               <span class="fa fa-stream"></span> Timeline
             </router-link>
-            <b-dropdown-divider />
+            <b-dropdown-divider v-if="displayMenu" />
             <router-link id="menuBtnLogout" variant="primary" to="/logout">
               <span class="fa fa-user"></span> Logout
             </router-link>
@@ -118,25 +111,7 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
-    let isLandingPage = this.$route.path === "/";
-    if (
-      this.oidcIsAuthenticated &&
-      this.name &&
-      this.userIsRegistered &&
-      !isLandingPage
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  get displayRegistration(): boolean {
-    console.log(this.userIsRegistered);
-    if (this.oidcIsAuthenticated && !this.userIsRegistered) {
-      return true;
-    }
-    return false;
+    return this.oidcIsAuthenticated && this.userIsRegistered;
   }
 
   get greeting(): string {

@@ -1,8 +1,8 @@
 import AuthenticationData from "@/models/authenticationData";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
-import MedicationResult from "./medicationResult";
-import Pharmacy from "./pharmacy";
+import MedicationResult from "@/models/medicationResult";
+import Pharmacy from "@/models/pharmacy";
 
 export enum StateType {
   NONE,
