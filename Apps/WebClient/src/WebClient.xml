@@ -75,6 +75,23 @@
             </summary>
             <returns>The default view.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.RobotsController">
+            <summary>
+            Dynamic Robots.txt for search engines.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.RobotsController.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.RobotsController"/> class.
+            </summary>
+            <param name="configuration">The injected configuration.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.RobotsController.Robots">
+            <summary>
+            Serves up an environment specific robots.txt.
+            </summary>
+            <returns>The robots text file.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.UserEmailController">
             <summary>
             Web API to handle user email interactions.

@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
+    <Folder Include="Views\Robots\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png" />
