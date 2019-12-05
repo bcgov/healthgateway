@@ -63,7 +63,8 @@ export default class AppComponent extends Vue {
   private readonly host: string = window.location.hostname.toLocaleUpperCase();
   private readonly isProduction: boolean =
     Process.NODE_ENV == EnvironmentType.production &&
-    this.host.startsWith("healthgateway");
+    (this.host.startsWith("HEALTHGATEWAY") ||
+    this.host.startsWith("WWW.HEALTHGATEWAY"));
 
   constructor() {
     super();
