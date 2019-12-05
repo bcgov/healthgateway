@@ -23,6 +23,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Filters;
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
@@ -77,13 +78,13 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             this.logger.LogDebug("Configure Http Services...");
 
-            services.AddHttpClient();
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
                 options.EnableForHttps = true;
             });
 
+            services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
 

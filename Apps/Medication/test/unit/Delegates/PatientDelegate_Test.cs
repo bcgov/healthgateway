@@ -27,6 +27,7 @@ namespace HealthGateway.Medication.Test
     using Newtonsoft.Json;
     using Xunit;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Services;
 
     public class PatientDelegate_Test
     {
@@ -41,14 +42,14 @@ namespace HealthGateway.Medication.Test
         public async Task ShouldGetPHN()
         {
             Patient expected = new Patient("1234", "000", "Test", "Gateway");
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
 
             IPatientDelegate service = new RestPatientDelegate(
                 new Mock<ILogger<RestPatientDelegate>>().Object,
@@ -62,7 +63,7 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldCatchBadRequest()
         {
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.BadRequest,
@@ -70,7 +71,7 @@ namespace HealthGateway.Medication.Test
             });
 
             var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
             IPatientDelegate service = new RestPatientDelegate(
                 new Mock<ILogger<RestPatientDelegate>>().Object,
                 httpMock.Object,

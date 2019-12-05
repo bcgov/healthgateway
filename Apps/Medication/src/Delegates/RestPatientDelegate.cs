@@ -21,6 +21,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Services;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -32,22 +33,22 @@ namespace HealthGateway.Medication.Delegates
     public class RestPatientDelegate : IPatientDelegate
     {
         private readonly ILogger logger;
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPatientDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientFactory">The injected http client factory.</param>
+        /// <param name="httpClientService">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestPatientDelegate(
             ILogger<RestPatientDelegate> logger,
-            IHttpClientFactory httpClientFactory,
+            IHttpClientService httpClientService,
             IConfiguration configuration)
         {
             this.logger = logger;
-            this.httpClientFactory = httpClientFactory;
+            this.httpClientService = httpClientService;
             this.configuration = configuration;
         }
 
@@ -59,7 +60,7 @@ namespace HealthGateway.Medication.Delegates
             timer.Start();
             this.logger.LogTrace($"Getting patient phn... {hdid}");
 
-            using (HttpClient client = this.httpClientFactory.CreateClient("patientService"))
+            using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("Authorization", authorization);

@@ -34,6 +34,7 @@ namespace HealthGateway.Medication.Test
     using Newtonsoft.Json;
     using Xunit;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Services;
 
     public class HNClientDelegate_Test
     {
@@ -57,14 +58,14 @@ namespace HealthGateway.Medication.Test
             Mock<IHNMessageParser<Pharmacy>> pharmacyParserMock = new Mock<IHNMessageParser<Pharmacy>>();
             pharmacyParserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new HNMessage<Pharmacy>(new Pharmacy()));
 
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             HttpClient client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
 
             Mock<IAuthService> authMock = new Mock<IAuthService>();
             authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
@@ -103,14 +104,14 @@ namespace HealthGateway.Medication.Test
             Mock<IHNMessageParser<Pharmacy>> pharmacyParserMock = new Mock<IHNMessageParser<Pharmacy>>();
             pharmacyParserMock.Setup(s => s.ParseResponseMessage(expected.Message)).Returns(new HNMessage<Pharmacy>(new Pharmacy()));
 
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Content = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
 
             Mock<IAuthService> authMock = new Mock<IAuthService>();
             authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
