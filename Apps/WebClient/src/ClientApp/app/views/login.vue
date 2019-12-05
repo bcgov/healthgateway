@@ -44,7 +44,7 @@
               </b-row>
             </div>
           </b-card-body>
-          <b-card-body v-else>
+          <b-card-body v-else-if="identityProviders[0] > 0">
             <span
               >Redirecting to <strong>{{ identityProviders[0].name }}</strong
               >...</span
