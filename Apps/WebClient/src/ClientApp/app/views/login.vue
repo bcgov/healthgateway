@@ -9,11 +9,11 @@
           align="center"
         >
           <h3 slot="header">Log In</h3>
-          <p slot="footer">
+          <p v-if="hasMultipleProviders" slot="footer">
             Not yet registered?
             <b-link to="/registrationInfo">Sign up</b-link>
           </p>
-          <b-card-body>
+          <b-card-body v-if="hasMultipleProviders">
             <div v-for="provider in identityProviders" :key="provider.id">
               <b-row>
                 <b-col>
@@ -43,6 +43,13 @@
                 ><b-col>or</b-col>
               </b-row>
             </div>
+          </b-card-body>
+          <b-card-body v-else>
+            <span
+              >Redirecting to <strong>{{ identityProviders[0].name }}</strong
+              >...</span
+            >
+            <b-spinner class="ml-2"></b-spinner>
           </b-card-body>
         </b-card>
       </b-col>
@@ -85,9 +92,16 @@ export default class LoginComponent extends Vue {
     } else if (this.oidcIsAuthenticated) {
       this.redirectPath = "/registrationInfo";
       this.routeHandler.push({ path: this.redirectPath });
-    } else if (!this.oidcIsAuthenticated && (this.identityProviders.length == 1)) {
-      this.oidcLogin(this.identityProviders[0]);
+    } else if (
+      !this.oidcIsAuthenticated &&
+      this.identityProviders.length == 1
+    ) {
+      this.oidcLogin(this.identityProviders[0].hint);
     }
+  }
+
+  get hasMultipleProviders(): boolean {
+    return this.identityProviders.length > 1;
   }
 
   oidcLogin(hint: string) {
