@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models;
@@ -41,7 +42,7 @@ namespace HealthGateway.Medication.Delegates
         private readonly ILogger logger;
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configService;
         private readonly IAuthService authService;
         private readonly ISequenceDelegate sequenceDelegate;
@@ -52,7 +53,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="medicationParser">The injected medication hn parser.</param>
         /// <param name="pharmacyParser">The injected pharmacy hn parser.</param>
-        /// <param name="httpClientFactory">The injected http client factory.</param>
+        /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authService">The injected authService for client credentials grant (system account).</param>
         /// <param name="sequenceDelegate">The injected sequence delegate.</param>
@@ -60,7 +61,7 @@ namespace HealthGateway.Medication.Delegates
             ILogger<RestHNClientDelegate> logger,
             IHNMessageParser<List<MedicationStatement>> medicationParser,
             IHNMessageParser<Pharmacy> pharmacyParser,
-            IHttpClientFactory httpClientFactory,
+            IHttpClientService httpClientService,
             IConfiguration configuration,
             IAuthService authService,
             ISequenceDelegate sequenceDelegate)
@@ -68,7 +69,7 @@ namespace HealthGateway.Medication.Delegates
             this.logger = logger;
             this.medicationParser = medicationParser;
             this.pharmacyParser = pharmacyParser;
-            this.httpClientFactory = httpClientFactory;
+            this.httpClientService = httpClientService;
             this.configService = configuration;
             this.authService = authService;
             this.sequenceDelegate = sequenceDelegate;
@@ -84,7 +85,7 @@ namespace HealthGateway.Medication.Delegates
 
             JWTModel jwtModel = this.authService.AuthenticateService();
             HNMessage<List<MedicationStatement>> retVal;
-            using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
+            using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
@@ -129,7 +130,7 @@ namespace HealthGateway.Medication.Delegates
 
             HNMessage<Pharmacy> retVal;
             JWTModel jwtModel = this.authService.AuthenticateService();
-            using (HttpClient client = this.httpClientFactory.CreateClient("medicationService"))
+            using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(

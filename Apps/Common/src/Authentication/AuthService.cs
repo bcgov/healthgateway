@@ -20,6 +20,7 @@ namespace HealthGateway.Common.Authentication
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -31,16 +32,21 @@ namespace HealthGateway.Common.Authentication
     {
         private readonly ILogger<AuthService> logger;
 
+        private readonly IHttpClientService httpClientService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="config">The configuration.</param>
+        /// <param name="httpClientService">The injected http client service.</param>
         public AuthService(
             ILogger<AuthService> logger,
-            IConfiguration config)
+            IConfiguration config,
+            IHttpClientService httpClientService)
         {
             this.logger = logger;
+            this.httpClientService = httpClientService;
             IConfigurationSection configSection = config?.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
@@ -74,7 +80,7 @@ namespace HealthGateway.Common.Authentication
             JWTModel authModel = new JWTModel();
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
                 {
                     // Create content for keycloak
                     IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]

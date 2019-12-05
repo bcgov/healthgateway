@@ -76,23 +76,6 @@ namespace HealthGateway.Medication
                 });
             });
 
-            services.AddHttpClient("medicationService").ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
-                };
-            });
-
-            services.AddHttpClient("patientService").ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
-                    AllowAutoRedirect = false,
-                };
-            });
-
             // Add services
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();

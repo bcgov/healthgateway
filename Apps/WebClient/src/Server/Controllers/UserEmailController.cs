@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
@@ -90,6 +91,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> GetUserEmailInvite(string hdid)
         {
+            Contract.Requires(hdid != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
 
