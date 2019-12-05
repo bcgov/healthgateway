@@ -84,6 +84,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 options.EnableForHttps = true;
             });
 
+            services.AddHttpClient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
