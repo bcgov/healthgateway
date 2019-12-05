@@ -22,7 +22,7 @@
     </b-navbar-brand>
 
     <b-navbar-brand>
-      <h4 class="nav-link mt-4 " to="/timeLine">HealthGateway</h4>
+      <h4 class="nav-link mb-0 mt-2" to="/timeLine">HealthGateway</h4>
     </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
