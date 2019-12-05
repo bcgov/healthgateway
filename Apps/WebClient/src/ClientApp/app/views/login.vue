@@ -1,5 +1,6 @@
 <template>
   <div class="container my-5" align="center">
+    <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row>
       <b-col>
         <b-card
@@ -61,6 +62,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import LoadingComponent from "@/components/loading.vue";
 import {
   IdentityProviderConfiguration,
   ExternalConfiguration
@@ -68,7 +70,11 @@ import {
 
 const namespace: string = "auth";
 
-@Component
+@Component({
+  components: {
+    LoadingComponent
+  }
+})
 export default class LoginComponent extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc: any;
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
@@ -76,6 +82,7 @@ export default class LoginComponent extends Vue {
   @Getter("identityProviders", { namespace: "config" })
   identityProviders: IdentityProviderConfiguration[];
 
+  private isLoading: boolean = true;
   private redirectPath: string = "";
   private routeHandler = undefined;
 
@@ -97,6 +104,9 @@ export default class LoginComponent extends Vue {
       this.identityProviders.length == 1
     ) {
       this.oidcLogin(this.identityProviders[0].hint);
+    }
+    else {
+      this.isLoading = false;
     }
   }
 

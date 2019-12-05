@@ -64,7 +64,7 @@ export default class AppComponent extends Vue {
   private readonly isProduction: boolean =
     Process.NODE_ENV == EnvironmentType.production &&
     (this.host.startsWith("HEALTHGATEWAY") ||
-    this.host.startsWith("WWW.HEALTHGATEWAY"));
+      this.host.startsWith("WWW.HEALTHGATEWAY"));
 
   constructor() {
     super();
