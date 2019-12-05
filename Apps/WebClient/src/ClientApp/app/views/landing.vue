@@ -28,6 +28,7 @@
       margin-bottom: auto;
       margin-left: auto;
       margin-right: auto;
+      max-width: 600px;
 
       border-radius: 25px;
       background-color: rgba(0, 0, 0, 0.5);
@@ -168,8 +169,6 @@
     .secure-wrapper {
       margin-top: 130px;
       margin-bottom: auto;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     .title {
@@ -194,7 +193,7 @@
       :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
     >
       <!--Empty Column for  fitting reasons-->
-      <b-col class="col-12 col-md-4 col-xl-5 d-none d-md-block" />
+      <b-col class="col-12 col-md-4 col-xl-6 d-none d-md-block" />
       <b-col class="col-12 col-md-8 col-xl-6">
         <div class="title-wrapper m-2 m-sm-5 p-5 p-md-5">
           <img
@@ -300,11 +299,11 @@
       </div>
     </b-row>
     <b-row
-      class="secure"
+      class="secure justify-content-around"
       :style="{ backgroundImage: 'url(\'' + bottomImage + '\')' }"
     >
-      <b-col class="col-12 col-md-8">
-        <div class="secure-wrapper p-2">
+      <b-col class="col-12 col-md-6">
+        <div class="secure-wrapper pl-5 pl-md-0">
           <div class="title">
             Securely access your information
           </div>
@@ -328,7 +327,7 @@
           </div>
         </div>
       </b-col>
-      <b-col class="col-0 col-md-4 d-block d-md-none" />
+      <b-col class="col-0 col-md-1 d-none d-md-block " />
     </b-row>
   </div>
 </template>
@@ -337,7 +336,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";
-import Image01 from "@/assets/images/landing/001_Hero-01_Duotone.png";
+import Image01 from "@/assets/images/landing/001_Hero-01_Duotone.jpeg";
 import Image02 from "@/assets/images/landing/002_Devices.png";
 import Image03 from "@/assets/images/landing/003_AdobeStock_143856492-edited_shoes.jpg";
 import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
