@@ -31,7 +31,6 @@ export const mutations: MutationTree<UserState> = {
     state.stateType = StateType.INITIALIZED;
   },
   setValidatedEmail(state: UserState, emailInvite: EmailInvite) {
-    console.log("setValidatedEmail", emailInvite);
     if (emailInvite) {
       Vue.set(state.user, "hasEmail", true);
       Vue.set(state.user, "verifiedEmail", emailInvite.validated);
