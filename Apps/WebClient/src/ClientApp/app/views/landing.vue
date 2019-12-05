@@ -28,7 +28,7 @@
       margin-bottom: auto;
       margin-left: auto;
       margin-right: auto;
-      max-width: 600px;
+      max-width: 500px;
 
       border-radius: 25px;
       background-color: rgba(0, 0, 0, 0.5);
@@ -41,10 +41,15 @@
     .title-text {
       color: white;
       font-size: 2.2em;
+      max-width: 340px;
     }
 
     .register-link {
       color: white;
+    }
+
+    .register-button {
+      max-width: 300px;
     }
   }
 
@@ -193,38 +198,43 @@
       :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
     >
       <!--Empty Column for  fitting reasons-->
-      <b-col class="col-12 col-md-4 col-xl-6 d-none d-md-block" />
-      <b-col class="col-12 col-md-8 col-xl-6">
-        <div class="title-wrapper m-2 m-sm-5 p-5 p-md-5">
+      <b-col class="col-12 col-md-5 col-xl-6 d-none d-md-block" />
+      <b-col class="col-12 col-md-6 col-xl-4">
+        <div class="title-wrapper p-4">
           <img
-            class="img-fluid logo py-4"
+            class="img-fluid logo d-block mx-auto"
             :src="logo"
             width="auto"
             height="auto"
             alt="B.C. Government Logo"
           />
 
-          <div class="title-text">
+          <div class="title-text my-4 mx-auto">
             <div>
-              Empowering you to manage your health
+              Empowering you
             </div>
+            <div>to manage your health</div>
           </div>
-          <b-row class=" p-3 p-md-5">
-            <b-col class="justify-content-center">
-              <b-button
-                id="btnStart"
-                to="registrationInfo"
-                class="btn btn-primary-landing w-100"
-                role="button"
-                >Register</b-button
-              >
-              <b-button
-                id="btnLogin"
-                to="login"
-                class="w-100 register-link"
-                variant="link"
-                >Already registered? <strong>Login</strong></b-button
-              >
+          <b-row class="">
+            <b-col class="justify-content-center align align-items-center">
+              <b-row>
+                <b-button
+                  id="btnStart"
+                  to="registrationInfo"
+                  class="btn btn-primary-landing mx-auto register-button w-100"
+                  role="button"
+                  >Register</b-button
+                >
+              </b-row>
+              <b-row>
+                <b-button
+                  id="btnLogin"
+                  to="login"
+                  class="register-link mx-auto"
+                  variant="link"
+                  >Already registered? <strong>Login</strong></b-button
+                >
+              </b-row>
             </b-col>
           </b-row>
         </div>

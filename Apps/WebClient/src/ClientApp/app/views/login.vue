@@ -4,6 +4,7 @@
     <b-row>
       <b-col>
         <b-card
+          v-if="identityProviders && identityProviders.length > 0"
           id="loginPicker"
           class="shadow-lg bg-white"
           style="max-width: 25rem;"
@@ -45,7 +46,7 @@
               </b-row>
             </div>
           </b-card-body>
-          <b-card-body v-else-if="identityProviders[0] > 0">
+          <b-card-body v-else>
             <span
               >Redirecting to <strong>{{ identityProviders[0].name }}</strong
               >...</span
@@ -53,6 +54,7 @@
             <b-spinner class="ml-2"></b-spinner>
           </b-card-body>
         </b-card>
+        <div v-else>No login providers configured</div>
       </b-col>
     </b-row>
   </div>
