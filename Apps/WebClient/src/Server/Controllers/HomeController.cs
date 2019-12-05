@@ -36,7 +36,7 @@ namespace HealthGateway.WebClient.Controllers
         /// The bc gov logo image.
         /// </summary>
         /// <returns>The logo image.</returns>
-        [Route("Logo")]
+        [Route("Logo.png")]
         public IActionResult Logo()
         {
             var file = Path.Combine(
@@ -46,9 +46,9 @@ namespace HealthGateway.WebClient.Controllers
                 "assets",
                 "images",
                 "gov",
-                "bcid-logo-rev-en.svg");
+                "bcid-logo-rev-en.png");
 
-            return this.PhysicalFile(file, "image/svg+xml");
+            return this.PhysicalFile(file, "image/png");
         }
 
         /// <summary>

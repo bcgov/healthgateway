@@ -58,10 +58,10 @@
     <Folder Include="Views\DumpHeaders\" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="ClientApp\app\assets\images\gov\bcid-logo-rev-en.svg" />
+    <None Remove="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ClientApp\app\assets\images\gov\bcid-logo-rev-en.svg">
+    <Content Include="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
