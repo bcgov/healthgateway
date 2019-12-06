@@ -1,7 +1,7 @@
 <template>
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
-    <b-navbar-brand>
+    <b-navbar-brand class="mx-0">
       <router-link to="/timeline">
         <img
           class="img-fluid d-none d-md-block mx-2"
@@ -21,8 +21,10 @@
       </router-link>
     </b-navbar-brand>
 
-    <b-navbar-brand>
-      <h4 class="nav-link mb-0 mt-2" to="/timeLine">HealthGateway</h4>
+    <b-navbar-brand class="px-0 pr-md-5 px-lg-5 mx-0">
+      <h4 class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0" to="/timeLine">
+        HealthGateway
+      </h4>
     </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>

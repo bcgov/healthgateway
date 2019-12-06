@@ -24,6 +24,12 @@
     height: 750px;
     background-size: cover;
 
+    /* Large Devices, Wide Screens */
+    @media (max-width: 767px) {
+      /* your desktop css */
+      height: 560px;
+    }
+
     .title-wrapper {
       margin-bottom: auto;
       margin-left: auto;
@@ -171,6 +177,12 @@
     height: 750px;
     background-size: cover;
 
+    /* Large Devices, Wide Screens */
+    @media (max-width: 767px) {
+      /* your desktop css */
+      height: 560px;
+    }
+
     .secure-wrapper {
       margin-top: 130px;
       margin-bottom: auto;
@@ -241,7 +253,7 @@
       </b-col>
     </b-row>
     <b-row
-      class="devices-section justify-content-center align-items-center mx-5"
+      class="devices-section justify-content-center align-items-center mx-1 mx-md-5"
     >
       <b-col class="d-none d-md-block text-center col-6 col-xl-4 m-auto">
         <img
@@ -251,8 +263,8 @@
           height="auto"
           alt="Devices"
       /></b-col>
-      <b-col class="col-12 col-md-6">
-        <div class="devices-text my-5 my-md-5 mx-md-5">
+      <b-col class="col-10 col-md-6">
+        <div class="devices-text my-5 my-md-5 ml-md-5">
           <h3>Browse your health records</h3>
           <div>
             Prescription medications
@@ -313,7 +325,7 @@
       :style="{ backgroundImage: 'url(\'' + bottomImage + '\')' }"
     >
       <b-col class="col-12 col-md-6">
-        <div class="secure-wrapper pl-5 pl-md-0">
+        <div class="secure-wrapper pl-2 pl-md-0">
           <div class="title">
             Securely access your information
           </div>
