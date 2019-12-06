@@ -106,8 +106,7 @@ export default class LoginComponent extends Vue {
       this.identityProviders.length == 1
     ) {
       this.oidcLogin(this.identityProviders[0].hint);
-    }
-    else {
+    } else {
       this.isLoading = false;
     }
   }

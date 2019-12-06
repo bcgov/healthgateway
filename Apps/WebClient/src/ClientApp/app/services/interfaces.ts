@@ -12,6 +12,7 @@ import Pharmacy from "@/models/pharmacy";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
+import UserEmail from "@/models/emailInvite";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
