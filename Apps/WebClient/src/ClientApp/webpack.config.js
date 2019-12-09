@@ -64,6 +64,7 @@ module.exports = env => {
                 ]
           },
           { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "url-loader?limit=25000" },
+          { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "image-webpack-loader", enforce: "pre" },
           {
             test: /\.(woff|woff2|eot|ttf|otf)$/,
             use: ["file-loader"]

@@ -1,47 +1,36 @@
 <template>
   <b-navbar toggleable="lg" type="dark">
     <!-- Brand -->
-    <b-navbar-brand>
-      <router-link to="/">
+    <b-navbar-brand class="mx-0">
+      <router-link to="/timeline">
         <img
-          class="img-fluid d-none d-md-block"
+          class="img-fluid d-none d-md-block mx-2"
           src="@/assets/images/gov/bcid-logo-rev-en.svg"
           width="181"
           height="44"
-          alt="B.C. Government Logo"
+          alt="Go to healthgateway timeline"
         />
+
         <img
           class="img-fluid d-md-none"
           src="@/assets/images/gov/bcid-symbol-rev.svg"
           width="64"
           height="44"
-          alt="B.C. Government Logo"
+          alt="Go to healthgateway timeline"
         />
       </router-link>
     </b-navbar-brand>
-    <b-navbar-brand>
-      <h3>HealthGateway</h3>
+
+    <b-navbar-brand class="px-0 pr-md-5 px-lg-5 mx-0">
+      <h4 class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0" to="/timeLine">
+        HealthGateway
+      </h4>
     </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
     <!-- Navbar links -->
     <b-collapse id="nav-collapse" is-nav>
-      <!-- Menu -->
-      <b-navbar-nav v-if="displayMenu">
-        <router-link class="nav-link" to="/timeLine">
-          <span class="fa fa-stream"></span> Timeline
-        </router-link>
-        <router-link class="nav-link" to="/profile">
-          <span class="fa fa-user"></span> Profile
-        </router-link>
-      </b-navbar-nav>
-      <b-navbar-nav v-if="displayRegistration">
-        <router-link class="nav-link" to="/registration">
-          <span class="fa fa-key"></span> Register
-        </router-link>
-      </b-navbar-nav>
-
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown
@@ -49,9 +38,14 @@
           id="menuBtndUser"
           :text="greeting"
           right
+          variant="dark"
         >
           <b-dropdown-item>
-            <router-link id="menuBtnLogout" to="/logout">
+            <router-link v-if="displayMenu" variant="primary" to="/timeline">
+              <span class="fa fa-stream"></span> Timeline
+            </router-link>
+            <b-dropdown-divider v-if="displayMenu" />
+            <router-link id="menuBtnLogout" variant="primary" to="/logout">
               <span class="fa fa-user"></span> Logout
             </router-link>
           </b-dropdown-item>
@@ -59,23 +53,6 @@
         <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
           <span class="fa fa-user"></span> Login
         </router-link>
-        <b-nav-item-dropdown
-          id="languageSelector"
-          :text="currentLanguage.description"
-          right
-        >
-          <b-dropdown-text>Language:</b-dropdown-text>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item
-            v-for="(value, key) in languages"
-            :key="key"
-            :active="currentLanguage.code === key"
-          >
-            <a :id="key" @click="onLanguageSelect(key)">{{
-              value.description
-            }}</a>
-          </b-dropdown-item>
-        </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -101,16 +78,21 @@ const user: string = "user";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Getter("oidcIsAuthenticated", { namespace: auth })
+  @Getter("oidcIsAuthenticated", {
+    namespace: auth
+  })
   oidcIsAuthenticated: boolean;
-  @Getter("user", { namespace: user }) user: User;
-  @Getter("userIsRegistered", { namespace: user })
+  @Getter("user", {
+    namespace: user
+  })
+  user: User;
+  @Getter("userIsRegistered", {
+    namespace: user
+  })
   userIsRegistered: boolean;
 
   private authenticationService: IAuthenticationService;
 
-  private languages: { [code: string]: ILanguage } = {};
-  private currentLanguage: ILanguage = null;
   private name: string = "";
 
   @Watch("oidcIsAuthenticated")
@@ -130,30 +112,8 @@ export default class HeaderComponent extends Vue {
     }
   }
 
-  created() {
-    this.loadLanguages();
-  }
-
   get displayMenu(): boolean {
-    let isLandingPage = this.$route.path === "/";
-    if (
-      this.oidcIsAuthenticated &&
-      this.name &&
-      this.userIsRegistered &&
-      !isLandingPage
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  get displayRegistration(): boolean {
-    console.log(this.userIsRegistered);
-    if (this.oidcIsAuthenticated && !this.userIsRegistered) {
-      return true;
-    }
-    return false;
+    return this.oidcIsAuthenticated && this.userIsRegistered;
   }
 
   get greeting(): string {
@@ -174,16 +134,6 @@ export default class HeaderComponent extends Vue {
 
   private getFullname(firstName: string, lastName: string): string {
     return firstName + " " + lastName;
-  }
-
-  private onLanguageSelect(languageCode: string): void {
-    this.currentLanguage = this.languages[languageCode];
-  }
-
-  private loadLanguages(): void {
-    this.languages["en"] = { code: "en", description: "English" };
-    this.languages["fr"] = { code: "fr", description: "French" };
-    this.currentLanguage = this.languages["en"];
   }
 }
 </script>

@@ -17,41 +17,38 @@ namespace HealthGateway.Medication.Services
 {
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
     /// </summary>
     public class RestPharmacyService : IPharmacyService
     {
-        /// <summary>
-        /// The http context provider.
-        /// </summary>
+        private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// Delegate to interact with hnclient.
-        /// </summary>
         private readonly IHNClientDelegate hnClientDelegate;
-
-        /// <summary>
-        /// The patient delegate used to retrieve Personal Health Number for subject.
-        /// </summary>
         private readonly IPatientDelegate patientDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestPharmacyService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
         public RestPharmacyService(
+            ILogger<RestPharmacyService> logger,
             IHttpContextAccessor httpAccessor,
             IHNClientDelegate hnClientDelegate,
             IPatientDelegate patientService)
         {
+            this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.hnClientDelegate = hnClientDelegate;
             this.patientDelegate = patientService;
@@ -60,14 +57,23 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId)
         {
+            this.logger.LogTrace($"Getting pharmacy... {pharmacyId}");
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
             string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
+            if (string.IsNullOrEmpty(phn))
+            {
+                return new HNMessage<Pharmacy>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
+            }
+
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            return await this.hnClientDelegate.GetPharmacyAsync(pharmacyId, phn, ipv4Address).ConfigureAwait(true);
+            HNMessage<Pharmacy> retVal = await this.hnClientDelegate.GetPharmacyAsync(pharmacyId, phn, ipv4Address).ConfigureAwait(true);
+
+            this.logger.LogDebug($"Finished getting pharmacy. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
     }
 }

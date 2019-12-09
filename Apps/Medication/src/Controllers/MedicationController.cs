@@ -21,11 +21,13 @@ namespace HealthGateway.Medication.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
+    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// The Medication controller.
     /// </summary>
+    [EnableCors("allowAny")]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
@@ -65,6 +67,7 @@ namespace HealthGateway.Medication.Controllers
 
             RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()
             {
+                ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
@@ -90,6 +93,7 @@ namespace HealthGateway.Medication.Controllers
 
             RequestResult<Dictionary<string, MedicationResult>> result = new RequestResult<Dictionary<string, MedicationResult>>()
             {
+                ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,

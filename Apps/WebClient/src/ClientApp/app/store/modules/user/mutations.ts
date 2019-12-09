@@ -5,6 +5,7 @@ import { StateType, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import UserProfile from "@/models/userProfile";
+import EmailInvite from "@/models/emailInvite";
 
 export const mutations: MutationTree<UserState> = {
   setOidcUserData(state: UserState, oidcUser: OidcUser) {
@@ -19,8 +20,28 @@ export const mutations: MutationTree<UserState> = {
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;
   },
-  setIsRegistered(state: UserState, isRegistered: boolean) {
-    Vue.set(state.user, "acceptedTermsOfService", isRegistered);
+  setProfileUserData(state: UserState, userProfile: UserProfile) {
+    Vue.set(
+      state.user,
+      "acceptedTermsOfService",
+      userProfile ? userProfile.acceptedTermsOfService : false
+    );
+    state.error = false;
+    state.statusMessage = "success";
+    state.stateType = StateType.INITIALIZED;
+  },
+  setValidatedEmail(state: UserState, emailInvite: EmailInvite) {
+    if (emailInvite) {
+      Vue.set(state.user, "hasEmail", true);
+      Vue.set(state.user, "verifiedEmail", emailInvite.validated);
+    } else {
+      Vue.set(state.user, "hasEmail", false);
+      Vue.set(state.user, "verifiedEmail", false);
+    }
+
+    state.error = false;
+    state.statusMessage = "success";
+    state.stateType = StateType.INITIALIZED;
   },
   clearUserData(state: UserState) {
     state.user = new User();

@@ -5,6 +5,7 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { RootState, PharmacyState } from "@/models/storeState";
 import Pharmacy from "@/models/pharmacy";
+import { ResultType } from "@/constants/resulttype";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -21,14 +22,16 @@ export const actions: ActionTree<PharmacyState, RootState> = {
       var pharmacy = getters.getStoredPharmacy(pharmacyId);
       if (pharmacy) {
         console.log("Pharmacy found stored, not quering!");
+        //console.log("Pharmacy Data: ", requestResult);
         resolve(pharmacy);
       } else {
+        console.log("Retrieving Pharmacy info");
         medicationService
           .getPharmacyInfo(pharmacyId)
-          .then(requestResult => {
-            console.log("Pharmacy Data: ", requestResult);
-            commit("addPharmacyData", requestResult.resourcePayload);
-            resolve(requestResult.resourcePayload);
+          .then(pharmacy => {
+            //console.log("Pharmacy Data: ", requestResult);
+            commit("addPharmacyData", pharmacy);
+            resolve(pharmacy);
           })
           .catch(error => {
             handleError(commit, error);

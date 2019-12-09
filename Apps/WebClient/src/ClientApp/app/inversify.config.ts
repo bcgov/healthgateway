@@ -13,7 +13,7 @@ import {
   IMedicationService,
   IUserProfileService,
   IUserFeedbackService,
-  IEmailValidationService
+  IUserEmailService
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "@/services/restImmsService";
@@ -23,7 +23,7 @@ import { RestMedicationService } from "@/services/restMedicationService";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
-import { RestEmailValidationService } from "@/services/restEmailValidationService";
+import { RestUserEmailService } from "@/services/restUserEmailService";
 
 let container = new Container();
 container
@@ -55,8 +55,8 @@ container
   .to(RestUserFeedbackService)
   .inSingletonScope();
 container
-  .bind<IEmailValidationService>(SERVICE_IDENTIFIER.EmailValidationService)
-  .to(RestEmailValidationService)
+  .bind<IUserEmailService>(SERVICE_IDENTIFIER.UserEmailService)
+  .to(RestUserEmailService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

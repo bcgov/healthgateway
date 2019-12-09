@@ -31,6 +31,7 @@ $radius: 15px;
 
 .leftPane {
   width: 60px;
+  max-width: 60px;
 }
 
 .detailsButton {
@@ -51,7 +52,7 @@ $radius: 15px;
   <b-row class="entryCard">
     <b-col>
       <b-row class="entryHeading">
-        <b-col class="icon leftPane" cols="0">
+        <b-col class="icon leftPane">
           <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
         </b-col>
         <b-col class="entryTitle">
@@ -59,7 +60,7 @@ $radius: 15px;
         </b-col>
       </b-row>
       <b-row>
-        <b-col class="leftPane" cols="0"> </b-col>
+        <b-col class="leftPane"></b-col>
         <b-col>
           <b-row>
             <b-col>
@@ -89,10 +90,6 @@ $radius: 15px;
                     <div>
                       <strong>Practitioner:</strong>
                       {{ entry.practitionerSurname }}
-                    </div>
-                    <div>
-                      <strong>Prescription #:</strong>
-                      {{ entry.prescriptionIdentifier }}
                     </div>
                   </div>
                   <div class="detailSection">
@@ -143,11 +140,20 @@ $radius: 15px;
                     </div>
                   </div>
                 </div>
-                <div v-else>
+                <div v-else-if="isLoading">
                   <div class="d-flex align-items-center">
                     <strong>Loading...</strong>
                     <b-spinner class="ml-5"></b-spinner>
                   </div>
+                </div>
+                <div v-else-if="hasErrors" class="pt-1">
+                  <b-alert :show="hasErrors" variant="danger">
+                    <h5>Error</h5>
+                    <span
+                      >An unexpected error occured while processing the
+                      request.</span
+                    >
+                  </b-alert>
                 </div>
               </b-collapse>
             </b-col>
@@ -191,7 +197,13 @@ export default class MedicationTimelineComponent extends Vue {
 
   private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
     this.detailsVisible = !this.detailsVisible;
-    // If the medicaiton or pharmacy details are loaded dont fetch again.
+    this.hasErrors = false;
+
+    if (!this.detailsVisible) {
+      return;
+    }
+
+    // If the medication or pharmacy details are loaded dont fetch again.
     if (this.medicationLoaded && this.pharmacyLoaded) {
       return;
     }
@@ -209,18 +221,24 @@ export default class MedicationTimelineComponent extends Vue {
 
     Promise.all([medicationPromise, pharmacyPromise])
       .then(results => {
-        // Load medication redails
-        medicationEntry.medication.populateFromModel(results[0]);
+        // Load medication details
+        if (results[0]) {
+          medicationEntry.medication.populateFromModel(results[0]);
+        }
         this.medicationLoaded = true;
 
-        // Load pharmacy details
-        medicationEntry.pharmacy.populateFromModel(results[1]);
+        if (results[1]) {
+          // Load pharmacy details
+          medicationEntry.pharmacy.populateFromModel(results[1]);
+        }
         this.pharmacyLoaded = true;
+
         this.isLoading = false;
       })
       .catch(err => {
-        this.hasErrors = true;
+        console.log("Error loading details");
         console.log(err);
+        this.hasErrors = true;
         this.isLoading = false;
       });
   }

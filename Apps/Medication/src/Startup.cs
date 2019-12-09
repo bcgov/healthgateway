@@ -65,21 +65,15 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddHttpClient("medicationService").ConfigurePrimaryHttpMessageHandler(() =>
+            services.AddCors(options =>
             {
-                return new HttpClientHandler
+                options.AddPolicy("allowAny", policy =>
                 {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
-                };
-            });
-
-            services.AddHttpClient("patientService").ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
-                    AllowAutoRedirect = false,
-                };
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
             });
 
             // Add services
@@ -92,6 +86,7 @@ namespace HealthGateway.Medication
 
             // Add parsers
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
+
             // Add delegates
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();

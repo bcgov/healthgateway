@@ -149,15 +149,15 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// Performs the actual download of the file and verifies if it has been
         /// previously processed.
         /// </summary>
-        public void Process(string ConfigSectionName)
+        public virtual void Process(string configSectionName)
         {
-            this.logger.LogInformation($"Reading configuration for section {ConfigSectionName}");
-            IConfigurationSection section = configuration.GetSection(ConfigSectionName);
+            this.logger.LogInformation($"Reading configuration for section {configSectionName}");
+            IConfigurationSection section = configuration.GetSection(configSectionName);
             Uri source = section.GetValue<Uri>("Url");
 
             string programType = section.GetValue<string>("AppName");
             this.logger.LogInformation($"Program Type = {programType}");
-            string targetFolder = configuration.GetSection(ConfigSectionName).GetValue<string>("TargetFolder");
+            string targetFolder = configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
 
             FileDownload downloadedFile = DownloadFile(source, targetFolder);
             if (!FileProcessed(downloadedFile))

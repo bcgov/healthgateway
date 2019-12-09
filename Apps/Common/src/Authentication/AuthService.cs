@@ -20,6 +20,7 @@ namespace HealthGateway.Common.Authentication
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -31,14 +32,21 @@ namespace HealthGateway.Common.Authentication
     {
         private readonly ILogger<AuthService> logger;
 
+        private readonly IHttpClientService httpClientService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthService"/> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
+        /// <param name="logger">The injected logger provider.</param>
         /// <param name="config">The configuration.</param>
-        public AuthService(ILogger<AuthService> logger, IConfiguration config)
+        /// <param name="httpClientService">The injected http client service.</param>
+        public AuthService(
+            ILogger<AuthService> logger,
+            IConfiguration config,
+            IHttpClientService httpClientService)
         {
             this.logger = logger;
+            this.httpClientService = httpClientService;
             IConfigurationSection configSection = config?.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
@@ -59,19 +67,20 @@ namespace HealthGateway.Common.Authentication
         /// <inheritdoc/>
         public JWTModel AuthenticateService()
         {
+            this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
             JWTModel jwtModel = authenticating.Result as JWTModel;
+            this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
 
-        /// <inheritdoc/>
-        public async Task<IAuthModel> ClientCredentialsAuth()
+        private async Task<IAuthModel> ClientCredentialsAuth()
         {
             JWTModel authModel = new JWTModel();
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
                 {
                     // Create content for keycloak
                     IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
@@ -88,8 +97,9 @@ namespace HealthGateway.Common.Authentication
 
                         using (HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
                         {
+                            string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                            this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
                             response.EnsureSuccessStatusCode();
-                            var jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                             authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
                         }
                     }
@@ -97,10 +107,7 @@ namespace HealthGateway.Common.Authentication
             }
             catch (HttpRequestException e)
             {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-                this.logger.LogDebug($"Error Message ${e.Message}");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-                Console.WriteLine($"Error Message ${e.Message}");
+                this.logger.LogError($"Error Message ${e.Message}");
             }
 
             return authModel;

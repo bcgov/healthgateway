@@ -23,6 +23,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Filters;
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
@@ -41,9 +42,11 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
     /// The startup configuration class.
@@ -73,17 +76,16 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection provider.</param>
         public void ConfigureHttpServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("Configure Http Services...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
-            services.AddHttpClient();
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
                 options.EnableForHttps = true;
             });
 
+            services.AddHttpClient<IHttpClientService, HttpClientService>();
+            services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
 
@@ -102,9 +104,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuthorizationServices...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
@@ -170,9 +170,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuditServices(IServiceCollection services)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("ConfigureAuditServices...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
             services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
@@ -201,9 +199,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseAuth(IApplicationBuilder app)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("Use Auth...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Enable jwt authentication
             app.UseAuthentication();
@@ -215,11 +211,26 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseForwardHeaders(IApplicationBuilder app)
         {
+            const string XForwardedProto = "X-Forwarded-Proto";
+
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
             this.logger.LogInformation($"Forward Headers enabled: {enabled}");
             if (enabled)
             {
+                string basePath = section.GetValue<string>("BasePath");
+                if (!string.IsNullOrEmpty(basePath))
+                {
+                    this.logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
+                    app.UsePathBase(basePath);
+                    app.Use(async (context, next) =>
+                    {
+                        context.Request.PathBase = basePath;
+                        await next.Invoke().ConfigureAwait(true);
+                    });
+                    app.UsePathBase(basePath);
+                }
+
                 string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
                 ForwardedHeadersOptions options = new ForwardedHeadersOptions
                 {
@@ -227,11 +238,25 @@ namespace HealthGateway.Common.AspNetConfiguration
                     RequireHeaderSymmetry = false,
                     ForwardLimit = null,
                 };
-                foreach (string ip in proxyIPs)
-                {
-                    options.KnownProxies.Add(IPAddress.Parse(ip));
-                }
 
+                app.Use((context, next) =>
+                {
+                    // IF this is not done, identity provider redirect urls drop to http:// which is undesirable.
+                    if (context.Request.Headers.TryGetValue(XForwardedProto, out StringValues proto))
+                    {
+                        this.logger.LogInformation($"Client using protocol: {proto}, assigning to request protocol");
+                        context.Request.Protocol = proto;
+                    }
+                    else
+                    {
+                        this.logger.LogInformation($"No header XforwardProto was found in request context - defaulting to {Uri.UriSchemeHttps}");
+                        context.Request.Protocol = Uri.UriSchemeHttps;
+                    }
+
+                    return next();
+                });
+
+                this.logger.LogInformation("Enabling Use Forward Header");
                 app.UseForwardedHeaders(options);
             }
         }
@@ -248,6 +273,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true,
+                    HotModuleReplacementEndpoint = "/dist/dist/__webpack_hmr",
                     ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"),
                 });
             }
@@ -309,19 +335,17 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseHealthChecks("/health");
 
             // Enable CORS
-            app.UseCors(builder =>
+            string enableCors = this.configuration.GetValue<string>("AllowOrigins", string.Empty);
+            if (!string.IsNullOrEmpty(enableCors))
             {
-                builder
-                    .WithOrigins(this.configuration.GetValue<string>("AllowOrigins", "*"))
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            });
-
-            // forwarded Header middleware required for apps behind proxies and load balancers
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto,
-            });
+                app.UseCors(builder =>
+                {
+                    builder
+                        .WithOrigins(enableCors)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            }
 
             app.UseResponseCompression();
             app.UseHttpsRedirection();
@@ -334,9 +358,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseSwagger(IApplicationBuilder app)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("Use Swagger...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
@@ -350,9 +372,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <returns>An async task.</returns>
         private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             this.logger.LogDebug("OnAuthenticationFailed...");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;

@@ -1,6 +1,8 @@
 import { injectable } from "inversify";
 import { IHttpDelegate, IUserProfileService } from "@/services/interfaces";
-import UserProfile from "@/models/userProfile";
+import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import RequestResult from "@/models/requestResult";
+import { ResultType } from "@/constants/resulttype";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
@@ -14,9 +16,11 @@ export class RestUserProfileService implements IUserProfileService {
   public getProfile(hdid: string): Promise<UserProfile> {
     return new Promise((resolve, reject) => {
       this.http
-        .getWithCors<UserProfile>(`${this.USER_PROFILE_BASE_URI}/${hdid}`)
-        .then(result => {
-          return resolve(result);
+        .getWithCors<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}`
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
         })
         .catch(err => {
           console.log("Fetch error:" + err.toString());
@@ -25,18 +29,33 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public createProfile(profile: UserProfile): Promise<boolean> {
+  public createProfile(createRequest: CreateUserRequest): Promise<UserProfile> {
     return new Promise((resolve, reject) => {
       this.http
-        .post<boolean>(`${this.USER_PROFILE_BASE_URI}/${profile.hdid}`, profile)
-        .then(result => {
-          console.log(result);
-          return resolve(result);
+        .post<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
+          createRequest
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
         })
         .catch(err => {
           console.log("Fetch error:" + err.toString());
           reject(err);
         });
     });
+  }
+
+  private handleResult(
+    requestResult: RequestResult<any>,
+    resolve: any,
+    reject: any
+  ) {
+    //console.log(requestResult);
+    if (requestResult.resultStatus === ResultType.Success) {
+      resolve(requestResult.resourcePayload);
+    } else {
+      reject(requestResult.resultMessage);
+    }
   }
 }

@@ -23,9 +23,9 @@ echo "DEMO ended"
 
 # TRAINING
 echo "TRAINING started"
-./service.sh -s patient -n q6qfzk-prod -e training 
-./service.sh -s immunization -n q6qfzk-prod -e training
-./service.sh -s medication -n q6qfzk-prod -e training
+./service.sh -s patient -n q6qfzk-prod -e production 
+./service.sh -s immunization -n q6qfzk-prod -e production
+./service.sh -s medication -n q6qfzk-prod -e production
 echo "TRAINING ended"
 
 read -p "Deployment is DONE. Press [Enter] to exit..."

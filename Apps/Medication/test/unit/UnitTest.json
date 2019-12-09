@@ -25,7 +25,7 @@
         },
         "Url": "http://localhost/",
         "ZPL": {
-            "TransactionReasonCode": "MM"
+            "TransactionReasonCode": "CQ"
         },
         "UnixTimeZoneId": "America/Vancouver",
         "WindowsTimeZoneId": "Pacific Standard Time"

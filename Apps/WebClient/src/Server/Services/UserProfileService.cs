@@ -17,50 +17,137 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Diagnostics.Contracts;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Constant;
+    using HealthGateway.WebClient.Models;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
+        private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
+        private readonly IEmailDelegate emailDelegate;
+        private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
+        /// <param name="configuration">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        public UserProfileService(IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
+        public UserProfileService(ILogger<UserProfileService> logger, IProfileDelegate profileDelegate, IEmailDelegate emailDelegate, IConfigurationService configuration, IEmailQueueService emailQueueService)
         {
+            this.logger = logger;
             this.profileDelegate = profileDelegate;
+            this.emailDelegate = emailDelegate;
+            this.configurationService = configuration;
             this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> GetUserProfile(string hdid)
+        public RequestResult<UserProfile> GetUserProfile(string hdid)
         {
-            return this.profileDelegate.GetUserProfile(hdid);
+            this.logger.LogTrace($"Getting user profile... {hdid}");
+            DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
+            this.logger.LogDebug($"Finished getting user profile. {JsonConvert.SerializeObject(retVal)}");
+
+            return new RequestResult<UserProfile>()
+            {
+                ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
+                ResultMessage = retVal.Message,
+                ResourcePayload = retVal.Payload,
+            };
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> CreateUserProfile(UserProfile userProfile, Uri hostUri)
+        public RequestResult<UserProfile> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
         {
-            Contract.Requires(userProfile != null && hostUri != null);
-            string email = userProfile.Email;
-            userProfile.Email = string.Empty;
+            Contract.Requires(createProfileRequest != null && hostUri != null);
+            this.logger.LogTrace($"Creating user profile... {JsonConvert.SerializeObject(createProfileRequest)}");
 
-            DBResult<UserProfile> result = this.profileDelegate.CreateUserProfile(userProfile);
+            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
 
-            if (result.Status == Database.Constant.DBStatusCode.Created &&
-                !string.IsNullOrEmpty(email))
+            RequestResult<UserProfile> requestResult = new RequestResult<UserProfile>();
+
+            if (registrationStatus == RegistrationStatus.Closed)
             {
-                this.emailQueueService.QueueInviteEmail(userProfile.HdId, email, hostUri);
+                requestResult.ResultStatus = ResultType.Error;
+                requestResult.ResultMessage = "Registration is closed";
+                this.logger.LogWarning($"Registration is closed. {JsonConvert.SerializeObject(createProfileRequest)}");
+                return requestResult;
             }
 
-            return result;
+            string hdid = createProfileRequest.Profile.HdId;
+            EmailInvite emailInvite = null;
+            if (registrationStatus == RegistrationStatus.InviteOnly)
+            {
+                if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
+                {
+                    requestResult.ResultStatus = ResultType.Error;
+                    requestResult.ResultMessage = "Invalid email invite";
+                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    return requestResult;
+                }
+
+                emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
+
+                // Fails if...
+                // Email invite not found or
+                // Email invite was already validated or
+                // Email invite must have a blank/null HDID or
+                // Email address doesn't match the invite
+                if (emailInvite == null ||
+                    emailInvite.Validated ||
+                    !string.IsNullOrEmpty(emailInvite.HdId) ||
+                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    requestResult.ResultStatus = ResultType.Error;
+                    requestResult.ResultMessage = "Invalid email invite";
+                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    return requestResult;
+                }
+            }
+
+            string email = createProfileRequest.Profile.Email;
+            createProfileRequest.Profile.Email = string.Empty;
+
+            createProfileRequest.Profile.CreatedBy = hdid;
+            createProfileRequest.Profile.UpdatedBy = hdid;
+
+            DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(createProfileRequest.Profile);
+
+            if (insertResult.Status == DBStatusCode.Created)
+            {
+                if (emailInvite != null)
+                {
+                    // Validates the invite email
+                    emailInvite.Validated = true;
+                    emailInvite.HdId = hdid;
+                    this.emailDelegate.UpdateEmailInvite(emailInvite);
+                }
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
+                }
+
+                requestResult.ResourcePayload = insertResult.Payload;
+                requestResult.ResultStatus = ResultType.Success;
+            }
+
+            this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(insertResult)}");
+            return requestResult;
         }
     }
 }

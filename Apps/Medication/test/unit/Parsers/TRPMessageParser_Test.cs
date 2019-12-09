@@ -16,9 +16,12 @@
 namespace HealthGateway.Medication.Test
 {
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -43,9 +46,12 @@ namespace HealthGateway.Medication.Test
             this.culture = CultureInfo.CreateSpecificCulture("en-CA");
             this.culture.DateTimeFormat.DateSeparator = "/";
 
-            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("UnitTest.json").Build();
             configuration.GetSection("HNClient").Bind(hnClientConfig);
-            this.parser = new TRPMessageParser(configuration);
+            this.parser = new TRPMessageParser(
+                new Mock<ILogger<TRPMessageParser>>().Object,
+                configuration);
         }
 
         [Fact]
@@ -54,9 +60,14 @@ namespace HealthGateway.Medication.Test
             string dateTime = this.getDateTime().ToString("yyyy/MM/dd HH:mm:", this.culture);
             string date = this.getDateTime().ToString("yyMMdd", this.culture);
 
-            HNMessage<string> request = this.parser.CreateRequestMessage(phn, userId, ipAddress, 101010, null);
+            HNMessage<string> request = this.parser.CreateRequestMessage(new HNMessageRequest {
+                Phn = phn,
+                UserId = userId,
+                IpAddress =ipAddress,
+                TraceId = 101010
+            });
 
-            Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Sucess);
+            Assert.True(request.Result == HealthGateway.Common.Constants.ResultType.Success);
             Assert.StartsWith($"MSH|^~\\&|{hnClientConfig.SendingApplication}|{hnClientConfig.SendingFacility}|{hnClientConfig.ReceivingApplication}|{hnClientConfig.ReceivingFacility}|{dateTime}", request.Message);
             Assert.Contains($"|{userId.ToUpper()}:{ipAddress}|ZPN|{traceNumber}|{hnClientConfig.ProcessingID}|{hnClientConfig.MessageVersion}\r", request.Message);
             Assert.Contains($"ZCA|{hnClientConfig.ZCA.BIN}|{hnClientConfig.ZCA.CPHAVersionNumber}|{hnClientConfig.ZCA.TransactionCode}|{hnClientConfig.ZCA.SoftwareId}|{hnClientConfig.ZCA.SoftwareVersion}", request.Message);
@@ -79,7 +90,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Error);
+            Assert.True(actual.Result == ResultType.Error);
             Assert.Equal(expectedErrorMessage, actual.ResultMessage);
             Assert.Null(actual.Message);
         }
@@ -149,7 +160,7 @@ namespace HealthGateway.Medication.Test
 
             HNMessage<List<MedicationStatement>> actual = this.parser.ParseResponseMessage(sb.ToString());
 
-            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Sucess);
+            Assert.True(actual.Result == HealthGateway.Common.Constants.ResultType.Success);
             Assert.Equal(3, actual.Message.Count);
             Assert.True(expectedMedicationStatement.IsDeepEqual(actual.Message.First()));
         }

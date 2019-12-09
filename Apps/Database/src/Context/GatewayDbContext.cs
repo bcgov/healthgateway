@@ -17,6 +17,9 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -27,6 +30,9 @@ namespace HealthGateway.Database.Context
     /// </summary>
     public class GatewayDbContext : BaseDbContext
     {
+        private string emailValidationTemplate;
+        private string emailInviteTemplate;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
         /// </summary>
@@ -34,6 +40,18 @@ namespace HealthGateway.Database.Context
         public GatewayDbContext(DbContextOptions<GatewayDbContext> options)
             : base(options)
         {
+            Assembly assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
+            Stream resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            {
+                this.emailValidationTemplate = reader.ReadToEnd();
+            }
+
+            resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            {
+                this.emailInviteTemplate = reader.ReadToEnd();
+            }
         }
 
         #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
@@ -329,39 +347,24 @@ namespace HealthGateway.Database.Context
                     Name = "Registration",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Email Verification ${Environment}",
-                    Body = string.Join(
-                                        Environment.NewLine,
-                                        "<!doctype html>",
-                                        "<html lang=\"en\">",
-                                        "<head></head>",
-                                        "<body style = \"margin:0\">",
-                                        "    <table cellspacing = \"0\" align = \"left\" width = \"100%\" style = \"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">",
-                                        "        <tr style = \"background:#003366;\">",
-                                        "            <th width=\"45\" ></th>",
-                                        "            <th width=\"450\" align=\"left\" style=\"text-align:left;\">",
-                                        "                <div role=\"img\" aria - label=\"Health Gateway Logo\">",
-                                        "                    <img src=\"\" alt=\"Health Gateway Logo\"/>",
-                                        "                </div>",
-                                        "            </th>",
-                                        "            <th width=\"\"></th>",
-                                        "        </tr>",
-                                        "        <tr>",
-                                        "            <td colspan=\"3\" height=\"20\"></td>",
-                                        "        </tr>",
-                                        "        <tr>",
-                                        "            <td></td>",
-                                        "            <td>",
-                                        "                <h1 style = \"font-size:18px;\">Almost there!</h1>",
-                                        "                <p>We've received a request to register your email address for a Ministry of Health Gateway account.</p>",
-                                        "                <p>To activate your account, please verify your email by clicking the link:</p>",
-                                        "                <a style = \"color:#1292c5;font-weight:600;\" href = \"${ActivationHost}/ValidateEmail/${InviteKey}\" > Health Gateway account verification </a>",
-                                        "            </td>",
-                                        "            <td></td>",
-                                        "        </tr>",
-                                        "    </table>",
-                                        "</body>",
-                                        "</html>"),
+                    Body = this.emailValidationTemplate,
                     Priority = EmailPriority.Standard,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = this.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = this.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+            modelBuilder.Entity<EmailTemplate>().HasData(
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("896f8f2e-3bed-400b-acaf-51dd6082b4bd"),
+                    Name = "Invite",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Private Invitation",
+                    Body = this.emailInviteTemplate,
+                    Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
                     CreatedBy = this.DefaultUser,

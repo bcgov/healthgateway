@@ -38,6 +38,7 @@ namespace HealthGateway.WebClient
     {
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
+        private readonly ILogger<Startup> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -49,6 +50,7 @@ namespace HealthGateway.WebClient
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace HealthGateway.WebClient
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
-            services.AddTransient<IEmailValidationService, EmailValidationService>();
+            services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IAuthService, AuthService>();
@@ -80,6 +82,7 @@ namespace HealthGateway.WebClient
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
             JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }

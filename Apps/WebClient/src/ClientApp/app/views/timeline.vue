@@ -2,7 +2,7 @@
 @import "@/assets/scss/_variables.scss";
 
 .column-wrapper {
-  border: 1px;
+  border: 1px; //red solid;
 }
 
 #pageTitle {
@@ -28,12 +28,19 @@
 <template>
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <b-row class="my-3">
+    <b-row class="my-3 fluid justify-content-md-center">
       <b-col class="col-3 column-wrapper"> </b-col>
-      <b-col id="timeline" class="col-6 column-wrapper">
+      <b-col id="timeline" class="col-12 col-lg-6 column-wrapper">
         <b-alert :show="hasErrors" dismissible variant="danger">
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
+        </b-alert>
+        <b-alert :show="unverifiedEmail" dismissible variant="info">
+          <h4>Unverified email</h4>
+          <span
+            >Your email has not been verified. Please check your inbox or junk
+            folder for an email from Health Gateway.</span
+          >
         </b-alert>
         <div id="pageTitle">
           <h1 id="subject">
@@ -143,11 +150,17 @@ export default class TimelineComponent extends Vue {
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
+
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
     this.fechMedicationStatements();
+    console.log(this.user);
+  }
+
+  get unverifiedEmail(): boolean {
+    return !this.user.verifiedEmail && this.user.hasEmail;
   }
 
   private fechMedicationStatements(protectiveWord?: string) {
@@ -171,8 +184,9 @@ export default class TimelineComponent extends Vue {
         } else {
           console.log(
             "Error returned from the medication statements call: " +
-              results.errorMessage
+              results.resultMessage
           );
+          this.hasErrors = true;
         }
       })
       .catch(err => {

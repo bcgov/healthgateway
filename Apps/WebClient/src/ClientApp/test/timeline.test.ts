@@ -13,6 +13,9 @@ import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import MedicationSumary from "@/models/medicationSumary";
+import MedicationResult from "@/models/medicationResult";
+import Pharmacy from "@/models/pharmacy";
 
 const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
@@ -55,30 +58,34 @@ class MockMedicationService implements IMedicationService {
     // No need to implement for the mock
     throw new Error(METHOD_NOT_IMPLEMENTED);
   }
-  getPatientMedicationStatements(hdid: string): Promise<RequestResult> {
-    return new Promise<RequestResult>((resolve, reject) => {
-      if (hdid === "hdid_with_results") {
-        resolve({
-          totalResultCount: medicationStatements.length,
-          pageIndex: 0,
-          pageSize: medicationStatements.length,
-          resultStatus: ResultType.Success,
-          resultMessage: "",
-          resourcePayload: medicationStatements
-        });
-      } else if (hdid === "hdid_no_results") {
-        resolve();
-      } else {
-        reject({
-          error: "User with " + hdid + " not found."
-        });
+  getPatientMedicationStatements(
+    hdid: string
+  ): Promise<RequestResult<MedicationStatement[]>> {
+    return new Promise<RequestResult<MedicationStatement[]>>(
+      (resolve, reject) => {
+        if (hdid === "hdid_with_results") {
+          resolve({
+            totalResultCount: medicationStatements.length,
+            pageIndex: 0,
+            pageSize: medicationStatements.length,
+            resultStatus: ResultType.Success,
+            resultMessage: "",
+            resourcePayload: medicationStatements
+          });
+        } else if (hdid === "hdid_no_results") {
+          resolve();
+        } else {
+          reject({
+            error: "User with " + hdid + " not found."
+          });
+        }
       }
-    });
+    );
   }
-  getMedicationInformation(drugIdentifier: string): Promise<RequestResult> {
+  getMedicationInformation(drugIdentifier: string): Promise<MedicationResult> {
     throw new Error(METHOD_NOT_IMPLEMENTED);
   }
-  getPharmacyInfo(pharmacyId: string): Promise<RequestResult> {
+  getPharmacyInfo(pharmacyId: string): Promise<Pharmacy> {
     // No need to implement for the mock
     throw new Error(METHOD_NOT_IMPLEMENTED);
   }

@@ -54,16 +54,17 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Remove="ClientApp\app\app.vue" />
-    <None Remove="WebClient.xml" />
+    <Folder Include="Views\DumpHeaders\" />
+    <Folder Include="Views\Robots\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ClientApp\app\components\modal\" />
+    <None Remove="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Server\Controllers\ProfileController.cs" />
+    <Content Include="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />

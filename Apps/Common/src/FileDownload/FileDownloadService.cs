@@ -21,6 +21,7 @@ namespace HealthGateway.Common.FileDownload
     using System.Net.Http;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
@@ -30,19 +31,18 @@ namespace HealthGateway.Common.FileDownload
     public class FileDownloadService : IFileDownloadService
     {
         private readonly ILogger<FileDownloadService> logger;
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IHttpClientService httpClientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileDownloadService"/> class.
         /// FileDownloadService constructor.
         /// </summary>
         /// <param name="logger">ILogger instance.</param>
-        /// <param name="httpClientFactory">The HTTP Client Factory.</param>
-        ///
-        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
+        /// <param name="httpClientService">The HTTP Client service.</param>
+        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientService httpClientService)
         {
             this.logger = logger;
-            this.httpClientFactory = httpClientFactory;
+            this.httpClientService = httpClientService;
         }
 
         /// <inheritdoc/>
@@ -56,9 +56,9 @@ namespace HealthGateway.Common.FileDownload
                 targetFolder = Path.Combine(Directory.GetCurrentDirectory(), targetFolder);
             }
 
-            if(!Directory.Exists(targetFolder)) 
+            if (!Directory.Exists(targetFolder))
             {
-                System.IO.Directory.CreateDirectory(targetFolder);
+                Directory.CreateDirectory(targetFolder);
             }
 
             fd.Name = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
@@ -66,7 +66,7 @@ namespace HealthGateway.Common.FileDownload
             string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
             {
-                using (HttpClient client = this.httpClientFactory.CreateClient())
+                using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
                 {
                     using (Stream inStream = await client.GetStreamAsync(fileUrl).ConfigureAwait(true))
                     {

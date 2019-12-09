@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System.Diagnostics;
+    using System.IO;
     using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,25 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The default view.</returns>
         public IActionResult Index() => this.View();
+
+        /// <summary>
+        /// The bc gov logo image.
+        /// </summary>
+        /// <returns>The logo image.</returns>
+        [Route("Logo.png")]
+        public IActionResult Logo()
+        {
+            var file = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "ClientApp",
+                "app",
+                "assets",
+                "images",
+                "gov",
+                "bcid-logo-rev-en.png");
+
+            return this.PhysicalFile(file, "image/png");
+        }
 
         /// <summary>
         /// The default page for error.

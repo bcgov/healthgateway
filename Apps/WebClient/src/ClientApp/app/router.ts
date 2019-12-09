@@ -17,6 +17,8 @@ import ValidateEmailComponent from "@/views/validateEmail.vue";
 
 Vue.use(VueRouter);
 
+const REGISTRATION_PATH = "/registration";
+
 const routes = [
   {
     path: "/",
@@ -26,11 +28,19 @@ const routes = [
   {
     path: "/registrationInfo",
     component: RegistrationInfoComponent,
+    props: (route: Route) => ({
+      inviteKey: route.query.inviteKey,
+      email: route.query.email
+    }),
     meta: { requiresAuth: false }
   },
   {
-    path: "/registration",
+    path: REGISTRATION_PATH,
     component: RegistrationComponent,
+    props: (route: Route) => ({
+      inviteKey: route.query.inviteKey,
+      inviteEmail: route.query.email
+    }),
     meta: { requiresAuth: true }
   },
   {
@@ -78,27 +88,41 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.path);
+  console.log(to.fullPath);
   if (to.meta.requiresAuth || to.meta.requiresRegistration) {
     store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
       if (!hasAccess) {
-        next({ path: "/login", query: { redirect: to.path } });
+        next({ path: "/login", query: { redirect: to.fullPath } });
       } else {
         handleUserHasAccess(to, from, next);
       }
     });
   } else {
-    next();
+    let userIsAuthenticated: boolean =
+      store.getters["auth/oidcIsAuthenticated"];
+    let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+
+    // If the user is authenticated but not registered, the registration must be completed
+    if (
+      userIsAuthenticated &&
+      !userIsRegistered &&
+      !to.meta.routeIsOidcCallback &&
+      !to.path.startsWith("/logout")
+    ) {
+      next({ path: REGISTRATION_PATH });
+    } else {
+      next();
+    }
   }
 });
 
 function handleUserHasAccess(to: Route, from: Route, next: any) {
   // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-  if (userIsRegistered && to.path === "/registration") {
+  if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
     next({ path: "/timeline" });
   } else if (to.meta.requiresRegistration && !userIsRegistered) {
-    next({ path: "/unauthorized" });
+    next({ path: REGISTRATION_PATH });
   } else {
     next();
   }

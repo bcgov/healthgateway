@@ -26,7 +26,8 @@ namespace HealthGateway.Medication.Test
     using System.Text;
     using Newtonsoft.Json;
     using Xunit;
-
+    using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Services;
 
     public class PatientDelegate_Test
     {
@@ -41,16 +42,19 @@ namespace HealthGateway.Medication.Test
         public async Task ShouldGetPHN()
         {
             Patient expected = new Patient("1234", "000", "Test", "Gateway");
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+            httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
 
-            IPatientDelegate service = new RestPatientDelegate(httpMock.Object, configuration);
+            IPatientDelegate service = new RestPatientDelegate(
+                new Mock<ILogger<RestPatientDelegate>>().Object,
+                httpMock.Object,
+                configuration);
             string phn = await service.GetPatientPHNAsync(expected.HdId, "Bearer TheTestToken");
 
             Assert.Equal(expected.PersonalHealthNumber, phn);
@@ -59,15 +63,19 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldCatchBadRequest()
         {
-            Mock<IHttpClientFactory> httpMock = new Mock<IHttpClientFactory>();
+            Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.BadRequest,
+                Content = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json),
             });
 
             var client = new HttpClient(clientHandlerStub);
-            httpMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
-            IPatientDelegate service = new RestPatientDelegate(httpMock.Object, configuration);
+            httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
+            IPatientDelegate service = new RestPatientDelegate(
+                new Mock<ILogger<RestPatientDelegate>>().Object,
+                httpMock.Object,
+                configuration);
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));
         }
     }

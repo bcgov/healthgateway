@@ -78,12 +78,18 @@ namespace HealthGateway.Database.Delegates
         EmailTemplate GetEmailTemplate(string templateName);
 
         /// <summary>
-        /// Gets a particulare EmailInvite based on the users HDID and inviteKey.
+        /// Gets a particular EmailInvite based on the users HDID and inviteKey.
         /// </summary>
-        /// <param name="hdid">The logged in users HDID.</param>
         /// <param name="inviteKey">The users inviteKey as emailed.</param>
         /// <returns>The EmailInvite that was fetched.</returns>
-        EmailInvite GetEmailInvite(string hdid, Guid inviteKey);
+        EmailInvite GetEmailInvite(Guid inviteKey);
+
+        /// <summary>
+        /// Gets the last EmailInvite based on the users HDID.
+        /// </summary>
+        /// <param name="hdid">The users hdid.</param>
+        /// <returns>The EmailInvite that was fetched.</returns>
+        EmailInvite GetLastEmailInviteForUser(string hdid);
 
         /// <summary>
         /// Updates an Email Invite using a populated EmailInvite object.

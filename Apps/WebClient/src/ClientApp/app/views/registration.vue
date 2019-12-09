@@ -30,27 +30,56 @@ input {
   <b-container>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <div v-if="!isLoading">
-      <b-row class="my-3">
+      <b-row v-if="isRegistrationClosed" class="my-3">
         <b-col>
-          <b-alert :show="hasErrors" dismissible variant="danger">
-            <h4>Error</h4>
-            <span
-              >An unexpected error occured while processing the request.</span
-            >
-          </b-alert>
           <div id="pageTitle">
             <h1 id="Subject">
-              Terms of Service
+              Closed Registration
             </h1>
             <div id="Description">
-              <strong>{{ fullName }}</strong>
-              , please provide your email address to receive notifications about
-              updates to the Health Gateway, such as new features and changes.
+              Thank you for your interest in the Health Gateway service. At this
+              time, the registration is closed.
             </div>
           </div>
         </b-col>
       </b-row>
-      <b-form ref="registrationForm" @submit.prevent="onSubmit">
+      <b-row v-else-if="isRegistrationInviteOnly && !inviteKey" class="my-3">
+        <b-col>
+          <div id="pageTitle">
+            <h1 id="Subject">
+              Restricted Registration
+            </h1>
+            <div id="Description">
+              Thank you for your interest in the Health Gateway service. At this
+              time, the registration is invite only. As we will be launching
+              more broadly in the coming months, please visit the site again. If
+              you are one of our patient partners, check your email for your
+              unique registration link.
+            </div>
+          </div>
+        </b-col>
+      </b-row>
+      <b-form v-else ref="registrationForm" @submit.prevent="onSubmit">
+        <b-row class="my-3">
+          <b-col>
+            <b-alert :show="hasErrors" dismissible variant="danger">
+              <h4>Error</h4>
+              <p>An unexpected error occured while processing the request:</p>
+              <span>{{ errorMessage }}</span>
+            </b-alert>
+            <div id="pageTitle">
+              <h1 id="Subject">
+                Terms of Service
+              </h1>
+              <div id="Description">
+                <strong>{{ fullName }}</strong>
+                , please provide your email address to receive notifications
+                about updates to the Health Gateway, such as new features and
+                changes.
+              </div>
+            </div>
+          </b-col>
+        </b-row>
         <b-row class="mb-3">
           <b-col>
             <b-form-input
@@ -58,7 +87,7 @@ input {
               v-model="$v.email.$model"
               type="email"
               placeholder="Your email address"
-              :disabled="emailOptout"
+              :disabled="emailOptout || isPredefinedEmail"
               :state="isValid($v.email)"
             />
             <b-form-invalid-feedback :state="isValid($v.email)">
@@ -66,7 +95,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-1">
+        <b-row v-if="!isPredefinedEmail" class="mb-3">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -81,7 +110,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row class="mb-5">
+        <b-row v-if="!isRegistrationInviteOnly" class="mb-3">
           <b-col>
             <b-form-checkbox
               id="optout"
@@ -109,13 +138,18 @@ input {
               I agree to the terms of service above.
             </b-form-checkbox>
             <b-form-invalid-feedback :state="isValid($v.accepted)">
-              Field is required.
+              You must accept the terms of service.
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
         <b-row class="mb-5">
           <b-col class="justify-content-right">
-            <b-button class="px-5 float-right" type="submit" size="lg"
+            <b-button
+              class="px-5 float-right"
+              type="submit"
+              size="lg"
+              variant="primary"
+              :class="{ disabled: !accepted }"
               >Register</b-button
             >
           </b-col>
@@ -128,7 +162,7 @@ input {
 <script lang="ts">
 import Vue from "vue";
 import { Getter, Action } from "vuex-class";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Ref, Prop } from "vue-property-decorator";
 import {
   IUserProfileService,
   IAuthenticationService
@@ -137,9 +171,11 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import User from "@/models/user";
 import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
+import { WebClientConfiguration } from "@/models/configData";
 
 @Component({
   components: {
@@ -150,21 +186,32 @@ import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
 export default class RegistrationComponent extends Vue {
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Ref("registrationForm") form!: HTMLFormElement;
+  @Getter("webClient", { namespace: "config" })
+  webClientConfig: WebClientConfiguration;
+  @Prop() inviteKey?: string;
+  @Prop() inviteEmail?: string;
 
-  private termsOfService: string = termsAndConditionsHTML;
+  private readonly termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
+
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
-  private validate: boolean;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
+  private errorMessage: string = "";
 
   mounted() {
-    this.validate = false;
+    if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
+      this.email = "";
+      this.emailConfirmation = "";
+    } else {
+      this.email = this.inviteEmail || "";
+      this.emailConfirmation = this.email;
+    }
 
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
@@ -208,6 +255,24 @@ export default class RegistrationComponent extends Vue {
     };
   }
 
+  get fullName(): string {
+    return this.oidcUser.given_name + " " + this.oidcUser.family_name;
+  }
+  get isRegistrationClosed(): boolean {
+    return this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
+  }
+  get isRegistrationInviteOnly(): boolean {
+    return (
+      this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly
+    );
+  }
+  get isPredefinedEmail() {
+    if (this.webClientConfig.registrationStatus != RegistrationStatus.Open) {
+      return !!this.inviteEmail;
+    }
+    return false;
+  }
+
   private isValid(param: any): boolean | undefined {
     return param.$dirty ? !param.$invalid : undefined;
   }
@@ -220,8 +285,6 @@ export default class RegistrationComponent extends Vue {
   }
 
   private onSubmit(event: any) {
-    console.log("submit!");
-    console.log(this.$v);
     this.$v.$touch();
     if (this.$v.$invalid) {
       this.submitStatus = "ERROR";
@@ -231,14 +294,17 @@ export default class RegistrationComponent extends Vue {
       this.isLoading = true;
       this.userProfileService
         .createProfile({
-          hdid: this.oidcUser.hdid,
-          acceptedTermsOfService: this.accepted,
-          email: this.email
+          profile: {
+            hdid: this.oidcUser.hdid,
+            acceptedTermsOfService: this.accepted,
+            email: this.email || ""
+          },
+          inviteCode: this.inviteKey || ""
         })
         .then(result => {
           console.log(result);
           this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
-            isRegistered => {
+            (isRegistered: boolean) => {
               if (isRegistered) {
                 this.$router.push({ path: "/timeline" });
               } else {
@@ -247,8 +313,10 @@ export default class RegistrationComponent extends Vue {
             }
           );
         })
-        .catch(() => {
+        .catch(err => {
           this.hasErrors = true;
+          this.errorMessage = err;
+          console.log(err);
         })
         .finally(() => {
           this.isLoading = false;
@@ -256,10 +324,6 @@ export default class RegistrationComponent extends Vue {
     }
 
     event.preventDefault();
-  }
-
-  get fullName(): string {
-    return this.oidcUser.given_name + " " + this.oidcUser.family_name;
   }
 }
 </script>
