@@ -87,7 +87,7 @@ objects:
       dockerStrategy:
         from:
           kind: ImageStreamTag
-          name: 'rhel7:latest'
+          name: 'ubuntu:18.04'
           namespace: openshift
       type: Docker
     successfulBuildsHistoryLimit: 2
