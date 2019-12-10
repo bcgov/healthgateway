@@ -1,5 +1,4 @@
-ARG DOTNET_VERSION=2.2
-FROM mcr.microsoft.com/dotnet/core/aspnet:${DOTNET_VERSION} AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 WORKDIR /app
