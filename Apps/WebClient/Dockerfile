@@ -1,8 +1,8 @@
-FROM docker-registry.default.svc:5000/q6qfzk-tools/dotnet22-base:latest
+ARG DOTNET_VERSION=2.2
+FROM mcr.microsoft.com/dotnet/core/aspnet:${DOTNET_VERSION} AS runtime
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV APPDLL=WebClient.dll
+WORKDIR /app
 COPY . .
 EXPOSE 8080
-USER 1001
-CMD ["bash","-c","dotnet $APPDLL"]
+ENTRYPOINT ["dotnet","Webclient.dll"]
