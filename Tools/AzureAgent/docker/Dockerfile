@@ -15,10 +15,6 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="builder,azure,devops,agent-v${DEVOPS_AGENT_VERSION},.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
       release="1"
 
-#ENV PATH=$HOME/.local/bin/:$PATH \
-#    LC_ALL=en_US.UTF-8 \
-#    LANG=en_US.UTF-8 
-
 RUN  apt-get update -y -qq && \
      apt-get install -y -qq git iputils-ping telnet traceroute curl apt-transport-https && \
      curl -sLO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
@@ -26,7 +22,6 @@ RUN  apt-get update -y -qq && \
      rm packages-microsoft-prod.deb && \
      apt-get update -y -qq && \
      apt-get install -y -qq dotnet-sdk-2.2 dotnet-sdk-3.1
-
 
 # Fetch stock azure client and install
 RUN mkdir -p /opt/az/agent && \
@@ -46,21 +41,19 @@ RUN mkdir -p /opt && \
 #Fetch OpenShift client and install
 RUN mkdir -p /opt && \
     cd /opt && \
-    curl -sL https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz | tar -zx && \
-    rm -f openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
+    curl -sL https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit.tar.gz | tar -zx && \
+    rm -f openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit.tar.gz
 
 ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh 
 RUN chmod +rx /opt/az/start.sh
 
 # Update environment variables
-ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit
+ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ENV AZ_DEVOPS_ORG_URL=set_me_to_the_org_url
 ENV AZ_DEVOPS_TOKEN=set_me_to_a_pat
 ENV HOME=/tmp
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
-#ENV PATH=$HOME/.local/bin/:$PATH
-#ENV PATH=$HOME/.dotnet/tools:$PATH
 
 # Update the version of `npm` that came with the packages above
 # and install a few additional tools.
