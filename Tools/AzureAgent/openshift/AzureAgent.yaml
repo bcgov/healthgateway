@@ -86,9 +86,8 @@ objects:
     strategy:
       dockerStrategy:
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: 'ubuntu:18.04'
-          namespace: openshift
       type: Docker
     successfulBuildsHistoryLimit: 2
     failedBuildsHistoryLimit: 2
@@ -219,7 +218,7 @@ parameters:
 - description: Azure DevOps Agent pool
   name: AZ_DEVOPS_POOL
   required: true
-  value: Default
+  value: HealthGateway
 - description: Azure DevOps PAT Token
   name: AZ_DEVOPS_TOKEN
   required: true
