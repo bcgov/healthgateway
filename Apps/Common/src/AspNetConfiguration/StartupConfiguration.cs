@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
@@ -36,11 +35,13 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.AspNetCore.SpaServices.Extensions;
     using Microsoft.AspNetCore.SpaServices.Webpack;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Primitives;
     using Microsoft.IdentityModel.Logging;
@@ -53,17 +54,17 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// </summary>
     public class StartupConfiguration
     {
-        private readonly IHostingEnvironment environment;
+        private readonly IWebHostEnvironment environment;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupConfiguration"/> class.
         /// </summary>
-        /// <param name="env">The environment variables provider.</param>
         /// <param name="config">The configuration provider.</param>
+        /// <param name="env">The environment variables provider.</param>
         /// <param name="logger">The logger provider.</param>
-        public StartupConfiguration(IConfiguration config, IHostingEnvironment env, ILogger logger)
+        public StartupConfiguration(IConfiguration config, IWebHostEnvironment env, ILogger logger)
         {
             this.environment = env;
             this.configuration = config;
@@ -91,10 +92,10 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.Formatting = Formatting.Indented;
+                    options.JsonSerializerOptions.WriteIndented = true;
                 });
         }
 

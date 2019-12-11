@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Text.Json;
     using HealthGateway.Database.Context;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Npgsql;
     using NpgsqlTypes;
 

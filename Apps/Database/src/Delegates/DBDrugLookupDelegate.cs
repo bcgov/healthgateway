@@ -19,11 +19,11 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Text.Json;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
@@ -49,21 +49,21 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers)
         {
-            this.logger.LogTrace($"Getting list of drug products from DB... {JsonConvert.SerializeObject(drugIdentifiers)}");
+            this.logger.LogTrace($"Getting list of drug products from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
             List<DrugProduct> retVal = this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber))
                                         .Include(c => c.Company)
                                         .Include(a => a.ActiveIngredient)
                                         .Include(f => f.Form)
                         .ToList();
 
-            this.logger.LogDebug($"Finished getting list of drug products from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting list of drug products from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc/>
         public List<PharmaCareDrug> GetPharmaCareDrugsByDIN(List<string> drugIdentifiers)
         {
-            this.logger.LogTrace($"Getting list of pharmacare drug products from DB... {JsonConvert.SerializeObject(drugIdentifiers)}");
+            this.logger.LogTrace($"Getting list of pharmacare drug products from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
 
             DateTime now = DateTime.UtcNow;
             List<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
@@ -71,7 +71,7 @@ namespace HealthGateway.Database.Delegates
                 .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).FirstOrDefault())
                 .ToList();
 
-            this.logger.LogDebug($"Finished getting list of pharmacare drug products from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting list of pharmacare drug products from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -79,13 +79,13 @@ namespace HealthGateway.Database.Delegates
         public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
         {
             Contract.Requires(drugIdentifiers != null);
-            this.logger.LogTrace($"Getting drug brand names from DB... {JsonConvert.SerializeObject(drugIdentifiers)}");
+            this.logger.LogTrace($"Getting drug brand names from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
 
             // Retrieve the brand names using the provincial data
             List<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDIN(drugIdentifiers);
             Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(pcd => pcd.DINPIN, pcd => pcd.BrandName);
 
-            if (drugIdentifiers.Count > provicialBrandNames.Count())
+            if (drugIdentifiers.Count > provicialBrandNames.Count)
             {
                 // Get the DINs not found on the previous query
                 List<string> notFoundDins = drugIdentifiers.Where(din => !provicialBrandNames.Keys.Contains(din)).ToList();
@@ -98,7 +98,7 @@ namespace HealthGateway.Database.Delegates
                 federalBrandNames.ToList().ForEach(x => provicialBrandNames.Add(x.Key, x.Value));
             }
 
-            this.logger.LogDebug($"Finished getting drug brand names from DB. {JsonConvert.SerializeObject(provicialBrandNames)}");
+            this.logger.LogDebug($"Finished getting drug brand names from DB. {JsonSerializer.Serialize(provicialBrandNames)}");
             return provicialBrandNames;
         }
     }

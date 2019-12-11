@@ -24,6 +24,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
@@ -39,7 +40,7 @@ namespace HealthGateway.Common.Services
         private const string REGISTRATION_TEMPLATE = "Registration";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
-        private readonly IHostingEnvironment enviroment;
+        private readonly IWebHostEnvironment enviroment;
         private readonly ILogger logger;
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace HealthGateway.Common.Services
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IEmailDelegate emailDelegate,
-            IHostingEnvironment enviroment)
+            IWebHostEnvironment enviroment)
         {
             this.logger = logger;
             this.emailDelegate = emailDelegate;
