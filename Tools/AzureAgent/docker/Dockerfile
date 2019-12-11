@@ -5,7 +5,7 @@ ARG DOTNET_VERSION=3.1
 ARG OPENSHIFT_VERSION=v3.11.0-0cbc58b
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
-    DESCRIPTION="Azure DevOps agent with .NET v${DOTNET_VERSION}, nodejs v${NODE_VERSION}, Agent v${DEVOPS_AGENT_VERSION}"
+    DESCRIPTION="Azure DevOps agent v${DEVOPS_AGENT_VERSION} with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI ${OPENSHIFT_VERSION}"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
@@ -21,7 +21,7 @@ RUN  apt-get update -y -qq && \
      dpkg -i packages-microsoft-prod.deb && \ 
      rm packages-microsoft-prod.deb && \
      apt-get update -y -qq && \
-     apt-get install -y -qq dotnet-sdk-2.2 dotnet-sdk-3.1
+     apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION}
 
 # Fetch stock azure client and install
 RUN mkdir -p /opt/az/agent && \
