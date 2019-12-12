@@ -39,18 +39,15 @@ namespace HealthGateway.Medication
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
-            this.configuration = configuration;
+            this.startupConfig = new StartupConfiguration(configuration, env);
         }
 
         /// <summary>
