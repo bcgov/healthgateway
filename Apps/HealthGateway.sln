@@ -25,13 +25,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseTests", "Database\t
 EndProject
 Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "WebClientTests", "WebClient\test\unit\WebClientTests.csproj", "{622DA0CD-5DF2-4FF1-9BE6-524CA0549976}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Patient", "Patient\src\Patient.csproj", "{F70FE4EA-45C1-43FD-9844-E6538F5EB084}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patient", "Patient\src\Patient.csproj", "{F70FE4EA-45C1-43FD-9844-E6538F5EB084}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "PatientTests", "Patient\test\unit\PatientTests.csproj", "{66487699-BD22-4707-99F8-CBDE347ECE94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientTests", "Patient\test\unit\PatientTests.csproj", "{66487699-BD22-4707-99F8-CBDE347ECE94}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobScheduler", "JobScheduler\src\JobScheduler.csproj", "{7919D2B4-49C0-4638-A325-76642AC1289E}"
 EndProject
