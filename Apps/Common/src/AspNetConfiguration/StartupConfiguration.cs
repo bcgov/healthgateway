@@ -314,13 +314,6 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             app.UseResponseCompression();
             app.UseHttpsRedirection();
-
-            // Executes the endpoint that was selected by routing.
-            app.UseEndpoints(endpoints =>
-            {
-                // Mapping of endpoints goes here:
-                endpoints.MapControllers();
-            });
         }
 
         /// <summary>

@@ -97,9 +97,15 @@ namespace HealthGateway.Medication
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
+
+            app.UseEndpoints(routes =>
+            {
+                // Mapping of endpoints goes here:
+                routes.MapControllers();
+            });
         }
     }
 }
