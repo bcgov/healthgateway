@@ -58,7 +58,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="logger">The injected logger provider.</param>
         public Startup(IWebHostEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
             this.logger = logger;
         }

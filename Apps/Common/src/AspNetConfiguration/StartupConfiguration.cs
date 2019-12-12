@@ -102,7 +102,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection provider.</param>
         public void ConfigureSpaServices(IServiceCollection services)
         {
-            this.logger.LogDebug("Configure Spa Services...");
+            this.configurationLogger.LogDebug("Configure Spa Services...");
 
             services.AddSpaStaticFiles(config =>
             {
@@ -288,7 +288,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseSpaStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = (content) =>

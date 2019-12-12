@@ -339,7 +339,7 @@
             </summary>
             <param name="args">The command line arguments to be passed in.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Program.CreateWebHostBuilder(System.String[])">
+        <member name="M:HealthGateway.WebClient.Program.CreateHostBuilder(System.String[])">
             <summary>.
             Creates the IWebHostBuilder.
             </summary>
@@ -481,13 +481,12 @@
             Configures the application during startup.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Startup})">
+        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Startup"/> class.
             </summary>
             <param name="env">The environment variables provider.</param>
             <param name="configuration">The injected configuration provider.</param>
-            <param name="logger">The injected logger provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
@@ -495,7 +494,7 @@
             </summary>
             <param name="services">The injected services provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
             </summary>
