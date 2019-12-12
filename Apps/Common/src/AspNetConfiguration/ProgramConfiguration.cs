@@ -37,20 +37,20 @@ namespace HealthGateway.Common.AspNetConfiguration
              where T : class
         {
             return Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((builderContext, config) =>
-            {
-                config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<T>();
-            })
-            .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-            });
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                })
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+                    config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<T>();
+                });
         }
     }
 }

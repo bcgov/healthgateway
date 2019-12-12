@@ -54,19 +54,18 @@ namespace HealthGateway.Common.AspNetConfiguration
     {
         private readonly IWebHostEnvironment environment;
         private readonly IConfiguration configuration;
-        private readonly ILogger logger;
+        private readonly ILogger configurationLogger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupConfiguration"/> class.
         /// </summary>
         /// <param name="config">The configuration provider.</param>
         /// <param name="env">The environment variables provider.</param>
-        /// <param name="logger">The logger provider.</param>
-        public StartupConfiguration(IConfiguration config, IWebHostEnvironment env, ILogger logger)
+        public StartupConfiguration(IConfiguration config, IWebHostEnvironment env)
         {
             this.environment = env;
             this.configuration = config;
-            this.logger = logger;
+            this.configurationLogger = this.GetStartupLogger();
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection provider.</param>
         public void ConfigureHttpServices(IServiceCollection services)
         {
-            this.logger.LogDebug("Configure Http Services...");
+            this.configurationLogger.LogDebug("Configure Http Services...");
 
             services.AddResponseCompression(options =>
             {
@@ -117,7 +116,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-            this.logger.LogDebug("ConfigureAuthorizationServices...");
+            this.configurationLogger.LogDebug("ConfigureAuthorizationServices...");
 
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
@@ -148,7 +147,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             IAuditLogger auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
-            this.logger.LogDebug($"Debug configuration is {debugEnabled}");
+            this.configurationLogger.LogDebug($"Debug configuration is {debugEnabled}");
 
             // Displays sensitive data from the jwt if the environment is development only
             IdentityModelEventSource.ShowPII = debugEnabled;
@@ -157,20 +156,20 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
+            }).AddJwtBearer(options =>
             {
-                o.SaveToken = true;
-                o.RequireHttpsMetadata = true;
-                o.IncludeErrorDetails = true;
-                this.configuration.GetSection("OpenIdConnect").Bind(o);
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = true;
+                options.IncludeErrorDetails = true;
+                this.configuration.GetSection("OpenIdConnect").Bind(options);
 
-                o.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuerSigningKey = true,
                     ValidateAudience = true,
                     ValidateIssuer = true,
                 };
-                o.Events = new JwtBearerEvents()
+                options.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = (ctx) => { return this.OnAuthenticationFailed(ctx, auditLogger); },
                 };
@@ -183,7 +182,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuditServices(IServiceCollection services)
         {
-            this.logger.LogDebug("ConfigureAuditServices...");
+            this.configurationLogger.LogDebug("ConfigureAuditServices...");
 
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
             services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
@@ -212,7 +211,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseAuth(IApplicationBuilder app)
         {
-            this.logger.LogDebug("Use Auth...");
+            this.configurationLogger.LogDebug("Use Auth...");
 
             // Enable jwt authentication
             app.UseAuthentication();
@@ -228,13 +227,13 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
-            this.logger.LogInformation($"Forward Headers enabled: {enabled}");
+            this.configurationLogger.LogInformation($"Forward Headers enabled: {enabled}");
             if (enabled)
             {
                 string basePath = section.GetValue<string>("BasePath");
                 if (!string.IsNullOrEmpty(basePath))
                 {
-                    this.logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
+                    this.configurationLogger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
                     app.UsePathBase(basePath);
                     app.Use(async (context, next) =>
                     {
@@ -257,19 +256,19 @@ namespace HealthGateway.Common.AspNetConfiguration
                     // IF this is not done, identity provider redirect urls drop to http:// which is undesirable.
                     if (context.Request.Headers.TryGetValue(XForwardedProto, out StringValues proto))
                     {
-                        this.logger.LogInformation($"Client using protocol: {proto}, assigning to request protocol");
+                        this.configurationLogger.LogInformation($"Client using protocol: {proto}, assigning to request protocol");
                         context.Request.Protocol = proto;
                     }
                     else
                     {
-                        this.logger.LogInformation($"No header XforwardProto was found in request context - defaulting to {Uri.UriSchemeHttps}");
+                        this.configurationLogger.LogInformation($"No header XforwardProto was found in request context - defaulting to {Uri.UriSchemeHttps}");
                         context.Request.Protocol = Uri.UriSchemeHttps;
                     }
 
                     return next();
                 });
 
-                this.logger.LogInformation("Enabling Use Forward Header");
+                this.configurationLogger.LogInformation("Enabling Use Forward Header");
                 app.UseForwardedHeaders(options);
             }
         }
@@ -309,6 +308,12 @@ namespace HealthGateway.Common.AspNetConfiguration
                         headers["Content-Type"] = mimeType;
                     }
                 },
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                // Mapping of endpoints goes here:
+                endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>
@@ -362,8 +367,10 @@ namespace HealthGateway.Common.AspNetConfiguration
             }
 
             app.UseResponseCompression();
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            //app.UseHttpsRedirection();
+
+            app.UseRouting();
+            //app.UseMvc();
         }
 
         /// <summary>
@@ -372,10 +379,22 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseSwagger(IApplicationBuilder app)
         {
-            this.logger.LogDebug("Use Swagger...");
+            this.configurationLogger.LogDebug("Use Swagger...");
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+        }
+
+        private ILogger GetStartupLogger()
+        {
+            //var logLevel = this.configuration.GetValue<string>("Logging");
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.AddConfiguration(this.configuration);
+            });
+
+            return loggerFactory.CreateLogger("Startup");
         }
 
         /// <summary>
@@ -386,7 +405,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <returns>An async task.</returns>
         private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
-            this.logger.LogDebug("OnAuthenticationFailed...");
+            this.configurationLogger.LogDebug("OnAuthenticationFailed...");
 
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
