@@ -275,66 +275,6 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
-        /// Configures the app to use web client.
-        /// </summary>
-        /// <param name="app">The application builder provider.</param>
-        public void UseWebClient(IApplicationBuilder app)
-        {
-            if (this.environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = (content) =>
-                {
-                    var headers = content.Context.Response.Headers;
-                    var contentType = headers["Content-Type"];
-                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        return;
-                    }
-
-                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
-                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
-                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
-                    {
-                        headers.Add("Content-Encoding", "gzip");
-                        headers["Content-Type"] = mimeType;
-                    }
-                },
-            });
-
-            app.UseEndpoints(endpoints =>
-            {
-                // Mapping of endpoints goes here:
-                endpoints.MapControllers();
-            });
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "dist";
-
-                if (this.environment.IsDevelopment())
-                {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
-                }
-            });
-
-            app.UseEndpoints(routes =>
-            {
-                routes.MapRazorPages();
-                routes.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routes.MapFallbackToController("Index", "Home");
-            });
-        }
-
-        /// <summary>
         /// Configures the app to use http.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
@@ -349,6 +289,8 @@ namespace HealthGateway.Common.AspNetConfiguration
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseRouting();
 
             // Enable health endpoint for readiness probe
             app.UseHealthChecks("/health");
@@ -369,7 +311,12 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseResponseCompression();
             app.UseHttpsRedirection();
 
-            app.UseRouting();
+            // Executes the endpoint that was selected by routing.
+            app.UseEndpoints(endpoints =>
+            {
+                // Mapping of endpoints goes here:
+                endpoints.MapControllers();
+            });
         }
 
         /// <summary>
