@@ -73,10 +73,16 @@
               @click="signupProcessVisible = !signupProcessVisible"
             >
               <span v-show="!signupProcessVisible">
-                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                <font-awesome-icon
+                  icon="chevron-down"
+                  aria-hidden="true"
+                ></font-awesome-icon>
               </span>
               <span v-show="signupProcessVisible">
-                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                <font-awesome-icon
+                  icon="chevron-up"
+                  aria-hidden="true"
+                ></font-awesome-icon>
               </span>
 
               I have a BC Services Card, but how do I use it?
@@ -159,6 +165,7 @@
           <b-col>
             <b-button
               id="moreOptionsBtn"
+              class="my-3"
               :class="dongleVisible ? 'collapsed' : null"
               :aria-expanded="dongleVisible ? 'true' : 'false'"
               aria-controls="collapse-4"
@@ -167,10 +174,16 @@
               @click="dongleVisible = !dongleVisible"
             >
               <span v-show="!dongleVisible">
-                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                <font-awesome-icon
+                  icon="chevron-down"
+                  aria-hidden="true"
+                ></font-awesome-icon>
               </span>
               <span v-show="dongleVisible">
-                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                <font-awesome-icon
+                  icon="chevron-up"
+                  aria-hidden="true"
+                ></font-awesome-icon>
               </span>
 
               Is there another option?

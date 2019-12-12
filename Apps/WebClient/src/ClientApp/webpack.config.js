@@ -5,9 +5,12 @@ const CheckerPlugin = require("awesome-typescript-loader").CheckerPlugin;
 const bundleOutputDir = "../wwwroot/dist";
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 
-module.exports = env => {
-  const isDevBuild = !(env && env.prod);
+module.exports = (env, argv) => {
+  const isDevBuild = argv !== undefined ? !argv.p : true;
   const cssLoader = "css-loader";
   return [
     {
@@ -64,7 +67,11 @@ module.exports = env => {
                 ]
           },
           { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "url-loader?limit=25000" },
-          { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "image-webpack-loader", enforce: "pre" },
+          {
+            test: /\.(png|jpg|jpeg|gif|svg)$/,
+            use: "image-webpack-loader",
+            enforce: "pre"
+          },
           {
             test: /\.(woff|woff2|eot|ttf|otf)$/,
             use: ["file-loader"]
@@ -73,7 +80,8 @@ module.exports = env => {
       },
       output: {
         path: path.resolve(__dirname, bundleOutputDir),
-        filename: "[name].js",
+        filename: "[name].bundle.js",
+        chunkFilename: "[name].chunk.js",
         publicPath: "/dist/"
       },
       plugins: [
@@ -86,10 +94,8 @@ module.exports = env => {
           context: __dirname,
           manifest: require("../wwwroot/dist/vendor-manifest.json")
         }),
-        new CompressionPlugin({
-          algorithm: "gzip",
-          test: /\.js$|\.css$|\.html$/
-        })
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        //new BundleAnalyzerPlugin()
       ].concat(
         isDevBuild
           ? [
@@ -104,10 +110,18 @@ module.exports = env => {
             ]
           : [
               // Plugins that apply in production builds only
-              //new webpack.optimize.UglifyJsPlugin(),
-              new MiniCssExtractPlugin({ filename: "site.css" })
+              new MiniCssExtractPlugin({ filename: "site.css" }),
+              new CompressionPlugin({
+                algorithm: "gzip",
+                test: /\.js$|\.css$|\.html$/
+              })
             ]
-      )
+      ),
+      optimization: {
+        usedExports: true,
+        minimize: true,
+        minimizer: [new TerserPlugin()]
+      }
     }
   ];
 };

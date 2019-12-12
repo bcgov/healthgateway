@@ -64,11 +64,17 @@
                     Date
                     <span v-show="sortDesc" name="descending">
                       (Newest)
-                      <i class="fa fa-chevron-down" aria-hidden="true"></i
+                      <font-awesome-icon
+                        icon="chevron-down"
+                        aria-hidden="true"
+                      ></font-awesome-icon
                     ></span>
                     <span v-show="!sortDesc" name="ascending">
                       (Oldest)
-                      <i class="fa fa-chevron-up" aria-hidden="true"></i
+                      <font-awesome-icon
+                        icon="chevron-up"
+                        aria-hidden="true"
+                      ></font-awesome-icon
                     ></span>
                   </b-btn>
                 </b-row>
@@ -113,17 +119,17 @@ import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { IMedicationService } from "@/services/interfaces";
-import LoadingComponent from "@/components/loading.vue";
-import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
-import MedicationTimelineComponent from "@/components/timeline/medication.vue";
-import { ResultType } from "@/constants/resulttype.ts";
 import moment from "moment";
+import LoadingComponent from "@/components/loading.vue";
+import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 
 const namespace: string = "user";
@@ -156,7 +162,6 @@ export default class TimelineComponent extends Vue {
 
   mounted() {
     this.fechMedicationStatements();
-    console.log(this.user);
   }
 
   get unverifiedEmail(): boolean {

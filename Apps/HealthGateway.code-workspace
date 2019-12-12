@@ -31,5 +31,6 @@
 			"path": "JobScheduler"
 		}
 	],
-	"settings": {}
+	"settings": {
+	}
 }

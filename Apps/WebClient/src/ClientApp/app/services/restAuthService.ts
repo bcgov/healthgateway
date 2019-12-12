@@ -1,10 +1,7 @@
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import Oidc, {
-  UserManager,
-  WebStorageStateStore,
-  User as OidcUser,
-  UserManagerSettings
-} from "oidc-client";
+import { User as OidcUser, UserManagerSettings } from "oidc-client";
+// These imports should be optimized
+import { UserManager, WebStorageStateStore } from "oidc-client";
 
 import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
