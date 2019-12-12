@@ -366,10 +366,10 @@ namespace HealthGateway.Common.AspNetConfiguration
             }
 
             app.UseResponseCompression();
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
-            //app.UseMvc();
+            app.UseMvc();
         }
 
         /// <summary>
@@ -386,7 +386,6 @@ namespace HealthGateway.Common.AspNetConfiguration
 
         private ILogger GetStartupLogger()
         {
-            //var logLevel = this.configuration.GetValue<string>("Logging");
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
