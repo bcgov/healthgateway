@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient
         /// <param name="env">The environment variables provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
         {
             this.startupConfig = new StartupConfiguration(configuration, env, logger);
             this.configuration = configuration;
@@ -92,7 +92,7 @@ namespace HealthGateway.WebClient
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
             this.startupConfig.UseForwardHeaders(app);
