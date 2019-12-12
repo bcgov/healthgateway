@@ -48,7 +48,6 @@ namespace HealthGateway.JobScheduler
     {
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -59,7 +58,6 @@ namespace HealthGateway.JobScheduler
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
-            this.logger = this.startupConfig.Logger;
         }
 
         /// <summary>
@@ -189,7 +187,9 @@ namespace HealthGateway.JobScheduler
                 {
                     OnRedirectToIdentityProvider = ctx =>
                     {
+                        this.logger.LogDebug("Redirecting to identity provider");
                         ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps, StringComparison.Ordinal);
+                        this.logger.LogDebug($"Sending Redirect URI: {ctx.ProtocolMessage.RedirectUri}");
                         return Task.FromResult(0);
                     },
                 };
