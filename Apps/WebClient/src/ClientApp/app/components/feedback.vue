@@ -42,7 +42,10 @@
       @click="visible = !visible"
     >
       <span>
-        <i class="fa fa-comments" aria-hidden="true"></i>
+        <font-awesome-icon
+          icon="comments"
+          aria-hidden="true"
+        ></font-awesome-icon>
         Feedback?
       </span>
     </b-button>
@@ -130,6 +133,9 @@ import { Component } from "vue-property-decorator";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import { IUserFeedbackService } from "@/services/interfaces";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
+library.add(faComments);
 
 @Component
 export default class FeedbackComponent extends Vue {

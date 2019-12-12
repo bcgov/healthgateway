@@ -24,10 +24,10 @@
       <b-col class="text-center mb-5">
         <b-spinner v-if="isLoading"></b-spinner>
         <span v-if="!isLoading && isSuccess === true" class="text-success"
-          ><i class="fa fa-check-circle fa-10x"></i
+          ><font-awesome-icon icon="check-circle" size="10x"></font-awesome-icon
         ></span>
         <span v-if="!isLoading && isSuccess === false" class="text-danger"
-          ><i class="fa fa-times-circle fa-10x"></i
+          ><font-awesome-icon icon="times-circle" size="10x"></font-awesome-icon
         ></span>
       </b-col>
     </b-row>
@@ -41,6 +41,9 @@ import { IUserEmailService } from "@/services/interfaces";
 import { Action, Getter } from "vuex-class";
 import container from "@/inversify.config";
 import User from "@/models/user";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+library.add(faTimesCircle);
 
 @Component
 export default class ValidateEmailComponent extends Vue {

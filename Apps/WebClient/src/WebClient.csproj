@@ -78,7 +78,7 @@
     <Exec Command="npm run lint" workingDirectory="./ClientApp" />
   </Target>
     
-  <Target Name="NPMInstall" BeforeTargets="DebugRunWebpack" Condition=" '$(Configuration)' == 'Debug' And !Exists('ClientApp\node_modules') "> 
+  <Target Name="NPMInstall" BeforeTargets="Build;DebugRunWebpack" Condition="!Exists('wwwroot\dist') Or !Exists('./ClientApp/node_modules')"> 
         <Exec Command="npm --version" ContinueOnError="true">
             <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
         </Exec>
@@ -104,8 +104,8 @@
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec Command="npm install" workingDirectory="./ClientApp" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js --env.prod" workingDirectory="./ClientApp" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" workingDirectory="./ClientApp" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js -p" workingDirectory="./ClientApp" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js -p" workingDirectory="./ClientApp" />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>

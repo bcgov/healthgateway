@@ -25,7 +25,7 @@ import { WebClientConfiguration } from "@/models/configData";
 const namespace = "auth";
 
 @Component
-export default class LoginComponent extends Vue {
+export default class LogoutComponent extends Vue {
   @Action("signOutOidc", { namespace }) logout: any;
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
   @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;

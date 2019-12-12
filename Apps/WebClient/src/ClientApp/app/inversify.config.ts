@@ -15,12 +15,12 @@ import {
   IUserFeedbackService,
   IUserEmailService
 } from "@/services/interfaces";
+import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "@/services/restImmsService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestMedicationService } from "@/services/restMedicationService";
-import HttpDelegate from "@/services/httpDelegate";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserEmailService } from "@/services/restUserEmailService";
