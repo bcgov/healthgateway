@@ -53,7 +53,10 @@ $radius: 15px;
     <b-col>
       <b-row class="entryHeading">
         <b-col class="icon leftPane">
-          <i :class="'fas fa-2x ' + getEntryIcon(entry)"></i>
+          <font-awesome-icon
+            :icon="getEntryIcon(entry)"
+            size="2x"
+          ></font-awesome-icon>
         </b-col>
         <b-col class="entryTitle">
           {{ entry.medication.brandName }}
@@ -76,10 +79,16 @@ $radius: 15px;
                 @click="toggleDetails(entry)"
               >
                 <span class="when-opened">
-                  <i class="fa fa-chevron-down" aria-hidden="true"></i
+                  <font-awesome-icon
+                    icon="chevron-down"
+                    aria-hidden="true"
+                  ></font-awesome-icon
                 ></span>
                 <span class="when-closed">
-                  <i class="fa fa-chevron-up" aria-hidden="true"></i
+                  <font-awesome-icon
+                    icon="chevron-up"
+                    aria-hidden="true"
+                  ></font-awesome-icon
                 ></span>
                 <span v-if="detailsVisible">Hide Details</span>
                 <span v-else>View Details</span>
@@ -171,6 +180,8 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 
+import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+
 @Component
 export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
@@ -191,8 +202,8 @@ export default class MedicationTimelineComponent extends Vue {
     return this.medicationLoaded && this.pharmacyLoaded;
   }
 
-  private getEntryIcon(entry: any): string {
-    return "fa-pills";
+  private getEntryIcon(entry: any): IconDefinition {
+    return faPills;
   }
 
   private toggleDetails(medicationEntry: MedicationTimelineEntry): void {

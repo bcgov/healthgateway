@@ -12,7 +12,14 @@ describe("NavBar Header Component", () => {
   localVue.use(Vuex);
   const router = new VueRouter();
 
-  const wrapper = shallowMount(HeaderComponent, { localVue, store, router });
+  const wrapper = shallowMount(HeaderComponent, {
+    localVue,
+    store,
+    router,
+    stubs: {
+      "font-awesome-icon": true
+    }
+  });
 
   test("is a Vue instance", () => {
     expect(wrapper.isVueInstance()).toBeTruthy();

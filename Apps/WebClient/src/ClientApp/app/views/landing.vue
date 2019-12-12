@@ -287,7 +287,7 @@
       >
         <div class="icon rounded-circle bg-white">
           <h3>
-            <span class="fa fa-2x" :class="icon.classIcon"></span>
+            <font-awesome-icon :icon="icon.definition" size="2x" />
           </h3>
         </div>
         <span>
@@ -366,9 +366,17 @@ import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
 
+import {
+  faPills,
+  faUserMd,
+  faFlask,
+  faSyringe,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
+
 interface Icon {
   label: string;
-  classIcon: string;
+  definition: IconDefinition;
 }
 
 interface Tile {
@@ -381,19 +389,19 @@ interface Tile {
 export default class LandingComponent extends Vue {
   private icons: Icon[] = [
     {
-      classIcon: "fa-pills",
+      definition: faPills,
       label: "Medications"
     },
     {
-      classIcon: "fa-user-md",
+      definition: faUserMd,
       label: "Consultations"
     },
     {
-      classIcon: "fa-flask",
+      definition: faFlask,
       label: "Lab Tests"
     },
     {
-      classIcon: "fa-syringe",
+      definition: faSyringe,
       label: "Vaccinations"
     }
   ];

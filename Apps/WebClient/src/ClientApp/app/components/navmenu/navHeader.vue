@@ -42,16 +42,16 @@
         >
           <b-dropdown-item>
             <router-link v-if="displayMenu" variant="primary" to="/timeline">
-              <span class="fa fa-stream"></span> Timeline
+              <font-awesome-icon icon="stream"></font-awesome-icon> Timeline
             </router-link>
             <b-dropdown-divider v-if="displayMenu" />
             <router-link id="menuBtnLogout" variant="primary" to="/logout">
-              <span class="fa fa-user"></span> Logout
+              <font-awesome-icon icon="user"></font-awesome-icon> Logout
             </router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
-          <span class="fa fa-user"></span> Login
+          <font-awesome-icon icon="user"></font-awesome-icon> Login
         </router-link>
       </b-navbar-nav>
     </b-collapse>
@@ -67,6 +67,9 @@ import { IAuthenticationService } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import User from "@/models/user";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faStream } from "@fortawesome/free-solid-svg-icons";
+library.add(faStream);
 
 interface ILanguage {
   code: string;

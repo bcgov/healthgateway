@@ -8,6 +8,7 @@ module.exports = {
     "^.+\\.(js)$": "<rootDir>/node_modules/babel-jest",
     "^.+\\.tsx?$": "ts-jest",
     "^.+\\.vue$": "vue-jest",
+    "^.+\\.(ts)$": "<rootDir>/node_modules/babel-jest",
     ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$":
       "jest-transform-stub",
     "^.+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp|html)$":

@@ -28,7 +28,9 @@
                   >
                     <b-row>
                       <b-col class="col-2">
-                        <span :class="`${provider.icon}`"></span>
+                        <font-awesome-icon
+                          :icon="`${provider.icon}`"
+                        ></font-awesome-icon>
                       </b-col>
                       <b-col class="text-justify">
                         <span>{{ provider.name }}</span>
@@ -51,7 +53,6 @@
               >Redirecting to <strong>{{ identityProviders[0].name }}</strong
               >...</span
             >
-            <b-spinner class="ml-2"></b-spinner>
           </b-card-body>
         </b-card>
         <div v-else>No login providers configured</div>
