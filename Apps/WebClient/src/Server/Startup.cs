@@ -96,7 +96,59 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
-            this.startupConfig.UseWebClient(app);
+            
+            if (this.environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = (content) =>
+                {
+                    var headers = content.Context.Response.Headers;
+                    var contentType = headers["Content-Type"];
+                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return;
+                    }
+
+                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
+                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
+                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
+                    {
+                        headers.Add("Content-Encoding", "gzip");
+                        headers["Content-Type"] = mimeType;
+                    }
+                },
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                // Mapping of endpoints goes here:
+                endpoints.MapControllers();
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "dist";
+
+                if (this.environment.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
+                }
+            });
+
+            app.UseEndpoints(routes =>
+            {
+                routes.MapRazorPages();
+                routes.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routes.MapFallbackToController("Index", "Home");
+            });
         }
     }
 }
