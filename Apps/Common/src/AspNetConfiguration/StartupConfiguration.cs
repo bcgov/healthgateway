@@ -215,6 +215,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Enable jwt authentication
             app.UseAuthentication();
+            app.UseAuthorization();
         }
 
         /// <summary>
@@ -369,7 +370,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseMvc();
         }
 
         /// <summary>
