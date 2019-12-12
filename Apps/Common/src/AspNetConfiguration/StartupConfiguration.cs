@@ -328,6 +328,18 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseSwaggerDocuments();
         }
 
+        /// <summary>
+        /// Configures the app to use Rest services.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseRest(IApplicationBuilder app)
+        {
+            app.UseEndpoints(routes =>
+            {
+                routes.MapControllers();
+            });
+        }
+
         private ILogger GetStartupLogger()
         {
             using var loggerFactory = LoggerFactory.Create(builder =>
