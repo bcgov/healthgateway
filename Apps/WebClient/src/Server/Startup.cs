@@ -16,6 +16,7 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.WebClient
 {
+    using System;
     using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
@@ -27,8 +28,10 @@ namespace HealthGateway.WebClient
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -96,8 +99,8 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
-            
-            if (this.environment.IsDevelopment())
+
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -137,7 +140,7 @@ namespace HealthGateway.WebClient
             {
                 spa.Options.SourcePath = "dist";
 
-                if (this.environment.IsDevelopment())
+                if (env.IsDevelopment())
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
                 }
