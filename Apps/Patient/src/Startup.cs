@@ -69,12 +69,7 @@ namespace HealthGateway.PatientService
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
-
-            app.UseEndpoints(routes =>
-            {
-                // Mapping of endpoints goes here:
-                routes.MapControllers();
-            });
+            this.startupConfig.UseRest(app);
         }
     }
 }

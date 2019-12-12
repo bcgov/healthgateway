@@ -134,6 +134,9 @@ namespace HealthGateway.WebClient
             {
                 // Mapping of endpoints goes here:
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapFallbackToController("Index", "Home");
             });
 
             app.UseSpa(spa =>
@@ -146,12 +149,7 @@ namespace HealthGateway.WebClient
                 }
             });
 
-            app.UseEndpoints(routes =>
-            {
-                routes.MapRazorPages();
-                routes.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routes.MapFallbackToController("Index", "Home");
-            });
+
         }
     }
 }
