@@ -35,7 +35,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
-    using Microsoft.AspNetCore.SpaServices.Webpack;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -89,12 +88,26 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks();
 
             services
-                .AddMvc()
+                .AddRazorPages()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
+        }
+
+        /// <summary>
+        /// Configures the SPA services.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public void ConfigureSpaServices(IServiceCollection services)
+        {
+            this.logger.LogDebug("Configure Spa Services...");
+
+            services.AddSpaStaticFiles(config =>
+            {
+                config.RootPath = "ClientApp";
+            });
         }
 
         /// <summary>
@@ -269,18 +282,13 @@ namespace HealthGateway.Common.AspNetConfiguration
             if (this.environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                {
-                    HotModuleReplacement = true,
-                    HotModuleReplacementEndpoint = "/dist/dist/__webpack_hmr",
-                    ProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"),
-                });
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseSpaStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = (content) =>
@@ -308,22 +316,21 @@ namespace HealthGateway.Common.AspNetConfiguration
                 endpoints.MapControllers();
             });
 
-            /*app.UseMvc(routes =>
+            app.UseSpa(spa =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                spa.Options.SourcePath = "dist";
 
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
-            });*/
-            app.UseEndpoints(endpoints =>
+                if (this.environment.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
+                }
+            });
+
+            app.UseEndpoints(routes =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapFallbackToController("Index", "Home");
+                routes.MapRazorPages();
+                routes.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routes.MapFallbackToController("Index", "Home");
             });
         }
 
