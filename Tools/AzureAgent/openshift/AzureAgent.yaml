@@ -85,11 +85,11 @@ objects:
       type: Git
     strategy:
       type: Docker
+      noCache: true
       dockerStrategy:
         from:
           kind: DockerImage
           name: 'ubuntu:18.04'
-	  noCache: true
     successfulBuildsHistoryLimit: 2
     failedBuildsHistoryLimit: 2
     triggers:
