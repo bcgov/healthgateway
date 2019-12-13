@@ -148,8 +148,6 @@ namespace HealthGateway.WebClient
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
                 }
             });
-
-
         }
     }
 }
