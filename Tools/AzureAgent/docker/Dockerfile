@@ -63,7 +63,7 @@ RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
     npm -v
 
 # Install the SonarQube scanner for dotnet
-RUN dotnet tool install --global dotnet-sonarscanner --version 4.6.2
+RUN dotnet tool install --global dotnet-sonarscanner
 # Allow other users to execute the tools
 RUN chmod -R 777 $HOME
 #RUN chmod a+x $HOME/.dotnet/tools/*
