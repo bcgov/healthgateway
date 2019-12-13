@@ -84,11 +84,12 @@ objects:
         uri: ${SOURCE_REPOSITORY_URL}
       type: Git
     strategy:
+      type: Docker
       dockerStrategy:
         from:
           kind: DockerImage
           name: 'ubuntu:18.04'
-      type: Docker
+	  noCache: true
     successfulBuildsHistoryLimit: 2
     failedBuildsHistoryLimit: 2
     triggers:
