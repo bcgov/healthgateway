@@ -16,10 +16,10 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Diagnostics.Contracts;
+    using System.Text.Json;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc/>
     public class DBWriteAuditEventDelegate : IWriteAuditEventDelegate
@@ -44,7 +44,7 @@ namespace HealthGateway.Database.Delegates
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
             Contract.Requires(auditEvent != null);
-            this.logger.LogTrace($"Writing audit event to DB... {JsonConvert.SerializeObject(auditEvent)}");
+            this.logger.LogTrace($"Writing audit event to DB... {JsonSerializer.Serialize(auditEvent)}");
             this.dbContext.AuditEvent.Add(auditEvent);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished writing audit event to DB... {auditEvent.Id}");

@@ -16,11 +16,11 @@ LABEL summary="$SUMMARY" \
       release="1"
 
 RUN  apt-get update -y -qq && \
-     apt-get install -y -qq git iputils-ping telnet traceroute curl apt-transport-https && \
+     apt-get install -y -qq git default-jdk iputils-ping telnet traceroute curl apt-transport-https && \
      curl -sLO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
      dpkg -i packages-microsoft-prod.deb && \ 
      rm packages-microsoft-prod.deb && \
-     apt-get update -y -qq && \
+     apt-get update -y -qq  && \ 
      apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION}
 
 # Fetch stock azure client and install
@@ -48,12 +48,12 @@ ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/sta
 RUN chmod +rx /opt/az/start.sh
 
 # Update environment variables
-ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ENV AZ_DEVOPS_ORG_URL=set_me_to_the_org_url
 ENV AZ_DEVOPS_TOKEN=set_me_to_a_pat
 ENV HOME=/tmp
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
+ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit:$HOME/.local/bin/:$HOME/.dotnet/tools
 
 # Update the version of `npm` that came with the packages above
 # and install a few additional tools.
@@ -63,10 +63,9 @@ RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
     npm -v
 
 # Install the SonarQube scanner for dotnet
-RUN dotnet tool install --global dotnet-sonarscanner --version 4.6.2
+RUN dotnet tool install --global dotnet-sonarscanner --version 4.8.0
 # Allow other users to execute the tools
 RUN chmod -R 777 $HOME
-#RUN chmod a+x $HOME/.dotnet/tools/*
 # Fix nugget permissions
 RUN rm -rf /tmp/NuGetScratch/lock/*
 RUN chmod 777 /tmp/.nuget

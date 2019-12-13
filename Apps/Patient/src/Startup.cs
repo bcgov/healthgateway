@@ -37,10 +37,9 @@ namespace HealthGateway.PatientService
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.startupConfig = new StartupConfiguration(configuration, env);
         }
 
         /// <summary>
@@ -67,9 +66,10 @@ namespace HealthGateway.PatientService
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseRest(app);
         }
     }
 }

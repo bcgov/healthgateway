@@ -19,12 +19,12 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class DBEmailDelegate : IEmailDelegate
@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting email from DB... {emailId}");
             Email retVal = this.dbContext.Find<Email>(emailId);
-            this.logger.LogDebug($"Finished getting email from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting email from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -61,7 +61,7 @@ namespace HealthGateway.Database.Delegates
             Email retVal = this.dbContext.Email.Where(p => p.Id == emailId &&
                                               p.EmailStatusCode == EmailStatus.New &&
                                               p.Priority >= EmailPriority.Standard).SingleOrDefault();
-            this.logger.LogDebug($"Finished getting new email from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting new email from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -74,7 +74,7 @@ namespace HealthGateway.Database.Delegates
                                         .OrderByDescending(s => s.Priority)
                                         .Take(maxRows)
                                         .ToList();
-            this.logger.LogDebug($"Finished getting list of low priority emails from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting list of low priority emails from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -85,7 +85,7 @@ namespace HealthGateway.Database.Delegates
             Contract.Requires(email != null);
             this.dbContext.Add<Email>(email);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished inserting email to DB. {JsonConvert.SerializeObject(email)}");
+            this.logger.LogDebug($"Finished inserting email to DB. {JsonSerializer.Serialize(email)}");
             return email.Id;
         }
 
@@ -96,13 +96,13 @@ namespace HealthGateway.Database.Delegates
             Contract.Requires(email != null);
             this.dbContext.Update<Email>(email);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email in DB. {JsonConvert.SerializeObject(email)}");
+            this.logger.LogDebug($"Finished updating email in DB. {JsonSerializer.Serialize(email)}");
         }
 
         /// <inheritdoc />
         public Guid InsertEmailInvite(EmailInvite invite)
         {
-            this.logger.LogTrace($"Inserting email invite to DB... {JsonConvert.SerializeObject(invite)}");
+            this.logger.LogTrace($"Inserting email invite to DB... {JsonSerializer.Serialize(invite)}");
             Contract.Requires(invite != null);
             this.dbContext.Add<EmailInvite>(invite);
             this.dbContext.SaveChanges();
@@ -118,7 +118,7 @@ namespace HealthGateway.Database.Delegates
                 .EmailTemplate
                 .Where(p => p.Name == templateName)
                 .FirstOrDefault<EmailTemplate>();
-            this.logger.LogDebug($"Finished getting email template from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting email template from DB. {JsonSerializer.Serialize(retVal)}");
 
             return retVal;
         }
@@ -133,7 +133,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => p.InviteKey == inviteKey)
                 .FirstOrDefault();
 
-            this.logger.LogDebug($"Finished getting email invite from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -147,7 +147,7 @@ namespace HealthGateway.Database.Delegates
                 .OrderByDescending(p => p.UpdatedBy)
                 .FirstOrDefault();
 
-            this.logger.LogDebug($"Finished getting email invite from DB. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -155,7 +155,7 @@ namespace HealthGateway.Database.Delegates
         public void UpdateEmailInvite(EmailInvite emailInvite)
         {
             Contract.Requires(emailInvite != null);
-            this.logger.LogTrace($"Updating email invite in DB... {JsonConvert.SerializeObject(emailInvite)}");
+            this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(emailInvite)}");
             this.dbContext.Update<EmailInvite>(emailInvite);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished updating email invite in DB. {emailInvite.Id}");

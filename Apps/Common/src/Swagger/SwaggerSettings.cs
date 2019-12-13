@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.Swagger;
 
     /// <summary>
@@ -30,7 +31,7 @@ namespace HealthGateway.Common.Swagger
         /// <summary>
         /// Gets or sets swagger Info.
         /// </summary>
-        public Info Info { get; set; }
+        public OpenApiInfo Info { get; set; }
 
         /// <summary>
         /// Gets or sets RoutePrefix.

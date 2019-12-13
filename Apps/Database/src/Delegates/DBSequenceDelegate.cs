@@ -17,7 +17,6 @@ namespace HealthGateway.Database.Delegates
 {
     using HealthGateway.Database.Context;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Npgsql;
     using NpgsqlTypes;
 
@@ -55,9 +54,6 @@ namespace HealthGateway.Database.Delegates
                 Direction = System.Data.ParameterDirection.Output,
             };
             this.dbContext.ExecuteSqlCommand($"SELECT nextval('{sequenceName}')", result);
-
-            // code below is to be used when updating to EF 3
-            // ctx.Database.ExecuteSqlRaw($"SELECT nextval('{seq}')", result);
             this.logger.LogDebug($"Finished getting next value for sequence from DB. {result.Value}");
             return (long)result.Value;
         }

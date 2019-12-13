@@ -55,12 +55,11 @@ namespace HealthGateway.JobScheduler
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
-            this.logger = logger;
+            this.logger = this.startupConfig.Logger;
         }
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace HealthGateway.JobScheduler
         /// </summary>
         /// <param name="app">The passed in Application Builder.</param>
         /// <param name="env">The passed in Environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
@@ -190,9 +189,7 @@ namespace HealthGateway.JobScheduler
                 {
                     OnRedirectToIdentityProvider = ctx =>
                     {
-                        this.logger.LogDebug("Redirecting to identity provider");
-                        ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps);
-                        this.logger.LogDebug($"Sending Redirect URI: {ctx.ProtocolMessage.RedirectUri}");
+                        ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps, StringComparison.Ordinal);
                         return Task.FromResult(0);
                     },
                 };

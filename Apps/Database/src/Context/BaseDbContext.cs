@@ -79,7 +79,7 @@ namespace HealthGateway.Database.Context
         /// <returns>The number of lines affected.</returns>
         public int ExecuteSqlCommand(string sql, params object[] parameters)
         {
-            return this.Database.ExecuteSqlCommand(sql, parameters);
+            return this.Database.ExecuteSqlRaw(sql, parameters);
         }
 
         /// <inheritdoc />

@@ -16,6 +16,7 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.WebClient
 {
+    using System;
     using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
@@ -27,8 +28,10 @@ namespace HealthGateway.WebClient
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -38,19 +41,16 @@ namespace HealthGateway.WebClient
     {
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
-        private readonly ILogger<Startup> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="env">The environment variables provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
-            this.logger = logger;
         }
 
         /// <summary>
@@ -92,14 +92,62 @@ namespace HealthGateway.WebClient
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseWebClient(app);
+            this.startupConfig.UseAuth(app);
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = (content) =>
+                {
+                    var headers = content.Context.Response.Headers;
+                    var contentType = headers["Content-Type"];
+                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return;
+                    }
+
+                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
+                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
+                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
+                    {
+                        headers.Add("Content-Encoding", "gzip");
+                        headers["Content-Type"] = mimeType;
+                    }
+                },
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                // Mapping of endpoints goes here:
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapFallbackToController("Index", "Home");
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "dist";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
+                }
+            });
         }
     }
 }
