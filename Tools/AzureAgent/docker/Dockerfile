@@ -15,13 +15,16 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="builder,azure,devops,agent-v${DEVOPS_AGENT_VERSION},.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
       release="1"
 
-RUN  apt-get update -y -qq && \
-     apt-get install -y -qq git default-jdk iputils-ping telnet traceroute curl apt-transport-https && \
+RUN  export DEBIAN_FRONTEND=noninteractive && \
+     apt-get update -y -qq && \
+     apt-get install -y -qq git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https && \
      curl -sLO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
      dpkg -i packages-microsoft-prod.deb && \ 
      rm packages-microsoft-prod.deb && \
      apt-get update -y -qq  && \ 
-     apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION}
+     apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION} && \
+     ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
+     dpkg-reconfigure --frontend noninteractive tzdata
 
 # Fetch stock azure client and install
 RUN mkdir -p /opt/az/agent && \
