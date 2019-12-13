@@ -40,12 +40,12 @@ steps:
 #    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
 #   displayName: Create Code Coverage Report
 
-- task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
-  inputs:
-    command: 'test'
-    projects: '$(App.Home)/test/unit/WebClientTests.csproj'
-    testRunTitle: 'WebClient'
+#- task: DotNetCoreCLI@2
+#   displayName: Run dotnet Tests
+#   inputs:
+#   command: 'test'
+#   projects: '$(App.Home)/test/unit/WebClientTests.csproj'
+#   testRunTitle: 'WebClient'
 
 - script: |
     set -e
