@@ -55,6 +55,8 @@ import {
   CardPlugin,
   LinkPlugin,
   FormPlugin,
+  FormInputPlugin,
+  FormCheckboxPlugin,
   FormTextareaPlugin,
   AlertPlugin,
   SpinnerPlugin
@@ -67,6 +69,8 @@ Vue.use(ButtonPlugin);
 Vue.use(CardPlugin);
 Vue.use(LinkPlugin);
 Vue.use(FormPlugin);
+Vue.use(FormInputPlugin);
+Vue.use(FormCheckboxPlugin);
 Vue.use(FormTextareaPlugin);
 Vue.use(AlertPlugin);
 Vue.use(SpinnerPlugin);
