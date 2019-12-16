@@ -37,6 +37,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
@@ -46,6 +47,7 @@ namespace HealthGateway.JobScheduler
     /// </summary>
     public class Startup
     {
+        private readonly IWebHostEnvironment environment;
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
@@ -57,6 +59,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="configuration">The injected configuration provider.</param>
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
+            this.environment = env;
             this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
             this.logger = this.startupConfig.Logger;
@@ -101,18 +104,27 @@ namespace HealthGateway.JobScheduler
         {
             Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
-
-            app.Use(async (context, next) =>
+            app.UseEndpoints(endpoints =>
             {
-                this.logger.LogDebug($"Current Protocol: {context.Request.Protocol}");
-                context.Request.Scheme = Uri.UriSchemeHttps;
-                this.logger.LogDebug($"New Protocol: {context.Request.Protocol}");
-                await next.Invoke().ConfigureAwait(true);
+                // Mapping of endpoints goes here:
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+
+            if (!this.environment.IsDevelopment())
+            {
+                app.Use(async (context, next) =>
+                {
+                    this.logger.LogDebug($"Current Protocol: {context.Request.Protocol}");
+                    context.Request.Scheme = Uri.UriSchemeHttps;
+                    this.logger.LogDebug($"New Protocol: {context.Request.Protocol}");
+                    await next.Invoke().ConfigureAwait(true);
+                });
+            }
 
             // Empty string signifies the root URL
             app.UseHangfireDashboard(string.Empty, new DashboardOptions
@@ -189,7 +201,12 @@ namespace HealthGateway.JobScheduler
                 {
                     OnRedirectToIdentityProvider = ctx =>
                     {
-                        ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps, StringComparison.Ordinal);
+                        if (!this.environment.IsDevelopment())
+                        {
+                            // Forces HTTPS endpoints in non-dev environments
+                            ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps, StringComparison.Ordinal);
+                        }
+
                         return Task.FromResult(0);
                     },
                 };
