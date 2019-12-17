@@ -7,12 +7,12 @@ describe("Auth mutations", () => {
     let state = initialState;
     let settings: UserSettings = {
       id_token: "id_token",
-      session_state: {},
+      session_state: "",
       access_token: "access_token",
       refresh_token: "refresh_token",
       token_type: "",
       scope: "test_scope_a test_scope_b",
-      profile: { name: "User Name" },
+      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
       expires_at: 0,
       state: undefined
     };
@@ -33,12 +33,12 @@ describe("Auth mutations", () => {
     let state = initialState;
     let settings: UserSettings = {
       id_token: "",
-      session_state: {},
+      session_state: "",
       access_token: "access_token",
       refresh_token: "refresh_token",
       token_type: "",
       scope: "test_scope",
-      profile: { name: "User Name" },
+      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
       expires_at: 0,
       state: undefined
     };
@@ -58,12 +58,12 @@ describe("Auth mutations", () => {
     let state = initialState;
     let settings: UserSettings = {
       id_token: "id_token",
-      session_state: {},
+      session_state: "",
       access_token: "access_token",
       refresh_token: "refresh_token",
       token_type: "",
       scope: "test_scope",
-      profile: { name: "User Name" },
+      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
       expires_at: 0,
       state: undefined
     };

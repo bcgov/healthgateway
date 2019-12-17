@@ -23,7 +23,6 @@ namespace HealthGateway.HNClient
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Configures the application during startup.
@@ -49,8 +48,9 @@ namespace HealthGateway.HNClient
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureHttpServices(services);
-            this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureSwaggerServices(services);
 
             // HNClient Service and delegate
             services.AddTransient<IHNClientDelegate, SocketHNClientDelegate>();
@@ -63,9 +63,10 @@ namespace HealthGateway.HNClient
         /// <param name="app">The application builder.</param>
         public void Configure(IApplicationBuilder app)
         {
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseRest(app);
         }
     }
 }

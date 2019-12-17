@@ -100,6 +100,7 @@ namespace HealthGateway.Medication
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            app.UseCors();
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseRest(app);
         }
