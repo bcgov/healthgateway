@@ -1,8 +1,16 @@
 @{
     ViewData["Title"] = "Dump Headers";
+    <h2>Headers</h2>
     foreach (var key in Context.Request.Headers.Keys)
     {
         var val = Context.Request.Headers[key];
         @:@key: @val <br />
     }
+    <h2>Request Information</h2>
+    @:Is HTTPs: @Context.Request.IsHttps<br />
+    @:Protocol: @Context.Request.Protocol<br />
+    @:Scheme: @Context.Request.Scheme<br />
+    @:Path: @Context.Request.Path<br />
+    @:PathBase: @Context.Request.PathBase<br />
+    @:Method: @Context.Request.Method<br />
 }
