@@ -55,11 +55,7 @@ namespace HealthGateway.WebClient
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-<<<<<<< HEAD
             this.logger = this.startupConfig.Logger;
-=======
-            this.Logger = this.startupConfig.Logger;
->>>>>>> dev
             this.configuration = configuration;
         }
 
@@ -69,11 +65,7 @@ namespace HealthGateway.WebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-<<<<<<< HEAD
             this.startupConfig.ConfigureForwardHeaders(services);
-=======
-            this.ConfigureForwardHeaders(services);
->>>>>>> dev
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
@@ -110,7 +102,7 @@ namespace HealthGateway.WebClient
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
-            this.UseForwardHeaders(app);
+            this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
@@ -163,59 +155,6 @@ namespace HealthGateway.WebClient
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
                 }
             });
-<<<<<<< HEAD
-=======
-        }
-
-        public void UseForwardHeaders(IApplicationBuilder app)
-        {
-            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            bool enabled = section.GetValue<bool>("Enabled");
-            this.Logger.LogInformation($"Forward Proxies enabled: {enabled}");
-            if (enabled)
-            {
-                this.Logger.LogDebug("Using Forward Headers");
-                string basePath = section.GetValue<string>("BasePath");
-                if (!string.IsNullOrEmpty(basePath))
-                {
-                    this.Logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
-                    app.UsePathBase(basePath);
-                    app.Use(async (context, next) =>
-                    {
-                        context.Request.PathBase = basePath;
-                        await next.Invoke().ConfigureAwait(true);
-                    });
-                    app.UsePathBase(basePath);
-                }
-
-                this.Logger.LogInformation("Enabling Use Forward Header");
-                app.UseForwardedHeaders();
-            }
-        }
-
-        public void ConfigureForwardHeaders(IServiceCollection services)
-        {
-            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            bool enabled = section.GetValue<bool>("Enabled");
-            this.Logger.LogInformation($"Forward Proxies enabled: {enabled}");
-            if (enabled)
-            {
-                this.Logger.LogDebug("Configuring Forward Headers");
-                IPAddress[] proxyIPs = section.GetSection("KnownProxies").Get<IPAddress[]>() ?? Array.Empty<IPAddress>();
-                services.Configure<ForwardedHeadersOptions>(options =>
-                {
-                    options.ForwardedHeaders = ForwardedHeaders.All;
-                    options.RequireHeaderSymmetry = false;
-                    options.ForwardLimit = null;
-                    options.KnownNetworks.Clear();
-                    options.KnownProxies.Clear();
-                    foreach (IPAddress ip in proxyIPs)
-                    {
-                        options.KnownProxies.Add(ip);
-                    }
-                });
-            }
->>>>>>> dev
         }
     }
 }
