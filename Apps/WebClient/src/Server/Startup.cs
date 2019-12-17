@@ -18,7 +18,6 @@ namespace HealthGateway.WebClient
 {
     using System;
     using System.Diagnostics.Contracts;
-    using System.Net;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -28,7 +27,6 @@ namespace HealthGateway.WebClient
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
@@ -44,8 +42,6 @@ namespace HealthGateway.WebClient
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
-
-        private ILogger Logger { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
