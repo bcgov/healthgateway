@@ -18,7 +18,6 @@ namespace HealthGateway.WebClient
 {
     using System;
     using System.Diagnostics.Contracts;
-    using System.Net;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -28,7 +27,6 @@ namespace HealthGateway.WebClient
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
@@ -43,8 +41,7 @@ namespace HealthGateway.WebClient
     {
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
-
-        private ILogger Logger { get; set; }
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -54,7 +51,7 @@ namespace HealthGateway.WebClient
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.Logger = this.startupConfig.Logger;
+            this.logger = this.startupConfig.Logger;
             this.configuration = configuration;
         }
 
@@ -64,7 +61,7 @@ namespace HealthGateway.WebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            this.ConfigureForwardHeaders(services);
+            this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
@@ -101,7 +98,7 @@ namespace HealthGateway.WebClient
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
-            this.UseForwardHeaders(app);
+            this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
@@ -154,56 +151,6 @@ namespace HealthGateway.WebClient
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
                 }
             });
-        }
-
-        public void UseForwardHeaders(IApplicationBuilder app)
-        {
-            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            bool enabled = section.GetValue<bool>("Enabled");
-            this.Logger.LogInformation($"Forward Proxies enabled: {enabled}");
-            if (enabled)
-            {
-                this.Logger.LogDebug("Using Forward Headers");
-                string basePath = section.GetValue<string>("BasePath");
-                if (!string.IsNullOrEmpty(basePath))
-                {
-                    this.Logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
-                    app.UsePathBase(basePath);
-                    app.Use(async (context, next) =>
-                    {
-                        context.Request.PathBase = basePath;
-                        await next.Invoke().ConfigureAwait(true);
-                    });
-                    app.UsePathBase(basePath);
-                }
-
-                this.Logger.LogInformation("Enabling Use Forward Header");
-                app.UseForwardedHeaders();
-            }
-        }
-
-        public void ConfigureForwardHeaders(IServiceCollection services)
-        {
-            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            bool enabled = section.GetValue<bool>("Enabled");
-            this.Logger.LogInformation($"Forward Proxies enabled: {enabled}");
-            if (enabled)
-            {
-                this.Logger.LogDebug("Configuring Forward Headers");
-                IPAddress[] proxyIPs = section.GetSection("KnownProxies").Get<IPAddress[]>() ?? Array.Empty<IPAddress>();
-                services.Configure<ForwardedHeadersOptions>(options =>
-                {
-                    options.ForwardedHeaders = ForwardedHeaders.All;
-                    options.RequireHeaderSymmetry = false;
-                    options.ForwardLimit = null;
-                    options.KnownNetworks.Clear();
-                    options.KnownProxies.Clear();
-                    foreach (IPAddress ip in proxyIPs)
-                    {
-                        options.KnownProxies.Add(ip);
-                    }
-                });
-            }
         }
     }
 }

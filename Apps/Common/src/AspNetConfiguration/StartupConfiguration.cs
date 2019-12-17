@@ -210,6 +210,34 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures Forward proxies.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        public void ConfigureForwardHeaders(IServiceCollection services)
+        {
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            bool enabled = section.GetValue<bool>("Enabled");
+            this.Logger.LogInformation($"Forward Proxies enabled: {enabled}");
+            if (enabled)
+            {
+                this.Logger.LogDebug("Configuring Forward Headers");
+                IPAddress[] proxyIPs = section.GetSection("KnownProxies").Get<IPAddress[]>() ?? Array.Empty<IPAddress>();
+                services.Configure<ForwardedHeadersOptions>(options =>
+                {
+                    options.ForwardedHeaders = ForwardedHeaders.All;
+                    options.RequireHeaderSymmetry = false;
+                    options.ForwardLimit = null;
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
+                    foreach (IPAddress ip in proxyIPs)
+                    {
+                        options.KnownProxies.Add(ip);
+                    }
+                });
+            }
+        }
+
+        /// <summary>
         /// Configures the app to use auth.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
@@ -228,13 +256,12 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseForwardHeaders(IApplicationBuilder app)
         {
-            const string XForwardedProto = "X-Forwarded-Proto";
-
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
-            this.Logger.LogInformation($"Forward Headers enabled: {enabled}");
+            this.Logger.LogInformation($"Forward Proxies enabled: {enabled}");
             if (enabled)
             {
+                this.Logger.LogDebug("Using Forward Headers");
                 string basePath = section.GetValue<string>("BasePath");
                 if (!string.IsNullOrEmpty(basePath))
                 {
@@ -248,33 +275,8 @@ namespace HealthGateway.Common.AspNetConfiguration
                     app.UsePathBase(basePath);
                 }
 
-                string[] proxyIPs = section.GetSection("IPs").Get<string[]>();
-                ForwardedHeadersOptions options = new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.All,
-                    RequireHeaderSymmetry = false,
-                    ForwardLimit = null,
-                };
-
-                app.Use((context, next) =>
-                {
-                    // IF this is not done, identity provider redirect urls drop to http:// which is undesirable.
-                    if (context.Request.Headers.TryGetValue(XForwardedProto, out StringValues proto))
-                    {
-                        this.Logger.LogInformation($"Client using protocol: {proto}, assigning to request protocol");
-                        context.Request.Protocol = proto;
-                    }
-                    else
-                    {
-                        this.Logger.LogInformation($"No header XforwardProto was found in request context - defaulting to {Uri.UriSchemeHttps}");
-                        context.Request.Protocol = Uri.UriSchemeHttps;
-                    }
-
-                    return next();
-                });
-
                 this.Logger.LogInformation("Enabling Use Forward Header");
-                app.UseForwardedHeaders(options);
+                app.UseForwardedHeaders();
             }
         }
 
@@ -292,7 +294,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-                app.UseHttpsRedirection();
             }
 
             app.UseRouting();
@@ -334,6 +335,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseRest(IApplicationBuilder app)
         {
+            this.Logger.LogDebug("Use Rest...");
             app.UseEndpoints(routes =>
             {
                 routes.MapControllers();
