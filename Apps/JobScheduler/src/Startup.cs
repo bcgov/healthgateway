@@ -71,6 +71,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in Service Collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
