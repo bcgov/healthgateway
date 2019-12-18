@@ -161,6 +161,13 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in IServiceCollection.</param>
         private void ConfigureAuthentication(IServiceCollection services)
         {
+            string basePath = string.Empty;
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            if (section.GetValue<bool>("Enabled", false))
+            {
+                basePath = section.GetValue<string>("BasePath");
+            }
+
             services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -170,8 +177,8 @@ namespace HealthGateway.JobScheduler
             .AddCookie(options =>
             {
                 options.Cookie.Name = AuthorizationConstants.CookieName;
-                options.LoginPath = AuthorizationConstants.LoginPath;
-                options.LogoutPath = AuthorizationConstants.LogoutPath;
+                options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                options.LogoutPath = $"{basePath}AuthorizationConstants.LogoutPath";
             })
             .AddOpenIdConnect(options =>
             {

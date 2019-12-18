@@ -35,7 +35,7 @@ namespace HealthGateway.JobScheduler.Controllers
         /// Initializes a new instance of the <see cref="JobSchedulerController"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="httpContextAccessor">The injected httpContextAccessor </param>
+        /// <param name="httpContextAccessor">The injected httpContextAccessor.</param>
         public JobSchedulerController(ILogger<JobSchedulerController> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
@@ -57,7 +57,7 @@ namespace HealthGateway.JobScheduler.Controllers
             }
 
             this.logger.LogDebug("Redirecting to dashboard");
-            string basePath = this.httpContextAccessor?.HttpContext.Request.PathBase.Value;
+            string basePath = this.httpContextAccessor.HttpContext.Request.PathBase.Value;
             return new RedirectResult($"{basePath}/");
 #pragma warning restore CA1303 //Restore literal warning
         }
