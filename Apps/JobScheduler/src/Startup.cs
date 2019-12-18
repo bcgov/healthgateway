@@ -116,17 +116,6 @@ namespace HealthGateway.JobScheduler
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-            if (!this.environment.IsDevelopment())
-            {
-                app.Use(async (context, next) =>
-                {
-                    this.logger.LogDebug($"Current Protocol: {context.Request.Protocol}");
-                    context.Request.Scheme = Uri.UriSchemeHttps;
-                    this.logger.LogDebug($"New Protocol: {context.Request.Protocol}");
-                    await next.Invoke().ConfigureAwait(true);
-                });
-            }
-
             // Empty string signifies the root URL
             app.UseHangfireDashboard(string.Empty, new DashboardOptions
             {
@@ -198,19 +187,6 @@ namespace HealthGateway.JobScheduler
                     ValidateIssuer = true,
                 };
                 this.configuration.GetSection("OpenIdConnect").Bind(options);
-                options.Events = new OpenIdConnectEvents()
-                {
-                    OnRedirectToIdentityProvider = ctx =>
-                    {
-                        if (!this.environment.IsDevelopment())
-                        {
-                            // Forces HTTPS endpoints in non-dev environments
-                            ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps, StringComparison.Ordinal);
-                        }
-
-                        return Task.FromResult(0);
-                    },
-                };
             });
         }
     }
