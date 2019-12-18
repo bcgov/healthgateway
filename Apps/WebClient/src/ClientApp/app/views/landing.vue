@@ -42,6 +42,7 @@
 
     .logo {
       margin-bottom: 1em;
+      max-width: 320px;
     }
 
     .title-text {
