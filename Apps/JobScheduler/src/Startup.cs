@@ -119,7 +119,7 @@ namespace HealthGateway.JobScheduler
             {
                 DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
-                AppPath = AuthorizationConstants.LogoutPath,
+                AppPath = $"{this.GetBasePath()}{AuthorizationConstants.LogoutPath}",
             });
 
             app.UseHangfireServer();
@@ -161,14 +161,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in IServiceCollection.</param>
         private void ConfigureAuthentication(IServiceCollection services)
         {
-            string basePath = string.Empty;
-            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            if (section.GetValue<bool>("Enabled", false))
-            {
-                basePath = section.GetValue<string>("BasePath");
-            }
-
-            this.logger.LogDebug($"JobScheduler authentication basePath = {basePath}");
+            string basePath = this.GetBasePath();
             services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -194,6 +187,19 @@ namespace HealthGateway.JobScheduler
                 };
                 this.configuration.GetSection("OpenIdConnect").Bind(options);
             });
+        }
+
+        private string GetBasePath()
+        {
+            string basePath = string.Empty;
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            if (section.GetValue<bool>("Enabled", false))
+            {
+                basePath = section.GetValue<string>("BasePath");
+            }
+
+            this.logger.LogDebug($"JobScheduler basePath = {basePath}");
+            return basePath;
         }
     }
 }

@@ -58,7 +58,9 @@ namespace HealthGateway.JobScheduler.Authorization
 
             if (!user.Identity.IsAuthenticated)
             {
-                httpContext.Response.Redirect(AuthorizationConstants.LoginPath);
+                string redirectUri = $"{httpContext.Request.PathBase.Value}{AuthorizationConstants.LoginPath}";
+                this.logger.LogDebug($"Sending redirect {redirectUri}");
+                httpContext.Response.Redirect(redirectUri);
                 return true;
             }
 
