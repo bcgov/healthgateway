@@ -17,7 +17,6 @@ namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -37,7 +36,6 @@ namespace HealthGateway.JobScheduler
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;

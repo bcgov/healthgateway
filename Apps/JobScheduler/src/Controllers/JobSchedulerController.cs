@@ -18,7 +18,9 @@ namespace HealthGateway.JobScheduler.Controllers
     using HealthGateway.JobScheduler.Authorization;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -27,14 +29,17 @@ namespace HealthGateway.JobScheduler.Controllers
     public class JobSchedulerController : Controller
     {
         private readonly ILogger<JobSchedulerController> logger;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobSchedulerController"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        public JobSchedulerController(ILogger<JobSchedulerController> logger)
+        /// <param name="httpContextAccessor">The injected httpContextAccessor </param>
+        public JobSchedulerController(ILogger<JobSchedulerController> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -52,7 +57,8 @@ namespace HealthGateway.JobScheduler.Controllers
             }
 
             this.logger.LogDebug("Redirecting to dashboard");
-            return new RedirectResult("/");
+            string basePath = this.httpContextAccessor?.HttpContext.Request.PathBase.Value;
+            return new RedirectResult($"{basePath}/");
 #pragma warning restore CA1303 //Restore literal warning
         }
 
