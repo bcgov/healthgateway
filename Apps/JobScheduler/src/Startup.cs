@@ -168,6 +168,7 @@ namespace HealthGateway.JobScheduler
                 basePath = section.GetValue<string>("BasePath");
             }
 
+            this.logger.LogDebug($"JobScheduler authentication basePath = {basePath}");
             services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -178,7 +179,7 @@ namespace HealthGateway.JobScheduler
             {
                 options.Cookie.Name = AuthorizationConstants.CookieName;
                 options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                options.LogoutPath = $"{basePath}AuthorizationConstants.LogoutPath";
+                options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
             })
             .AddOpenIdConnect(options =>
             {
