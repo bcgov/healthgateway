@@ -77,6 +77,9 @@ const routes = [
   {
     path: "/login",
     component: LoginComponent,
+    props: (route: Route) => ({
+      isRetry: route.query.isRetry
+    }),
     meta: { requiresAuth: false, roles: ["user"] }
   },
   {
