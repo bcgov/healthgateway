@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "test": "jest --config jest.config.js",
-    "dev": "webpack --config webpack.config.js --env.prod=0",
+    "dev": "webpack --config webpack.config.js --env.prod=0 --watch",
     "prod": "webpack --config webpack.config.js --env.prod=1 --env.min -p",
     "vendor": "webpack --config webpack.config.vendor.js --env.prod=1 --env.min",
     "lint": "eslint \"**/*.ts\" \"**/*.vue\"",
