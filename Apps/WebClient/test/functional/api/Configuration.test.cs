@@ -9,7 +9,7 @@ namespace HealthGateway.WebClient.Test.Functional.Api
 {
     public class Configuration_Test
     {
-        private string baseUrl = "https://dev-gateway.pathfinder.gov.bc.ca";
+        private string baseUrl = "https://dev.healthgateway.gov.bc.ca/";
 
         [Fact]
         public void RetrieveConfigurationTest()
