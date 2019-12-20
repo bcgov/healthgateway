@@ -23,11 +23,11 @@
           align="center"
         >
           <h3 slot="header">Log In</h3>
-          <p v-if="hasMultipleProviders" slot="footer">
+          <p v-if="hasMultipleProviders || isRetry" slot="footer">
             Not yet registered?
             <b-link to="/registrationInfo">Sign up</b-link>
           </p>
-          <b-card-body v-if="hasMultipleProviders">
+          <b-card-body v-if="hasMultipleProviders || isRetry">
             <div v-for="provider in identityProviders" :key="provider.id">
               <b-row>
                 <b-col>
