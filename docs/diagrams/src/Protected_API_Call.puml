@@ -1,4 +1,4 @@
-@startuml Protected API Call
+@startuml Protected_API_Call
 autonumber
     actor Citizen
     Browser <-- HealthGateway : Begin
