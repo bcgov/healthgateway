@@ -11,5 +11,5 @@ autonumber
     KeyCloak -> Browser : Returns code token
     Browser <-> KeyCloak : Exchange Code for access (bearer) Token
     Browser <-> KeyCloak : Retrieve user info
-    Browser --> Browser : Store token in LocalStorage (session)
+    Browser --> Browser : Store token in Cookie (session)
 @enduml
