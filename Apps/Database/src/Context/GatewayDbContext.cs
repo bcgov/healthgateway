@@ -30,8 +30,8 @@ namespace HealthGateway.Database.Context
     /// </summary>
     public class GatewayDbContext : BaseDbContext
     {
-        private string emailValidationTemplate;
-        private string emailInviteTemplate;
+        private string? emailValidationTemplate;
+        private string? emailInviteTemplate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
@@ -40,40 +40,49 @@ namespace HealthGateway.Database.Context
         public GatewayDbContext(DbContextOptions<GatewayDbContext> options)
             : base(options)
         {
-            Assembly assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
-            Stream resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
-            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            Assembly? assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
+            if (assembly != null)
             {
-                this.emailValidationTemplate = reader.ReadToEnd();
-            }
+                Stream? resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
+                if (resourceStream != null)
+                {
+                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+                    {
+                        this.emailValidationTemplate = reader.ReadToEnd();
+                    }
+                }
 
-            resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
-            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-            {
-                this.emailInviteTemplate = reader.ReadToEnd();
+                resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
+                if (resourceStream != null)
+                {
+                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+                    {
+                        this.emailInviteTemplate = reader.ReadToEnd();
+                    }
+                }
             }
         }
 
         #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
-        public DbSet<AuditEvent> AuditEvent { get; set; }
-        public DbSet<DrugProduct> DrugProduct { get; set; }
-        public DbSet<ActiveIngredient> ActiveIngredient { get; set; }
-        public DbSet<Company> Company { get; set; }
-        public DbSet<Status> Status { get; set; }
-        public DbSet<Form> Form { get; set; }
-        public DbSet<Packaging> Packaging { get; set; }
-        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; }
-        public DbSet<Route> Route { get; set; }
-        public DbSet<Schedule> Schedule { get; set; }
-        public DbSet<TherapeuticClass> TherapeuticClass { get; set; }
-        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; }
-        public DbSet<Email> Email { get; set; }
-        public DbSet<EmailInvite> EmailInvite { get; set; }
-        public DbSet<EmailTemplate> EmailTemplate { get; set; }
-        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; }
-        public DbSet<FileDownload> FileDownload { get; set; }
-        public DbSet<UserProfile> UserProfile { get; set; }
-        public DbSet<UserFeedback> UserFeedback { get; set; }
+        public DbSet<AuditEvent> AuditEvent { get; set; } = null!;
+        public DbSet<DrugProduct> DrugProduct { get; set; } = null!;
+        public DbSet<ActiveIngredient> ActiveIngredient { get; set; } = null!;
+        public DbSet<Company> Company { get; set; } = null!;
+        public DbSet<Status> Status { get; set; } = null!;
+        public DbSet<Form> Form { get; set; } = null!;
+        public DbSet<Packaging> Packaging { get; set; } = null!;
+        public DbSet<PharmaceuticalStd> PharmaceuticalStd { get; set; } = null!;
+        public DbSet<Route> Route { get; set; } = null!;
+        public DbSet<Schedule> Schedule { get; set; } = null!;
+        public DbSet<TherapeuticClass> TherapeuticClass { get; set; } = null!;
+        public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; } = null!;
+        public DbSet<Email> Email { get; set; } = null!;
+        public DbSet<EmailInvite> EmailInvite { get; set; } = null!;
+        public DbSet<EmailTemplate> EmailTemplate { get; set; } = null!;
+        public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; } = null!;
+        public DbSet<FileDownload> FileDownload { get; set; } = null!;
+        public DbSet<UserProfile> UserProfile { get; set; } = null!;
+        public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
         #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -90,7 +99,7 @@ namespace HealthGateway.Database.Context
             .IsCyclic(true);
 
             // Create the unique index for the SHA256 hash
-            modelBuilder.Entity<FileDownload>()
+            modelBuilder!.Entity<FileDownload>()
                     .HasIndex(f => f.Hash)
                     .IsUnique();
 
@@ -151,36 +160,36 @@ namespace HealthGateway.Database.Context
                 {
                     ResultCode = AuditTransactionResult.Success,
                     Description = "Success",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new AuditTransactionResultCode
                 {
                     ResultCode = AuditTransactionResult.Failure,
                     Description = "Failure",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new AuditTransactionResultCode
                 {
                     ResultCode = AuditTransactionResult.Unauthorized,
                     Description = "Unauthorized",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new AuditTransactionResultCode
                 {
                     ResultCode = AuditTransactionResult.SystemError,
                     Description = "System Error",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 });
         }
@@ -192,90 +201,90 @@ namespace HealthGateway.Database.Context
                 {
                     ProgramCode = ProgramType.FederalApproved,
                     Description = "Federal Approved Drug Load",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = ProgramType.FederalMarketed,
                     Description = "Federal Marketed Drug Load",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = ProgramType.FederalCancelled,
                     Description = "Federal Cancelled Drug Load",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = ProgramType.FederalDormant,
                     Description = "Federal Dormant Drug Load",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = ProgramType.Provincial,
                     Description = "Provincial Pharmacare Drug Load",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = AuditApplication.Configuration,
                     Description = "Configuration Service",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = AuditApplication.WebClient,
                     Description = "Web Client",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = AuditApplication.Immunization,
                     Description = "Immunization Service",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = AuditApplication.Patient,
                     Description = "Patient Service",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new ProgramTypeCode
                 {
                     ProgramCode = AuditApplication.Medication,
                     Description = "Medication Service",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 });
         }
@@ -290,17 +299,17 @@ namespace HealthGateway.Database.Context
                 new EmailFormatCode
                 {
                     FormatCode = EmailFormat.Text,
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new EmailFormatCode
                 {
                     FormatCode = EmailFormat.HTML,
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 });
             modelBuilder.Entity<EmailStatusCode>().HasData(
@@ -308,36 +317,36 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = EmailStatus.New,
                     Description = "A newly created email",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new EmailStatusCode
                 {
                     StatusCode = EmailStatus.Pending,
                     Description = "An email pending batch pickup",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new EmailStatusCode
                 {
                     StatusCode = EmailStatus.Processed,
                     Description = "An email that has been sent",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 },
                 new EmailStatusCode
                 {
                     StatusCode = EmailStatus.Error,
                     Description = "An Email that will not be sent",
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 });
             modelBuilder.Entity<EmailTemplate>().HasData(
@@ -351,9 +360,9 @@ namespace HealthGateway.Database.Context
                     Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 });
             modelBuilder.Entity<EmailTemplate>().HasData(
@@ -367,9 +376,9 @@ namespace HealthGateway.Database.Context
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
-                    CreatedBy = this.DefaultUser,
+                    CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = this.DefaultUser,
+                    UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
                 });
         }

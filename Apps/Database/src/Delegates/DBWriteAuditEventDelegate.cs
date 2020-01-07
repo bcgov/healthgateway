@@ -43,9 +43,8 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
-            Contract.Requires(auditEvent != null);
             this.logger.LogTrace($"Writing audit event to DB... {JsonSerializer.Serialize(auditEvent)}");
-            this.dbContext.AuditEvent.Add(auditEvent);
+            this.dbContext.Add(auditEvent);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished writing audit event to DB... {auditEvent.Id}");
         }

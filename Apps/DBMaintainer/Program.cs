@@ -25,6 +25,7 @@ namespace HealthGateway.DrugMaintainer
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Services;
 
     class Program
     {
@@ -61,6 +62,7 @@ namespace HealthGateway.DrugMaintainer
                            services.AddHttpClient();
 
                            // Add services
+                           services.AddTransient<IHttpClientService, HttpClientService>();
                            services.AddTransient<IFileDownloadService, FileDownloadService>();
                            services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
                            services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();

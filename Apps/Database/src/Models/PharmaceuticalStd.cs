@@ -26,13 +26,13 @@ namespace HealthGateway.Database.Models
         [Column("PharmaceuticalStdId")]
         public Guid Id { get; set; }
 
-        public string PharmaceuticalStdDesc { get; set; }
+        public string? PharmaceuticalStdDesc { get; set; }
 
         /// <summary>
         /// Gets or sets the object Drug Product reference.
         /// </summary>
         [Required]
-        public virtual DrugProduct DrugProduct { get; set; }
+        public virtual DrugProduct? DrugProduct { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.

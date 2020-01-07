@@ -26,17 +26,17 @@ namespace HealthGateway.Common.Swagger
         /// <summary>
         /// Gets or sets document Name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets swagger Info.
         /// </summary>
-        public OpenApiInfo Info { get; set; }
+        public OpenApiInfo? Info { get; set; }
 
         /// <summary>
         /// Gets or sets RoutePrefix.
         /// </summary>
-        public string RoutePrefix { get; set; }
+        public string? RoutePrefix { get; set; }
 
         /// <summary>
         /// Gets Route Prefix with tailing slash.

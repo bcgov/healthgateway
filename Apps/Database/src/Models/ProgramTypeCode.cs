@@ -27,10 +27,10 @@ namespace HealthGateway.Database.Models
         [Key]
         [Required]
         [MaxLength(10)]
-        public string ProgramCode { get; set; }
+        public string? ProgramCode { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

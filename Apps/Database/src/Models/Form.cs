@@ -29,10 +29,10 @@ namespace HealthGateway.Database.Models
         public int PharmaceuticalFormCode { get; set; }
 
         [MaxLength(40)]
-        public string PharmaceuticalForm { get; set; }
+        public string? PharmaceuticalForm { get; set; }
 
         [MaxLength(80)]
-        public string PharmaceuticalFormFrench { get; set; }
+        public string? PharmaceuticalFormFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.
