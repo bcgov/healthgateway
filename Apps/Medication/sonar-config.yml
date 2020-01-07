@@ -1,5 +1,5 @@
 properties:
-  sonar.coverage.exclusions: '**Tests*.cs, **/Common/**, **/Database/**' 
+  sonar.coverage.exclusions: '**Tests*.cs, **/Common/**, **/Database/**, **/Startup.cs, **/Program.cs' 
   sonar.cs.opencover.reportsPaths: '**/coverage.opencover.xml'
   sonar.cs.xunit.reportsPaths: '**/xUnitResults/results.xml'
   sonar.scm.disabled: 'true'
