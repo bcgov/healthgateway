@@ -44,7 +44,7 @@ steps:
       /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
       /d:sonar.login="$(sonar.login)" \
       /d:sonar.scm.disabled="true" \
-      /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**" \
+      /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
       /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
       /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
     dotnet build    
