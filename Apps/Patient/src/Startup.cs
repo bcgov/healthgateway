@@ -14,11 +14,13 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.PatientService
+namespace HealthGateway.Patient
 {
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -57,6 +59,7 @@ namespace HealthGateway.PatientService
 
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, SoapPatientService>();
         }
 

@@ -13,50 +13,100 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.PatientService.Test
+namespace HealthGateway.Patient.Test
 {
     using Xunit;
-    using Models;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Configuration;
     using Moq;
-
+    using System.Threading.Tasks;
+    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Models;
+    using HealthGateway.Patient.Services;
+    using ServiceReference;
 
     public class PatientService_Test
     {
-        private Mock<ILogger<SoapPatientService>> serviceLogger;
-        private Mock<ILogger<LoggingMessageInspector>> messageLogger;
-        //private SoapPatientService service;
-
-        public PatientService_Test()
-        {
-            /*
-            var certificateSection = new Mock<IConfigurationSection>();
-            certificateSection.SetupGet(x => x[It.IsAny<string>()]).Returns("testvalue");
-
-            var configurationSection = new Mock<IConfigurationSection>();
-            configurationSection.Setup(a => a.GetSection("ClientCertificate")).Returns(certificateSection.Object);
-
-            var configuration = new Mock<IConfiguration>();
-            configuration.Setup(a => a.GetSection("ClientRegistries")).Returns(configurationSection.Object);*/
-
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("UnitTest.json").Build();
-        
-
-            // Mock dependency injection of controller
-            this.serviceLogger = new Mock<ILogger<SoapPatientService>>();
-            this.messageLogger = new Mock<ILogger<LoggingMessageInspector>>();
-
-            // Creates the controller passing mocked dependencies
-            //this.service = new SoapPatientService(serviceLogger.Object, config, new LoggingEndpointBehaviour(new LoggingMessageInspector(messageLogger.Object)));
-        }
-
         [Fact]
-        public void Should_true()
+        public async Task ShouldGetPatient()
         {
-            //Patient pat = await service.GetPatient("qeqwe");
-            Assert.True(true);
+            // Setup
+            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            string expectedPhn = "0009735353315";
+            string expectedResponseCode = "BCHCIM.GD.0.0013";
+            string expectedFirstName = "John";
+            string expectedLastName = "Doe";
+
+
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson identifiedPerson =
+                new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
+                {
+                    identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+                    {
+                        id = new II[]
+                        {
+                            new II()
+                            {
+                                extension = expectedPhn
+                            }
+                        },
+                        name = new PN[]
+                        {
+                            new PN()
+                            {
+                                Items = new ENXP[] {
+                                    new engiven()
+                                    {
+                                        Text = new string[]{ expectedFirstName }
+                                    },
+                                    new enfamily()
+                                    {
+                                        Text = new string[]{ expectedLastName }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegateMock = new Mock<IClientRegistriesDelegate>();
+            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographics>())).ReturnsAsync(
+                new HCIM_IN_GetDemographicsResponse1()
+                {
+                    HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse()
+                    {
+                        controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess()
+                        {
+                            queryAck = new HCIM_MT_QueryResponseQueryAck()
+                            {
+                                queryResponseCode = new CS()
+                                {
+                                    code = expectedResponseCode
+                                },
+                            },
+                            subject = new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2[]
+                              {
+                                  new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
+                                  {
+                                      target = identifiedPerson
+                                  }
+                              }
+                        }
+                    }
+                }
+            );
+
+            IPatientService service = new SoapPatientService(
+                new Mock<ILogger<SoapPatientService>>().Object,
+                clientRegistriesDelegateMock.Object
+            );
+
+            // Act
+            Patient actual = await service.GetPatient(hdid);
+
+            // Verify
+            Assert.Equal(expectedPhn, actual.PersonalHealthNumber);
+            Assert.Equal(expectedFirstName, actual.FirstName);
+            Assert.Equal(expectedLastName, actual.LastName);
         }
     }
 }

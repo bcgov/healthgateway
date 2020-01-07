@@ -13,21 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Services
+namespace HealthGateway.Patient.Delegates
 {
     using System.Threading.Tasks;
-    using HealthGateway.Patient.Models;
+    using ServiceReference;
 
     /// <summary>
     /// The Patient data service.
     /// </summary>
-    public interface IPatientService
+    public interface IClientRegistriesDelegate
     {
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="id">The patient id.</param>
-        /// <returns>The patient model.</returns>
-        Task<Patient> GetPatient(string id);
+        /// <param name="request">The get demographics request.</param>
+        /// <returns>The patient get demographics response.</returns>
+        Task<HCIM_IN_GetDemographicsResponse1> GetDemographicsAsync(HCIM_IN_GetDemographics request);
     }
 }
