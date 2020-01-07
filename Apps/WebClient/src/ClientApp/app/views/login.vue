@@ -3,6 +3,18 @@
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row>
       <b-col>
+        <b-alert
+          style="max-width: 25rem;"
+          :show="isRetry"
+          dismissible
+          variant="danger"
+        >
+          <h4>Error</h4>
+          <span
+            >An unexpected error occured while processing the request, please
+            try again.</span
+          >
+        </b-alert>
         <b-card
           v-if="identityProviders && identityProviders.length > 0"
           id="loginPicker"
@@ -11,11 +23,11 @@
           align="center"
         >
           <h3 slot="header">Log In</h3>
-          <p v-if="hasMultipleProviders" slot="footer">
+          <p v-if="hasMultipleProviders || isRetry" slot="footer">
             Not yet registered?
             <b-link to="/registrationInfo">Sign up</b-link>
           </p>
-          <b-card-body v-if="hasMultipleProviders">
+          <b-card-body v-if="hasMultipleProviders || isRetry">
             <div v-for="provider in identityProviders" :key="provider.id">
               <b-row>
                 <b-col>
@@ -63,7 +75,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
 import {
@@ -84,6 +96,7 @@ export default class LoginComponent extends Vue {
   @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
   @Getter("identityProviders", { namespace: "config" })
   identityProviders: IdentityProviderConfiguration[];
+  @Prop() isRetry?: boolean;
 
   private isLoading: boolean = true;
   private redirectPath: string = "";
@@ -104,7 +117,8 @@ export default class LoginComponent extends Vue {
       this.routeHandler.push({ path: this.redirectPath });
     } else if (
       !this.oidcIsAuthenticated &&
-      this.identityProviders.length == 1
+      this.identityProviders.length == 1 &&
+      !this.isRetry
     ) {
       this.oidcLogin(this.identityProviders[0].hint);
     } else {

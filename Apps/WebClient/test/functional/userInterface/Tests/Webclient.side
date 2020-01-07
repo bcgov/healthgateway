@@ -2,7 +2,7 @@
   "id": "c08ce78b-d6e9-43f9-9b83-6b24fde05198",
   "version": "2.0",
   "name": "Webclient",
-  "url": "https://dev-gateway.pathfinder.gov.bc.ca/",
+  "url": "https://dev.healthgateway.gov.bc.ca/",
   "tests": [{
     "id": "5623a813-676e-42d2-9fc8-4117f3206bf6",
     "name": "Health Gateway Landing Page",
@@ -34,16 +34,15 @@
       "target": "id=btnLogin",
       "targets": [
         ["id=btnLogin", "id"],
-        ["linkText=Log In", "linkText"],
+        ["linkText=Already registered? Login", "linkText"],
         ["css=#btnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Log In')]", "xpath:link"],
         ["xpath=//a[@id='btnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a[2]", "xpath:idRelative"],
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div/div[2]/div/div[2]/a", "xpath:idRelative"],
         ["xpath=(//a[contains(@href, '/login')])[2]", "xpath:href"],
-        ["xpath=//a[2]", "xpath:position"],
-        ["xpath=//a[contains(.,'Log In')]", "xpath:innerText"]
+        ["xpath=//div[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Already registered? Login')]", "xpath:innerText"]
       ],
-      "value": "Log In"
+      "value": "Already registered? Login"
     }, {
       "id": "3f720218-7061-4a05-8ab5-07f994ce6864",
       "comment": "",
@@ -51,16 +50,16 @@
       "target": "id=btnStart",
       "targets": [
         ["id=btnStart", "id"],
-        ["linkText=Sign Up", "linkText"],
+        ["linkText=Register", "linkText"],
         ["css=#btnStart", "css:finder"],
-        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=//a[contains(text(),'Register')]", "xpath:link"],
         ["xpath=//a[@id='btnStart']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/div[2]/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/cardInfo')]", "xpath:href"],
-        ["xpath=//div[2]/a", "xpath:position"],
-        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+        ["xpath=//div[@id='app-root']/main/div/div/div[2]/div/div[2]/div/div/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/registrationInfo')]", "xpath:href"],
+        ["xpath=//div/div/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Register')]", "xpath:innerText"]
       ],
-      "value": "Sign Up"
+      "value": "Register"
     }]
   }, {
     "id": "30b6a4ff-58af-44be-b784-e2b42d5210e1",
@@ -1068,6 +1067,13 @@
       "targets": [],
       "value": ""
     }, {
+      "id": "53b17a30-f6de-485c-a795-1419a023f963",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1280x800",
+      "targets": [],
+      "value": ""
+    }, {
       "id": "65d48656-2a78-4d0e-b579-5be5729fa1c1",
       "comment": "",
       "command": "storeXpathCount",
@@ -1622,7 +1628,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7", "ab14080b-7682-4505-9050-9e178beaccfe", "1ac3c249-0fb3-4609-afa9-24208fd6b2f9"]
+    "tests": ["c033b379-f96e-48f6-bd75-39e6e4ec1302", "6420586f-660b-44ef-be23-d2e3c4d161e7", "ab14080b-7682-4505-9050-9e178beaccfe"]
   }, {
     "id": "2347de0a-896f-4f4e-8a91-3891b634bcdf",
     "name": "Timeline Page",
@@ -1638,6 +1644,6 @@
     "timeout": 300,
     "tests": ["09e7c520-e54c-47c3-92fd-cadc93da5bcd", "9dfb86e7-652f-4831-af4a-275b58c38cbf", "fc6f8e24-0d80-4e7d-8eb1-1b1ea3160392"]
   }],
-  "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/"],
+  "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/", "https://dev.healthgateway.gov.bc.ca/"],
   "plugins": []
 }

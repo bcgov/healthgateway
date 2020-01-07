@@ -13,19 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.PatientService
+namespace HealthGateway.Patient.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
-    using System.ServiceModel;
-    using System.ServiceModel.Description;
-    using System.ServiceModel.Security;
-    using HealthGateway.PatientService.Models;
-    using Microsoft.Extensions.Configuration;
+    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using ServiceReference;
@@ -35,45 +30,18 @@ namespace HealthGateway.PatientService
     /// </summary>
     public class SoapPatientService : IPatientService
     {
-        private readonly IEndpointBehavior loggingEndpointBehaviour;
         private readonly ILogger logger;
-        private readonly QUPA_AR101102_PortTypeClient getDemographicsClient;
+        private readonly IClientRegistriesDelegate clientRegistriesDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoapPatientService"/> class.
-        /// Constructor that requires an IEndpointBehavior for dependency injection.
         /// </summary>
         /// <param name="logger">The service Logger.</param>
-        /// <param name="configuration">The service configuration.</param>
-        /// <param name="loggingEndpointBehaviour">Endpoint behaviour for logging purposes.</param>
-        public SoapPatientService(ILogger<SoapPatientService> logger, IConfiguration configuration, IEndpointBehavior loggingEndpointBehaviour)
+        /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
+        public SoapPatientService(ILogger<SoapPatientService> logger, IClientRegistriesDelegate clientRegistriesDelegate)
         {
-            Contract.Requires(configuration != null);
-            this.loggingEndpointBehaviour = loggingEndpointBehaviour;
             this.logger = logger;
-
-            IConfigurationSection clientConfiguration = configuration.GetSection("ClientRegistries");
-
-            // Load Certificate
-            string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
-            string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
-            X509Certificate2 clientCertificate = new X509Certificate2(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
-
-            string serviceUrl = clientConfiguration.GetValue<string>("ServiceUrl");
-            EndpointAddress endpoint = new EndpointAddress(new Uri(serviceUrl));
-
-            // Create client
-            this.getDemographicsClient = new QUPA_AR101102_PortTypeClient(QUPA_AR101102_PortTypeClient.EndpointConfiguration.QUPA_AR101102_Port, endpoint);
-            this.getDemographicsClient.Endpoint.EndpointBehaviors.Add(this.loggingEndpointBehaviour);
-            this.getDemographicsClient.ClientCredentials.ClientCertificate.Certificate = clientCertificate;
-
-            // TODO: - HACK - Remove this once we can get the server certificate to be trusted.
-            this.getDemographicsClient.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
-                new X509ServiceCertificateAuthentication()
-                {
-                    CertificateValidationMode = X509CertificateValidationMode.None,
-                    RevocationMode = X509RevocationMode.NoCheck,
-                };
+            this.clientRegistriesDelegate = clientRegistriesDelegate;
         }
 
         /// <summary>
@@ -92,7 +60,7 @@ namespace HealthGateway.PatientService
             HCIM_IN_GetDemographics request = this.CreateRequest(hdid);
 
             // Perform the request
-            HCIM_IN_GetDemographicsResponse1 reply = await this.getDemographicsClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesDelegate.GetDemographicsAsync(request).ConfigureAwait(true);
 
             // Verify that the reply contains a result
             string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;

@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -145,10 +146,9 @@ namespace HealthGateway.WebClient
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "dist";
-
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5000");
+                    spa.UseReactDevelopmentServer("dev");
                 }
             });
         }

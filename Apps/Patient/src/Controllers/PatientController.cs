@@ -18,7 +18,8 @@ namespace HealthGateway.PatientService.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
-    using HealthGateway.PatientService.Models;
+    using HealthGateway.Patient.Services;
+    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -81,7 +82,7 @@ namespace HealthGateway.PatientService.Controllers
                 return new ForbidResult();
             }
 
-            var result = await this.service.GetPatient(hdid).ConfigureAwait(true);
+            Patient result = await this.service.GetPatient(hdid).ConfigureAwait(true);
             return new JsonResult(result);
         }
     }
