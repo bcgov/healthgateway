@@ -74,7 +74,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueEmail(Email email)
         {
-            Contract.Requires(email != null);
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
             this.emailDelegate.InsertEmail(email);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
@@ -84,7 +83,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
-            Contract.Requires(hdid != null && toEmail != null && activationHost != null);
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
             EmailInvite invite = new EmailInvite();
             invite.InviteKey = Guid.NewGuid();
