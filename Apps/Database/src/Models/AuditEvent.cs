@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constant;
 
     /// <summary>
     /// Represents an AuditEvent entity
@@ -51,47 +50,47 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(15)]
         [Required]
-        public string ClientIP { get; set; }
+        public string? ClientIP { get; set; }
 
         /// <summary>
         /// Gets or sets the application specific subject identifer.
         /// </summary>
         [MaxLength(100)]
-        public string ApplicationSubject { get; set; }
+        public string? ApplicationSubject { get; set; }
 
         /// <summary>
         /// Gets or sets the application name recording the event.
         /// </summary>
         [MaxLength(10)]
         [Required]
-        public string ApplicationType { get; set; }
+        public string? ApplicationType { get; set; }
 
         /// <summary>
         /// Gets or sets the transacation within the application causing the event.
         /// </summary>
         [MaxLength(100)]
         [Required]
-        public string TransactionName { get; set; }
+        public string? TransactionName { get; set; }
 
         /// <summary>
         /// Gets or sets the version of the transaction.
         /// </summary>
         [MaxLength(5)]
-        public string TransactionVersion { get; set; }
+        public string? TransactionVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the trace value for the audit event.
         /// </summary>
         ///
         [MaxLength(200)]
-        public string Trace { get; set; }
+        public string? Trace { get; set; }
 
         /// <summary>
         /// Gets or sets the result code/status code from the transaction.
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public string TransactionResultCode { get; set; }
+        public string? TransactionResultCode { get; set; }
 
         /// <summary>
         /// Gets or sets the duration of the transaction in milliseconds.

@@ -78,7 +78,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
         {
-            Contract.Requires(drugIdentifiers != null);
+            // Contract.Requires(drugIdentifiers != null);
             this.logger.LogTrace($"Getting drug brand names from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
 
             // Retrieve the brand names using the provincial data

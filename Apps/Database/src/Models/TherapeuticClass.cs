@@ -27,22 +27,22 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         [MaxLength(8)]
-        public string AtcNumber { get; set; }
+        public string? AtcNumber { get; set; }
 
         [MaxLength(120)]
-        public string Atc { get; set; }
+        public string? Atc { get; set; }
 
         [MaxLength(240)]
-        public string AtcFrench { get; set; }
+        public string? AtcFrench { get; set; }
 
         [MaxLength(20)]
-        public string AhfsNumber { get; set; }
+        public string? AhfsNumber { get; set; }
 
         [MaxLength(80)]
-        public string Ahfs { get; set; }
+        public string? Ahfs { get; set; }
 
         [MaxLength(160)]
-        public string AhfsFrench { get; set; }
+        public string? AhfsFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.

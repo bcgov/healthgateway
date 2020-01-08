@@ -27,6 +27,6 @@ namespace HealthGateway.Database.Models
         [Key]
         [Required]
         [MaxLength(4)]
-        public string FormatCode { get; set; }
+        public string? FormatCode { get; set; }
     }
 }

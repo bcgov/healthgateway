@@ -68,7 +68,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<UserFeedback> UpdateUserFeedback(UserFeedback feedback)
         {
-            Contract.Requires(feedback != null);
             this.logger.LogTrace($"Updating user feedback in DB... {JsonSerializer.Serialize(feedback)}");
             DBResult<UserFeedback> result = this.GetUserFeedback(feedback.Id);
             if (result.Status == DBStatusCode.Read)

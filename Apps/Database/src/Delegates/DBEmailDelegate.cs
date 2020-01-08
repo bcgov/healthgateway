@@ -82,7 +82,6 @@ namespace HealthGateway.Database.Delegates
         public Guid InsertEmail(Email email)
         {
             this.logger.LogTrace($"Inserting email to DB... {email}");
-            Contract.Requires(email != null);
             this.dbContext.Add<Email>(email);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished inserting email to DB. {JsonSerializer.Serialize(email)}");
@@ -93,7 +92,6 @@ namespace HealthGateway.Database.Delegates
         public void UpdateEmail(Email email)
         {
             this.logger.LogTrace($"Updating email in DB... {email}");
-            Contract.Requires(email != null);
             this.dbContext.Update<Email>(email);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished updating email in DB. {JsonSerializer.Serialize(email)}");
@@ -103,7 +101,6 @@ namespace HealthGateway.Database.Delegates
         public Guid InsertEmailInvite(EmailInvite invite)
         {
             this.logger.LogTrace($"Inserting email invite to DB... {JsonSerializer.Serialize(invite)}");
-            Contract.Requires(invite != null);
             this.dbContext.Add<EmailInvite>(invite);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished inserting email invite to DB. {invite.Id}");
@@ -154,7 +151,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public void UpdateEmailInvite(EmailInvite emailInvite)
         {
-            Contract.Requires(emailInvite != null);
             this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(emailInvite)}");
             this.dbContext.Update<EmailInvite>(emailInvite);
             this.dbContext.SaveChanges();

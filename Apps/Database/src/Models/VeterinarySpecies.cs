@@ -27,13 +27,13 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         [MaxLength(80)]
-        public string Species { get; set; }
+        public string? Species { get; set; }
 
         [MaxLength(160)]
-        public string SpeciesFrench { get; set; }
+        public string? SpeciesFrench { get; set; }
 
         [MaxLength(80)]
-        public string SubSpecies { get; set; }
+        public string? SubSpecies { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.

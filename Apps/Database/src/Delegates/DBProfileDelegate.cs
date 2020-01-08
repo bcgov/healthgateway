@@ -46,7 +46,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<UserProfile> InsertUserProfile(UserProfile profile)
         {
-            Contract.Requires(profile != null);
             this.logger.LogTrace($"Inserting user profile to DB... {JsonSerializer.Serialize(profile)}");
             DBResult<UserProfile> result = new DBResult<UserProfile>();
             this.dbContext.Add<UserProfile>(profile);
@@ -68,7 +67,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<UserProfile> UpdateUserProfile(UserProfile profile)
         {
-            Contract.Requires(profile != null);
             this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
             DBResult<UserProfile> result = this.GetUserProfile(profile.HdId);
             if (result.Status == DBStatusCode.Read)
