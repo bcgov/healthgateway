@@ -43,7 +43,7 @@ The Health Gateway is designed to use external identity providers (IdPs) integra
 
 In **Step 1**, the user navigates to the Health Gateway on their browser.  The browser loads the Health Gateway application in **Step 2**. In **Step 3**, the user selects to login using their BC Services Card. **Step 4** submits an authentication request to KeyCloak (RedHat SSO) passing the selected identity provider choice, in this case 'bcsc'.  KeyCloak connects to the IAS, a provisioned Identity Provider (IdP), and in **Step 5**. KeyCloak submits an OAuth2 OIDC authentication request.
 
-In **Step 6**, the BC Services Card authentication flow takes over. The user follows a standard interaction for authenticating with their BC Services Card, most commonly executed using the BC Services Card mobile app. The user experience and flow is the same as experienced connecting to https://id.gov.bc.ca/account.
+In **Step 6**, the BC Services Card authentication flow takes over. The user follows a standard interaction for authenticating with their BC Services Card, most commonly executed using the BC Services Card mobile app. The user experience and flow is the same as experienced connecting to [BC ServicesCard ID Account](https://id.gov.bc.ca/account).
 
 In **Step 7**, upon a successful login by the Citizen with their BCSC, IAS returns the id_token, a JSON Web Token for the authenticated user. In **Step 8**, KeyCloak returns an authorization code back to the client application (HealthGateway running in the Citizen's browser).  Following normal Oauth code flow, the client app exchanges the authorization code for the bearer token of the authenticated user in **Step 9**.  
 
@@ -51,21 +51,19 @@ Optionally, in **Step 10**, the client app retrieves userInfo by making an expli
 
 The last step, **Step 11** the user's JWT or bearer token is stored in session in the Browser to avoid repeatedly asking for the user to authenticate themselves. This is deleted upon logout.
 
-## Example Access control of Medications API
+## Access control of Medications API and PharmaNet
 
-The Health Gateway is composed of publicly accessible but protected service APIs that fetch Medications data and other health records. This example flow illustrates the protections of those APIs. An HTTP Not Authorized '401' Error is returned whenever sufficient access is not met. 
+The Health Gateway is composed of publicly accessible but medication service APIs that fetch Medications records. This  flow illustrates the protections of those APIs and the specific protections and grants needed to access the PharmaNet facade service HNClient running in a hosted Internet Information Services at provinical data centre. (outside of OpenShift). An HTTP Not Authorized '401' Error is returned whenever sufficient access is not met. The connection fot the HNClient services is limited to an client credentials grant OAuth2 flow only from the Medications Service. No other authenticated entity can access the HNClient endpoint.
 
-<img src="diagrams/out/Protected_API_Call.png"
-     alt="OIDC Flow"
+<img src="diagrams/out/PharmaNet_OAuth2_HNClient_Flow.png"
+     alt="PharmaNet OAuth2 Flow"
      style="float: left; margin-right: 10px;" />
 
- **Step 1** Begins the flow by loading the HealthGateway app into the Citizen's browser.   **Step 2** we repeat the login flow as described above.  The citizen then selects to view their Medications in **Step 3**.  The first thing we need is a subject identiifer as known to our provincial health records, namely the PHN.  A protected API call to GetPHN() is called in **Step 4**.  In **Step 5** the PatientAPI checks that the Bearer token supplied is valid before proceeding to exchange the HDID (UserInfo.sub) for a PHN. Obtaining the PHN is done via a SOAP call to HCIM using the HL7v3 HCIM_IN_GetDemographics query in **Step 6**.  The PHN is returned to the HealthGateway Single Page App in the Browser in **Step 7**. 
+ **Step 1** Begins the flow by loading the HealthGateway app into the Citizen's browser.   **Step 2** we repeat the login flow as described above.  The citizen then selects to get their Medications in **Step 3**.  The first thing we need is a subject identiifer as known to our provincial health records, namely the PHN.  A protected API call to GetPHN() is called in **Step 4**.  In **Step 5** the PatientAPI checks that the Bearer token (JWT) supplied is valid before proceeding to exchange the HDID (UserInfo.sub) for a PHN. Obtaining the PHN is done via a SOAP call to HCIM using the HL7v3 HCIM_IN_GetDemographics query in **Step 6**.  The PHN is returned to the HealthGateway Single Page App in the Browser in **Step 7**.
 
- The application now has the Citizen's PHN patient identifier to be used to get Medications, and in **Step 8** Medications are requested.  In **Step 8** the MedicationsAPI service first checks Bearer token and then connects to PharmaNet over HNI to fetch medications history using an HL7v2 message structure (**Step 10**).   The Medications are returned and displayed on the browser in **Step 11**.
+ The application now has the Citizen's PHN patient identifier to be used to get Medications, and in **Step 8** Medications are requested.  Once again, the Medications API endpoint uses the KeyCloak endpoint to verify the JWT **Step 9**. In **Step 10**, the MedicationsAPI service logs into KeyCloak to retrieve a valid Bearer token with the necessary scope and audience that HNClient is restricting access to, and then connects to HNClent service. HNClient validates and verifies the token provided by the Medications Service, **Step 11**, and then HNClient requests patient medication profile over HNI in **Step 12** by connecting to PharmaNet over secure endpoint route (HNSecure network), in **Step 12** to fetch medications history using an HL7v2 message structure (**Step 14**).   The Medications are returned as HL7v2 TRP to the MedicationsAPI **Step 15**.
 
- In **Step 12** the Citizen logs out of the HealthGateway.  The HealthGateway relays that logout to KeyCloak to shut down authentication context for the user (**Step 13**), and the HealthGateway session token is deleted from the Browser (**Step 14**).
-
- In **Step 15** if the user then attempts a call to the MedicationsAPI, passing the old token or no token, the API will reject the request after checking the token (**Step 16**) and returns an HTTP Error: '401 Not Authorised' in **Step 17**.
+ In **Step 16** the medications are returned to the browser to view.  
 
 ## Citizen as Patient
 

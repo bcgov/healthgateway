@@ -74,7 +74,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueEmail(Email email)
         {
-            Contract.Requires(email != null);
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
             this.emailDelegate.InsertEmail(email);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
@@ -84,7 +83,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
-            Contract.Requires(hdid != null && toEmail != null && activationHost != null);
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
             EmailInvite invite = new EmailInvite();
             invite.InviteKey = Guid.NewGuid();
@@ -123,7 +121,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            Contract.Requires(toEmail != null && emailTemplate != null && keyValues != null);
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
@@ -150,7 +147,6 @@ namespace HealthGateway.Common.Services
 
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            Contract.Requires(emailTemplate != null);
             if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
             {
                 keyValues.Add(ENVIRONMENT_VARIABLE, this.enviroment.IsProduction() ? string.Empty : this.enviroment.EnvironmentName);
