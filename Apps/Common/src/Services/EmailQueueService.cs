@@ -121,7 +121,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            Contract.Requires(toEmail != null && emailTemplate != null && keyValues != null);
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
@@ -148,7 +147,6 @@ namespace HealthGateway.Common.Services
 
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            Contract.Requires(emailTemplate != null);
             if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
             {
                 keyValues.Add(ENVIRONMENT_VARIABLE, this.enviroment.IsProduction() ? string.Empty : this.enviroment.EnvironmentName);
