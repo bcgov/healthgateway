@@ -1,5 +1,5 @@
 properties:
-  sonar.coverage.exclusions: '**Tests*.cs, **test*.ts, **/Common/**'
+  sonar.coverage.exclusions: '**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs'
   sonar.testExecutionReportPaths: 'WebClient/sonar_reports/jest.out/test-report.xml'
   sonar.typescript.lcov.reportPaths: ../sonar_reports/jest.out/lcov.info
   sonar.typescript.test.reportPaths: ../sonar_reports/jest.out/lcov.info
