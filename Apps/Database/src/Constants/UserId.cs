@@ -13,34 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Database.Constants
 {
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-
     /// <summary>
-    /// The user profile model.
+    /// Constants for UserIds used through out the DB.
     /// </summary>
-    public class UserProfile : AuditableEntity
+    public static class UserId
     {
         /// <summary>
-        /// Gets or sets the user hdid.
+        /// The default Id to use when creating auditable entities.
         /// </summary>
-        [Key]
-        [Column("UserProfileId")]
-        [MaxLength(52)]
-        public string HdId { get; set; } = null!;
+        public const string DefaultUser = "System";
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user accepted the terms of service.
+        /// The username for the DBMaintainer load application.
         /// </summary>
-        [Required]
-        public bool AcceptedTermsOfService { get; set; }
+        public const string DBMaintainer = "DBMaintainer";
 
         /// <summary>
-        /// Gets or sets the user email.
+        /// The default HDID to use when unknown.
         /// </summary>
-        [MaxLength(254)]
-        public string? Email { get; set; }
+        public const string UnknownHdId = "UnknownHDID";
     }
 }

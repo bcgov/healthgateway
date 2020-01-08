@@ -22,11 +22,12 @@ namespace HealthGateway.Database.Wrapper
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
     public class DBResult<T>
+        where T : class
     {
         /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
-        public T Payload { get; set; }
+        public T Payload { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Status of the request.
@@ -37,6 +38,6 @@ namespace HealthGateway.Database.Wrapper
         /// Gets or sets the message depending on the result type.
         /// Will always be set when ResultType is Error.
         /// </summary>
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

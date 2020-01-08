@@ -29,6 +29,6 @@ namespace HealthGateway.Database.Models
         public bool IsSatisfied { get; set; }
 
         [MaxLength(500)]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }

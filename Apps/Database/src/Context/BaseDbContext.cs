@@ -38,17 +38,6 @@ namespace HealthGateway.Database.Context
         }
 
         /// <summary>
-        /// Gets the default user to be used when absent.
-        /// </summary>
-        protected virtual string DefaultUser
-        {
-            get
-            {
-                return "System";
-            }
-        }
-
-        /// <summary>
         /// Gets the concurrency column that we use in our DB.
         /// </summary>
         protected virtual string ConcurrencyColumn
@@ -97,12 +86,10 @@ namespace HealthGateway.Database.Context
                     {
                         // newly created records must have a createdby and date/time stamp associated to them
                         auditEntity.CreatedDateTime = now;
-                        auditEntity.CreatedBy = auditEntity.CreatedBy ?? this.DefaultUser;
                     }
 
                     // set the updated by and date/time columns for both created and updated rows
                     auditEntity.UpdatedDateTime = now;
-                    auditEntity.UpdatedBy = auditEntity.CreatedBy ?? this.DefaultUser;
                 }
 
                 if (entityEntry.Entity is IConcurrencyGuard && entityEntry.State == EntityState.Modified)

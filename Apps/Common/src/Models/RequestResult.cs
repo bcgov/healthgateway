@@ -53,6 +53,6 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the message depending on the result type.
         /// Will always be set when ResultType is Error.
         /// </summary>
-        public string? ResultMessage { get; set; }
+        public string ResultMessage { get; set; } = string.Empty;
     }
 }

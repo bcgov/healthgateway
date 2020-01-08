@@ -27,10 +27,10 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         [MaxLength(40)]
-        public string ScheduleDesc { get; set; }
+        public string? ScheduleDesc { get; set; }
 
         [MaxLength(80)]
-        public string ScheduleDescFrench { get; set; }
+        public string? ScheduleDescFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.

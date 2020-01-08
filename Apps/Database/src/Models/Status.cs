@@ -27,18 +27,18 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         [MaxLength(1)]
-        public string CurrentStatusFlag { get; set; }
+        public string? CurrentStatusFlag { get; set; }
 
         [MaxLength(40)]
-        public string StatusDesc { get; set; }
+        public string? StatusDesc { get; set; }
 
         [MaxLength(80)]
-        public string StatusDescFrench { get; set; }
+        public string? StatusDescFrench { get; set; }
 
         public DateTime? HistoryDate { get; set; }
 
         [MaxLength(80)]
-        public string LotNumber { get; set; }
+        public string? LotNumber { get; set; }
 
         public DateTime? ExpirationDate { get; set; }
 

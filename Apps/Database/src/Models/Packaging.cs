@@ -27,25 +27,25 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         [MaxLength(12)]
-        public string UPC { get; set; }
+        public string? UPC { get; set; }
 
         [MaxLength(40)]
-        public string PackageType { get; set; }
+        public string? PackageType { get; set; }
 
         [MaxLength(80)]
-        public string PackageTypeFrench { get; set; }
+        public string? PackageTypeFrench { get; set; }
 
         [MaxLength(40)]
-        public string PackageSizeUnit { get; set; }
+        public string? PackageSizeUnit { get; set; }
 
         [MaxLength(80)]
-        public string PackageSizeUnitFrench { get; set; }
+        public string? PackageSizeUnitFrench { get; set; }
 
         [MaxLength(5)]
-        public string PackageSize { get; set; }
+        public string? PackageSize { get; set; }
 
         [MaxLength(80)]
-        public string ProductInformation { get; set; }
+        public string? ProductInformation { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.

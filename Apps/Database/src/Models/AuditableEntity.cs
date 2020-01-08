@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Runtime.Serialization;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Base class for all DB entities to ensure audit data is saved.
@@ -32,7 +33,7 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(60)]
         [IgnoreDataMember]
-        public string CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = UserId.DefaultUser;
 
         /// <summary>
         /// Gets or sets the datetime the entity was created.
@@ -49,7 +50,7 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(60)]
         [IgnoreDataMember]
-        public string UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; } = UserId.DefaultUser;
 
         /// <summary>
         /// Gets or sets the datetime the entity was updated.
