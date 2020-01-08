@@ -41,8 +41,6 @@ namespace HealthGateway.Common.Filters
         /// <inheritdoc/>
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            Contract.Requires(next != null);
-
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.AuditEventDateTime = DateTime.UtcNow;
 

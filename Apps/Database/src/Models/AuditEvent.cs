@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the application specific subject identifer.
         /// </summary>
         [MaxLength(100)]
-        public string ApplicationSubject { get; set; }
+        public string? ApplicationSubject { get; set; }
 
         /// <summary>
         /// Gets or sets the application name recording the event.
@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the version of the transaction.
         /// </summary>
         [MaxLength(5)]
-        public string TransactionVersion { get; set; }
+        public string? TransactionVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the trace value for the audit event.

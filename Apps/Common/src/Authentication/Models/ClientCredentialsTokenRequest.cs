@@ -26,18 +26,18 @@ namespace HealthGateway.Common.Authentication.Models
         /// Gets or sets a unique identifier of the target API you want to access.
         /// </summary>
         [JsonProperty("audience")]
-        public string Audience { get; set; }
+        public string? Audience { get; set; }
 
         /// <summary>
         /// Gets or sets the application's Client ID.
         /// </summary>
         [JsonProperty("client_id")]
-        public string ClientId { get; set; }
+        public string? ClientId { get; set; }
 
         /// <summary>
         /// Gets or sets your application's Client Secret.
         /// </summary>
         [JsonProperty("client_secret")]
-        public string ClientSecret { get; set; }
+        public string? ClientSecret { get; set; }
     }
 }

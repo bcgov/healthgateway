@@ -102,7 +102,6 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueInviteEmail(EmailInvite invite)
         {
-            Contract.Requires(invite != null);
             this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(invite)}");
             this.emailDelegate.InsertEmailInvite(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));

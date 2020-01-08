@@ -23,41 +23,41 @@ namespace HealthGateway.Common.Authentication.Models
         /// <summary>
         /// Gets or sets the access token.
         /// </summary>
-        string AccessToken { get; set; }
+        string? AccessToken { get; set; }
 
         /// <summary>
         /// Gets or sets the token expiration in minutes.
         /// </summary>
-        int ExpiresIn { get; set; }
+        int? ExpiresIn { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token expiration in minutes.
         /// </summary>
-        int RefreshExpiresIn { get; set; }
+        int? RefreshExpiresIn { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
         /// </summary>
-        string RefreshToken { get; set; }
+        string? RefreshToken { get; set; }
 
         /// <summary>
         /// Gets or sets the token type.
         /// </summary>
-        string TokenType { get; set; }
+        string? TokenType { get; set; }
 
         /// <summary>
         /// Gets or sets the not-before-policy.
         /// </summary>
-        int NotBeforePolicy { get; set; }
+        int? NotBeforePolicy { get; set; }
 
         /// <summary>
         /// Gets or sets the session state.
         /// </summary>
-        string SessionState { get; set; }
+        string? SessionState { get; set; }
 
         /// <summary>
         /// Gets or sets the scope.
         /// </summary>
-        string Scope { get; set; }
+        string? Scope { get; set; }
     }
 }

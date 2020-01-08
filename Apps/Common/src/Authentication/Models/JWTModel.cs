@@ -25,34 +25,34 @@ namespace HealthGateway.Common.Authentication.Models
     {
         /// <inheritdoc/>
         [JsonProperty("access_token")]
-        public string AccessToken { get; set; }
+        public string? AccessToken { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("expires_in")]
-        public int ExpiresIn { get; set; }
+        public int? ExpiresIn { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("refresh_expires_in")]
-        public int RefreshExpiresIn { get; set; }
+        public int? RefreshExpiresIn { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("refresh_token")]
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("token_type")]
-        public string TokenType { get; set; }
+        public string? TokenType { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("not-before-policy")]
-        public int NotBeforePolicy { get; set; }
+        public int? NotBeforePolicy { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("session_state")]
-        public string SessionState { get; set; }
+        public string? SessionState { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("scope")]
-        public string Scope { get; set; }
+        public string? Scope { get; set; }
     }
 }
