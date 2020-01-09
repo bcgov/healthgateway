@@ -46,7 +46,7 @@ namespace HealthGateway.Common.Authorization
         /// <returns>a Task.</returns>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPatientRequirement requirement, string hdid)
         {
-            if (this.IsOwner(context?.User, hdid))
+            if (this.IsOwner(context?.User!, hdid))
             {
                 context?.Succeed(requirement);
             }
@@ -61,9 +61,6 @@ namespace HealthGateway.Common.Authorization
         /// <param name="hdid">The health data resource subject identifier.</param>
         private bool IsOwner(ClaimsPrincipal user, string hdid)
         {
-            Contract.Requires(hdid != null);
-            Contract.Requires(user != null);
-
             string hdidClaim = user.FindFirst(c => c.Type == "hdid").Value;
             return string.Equals(hdidClaim, hdid, System.StringComparison.Ordinal);
         }

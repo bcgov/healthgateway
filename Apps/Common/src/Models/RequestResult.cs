@@ -32,17 +32,17 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.
         /// </summary>
-        public int TotalResultCount { get; set; }
+        public int? TotalResultCount { get; set; }
 
         /// <summary>
         /// Gets or sets the page being returned on this result for pagination.
         /// </summary>
-        public int PageIndex { get; set; }
+        public int? PageIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for pagination.
         /// </summary>
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the Result of the request.

@@ -29,11 +29,11 @@ namespace HealthGateway.Common.Authentication.Models
 
         /// <inheritdoc/>
         [JsonProperty("expires_in")]
-        public int ExpiresIn { get; set; }
+        public int? ExpiresIn { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("refresh_expires_in")]
-        public int RefreshExpiresIn { get; set; }
+        public int? RefreshExpiresIn { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("refresh_token")]
@@ -45,7 +45,7 @@ namespace HealthGateway.Common.Authentication.Models
 
         /// <inheritdoc/>
         [JsonProperty("not-before-policy")]
-        public int NotBeforePolicy { get; set; }
+        public int? NotBeforePolicy { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty("session_state")]

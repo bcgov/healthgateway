@@ -28,12 +28,12 @@ namespace HealthGateway.Common.Authentication.Models
         /// <summary>
         /// Gets or sets the token expiration in minutes.
         /// </summary>
-        int ExpiresIn { get; set; }
+        int? ExpiresIn { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token expiration in minutes.
         /// </summary>
-        int RefreshExpiresIn { get; set; }
+        int? RefreshExpiresIn { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -48,7 +48,7 @@ namespace HealthGateway.Common.Authentication.Models
         /// <summary>
         /// Gets or sets the not-before-policy.
         /// </summary>
-        int NotBeforePolicy { get; set; }
+        int? NotBeforePolicy { get; set; }
 
         /// <summary>
         /// Gets or sets the session state.

@@ -48,7 +48,6 @@ namespace HealthGateway.Common.FileDownload
         /// <inheritdoc/>
         public async Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
-            Contract.Requires(fileUrl != null);
             FileDownload fd = new FileDownload();
 
             if (isRelativePath)

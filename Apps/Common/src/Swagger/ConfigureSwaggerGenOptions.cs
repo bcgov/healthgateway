@@ -45,10 +45,9 @@ namespace HealthGateway.Common.Swagger
         {
             Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
             Debug.Assert(swaggerSettings != null, $"{nameof(swaggerSettings)} != null");
-            Contract.Requires(swaggerSettings != null);
 
             this.provider = versionDescriptionProvider;
-            this.settings = swaggerSettings.Value ?? new SwaggerSettings();
+            this.settings = swaggerSettings?.Value ?? new SwaggerSettings();
         }
 
         /// <inheritdoc />
@@ -64,7 +63,7 @@ namespace HealthGateway.Common.Swagger
 
         private static void SetCommentsPathForSwaggerJsonAndUi(SwaggerGenOptions options)
         {
-            var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
+            var xmlFile = $"{Assembly.GetEntryAssembly() !.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         }
@@ -73,7 +72,7 @@ namespace HealthGateway.Common.Swagger
         {
             foreach (var description in this.provider.ApiVersionDescriptions)
             {
-                this.settings.Info.Version = description.ApiVersion.ToString();
+                this.settings.Info!.Version = description.ApiVersion.ToString();
 
                 if (description.IsDeprecated)
                 {
