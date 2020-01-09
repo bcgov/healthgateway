@@ -1062,7 +1062,7 @@
     }, {
       "id": "247bd563-f06e-4d8a-ba14-670fc44b559a",
       "comment": "",
-      "command": "pause",
+      "command": "//pause",
       "target": "3000",
       "targets": [],
       "value": ""
