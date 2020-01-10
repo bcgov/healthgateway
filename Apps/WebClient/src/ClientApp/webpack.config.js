@@ -81,7 +81,7 @@ module.exports = (env, argv) => {
       output: {
         path: path.resolve(__dirname, bundleOutputDir),
         filename: "[name].bundle.js",
-        chunkFilename: "[name].chunk.js",
+        chunkFilename: "[name].chunk.[contenthash].js",
         publicPath: "/dist/"
       },
       plugins: [
