@@ -39,11 +39,11 @@ export class RestUserEmailService implements IUserEmailService {
     });
   }
 
-  public updateEmail(hdid:string, email: string): Promise<boolean> {
+  public updateEmail(hdid: string, email: string): Promise<boolean> {
     return new Promise(resolve => {
       this.http
         .put<void>(`${this.USER_EMAIL_BASE_URI}/${hdid}`, email)
-        .then(()=> {
+        .then(() => {
           return resolve();
         })
         .catch(err => {
