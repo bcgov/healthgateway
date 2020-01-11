@@ -77,4 +77,5 @@ export interface IHttpDelegate {
   getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   post<T>(url: string, payload: Object): Promise<T>;
+  put<T>(url: string, payload: Object): Promise<T>;
 }
