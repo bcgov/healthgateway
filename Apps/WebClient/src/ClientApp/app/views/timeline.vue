@@ -209,7 +209,11 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-          this.filter();
+          if (!this.filterText) {
+            this.visibleTimelineEntries = this.timelineEntries;
+          } else {
+            this.scheduleFilter();
+          }
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
           this.protectiveWordAttempts++;
@@ -248,37 +252,21 @@ export default class TimelineComponent extends Vue {
   }
 
   @Watch("filterText")
-  private filter() {
-    if (!this.filterText) {
-      this.visibleTimelineEntries = this.timelineEntries;
-      return;
-    }
+  private scheduleFilter() {
     if (this.filterTimeout) {
       clearTimeout(this.filterTimeout);
     }
 
     this.filterTimeout = setTimeout(() => {
-      console.log(`filtering ${this.filterText}`);
-      this.visibleTimelineEntries = this.timelineEntries.filter(
-        this.filterExpression
+      if (!this.filterText) {
+        this.visibleTimelineEntries = this.timelineEntries;
+        return;
+      }
+      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+        entry.filterApplies(this.filterText)
       );
     }, 1000);
   }
-
-  private filterExpression(entry: TimelineEntry) {
-    if ((entry as MedicationTimelineEntry).type) {
-      var medEntry = entry as MedicationTimelineEntry;
-      var text =
-        (medEntry.practitionerSurname! || "") +
-        (medEntry.medication.brandName! || "") +
-        (medEntry.medication.genericName! || "");
-      text = text.toUpperCase();
-      if (text.includes(this.filterText.toUpperCase())) {
-        return true;
-      }
-    }
-  }
-
   private get dateGroups(): DateGroup[] {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
