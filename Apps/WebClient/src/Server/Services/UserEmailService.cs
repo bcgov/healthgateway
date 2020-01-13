@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Services
             this.logger = logger;
             this.emailDelegate = emailDelegate;
             this.profileDelegate = profileDelegate;
-            this.emailQueueService =  emailQueueService;
+            this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc />
@@ -81,7 +81,8 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserEmail(string hdid, string email, Uri hostUri) {
+        public bool UpdateUserEmail(string hdid, string email, Uri hostUri)
+        {
             this.logger.LogTrace($"Updating user email...");
             bool retVal = false;
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
@@ -100,7 +101,7 @@ namespace HealthGateway.WebClient.Services
                 // Updated the email
                 else if (emailInvite.Email.To != email)
                 {
-                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);\
+                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
                     this.logger.LogDebug($"Updating email");
                 }
                 // Same email, validation needs to be resent
@@ -113,7 +114,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
                 this.logger.LogDebug($"Finished updating user email");
             }
-            
+
             return retVal;
         }
     }
