@@ -54,7 +54,7 @@
               <b-form-input
                 v-model="filterText"
                 type="text"
-                placeholder="Search"
+                placeholder="Filter"
                 maxlength="50"
               ></b-form-input>
               <b-input-group-append>
