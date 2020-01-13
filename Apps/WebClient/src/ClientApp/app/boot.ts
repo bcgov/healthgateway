@@ -8,6 +8,7 @@ import i18n from "@/i18n";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
 import "@/registerComponentHooks";
+import { InputGroupPlugin } from 'bootstrap-vue'
 
 const App = () => import(/* webpackChunkName: "app" */ "@/app.vue");
 import router from "@/router";
@@ -34,6 +35,7 @@ Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);
+Vue.use(InputGroupPlugin)
 
 const httpDelegate: IHttpDelegate = container.get(
   DELEGATE_IDENTIFIER.HttpDelegate
