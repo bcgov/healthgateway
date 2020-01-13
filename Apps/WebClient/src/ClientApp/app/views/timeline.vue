@@ -63,7 +63,7 @@
                 </b-input-group-text>
               </b-input-group-append>
             </b-input-group>
-            <hr />
+            <br />
           </b-col>
         </b-row>
         <div v-if="!isLoading">
