@@ -114,5 +114,47 @@ namespace HealthGateway.WebClient.Controllers
 
             return new JsonResult(result);
         }
+
+        /// <summary>
+        /// Updates the user email.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="email">The new email.</param>
+        /// <response code="200">Returns true if the call was successful.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Route("{hdid}")]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string email)
+        {
+            Contract.Requires(hdid != null);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+
+            // Validate that the query parameter matches the user claims
+            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
+            }
+
+            var isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            string referer = this.httpContextAccessor.HttpContext.Request
+                .GetTypedHeaders()
+                .Referer?
+                .GetLeftPart(UriPartial.Authority);
+
+            bool result = this.userEmailService.UpdateUserEmail(hdid, email, new Uri(referer));
+
+            return new JsonResult(result);
+        }
     }
 }
