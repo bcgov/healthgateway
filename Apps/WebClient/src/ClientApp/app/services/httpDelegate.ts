@@ -64,4 +64,25 @@ export default class HttpDelegate implements IHttpDelegate {
         });
     });
   }
+
+  public put<T>(
+    url: string,
+    payload: Object,
+    headers: Dictionary<string> | undefined = undefined
+  ): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      let config: AxiosRequestConfig = {
+        headers
+      };
+      Axios.put(url, payload, config)
+        .then(response => {
+          return resolve(response.data);
+        })
+        .catch(err => {
+          const errorMessage: string = `PUT error: ${err.toString()}`;
+          console.log(errorMessage);
+          return reject(errorMessage);
+        });
+    });
+  }
 }
