@@ -253,15 +253,19 @@ export default class RegistrationInfoComponent extends Vue {
   private signupProcessVisible: boolean = false;
   private dongleVisible: boolean = false;
   private registrationLink: string = "/registration/";
+  private regInviteOnly: boolean = false;
+  private regClosed: boolean = false;
   @Prop() inviteKey?: string;
   @Prop() email?: string;
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;
 
   mounted() {
+    this.regInviteOnly = this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly;
+    this.regClosed = this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
+
     if (
-      this.webClientConfig.registrationStatus ==
-        RegistrationStatus.InviteOnly &&
+      this.regInviteOnly &&
       this.inviteKey
     ) {
       this.registrationLink += `?inviteKey=${this.inviteKey}`;
