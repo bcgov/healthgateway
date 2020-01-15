@@ -48,6 +48,24 @@
           </h1>
           <hr />
         </div>
+        <b-row>
+          <b-col>
+            <b-input-group>
+              <b-form-input
+                v-model="filterText"
+                type="text"
+                placeholder="Filter"
+                maxlength="50"
+              ></b-form-input>
+              <b-input-group-append>
+                <b-input-group-text>
+                  <font-awesome-icon :icon="getIcon()"></font-awesome-icon>
+                </b-input-group-text>
+              </b-input-group-append>
+            </b-input-group>
+            <br />
+          </b-col>
+        </b-row>
         <div v-if="!isLoading">
           <div id="listControlls">
             <b-row>
@@ -116,7 +134,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Watch, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { IMedicationService } from "@/services/interfaces";
 import container from "@/inversify.config";
@@ -131,6 +149,7 @@ import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import FeedbackComponent from "@/components/feedback.vue";
+import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 const namespace: string = "user";
 
@@ -150,7 +169,10 @@ interface DateGroup {
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
 
+  private filterTimeout: number = null;
+  private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
+  private visibleTimelineEntries: TimelineEntry[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
@@ -168,6 +190,10 @@ export default class TimelineComponent extends Vue {
     return !this.user.verifiedEmail && this.user.hasEmail;
   }
 
+  private getIcon(): IconDefinition {
+    return faSearch;
+  }
+
   private fechMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
@@ -182,6 +208,11 @@ export default class TimelineComponent extends Vue {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
+          }
+          if (!this.filterText) {
+            this.visibleTimelineEntries = this.timelineEntries;
+          } else {
+            this.scheduleFilter();
           }
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
@@ -220,12 +251,28 @@ export default class TimelineComponent extends Vue {
     return moment(date).format("ll");
   }
 
+  @Watch("filterText")
+  private scheduleFilter() {
+    if (this.filterTimeout) {
+      clearTimeout(this.filterTimeout);
+    }
+
+    this.filterTimeout = setTimeout(() => {
+      if (!this.filterText) {
+        this.visibleTimelineEntries = this.timelineEntries;
+        return;
+      }
+      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+        entry.filterApplies(this.filterText)
+      );
+    }, 1000);
+  }
   private get dateGroups(): DateGroup[] {
-    if (this.timelineEntries.length === 0) {
+    if (this.visibleTimelineEntries.length === 0) {
       return [];
     }
 
-    let groups = this.timelineEntries.reduce((groups, entry) => {
+    let groups = this.visibleTimelineEntries.reduce((groups, entry) => {
       // Get the string version of the date and get the date
       //const date = (entry.date).split("T")[0];
       const date = new Date(entry.date).setHours(0, 0, 0, 0);
@@ -262,11 +309,10 @@ export default class TimelineComponent extends Vue {
   }
 
   private getVisibleCount(): number {
-    return this.timelineEntries.length;
+    return this.visibleTimelineEntries.length;
   }
 
   private getTotalCount(): number {
-    // TODO: The model needs to have pagination
     return this.timelineEntries.length;
   }
 }
