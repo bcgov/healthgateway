@@ -275,7 +275,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.BetaRequest", b =>
                 {
                     b.Property<string>("HdId")
-                        .HasColumnName("UserId")
+                        .HasColumnName("BetaRequestId")
                         .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 

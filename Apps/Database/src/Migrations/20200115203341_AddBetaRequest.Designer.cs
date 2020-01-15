@@ -26,7 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200115005316_AddBetaRequest")]
+    [Migration("20200115203341_AddBetaRequest")]
     partial class AddBetaRequest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -293,7 +293,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.BetaRequest", b =>
                 {
                     b.Property<string>("HdId")
-                        .HasColumnName("UserId")
+                        .HasColumnName("BetaRequestId")
                         .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 

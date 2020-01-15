@@ -29,7 +29,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(maxLength: 52, nullable: false),
+                    BetaRequestId = table.Column<string>(maxLength: 52, nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
@@ -39,7 +39,7 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BetaRequest", x => x.UserId);
+                    table.PrimaryKey("PK_BetaRequest", x => x.BetaRequestId);
                 });
         }
 
