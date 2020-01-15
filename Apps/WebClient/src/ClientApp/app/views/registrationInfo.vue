@@ -24,6 +24,25 @@
   <b-container>
     <b-row class="pt-5">
       <b-col class="text-center mb-5">
+        <b-alert
+          :show="regInviteOnly"
+          variant="info"
+        >
+          <h4>Invite Only Registration</h4>
+          <span>Hi, thank you for your interest in the Health Gateway.
+            Registration is invite only at this time, however, you can enter your email address to be added to the waitlist.
+            We will send you registration link in the near future to participate as an early user of the application.
+          </span>
+        </b-alert>
+        <b-alert
+          :show="regClosed"
+          variant="info"
+        >
+          <h4>Closed Registration</h4>
+          <span>
+            Registration for the Health Gateway is closed at this time. Please check back for updates. Thank you.
+          </span>
+        </b-alert>
         <h4 class="title">
           Register securely to access your health records using BC Services Card
         </h4>
