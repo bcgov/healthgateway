@@ -58,7 +58,7 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogTrace($"Creating a beta request... {JsonConvert.SerializeObject(betaRequest)}");
 
             RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
-            string hdid = betaRequest.hdid;
+            string hdid = betaRequest.HdId;
             betaRequest.CreatedBy = hdid;
             betaRequest.UpdatedBy = hdid;
 

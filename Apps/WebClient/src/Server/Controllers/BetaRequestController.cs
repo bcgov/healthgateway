@@ -75,7 +75,7 @@ namespace HealthGateway.WebClient.Controllers
             Contract.Requires(betaRequest != null);
 
             // Validate that the query parameter matches the post body
-            if (!hdid.Equals(betaRequest.hdid, StringComparison.CurrentCultureIgnoreCase))
+            if (!hdid.Equals(betaRequest.HdId, StringComparison.CurrentCultureIgnoreCase))
             {
                 return new BadRequestResult();
             }

@@ -15,19 +15,27 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
-    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Represents a request to access the service in beta mode.
-    /// TODO: Finish DB model
     /// </summary>
     public class BetaRequest : AuditableEntity
     {
-        // TODO:
-        public string hdid;
-        public string emailAddress;
+        /// <summary>
+        /// Gets or sets the user id for the request.
+        /// </summary>
+        [Key]
+        [Column("UserId")]
+        [MaxLength(52)]
+        public string HdId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the email for the request.
+        /// </summary>
+        [MaxLength(254)]
+        [Required]
+        public string EmailAddress { get; set; } = null!;
     }
 }
