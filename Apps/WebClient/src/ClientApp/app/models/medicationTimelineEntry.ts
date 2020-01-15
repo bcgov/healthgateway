@@ -22,7 +22,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     this.directions = model.directions || "N/A";
   }
 
-  private filterApplies(filterText: string): boolean {
+  public filterApplies(filterText: string): boolean {
     var text =
       (this.practitionerSurname! || "") +
       (this.medication.brandName! || "") +
