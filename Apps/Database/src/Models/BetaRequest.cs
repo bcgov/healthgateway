@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the user id for the request.
         /// </summary>
         [Key]
-        [Column("UserId")]
+        [Column("BetaRequestId")]
         [MaxLength(52)]
         public string HdId { get; set; } = null!;
 
