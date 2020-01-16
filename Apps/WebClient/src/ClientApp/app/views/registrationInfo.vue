@@ -24,6 +24,33 @@
   <b-container>
     <b-row class="pt-5">
       <b-col class="text-center mb-5">
+        <b-alert
+          :show="isRegistrationInviteOnly"
+          variant="info"
+        >
+          <h4>Invite Only Registration</h4>
+          <span class="text-justify d-flex p-2">
+              Hi, thank you for your interest in the Health Gateway.
+              Registration is invite only at this time, however, you can enter your email address to be added to the waitlist. To sign up:
+              <br />
+              - Please click "Register for Health Gateway".
+              <br />
+              - Sign-in with your BC Services Card.
+              <br />
+              - Enter your email address when prompted.
+              <br />
+              - We will send you a registration link in the near future so you can participate as an early user of the application.
+          </span>
+        </b-alert>
+        <b-alert
+          :show="isRegistrationClosed"
+          variant="info"
+        >
+          <h4>Closed Registration</h4>
+          <span class="text-justify d-flex p-2">
+            Registration for the Health Gateway is closed at this time. Please check back for updates. Thank you.
+          </span>
+        </b-alert>
         <h4 class="title">
           Register securely to access your health records using BC Services Card
         </h4>
@@ -253,15 +280,19 @@ export default class RegistrationInfoComponent extends Vue {
   private signupProcessVisible: boolean = false;
   private dongleVisible: boolean = false;
   private registrationLink: string = "/registration/";
+  private isRegistrationInviteOnly: boolean = false;
+  private isRegistrationClosed: boolean = false;
   @Prop() inviteKey?: string;
   @Prop() email?: string;
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;
 
   mounted() {
+    this.isRegistrationInviteOnly = this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly;
+    this.isRegistrationClosed = this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
+
     if (
-      this.webClientConfig.registrationStatus ==
-        RegistrationStatus.InviteOnly &&
+      this.isRegistrationInviteOnly &&
       this.inviteKey
     ) {
       this.registrationLink += `?inviteKey=${this.inviteKey}`;
