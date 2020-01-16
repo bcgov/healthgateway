@@ -5,32 +5,23 @@
   color: $primary;
 }
 
-#Description {
-  font-size: 1.2em;
+label {
+  font-weight: bold;
 }
 
 input {
   max-width: 320px;
 }
 
-.accept label {
-  color: $primary;
-}
-
-.optout label {
-  color: $soft_text;
-}
-
-#termsOfService {
-  background-color: $light_background;
-  color: $soft_text;
+.actionButton {
+  width: 80px;
 }
 </style>
 <template>
   <div class="container">
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <div class="row pt-5">
-      <div class="col-lg-12 col-md-12 text-center">
+    <div class="row py-5">
+      <div class="col-lg-12 col-md-12">
         <div id="pageTitle">
           <h1 id="subject">
             Profile
@@ -39,7 +30,7 @@ input {
         </div>
         <b-row class="mb-3">
           <b-col>
-            Full Name
+            <label for="profileNames">Full Name</label>
             <b-form-input
               id="profileNames"
               v-model="fullName"
@@ -49,13 +40,21 @@ input {
         </b-row>
         <b-row class="mb-3">
           <b-col>
-            Email Address
+            <label for="email">Email Address</label>
+            <b-button
+              v-if="!isEdditable"
+              id="editEmail"
+              class="mx-auto"
+              variant="link"
+              @click="makeEdditable()"
+              >Edit
+            </b-button>
             <b-form-input
               id="email"
               v-model="$v.email.$model"
               type="email"
-              placeholder="Your email address"
-              :disabled="isEdditable"
+              :placeholder="isEdditable ? 'Your email address' : 'Empty'"
+              :disabled="!isEdditable"
               :state="isValid($v.email)"
             />
             <b-form-invalid-feedback :state="isValid($v.email)">
@@ -63,7 +62,7 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row v-if="!isEdditable" class="mb-3">
+        <b-row v-if="isEdditable" class="mb-3">
           <b-col>
             <b-form-input
               id="emailConfirmation"
@@ -75,6 +74,23 @@ input {
             <b-form-invalid-feedback :state="$v.emailConfirmation.sameAsEmail">
               Emails must match
             </b-form-invalid-feedback>
+          </b-col>
+        </b-row>
+        <b-row v-if="isEdditable" class="mb-3 justify-content-end">
+          <b-col class="text-right">
+            <b-button
+              id="cancelBtn"
+              class="mx-2 actionButton"
+              @click="cancelEdit()"
+              >Cancel
+            </b-button>
+            <b-button
+              id="saveBtn"
+              variant="primary"
+              class="mx-2 actionButton"
+              @click="saveEdit()"
+              >Save
+            </b-button>
           </b-col>
         </b-row>
       </div>
@@ -108,8 +124,11 @@ const authNamespace: string = "auth";
 export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
     namespace: authNamespace
-  }) oidcIsAuthenticated: boolean;
+  })
+  oidcIsAuthenticated: boolean;
   @Action("getPatientData", { namespace: authNamespace }) getPatientData;
+  @Action("getUserEmail", { namespace: userNamespace }) getUserEmail;
+  @Action("updateUserEmail", { namespace: userNamespace }) updateUserEmail;
   @Getter("user", { namespace: userNamespace }) user: User;
 
   private isLoading: boolean = true;
@@ -121,11 +140,22 @@ export default class ProfileComponent extends Vue {
   private isEdditable: boolean = false;
   private oidcUser: any = {};
 
+  private tempEmail: string = "";
+
+  private submitStatus: string = "";
+
+  private userEmailService: IUserEmailService;
+
   mounted() {
     // Load the user name
     var authenticationService: IAuthenticationService = container.get(
       SERVICE_IDENTIFIER.AuthenticationService
     );
+
+    this.userEmailService = container.get<IUserEmailService>(
+      SERVICE_IDENTIFIER.UserEmailService
+    );
+
     authenticationService
       .getOidcUserProfile()
       .then(oidcUser => {
@@ -139,6 +169,12 @@ export default class ProfileComponent extends Vue {
       .finally(() => {
         this.isLoading = false;
       });
+
+    if (this.user.hasEmail) {
+      this.getUserEmail({ hdid: this.user.hdid }).then(emailInvite => {
+        console.log(emailInvite);
+      });
+    }
   }
 
   validations() {
@@ -155,8 +191,7 @@ export default class ProfileComponent extends Vue {
         }),
         sameAsEmail: sameAs("email"),
         email
-      },
-      accepted: { isChecked: sameAs(() => true) }
+      }
     };
   }
 
@@ -166,6 +201,69 @@ export default class ProfileComponent extends Vue {
 
   private isValid(param: any): boolean | undefined {
     return param.$dirty ? !param.$invalid : undefined;
+  }
+
+  private makeEdditable(): void {
+    this.isEdditable = true;
+    this.tempEmail = this.email;
+  }
+
+  private cancelEdit(): void {
+    this.isEdditable = false;
+    this.email = this.tempEmail;
+    this.emailConfirmation = "";
+    this.tempEmail = "";
+    this.$v.$reset();
+  }
+
+  private saveEdit(): void {
+    this.$v.$touch();
+    console.log(this.$v);
+    if (this.$v.$invalid) {
+      this.submitStatus = "ERROR";
+    } else {
+      this.submitStatus = "PENDING";
+
+      this.isLoading = true;
+      this.updateUserEmail(
+        { hdid: this.user.hdid },
+        { emailAddress: this.email }
+      ).then(() => {
+        console.log("success!");
+        this.isLoading = false;
+      });
+      /*this.userProfileService
+        .createProfile({
+          profile: {
+            hdid: this.oidcUser.hdid,
+            acceptedTermsOfService: this.accepted,
+            email: this.email || ""
+          },
+          inviteCode: this.inviteKey || ""
+        })
+        .then(result => {
+          console.log(result);
+          this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
+            (isRegistered: boolean) => {
+              if (isRegistered) {
+                this.$router.push({ path: "/timeline" });
+              } else {
+                this.hasErrors = true;
+              }
+            }
+          );
+        })
+        .catch(err => {
+          this.hasErrors = true;
+          this.errorMessage = err;
+          console.log(err);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });*/
+    }
+
+    event.preventDefault();
   }
 }
 </script>

@@ -69,6 +69,7 @@ export interface IUserEmailService {
   initialize(http: IHttpDelegate): void;
   getLatestInvite(hdid: string): Promise<UserEmail>;
   validateEmail(inviteKey: string): Promise<boolean>;
+  updateEmail(hdid: string, email: string): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

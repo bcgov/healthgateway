@@ -9,6 +9,7 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
+import EmailInvite from "@/models/emailInvite";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -75,6 +76,32 @@ export const actions: ActionTree<UserState, RootState> = {
             commit("setValidatedEmail", undefined);
             resolve(isRegistered);
           }
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  getUserEmail({ commit }, { hdid }): Promise<EmailInvite> {
+    return new Promise((resolve, reject) => {
+      userEmailService
+        .getLatestInvite(hdid)
+        .then(emailInvite => {
+          resolve(emailInvite);
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userEmailService
+        .updateEmail(hdid, emailAddress)
+        .then(() => {
+          resolve();
         })
         .catch(error => {
           handleError(commit, error);
