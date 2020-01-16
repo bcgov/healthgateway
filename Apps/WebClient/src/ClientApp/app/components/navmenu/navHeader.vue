@@ -41,8 +41,12 @@
           variant="dark"
         >
           <b-dropdown-item>
-            <router-link v-if="displayMenu" variant="primary" to="/timeline">
-              <font-awesome-icon icon="stream"></font-awesome-icon> Timeline
+            <router-link id="menuBtnTimeline" v-if="displayMenu" variant="primary" to="/timeline">
+              <font-awesome-icon icon="user"></font-awesome-icon> Timeline
+            </router-link>
+            <b-dropdown-divider v-if="displayMenu" />
+            <router-link id="menuBtnProfile" variant="primary" to="/profile">
+              <font-awesome-icon icon="stream"></font-awesome-icon> Profile
             </router-link>
             <b-dropdown-divider v-if="displayMenu" />
             <router-link id="menuBtnLogout" variant="primary" to="/logout">
