@@ -98,6 +98,7 @@ export const actions: ActionTree<UserState, RootState> = {
   },
   updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log(hdid, emailAddress);
       userEmailService
         .updateEmail(hdid, emailAddress)
         .then(() => {

@@ -119,14 +119,14 @@ namespace HealthGateway.WebClient.Controllers
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="email">The new email.</param>
+        /// <param name="emailAddress">The new email.</param>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string email)
+        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromForm] string emailAddress)
         {
             Contract.Requires(hdid != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -152,7 +152,7 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer?
                 .GetLeftPart(UriPartial.Authority);
 
-            bool result = this.userEmailService.UpdateUserEmail(hdid, email, new Uri(referer));
+            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer));
 
             return new JsonResult(result);
         }

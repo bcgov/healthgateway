@@ -41,8 +41,12 @@ export class RestUserEmailService implements IUserEmailService {
 
   public updateEmail(hdid: string, email: string): Promise<boolean> {
     return new Promise(resolve => {
+      console.log(hdid, email);
       this.http
-        .put<void>(`${this.USER_EMAIL_BASE_URI}/${hdid}`, email)
+        .put<void>(
+          `${this.USER_EMAIL_BASE_URI}/${hdid}`,
+          JSON.stringify({ emailAddress: email })
+        )
         .then(() => {
           return resolve();
         })

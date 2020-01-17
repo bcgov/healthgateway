@@ -224,11 +224,13 @@ export default class ProfileComponent extends Vue {
     } else {
       this.submitStatus = "PENDING";
 
+      console.log(this.email);
+
       this.isLoading = true;
-      this.updateUserEmail(
-        { hdid: this.user.hdid },
-        { emailAddress: this.email }
-      ).then(() => {
+      this.updateUserEmail({
+        hdid: this.user.hdid,
+        emailAddress: this.email
+      }).then(() => {
         console.log("success!");
         this.isLoading = false;
       });
