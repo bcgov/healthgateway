@@ -50,7 +50,6 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="emailDelegate">The email delegate to use.</param>
         public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
         {
-            Contract.Requires(configuration != null && logger != null && emailDelegate != null);
             this.configuration = configuration;
             this.logger = logger;
             this.emailDelegate = emailDelegate;
@@ -122,7 +121,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
         private void SendEmail(Email email)
         {
-            Exception caught = null;
+            Exception? caught = null;
             email.Attempts++;
             try
             {
