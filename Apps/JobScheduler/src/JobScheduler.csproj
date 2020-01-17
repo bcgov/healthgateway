@@ -83,6 +83,5 @@
     <Content Remove="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
     <Content Remove="Views\Home\Index.cshtml" />
-    <Content Remove="appsettings %28copy%29.Development.json" />
   </ItemGroup>
 </Project>
