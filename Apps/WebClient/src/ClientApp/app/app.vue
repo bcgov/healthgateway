@@ -59,7 +59,8 @@ import {
   FormCheckboxPlugin,
   FormTextareaPlugin,
   AlertPlugin,
-  SpinnerPlugin
+  SpinnerPlugin,
+  InputGroupPlugin
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -74,6 +75,7 @@ Vue.use(FormCheckboxPlugin);
 Vue.use(FormTextareaPlugin);
 Vue.use(AlertPlugin);
 Vue.use(SpinnerPlugin);
+Vue.use(InputGroupPlugin);
 
 // Load general icons
 import { library } from "@fortawesome/fontawesome-svg-core";

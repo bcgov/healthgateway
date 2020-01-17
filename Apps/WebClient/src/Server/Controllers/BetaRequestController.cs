@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -27,121 +28,63 @@ namespace HealthGateway.WebClient.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to handle user email interactions.
+    /// Web API to handle requests for beta users.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    public class UserEmailController
+    public class BetaRequestController
     {
-        private readonly IUserEmailService userEmailService;
+        private readonly IBetaRequestService betaRequestService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationService authorizationService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserEmailController"/> class.
+        /// Initializes a new instance of the <see cref="BetaRequestController"/> class.
         /// </summary>
-        /// <param name="userEmailService">The injected user email service.</param>
+        /// <param name="betaRequestService">The injected beta request service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
-        public UserEmailController(
-            IUserEmailService userEmailService,
+        /// <param name="authorizationService">The injected authorization service.</param>        
+        public BetaRequestController(
+            IBetaRequestService betaRequestService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            this.userEmailService = userEmailService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
+            this.betaRequestService = betaRequestService;
         }
 
         /// <summary>
-        /// Validates an email invite.
+        /// Posts a beta request json to be inserted into the database.
         /// </summary>
-        /// <returns>The an empty response.</returns>
-        /// <param name="inviteKey">The email invite key.</param>
-        /// <response code="200">The email was validated.</response>
+        /// <returns>The http status.</returns>
+        /// <param name="hdid">The resource hdid.</param>
+        /// <param name="betaRequest">The beta request model.</param>
+        /// <response code="200">The beta request record was saved.</response>
+        /// <response code="400">The beta request was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="404">The invite key was not found.</response>
-        [HttpGet]
-        [Route("Validate/{inviteKey}")]
-        public IActionResult ValidateEmail(Guid inviteKey)
-        {
-            string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
-            if (this.userEmailService.ValidateEmail(hdid, inviteKey))
-            {
-                return new OkResult();
-            }
-            else
-            {
-                return new NotFoundResult();
-            }
-        }
-
-        /// <summary>
-        /// Validates an email invite.
-        /// </summary>
-        /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
+        [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetUserEmailInvite(string hdid)
+        public async Task<IActionResult> CreateBetaRequest(string hdid, [FromBody] BetaRequest betaRequest)
         {
             Contract.Requires(hdid != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
+            Contract.Requires(betaRequest != null);
 
-            // Validate that the query parameter matches the user claims
-            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
+            // Validate that the query parameter matches the post body
+            if (!hdid.Equals(betaRequest.HdId, StringComparison.CurrentCultureIgnoreCase))
             {
                 return new BadRequestResult();
             }
 
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
-            EmailInvite result = this.userEmailService.RetrieveLastInvite(hdid);
-
-            return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Updates the user email.
-        /// </summary>
-        /// <param name="hdid">The user hdid.</param>
-        /// <param name="email">The new email.</param>
-        /// <response code="200">Returns true if the call was successful.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPut]
-        [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string email)
-        {
-            Contract.Requires(hdid != null);
+            // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-
-            // Validate that the query parameter matches the user claims
-            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+            AuthorizationResult isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
-
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
@@ -152,7 +95,43 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer?
                 .GetLeftPart(UriPartial.Authority);
 
-            bool result = this.userEmailService.UpdateUserEmail(hdid, email, new Uri(referer));
+            RequestResult<BetaRequest> result = this.betaRequestService.CreateBetaRequest(betaRequest);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Retrieves the latest user queued email
+        /// </summary>
+        /// <returns>The email for the suer queued.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the email for the queued user.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}")]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> GetBetaRequest(string hdid)
+        {
+            Contract.Requires(hdid != null);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+
+            // Validate that the query parameter matches the user claims
+            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
+            }
+
+            var isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            BetaRequest result = this.betaRequestService.GetBetaRequest(hdid);
 
             return new JsonResult(result);
         }

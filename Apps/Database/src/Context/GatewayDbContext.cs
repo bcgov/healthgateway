@@ -83,6 +83,7 @@ namespace HealthGateway.Database.Context
         public DbSet<FileDownload> FileDownload { get; set; } = null!;
         public DbSet<UserProfile> UserProfile { get; set; } = null!;
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
+        public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
         #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
