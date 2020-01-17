@@ -119,7 +119,7 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            string email = createProfileRequest.Profile.Email;
+            string? email = createProfileRequest.Profile.Email;
             createProfileRequest.Profile.Email = string.Empty;
 
             createProfileRequest.Profile.CreatedBy = hdid;

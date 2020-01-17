@@ -21,6 +21,15 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
     this.directions = model.directions || "N/A";
   }
+
+  public filterApplies(filterText: string): boolean {
+    var text =
+      (this.practitionerSurname! || "") +
+      (this.medication.brandName! || "") +
+      (this.medication.genericName! || "");
+    text = text.toUpperCase();
+    return text.includes(filterText.toUpperCase());
+  }
 }
 
 class PharmacyViewModel {

@@ -15,35 +15,26 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The User Email service.
+    /// Service that provides functionality to access and create requests for beta access.
     /// </summary>
-    public interface IUserEmailService
+    public interface IBetaRequestService
     {
         /// <summary>
-        /// Validates the email that matches the given invite key.
+        /// Retrieves the beta request for a user.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="inviteKey">The email invite key.</param>
-        /// <returns>returns true if the email invite was found.</returns>
-        bool ValidateEmail(string hdid, Guid inviteKey);
+        /// <returns>returns the beta request for the user if found.</returns>
+        BetaRequest GetBetaRequest(string hdid);
 
         /// <summary>
-        /// Retrieves the last invite email.
+        /// Saves the user profile to the database.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>returns the last email invite if found.</returns>
-        EmailInvite RetrieveLastInvite(string hdid);
-
-        /// <summary>
-        /// Updates the user email.
-        /// </summary>
-        /// <param name="hdid">The user hdid.</param>
-        /// <param name="email">Email to be set for the user.</param>
-        /// <returns>returns true if the email invite was sucessfully created.</returns>
-        bool UpdateUserEmail(string hdid, string email, Uri hostUri);
+        /// <param name="betaRequest">The request to create a beta request.</param>
+        /// <returns>The wrapped user profile.</returns>
+        RequestResult<BetaRequest> CreateBetaRequest(BetaRequest betaRequest);
     }
 }
