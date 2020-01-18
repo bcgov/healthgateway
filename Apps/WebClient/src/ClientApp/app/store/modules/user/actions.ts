@@ -88,6 +88,7 @@ export const actions: ActionTree<UserState, RootState> = {
       userEmailService
         .getLatestInvite(hdid)
         .then(userEmailInvite => {
+          commit("setValidatedEmail", userEmailInvite);
           resolve(userEmailInvite);
         })
         .catch(error => {

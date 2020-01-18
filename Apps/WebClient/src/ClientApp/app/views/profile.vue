@@ -175,7 +175,6 @@ export default class ProfileComponent extends Vue {
     namespace: authNamespace
   })
   oidcIsAuthenticated: boolean;
-  @Action("getPatientData", { namespace: authNamespace }) getPatientData;
   @Action("getUserEmail", { namespace: userNamespace }) getUserEmail;
   @Action("updateUserEmail", { namespace: userNamespace }) updateUserEmail;
   @Getter("user", { namespace: userNamespace }) user: User;
