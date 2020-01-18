@@ -140,8 +140,9 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting last email invite from DB for user... {hdid}");
             EmailInvite retVal = this.dbContext
                 .EmailInvite
+                .Include(email => email.Email)
                 .Where(p => p.HdId == hdid)
-                .OrderByDescending(p => p.UpdatedBy)
+                .OrderByDescending(p => p.UpdatedDateTime)
                 .FirstOrDefault();
 
             this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");

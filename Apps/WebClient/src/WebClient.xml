@@ -166,6 +166,7 @@
             </summary>
             <param name="hdid">The user hdid.</param>
             <param name="emailAddress">The new email.</param>
+            <returns>True if the action was successful.</returns>
             <response code="200">Returns true if the call was successful.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -183,7 +184,7 @@
             <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserProfile(HealthGateway.Database.Models.UserFeedback)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
             <summary>
             Posts a user feedback json to be inserted into the database.
             </summary>
@@ -346,6 +347,44 @@
             <summary>
             Gets or sets the amount of time in seconds after which the user will be
             redirected from the logout page back to the home.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UserEmailInvite">
+            <summary>
+            Model that provides a user representation of an EmailInvite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.Id">
+            <summary>
+            Gets or sets the email invite id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.HdId">
+            <summary>
+            Gets or sets the users directed identifier.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.Validated">
+            <summary>
+            Gets or sets a value indicating whether the invite was validated.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.EmailId">
+            <summary>
+            Gets or sets the associated email that was sent for this invite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.EmailAddress">
+            <summary>
+            Gets or sets the associated email that was sent for this invite.
+            </summary>
+            <summary>
+            Gets or sets the email address for the invite.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserEmailInvite.CreateFromDbModel(HealthGateway.Database.Models.EmailInvite)">
+            <summary>
+            Constructs a UserInviteEmail from a EmailInvite.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">

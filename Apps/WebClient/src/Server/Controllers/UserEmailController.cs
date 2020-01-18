@@ -21,6 +21,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -110,9 +111,18 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            EmailInvite result = this.userEmailService.RetrieveLastInvite(hdid);
+            EmailInvite emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
 
-            return new JsonResult(result);
+            // Check expiration and remove fields that contains sensitive information
+            if (emailInvite.ExpireDate < DateTime.Now)
+            {
+                return new JsonResult(null);
+            }
+            else
+            {
+                UserEmailInvite result = UserEmailInvite.CreateFromDbModel(emailInvite);
+                return new JsonResult(result);
+            }
         }
 
         /// <summary>
@@ -120,13 +130,14 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">The new email.</param>
+        /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromForm] string emailAddress)
+        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string emailAddress)
         {
             Contract.Requires(hdid != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;

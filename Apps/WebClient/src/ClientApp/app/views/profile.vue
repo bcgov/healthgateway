@@ -10,7 +10,8 @@ label {
 }
 
 input {
-  max-width: 320px;
+  width: 320px !important;
+  max-width: 320px !important;
 }
 
 .actionButton {
@@ -22,6 +23,10 @@ input {
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <div class="row py-5">
       <div class="col-lg-12 col-md-12">
+        <b-alert :show="hasErrors" dismissible variant="danger">
+          <h4>Error</h4>
+          <span>An unexpected error occured while processing the request.</span>
+        </b-alert>
         <div id="pageTitle">
           <h1 id="subject">
             Profile
@@ -31,11 +36,9 @@ input {
         <b-row class="mb-3">
           <b-col>
             <label for="profileNames">Full Name</label>
-            <b-form-input
-              id="profileNames"
-              v-model="fullName"
-              :disabled="true"
-            />
+            <div id="profileNames">
+              {{ fullName }}
+            </div>
           </b-col>
         </b-row>
         <b-row class="mb-3">
@@ -49,16 +52,41 @@ input {
               @click="makeEdditable()"
               >Edit
             </b-button>
-            <b-form-input
-              id="email"
-              v-model="$v.email.$model"
-              type="email"
-              :placeholder="isEdditable ? 'Your email address' : 'Empty'"
-              :disabled="!isEdditable"
-              :state="isValid($v.email)"
-            />
+            <div class="form-inline">
+              <b-form-input
+                id="email"
+                v-model="$v.email.$model"
+                type="email"
+                :placeholder="isEdditable ? 'Your email address' : 'Empty'"
+                :disabled="!isEdditable"
+                :state="isValid($v.email)"
+              />
+              <div v-if="!emailVerified && !isEdditable && email" class="ml-3">
+                (Not Verified)
+              </div>
+              <b-button
+                v-if="isEdditable && email && email === tempEmail"
+                id="removeEmail"
+                class="ml-5 text-danger"
+                variant="link"
+                @click="removeEmail()"
+                >Remove
+              </b-button>
+              <b-button
+                v-if="!emailVerified && !isEdditable && email"
+                id="resendEmail"
+                variant="warning"
+                class="ml-auto"
+                :disabled="verificationSent"
+                @click="sendUserEmailUpdate()"
+                >Resend Verification
+              </b-button>
+            </div>
             <b-form-invalid-feedback :state="isValid($v.email)">
               Valid email is required
+            </b-form-invalid-feedback>
+            <b-form-invalid-feedback :state="$v.email.newEmail">
+              New email must be different from the previous one
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
@@ -76,6 +104,16 @@ input {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
+        <b-row v-if="!email && tempEmail">
+          <b-col class="font-weight-bold text-primary text-center">
+            <font-awesome-icon
+              icon="exclamation-triangle"
+              aria-hidden="true"
+            ></font-awesome-icon>
+            Removing your email will prevent future communication about your
+            healthrecords
+          </b-col>
+        </b-row>
         <b-row v-if="isEdditable" class="mb-3 justify-content-end">
           <b-col class="text-right">
             <b-button
@@ -88,6 +126,7 @@ input {
               id="saveBtn"
               variant="primary"
               class="mx-2 actionButton"
+              :disabled="tempEmail === email"
               @click="saveEdit()"
               >Save
             </b-button>
@@ -103,7 +142,13 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import LoadingComponent from "@/components/loading.vue";
 import { Action, Getter } from "vuex-class";
-import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
+import {
+  required,
+  requiredIf,
+  sameAs,
+  email,
+  not
+} from "vuelidate/lib/validators";
 import {
   IUserEmailService,
   IAuthenticationService
@@ -112,6 +157,10 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
+import UserEmailInvite from "@/models/userEmailInvite";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+library.add(faExclamationTriangle);
 
 const userNamespace: string = "user";
 const authNamespace: string = "auth";
@@ -135,19 +184,19 @@ export default class ProfileComponent extends Vue {
   private hasErrors: boolean = false;
   private errorMessage: string = "";
 
+  private emailVerified = false;
   private email: string = "";
   private emailConfirmation: string = "";
   private isEdditable: boolean = false;
   private oidcUser: any = {};
+  private verificationSent: boolean = false;
 
   private tempEmail: string = "";
-
   private submitStatus: string = "";
-
   private userEmailService: IUserEmailService;
 
   mounted() {
-    // Load the user name
+    // Load the user name and current email
     var authenticationService: IAuthenticationService = container.get(
       SERVICE_IDENTIFIER.AuthenticationService
     );
@@ -156,25 +205,32 @@ export default class ProfileComponent extends Vue {
       SERVICE_IDENTIFIER.UserEmailService
     );
 
-    authenticationService
-      .getOidcUserProfile()
-      .then(oidcUser => {
-        if (oidcUser) {
-          this.oidcUser = oidcUser;
+    this.isLoading = true;
+    var oidcUserPromise = authenticationService.getOidcUserProfile();
+    var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
+    Promise.all([oidcUserPromise, userEmailPromise])
+      .then(results => {
+        // Load oidc user details
+        if (results[0]) {
+          this.oidcUser = results[0];
         }
+
+        if (results[1]) {
+          // Load user email
+          var userEmailInvite = results[1];
+          this.email = userEmailInvite.emailAddress;
+          this.emailVerified = userEmailInvite.validated;
+          this.verificationSent = this.emailVerified;
+        }
+
+        this.isLoading = false;
       })
-      .catch(() => {
+      .catch(err => {
+        console.log("Error loading profile");
+        console.log(err);
         this.hasErrors = true;
-      })
-      .finally(() => {
         this.isLoading = false;
       });
-
-    if (this.user.hasEmail) {
-      this.getUserEmail({ hdid: this.user.hdid }).then(emailInvite => {
-        console.log(emailInvite);
-      });
-    }
   }
 
   validations() {
@@ -183,6 +239,7 @@ export default class ProfileComponent extends Vue {
         required: requiredIf(() => {
           return !this.isEdditable;
         }),
+        newEmail: not(sameAs("tempEmail")),
         email
       },
       emailConfirmation: {
@@ -205,7 +262,7 @@ export default class ProfileComponent extends Vue {
 
   private makeEdditable(): void {
     this.isEdditable = true;
-    this.tempEmail = this.email;
+    this.tempEmail = this.email || "";
   }
 
   private cancelEdit(): void {
@@ -226,46 +283,39 @@ export default class ProfileComponent extends Vue {
 
       console.log(this.email);
 
-      this.isLoading = true;
-      this.updateUserEmail({
-        hdid: this.user.hdid,
-        emailAddress: this.email
-      }).then(() => {
-        console.log("success!");
-        this.isLoading = false;
-      });
-      /*this.userProfileService
-        .createProfile({
-          profile: {
-            hdid: this.oidcUser.hdid,
-            acceptedTermsOfService: this.accepted,
-            email: this.email || ""
-          },
-          inviteCode: this.inviteKey || ""
-        })
-        .then(result => {
-          console.log(result);
-          this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
-            (isRegistered: boolean) => {
-              if (isRegistered) {
-                this.$router.push({ path: "/timeline" });
-              } else {
-                this.hasErrors = true;
-              }
-            }
-          );
-        })
-        .catch(err => {
-          this.hasErrors = true;
-          this.errorMessage = err;
-          console.log(err);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });*/
+      this.sendUserEmailUpdate();
     }
 
     event.preventDefault();
+  }
+
+  private sendUserEmailUpdate(): void {
+    this.isLoading = true;
+    this.updateUserEmail({
+      hdid: this.user.hdid,
+      emailAddress: this.email
+    })
+      .then(() => {
+        console.log("success!");
+        this.isEdditable = false;
+        this.verificationSent = true;
+        this.emailConfirmation = "";
+        this.tempEmail = "";
+        this.$v.$reset();
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  }
+
+  private removeEmail(): void {
+    this.$v.$touch();
+    this.email = "";
+    this.emailConfirmation = "";
   }
 }
 </script>

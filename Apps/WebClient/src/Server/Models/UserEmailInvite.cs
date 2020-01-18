@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,57 +13,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.WebClient.Models
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Models;
 
-#pragma warning disable CS1591 // self explanatory simple model
-#pragma warning disable SA1600 // self explanatory simple model
-    public class EmailInvite : AuditableEntity
+    /// <summary>
+    /// Model that provides a user representation of an EmailInvite.
+    /// </summary>
+    public class UserEmailInvite
     {
         /// <summary>
         /// Gets or sets the email invite id.
         /// </summary>
-        [Key]
-        [Column("EmailInviteId")]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the users directed identifier.
         /// </summary>
-        [MaxLength(52)]
         public string? HdId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the invite was validated.
         /// </summary>
-        [Required]
         public bool Validated { get; set; }
 
         /// <summary>
         /// Gets or sets the associated email that was sent for this invite.
         /// </summary>
-        [Required]
         public Guid EmailId { get; set; }
 
         /// <summary>
         /// Gets or sets the associated email that was sent for this invite.
         /// </summary>
-        [Required]
-        public virtual Email? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets the invite key.
+        /// Gets or sets the email address for the invite.
         /// </summary>
-        [Required]
-        public Guid InviteKey { get; set; }
+        public string? EmailAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets the expire date for the email invite.
+        /// Constructs a UserInviteEmail from a EmailInvite.
         /// </summary>
-        [Required]
-        public DateTime ExpireDate { get; set; }
+        public static UserEmailInvite CreateFromDbModel(EmailInvite model)
+        {
+            return new UserEmailInvite()
+            {
+                Id = model.Id,
+                HdId = model.HdId,
+                Validated = model.Validated,
+                EmailId = model.EmailId,
+                EmailAddress = model?.Email?.To,
+            };
+        }
     }
 }
