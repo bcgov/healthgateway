@@ -5,7 +5,7 @@ import { StateType, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import UserProfile from "@/models/userProfile";
-import EmailInvite from "@/models/emailInvite";
+import UserEmailInvite from "@/models/userEmailInvite";
 
 export const mutations: MutationTree<UserState> = {
   setOidcUserData(state: UserState, oidcUser: OidcUser) {
@@ -30,10 +30,10 @@ export const mutations: MutationTree<UserState> = {
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;
   },
-  setValidatedEmail(state: UserState, emailInvite: EmailInvite) {
-    if (emailInvite) {
+  setValidatedEmail(state: UserState, userEmailInvite: UserEmailInvite) {
+    if (userEmailInvite) {
       Vue.set(state.user, "hasEmail", true);
-      Vue.set(state.user, "verifiedEmail", emailInvite.validated);
+      Vue.set(state.user, "verifiedEmail", userEmailInvite.validated);
     } else {
       Vue.set(state.user, "hasEmail", false);
       Vue.set(state.user, "verifiedEmail", false);

@@ -26,42 +26,53 @@ namespace HealthGateway.Common.Services
     public interface IEmailQueueService
     {
         /// <summary>
-        /// Queues an email based on a template name.
+        /// Queues a new email based on a template name.
         /// Template will be looked up in the DB.
+        /// A new email will be added to the database
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        void QueueEmail(string toEmail, string templateName, Dictionary<string, string> keyValues);
+        void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues);
 
         /// <summary>
         /// Queues an email using a resolved template.
+        /// A new email will be added to the database
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="emailTemplate">The resolved Email Template.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        void QueueEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
+        void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
 
         /// <summary>
         /// Queues an email using a populated Email object.
+        /// A new email will be added to the database
         /// </summary>
         /// <param name="email">The populated email to save.</param>
-        void QueueEmail(Email email);
+        void QueueNewEmail(Email email);
 
         /// <summary>
-        /// Queues an email invite.
+        /// Queues a new email invite.
         /// Template will be looked up in the DB.
+        /// A new invite email will be added to the database.
         /// </summary>
         /// <param name="hdid">The users hdid to associate the invite with.</param>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="activationHost">The host of the email validation endpoint.</param>
-        void QueueInviteEmail(string hdid, string toEmail, Uri activationHost);
+        void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost);
 
         /// <summary>
-        /// Queues an email using a populated Email object.
+        /// Queues a new email using a populated Email object.
+        /// A new invite email will be added to the database.
         /// </summary>
         /// <param name="invite">The populated invite with associated email to send.</param>
-        void QueueInviteEmail(EmailInvite invite);
+        void QueueNewInviteEmail(EmailInvite invite);
+
+        /// <summary>
+        /// Queues an email to be sent.
+        /// </summary>
+        /// <param name="inviteEmailId">The id of the email to send.</param>
+        void QueueInviteEmail(Guid inviteEmailId);
 
         /// <summary>
         /// Looks up an Email Template in the database.

@@ -24,6 +24,41 @@
             Registration is on Invite only mode.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.BetaRequestController">
+            <summary>
+            Web API to handle requests for beta users.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.#ctor(HealthGateway.WebClient.Services.IBetaRequestService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.BetaRequestController"/> class.
+            </summary>
+            <param name="betaRequestService">The injected beta request service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>        
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.CreateBetaRequest(System.String,HealthGateway.Database.Models.BetaRequest)">
+            <summary>
+            Posts a beta request json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="hdid">The resource hdid.</param>
+            <param name="betaRequest">The beta request model.</param>
+            <response code="200">The beta request record was saved.</response>
+            <response code="400">The beta request was already inserted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.GetBetaRequest(System.String)">
+            <summary>
+            Retrieves the latest user queued email
+            </summary>
+            <returns>The email for the suer queued.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the email for the queued user.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.ConfigurationController">
             <summary>
             Web API to return Health Gateway configuration to approved clients.
@@ -130,7 +165,8 @@
             Updates the user email.
             </summary>
             <param name="hdid">The user hdid.</param>
-            <param name="email">The new email.</param>
+            <param name="emailAddress">The new email.</param>
+            <returns>True if the action was successful.</returns>
             <response code="200">Returns true if the call was successful.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -148,7 +184,7 @@
             <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserProfile(HealthGateway.Database.Models.UserFeedback)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
             <summary>
             Posts a user feedback json to be inserted into the database.
             </summary>
@@ -313,6 +349,44 @@
             redirected from the logout page back to the home.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.UserEmailInvite">
+            <summary>
+            Model that provides a user representation of an EmailInvite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.Id">
+            <summary>
+            Gets or sets the email invite id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.HdId">
+            <summary>
+            Gets or sets the users directed identifier.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.Validated">
+            <summary>
+            Gets or sets a value indicating whether the invite was validated.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.EmailId">
+            <summary>
+            Gets or sets the associated email that was sent for this invite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.EmailAddress">
+            <summary>
+            Gets or sets the associated email that was sent for this invite.
+            </summary>
+            <summary>
+            Gets or sets the email address for the invite.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserEmailInvite.CreateFromDbModel(HealthGateway.Database.Models.EmailInvite)">
+            <summary>
+            Constructs a UserInviteEmail from a EmailInvite.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
             <summary>
             Configuration data to be used by the Health Gateway Webclient.
@@ -356,6 +430,22 @@
             <param name="args">The command line arguments to be passed in.</param>
             <returns>Returns the configured webhost.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.BetaRequestService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IBetaRequestDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.BetaRequestService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="betaRequestDelegate">The email delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.GetBetaRequest(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -373,6 +463,25 @@
             Reads the external configuration and returns it to the caller.
             </summary>
             <returns>The external configuration data.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IBetaRequestService">
+            <summary>
+            Service that provides functionality to access and create requests for beta access.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IBetaRequestService.GetBetaRequest(System.String)">
+            <summary>
+            Retrieves the beta request for a user.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <returns>returns the beta request for the user if found.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IBetaRequestService.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
+            <summary>
+            Saves the user profile to the database.
+            </summary>
+            <param name="betaRequest">The request to create a beta request.</param>
+            <returns>The wrapped user profile.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
             <summary>

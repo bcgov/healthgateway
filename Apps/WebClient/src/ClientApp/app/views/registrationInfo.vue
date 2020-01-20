@@ -24,31 +24,28 @@
   <b-container>
     <b-row class="pt-5">
       <b-col class="text-center mb-5">
-        <b-alert
-          :show="isRegistrationInviteOnly"
-          variant="info"
-        >
+        <b-alert :show="isRegistrationInviteOnly" variant="info">
           <h4>Invite Only Registration</h4>
           <span class="text-justify d-flex p-2">
-              Hi, thank you for your interest in the Health Gateway.
-              Registration is invite only at this time, however, you can enter your email address to be added to the waitlist. To sign up:
-              <br />
-              - Please click "Register for Health Gateway".
-              <br />
-              - Sign-in with your BC Services Card.
-              <br />
-              - Enter your email address when prompted.
-              <br />
-              - We will send you a registration link in the near future so you can participate as an early user of the application.
+            Hi, thank you for your interest in the Health Gateway. Registration
+            is invite only at this time, however, you can enter your email
+            address to be added to the waitlist. To sign up:
+            <br />
+            - Please click "Register for Health Gateway".
+            <br />
+            - Sign-in with your BC Services Card.
+            <br />
+            - Enter your email address when prompted.
+            <br />
+            - We will send you a registration link in the near future so you can
+            participate as an early user of the application.
           </span>
         </b-alert>
-        <b-alert
-          :show="isRegistrationClosed"
-          variant="info"
-        >
+        <b-alert :show="isRegistrationClosed" variant="info">
           <h4>Closed Registration</h4>
           <span class="text-justify d-flex p-2">
-            Registration for the Health Gateway is closed at this time. Please check back for updates. Thank you.
+            Registration for the Health Gateway is closed at this time. Please
+            check back for updates. Thank you.
           </span>
         </b-alert>
         <h4 class="title">
@@ -288,13 +285,12 @@ export default class RegistrationInfoComponent extends Vue {
   webClientConfig: WebClientConfiguration;
 
   mounted() {
-    this.isRegistrationInviteOnly = this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly;
-    this.isRegistrationClosed = this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
+    this.isRegistrationInviteOnly =
+      this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly;
+    this.isRegistrationClosed =
+      this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
 
-    if (
-      this.isRegistrationInviteOnly &&
-      this.inviteKey
-    ) {
+    if (this.isRegistrationInviteOnly && this.inviteKey) {
       this.registrationLink += `?inviteKey=${this.inviteKey}`;
       this.registrationLink += this.email ? `&email=${this.email}` : "";
     }

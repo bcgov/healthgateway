@@ -90,26 +90,43 @@ namespace HealthGateway.WebClient.Services
 
             if (email != userProfile.Email)
             {
-                // Removing the email
-                if (email == null)
+                if (string.IsNullOrEmpty(email))
                 {
+                    // Removing the email
+                    this.logger.LogDebug($"Removing email");
+
                     // Remove the current email until it gets validated
                     userProfile.Email = null;
                     this.profileDelegate.UpdateUserProfile(userProfile);
-                    this.logger.LogDebug($"Removing email");
+
+                    emailInvite.ExpireDate = DateTime.Now;
+                    this.emailDelegate.UpdateEmailInvite(emailInvite);
                 }
-                // Updated the email
-                else if (emailInvite.Email.To != email)
+                else if (emailInvite?.Email?.To != email || emailInvite.ExpireDate < DateTime.Now)
                 {
-                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
+                    // Create a new invite email 
                     this.logger.LogDebug($"Updating email");
+
+                    // Remove the current email until it gets validated
+                    userProfile.Email = null;
+                    this.profileDelegate.UpdateUserProfile(userProfile);
+
+                    // Expire the previous invite email
+                    if (emailInvite?.Email?.To != null)
+                    {
+                        emailInvite.ExpireDate = DateTime.Now;
+                        this.emailDelegate.UpdateEmailInvite(emailInvite);
+                    }
+
+                    this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
                 }
-                // Same email, validation needs to be resent
                 else
                 {
-                    // Right now the email code is does not get expired.
-                    this.emailQueueService.QueueEmail(emailInvite.Email);
+                    // Same email, validation needs to be resent
                     this.logger.LogDebug($"Re-queueing email");
+
+                    // Add the existing email to the queue
+                    this.emailQueueService.QueueInviteEmail(emailInvite.Id);
                 }
                 retVal = true;
                 this.logger.LogDebug($"Finished updating user email");

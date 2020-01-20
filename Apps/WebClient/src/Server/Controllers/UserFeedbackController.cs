@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateUserProfile([FromBody] UserFeedback userFeedback)
+        public async Task<IActionResult> CreateUserFeedback([FromBody] UserFeedback userFeedback)
         {
             Contract.Requires(userFeedback != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;

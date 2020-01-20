@@ -108,7 +108,6 @@ function createWrapper(): Wrapper<TimelineComponent> {
   const localVue = createLocalVue();
   localVue.use(Vuex);
   localVue.use(BootstrapVue);
-  //localVue.component("font-awesome-icon", FontAwesomeIcon);
 
   let customStore = new Vuex.Store({
     modules: {
