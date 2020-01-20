@@ -15,30 +15,37 @@
 // -------------------------------------------------------------------------
 namespace Healthgateway.JobScheduler.Models
 {
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Represents configuration for a job instance.
+    /// Represents the RocketChat Configuration.
     /// </summary>
-    public class JobConfiguration
+    public class HNClientResult
     {
         /// <summary>
-        /// Gets or sets the Job Id.
+        /// Initializes a new instance of the <see cref="HNClientResult"/> class.
         /// </summary>
-        public string? Id { get; set; }
+        public HNClientResult()
+        {
+        }
 
         /// <summary>
-        /// Gets or sets the CRON schedule for the job.
+        /// Gets or sets the HL7 Message.
         /// </summary>
-        public string? Schedule { get; set; }
+        [JsonPropertyName("message")]
+        public string? HL7Message { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the job should be run near immediately after scheduling.
+        /// Gets or sets a value indicating whether an error has occurred.
         /// </summary>
-        public bool Immediate { get; set; }
+        [JsonPropertyName("isErr")]
+        public bool Error { get; set; }
 
         /// <summary>
-        /// Gets or sets the delay when queueing the immediate job.
-        /// This value is required as the jobs are schedued async and the DB may not be setup yet.
+        /// Gets or sets the Error Message.
         /// </summary>
-        public int Delay { get; set; }
+        [JsonPropertyName("error")]
+        public string? ErrorMessage { get; set; }
     }
 }

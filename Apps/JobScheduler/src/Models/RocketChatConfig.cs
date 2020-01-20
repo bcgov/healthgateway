@@ -15,30 +15,30 @@
 // -------------------------------------------------------------------------
 namespace Healthgateway.JobScheduler.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Represents configuration for a job instance.
+    /// Represents the RocketChat Configuration.
     /// </summary>
-    public class JobConfiguration
+    public class RocketChatConfig
     {
         /// <summary>
-        /// Gets or sets the Job Id.
+        /// Initializes a new instance of the <see cref="RocketChatConfig"/> class.
         /// </summary>
-        public string? Id { get; set; }
+        public RocketChatConfig()
+        {
+        }
 
         /// <summary>
-        /// Gets or sets the CRON schedule for the job.
+        /// Gets or sets the Rocket Chat Message to be posted.
         /// </summary>
-        public string? Schedule { get; set; }
+        public RocketChatMessage? Message { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the job should be run near immediately after scheduling.
+        /// Gets or sets the webhook URL to post the message to.
         /// </summary>
-        public bool Immediate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the delay when queueing the immediate job.
-        /// This value is required as the jobs are schedued async and the DB may not be setup yet.
-        /// </summary>
-        public int Delay { get; set; }
+        public Uri? WebHookURL { get; set; }
     }
 }
