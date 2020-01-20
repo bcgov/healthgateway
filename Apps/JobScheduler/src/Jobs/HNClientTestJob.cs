@@ -100,6 +100,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 // If HNClient is in an error state, post a message to Rocket Chat to indicate HNClient is down.
                 RocketChatConfig rcCfg = this.configuration.GetSection($"{JobKey}:{RocketChatKey}").Get<RocketChatConfig>();
                 string json = JsonSerializer.Serialize(rcCfg.Message);
+                this.logger.LogInformation($"HNClient is down, sending message to RocketChat {json}");
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, rcCfg.WebHookURL)
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
