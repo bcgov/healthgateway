@@ -1,8 +1,12 @@
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
 #pageTitle {
   color: $primary;
+}
+
+#pageTitle hr {
+  border-top: 2px solid $primary;
 }
 
 #Description {

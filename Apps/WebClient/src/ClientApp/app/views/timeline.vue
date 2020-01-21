@@ -8,6 +8,7 @@
 #pageTitle {
   color: $primary;
 }
+
 #pageTitle hr {
   border-top: 2px solid $primary;
 }
@@ -23,6 +24,23 @@
   padding-top: 0px;
   color: $primary;
   font-size: 1.3em;
+}
+
+.has-filter .form-control {
+  padding-left: 2.375rem;
+}
+
+.has-filter .form-control-feedback {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 2.375rem;
+  height: 2.375rem;
+  line-height: 2.375rem;
+  text-align: center;
+  pointer-events: none;
+  color: #aaa;
+  padding: 12px;
 }
 </style>
 <template>
@@ -50,19 +68,20 @@
         </div>
         <b-row>
           <b-col>
-            <b-input-group>
+            <div class="form-group has-filter">
+              <font-awesome-icon
+                :icon="getIcon()"
+                class="form-control-feedback"
+                fixed-width
+              ></font-awesome-icon>
               <b-form-input
                 v-model="filterText"
                 type="text"
                 placeholder="Filter"
                 maxlength="50"
+                debounce="250"
               ></b-form-input>
-              <b-input-group-append>
-                <b-input-group-text>
-                  <font-awesome-icon :icon="getIcon()"></font-awesome-icon>
-                </b-input-group-text>
-              </b-input-group-append>
-            </b-input-group>
+            </div>
             <br />
           </b-col>
         </b-row>
@@ -169,7 +188,6 @@ interface DateGroup {
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
 
-  private filterTimeout: number = null;
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
@@ -212,7 +230,7 @@ export default class TimelineComponent extends Vue {
           if (!this.filterText) {
             this.visibleTimelineEntries = this.timelineEntries;
           } else {
-            this.scheduleFilter();
+            this.applyTimelineFilter();
           }
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
@@ -252,20 +270,10 @@ export default class TimelineComponent extends Vue {
   }
 
   @Watch("filterText")
-  private scheduleFilter() {
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
-
-    this.filterTimeout = setTimeout(() => {
-      if (!this.filterText) {
-        this.visibleTimelineEntries = this.timelineEntries;
-        return;
-      }
-      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
-        entry.filterApplies(this.filterText)
-      );
-    }, 1000);
+  private applyTimelineFilter() {
+    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+      entry.filterApplies(this.filterText)
+    );
   }
   private get dateGroups(): DateGroup[] {
     if (this.visibleTimelineEntries.length === 0) {
