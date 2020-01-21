@@ -37,7 +37,7 @@
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
             <param name="authorizationService">The injected authorization service.</param>        
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.CreateBetaRequest(System.String,HealthGateway.Database.Models.BetaRequest)">
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
             <summary>
             Posts a beta request json to be inserted into the database.
             </summary>
@@ -443,7 +443,7 @@
         <member name="M:HealthGateway.WebClient.Services.BetaRequestService.GetBetaRequest(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.PutBetaRequest(HealthGateway.Database.Models.BetaRequest)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
@@ -476,7 +476,7 @@
             <param name="hdid">The requested user hdid.</param>
             <returns>returns the beta request for the user if found.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IBetaRequestService.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
+        <member name="M:HealthGateway.WebClient.Services.IBetaRequestService.PutBetaRequest(HealthGateway.Database.Models.BetaRequest)">
             <summary>
             Saves the user profile to the database.
             </summary>

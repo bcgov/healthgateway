@@ -21,7 +21,8 @@ import {
   IConfigService,
   IUserProfileService,
   IUserFeedbackService,
-  IUserEmailService
+  IUserEmailService,
+  IBetaRequestService
 } from "@/services/interfaces";
 import SERVICE_IDENTIFIER, {
   DELEGATE_IDENTIFIER
@@ -67,6 +68,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userEmailService: IUserEmailService = container.get(
     SERVICE_IDENTIFIER.UserEmailService
   );
+  const betaRequestService: IBetaRequestService = container.get(
+    SERVICE_IDENTIFIER.BetaRequestService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -75,6 +79,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
+  betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),

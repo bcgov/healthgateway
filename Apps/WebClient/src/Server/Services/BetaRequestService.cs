@@ -52,25 +52,45 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<BetaRequest> CreateBetaRequest(BetaRequest betaRequest)
+        public RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest)
         {
             Contract.Requires(betaRequest != null);
+            Contract.Requires(!string.IsNullOrEmpty(betaRequest.HdId));
             this.logger.LogTrace($"Creating a beta request... {JsonConvert.SerializeObject(betaRequest)}");
 
-            RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
-            string hdid = betaRequest.HdId;
-            betaRequest.CreatedBy = hdid;
-            betaRequest.UpdatedBy = hdid;
-
-            DBResult<BetaRequest> insertResult = this.betaRequestDelegate.InsertBetaRequest(betaRequest);
-            if (insertResult.Status == DBStatusCode.Created)
+            // If there is a previous request, update it isntead of creating a new one
+            BetaRequest previousRequest = this.betaRequestDelegate.GetBetaRequest(betaRequest.HdId).Payload;
+            if (previousRequest != null)
             {
-                requestResult.ResourcePayload = insertResult.Payload;
-                requestResult.ResultStatus = ResultType.Success;
-            }
+                RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
+                DBResult<BetaRequest> insertResult = this.betaRequestDelegate.UpdateBetaRequest(betaRequest);
+                if (insertResult.Status == DBStatusCode.Updated)
+                {
+                    requestResult.ResourcePayload = insertResult.Payload;
+                    requestResult.ResultStatus = ResultType.Success;
+                }
 
-            this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(insertResult)}");
-            return requestResult;
+                this.logger.LogDebug($"Finished updating beta request. {JsonConvert.SerializeObject(insertResult)}");
+                return requestResult;
+            }
+            else
+            {
+                RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
+                string hdid = betaRequest.HdId;
+                betaRequest.CreatedBy = hdid;
+                betaRequest.UpdatedBy = hdid;
+
+                DBResult<BetaRequest> insertResult = this.betaRequestDelegate.InsertBetaRequest(betaRequest);
+                if (insertResult.Status == DBStatusCode.Created)
+                {
+                    requestResult.ResourcePayload = insertResult.Payload;
+                    requestResult.ResultStatus = ResultType.Success;
+
+                }
+
+                this.logger.LogDebug($"Finished creating beta request. {JsonConvert.SerializeObject(insertResult)}");
+                return requestResult;
+            }
         }
     }
 }

@@ -35,6 +35,6 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="betaRequest">The request to create a beta request.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<BetaRequest> CreateBetaRequest(BetaRequest betaRequest);
+        RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest);
     }
 }
