@@ -66,24 +66,16 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="400">The beta request was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPost]
-        [Route("{hdid}")]
+        [HttpPut]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateBetaRequest(string hdid, [FromBody] BetaRequest betaRequest)
+        public async Task<IActionResult> CreateBetaRequest([FromBody] BetaRequest betaRequest)
         {
-            Contract.Requires(hdid != null);
             Contract.Requires(betaRequest != null);
-
-            // Validate that the query parameter matches the post body
-            if (!hdid.Equals(betaRequest.HdId, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
 
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
+                .AuthorizeAsync(user, betaRequest.HdId, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
@@ -95,7 +87,7 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer?
                 .GetLeftPart(UriPartial.Authority);
 
-            RequestResult<BetaRequest> result = this.betaRequestService.CreateBetaRequest(betaRequest);
+            RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest);
             return new JsonResult(result);
         }
 

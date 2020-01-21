@@ -113,7 +113,7 @@ function createWrapper(): Wrapper<ProfileComponent> {
     }
   });
 
-  return shallowMount(ProfileComponent, {
+  return mount(ProfileComponent, {
     localVue,
     store: customStore,
     mocks: {

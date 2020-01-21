@@ -13,6 +13,7 @@ import MedicationResult from "@/models/medicationResult";
 import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
+import BetaRequest from "@/models/betaRequest";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -70,6 +71,12 @@ export interface IUserEmailService {
   getLatestInvite(hdid: string): Promise<UserEmailInvite>;
   validateEmail(inviteKey: string): Promise<boolean>;
   updateEmail(hdid: string, email: string): Promise<boolean>;
+}
+
+export interface IBetaRequestService {
+  initialize(http: IHttpDelegate): void;
+  getRequest(hdid: string): Promise<BetaRequest>;
+  putRequest(request: BetaRequest): Promise<BetaRequest>;
 }
 
 export interface IHttpDelegate {
