@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:5010"
+      "applicationUrl": "http://localhost:5000"
     }
   },
   "profiles": {
@@ -15,7 +15,7 @@
         "DOTNET_USE_POLLING_FILE_WATCHER": "1",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5010;"
+      "applicationUrl": "http://localhost:5000;"
     }
   }
 }
