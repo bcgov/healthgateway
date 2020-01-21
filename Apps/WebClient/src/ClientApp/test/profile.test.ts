@@ -13,7 +13,7 @@ import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
 import Vue from "vue";
 import Vuelidate from "vuelidate";
-Vue.use(Vuelidate);
+/*Vue.use(Vuelidate);
 
 const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 @injectable()
@@ -125,7 +125,7 @@ function createWrapper(): Wrapper<ProfileComponent> {
     },
     sync: false
   });
-}
+}*/
 
 describe("Dummy Test", () => {
   test("has header element with static text", () => {
