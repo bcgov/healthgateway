@@ -271,8 +271,6 @@ export default class TimelineComponent extends Vue {
 
   @Watch("filterText")
   private applyTimelineFilter() {
-    console.log("filtering!");
-
     this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
       entry.filterApplies(this.filterText)
     );
