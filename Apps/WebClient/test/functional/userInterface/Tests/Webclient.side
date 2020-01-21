@@ -703,7 +703,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 17 out of 17 records"
+      "value": "Displaying 556 out of 556 records"
     }, {
       "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
       "comment": "",
@@ -724,7 +724,7 @@
       "command": "assert",
       "target": "countCards",
       "targets": [],
-      "value": "17"
+      "value": "556"
     }]
   }, {
     "id": "7a8e3e70-67ba-49e8-94a7-241c2f407c4b",
@@ -1607,6 +1607,105 @@
       ],
       "value": "30000"
     }]
+  }, {
+    "id": "f2822a3d-4ab1-4235-8350-4f8797f6f186",
+    "name": "Timeline - Text Filter",
+    "commands": [{
+      "id": "1b8f754c-d743-4315-8f05-a23cd9f89a3f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8e7ddd8f-858a-4472-93b9-28007a1c4ba3",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "f0b06508-9066-4109-bb51-de956146d5cc",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "bfc4a309-9c77-43e5-9bff-3630a321e445",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#listControlls .col",
+      "targets": [
+        ["css=#listControlls .col", "css:finder"],
+        ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "Displaying 556 out of 556 records"
+    }, {
+      "id": "6de9c864-7c6a-439a-b066-c129a577446c",
+      "comment": "",
+      "command": "type",
+      "target": "id=__BVID__39",
+      "targets": [
+        ["id=__BVID__39", "id"],
+        ["css=#\\__BVID__39", "css:finder"],
+        ["xpath=//input[@id='__BVID__39']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "No3"
+    }, {
+      "id": "2514dc35-4490-4cd6-9740-e897eabe68dd",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=__BVID__39",
+      "targets": [
+        ["id=__BVID__39", "id"],
+        ["css=#\\__BVID__39", "css:finder"],
+        ["xpath=//input[@id='__BVID__39']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "af961cb6-7065-4f6b-8079-1e44c647599b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#listControlls .col",
+      "targets": [
+        ["css=#listControlls .col", "css:finder"],
+        ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
+      ],
+      "value": "Displaying 28 out of 556 records"
+    }, {
+      "id": "862255f7-9fdc-4b23-9237-16742978f295",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//*[contains(@class, 'entryCard')]",
+      "targets": [],
+      "value": "countCards"
+    }, {
+      "id": "08c0110f-31fc-43da-8e96-922b72fe538d",
+      "comment": "",
+      "command": "echo",
+      "target": "${countCards}",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d45e4397-12b9-4af4-ab35-0640624a5820",
+      "comment": "",
+      "command": "assert",
+      "target": "countCards",
+      "targets": [],
+      "value": "28"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -1635,7 +1734,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",
