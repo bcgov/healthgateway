@@ -16,28 +16,28 @@
 namespace HealthGateway.JobScheduler
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
 
     /// <summary>
-    /// The program startup class.
+    /// The entry point for the project.
     /// </summary>
     public static class Program
     {
-        /// <summary>
-        /// Default entry point.
+        /// <summary>.
+        /// The entry point for the class.
         /// </summary>
-        /// <param name="args">Inbound parms.</param>
+        /// <param name="args">The command line arguments to be passed in.</param>
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        /// <summary>
-        /// Initializes the Host Builder.
+        /// <summary>.
+        /// Creates the IWebHostBuilder.
         /// </summary>
-        /// <param name="args">Inbound parms to use.</param>
-        /// <returns>The Host BUilder object.</returns>
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
+        /// <param name="args">The command line arguments to be passed in.</param>
+        /// <returns>Returns the configured webhost.</returns>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            ProgramConfiguration.CreateHostBuilder<Startup>(args);
     }
 }

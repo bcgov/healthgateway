@@ -75,12 +75,9 @@ namespace HealthGateway.Common.Auditing
         /// <inheritdoc />
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(auditEvent != null);
-
             ClaimsIdentity claimsIdentity = (ClaimsIdentity)context.User.Identity;
             Claim hdidClaim = claimsIdentity.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
-            string hdid = hdidClaim?.Value;
+            string? hdid = hdidClaim?.Value;
 
             auditEvent.ApplicationType = this.GetApplicationType();
             auditEvent.TransactionResultCode = this.GetTransactionResultType(context.Response.StatusCode);
@@ -130,7 +127,7 @@ namespace HealthGateway.Common.Auditing
         /// <returns>The mapped application type.</returns>
         private string GetApplicationType()
         {
-            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+            AssemblyName assemblyName = Assembly.GetEntryAssembly() !.GetName();
             switch (assemblyName.Name)
             {
                 case "Configuration":

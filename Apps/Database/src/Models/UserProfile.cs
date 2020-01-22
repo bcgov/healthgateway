@@ -29,7 +29,7 @@ namespace HealthGateway.Database.Models
         [Key]
         [Column("UserProfileId")]
         [MaxLength(52)]
-        public string HdId { get; set; }
+        public string HdId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether the user accepted the terms of service.
@@ -41,6 +41,6 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the user email.
         /// </summary>
         [MaxLength(254)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }

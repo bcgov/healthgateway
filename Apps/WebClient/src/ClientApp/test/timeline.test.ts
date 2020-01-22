@@ -13,7 +13,6 @@ import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
-import MedicationSumary from "@/models/medicationSumary";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
 
@@ -126,6 +125,9 @@ function createWrapper(): Wrapper<TimelineComponent> {
     mocks: {
       $route,
       $router
+    },
+    stubs: {
+      "font-awesome-icon": true
     }
   });
 }

@@ -1,8 +1,9 @@
-FROM docker-registry.default.svc:5000/q6qfzk-tools/dotnet22-base:latest
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV APPDLL=JobScheduler.dll
+WORKDIR /app
 COPY . .
+RUN mkdir -p Resources && \
+    chmod uog+rwx Resources
 EXPOSE 8080
-USER 1001
-CMD ["bash","-c","dotnet $APPDLL"]
+ENTRYPOINT ["dotnet","JobScheduler.dll"]

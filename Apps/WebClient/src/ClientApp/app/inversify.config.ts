@@ -13,17 +13,19 @@ import {
   IMedicationService,
   IUserProfileService,
   IUserFeedbackService,
-  IUserEmailService
+  IUserEmailService,
+  IBetaRequestService
 } from "@/services/interfaces";
+import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmsService } from "@/services/restImmsService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestMedicationService } from "@/services/restMedicationService";
-import HttpDelegate from "@/services/httpDelegate";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserEmailService } from "@/services/restUserEmailService";
+import { RestBetaRequestService } from "./services/restBetaRequestService";
 
 let container = new Container();
 container
@@ -57,6 +59,10 @@ container
 container
   .bind<IUserEmailService>(SERVICE_IDENTIFIER.UserEmailService)
   .to(RestUserEmailService)
+  .inSingletonScope();
+container
+  .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)
+  .to(RestBetaRequestService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

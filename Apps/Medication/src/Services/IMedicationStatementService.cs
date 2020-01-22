@@ -30,6 +30,6 @@ namespace HealthGateway.Medication.Services
         /// <param name="hdid">The hdid to retrieve records for.</param>
         /// <param name="protectiveWord">The protective word.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord);
+        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord);
     }
 }

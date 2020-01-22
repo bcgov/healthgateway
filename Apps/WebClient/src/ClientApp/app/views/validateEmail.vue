@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .title {
   color: $primary;
@@ -12,10 +12,10 @@
         <h4 v-if="isLoading" class="title">
           We are verifying your email...
         </h4>
-        <h4 v-if="!isLoading && success === true" class="text-success">
+        <h4 v-if="!isLoading && isSuccess === true" class="text-success">
           Your email was successfully verified!
         </h4>
-        <h4 v-if="!isLoading && success === false" class="text-danger">
+        <h4 v-if="!isLoading && isSuccess === false" class="text-danger">
           Something is not right, are you sure this is the correct link?
         </h4>
       </b-col>
@@ -23,11 +23,11 @@
     <b-row class="pt-5">
       <b-col class="text-center mb-5">
         <b-spinner v-if="isLoading"></b-spinner>
-        <span v-if="!isLoading && success === true" class="text-success"
-          ><i class="fa fa-check-circle fa-10x"></i
+        <span v-if="!isLoading && isSuccess === true" class="text-success"
+          ><font-awesome-icon icon="check-circle" size="10x"></font-awesome-icon
         ></span>
-        <span v-if="!isLoading && success === false" class="text-danger"
-          ><i class="fa fa-times-circle fa-10x"></i
+        <span v-if="!isLoading && isSuccess === false" class="text-danger"
+          ><font-awesome-icon icon="times-circle" size="10x"></font-awesome-icon
         ></span>
       </b-col>
     </b-row>
@@ -38,13 +38,20 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import { IUserEmailService } from "@/services/interfaces";
+import { Action, Getter } from "vuex-class";
 import container from "@/inversify.config";
+import User from "@/models/user";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+library.add(faTimesCircle);
 
 @Component
 export default class ValidateEmailComponent extends Vue {
   @Prop() inviteKey!: string;
+  @Getter("user", { namespace: "user" }) user: User;
+  @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   private isLoading: boolean = false;
-  private success: boolean | null = null;
+  private isSuccess: boolean | null = null;
 
   mounted() {
     this.isLoading = true;
@@ -55,8 +62,9 @@ export default class ValidateEmailComponent extends Vue {
     userEmailService
       .validateEmail(this.inviteKey)
       .then(isValid => {
-        this.success = isValid;
+        this.isSuccess = isValid;
         if (isValid) {
+          this.checkRegistration({ hdid: this.user.hdid });
           setTimeout(() => this.$router.push({ path: "/timeline" }), 2000);
         }
       })

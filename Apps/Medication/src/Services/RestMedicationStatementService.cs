@@ -67,11 +67,11 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string protectiveWord)
+        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
         {
             this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (hnClientMedicationResult.Result == HealthGateway.Common.Constants.ResultType.Success)
+            if (hnClientMedicationResult.Result == ResultType.Success)
             {
                 // Filter the results to return only Dispensed or Filled prescriptions.
                 hnClientMedicationResult.Message = hnClientMedicationResult.Message
@@ -85,10 +85,10 @@ namespace HealthGateway.Medication.Services
             return hnClientMedicationResult;
         }
 
-        private static Tuple<bool, string> ValidateProtectiveWord(string protectiveWord)
+        private static Tuple<bool, string?> ValidateProtectiveWord(string? protectiveWord)
         {
             bool valid = true;
-            string errMsg = null;
+            string? errMsg = null;
             if (!string.IsNullOrEmpty(protectiveWord))
             {
                 if (protectiveWord.Length >= MinLengthProtectiveWord && protectiveWord.Length <= MaxLengthProtectiveWord)
@@ -119,7 +119,7 @@ namespace HealthGateway.Medication.Services
             return Tuple.Create(valid, errMsg);
         }
 
-        private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string protectiveWord)
+        private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string? protectiveWord)
         {
             HNMessage<List<MedicationStatement>> retMessage = null;
             var validationResult = ValidateProtectiveWord(protectiveWord);

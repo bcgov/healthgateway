@@ -84,12 +84,12 @@ objects:
         uri: ${SOURCE_REPOSITORY_URL}
       type: Git
     strategy:
+      type: Docker
+      noCache: true
       dockerStrategy:
         from:
-          kind: ImageStreamTag
-          name: 'rhel7:latest'
-          namespace: openshift
-      type: Docker
+          kind: DockerImage
+          name: 'ubuntu:18.04'
     successfulBuildsHistoryLimit: 2
     failedBuildsHistoryLimit: 2
     triggers:
@@ -219,7 +219,7 @@ parameters:
 - description: Azure DevOps Agent pool
   name: AZ_DEVOPS_POOL
   required: true
-  value: Default
+  value: HealthGateway
 - description: Azure DevOps PAT Token
   name: AZ_DEVOPS_TOKEN
   required: true

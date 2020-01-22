@@ -43,4 +43,4 @@ parameters:
   displayName: BASE_IMAGE
   name: BASE_IMAGE
   required: true
-  value: docker-registry.default.svc:5000/q6qfzk-tools/dotnet22-base
+  value: mcr.microsoft.com/dotnet/core/aspnet:3.1

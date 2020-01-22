@@ -23,8 +23,8 @@
   },
   "homepage": "https://github.com/bcgov/healthgateway#readme",
   "dependencies": {
-    "replace-in-files-cli": "^0.2.0",
-    "selenium-side-runner": "^3.11.0",
-    "selenium-webdriver": "^4.0.0-alpha.4"
+    "replace-in-files-cli": "^0.3.0",
+    "selenium-side-runner": "^3.16.0",
+    "selenium-webdriver": "^4.0.0-alpha.5"
   }
 }

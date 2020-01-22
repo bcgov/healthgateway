@@ -15,26 +15,21 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.Swagger;
 
     /// <inheritdoc />
     public sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerOptions>
     {
-#pragma warning disable CA1303 //Disable literals
         private readonly SwaggerSettings settings;
-        private readonly ILogger<ConfigureSwaggerOptions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
         /// </summary>
         /// <param name="settings">settings.</param>
-        /// <param name="logger">The logger to use.</param>
-        public ConfigureSwaggerOptions(IOptions<SwaggerSettings> settings, ILogger<ConfigureSwaggerOptions> logger)
+        public ConfigureSwaggerOptions(IOptions<SwaggerSettings> settings)
         {
             this.settings = settings?.Value ?? new SwaggerSettings();
-            this.logger = logger;
         }
 
         /// <inheritdoc />
@@ -42,12 +37,7 @@ namespace HealthGateway.Common.Swagger
         {
             if (options != null)
             {
-                this.logger.LogInformation($"RoutePrefix: {this.settings.RoutePrefixWithSlash}");
                 options.RouteTemplate = this.settings.RoutePrefixWithSlash + "{documentName}/swagger.json";
-            }
-            else
-            {
-                this.logger.LogInformation("SwaggerOptions are null and will be defaults");
             }
         }
     }

@@ -1,19 +1,15 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import "@fortawesome/fontawesome-free/js/fontawesome";
-import "@fortawesome/fontawesome-free/js/solid";
-import "@fortawesome/fontawesome-free/js/regular";
-import "@fortawesome/fontawesome-free/js/brands";
+
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
-
-import BootstrapVue from "bootstrap-vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import i18n from "@/i18n";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
 import "@/registerComponentHooks";
 
-import App from "@/app.vue";
+const App = () => import(/* webpackChunkName: "app" */ "@/app.vue");
 import router from "@/router";
 import store from "@/store/store";
 import {
@@ -25,7 +21,8 @@ import {
   IConfigService,
   IUserProfileService,
   IUserFeedbackService,
-  IUserEmailService
+  IUserEmailService,
+  IBetaRequestService
 } from "@/services/interfaces";
 import SERVICE_IDENTIFIER, {
   DELEGATE_IDENTIFIER
@@ -34,7 +31,8 @@ import container from "@/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
-Vue.use(BootstrapVue);
+Vue.component("font-awesome-icon", FontAwesomeIcon);
+
 Vue.use(VueRouter);
 Vue.use(Vuelidate);
 
@@ -70,6 +68,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userEmailService: IUserEmailService = container.get(
     SERVICE_IDENTIFIER.UserEmailService
   );
+  const betaRequestService: IBetaRequestService = container.get(
+    SERVICE_IDENTIFIER.BetaRequestService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -78,6 +79,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
+  betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),

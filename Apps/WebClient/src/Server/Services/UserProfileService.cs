@@ -119,7 +119,7 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            string email = createProfileRequest.Profile.Email;
+            string? email = createProfileRequest.Profile.Email;
             createProfileRequest.Profile.Email = string.Empty;
 
             createProfileRequest.Profile.CreatedBy = hdid;
@@ -139,7 +139,7 @@ namespace HealthGateway.WebClient.Services
 
                 if (!string.IsNullOrEmpty(email))
                 {
-                    this.emailQueueService.QueueInviteEmail(hdid, email, hostUri);
+                    this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
                 }
 
                 requestResult.ResourcePayload = insertResult.Payload;

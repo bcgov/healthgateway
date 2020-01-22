@@ -37,7 +37,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(8)]
-        public string DINPIN { get; set; }
+        public string DINPIN { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Plan.
@@ -45,7 +45,7 @@ namespace HealthGateway.Database.Models
         /// Drugs with no benefit groups are identified as ‘NB’ for ‘Non Benefit’.
         /// </summary>
         [MaxLength(2)]
-        public string Plan { get; set; }
+        public string? Plan { get; set; }
 
         /// <summary>
         /// Gets or sets the Effective date.
@@ -67,7 +67,7 @@ namespace HealthGateway.Database.Models
         /// For those benefit groups identified by one character, a space precedes the character.
         /// </summary>
         [MaxLength(60)]
-        public string BenefitGroupList { get; set; }
+        public string? BenefitGroupList { get; set; }
 
         /// <summary>
         /// Gets or sets the low cost alternative indicator.
@@ -76,7 +76,7 @@ namespace HealthGateway.Database.Models
         /// See LCA transition information at main site under “Caveats”.
         /// </summary>
         [MaxLength(2)]
-        public string LCAIndicator { get; set; }
+        public string? LCAIndicator { get; set; }
 
         /// <summary>
         /// Gets or sets the Pay Generic indicator.
@@ -84,21 +84,22 @@ namespace HealthGateway.Database.Models
         /// ‘Y’ indicates a partial LCA benefit and ‘N’ indicates a full LCA benefit OR not part of LCA program.
         /// </summary>
         [MaxLength(1)]
-        public string PayGenericIndicator { get; set; }
+        public string? PayGenericIndicator { get; set; }
 
         /// <summary>
         /// Gets or sets the brand name.
         /// Brand name (manufacturer’s name) of the drug or product.
         /// </summary>
+        [Required]
         [MaxLength(80)]
-        public string BrandName { get; set; }
+        public string BrandName { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the manufacturer.
         /// Drug Manufacturer Code for the manufacturer of the drug.
         /// </summary>
         [MaxLength(6)]
-        public string Manufacturer { get; set; }
+        public string? Manufacturer { get; set; }
 
         /// <summary>
         /// Gets or sets the generic name.
@@ -106,21 +107,21 @@ namespace HealthGateway.Database.Models
         /// This field contains the chemical name as well as the strength, dose and form of the drug.
         /// </summary>
         [MaxLength(60)]
-        public string GenericName { get; set; }
+        public string? GenericName { get; set; }
 
         /// <summary>
         /// Gets or sets the dosage form.
         /// Dose form description such as “TABLETS” to explain the abbreviation used in the Generic Name.
         /// </summary>
         [MaxLength(20)]
-        public string DosageForm { get; set; }
+        public string? DosageForm { get; set; }
 
         /// <summary>
         /// Gets or sets the trial flag.
         /// The drug and plan combination is eligible for the Trial Prescription Program.
         /// </summary>
         [MaxLength(1)]
-        public string TrialFlag { get; set; }
+        public string? TrialFlag { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum price.
@@ -145,14 +146,14 @@ namespace HealthGateway.Database.Models
         /// RDP Category (e.g., “0024”).
         /// </summary>
         [MaxLength(4)]
-        public string RDPCategory { get; set; }
+        public string? RDPCategory { get; set; }
 
         /// <summary>
         /// Gets or sets the Reference Drug Program sub-category.
         /// Reference Drug Sub-category (e.g., “0001”).
         /// </summary>
         [MaxLength(4)]
-        public string RDPSubCategory { get; set; }
+        public string? RDPSubCategory { get; set; }
 
         /// <summary>
         /// Gets or sets the Reference Drug Program price.
@@ -166,7 +167,7 @@ namespace HealthGateway.Database.Models
         /// Plan(s) under which the drug is not subject to RDP price reductions.
         /// </summary>
         [MaxLength(20)]
-        public string RDPExcludedPlans { get; set; }
+        public string? RDPExcludedPlans { get; set; }
 
         /// <summary>
         /// Gets or sets the Canadian Federal Regularatory Code.
@@ -189,14 +190,14 @@ namespace HealthGateway.Database.Models
         /// Note: Products that fall under two or more regulatory codes are listed under the code for the category that is most restrictive.
         /// </summary>
         [MaxLength(1)]
-        public string CFRCode { get; set; }
+        public string? CFRCode { get; set; }
 
         /// <summary>
         /// Gets or sets the PharmaCare Plan description.
         /// A description of the PharmaCare Plan (e.g., ”Income Based”).
         /// </summary>
         [MaxLength(80)]
-        public string PharmaCarePlanDescription { get; set; }
+        public string? PharmaCarePlanDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum days supply.
@@ -222,7 +223,7 @@ namespace HealthGateway.Database.Models
         /// An indicator that the DIN is a Limited Use product.
         /// </summary>
         [MaxLength(1)]
-        public string LimitedUseFlag { get; set; }
+        public string? LimitedUseFlag { get; set; }
 
         /// <summary>
         /// Gets or sets the assoicated File Download ID.
@@ -234,6 +235,6 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the FileDownload entity.
         /// Code first mechanism to define the foreign key.
         /// </summary>
-        public virtual FileDownload FileDownload { get; set; }
+        public virtual FileDownload? FileDownload { get; set; }
     }
 }

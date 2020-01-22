@@ -40,79 +40,79 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the ingredient.
         /// </summary>
         [MaxLength(240)]
-        public string Ingredient { get; set; }
+        public string? Ingredient { get; set; }
 
         /// <summary>
         /// Gets or sets the ingredient in French.
         /// </summary>
         [MaxLength(400)]
-        public string IngredientFrench { get; set; }
+        public string? IngredientFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the ingredient supplied indicator.
         /// </summary>
         [MaxLength(1)]
-        public string IngredientSuppliedInd { get; set; }
+        public string? IngredientSuppliedInd { get; set; }
 
         /// <summary>
         /// Gets or sets the strength.
         /// </summary>
         [MaxLength(20)]
-        public string Strength { get; set; }
+        public string? Strength { get; set; }
 
         /// <summary>
         /// Gets or sets the strength unit.
         /// </summary>
         [MaxLength(40)]
-        public string StrengthUnit { get; set; }
+        public string? StrengthUnit { get; set; }
 
         /// <summary>
         /// Gets or sets the strengthunit in French.
         /// </summary>
         [MaxLength(80)]
-        public string StrengthUnitFrench { get; set; }
+        public string? StrengthUnitFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the strength type.
         /// </summary>
         [MaxLength(40)]
-        public string StrengthType { get; set; }
+        public string? StrengthType { get; set; }
 
         /// <summary>
         /// Gets or sets the strengthtype in French.
         /// </summary>
         [MaxLength(80)]
-        public string StrengthTypeFrench { get; set; }
+        public string? StrengthTypeFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Dosage value.
         /// </summary>
         [MaxLength(20)]
-        public string DosageValue { get; set; }
+        public string? DosageValue { get; set; }
 
         /// <summary>
         /// Gets or sets the base.
         /// </summary>
         [MaxLength(1)]
-        public string Base { get; set; }
+        public string? Base { get; set; }
 
         /// <summary>
         /// Gets or sets the dosage unit.
         /// </summary>
         [MaxLength(40)]
-        public string DosageUnit { get; set; }
+        public string? DosageUnit { get; set; }
 
         /// <summary>
         /// Gets or sets the dosage unit in French.
         /// </summary>
         [MaxLength(80)]
-        public string DosageUnitFrench { get; set; }
+        public string? DosageUnitFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the Notes.
         /// </summary>
         [MaxLength(2000)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         /// <summary>
         /// Gets or sets the Drug Product foreign key.

@@ -43,10 +43,62 @@ main {
 import Vue from "vue";
 import { Component, Watch, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
+import Process, { EnvironmentType } from "@/constants/process.ts";
+
+// Load Bootstrap general plugins
+import {
+  LayoutPlugin,
+  NavPlugin,
+  NavbarPlugin,
+  ModalPlugin,
+  ButtonPlugin,
+  CardPlugin,
+  LinkPlugin,
+  FormPlugin,
+  FormInputPlugin,
+  FormCheckboxPlugin,
+  FormTextareaPlugin,
+  AlertPlugin,
+  SpinnerPlugin,
+  InputGroupPlugin
+} from "bootstrap-vue";
+Vue.use(LayoutPlugin);
+Vue.use(NavPlugin);
+Vue.use(NavbarPlugin);
+Vue.use(ModalPlugin);
+Vue.use(ButtonPlugin);
+Vue.use(CardPlugin);
+Vue.use(LinkPlugin);
+Vue.use(FormPlugin);
+Vue.use(FormInputPlugin);
+Vue.use(FormCheckboxPlugin);
+Vue.use(FormTextareaPlugin);
+Vue.use(AlertPlugin);
+Vue.use(SpinnerPlugin);
+Vue.use(InputGroupPlugin);
+
+// Load general icons
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faUser,
+  faAddressCard,
+  faUserSecret,
+  faChevronUp,
+  faChevronDown,
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+library.add(
+  faUser,
+  faAddressCard,
+  faUserSecret,
+  faChevronUp,
+  faChevronDown,
+  faSpinner
+);
+
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
-import Process, { EnvironmentType } from "@/constants/process.ts";
 
 @Component({
   components: {

@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 ARG APP=WebClient
-ARG NODE_VERSION=v10.13.0
+ARG NODE_VERSION=v12.13.1
 USER root
 # Fetch stock nodejs and install
 RUN mkdir -p /usr/local/lib/nodejs && \
@@ -10,8 +10,17 @@ RUN mkdir -p /usr/local/lib/nodejs && \
     rm -f node-${NODE_VERSION}-linux-x64.tar.gz
 
 RUN adduser --disabled-password --gecos "Test user" installer
-USER installer
+
 ENV PATH=/usr/local/lib/nodejs/node-${NODE_VERSION}-linux-x64/bin:$PATH
+
+# Update the version of `npm` that came with the packages above
+# and install a few additional tools.
+RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
+    rm -rf ~/.npm && \
+    node -v && \
+    npm -v
+
+USER installer
 
 WORKDIR /home/installer
 #Copy Required Projects
@@ -26,10 +35,10 @@ RUN rm src/*.local.json && \
     cd src/ClientApp && \
     rm -rf node_modules && \
     npm install && \
-    cd ../.. && \
-    dotnet publish -o ../../out
+    cd ../../ && \
+    dotnet publish -o ../out
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 ENV ASPNETCORE_URLS=http://+:8080
 WORKDIR /app
 COPY --from=build /home/installer/out ./

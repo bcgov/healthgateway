@@ -40,30 +40,30 @@ steps:
 #    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
 #   displayName: Create Code Coverage Report
 
-- task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
-  inputs:
-    command: 'test'
-    projects: '$(App.Home)/test/unit/WebClientTests.csproj'
-    testRunTitle: 'WebClient'
+#- task: DotNetCoreCLI@2
+#   displayName: Run dotnet Tests
+#   inputs:
+#     command: 'test'
+#     projects: '$(App.Home)/test/unit/WebClientTests.csproj'
+#     testRunTitle: 'WebClient'
 
-- script: |
-    set -e
-    dotnet test test/unit/WebClientTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
-    npm --prefix src/ClientApp test
-    dotnet sonarscanner begin /d:sonar.verbose=false /k:"webclient_pr_$(System.PullRequest.PullRequestNumber)" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.typescript.test.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" /d:sonar.testExecutionReportPaths="WebClient/sonar_reports/jest.out/test-report.xml" /d:sonar.test.inclusions="**/*.test.ts"
-    dotnet build    
-    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
-    echo "$@" >&2
-  displayName: 'Perform Static Code Analysis'
-  continueOnError: 'false'
-  workingDirectory: $(App.Home)
+#- script: |
+#    set -e
+#    dotnet test test/unit/WebClientTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger:"xunit;LogFileName=results.xml" -r ./xUnitResults 
+#    npm --prefix src/ClientApp test
+#    dotnet sonarscanner begin /d:sonar.verbose=false /k:"webclient_pr_$(System.PullRequest.PullRequestNumber)" /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" /d:sonar.typescript.test.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" /d:sonar.testExecutionReportPaths="WebClient/sonar_reports/jest.out/test-report.xml" /d:sonar.test.inclusions="**/*.test.ts"
+#    dotnet build    
+#    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+#    echo "$@" >&2
+#  displayName: 'Perform Static Code Analysis'
+#  continueOnError: 'false'
+#  workingDirectory: $(App.Home)
   
-- task: Bash@3
-  displayName: 'Add SonarQube Report to GitHub Pull Request'
-  inputs:
-    targetType: 'inline'
-    script: 'curl -d ''{"body":"WebClient Project [SonarQube Report](https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=webclient_pr_$(System.PullRequest.PullRequestNumber))"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
+#- task: Bash@3
+#  displayName: 'Add SonarQube Report to GitHub Pull Request'
+#  inputs:
+#    targetType: 'inline'
+#    script: 'curl -d ''{"body":"WebClient Project [SonarQube Report](https://sonarqube-gateway.pathfinder.gov.bc.ca/dashboard?id=webclient_pr_$(System.PullRequest.PullRequestNumber))"}'' -H "Content-Type: application/json" -H "Authorization: Bearer $(github.token)" -X POST https://api.github.com/repos/bcgov/healthgateway/issues/$(System.PullRequest.PullRequestNumber)/comments'
 
 # - task: DotNetCoreCLI@2
 #   displayName: Run dotnet Tests

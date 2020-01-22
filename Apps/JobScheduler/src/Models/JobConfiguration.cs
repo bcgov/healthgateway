@@ -23,12 +23,12 @@ namespace Healthgateway.JobScheduler.Models
         /// <summary>
         /// Gets or sets the Job Id.
         /// </summary>
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the CRON schedule for the job.
         /// </summary>
-        public string Schedule { get; set; }
+        public string? Schedule { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the job should be run near immediately after scheduling.

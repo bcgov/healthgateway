@@ -16,8 +16,8 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("Relational:Sequence:.gateway.trace_seq", "'gateway.trace_seq', '', '1', '1', '1', '999999', 'Int64', 'True'");
 
@@ -25,62 +25,82 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ActiveIngredientId");
+                        .HasColumnName("ActiveIngredientId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ActiveIngredientCode");
+                    b.Property<int>("ActiveIngredientCode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Base")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("DosageUnit")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("DosageUnitFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("DosageValue")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Ingredient")
+                        .HasColumnType("character varying(240)")
                         .HasMaxLength(240);
 
                     b.Property<string>("IngredientFrench")
+                        .HasColumnType("character varying(400)")
                         .HasMaxLength(400);
 
                     b.Property<string>("IngredientSuppliedInd")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("Notes")
+                        .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<string>("Strength")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.Property<string>("StrengthType")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("StrengthTypeFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("StrengthUnit")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("StrengthUnitFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -100,48 +120,62 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("AuditEventId");
+                        .HasColumnName("AuditEventId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ApplicationSubject")
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("ApplicationType")
                         .IsRequired()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
-                    b.Property<DateTime>("AuditEventDateTime");
+                    b.Property<DateTime>("AuditEventDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("ClientIP")
                         .IsRequired()
+                        .HasColumnType("character varying(15)")
                         .HasMaxLength(15);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Trace")
+                        .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.Property<long?>("TransactionDuration");
+                    b.Property<long?>("TransactionDuration")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("TransactionName")
                         .IsRequired()
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("TransactionResultCode")
                         .IsRequired()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("TransactionVersion")
+                        .HasColumnType("character varying(5)")
                         .HasMaxLength(5);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -161,24 +195,29 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.AuditTransactionResultCode", b =>
                 {
                     b.Property<string>("ResultCode")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("character varying(30)")
                         .HasMaxLength(30);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -233,75 +272,137 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.BetaRequest", b =>
+                {
+                    b.Property<string>("HdId")
+                        .HasColumnName("BetaRequestId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("character varying(254)")
+                        .HasMaxLength(254);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("HdId");
+
+                    b.ToTable("BetaRequest");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("CompanyId");
+                        .HasColumnName("CompanyId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AddressBillingFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("AddressMailingFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("AddressNotificationFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("AddressOther")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("CityName")
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<int>("CompanyCode");
+                    b.Property<int>("CompanyCode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CompanyName")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("CompanyType")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("Country")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("CountryFrench")
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ManufacturerCode")
+                        .HasColumnType("character varying(5)")
                         .HasMaxLength(5);
 
                     b.Property<string>("PostOfficeBox")
+                        .HasColumnType("character varying(15)")
                         .HasMaxLength(15);
 
                     b.Property<string>("PostalCode")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.Property<string>("Province")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("ProvinceFrench")
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("StreetName")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("SuiteNumber")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -321,63 +422,85 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("DrugProductId");
+                        .HasColumnName("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AccessionNumber")
+                        .HasColumnType("character varying(5)")
                         .HasMaxLength(5);
 
                     b.Property<string>("AiGroupNumber")
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("BrandNameFrench")
+                        .HasColumnType("character varying(300)")
                         .HasMaxLength(300);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Descriptor")
+                        .HasColumnType("character varying(150)")
                         .HasMaxLength(150);
 
                     b.Property<string>("DescriptorFrench")
+                        .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("DrugClass")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("DrugClassFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("DrugCode")
                         .IsRequired()
+                        .HasColumnType("character varying(8)")
                         .HasMaxLength(8);
 
                     b.Property<string>("DrugIdentificationNumber")
+                        .IsRequired()
+                        .HasColumnType("character varying(29)")
                         .HasMaxLength(29);
 
-                    b.Property<Guid>("FileDownloadId");
+                    b.Property<Guid>("FileDownloadId")
+                        .HasColumnType("uuid");
 
-                    b.Property<DateTime>("LastUpdate");
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NumberOfAis")
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("PediatricFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("ProductCategorization")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -396,9 +519,11 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailId");
+                        .HasColumnName("EmailId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("Attempts");
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -406,43 +531,56 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("EmailStatusCode")
                         .IsRequired()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("FormatCode")
                         .IsRequired()
+                        .HasColumnType("character varying(4)")
                         .HasMaxLength(4);
 
                     b.Property<string>("From")
                         .IsRequired()
+                        .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
-                    b.Property<DateTime?>("LastRetryDateTime");
+                    b.Property<DateTime?>("LastRetryDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("Priority");
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime?>("SentDateTime");
+                    b.Property<DateTime?>("SentDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("SmtpStatusCode");
+                    b.Property<int>("SmtpStatusCode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Subject")
                         .IsRequired()
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("To")
                         .IsRequired()
+                        .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -462,20 +600,24 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.EmailFormatCode", b =>
                 {
                     b.Property<string>("FormatCode")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("character varying(4)")
                         .HasMaxLength(4);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -512,28 +654,40 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailInviteId");
+                        .HasColumnName("EmailInviteId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("EmailId");
+                    b.Property<Guid>("EmailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpireDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("HdId")
+                        .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 
-                    b.Property<Guid>("InviteKey");
+                    b.Property<Guid>("InviteKey")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<bool>("Validated");
+                    b.Property<bool>("Validated")
+                        .HasColumnType("boolean");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -551,24 +705,29 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.EmailStatusCode", b =>
                 {
                     b.Property<string>("StatusCode")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("character varying(30)")
                         .HasMaxLength(30);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -627,7 +786,8 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailTemplateId");
+                        .HasColumnName("EmailTemplateId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -635,37 +795,48 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("EffectiveDate");
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("ExpiryDate");
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("FormatCode")
                         .IsRequired()
+                        .HasColumnType("character varying(4)")
                         .HasMaxLength(4);
 
                     b.Property<string>("From")
                         .IsRequired()
+                        .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("character varying(30)")
                         .HasMaxLength(30);
 
-                    b.Property<int>("Priority");
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Subject")
                         .IsRequired()
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -777,31 +948,39 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("FileDownloadId");
+                        .HasColumnName("FileDownloadId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Hash")
                         .IsRequired()
+                        .HasColumnType("character varying(44)")
                         .HasMaxLength(44);
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("character varying(35)")
                         .HasMaxLength(35);
 
                     b.Property<string>("ProgramCode")
                         .IsRequired()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -824,29 +1003,38 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("FormId");
+                        .HasColumnName("FormId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PharmaceuticalForm")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
-                    b.Property<int>("PharmaceuticalFormCode");
+                    b.Property<int>("PharmaceuticalFormCode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("PharmaceuticalFormFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -866,42 +1054,55 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("PackagingId");
+                        .HasColumnName("PackagingId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PackageSize")
+                        .HasColumnType("character varying(5)")
                         .HasMaxLength(5);
 
                     b.Property<string>("PackageSizeUnit")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("PackageSizeUnitFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("PackageType")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("PackageTypeFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("ProductInformation")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UPC")
+                        .HasColumnType("character varying(12)")
                         .HasMaxLength(12);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -921,28 +1122,37 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("PharmaCareDrugId");
+                        .HasColumnName("PharmaCareDrugId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("BenefitGroupList")
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
                     b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("CFRCode")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("DINPIN")
                         .IsRequired()
+                        .HasColumnType("character varying(8)")
                         .HasMaxLength(8);
 
                     b.Property<string>("DosageForm")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.Property<DateTime>("EffectiveDate")
@@ -951,62 +1161,78 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("Date");
 
-                    b.Property<Guid>("FileDownloadId");
+                    b.Property<Guid>("FileDownloadId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("FormularyListDate")
                         .HasColumnType("Date");
 
                     b.Property<string>("GenericName")
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
                     b.Property<string>("LCAIndicator")
+                        .HasColumnType("character varying(2)")
                         .HasMaxLength(2);
 
                     b.Property<decimal?>("LCAPrice")
                         .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("LimitedUseFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("Manufacturer")
+                        .HasColumnType("character varying(6)")
                         .HasMaxLength(6);
 
-                    b.Property<int?>("MaximumDaysSupply");
+                    b.Property<int?>("MaximumDaysSupply")
+                        .HasColumnType("integer");
 
                     b.Property<decimal?>("MaximumPrice")
                         .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("PayGenericIndicator")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("PharmaCarePlanDescription")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("Plan")
+                        .HasColumnType("character varying(2)")
                         .HasMaxLength(2);
 
-                    b.Property<int?>("QuantityLimit");
+                    b.Property<int?>("QuantityLimit")
+                        .HasColumnType("integer");
 
                     b.Property<string>("RDPCategory")
+                        .HasColumnType("character varying(4)")
                         .HasMaxLength(4);
 
                     b.Property<string>("RDPExcludedPlans")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.Property<decimal?>("RDPPrice")
                         .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("RDPSubCategory")
+                        .HasColumnType("character varying(4)")
                         .HasMaxLength(4);
 
                     b.Property<string>("TrialFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1025,23 +1251,30 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("PharmaceuticalStdId");
+                        .HasColumnName("PharmaceuticalStdId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("PharmaceuticalStdDesc");
+                    b.Property<string>("PharmaceuticalStdDesc")
+                        .HasColumnType("text");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1060,24 +1293,29 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.ProgramTypeCode", b =>
                 {
                     b.Property<string>("ProgramCode")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("character varying(10)")
                         .HasMaxLength(10);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("character varying(50)")
                         .HasMaxLength(50);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1196,29 +1434,38 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("RouteId");
+                        .HasColumnName("RouteId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Administration")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
-                    b.Property<int>("AdministrationCode");
+                    b.Property<int>("AdministrationCode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("AdministrationFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1238,27 +1485,35 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ScheduleId");
+                        .HasColumnName("ScheduleId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ScheduleDesc")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("ScheduleDescFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1275,37 +1530,49 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("StatusId");
+                        .HasColumnName("StatusId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CurrentStatusFlag")
+                        .HasColumnType("character varying(1)")
                         .HasMaxLength(1);
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ExpirationDate");
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("HistoryDate");
+                    b.Property<DateTime?>("HistoryDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LotNumber")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("StatusDesc")
+                        .HasColumnType("character varying(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("StatusDescFrench")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1324,39 +1591,51 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("TherapeuticClassId");
+                        .HasColumnName("TherapeuticClassId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Ahfs")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("AhfsFrench")
+                        .HasColumnType("character varying(160)")
                         .HasMaxLength(160);
 
                     b.Property<string>("AhfsNumber")
+                        .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.Property<string>("Atc")
+                        .HasColumnType("character varying(120)")
                         .HasMaxLength(120);
 
                     b.Property<string>("AtcFrench")
+                        .HasColumnType("character varying(240)")
                         .HasMaxLength(240);
 
                     b.Property<string>("AtcNumber")
+                        .HasColumnType("character varying(8)")
                         .HasMaxLength(8);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1376,24 +1655,31 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("UserFeedbackId");
+                        .HasColumnName("UserFeedbackId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
+                        .HasColumnType("character varying(500)")
                         .HasMaxLength(500);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<bool>("IsSatisfied");
+                    b.Property<bool>("IsSatisfied")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1409,26 +1695,32 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
                     b.Property<string>("HdId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("UserProfileId")
+                        .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 
-                    b.Property<bool>("AcceptedTermsOfService");
+                    b.Property<bool>("AcceptedTermsOfService")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
+                        .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1445,30 +1737,39 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("VeterinarySpeciesId");
+                        .HasColumnName("VeterinarySpeciesId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("CreatedDateTime");
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("DrugProductId");
+                    b.Property<Guid>("DrugProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Species")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("SpeciesFrench")
+                        .HasColumnType("character varying(160)")
                         .HasMaxLength(160);
 
                     b.Property<string>("SubSpecies")
+                        .HasColumnType("character varying(80)")
                         .HasMaxLength(80);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
+                        .HasColumnType("character varying(60)")
                         .HasMaxLength(60);
 
-                    b.Property<DateTime>("UpdatedDateTime");
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1486,31 +1787,35 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("ActiveIngredient")
                         .HasForeignKey("HealthGateway.Database.Models.ActiveIngredient", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.AuditEvent", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode")
+                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode", null)
                         .WithMany()
                         .HasForeignKey("ApplicationType")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("HealthGateway.Database.Models.AuditTransactionResultCode")
+                    b.HasOne("HealthGateway.Database.Models.AuditTransactionResultCode", null)
                         .WithMany()
                         .HasForeignKey("TransactionResultCode")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("Company")
                         .HasForeignKey("HealthGateway.Database.Models.Company", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
@@ -1518,20 +1823,23 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.FileDownload", "FileDownload")
                         .WithMany()
                         .HasForeignKey("FileDownloadId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Email", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.EmailStatusCode")
+                    b.HasOne("HealthGateway.Database.Models.EmailStatusCode", null)
                         .WithMany()
                         .HasForeignKey("EmailStatusCode")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode")
+                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode", null)
                         .WithMany()
                         .HasForeignKey("FormatCode")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailInvite", b =>
@@ -1539,39 +1847,44 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.Email", "Email")
                         .WithMany()
                         .HasForeignKey("EmailId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailTemplate", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode")
+                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode", null)
                         .WithMany()
                         .HasForeignKey("FormatCode")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.FileDownload", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode")
+                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode", null)
                         .WithMany()
                         .HasForeignKey("ProgramCode")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Form", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("Form")
                         .HasForeignKey("HealthGateway.Database.Models.Form", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("Packaging")
                         .HasForeignKey("HealthGateway.Database.Models.Packaging", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaCareDrug", b =>
@@ -1579,7 +1892,8 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.FileDownload", "FileDownload")
                         .WithMany()
                         .HasForeignKey("FileDownloadId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
@@ -1587,39 +1901,44 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithOne("PharmaceuticalStd")
                         .HasForeignKey("HealthGateway.Database.Models.PharmaceuticalStd", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("Route")
                         .HasForeignKey("HealthGateway.Database.Models.Route", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Status", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithMany("Statuses")
                         .HasForeignKey("DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.TherapeuticClass", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("TherapeuticClass")
                         .HasForeignKey("HealthGateway.Database.Models.TherapeuticClass", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("VeterinarySpecies")
                         .HasForeignKey("HealthGateway.Database.Models.VeterinarySpecies", "DrugProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

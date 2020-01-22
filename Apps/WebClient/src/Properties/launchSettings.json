@@ -12,6 +12,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
+        "DOTNET_USE_POLLING_FILE_WATCHER": "1",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000;"

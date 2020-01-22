@@ -94,7 +94,7 @@ parameters:
     value: "30000"
   - name: GRID_NEW_SESSION_WAIT_TIMEOUT
     description: The timeout to wait for new sessions
-    value: "30"
+    value: "30000"
   - name: GRID_JETTY_MAX_THREADS
     description: Max Threads for Jetty server
     value: "100"
@@ -109,7 +109,7 @@ parameters:
     value: "300"
   - name: GRID_BROWSER_TIMEOUT
     description: The timeout for the browser
-    value: "30"
+    value: "30000"
   - name: GRID_MAX_SESSION
     description: How many sessions max
     value: "3"

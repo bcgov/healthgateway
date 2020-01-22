@@ -54,7 +54,7 @@ npm test
 DEV:
 
 ```console	
-npm test -- --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
+npm test -- --base-url "https://dev.healthgateway.gov.bc.ca/"
 ```
 
 ### Using selenium-hub server (No chromedriver required)
@@ -62,7 +62,7 @@ npm test -- --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
 DEV:
 
 ```console	
-npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
+npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev.healthgateway.gov.bc.ca/"
 ```
 
 LOCALHOST:
@@ -77,5 +77,5 @@ npm test -- --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" -
 Selenium-hub also supports tests in other browsers like firefox, to run:
 
 ```console	
-npm test -- --config-file ./firefox.side.yml --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev-gateway.pathfinder.gov.bc.ca/"
+npm test -- --config-file ./firefox.side.yml --server "http://selenium-hub-gateway.pathfinder.gov.bc.ca/wd/hub" --base-url "https://dev.healthgateway.gov.bc.ca/"
 ```

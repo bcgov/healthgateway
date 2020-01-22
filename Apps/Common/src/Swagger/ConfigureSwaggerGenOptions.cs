@@ -23,7 +23,6 @@ namespace HealthGateway.Common.Swagger
     using System.Reflection;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -33,36 +32,28 @@ namespace HealthGateway.Common.Swagger
     /// </summary>
     public sealed class ConfigureSwaggerGenOptions : IConfigureOptions<SwaggerGenOptions>
     {
-#pragma warning disable CA1303 //Disable literals
         private readonly IApiVersionDescriptionProvider provider;
         private readonly SwaggerSettings settings;
-        private readonly ILogger<ConfigureSwaggerGenOptions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigureSwaggerGenOptions"/> class.
         /// </summary>
         /// <param name="versionDescriptionProvider">IApiVersionDescriptionProvider.</param>
         /// <param name="swaggerSettings">App Settings for Swagger.</param>
-        /// <param name="logger">The logger to use.</param>
         public ConfigureSwaggerGenOptions(
-            IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> swaggerSettings, ILogger<ConfigureSwaggerGenOptions> logger)
+            IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> swaggerSettings)
         {
             Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
             Debug.Assert(swaggerSettings != null, $"{nameof(swaggerSettings)} != null");
-            Contract.Requires(swaggerSettings != null);
 
             this.provider = versionDescriptionProvider;
-            this.settings = swaggerSettings.Value ?? new SwaggerSettings();
-            this.logger = logger;
-            logger.LogDebug("In constructor ConfigureSwaggerGenOptions");
+            this.settings = swaggerSettings?.Value ?? new SwaggerSettings();
         }
 
         /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
         {
-            this.logger.LogDebug("In ConfigureSwaggerGenOptions.Configure");
             options.OperationFilter<SwaggerDefaultValues>();
-            options.DescribeAllEnumsAsStrings();
             options.IgnoreObsoleteActions();
             options.IgnoreObsoleteProperties();
 
@@ -72,17 +63,16 @@ namespace HealthGateway.Common.Swagger
 
         private static void SetCommentsPathForSwaggerJsonAndUi(SwaggerGenOptions options)
         {
-            var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
+            var xmlFile = $"{Assembly.GetEntryAssembly() !.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         }
 
         private void AddSwaggerDocumentForEachDiscoveredApiVersion(SwaggerGenOptions options)
         {
-            this.logger.LogDebug("In AddSwaggerDocumentForEachDiscoveredApiVersion");
             foreach (var description in this.provider.ApiVersionDescriptions)
             {
-                this.settings.Info.Version = description.ApiVersion.ToString();
+                this.settings.Info!.Version = description.ApiVersion.ToString();
 
                 if (description.IsDeprecated)
                 {
@@ -90,10 +80,6 @@ namespace HealthGateway.Common.Swagger
                 }
 
                 options.SwaggerDoc(description.GroupName, this.settings.Info);
-
-                // TODO: Decide what we are going to do
-                // Experimenting with the document filter - this code may be removed if it doesn't pan out.
-                // options.DocumentFilter<SwaggerPathPrefixDocumentFilter>("api/medicationservice");
             }
         }
     }

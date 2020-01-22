@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.PatientService
+namespace HealthGateway.Patient
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
 
     /// <summary>
     /// The entry point for the project.
@@ -29,7 +29,7 @@ namespace HealthGateway.PatientService
         /// <param name="args">The command line arguments to be passed in.</param>
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         /// <summary>.
@@ -37,7 +37,7 @@ namespace HealthGateway.PatientService
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
         /// <returns>Returns the configured webhost.</returns>
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateWebHostBuilder<Startup>(args);
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            ProgramConfiguration.CreateHostBuilder<Startup>(args);
     }
 }

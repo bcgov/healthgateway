@@ -13,6 +13,7 @@ import User from "@/models/user";
 @Component
 export default class LoginCallbackComponent extends Vue {
   @Action("oidcSignInCallback", { namespace: "auth" }) oidcSignInCallback;
+  @Action("clearStorage", { namespace: "auth" }) clearStorage;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
   @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
   @Getter("user", { namespace: "user" }) user: User;
@@ -36,8 +37,10 @@ export default class LoginCallbackComponent extends Vue {
         });
       })
       .catch(err => {
+        // Login failed redirect it back to the login page.
         console.error(err);
-        this.$router.push("/signin-oidc-error"); // Handle errors any way you want
+        this.clearStorage();
+        this.$router.push({ path: "/login", query: { isRetry: "true" } });
       });
   }
 }

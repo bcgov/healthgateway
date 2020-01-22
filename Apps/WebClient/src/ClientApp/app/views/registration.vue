@@ -1,8 +1,12 @@
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
 #pageTitle {
   color: $primary;
+}
+
+#pageTitle hr {
+  border-top: 2px solid $primary;
 }
 
 #Description {
@@ -10,7 +14,8 @@
 }
 
 input {
-  max-width: 320px;
+  width: 320px !important;
+  max-width: 320px !important;
 }
 
 .accept label {
@@ -29,8 +34,8 @@ input {
 <template>
   <b-container>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <div v-if="!isLoading">
-      <b-row v-if="isRegistrationClosed" class="my-3">
+    <div v-if="!isLoading" class="py-5">
+      <b-row v-if="isRegistrationClosed">
         <b-col>
           <div id="pageTitle">
             <h1 id="Subject">
@@ -43,20 +48,109 @@ input {
           </div>
         </b-col>
       </b-row>
-      <b-row v-else-if="isRegistrationInviteOnly && !inviteKey" class="my-3">
+      <b-row v-else-if="isRegistrationInviteOnly && !inviteKey">
         <b-col>
           <div id="pageTitle">
             <h1 id="Subject">
-              Restricted Registration
+              Enter your email to join the waitlist
             </h1>
-            <div id="Description">
-              Thank you for your interest in the Health Gateway service. At this
-              time, the registration is invite only. As we will be launching
-              more broadly in the coming months, please visit the site again. If
-              you are one of our patient partners, check your email for your
-              unique registration link.
-            </div>
+            <hr />
           </div>
+          <b-row class="mb-3">
+            <b-col>
+              <label for="waitlistNames" class="font-weight-bold"
+                >Full Name</label
+              >
+              <b-row
+                ><b-col id="waitlistNames">
+                  {{ fullName }}
+                </b-col>
+                <b-col
+                  id="authenticatedLabel"
+                  class="ml-auto text-right text-success"
+                  >Authenticated
+                  <font-awesome-icon
+                    icon="check"
+                    aria-hidden="true"
+                  ></font-awesome-icon>
+                </b-col>
+              </b-row>
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col>
+              <label for="waitlistEditEmail" class="font-weight-bold"
+                >Email Address</label
+              >
+              <b-button
+                v-if="!waitlistEdditable && waitlistTempEmail"
+                id="waitlistEditEmail"
+                class="mx-auto"
+                variant="link"
+                @click="makeWaitlistEdditable()"
+                >Edit
+              </b-button>
+              <div class="form-inline">
+                <b-form-input
+                  id="waitlistEmail"
+                  v-model="$v.email.$model"
+                  type="email"
+                  placeholder="Your email address"
+                  :disabled="!waitlistEdditable"
+                  :state="isValid($v.email)"
+                />
+                <div
+                  v-if="!waitlistEdditable && waitlistTempEmail"
+                  id="authenticatedLabel"
+                  class="ml-auto text-right text-warning"
+                >
+                  Waitlisted
+                </div>
+              </div>
+              <b-form-invalid-feedback :state="isValid($v.email)">
+                Valid email is required
+              </b-form-invalid-feedback>
+              <b-form-invalid-feedback :state="$v.email.newEmail">
+                New email must be different from the previous one
+              </b-form-invalid-feedback>
+            </b-col>
+          </b-row>
+          <b-row v-if="waitlistEdditable" class="mb-3">
+            <b-col>
+              <b-form-input
+                id="waitlistEmailConfirmation"
+                v-model="$v.emailConfirmation.$model"
+                type="email"
+                placeholder="Confirm your email address"
+                :state="isValid($v.emailConfirmation)"
+              />
+              <b-form-invalid-feedback
+                :state="$v.emailConfirmation.sameAsEmail"
+              >
+                Emails must match
+              </b-form-invalid-feedback>
+            </b-col>
+          </b-row>
+          <b-row v-if="waitlistEdditable" class="mb-3 justify-content-end">
+            <b-col class="text-right">
+              <b-button
+                v-if="waitlistTempEmail"
+                id="cancelBtn"
+                class="mx-2 actionButton"
+                @click="cancelWaitlistEdit()"
+                >Cancel
+              </b-button>
+              <b-button
+                id="saveBtn"
+                variant="primary"
+                class="mx-2 actionButton"
+                :disabled="waitlistTempEmail === email"
+                @click="saveWaitlistEdit()"
+                ><span v-if="waitlistTempEmail">Save</span>
+                <span v-else>Join Waitlist</span>
+              </b-button>
+            </b-col>
+          </b-row>
         </b-col>
       </b-row>
       <b-form v-else ref="registrationForm" @submit.prevent="onSubmit">
@@ -165,7 +259,8 @@ import { Getter, Action } from "vuex-class";
 import { Component, Ref, Prop } from "vue-property-decorator";
 import {
   IUserProfileService,
-  IAuthenticationService
+  IAuthenticationService,
+  IBetaRequestService
 } from "@/services/interfaces";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
@@ -176,6 +271,10 @@ import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
 import { WebClientConfiguration } from "@/models/configData";
+import BetaRequest from "@/models/betaRequest";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+library.add(faCheck);
 
 @Component({
   components: {
@@ -204,7 +303,17 @@ export default class RegistrationComponent extends Vue {
   private hasErrors: boolean = false;
   private errorMessage: string = "";
 
+  private betaRequestService: IBetaRequestService;
+  private waitlistEdditable = true;
+  private waitlistTempEmail: string = "";
+  private waitlistEmail: string = "";
+  private waitlistEmailConfirmation: string = "";
+
   mounted() {
+    this.betaRequestService = container.get(
+      SERVICE_IDENTIFIER.BetaRequestService
+    );
+
     if (this.webClientConfig.registrationStatus == RegistrationStatus.Open) {
       this.email = "";
       this.emailConfirmation = "";
@@ -226,12 +335,31 @@ export default class RegistrationComponent extends Vue {
       .then(oidcUser => {
         if (oidcUser) {
           this.oidcUser = oidcUser;
+
+          this.betaRequestService
+            .getRequest(this.oidcUser.hdid)
+            .then(betaRequest => {
+              console.log("beta request:", betaRequest);
+              if (betaRequest) {
+                this.email = betaRequest.emailAddress;
+                this.waitlistTempEmail = this.email;
+                this.waitlistEdditable = false;
+              } else {
+                this.makeWaitlistEdditable();
+              }
+            })
+            .catch(() => {
+              this.hasErrors = true;
+            })
+            .finally(() => {
+              this.isLoading = false;
+            });
+        } else {
+          this.isLoading = false;
         }
       })
       .catch(() => {
         this.hasErrors = true;
-      })
-      .finally(() => {
         this.isLoading = false;
       });
   }
@@ -324,6 +452,52 @@ export default class RegistrationComponent extends Vue {
     }
 
     event.preventDefault();
+  }
+
+  private makeWaitlistEdditable(): void {
+    this.waitlistEdditable = true;
+    this.waitlistTempEmail = this.email || "";
+  }
+
+  private saveWaitlistEdit(): void {
+    this.$v.$touch();
+    console.log(this.$v);
+    if (this.$v.email.$invalid || this.$v.emailConfirmation.$invalid) {
+      this.submitStatus = "ERROR";
+    } else {
+      this.submitStatus = "PENDING";
+
+      console.log(this.email);
+
+      let newRequest: BetaRequest = {
+        hdid: this.oidcUser.hdid,
+        emailAddress: this.email
+      };
+
+      this.betaRequestService
+        .putRequest(newRequest)
+        .then(result => {
+          console.log("success!");
+          console.log(result);
+          this.waitlistEdditable = false;
+          this.waitlistEmailConfirmation = "";
+          this.waitlistTempEmail = this.email;
+          this.$v.$reset();
+        })
+        .catch(() => {
+          this.hasErrors = true;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    }
+  }
+
+  private cancelWaitlistEdit(): void {
+    this.waitlistEdditable = false;
+    this.email = this.waitlistTempEmail;
+    this.waitlistEmailConfirmation = "";
+    this.$v.$reset();
   }
 }
 </script>

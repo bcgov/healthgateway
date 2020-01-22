@@ -8,6 +8,7 @@
 #pageTitle {
   color: $primary;
 }
+
 #pageTitle hr {
   border-top: 2px solid $primary;
 }
@@ -23,6 +24,23 @@
   padding-top: 0px;
   color: $primary;
   font-size: 1.3em;
+}
+
+.has-filter .form-control {
+  padding-left: 2.375rem;
+}
+
+.has-filter .form-control-feedback {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 2.375rem;
+  height: 2.375rem;
+  line-height: 2.375rem;
+  text-align: center;
+  pointer-events: none;
+  color: #aaa;
+  padding: 12px;
 }
 </style>
 <template>
@@ -48,6 +66,25 @@
           </h1>
           <hr />
         </div>
+        <b-row>
+          <b-col>
+            <div class="form-group has-filter">
+              <font-awesome-icon
+                :icon="getIcon()"
+                class="form-control-feedback"
+                fixed-width
+              ></font-awesome-icon>
+              <b-form-input
+                v-model="filterText"
+                type="text"
+                placeholder="Filter"
+                maxlength="50"
+                debounce="250"
+              ></b-form-input>
+            </div>
+            <br />
+          </b-col>
+        </b-row>
         <div v-if="!isLoading">
           <div id="listControlls">
             <b-row>
@@ -64,11 +101,17 @@
                     Date
                     <span v-show="sortDesc" name="descending">
                       (Newest)
-                      <i class="fa fa-chevron-down" aria-hidden="true"></i
+                      <font-awesome-icon
+                        icon="chevron-down"
+                        aria-hidden="true"
+                      ></font-awesome-icon
                     ></span>
                     <span v-show="!sortDesc" name="ascending">
                       (Oldest)
-                      <i class="fa fa-chevron-up" aria-hidden="true"></i
+                      <font-awesome-icon
+                        icon="chevron-up"
+                        aria-hidden="true"
+                      ></font-awesome-icon
                     ></span>
                   </b-btn>
                 </b-row>
@@ -110,21 +153,22 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Watch, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { IMedicationService } from "@/services/interfaces";
-import LoadingComponent from "@/components/loading.vue";
-import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
-import MedicationTimelineComponent from "@/components/timeline/medication.vue";
-import { ResultType } from "@/constants/resulttype.ts";
 import moment from "moment";
+import LoadingComponent from "@/components/loading.vue";
+import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import FeedbackComponent from "@/components/feedback.vue";
+import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 const namespace: string = "user";
 
@@ -144,7 +188,9 @@ interface DateGroup {
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
 
+  private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
+  private visibleTimelineEntries: TimelineEntry[] = [];
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
@@ -156,11 +202,14 @@ export default class TimelineComponent extends Vue {
 
   mounted() {
     this.fechMedicationStatements();
-    console.log(this.user);
   }
 
   get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
+  }
+
+  private getIcon(): IconDefinition {
+    return faSearch;
   }
 
   private fechMedicationStatements(protectiveWord?: string) {
@@ -177,6 +226,11 @@ export default class TimelineComponent extends Vue {
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
+          }
+          if (!this.filterText) {
+            this.visibleTimelineEntries = this.timelineEntries;
+          } else {
+            this.applyTimelineFilter();
           }
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
@@ -215,12 +269,18 @@ export default class TimelineComponent extends Vue {
     return moment(date).format("ll");
   }
 
+  @Watch("filterText")
+  private applyTimelineFilter() {
+    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+      entry.filterApplies(this.filterText)
+    );
+  }
   private get dateGroups(): DateGroup[] {
-    if (this.timelineEntries.length === 0) {
+    if (this.visibleTimelineEntries.length === 0) {
       return [];
     }
 
-    let groups = this.timelineEntries.reduce((groups, entry) => {
+    let groups = this.visibleTimelineEntries.reduce((groups, entry) => {
       // Get the string version of the date and get the date
       //const date = (entry.date).split("T")[0];
       const date = new Date(entry.date).setHours(0, 0, 0, 0);
@@ -257,11 +317,10 @@ export default class TimelineComponent extends Vue {
   }
 
   private getVisibleCount(): number {
-    return this.timelineEntries.length;
+    return this.visibleTimelineEntries.length;
   }
 
   private getTotalCount(): number {
-    // TODO: The model needs to have pagination
     return this.timelineEntries.length;
   }
 }

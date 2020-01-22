@@ -15,10 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration
 {
-    using System;
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -29,39 +28,29 @@ namespace HealthGateway.Common.AspNetConfiguration
         private const string EnvironmentPrefix = "HealthGateway_";
 
         /// <summary>
-        /// Builds the webhost object with console logging and Configuration prefixing enabled.
-        /// </summary>
-        /// <typeparam name="T">The startup class.</typeparam>
-        /// <param name="args">The command line arguments.</param>
-        /// <returns>Returns the configured webhost.</returns>
-        [Obsolete("Invoke static CreateWebHostBuilder - See Medication Program.cs")]
-        public static IWebHost BuildWebHost<T>(string[] args)
-            where T : class
-        {
-            return CreateWebHostBuilder<T>(args).Build();
-        }
-
-        /// <summary>
-        /// Creates a WebHostBuild with console logging and Configuration prefixing enabled.
+        /// Creates a IHostBuilder with console logging and Configuration prefixing enabled.
         /// </summary>
         /// <typeparam name="T">The startup class.</typeparam>
         /// <param name="args">The command line arguments.</param>
         /// <returns>Returns the configured WebHostBuilder.</returns>
-        public static IWebHostBuilder CreateWebHostBuilder<T>(string[] args)
+        public static IHostBuilder CreateHostBuilder<T>(string[] args)
              where T : class
         {
-            return WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((builderContext, config) =>
-            {
-                config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
-            })
-            .UseStartup<T>()
-            .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-            });
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                })
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+                    config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<T>();
+                });
         }
     }
 }

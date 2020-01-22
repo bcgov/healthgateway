@@ -58,6 +58,9 @@ function createWrapper(): Wrapper<LoginComponent> {
     mocks: {
       $route,
       $router
+    },
+    stubs: {
+      "font-awesome-icon": true
     }
   });
 }
@@ -141,7 +144,7 @@ describe("Login view", () => {
     const keycloakProvider: IdentityProviderConfiguration = {
       name: "keycloak",
       id: "keyid",
-      icon: "fa-user",
+      icon: "user",
       disabled: true
     };
 
@@ -155,7 +158,7 @@ describe("Login view", () => {
     expect(
       wrapper
         .find(`#${bceidProvider.id}Btn`)
-        .find(`.${bceidProvider.icon}`)
+        .find(`[icon="${bceidProvider.icon}" ]`)
         .isVisible()
     ).toBe(true);
     expect(wrapper.find(`#${bceidProvider.id}Btn`).text()).toBe(
@@ -168,7 +171,7 @@ describe("Login view", () => {
     expect(
       wrapper
         .find(`#${keycloakProvider.id}Btn`)
-        .find(`.${keycloakProvider.icon}`)
+        .find(`[icon="${keycloakProvider.icon}" ]`)
         .isVisible()
     ).toBe(true);
     expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(

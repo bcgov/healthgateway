@@ -22,26 +22,27 @@ namespace HealthGateway.Common.Models
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
     public class RequestResult<T>
+        where T : class
     {
         /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
-        public T ResourcePayload { get; set; }
+        public T ResourcePayload { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.
         /// </summary>
-        public int TotalResultCount { get; set; }
+        public int? TotalResultCount { get; set; }
 
         /// <summary>
         /// Gets or sets the page being returned on this result for pagination.
         /// </summary>
-        public int PageIndex { get; set; }
+        public int? PageIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for pagination.
         /// </summary>
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the Result of the request.
@@ -52,6 +53,6 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the message depending on the result type.
         /// Will always be set when ResultType is Error.
         /// </summary>
-        public string ResultMessage { get; set; }
+        public string ResultMessage { get; set; } = string.Empty;
     }
 }

@@ -1,10 +1,7 @@
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import Oidc, {
-  UserManager,
-  WebStorageStateStore,
-  User as OidcUser,
-  UserManagerSettings
-} from "oidc-client";
+import { User as OidcUser, UserManagerSettings } from "oidc-client";
+// These imports should be optimized
+import { UserManager, WebStorageStateStore } from "oidc-client";
 
 import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
@@ -40,12 +37,17 @@ export class RestAuthenticationService implements IAuthenticationService {
       scope: config.scope,
       post_logout_redirect_uri: config.callbacks["Logout"],
       filterProtocolClaims: true,
-      loadUserInfo: false
+      loadUserInfo: false,
+      automaticSilentRenew: true
     };
     console.log("oidc configuration: ", oidcConfig);
     this.http = httpDelegate;
     this.authorityUri = config.authority;
     this.oidcUserManager = new UserManager(oidcConfig);
+
+    this.oidcUserManager.events.addAccessTokenExpiring(function() {
+      console.log("Token expiring...");
+    });
   }
 
   public getOidcConfig(): UserManagerSettings {

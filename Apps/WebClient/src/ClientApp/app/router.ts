@@ -3,17 +3,32 @@ import Vue from "vue";
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
-import ProfileComponent from "@/views/profile.vue";
-import LandingComponent from "@/views/landing.vue";
-import NotFoundComponent from "@/views/errors/notFound.vue";
-import LoginComponent from "@/views/login.vue";
-import LogoutComponent from "@/views/logout.vue";
-import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
-import LoginCallback from "@/views/loginCallback.vue";
-import RegistrationComponent from "@/views/registration.vue";
-import RegistrationInfoComponent from "@/views/registrationInfo.vue";
-import TimelineComponent from "@/views/timeline.vue";
-import ValidateEmailComponent from "@/views/validateEmail.vue";
+const ProfileComponent = () =>
+  import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
+const LandingComponent = () =>
+  import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
+const NotFoundComponent = () =>
+  import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
+const LoginComponent = () =>
+  import(/* webpackChunkName: "login" */ "@/views/login.vue");
+const LogoutComponent = () =>
+  import(/* webpackChunkName: "logout" */ "@/views/logout.vue");
+const UnauthorizedComponent = () =>
+  import(
+    /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
+  );
+const LoginCallback = () =>
+  import(/* webpackChunkName: "loginCallback" */ "@/views/loginCallback.vue");
+const RegistrationComponent = () =>
+  import(/* webpackChunkName: "registration" */ "@/views/registration.vue");
+const RegistrationInfoComponent = () =>
+  import(
+    /* webpackChunkName: "registrationInfo" */ "@/views/registrationInfo.vue"
+  );
+const TimelineComponent = () =>
+  import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
+const ValidateEmailComponent = () =>
+  import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
 
 Vue.use(VueRouter);
 
@@ -62,6 +77,9 @@ const routes = [
   {
     path: "/login",
     component: LoginComponent,
+    props: (route: Route) => ({
+      isRetry: route.query.isRetry
+    }),
     meta: { requiresAuth: false, roles: ["user"] }
   },
   {

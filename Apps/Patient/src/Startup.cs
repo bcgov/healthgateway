@@ -14,11 +14,13 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.PatientService
+namespace HealthGateway.Patient
 {
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -37,10 +39,9 @@ namespace HealthGateway.PatientService
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.startupConfig = new StartupConfiguration(configuration, env);
         }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace HealthGateway.PatientService
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
@@ -57,6 +59,7 @@ namespace HealthGateway.PatientService
 
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, SoapPatientService>();
         }
 
@@ -67,9 +70,10 @@ namespace HealthGateway.PatientService
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseRest(app);
         }
     }
 }

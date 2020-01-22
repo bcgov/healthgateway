@@ -17,7 +17,6 @@ namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Diagnostics.Contracts;
-    using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -46,6 +45,7 @@ namespace HealthGateway.JobScheduler
     /// </summary>
     public class Startup
     {
+        private readonly IWebHostEnvironment environment;
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
@@ -55,12 +55,12 @@ namespace HealthGateway.JobScheduler
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IHostingEnvironment env, IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.startupConfig = new StartupConfiguration(configuration, env, logger);
+            this.environment = env;
+            this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
-            this.logger = logger;
+            this.logger = this.startupConfig.Logger;
         }
 
         /// <summary>
@@ -69,6 +69,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in Service Collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
@@ -98,21 +99,18 @@ namespace HealthGateway.JobScheduler
         /// </summary>
         /// <param name="app">The passed in Application Builder.</param>
         /// <param name="env">The passed in Environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Contract.Requires(env != null);
             this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
-
-            app.Use(async (context, next) =>
+            app.UseEndpoints(endpoints =>
             {
-                this.logger.LogDebug($"Current Protocol: {context.Request.Protocol}");
-                context.Request.Scheme = Uri.UriSchemeHttps;
-                this.logger.LogDebug($"New Protocol: {context.Request.Protocol}");
-                await next.Invoke().ConfigureAwait(true);
+                // Mapping of endpoints goes here:
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
             // Empty string signifies the root URL
@@ -120,7 +118,7 @@ namespace HealthGateway.JobScheduler
             {
                 DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
-                AppPath = AuthorizationConstants.LogoutPath,
+                AppPath = $"{this.GetBasePath()}{AuthorizationConstants.LogoutPath}",
             });
 
             app.UseHangfireServer();
@@ -133,6 +131,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
+            SchedulerHelper.ScheduleJob<HNClientTestJob>(this.configuration, "HNClientTest", j => j.Process());
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -162,6 +161,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in IServiceCollection.</param>
         private void ConfigureAuthentication(IServiceCollection services)
         {
+            string basePath = this.GetBasePath();
             services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -171,8 +171,8 @@ namespace HealthGateway.JobScheduler
             .AddCookie(options =>
             {
                 options.Cookie.Name = AuthorizationConstants.CookieName;
-                options.LoginPath = AuthorizationConstants.LoginPath;
-                options.LogoutPath = AuthorizationConstants.LogoutPath;
+                options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
             })
             .AddOpenIdConnect(options =>
             {
@@ -186,17 +186,20 @@ namespace HealthGateway.JobScheduler
                     ValidateIssuer = true,
                 };
                 this.configuration.GetSection("OpenIdConnect").Bind(options);
-                options.Events = new OpenIdConnectEvents()
-                {
-                    OnRedirectToIdentityProvider = ctx =>
-                    {
-                        this.logger.LogDebug("Redirecting to identity provider");
-                        ctx.ProtocolMessage.RedirectUri = ctx.ProtocolMessage.RedirectUri.Replace(Uri.UriSchemeHttp, Uri.UriSchemeHttps);
-                        this.logger.LogDebug($"Sending Redirect URI: {ctx.ProtocolMessage.RedirectUri}");
-                        return Task.FromResult(0);
-                    },
-                };
             });
+        }
+
+        private string GetBasePath()
+        {
+            string basePath = string.Empty;
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            if (section.GetValue<bool>("Enabled", false))
+            {
+                basePath = section.GetValue<string>("BasePath");
+            }
+
+            this.logger.LogDebug($"JobScheduler basePath = {basePath}");
+            return basePath;
         }
     }
 }

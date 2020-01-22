@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Authentication
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            IConfigurationSection configSection = config?.GetSection("AuthService");
+            IConfigurationSection? configSection = config.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
             this.TokenRequest = new ClientCredentialsTokenRequest()
@@ -70,7 +70,7 @@ namespace HealthGateway.Common.Authentication
             this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
-            JWTModel jwtModel = authenticating.Result as JWTModel;
+            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
             this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
@@ -85,9 +85,9 @@ namespace HealthGateway.Common.Authentication
                     // Create content for keycloak
                     IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
                     {
-                        new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId),
-                        new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret),
-                        new KeyValuePair<string, string>("audience", this.TokenRequest.Audience),
+                        new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId!),
+                        new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
+                        new KeyValuePair<string, string>("audience", this.TokenRequest.Audience!),
                         new KeyValuePair<string, string>("grant_type", @"client_credentials"),
                     };
                     using (var content = new FormUrlEncodedContent(keycloakParams))
