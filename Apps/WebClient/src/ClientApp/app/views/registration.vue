@@ -50,6 +50,11 @@ input {
       </b-row>
       <b-row v-else-if="isRegistrationInviteOnly && !inviteKey">
         <b-col>
+          <b-alert :show="hasErrors" dismissible variant="danger">
+            <h4>Error</h4>
+            <p>An unexpected error occured while processing the request:</p>
+            <span>{{ errorMessage }}</span>
+          </b-alert>
           <div id="pageTitle">
             <h1 id="Subject">
               Enter your email to join the waitlist
@@ -83,7 +88,11 @@ input {
                 >Email Address</label
               >
               <b-button
-                v-if="!waitlistEdditable && waitlistTempEmail"
+                v-if="
+                  !waitlistEdditable &&
+                    waitlistTempEmail &&
+                    !waitlistedSuccessfully
+                "
                 id="waitlistEditEmail"
                 class="mx-auto"
                 variant="link"
@@ -149,6 +158,15 @@ input {
                 ><span v-if="waitlistTempEmail">Save</span>
                 <span v-else>Join Waitlist</span>
               </b-button>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col
+              v-if="waitlistedSuccessfully"
+              class="font-weight-bold text-primary text-center "
+            >
+              Thanks! Your email has been added to the wait list. You should
+              receive an email confirmation from Health Gateway shortly.
             </b-col>
           </b-row>
         </b-col>
@@ -308,6 +326,8 @@ export default class RegistrationComponent extends Vue {
   private waitlistTempEmail: string = "";
   private waitlistEmail: string = "";
   private waitlistEmailConfirmation: string = "";
+
+  private waitlistedSuccessfully = false;
 
   mounted() {
     this.betaRequestService = container.get(
@@ -482,9 +502,12 @@ export default class RegistrationComponent extends Vue {
           this.waitlistEdditable = false;
           this.waitlistEmailConfirmation = "";
           this.waitlistTempEmail = this.email;
+          this.waitlistedSuccessfully = true;
+          this.hasErrors = false;
           this.$v.$reset();
         })
-        .catch(() => {
+        .catch(err => {
+          console.log("OH NO!", err);
           this.hasErrors = true;
         })
         .finally(() => {

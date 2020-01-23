@@ -64,37 +64,10 @@ namespace HealthGateway.Database.Delegates
         void UpdateEmail(Email email);
 
         /// <summary>
-        /// Inserts an email invite and the associated email.
-        /// </summary>
-        /// <param name="invite">The invite to insert.</param>
-        /// <returns>Returns the guid of the saved email invite.</returns>
-        Guid InsertEmailInvite(EmailInvite invite);
-
-        /// <summary>
         /// Looks up an Email Template in the database.
         /// </summary>
         /// <param name="templateName">The name of the template.</param>
         /// <returns>The populated Email template or null if not found.</returns>
         EmailTemplate GetEmailTemplate(string templateName);
-
-        /// <summary>
-        /// Gets a particular EmailInvite based on the users HDID and inviteKey.
-        /// </summary>
-        /// <param name="inviteKey">The users inviteKey as emailed.</param>
-        /// <returns>The EmailInvite that was fetched.</returns>
-        EmailInvite GetEmailInvite(Guid inviteKey);
-
-        /// <summary>
-        /// Gets the last EmailInvite based on the users HDID.
-        /// </summary>
-        /// <param name="hdid">The users hdid.</param>
-        /// <returns>The EmailInvite that was fetched.</returns>
-        EmailInvite GetLastEmailInviteForUser(string hdid);
-
-        /// <summary>
-        /// Updates an Email Invite using a populated EmailInvite object.
-        /// </summary>
-        /// <param name="emailInvite">The populated email to save.</param>
-        void UpdateEmailInvite(EmailInvite emailInvite);
     }
 }
