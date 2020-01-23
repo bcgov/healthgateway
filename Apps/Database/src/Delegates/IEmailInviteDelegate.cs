@@ -20,7 +20,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Interface for sending email.
+    /// Delegate that performs operations for the EmailInvite model.
     /// </summary>
     public interface IEmailInviteDelegate
     {
