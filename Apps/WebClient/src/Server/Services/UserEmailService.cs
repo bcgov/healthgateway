@@ -19,7 +19,6 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
@@ -27,7 +26,7 @@ namespace HealthGateway.WebClient.Services
     public class UserEmailService : IUserEmailService
     {
         private readonly ILogger logger;
-        private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
 
@@ -35,13 +34,13 @@ namespace HealthGateway.WebClient.Services
         /// Initializes a new instance of the <see cref="UserEmailService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
+        /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        public UserEmailService(ILogger<UserEmailService> logger, IEmailDelegate emailDelegate, IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
+        public UserEmailService(ILogger<UserEmailService> logger, IEmailInviteDelegate emailInviteDelegate, IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
         {
             this.logger = logger;
-            this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
         }
@@ -51,14 +50,14 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
             bool retVal = false;
-            EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
+            EmailInvite emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
 
             if (emailInvite != null && emailInvite.HdId == hdid)
             {
                 if (!emailInvite.Validated)
                 {
                     emailInvite.Validated = true;
-                    this.emailDelegate.UpdateEmailInvite(emailInvite);
+                    this.emailInviteDelegate.Update(emailInvite);
                     UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
                     userProfile.Email = emailInvite.Email.To; // Gets the user email from the email sent.
                     this.profileDelegate.UpdateUserProfile(userProfile);
@@ -75,7 +74,7 @@ namespace HealthGateway.WebClient.Services
         public EmailInvite RetrieveLastInvite(string hdid)
         {
             this.logger.LogTrace($"Retrieving last invite for {hdid}");
-            EmailInvite emailInvite = this.emailDelegate.GetLastEmailInviteForUser(hdid);
+            EmailInvite emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
             this.logger.LogDebug($"Finished retrieving email: {JsonConvert.SerializeObject(emailInvite)}");
             return emailInvite;
         }
@@ -86,7 +85,7 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogTrace($"Updating user email...");
             bool retVal = false;
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            EmailInvite emailInvite = this.emailDelegate.GetLastEmailInviteForUser(hdid);
+            EmailInvite emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
 
             if (email != userProfile.Email)
             {
@@ -100,7 +99,7 @@ namespace HealthGateway.WebClient.Services
                     this.profileDelegate.UpdateUserProfile(userProfile);
 
                     emailInvite.ExpireDate = DateTime.Now;
-                    this.emailDelegate.UpdateEmailInvite(emailInvite);
+                    this.emailInviteDelegate.Update(emailInvite);
                 }
                 else if (emailInvite?.Email?.To != email || emailInvite.ExpireDate < DateTime.Now)
                 {
@@ -115,7 +114,7 @@ namespace HealthGateway.WebClient.Services
                     if (emailInvite?.Email?.To != null)
                     {
                         emailInvite.ExpireDate = DateTime.Now;
-                        this.emailDelegate.UpdateEmailInvite(emailInvite);
+                        this.emailInviteDelegate.Update(emailInvite);
                     }
 
                     this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);

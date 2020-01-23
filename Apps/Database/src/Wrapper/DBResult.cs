@@ -38,6 +38,6 @@ namespace HealthGateway.Database.Wrapper
         /// Gets or sets the message depending on the result type.
         /// Will always be set when ResultType is Error.
         /// </summary>
-        public string? Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }

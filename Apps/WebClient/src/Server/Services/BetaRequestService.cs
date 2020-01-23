@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Services
     using System.Diagnostics.Contracts;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -30,16 +31,19 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly IBetaRequestDelegate betaRequestDelegate;
+        private readonly IEmailQueueService emailQueueService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetaRequestService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="betaRequestDelegate">The email delegate to interact with the DB.</param>
-        public BetaRequestService(ILogger<UserEmailService> logger, IBetaRequestDelegate betaRequestDelegate)
+        /// <param name="emailQueueService">The email service to queue emails.</param>
+        public BetaRequestService(ILogger<UserEmailService> logger, IBetaRequestDelegate betaRequestDelegate, IEmailQueueService emailQueueService)
         {
             this.logger = logger;
             this.betaRequestDelegate = betaRequestDelegate;
+            this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc />
@@ -68,27 +72,35 @@ namespace HealthGateway.WebClient.Services
                 {
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
+                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE);
+                    this.logger.LogDebug($"Finished updating beta request. {JsonConvert.SerializeObject(insertResult)}");
+                }
+                else
+                {
+                    requestResult.ResultMessage = insertResult.Message;
+                    requestResult.ResultStatus = ResultType.Error;
                 }
 
-                this.logger.LogDebug($"Finished updating beta request. {JsonConvert.SerializeObject(insertResult)}");
                 return requestResult;
             }
             else
             {
-                RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
-                string hdid = betaRequest.HdId;
-                betaRequest.CreatedBy = hdid;
-                betaRequest.UpdatedBy = hdid;
-
+                betaRequest.CreatedBy = betaRequest.HdId;
+                betaRequest.UpdatedBy = betaRequest.HdId;
                 DBResult<BetaRequest> insertResult = this.betaRequestDelegate.InsertBetaRequest(betaRequest);
+                RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
                 if (insertResult.Status == DBStatusCode.Created)
                 {
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
-
+                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE);
+                    this.logger.LogDebug($"Finished creating beta request. {JsonConvert.SerializeObject(insertResult)}");
                 }
-
-                this.logger.LogDebug($"Finished creating beta request. {JsonConvert.SerializeObject(insertResult)}");
+                else
+                {
+                    requestResult.ResultMessage = insertResult.Message;
+                    requestResult.ResultStatus = ResultType.Error;
+                }
                 return requestResult;
             }
         }

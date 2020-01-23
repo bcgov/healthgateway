@@ -32,6 +32,15 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
+        void QueueNewEmail(string toEmail, string templateName);
+
+        /// <summary>
+        /// Queues a new email based on a template name.
+        /// Template will be looked up in the DB.
+        /// A new email will be added to the database
+        /// </summary>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="templateName">The template to search the database for.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
         void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues);
 
@@ -73,21 +82,5 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="inviteEmailId">The id of the email to send.</param>
         void QueueInviteEmail(Guid inviteEmailId);
-
-        /// <summary>
-        /// Looks up an Email Template in the database.
-        /// </summary>
-        /// <param name="templateName">The name of the template.</param>
-        /// <returns>The populated Email template or null if not found.</returns>
-        EmailTemplate GetEmailTemplate(string templateName);
-
-        /// <summary>
-        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
-        /// </summary>
-        /// <param name="toEmail">The To email address.</param>
-        /// <param name="emailTemplate">An Email template object.</param>
-        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        /// <returns>The populated email object.</returns>
-        Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
     }
 }

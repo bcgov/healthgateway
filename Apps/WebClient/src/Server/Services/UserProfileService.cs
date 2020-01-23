@@ -35,6 +35,7 @@ namespace HealthGateway.WebClient.Services
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
 
@@ -44,13 +45,15 @@ namespace HealthGateway.WebClient.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
+        /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="configuration">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        public UserProfileService(ILogger<UserProfileService> logger, IProfileDelegate profileDelegate, IEmailDelegate emailDelegate, IConfigurationService configuration, IEmailQueueService emailQueueService)
+        public UserProfileService(ILogger<UserProfileService> logger, IProfileDelegate profileDelegate, IEmailDelegate emailDelegate, IEmailInviteDelegate emailInviteDelegate, IConfigurationService configuration, IEmailQueueService emailQueueService)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
             this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             this.configurationService = configuration;
             this.emailQueueService = emailQueueService;
         }
@@ -100,7 +103,7 @@ namespace HealthGateway.WebClient.Services
                     return requestResult;
                 }
 
-                emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
+                emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
 
                 // Fails if...
                 // Email invite not found or
@@ -134,7 +137,7 @@ namespace HealthGateway.WebClient.Services
                     // Validates the invite email
                     emailInvite.Validated = true;
                     emailInvite.HdId = hdid;
-                    this.emailDelegate.UpdateEmailInvite(emailInvite);
+                    this.emailInviteDelegate.Update(emailInvite);
                 }
 
                 if (!string.IsNullOrEmpty(email))

@@ -17,9 +17,9 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text.RegularExpressions;
     using Hangfire;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -37,9 +37,9 @@ namespace HealthGateway.Common.Services
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
         private const string ENVIRONMENT_VARIABLE = "Environment";
-        private const string REGISTRATION_TEMPLATE = "Registration";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IWebHostEnvironment enviroment;
         private readonly ILogger logger;
 
@@ -47,16 +47,26 @@ namespace HealthGateway.Common.Services
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="emailDelegate">The delegate to be used.</param>
+        /// <param name="emailDelegate">Email delegate to be used.</param>
+        /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
         /// <param name="enviroment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IEmailDelegate emailDelegate,
+            IEmailInviteDelegate emailInviteDelegate,
             IWebHostEnvironment enviroment)
         {
             this.logger = logger;
             this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             this.enviroment = enviroment;
+        }
+
+        /// <inheritdoc />
+        public void QueueNewEmail(string toEmail, string templateName)
+        {
+            Dictionary<string, string> keyValues = new Dictionary<string, string>();
+            this.QueueNewEmail(toEmail, templateName, keyValues);
         }
 
         /// <inheritdoc />
@@ -95,7 +105,7 @@ namespace HealthGateway.Common.Services
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
-            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(REGISTRATION_TEMPLATE), keyValues);
+            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.REGISTRATION_TEMPLATE), keyValues);
 
             this.QueueNewInviteEmail(invite);
         }
@@ -104,7 +114,7 @@ namespace HealthGateway.Common.Services
         public void QueueNewInviteEmail(EmailInvite invite)
         {
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
-            this.emailDelegate.InsertEmailInvite(invite);
+            this.emailInviteDelegate.Insert(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
             this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
         }
@@ -117,17 +127,14 @@ namespace HealthGateway.Common.Services
             this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
         }
 
-        /// <inheritdoc />
-        public EmailTemplate GetEmailTemplate(string templateName)
-        {
-            this.logger.LogTrace($"Getting email template... {templateName}");
-            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
-            return retVal;
-        }
-
-        /// <inheritdoc />
-        public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        /// <summary>
+        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
+        /// </summary>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="emailTemplate">An Email template object.</param>
+        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
+        /// <returns>The populated email object.</returns>
+        private Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
@@ -136,22 +143,17 @@ namespace HealthGateway.Common.Services
             return email;
         }
 
-
         /// <summary>
-        /// A string to scan for keys marked up as ${KEYNAME} to replace.
-        /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
+        /// Looks up an Email Template in the database.
         /// </summary>
-        /// <param name="template">The string to scan and replace.</param>
-        /// <param name="data">The dictionary of key/value pairs.</param>
-        /// <returns>The string with the key replaced by the supplied values.</returns>
-        private static string ProcessTemplateString(string template, Dictionary<string, string> data)
+        /// <param name="templateName">The name of the template.</param>
+        /// <returns>The populated Email template or null if not found.</returns>
+        private EmailTemplate GetEmailTemplate(string templateName)
         {
-            // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
-            // the mustaches match one of those in the dictionary.  If so it then replaces the match
-            // with the value in the dictionary.
-            return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
-               m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value) ?
-               data[m.Groups[1].Value] : m.Value);
+            this.logger.LogTrace($"Getting email template... {templateName}");
+            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
+            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
 
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
@@ -168,6 +170,23 @@ namespace HealthGateway.Common.Services
             email.Body = ProcessTemplateString(emailTemplate.Body, keyValues);
             email.FormatCode = emailTemplate.FormatCode;
             return email;
+        }
+
+        /// <summary>
+        /// A string to scan for keys marked up as ${KEYNAME} to replace.
+        /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
+        /// </summary>
+        /// <param name="template">The string to scan and replace.</param>
+        /// <param name="data">The dictionary of key/value pairs.</param>
+        /// <returns>The string with the key replaced by the supplied values.</returns>
+        private static string ProcessTemplateString(string template, Dictionary<string, string> data)
+        {
+            // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
+            // the mustaches match one of those in the dictionary.  If so it then replaces the match
+            // with the value in the dictionary.
+            return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
+               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
+               data[m.Groups[1].Value] : m.Value);
         }
     }
 }
