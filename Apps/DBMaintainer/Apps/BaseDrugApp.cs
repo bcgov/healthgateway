@@ -16,6 +16,7 @@
 namespace HealthGateway.DrugMaintainer.Apps
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
@@ -139,10 +140,12 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="downloadedFile">Search for all download files not matching this one.</param>
         protected void RemoveOldFiles(FileDownload downloadedFile)
         {
-            var oldIds = this.drugDbContext.FileDownload.Where(p => p.ProgramCode == downloadedFile.ProgramCode &&
-                                          p.Hash != downloadedFile.Hash).Select(f => f.Id).ToList();
+            List<FileDownload> oldIds = this.drugDbContext.FileDownload
+                                            .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
+                                            .Select(f => new FileDownload{ Id = f.Id, Version = f.Version})
+                                            .ToList();
             oldIds.ForEach(s => logger.LogInformation($"Deleting old Download file with hash: {s}"));
-            this.drugDbContext.RemoveRange(oldIds.Select(id => new FileDownload { Id = id }));
+            this.drugDbContext.RemoveRange(oldIds);
         }
 
         /// <summary>
