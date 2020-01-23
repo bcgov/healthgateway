@@ -134,10 +134,6 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-router.afterEach((to, from) => {
-  window.snowplow("trackPageView");
-});
-
 function handleUserHasAccess(to: Route, from: Route, next: any) {
   // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
