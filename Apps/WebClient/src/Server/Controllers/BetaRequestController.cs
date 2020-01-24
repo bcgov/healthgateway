@@ -87,8 +87,6 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer?
                 .GetLeftPart(UriPartial.Authority);
 
-            referer = referer.Remove(referer.Length - 1, 1); // Strips last slash
-
             RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest, referer);
             return new JsonResult(result);
         }
