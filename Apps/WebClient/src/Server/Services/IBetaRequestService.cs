@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
 
@@ -34,7 +35,8 @@ namespace HealthGateway.WebClient.Services
         /// Saves the user profile to the database.
         /// </summary>
         /// <param name="betaRequest">The request to create a beta request.</param>
+        /// <param name="hostUrl">The host url for referal purposes.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest);
+        RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl);
     }
 }

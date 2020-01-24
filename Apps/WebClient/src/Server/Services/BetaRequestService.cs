@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -32,6 +34,9 @@ namespace HealthGateway.WebClient.Services
         private readonly ILogger logger;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IEmailQueueService emailQueueService;
+#pragma warning disable SA1310 // Disable _ in variable name
+        private const string HOST_TEMPLATE_VARIABLE = "host";
+#pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetaRequestService"/> class.
@@ -56,7 +61,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest)
+        public RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl)
         {
             Contract.Requires(betaRequest != null);
             Contract.Requires(!string.IsNullOrEmpty(betaRequest.HdId));
@@ -70,9 +75,11 @@ namespace HealthGateway.WebClient.Services
                 DBResult<BetaRequest> insertResult = this.betaRequestDelegate.UpdateBetaRequest(betaRequest);
                 if (insertResult.Status == DBStatusCode.Updated)
                 {
+                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
+                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE, keyValues);
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
-                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE);
                     this.logger.LogDebug($"Finished updating beta request. {JsonConvert.SerializeObject(insertResult)}");
                 }
                 else
@@ -91,9 +98,11 @@ namespace HealthGateway.WebClient.Services
                 RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
                 if (insertResult.Status == DBStatusCode.Created)
                 {
+                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
+                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE, keyValues);
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
-                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE);
                     this.logger.LogDebug($"Finished creating beta request. {JsonConvert.SerializeObject(insertResult)}");
                 }
                 else
