@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Services
         /// <summary>
         /// Queues a new email based on a template name.
         /// Template will be looked up in the DB.
-        /// A new email will be added to the database
+        /// A new email will be added to the database.
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.Services
         /// <summary>
         /// Queues a new email based on a template name.
         /// Template will be looked up in the DB.
-        /// A new email will be added to the database
+        /// A new email will be added to the database.
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
@@ -46,7 +46,7 @@ namespace HealthGateway.Common.Services
 
         /// <summary>
         /// Queues an email using a resolved template.
-        /// A new email will be added to the database
+        /// A new email will be added to the database.
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="emailTemplate">The resolved Email Template.</param>
@@ -55,7 +55,7 @@ namespace HealthGateway.Common.Services
 
         /// <summary>
         /// Queues an email using a populated Email object.
-        /// A new email will be added to the database
+        /// A new email will be added to the database.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
         void QueueNewEmail(Email email);
@@ -82,5 +82,14 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="inviteEmailId">The id of the email to send.</param>
         void QueueInviteEmail(Guid inviteEmailId);
+
+        /// <summary>
+        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
+        /// </summary>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="emailTemplate">An Email template object.</param>
+        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
+        /// <returns>The populated email object.</returns>
+        Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
     }
 }
