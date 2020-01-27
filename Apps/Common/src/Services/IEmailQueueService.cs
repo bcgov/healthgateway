@@ -82,5 +82,14 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="inviteEmailId">The id of the email to send.</param>
         void QueueInviteEmail(Guid inviteEmailId);
+
+        /// <summary>
+        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
+        /// </summary>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="emailTemplate">An Email template object.</param>
+        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
+        /// <returns>The populated email object.</returns>
+        Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
     }
 }

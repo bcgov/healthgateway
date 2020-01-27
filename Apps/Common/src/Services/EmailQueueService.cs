@@ -127,14 +127,8 @@ namespace HealthGateway.Common.Services
             this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
         }
 
-        /// <summary>
-        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
-        /// </summary>
-        /// <param name="toEmail">The To email address.</param>
-        /// <param name="emailTemplate">An Email template object.</param>
-        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        /// <returns>The populated email object.</returns>
-        private Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        /// <inheritdoc />
+        public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
