@@ -87,7 +87,7 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer?
                 .GetLeftPart(UriPartial.Authority);
 
-            RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest);
+            RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest, referer);
             return new JsonResult(result);
         }
 

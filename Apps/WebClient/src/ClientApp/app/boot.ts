@@ -4,7 +4,6 @@ import VueRouter from "vue-router";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import i18n from "@/i18n";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
 import "@/registerComponentHooks";
@@ -103,7 +102,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 function initializeVue() {
   new Vue({
     el: "#app-root",
-    i18n: i18n,
     store,
     router,
     render: h => h(App)
