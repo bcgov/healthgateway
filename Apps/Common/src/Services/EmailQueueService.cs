@@ -127,20 +127,31 @@ namespace HealthGateway.Common.Services
             this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
         }
 
-        /// <summary>
-        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
-        /// </summary>
-        /// <param name="toEmail">The To email address.</param>
-        /// <param name="emailTemplate">An Email template object.</param>
-        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        /// <returns>The populated email object.</returns>
-        private Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        /// <inheritdoc />
+        public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
             this.logger.LogDebug($"Finished processing template. {JsonConvert.SerializeObject(email)}");
             return email;
+        }
+
+        /// <summary>
+        /// A string to scan for keys marked up as ${KEYNAME} to replace.
+        /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
+        /// </summary>
+        /// <param name="template">The string to scan and replace.</param>
+        /// <param name="data">The dictionary of key/value pairs.</param>
+        /// <returns>The string with the key replaced by the supplied values.</returns>
+        private static string ProcessTemplateString(string template, Dictionary<string, string> data)
+        {
+            // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
+            // the mustaches match one of those in the dictionary.  If so it then replaces the match
+            // with the value in the dictionary.
+            return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
+               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
+               data[m.Groups[1].Value] : m.Value);
         }
 
         /// <summary>
@@ -170,23 +181,6 @@ namespace HealthGateway.Common.Services
             email.Body = ProcessTemplateString(emailTemplate.Body, keyValues);
             email.FormatCode = emailTemplate.FormatCode;
             return email;
-        }
-
-        /// <summary>
-        /// A string to scan for keys marked up as ${KEYNAME} to replace.
-        /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
-        /// </summary>
-        /// <param name="template">The string to scan and replace.</param>
-        /// <param name="data">The dictionary of key/value pairs.</param>
-        /// <returns>The string with the key replaced by the supplied values.</returns>
-        private static string ProcessTemplateString(string template, Dictionary<string, string> data)
-        {
-            // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
-            // the mustaches match one of those in the dictionary.  If so it then replaces the match
-            // with the value in the dictionary.
-            return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
-               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
-               data[m.Groups[1].Value] : m.Value);
         }
     }
 }
