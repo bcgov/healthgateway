@@ -56,6 +56,13 @@ input {
               @click="makeEdditable()"
               >Edit
             </b-button>
+            <b-button v-if="email"
+                      id="removeEmail"
+                      class="text-danger"
+                      variant="link"
+                      @click="makeEdditable();removeEmail()">
+                Remove
+            </b-button>            
             <div class="form-inline">
               <b-form-input
                 id="email"
@@ -68,14 +75,6 @@ input {
               <div v-if="!emailVerified && !isEdditable && email" class="ml-3">
                 (Not Verified)
               </div>
-              <b-button
-                v-if="isEdditable && email && email === tempEmail"
-                id="removeEmail"
-                class="ml-5 text-danger"
-                variant="link"
-                @click="removeEmail()"
-                >Remove
-              </b-button>
               <b-button
                 v-if="!emailVerified && !isEdditable && email"
                 id="resendEmail"
@@ -262,6 +261,7 @@ export default class ProfileComponent extends Vue {
 
   private makeEdditable(): void {
     this.isEdditable = true;
+    this.emailConfirmation = this.email;
     this.tempEmail = this.email || "";
   }
 
