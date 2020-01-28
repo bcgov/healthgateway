@@ -1,20 +1,23 @@
 <template>
-  <v-app>
-    <core-filter />
-
-    <core-toolbar />
-
-    <core-drawer />
-
-    <core-view />
+  <v-app id="mysegement">
+    <MainNavbar title="HealthGateway Admin"/>
+    <v-content>
+      <router-view />
+    </v-content>
+    <Footer/>
   </v-app>
 </template>
 
-<style lang="scss">
-@import '@/styles/index.scss';
+<script lang="ts">
+import MainNavbar from '@/components/MainNavbar.vue';
+import Footer from '@/components/Footer.vue';
 
-/* Remove in 1.2 */
-.v-datatable thead th.column.sortable i {
-  vertical-align: unset;
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component({
+  components: { MainNavbar, Footer },
+})
+export default class App extends Vue {
+
 }
-</style>
+</script>

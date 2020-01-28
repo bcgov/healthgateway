@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace mysegments
+namespace HealthGateway.AdminWebClient
 {
     public class Program
     {

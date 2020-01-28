@@ -27,7 +27,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Logging;
 using VueCliMiddleware;
 
-namespace mysegments
+namespace HealthGateway.AdminWebClient
 {
     public class Startup
     {

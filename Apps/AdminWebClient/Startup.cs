@@ -27,7 +27,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Logging;
 using VueCliMiddleware;
 
-namespace mysegments
+namespace HealthGateway.AdminWebClient
 {
     public class Startup
     {
@@ -117,7 +117,7 @@ namespace mysegments
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                configuration.RootPath = "src/ClientApp/dist";
             });
         }
 
@@ -169,7 +169,7 @@ namespace mysegments
                     {
                         endpoints.MapToVueCliProxy(
                             "{*path}",
-                            new SpaOptions { SourcePath = "ClientApp" },
+                            new SpaOptions { SourcePath = "src/ClientApp" },
                             npmScript: "serve",
                             regex: "Compiled successfully");
                     }
@@ -181,7 +181,7 @@ namespace mysegments
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "src/ClientApp";
             });
         }
     }

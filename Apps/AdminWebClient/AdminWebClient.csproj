@@ -5,12 +5,12 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
+    <SpaRoot>src\ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <Authors></Authors>
     <Company>Government of British Columbia.</Company>
-    <Description>AdminWebClient, an ASP.NET Core + Vue.js project</Description>
-    <Copyright>GNU GPLv3 Zed Werks Inc.</Copyright>
+    <Description>AdminWebClient, an ASP.NET Core + Vue.js and Vuetify project</Description>
+    <Copyright>Apache 2.0 License, Copyright Province of British Columbia</Copyright>
     <AssemblyName>AdminWebClient</AssemblyName>
     <RootNamespace>AdminWebClient</RootNamespace>
     <Version>1.0.0</Version>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ClientApp\tsconfig.json" />
+    <Content Include="$(SpaRoot)tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
