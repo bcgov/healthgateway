@@ -1889,7 +1889,7 @@
         ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[5]/div", "xpath:idRelative"],
         ["xpath=//div[5]/div", "xpath:position"]
       ],
-      "value": " Removing your email will prevent future communication about your healthrecords"
+      "value": "Removing your email address will disable future communications from the Health Gateway"
     }, {
       "id": "96347150-5448-4d97-918c-a0c1509e1b92",
       "comment": "",
