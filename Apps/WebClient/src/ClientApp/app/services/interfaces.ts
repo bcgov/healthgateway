@@ -12,7 +12,8 @@ import Pharmacy from "@/models/pharmacy";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
-import UserEmail from "@/models/emailInvite";
+import UserEmailInvite from "@/models/userEmailInvite";
+import BetaRequest from "@/models/betaRequest";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -67,8 +68,15 @@ export interface IUserFeedbackService {
 
 export interface IUserEmailService {
   initialize(http: IHttpDelegate): void;
-  getLatestInvite(hdid: string): Promise<UserEmail>;
+  getLatestInvite(hdid: string): Promise<UserEmailInvite>;
   validateEmail(inviteKey: string): Promise<boolean>;
+  updateEmail(hdid: string, email: string): Promise<boolean>;
+}
+
+export interface IBetaRequestService {
+  initialize(http: IHttpDelegate): void;
+  getRequest(hdid: string): Promise<BetaRequest>;
+  putRequest(request: BetaRequest): Promise<BetaRequest>;
 }
 
 export interface IHttpDelegate {
@@ -77,4 +85,9 @@ export interface IHttpDelegate {
   getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   post<T>(url: string, payload: Object): Promise<T>;
+  put<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
 }

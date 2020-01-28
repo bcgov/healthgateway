@@ -4,7 +4,6 @@ import VueRouter from "vue-router";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import i18n from "@/i18n";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
 import "@/registerComponentHooks";
@@ -21,7 +20,8 @@ import {
   IConfigService,
   IUserProfileService,
   IUserFeedbackService,
-  IUserEmailService
+  IUserEmailService,
+  IBetaRequestService
 } from "@/services/interfaces";
 import SERVICE_IDENTIFIER, {
   DELEGATE_IDENTIFIER
@@ -67,6 +67,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userEmailService: IUserEmailService = container.get(
     SERVICE_IDENTIFIER.UserEmailService
   );
+  const betaRequestService: IBetaRequestService = container.get(
+    SERVICE_IDENTIFIER.BetaRequestService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -75,6 +78,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
+  betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
@@ -98,7 +102,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 function initializeVue() {
   new Vue({
     el: "#app-root",
-    i18n: i18n,
     store,
     router,
     render: h => h(App)

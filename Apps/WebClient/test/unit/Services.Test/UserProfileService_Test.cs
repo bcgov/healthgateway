@@ -52,7 +52,8 @@ namespace HealthGateway.WebClient.Test.Services
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(expected);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            emailDelegateMock.Setup(s => s.GetEmailInvite(It.IsAny<Guid>())).Returns(new EmailInvite());
+            Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
+            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new EmailInvite());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
@@ -61,6 +62,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
                 emailDelegateMock.Object,
+                emailInviteDelegateMock.Object,
                 configServiceMock.Object,
                 emailer.Object);
             RequestResult<UserProfile> actualResult = service.GetUserProfile(hdid);
@@ -85,12 +87,12 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
-            // emailer.Setup(s => s.QueueEmail(
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            emailDelegateMock.Setup(s => s.GetEmailInvite(It.IsAny<Guid>())).Returns(new EmailInvite());
+            Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
+            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new EmailInvite());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = RegistrationStatus.Open } });
@@ -98,6 +100,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
                 emailDelegateMock.Object,
+                emailInviteDelegateMock.Object,
                 configServiceMock.Object,
                 emailer.Object);
 
