@@ -1,6 +1,6 @@
 <template>
   <v-app id="mysegement">
-    <MainNavbar title="HealthGateway Admin Testo2"/>
+    <MainNavbar title="HealthGateway Admin"/>
     <v-content>
       <router-view />
     </v-content>

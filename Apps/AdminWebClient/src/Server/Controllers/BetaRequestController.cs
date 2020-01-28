@@ -32,19 +32,19 @@ namespace HealthGateway.Admin.Controllers
     //[ApiVersion("1.0")]
     [Route("v1/api/[controller]")]
     [ApiController]
-    public class UserEmailController
+    public class BetaRequestController
     {
         private readonly IUserEmailService userEmailService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationService authorizationService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserEmailController"/> class.
+        /// Initializes a new instance of the <see cref="BetaRequestController"/> class.
         /// </summary>
         /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="authorizationService">The injected authorization service.</param>
-        public UserEmailController(
+        public BetaRequestController(
             IUserEmailService userEmailService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
