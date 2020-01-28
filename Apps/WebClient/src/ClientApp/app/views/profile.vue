@@ -109,14 +109,11 @@ input {
           </b-col>
         </b-row>
         <b-row v-if="!email && tempEmail">
-          <b-col class="font-weight-bold text-primary text-center">
-            <font-awesome-icon
-              icon="exclamation-triangle"
-              aria-hidden="true"
-            ></font-awesome-icon>
-            Removing your email will prevent future communication about your
-            healthrecords
-          </b-col>
+            <b-col class="font-weight-bold text-primary text-center">
+                <font-awesome-icon icon="exclamation-triangle"
+                                   aria-hidden="true"></font-awesome-icon>
+                Removing your email address will disable future communications from the Health Gateway
+            </b-col>
         </b-row>
         <b-row v-if="isEdditable" class="mb-3 justify-content-end">
           <b-col class="text-right">
