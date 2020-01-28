@@ -56,13 +56,18 @@ input {
               @click="makeEdditable()"
               >Edit
             </b-button>
-            <b-button v-if="email"
-                      id="removeEmail"
-                      class="text-danger"
-                      variant="link"
-                      @click="makeEdditable();removeEmail()">
-                Remove
-            </b-button>            
+            <b-button
+              v-if="email"
+              id="removeEmail"
+              class="text-danger"
+              variant="link"
+              @click="
+                makeEdditable();
+                removeEmail();
+              "
+            >
+              Remove
+            </b-button>
             <div class="form-inline">
               <b-form-input
                 id="email"
@@ -108,11 +113,14 @@ input {
           </b-col>
         </b-row>
         <b-row v-if="!email && tempEmail">
-            <b-col class="font-weight-bold text-primary text-center">
-                <font-awesome-icon icon="exclamation-triangle"
-                                   aria-hidden="true"></font-awesome-icon>
-                Removing your email address will disable future communications from the Health Gateway
-            </b-col>
+          <b-col class="font-weight-bold text-primary text-center">
+            <font-awesome-icon
+              icon="exclamation-triangle"
+              aria-hidden="true"
+            ></font-awesome-icon>
+            Removing your email address will disable future communications from
+            the Health Gateway
+          </b-col>
         </b-row>
         <b-row v-if="isEdditable" class="mb-3 justify-content-end">
           <b-col class="text-right">
