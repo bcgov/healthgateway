@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdminWebClient</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Admin.Controllers.UserEmailController">
+            <summary>
+            Web API to handle user email interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserEmailController.#ctor(HealthGateway.Admin.Services.IUserEmailService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.UserEmailController"/> class.
+            </summary>
+            <param name="userEmailService">The injected user email service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserEmailController.ValidateEmail(System.Guid)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The an empty response.</returns>
+            <param name="inviteKey">The email invite key.</param>
+            <response code="200">The email was validated.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="404">The invite key was not found.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserEmailController.GetUserEmailInvite(System.String)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user email invite json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.IUserEmailService">
+            <summary>
+            The User Email service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IUserEmailService.ValidateEmail(System.String,System.Guid)">
+            <summary>
+            Validates the email that matches the given invite key.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="inviteKey">The email invite key.</param>
+            <returns>returns true if the email invite was found.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.UserEmailService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserEmailService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserEmailService})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.UserEmailService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="emailDelegate">The email delegate to interact with the DB.</param>
+            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+        </member>
+        <member name="T:HealthGateway.AdminWebClient.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.AdminWebClient.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.AdminWebClient.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+    </members>
+</doc>

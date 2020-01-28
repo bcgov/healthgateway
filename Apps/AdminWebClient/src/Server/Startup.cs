@@ -13,26 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.Extensions.Logging;
-using VueCliMiddleware;
-
 namespace HealthGateway.AdminWebClient
 {
+    using HealthGateway.Common.AspNetConfiguration;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SpaServices;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.IdentityModel.Logging;
+    using Microsoft.Extensions.Logging;
+    using VueCliMiddleware;
+
+    /// <summary>
+    /// Configures the application during startup.
+    /// </summary>
     public class Startup
     {
+        private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
-        private readonly ILogger<Startup> logger;
+        private readonly ILogger logger;
 
         readonly static string CorsPolicy = "CorsPolicy";
 
@@ -41,79 +46,35 @@ namespace HealthGateway.AdminWebClient
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
+            this.startupConfig = new StartupConfiguration(configuration, env);
+            this.logger = this.startupConfig.Logger;
             this.configuration = configuration;
-            this.logger = logger;
-
         }
 
         /// <summary>
-        /// This sets up the OIDC authentication.
+        /// This method gets called by the runtime. Use this method to add services to the container.
         /// </summary>
-        /// <param name="services">The passed in IServiceCollection.</param>
-        private void ConfigureAuthentication(IServiceCollection services)
-        {
-            services.AddAuthentication(options =>
-            {
-
-            })
-            .AddCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-            });
-        }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
             IdentityModelEventSource.ShowPII = true; //To show detail of error and see the problem
 
             this.logger.LogDebug("Configure Services...");
 
-            services.AddCors(o => o.AddPolicy(CorsPolicy, builder =>
-            {
-                string origins = this.configuration.GetValue<string>("AddCors:WithOrigins");
+            this.startupConfig.ConfigureForwardHeaders(services);
+            this.startupConfig.ConfigureHttpServices(services);
+            this.startupConfig.ConfigureAuditServices(services);
+            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureSwaggerServices(services);
 
-                builder.WithOrigins(origins)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                    .Build();
-            }));
+            // Add services
+            //services.AddTransient<IConfigurationService, ConfigurationService>();
 
-            services.AddHttpClient();
-            services.AddResponseCompression();
-            /*         services.AddResponseCompression(options =>
-                    {
-                        //options.Providers.Add<GzipCompressionProvider>();
-                        options.EnableForHttps = true;
-                    }); */
-
-            this.ConfigureAuthentication(services);
-
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential 
-                // cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                // requires using Microsoft.AspNetCore.Http;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-            services.AddHttpContextAccessor();
-            services.AddHealthChecks();
-
-            services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
+            // Configure SPA 
             services.AddControllersWithViews();
-
-            // Add AddRazorPages if the app uses Razor Pages.
-            //services.AddRazorPages();
 
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -125,6 +86,11 @@ namespace HealthGateway.AdminWebClient
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            this.startupConfig.UseForwardHeaders(app);
+            this.startupConfig.UseSwagger(app);
+            this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
+
             if (env.IsDevelopment())
             {
                 this.logger.LogInformation("ENVIRONENT is Development");
@@ -137,23 +103,16 @@ namespace HealthGateway.AdminWebClient
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            /*app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
-
-            app.UseRouting();
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.All
-            });
 
             // app.UseRequestLocalization();
             //app.UseCors(CorsPolicy);
 
             app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthorization();*/
 
             if (!env.IsDevelopment())
             {
@@ -162,6 +121,7 @@ namespace HealthGateway.AdminWebClient
 
             app.UseEndpoints(endpoints =>
                 {
+                    endpoints.MapControllers();
                     endpoints.MapControllerRoute(
                         name: "default",
                         pattern: "{controller}/{action=Index}/{id?}");
@@ -176,7 +136,7 @@ namespace HealthGateway.AdminWebClient
                     }
 
                     // Add MapRazorPages if the app uses Razor Pages. Since Endpoint Routing includes support for many frameworks, adding Razor Pages is now opt -in.
-                    endpoints.MapRazorPages();
+                    //endpoints.MapRazorPages();
                 }
             );
 

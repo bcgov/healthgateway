@@ -12,17 +12,29 @@
     <Description>AdminWebClient, an ASP.NET Core + Vue.js project</Description>
     <Copyright>GNU GPLv3 Zed Werks Inc.</Copyright>
     <AssemblyName>AdminWebClient</AssemblyName>
-    <RootNamespace>AdminWebClient</RootNamespace>
+    <RootNamespace>HealthGateway.AdminWebClient</RootNamespace>
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>.\AdminWebClient.xml</DocumentationFile>
+  </PropertyGroup>  
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.0" />
     <PackageReference Include="UAParser" Version="3.1.43" />
     <PackageReference Include="VueCliMiddleware" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

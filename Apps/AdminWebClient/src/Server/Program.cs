@@ -13,38 +13,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 namespace HealthGateway.AdminWebClient
 {
-    public class Program
-    {
-        private const string EnvironmentPrefix = "AdminWebClient_";
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.AspNetConfiguration;
 
+    /// <summary>
+    /// The entry point for the project.
+    /// </summary>
+    public static class Program
+    {
+        /// <summary>.
+        /// The entry point for the class.
+        /// </summary>
+        /// <param name="args">The command line arguments to be passed in.</param>
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((builderContext, config) =>
-                {
-                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                    config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
-                })
-                .UseStartup<Startup>()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-
-                    logging.AddFilter("Microsoft", LogLevel.Warning);
-                    logging.AddFilter("System", LogLevel.Warning);
-                    logging.AddConsole();
-                });
+        /// <summary>.
+        /// Creates the IWebHostBuilder.
+        /// </summary>
+        /// <param name="args">The command line arguments to be passed in.</param>
+        /// <returns>Returns the configured webhost.</returns>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            ProgramConfiguration.CreateHostBuilder<Startup>(args);
     }
 }
