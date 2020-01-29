@@ -107,7 +107,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting pending beta requests from DB...");
             DBResult<List<BetaRequest>> result = new DBResult<List<BetaRequest>>();
-            List<BetaRequest> betaRequests = this.dbContext.BetaRequest.Where(b => this.dbContext.EmailInvite.Select(e => e.HdId).Contains(b.HdId)).ToList();
+            List<BetaRequest> betaRequests = this.dbContext.BetaRequest.Where(b => !this.dbContext.EmailInvite.Select(e => e.HdId).Contains(b.HdId)).ToList();
             result.Payload = betaRequests;
             result.Status = betaRequests != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting pending beta request from DB. {JsonSerializer.Serialize(result)}");
