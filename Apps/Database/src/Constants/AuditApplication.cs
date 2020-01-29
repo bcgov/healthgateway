@@ -44,5 +44,10 @@ namespace HealthGateway.Database.Constant
         /// Represents the Medication application.
         /// </summary>
         public const string Medication = "MED";
+
+        /// <summary>
+        /// Represents the Admin Client application.
+        /// </summary>
+        public const string AdminWebClient = "IMM";
     }
 }
