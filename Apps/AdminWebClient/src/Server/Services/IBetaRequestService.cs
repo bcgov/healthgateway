@@ -16,19 +16,28 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
+    using System.Collections.Generic;
+    using HealthGateway.Admin.Models;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The User Email service.
+    /// Service that provides functionality to access and create requests for beta access.
     /// </summary>
-    public interface IUserEmailService
+    public interface IBetaRequestService
     {
         /// <summary>
-        /// Validates the email that matches the given invite key.
+        /// Retrieves the beta requests where the user does not have an invite yet.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="inviteKey">The email invite key.</param>
-        /// <returns>returns true if the email invite was found.</returns>
-        bool ValidateEmail(string hdid, Guid inviteKey);
+        /// <returns>returns the beta request for the user if found.</returns>
+        List<UserBetaRequest> GetPendingBetaRequests();
+
+        /// <summary>
+        /// Saves the user profile to the database.
+        /// </summary>
+        /// <param name="betaRequests">The request to create a beta request.</param>
+        /// <param name="hostUrl">The host url for referal purposes.</param>
+        /// <returns>The wrapped user profile.</returns>
+        //RequestResult<List<UserBetaRequest>> SendInvites(List<UserBetaRequest> betaRequests, string hostUrl);
     }
 }

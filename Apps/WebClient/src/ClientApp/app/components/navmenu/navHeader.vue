@@ -40,18 +40,36 @@
           right
           variant="dark"
         >
-          <b-dropdown-item>
-            <router-link v-if="displayMenu" variant="primary" to="/timeline">
-              <font-awesome-icon icon="stream"></font-awesome-icon> Timeline
+          <b-dropdown-item v-if="displayMenu">
+            <router-link id="menuBtnTimeline" variant="primary" to="/timeline">
+              <font-awesome-icon icon="stream"></font-awesome-icon>Timeline
             </router-link>
-            <b-dropdown-divider v-if="displayMenu" />
+          </b-dropdown-item>
+          <b-dropdown-divider v-if="displayMenu" />
+          <b-dropdown-item v-if="displayMenu">
+            <router-link id="menuBtnProfile" variant="primary" to="/profile">
+              <font-awesome-icon icon="user"></font-awesome-icon>Profile
+            </router-link>
+          </b-dropdown-item>
+          <b-dropdown-item
+            v-if="displayMenu"
+            href="https://github.com/bcgov/healthgateway/wiki"
+          >
+            <a
+              href="https://github.com/bcgov/healthgateway/wiki"
+              target="_blank"
+            >
+              <font-awesome-icon icon="info-circle"></font-awesome-icon>About
+            </a>
+          </b-dropdown-item>
+          <b-dropdown-item>
             <router-link id="menuBtnLogout" variant="primary" to="/logout">
-              <font-awesome-icon icon="user"></font-awesome-icon> Logout
+              <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>Logout
             </router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
         <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
-          <font-awesome-icon icon="user"></font-awesome-icon> Login
+          <font-awesome-icon icon="user"></font-awesome-icon>Login
         </router-link>
       </b-navbar-nav>
     </b-collapse>
@@ -68,8 +86,14 @@ import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import container from "@/inversify.config";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStream,
+  faSignOutAlt,
+  faInfoCircle
+} from "@fortawesome/free-solid-svg-icons";
 library.add(faStream);
+library.add(faSignOutAlt);
+library.add(faInfoCircle);
 
 interface ILanguage {
   code: string;

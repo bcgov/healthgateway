@@ -17,9 +17,9 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text.RegularExpressions;
     using Hangfire;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -37,9 +37,9 @@ namespace HealthGateway.Common.Services
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
         private const string ENVIRONMENT_VARIABLE = "Environment";
-        private const string REGISTRATION_TEMPLATE = "Registration";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IWebHostEnvironment enviroment;
         private readonly ILogger logger;
 
@@ -47,32 +47,42 @@ namespace HealthGateway.Common.Services
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="emailDelegate">The delegate to be used.</param>
+        /// <param name="emailDelegate">Email delegate to be used.</param>
+        /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
         /// <param name="enviroment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IEmailDelegate emailDelegate,
+            IEmailInviteDelegate emailInviteDelegate,
             IWebHostEnvironment enviroment)
         {
             this.logger = logger;
             this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             this.enviroment = enviroment;
         }
 
         /// <inheritdoc />
-        public void QueueEmail(string toEmail, string templateName, Dictionary<string, string> keyValues)
+        public void QueueNewEmail(string toEmail, string templateName)
         {
-            this.QueueEmail(toEmail, this.GetEmailTemplate(templateName), keyValues);
+            Dictionary<string, string> keyValues = new Dictionary<string, string>();
+            this.QueueNewEmail(toEmail, templateName, keyValues);
         }
 
         /// <inheritdoc />
-        public void QueueEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues)
         {
-            this.QueueEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues));
+            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues);
         }
 
         /// <inheritdoc />
-        public void QueueEmail(Email email)
+        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        {
+            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues));
+        }
+
+        /// <inheritdoc />
+        public void QueueNewEmail(Email email)
         {
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
             this.emailDelegate.InsertEmail(email);
@@ -81,12 +91,13 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueInviteEmail(string hdid, string toEmail, Uri activationHost)
+        public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
             EmailInvite invite = new EmailInvite();
             invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
+            invite.ExpireDate = DateTime.MaxValue;
 
             string hostUrl = activationHost.ToString();
             hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash
@@ -94,27 +105,26 @@ namespace HealthGateway.Common.Services
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
-            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(REGISTRATION_TEMPLATE), keyValues);
+            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.REGISTRATION_TEMPLATE), keyValues);
 
-            this.QueueInviteEmail(invite);
+            this.QueueNewInviteEmail(invite);
         }
 
         /// <inheritdoc />
-        public void QueueInviteEmail(EmailInvite invite)
+        public void QueueNewInviteEmail(EmailInvite invite)
         {
-            this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(invite)}");
-            this.emailDelegate.InsertEmailInvite(invite);
+            this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
+            this.emailInviteDelegate.Insert(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
-            this.logger.LogDebug($"Finished queueing invite email. {invite.Id}");
+            this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
         }
 
         /// <inheritdoc />
-        public EmailTemplate GetEmailTemplate(string templateName)
+        public void QueueInviteEmail(Guid inviteEmailId)
         {
-            this.logger.LogTrace($"Getting email template... {templateName}");
-            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
-            return retVal;
+            this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(inviteEmailId)}");
+            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(inviteEmailId));
+            this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
         }
 
         /// <inheritdoc />
@@ -140,8 +150,21 @@ namespace HealthGateway.Common.Services
             // the mustaches match one of those in the dictionary.  If so it then replaces the match
             // with the value in the dictionary.
             return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
-               m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value) ?
+               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
                data[m.Groups[1].Value] : m.Value);
+        }
+
+        /// <summary>
+        /// Looks up an Email Template in the database.
+        /// </summary>
+        /// <param name="templateName">The name of the template.</param>
+        /// <returns>The populated Email template or null if not found.</returns>
+        private EmailTemplate GetEmailTemplate(string templateName)
+        {
+            this.logger.LogTrace($"Getting email template... {templateName}");
+            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
+            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
 
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)

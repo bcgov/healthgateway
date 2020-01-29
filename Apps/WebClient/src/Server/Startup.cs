@@ -75,12 +75,15 @@ namespace HealthGateway.WebClient
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
+            services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IAuthService, AuthService>();
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
+            services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

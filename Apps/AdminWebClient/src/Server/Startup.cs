@@ -29,6 +29,8 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.IdentityModel.Logging;
     using Microsoft.Extensions.Logging;
     using VueCliMiddleware;
+    using HealthGateway.Admin.Services;
+    using HealthGateway.Database.Delegates;
 
     /// <summary>
     /// Configures the application during startup.
@@ -71,7 +73,11 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Add services
-            //services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IBetaRequestService, BetaRequestService>();
+            //services.AddTransient<IBetaRequestService, BetaRequestService>();
+            
+            // Add delegates
+            services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
 
             // Configure SPA 
             services.AddControllersWithViews();

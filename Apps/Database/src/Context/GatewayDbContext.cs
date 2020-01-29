@@ -32,6 +32,7 @@ namespace HealthGateway.Database.Context
     {
         private string? emailValidationTemplate;
         private string? emailInviteTemplate;
+        private string? emailBetaConfirmationTemplate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
@@ -60,10 +61,19 @@ namespace HealthGateway.Database.Context
                         this.emailInviteTemplate = reader.ReadToEnd();
                     }
                 }
+
+                resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html");
+                if (resourceStream != null)
+                {
+                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+                    {
+                        this.emailBetaConfirmationTemplate = reader.ReadToEnd();
+                    }
+                }
             }
         }
 
-        #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
+#pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
         public DbSet<AuditEvent> AuditEvent { get; set; } = null!;
         public DbSet<DrugProduct> DrugProduct { get; set; } = null!;
         public DbSet<ActiveIngredient> ActiveIngredient { get; set; } = null!;
@@ -83,7 +93,8 @@ namespace HealthGateway.Database.Context
         public DbSet<FileDownload> FileDownload { get; set; } = null!;
         public DbSet<UserProfile> UserProfile { get; set; } = null!;
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
-        #pragma warning restore CS1591, SA1600
+        public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
+#pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -373,6 +384,22 @@ namespace HealthGateway.Database.Context
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Private Invitation",
                     Body = this.emailInviteTemplate,
+                    Priority = EmailPriority.Low,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+            modelBuilder.Entity<EmailTemplate>().HasData(
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("2ab5d4aa-c4c9-4324-a753-cde4e21e7612"),
+                    Name = "BetaConfirmation",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Waitlist Confirmation",
+                    Body = this.emailBetaConfirmationTemplate,
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,

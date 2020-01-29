@@ -1,4 +1,4 @@
-export default interface EmailInvite {
+export default interface UserEmailInvite {
   // Gets or sets the user hdid.
   id: string;
   // Gets or sets the users directed identifier.
@@ -9,4 +9,6 @@ export default interface EmailInvite {
   emailId: string;
   // Gets or sets the invite key.
   inviteKey: string;
+  // Gets or sets the email address for the invite.
+  emailAddress: string;
 }

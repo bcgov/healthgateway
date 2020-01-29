@@ -703,7 +703,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 17 out of 17 records"
+      "value": "Displaying 556 out of 556 records"
     }, {
       "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
       "comment": "",
@@ -724,7 +724,7 @@
       "command": "assert",
       "target": "countCards",
       "targets": [],
-      "value": "17"
+      "value": "556"
     }]
   }, {
     "id": "7a8e3e70-67ba-49e8-94a7-241c2f407c4b",
@@ -1607,6 +1607,369 @@
       ],
       "value": "30000"
     }]
+  }, {
+    "id": "f2822a3d-4ab1-4235-8350-4f8797f6f186",
+    "name": "Timeline - Text Filter",
+    "commands": [{
+      "id": "1b8f754c-d743-4315-8f05-a23cd9f89a3f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8e7ddd8f-858a-4472-93b9-28007a1c4ba3",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "f0b06508-9066-4109-bb51-de956146d5cc",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "bfc4a309-9c77-43e5-9bff-3630a321e445",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#listControlls .col",
+      "targets": [
+        ["css=#listControlls .col", "css:finder"],
+        ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "Displaying 556 out of 556 records"
+    }, {
+      "id": "6de9c864-7c6a-439a-b066-c129a577446c",
+      "comment": "",
+      "command": "type",
+      "target": "id=__BVID__39",
+      "targets": [
+        ["id=__BVID__39", "id"],
+        ["css=#\\__BVID__39", "css:finder"],
+        ["xpath=//input[@id='__BVID__39']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "No3"
+    }, {
+      "id": "2514dc35-4490-4cd6-9740-e897eabe68dd",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=__BVID__39",
+      "targets": [
+        ["id=__BVID__39", "id"],
+        ["css=#\\__BVID__39", "css:finder"],
+        ["xpath=//input[@id='__BVID__39']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "af961cb6-7065-4f6b-8079-1e44c647599b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#listControlls .col",
+      "targets": [
+        ["css=#listControlls .col", "css:finder"],
+        ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
+      ],
+      "value": "Displaying 28 out of 556 records"
+    }, {
+      "id": "862255f7-9fdc-4b23-9237-16742978f295",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//*[contains(@class, 'entryCard')]",
+      "targets": [],
+      "value": "countCards"
+    }, {
+      "id": "08c0110f-31fc-43da-8e96-922b72fe538d",
+      "comment": "",
+      "command": "echo",
+      "target": "${countCards}",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d45e4397-12b9-4af4-ab35-0640624a5820",
+      "comment": "",
+      "command": "assert",
+      "target": "countCards",
+      "targets": [],
+      "value": "28"
+    }]
+  }, {
+    "id": "c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f",
+    "name": "Profile - Validation",
+    "commands": [{
+      "id": "ede5cfc6-61e8-4eb1-a3e9-3b24511b4183",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "18b240e1-f075-49b3-84e2-c1afc2f6fc74",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "c82d03f5-c0c9-4096-92ac-27c489b005c7",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "0789ed00-88b7-4c6c-b232-49d919281bfa",
+      "comment": "",
+      "command": "click",
+      "target": "css=#menuBtndUser__BV_button_ > span",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "37c9def8-ac4b-4e5f-ae7c-9da61fc97874",
+      "comment": "",
+      "command": "click",
+      "target": "css=#menuBtndUser__BV_button_ > span",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c8c7843f-4db8-4e1a-a750-1b069fbdbb39",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtndUser__BV_button_",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3af88e08-c54d-4d2d-96e1-b98d5b18fb9c",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnProfile",
+      "targets": [
+        ["id=menuBtnProfile", "id"],
+        ["css=#menuBtnProfile", "css:finder"],
+        ["xpath=//a[contains(text(),'Profile')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnProfile']", "xpath:attributes"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li[3]/a/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/profile')]", "xpath:href"],
+        ["xpath=//li[3]/a/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "100fe901-1096-4473-ac60-8203b65848e2",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "67b69865-0a2d-44d4-b066-fa6ff0c3bdf4",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=profileNames",
+      "targets": [
+        ["id=profileNames", "id"],
+        ["css=#profileNames", "css:finder"],
+        ["xpath=//div[@id='profileNames']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "Dr Gateway"
+    }, {
+      "id": "ab398fad-80da-4fa9-82ff-817a49c56664",
+      "comment": "",
+      "command": "click",
+      "target": "id=editEmail",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7c021a48-1fac-4833-9401-37aa14e74804",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "0611069d-ea1b-413b-b123-8ef19612888f",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [],
+      "value": "healthgateway@mailinator.com"
+    }, {
+      "id": "f6177ba8-7512-47be-aa33-0465ac4c1cc9",
+      "comment": "",
+      "command": "type",
+      "target": "id=emailConfirmation",
+      "targets": [],
+      "value": "healthgateway@mailinator.com"
+    }, {
+      "id": "7dc00a17-3fe9-41d4-95fe-8291127192ae",
+      "comment": "",
+      "command": "click",
+      "target": "id=saveBtn",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "bd97e519-5b71-454e-8185-5456a06965a3",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "113a975e-cded-40a6-a34d-9d7175e1e74f",
+      "comment": "",
+      "command": "click",
+      "target": "id=editEmail",
+      "targets": [
+        ["id=editEmail", "id"],
+        ["css=#editEmail", "css:finder"],
+        ["xpath=//button[@id='editEmail']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Edit')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "aef36ead-e31e-4ad5-bda6-125944e5bf62",
+      "comment": "",
+      "command": "click",
+      "target": "id=removeEmail",
+      "targets": [
+        ["id=removeEmail", "id"],
+        ["css=#removeEmail", "css:finder"],
+        ["xpath=//button[@id='removeEmail']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[3]/div/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Remove')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7e102547-1445-4267-b2aa-2b97c82318a9",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.font-weight-bold",
+      "targets": [
+        ["css=.font-weight-bold", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[5]/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div", "xpath:position"]
+      ],
+      "value": "Removing your email address will disable future communications from the Health Gateway"
+    }, {
+      "id": "96347150-5448-4d97-918c-a0c1509e1b92",
+      "comment": "",
+      "command": "click",
+      "target": "id=saveBtn",
+      "targets": [
+        ["id=saveBtn", "id"],
+        ["css=#saveBtn", "css:finder"],
+        ["xpath=//button[@id='saveBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[6]/div/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Save')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fd27e8db-6ab3-4080-bc58-b15717aa2576",
+      "comment": "",
+      "command": "click",
+      "target": "id=editEmail",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "370b4969-c10e-4e4a-bf42-84e677b1127d",
+      "comment": "",
+      "command": "click",
+      "target": "id=emailConfirmation",
+      "targets": [
+        ["id=emailConfirmation", "id"],
+        ["css=#emailConfirmation", "css:finder"],
+        ["xpath=//input[@id='emailConfirmation']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[4]/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a1418e9a-7a36-4c7e-8534-c5a19dde0603",
+      "comment": "",
+      "command": "type",
+      "target": "id=emailConfirmation",
+      "targets": [
+        ["id=emailConfirmation", "id"],
+        ["css=#emailConfirmation", "css:finder"],
+        ["xpath=//input[@id='emailConfirmation']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[4]/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/input", "xpath:position"]
+      ],
+      "value": "healthgateway@mailinator.com"
+    }, {
+      "id": "b78c23e0-c77d-4ffe-ba8b-f53bc176c2df",
+      "comment": "",
+      "command": "type",
+      "target": "id=emailConfirmation",
+      "targets": [],
+      "value": "wrongaddress@mailinator.com"
+    }, {
+      "id": "bb12e5f4-4099-4139-8696-7ab2c6a2ee84",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.d-block",
+      "targets": [
+        ["css=.d-block", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[4]/div/div", "xpath:idRelative"],
+        ["xpath=//div/div[4]/div/div", "xpath:position"]
+      ],
+      "value": "Emails must match"
+    }, {
+      "id": "1957071b-71b9-4d45-a031-556ce63fa8f9",
+      "comment": "",
+      "command": "click",
+      "target": "id=cancelBtn",
+      "targets": [
+        ["id=cancelBtn", "id"],
+        ["css=#cancelBtn", "css:finder"],
+        ["xpath=//button[@id='cancelBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[5]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Cancel')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -1635,7 +1998,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",
@@ -1643,6 +2006,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["09e7c520-e54c-47c3-92fd-cadc93da5bcd", "9dfb86e7-652f-4831-af4a-275b58c38cbf", "fc6f8e24-0d80-4e7d-8eb1-1b1ea3160392"]
+  }, {
+    "id": "8839bca1-ddc5-4239-8b59-9e241f4111c3",
+    "name": "Profile",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/", "https://dev.healthgateway.gov.bc.ca/"],
   "plugins": []

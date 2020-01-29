@@ -3,6 +3,9 @@ import Vue from "vue";
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
+import { SnowplowWindow } from "@/extensions";
+declare let window: SnowplowWindow;
+
 const ProfileComponent = () =>
   import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingComponent = () =>
@@ -132,6 +135,10 @@ router.beforeEach(async (to, from, next) => {
       next();
     }
   }
+});
+
+router.afterEach((to, from) => {
+  window.snowplow("trackPageView");
 });
 
 function handleUserHasAccess(to: Route, from: Route, next: any) {

@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
@@ -25,20 +26,23 @@ namespace HealthGateway.WebClient.Services
     public class UserEmailService : IUserEmailService
     {
         private readonly ILogger logger;
-        private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IProfileDelegate profileDelegate;
+        private readonly IEmailQueueService emailQueueService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserEmailService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
+        /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        public UserEmailService(ILogger<UserEmailService> logger, IEmailDelegate emailDelegate, IProfileDelegate profileDelegate)
+        /// <param name="emailQueueService">The email service to queue emails.</param>
+        public UserEmailService(ILogger<UserEmailService> logger, IEmailInviteDelegate emailInviteDelegate, IProfileDelegate profileDelegate, IEmailQueueService emailQueueService)
         {
             this.logger = logger;
-            this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             this.profileDelegate = profileDelegate;
+            this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc />
@@ -46,14 +50,14 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
             bool retVal = false;
-            EmailInvite emailInvite = this.emailDelegate.GetEmailInvite(inviteKey);
+            EmailInvite emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
 
             if (emailInvite != null && emailInvite.HdId == hdid)
             {
                 if (!emailInvite.Validated)
                 {
                     emailInvite.Validated = true;
-                    this.emailDelegate.UpdateEmailInvite(emailInvite);
+                    this.emailInviteDelegate.Update(emailInvite);
                     UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
                     userProfile.Email = emailInvite.Email.To; // Gets the user email from the email sent.
                     this.profileDelegate.UpdateUserProfile(userProfile);
@@ -70,9 +74,64 @@ namespace HealthGateway.WebClient.Services
         public EmailInvite RetrieveLastInvite(string hdid)
         {
             this.logger.LogTrace($"Retrieving last invite for {hdid}");
-            EmailInvite emailInvite = this.emailDelegate.GetLastEmailInviteForUser(hdid);
+            EmailInvite emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
             this.logger.LogDebug($"Finished retrieving email: {JsonConvert.SerializeObject(emailInvite)}");
             return emailInvite;
+        }
+
+        /// <inheritdoc />
+        public bool UpdateUserEmail(string hdid, string email, Uri hostUri)
+        {
+            this.logger.LogTrace($"Updating user email...");
+            bool retVal = false;
+            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+            EmailInvite emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
+
+            if (email != userProfile.Email)
+            {
+                if (string.IsNullOrEmpty(email))
+                {
+                    // Removing the email
+                    this.logger.LogDebug($"Removing email");
+
+                    // Remove the current email until it gets validated
+                    userProfile.Email = null;
+                    this.profileDelegate.UpdateUserProfile(userProfile);
+
+                    emailInvite.ExpireDate = DateTime.Now;
+                    this.emailInviteDelegate.Update(emailInvite);
+                }
+                else if (emailInvite?.Email?.To != email || emailInvite.ExpireDate < DateTime.Now)
+                {
+                    // Create a new invite email 
+                    this.logger.LogDebug($"Updating email");
+
+                    // Remove the current email until it gets validated
+                    userProfile.Email = null;
+                    this.profileDelegate.UpdateUserProfile(userProfile);
+
+                    // Expire the previous invite email
+                    if (emailInvite?.Email?.To != null)
+                    {
+                        emailInvite.ExpireDate = DateTime.Now;
+                        this.emailInviteDelegate.Update(emailInvite);
+                    }
+
+                    this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+                }
+                else
+                {
+                    // Same email, validation needs to be resent
+                    this.logger.LogDebug($"Re-queueing email");
+
+                    // Add the existing email to the queue
+                    this.emailQueueService.QueueInviteEmail(emailInvite.Id);
+                }
+                retVal = true;
+                this.logger.LogDebug($"Finished updating user email");
+            }
+
+            return retVal;
         }
     }
 }

@@ -98,16 +98,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public Guid InsertEmailInvite(EmailInvite invite)
-        {
-            this.logger.LogTrace($"Inserting email invite to DB... {JsonSerializer.Serialize(invite)}");
-            this.dbContext.Add<EmailInvite>(invite);
-            this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished inserting email invite to DB. {invite.Id}");
-            return invite.Id;
-        }
-
-        /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
             this.logger.LogTrace($"Getting email template from DB... {templateName}");
@@ -118,43 +108,6 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished getting email template from DB. {JsonSerializer.Serialize(retVal)}");
 
             return retVal;
-        }
-
-        /// <inheritdoc />
-        public EmailInvite GetEmailInvite(Guid inviteKey)
-        {
-            this.logger.LogTrace($"Getting email invite from DB... {inviteKey}");
-            EmailInvite retVal = this.dbContext
-                .EmailInvite
-                .Include(email => email.Email)
-                .Where(p => p.InviteKey == inviteKey)
-                .FirstOrDefault();
-
-            this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");
-            return retVal;
-        }
-
-        /// <inheritdoc />
-        public EmailInvite GetLastEmailInviteForUser(string hdid)
-        {
-            this.logger.LogTrace($"Getting last email invite from DB for user... {hdid}");
-            EmailInvite retVal = this.dbContext
-                .EmailInvite
-                .Where(p => p.HdId == hdid)
-                .OrderByDescending(p => p.UpdatedBy)
-                .FirstOrDefault();
-
-            this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");
-            return retVal;
-        }
-
-        /// <inheritdoc />
-        public void UpdateEmailInvite(EmailInvite emailInvite)
-        {
-            this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(emailInvite)}");
-            this.dbContext.Update<EmailInvite>(emailInvite);
-            this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email invite in DB. {emailInvite.Id}");
         }
     }
 }

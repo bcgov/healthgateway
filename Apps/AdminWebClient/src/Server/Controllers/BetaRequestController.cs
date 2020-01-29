@@ -34,47 +34,24 @@ namespace HealthGateway.Admin.Controllers
     [ApiController]
     public class BetaRequestController
     {
-        private readonly IUserEmailService userEmailService;
+        private readonly IBetaRequestService betaRequestService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetaRequestController"/> class.
         /// </summary>
-        /// <param name="userEmailService">The injected user email service.</param>
+        /// <param name="betaRequestService">The injected user email service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="authorizationService">The injected authorization service.</param>
         public BetaRequestController(
-            IUserEmailService userEmailService,
+            IBetaRequestService betaRequestService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            this.userEmailService = userEmailService;
+            this.betaRequestService = betaRequestService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
-        }
-
-        /// <summary>
-        /// Validates an email invite.
-        /// </summary>
-        /// <returns>The an empty response.</returns>
-        /// <param name="inviteKey">The email invite key.</param>
-        /// <response code="200">The email was validated.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="404">The invite key was not found.</response>
-        [HttpGet]
-        [Route("Validate/{inviteKey}")]
-        public IActionResult ValidateEmail(Guid inviteKey)
-        {
-            string hdid = this.httpContextAccessor.HttpContext.User.FindFirst("hdid").Value;
-            if (this.userEmailService.ValidateEmail(hdid, inviteKey))
-            {
-                return new OkResult();
-            }
-            else
-            {
-                return new NotFoundResult();
-            }
         }
 
         /// <summary>
@@ -88,9 +65,8 @@ namespace HealthGateway.Admin.Controllers
         [HttpGet]
         [Route("{hdid}")]
         //[Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetUserEmailInvite(string hdid)
+        public async Task<IActionResult> GetBetaRequests()
         {
-            Contract.Requires(hdid != null);
             /*ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
 
@@ -111,7 +87,7 @@ namespace HealthGateway.Admin.Controllers
 
             //EmailInvite result = this.userEmailService.RetrieveLastInvite(hdid);
 
-            return new JsonResult(hdid);
+            return new JsonResult(this.betaRequestService.GetPendingBetaRequests());
         }
     }
 }

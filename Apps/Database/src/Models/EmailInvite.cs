@@ -18,14 +18,13 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
     public class EmailInvite : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the user hdid.
+        /// Gets or sets the email invite id.
         /// </summary>
         [Key]
         [Column("EmailInviteId")]
@@ -60,5 +59,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public Guid InviteKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expire date for the email invite.
+        /// </summary>
+        [Required]
+        public DateTime ExpireDate { get; set; }
     }
 }
