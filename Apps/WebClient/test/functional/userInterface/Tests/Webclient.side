@@ -1970,6 +1970,61 @@
       ],
       "value": ""
     }]
+  }, {
+    "id": "44eb2eaa-1a39-4e1b-bc1e-23f54f30a5bd",
+    "name": "About",
+    "commands": [{
+      "id": "b0281574-b263-4b67-a160-b402a082f8fa",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "774cf1d5-6299-4e93-a3bb-7f22d78ca4e4",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "b1118892-ddf1-4f8f-aa9b-5a419d9fd89d",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "5c4f3630-f846-4309-8167-c84daa71603c",
+      "comment": "",
+      "command": "click",
+      "target": "css=#menuBtndUser__BV_button_ > span",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "10b8bd78-4cd4-4722-84c0-6a4b60b2645a",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=li:nth-child(4) > .dropdown-item > a",
+      "targets": [
+        ["css=li:nth-child(4) > .dropdown-item > a", "css:finder"],
+        ["xpath=//a[contains(text(),'About')]", "xpath:link"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li[4]/a/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, 'https://github.com/bcgov/healthgateway/wiki')])[2]", "xpath:href"],
+        ["xpath=//li[4]/a/a", "xpath:position"]
+      ],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2013,6 +2068,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f"]
+  }, {
+    "id": "261f5540-a1a0-4970-9eb2-c0bae8d29215",
+    "name": "Menu",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["44eb2eaa-1a39-4e1b-bc1e-23f54f30a5bd"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/", "https://dev.healthgateway.gov.bc.ca/"],
   "plugins": []
