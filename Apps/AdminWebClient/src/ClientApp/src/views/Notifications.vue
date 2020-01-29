@@ -240,17 +240,17 @@ export default {
       'info',
       'success',
       'warning',
-      'error'
+      'error',
     ],
     top: true,
     bottom: false,
     left: false,
     right: false,
-    snackbar: false
+    snackbar: false,
   }),
 
   methods: {
-    snack (...args) {
+    snack(...args) {
       this.top = false;
       this.bottom = false;
       this.left = false;
@@ -263,7 +263,7 @@ export default {
       this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
       this.snackbar = true;
-    }
+    },
   },
-}
+};
 </script>
