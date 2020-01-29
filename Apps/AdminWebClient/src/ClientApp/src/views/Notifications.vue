@@ -251,19 +251,19 @@ export default {
 
   methods: {
     snack (...args) {
-      this.top = false
-      this.bottom = false
-      this.left = false
-      this.right = false
+      this.top = false;
+      this.bottom = false;
+      this.left = false;
+      this.right = false;
 
       for (const loc of args) {
-        this[loc] = true
+        this[loc] = true;
       }
 
-      this.color = this.colors[Math.floor(Math.random() * this.colors.length)]
+      this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
-      this.snackbar = true
+      this.snackbar = true;
     }
-  }
+  },
 }
 </script>
