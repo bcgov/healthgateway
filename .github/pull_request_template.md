@@ -6,7 +6,7 @@
 - [ ] Bug
 - [ ] Documentation
 
-##Description:
+## Description:
 A sentences or two describing the overall goals of the pull request's commits.
 
 ## Testing
