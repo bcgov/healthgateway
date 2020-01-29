@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClient
 {
+    using Hangfire;
+    using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
@@ -31,6 +33,8 @@ namespace HealthGateway.AdminWebClient
     using VueCliMiddleware;
     using HealthGateway.Admin.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Common.Services;
+    using Hangfire;
 
     /// <summary>
     /// Configures the application during startup.
@@ -74,10 +78,12 @@ namespace HealthGateway.AdminWebClient
 
             // Add services
             services.AddTransient<IBetaRequestService, BetaRequestService>();
-            //services.AddTransient<IBetaRequestService, BetaRequestService>();
-            
+            services.AddTransient<IEmailQueueService, EmailQueueService>();
+
             // Add delegates
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
+            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
+            services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
 
             // Configure SPA 
             services.AddControllersWithViews();
@@ -87,6 +93,9 @@ namespace HealthGateway.AdminWebClient
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

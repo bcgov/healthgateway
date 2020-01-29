@@ -128,6 +128,15 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
+        public EmailTemplate GetEmailTemplate(string templateName)
+        {
+            this.logger.LogTrace($"Getting email template... {templateName}");
+            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
+            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
+        }
+
+        /// <inheritdoc />
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
@@ -152,19 +161,6 @@ namespace HealthGateway.Common.Services
             return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
                (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
                data[m.Groups[1].Value] : m.Value);
-        }
-
-        /// <summary>
-        /// Looks up an Email Template in the database.
-        /// </summary>
-        /// <param name="templateName">The name of the template.</param>
-        /// <returns>The populated Email template or null if not found.</returns>
-        private EmailTemplate GetEmailTemplate(string templateName)
-        {
-            this.logger.LogTrace($"Getting email template... {templateName}");
-            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
-            return retVal;
         }
 
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
