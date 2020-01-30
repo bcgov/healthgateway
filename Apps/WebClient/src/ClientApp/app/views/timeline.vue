@@ -47,7 +47,7 @@
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row class="my-3 fluid justify-content-md-center">
-      <b-col class="col-3 column-wrapper"> </b-col>
+      <b-col class="col-3 column-wrapper"></b-col>
       <b-col id="timeline" class="col-12 col-lg-6 column-wrapper">
         <b-alert :show="hasErrors" dismissible variant="danger">
           <h4>Error</h4>
@@ -55,15 +55,13 @@
         </b-alert>
         <b-alert :show="unverifiedEmail" dismissible variant="info">
           <h4>Unverified email</h4>
-          <span
-            >Your email has not been verified. Please check your inbox or junk
-            folder for an email from Health Gateway.</span
-          >
+          <span>
+            Your email has not been verified. Please check your inbox or junk
+            folder for an email from Health Gateway.
+          </span>
         </b-alert>
         <div id="pageTitle">
-          <h1 id="subject">
-            Health Care Timeline
-          </h1>
+          <h1 id="subject">Health Care Timeline</h1>
           <hr />
         </div>
         <b-row>
@@ -104,15 +102,15 @@
                       <font-awesome-icon
                         icon="chevron-down"
                         aria-hidden="true"
-                      ></font-awesome-icon
-                    ></span>
+                      ></font-awesome-icon>
+                    </span>
                     <span v-show="!sortDesc" name="ascending">
                       (Oldest)
                       <font-awesome-icon
                         icon="chevron-up"
                         aria-hidden="true"
-                      ></font-awesome-icon
-                    ></span>
+                      ></font-awesome-icon>
+                    </span>
                   </b-btn>
                 </b-row>
               </b-col>
@@ -121,9 +119,7 @@
           <div id="timeData">
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
               <b-col cols="auto">
-                <div class="date">
-                  {{ getHeadingDate(dateGroup.date) }}
-                </div>
+                <div class="date">{{ getHeadingDate(dateGroup.date) }}</div>
               </b-col>
               <b-col>
                 <hr class="dateBreakLine" />
@@ -139,7 +135,9 @@
           </div>
         </div>
       </b-col>
-      <b-col class="col-3 column-wrapper"> </b-col>
+      <b-col class="col-3 column-wrapper">
+        <HealthlinkComponent />
+      </b-col>
     </b-row>
     <ProtectiveWordComponent
       ref="protectiveWordModal"
@@ -167,6 +165,7 @@ import moment from "moment";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import MedicationTimelineComponent from "@/components/timeline/medication.vue";
+import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
@@ -182,6 +181,7 @@ interface DateGroup {
     LoadingComponent,
     ProtectiveWordComponent,
     MedicationComponent: MedicationTimelineComponent,
+    HealthlinkComponent: HealthlinkSidebarComponent,
     FeedbackComponent
   }
 })
