@@ -11,7 +11,7 @@
     class="box d-none d-lg-block mx-auto bg-white border-0 rounded shadow"
     no-body
   >
-    <b-card-body @click="handleClick()">
+    <b-card-body @click="handleClick(currentCard.urlLink)">
       <img
         class="img-fluid px-4"
         :src="currentCard.imageSrc"
@@ -35,6 +35,7 @@ interface Healthcard {
   title: string;
   description: string;
   imageSrc: string;
+  urlLink: string;
 }
 
 @Component
@@ -42,20 +43,23 @@ export default class HealthlinkSidebarComponent extends Vue {
   private currentCard: Healthcard = {
     title: "",
     description: "",
-    imageSrc: ""
+    imageSrc: "",
+    urlLink: ""
   };
   private cardPool: Healthcard[] = [
     {
       title: "8-1-1",
       description:
         "Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year.",
-      imageSrc: PhoneImage
+      imageSrc: PhoneImage,
+      urlLink: "https://www.healthlinkbc.ca/services-and-resources/about-8-1-1"
     },
     {
       title: "Healthlink",
       description:
         "HealthLink BC provides reliable non-emergency health information and advice in British Columbia.",
-      imageSrc: HealthlinkImage
+      imageSrc: HealthlinkImage,
+      urlLink: "https://www.healthlinkbc.ca"
     }
   ];
   mounted() {
@@ -63,11 +67,8 @@ export default class HealthlinkSidebarComponent extends Vue {
     this.currentCard = this.cardPool[cardIndex];
   }
 
-  private handleClick(): void {
-    window.open(
-      "https://www.healthlinkbc.ca/services-and-resources/about-8-1-1 ",
-      "_blank"
-    );
+  private handleClick(urlLink: string): void {
+    window.open(urlLink, "_blank");
   }
 }
 </script>
