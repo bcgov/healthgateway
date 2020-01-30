@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -45,5 +46,11 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The hdid associated with the beta request to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<BetaRequest> GetBetaRequest(string hdId);
+
+        /// <summary>
+        /// Fetches the pending BetaRequest from the database.
+        /// </summary>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<List<BetaRequest>> GetPendingBetaRequest();
     }
 }

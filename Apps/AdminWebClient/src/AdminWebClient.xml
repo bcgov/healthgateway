@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdminWebClient</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Admin.Controllers.BetaRequestController">
+            <summary>
+            Web API to handle user email interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.BetaRequestController.#ctor(HealthGateway.Admin.Services.IBetaRequestService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.BetaRequestController"/> class.
+            </summary>
+            <param name="betaRequestService">The injected user email service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.BetaRequestController.GetBetaRequests">
+            <summary>
+            Retrieves a list of pending beta requests.
+            </summary>
+            <returns>The invite email.</returns>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.BetaRequestController.SendBetaRequestsInvites(System.Collections.Generic.List{System.String})">
+            <summary>
+            Sends email invites to the beta requets with the given ids.
+            </summary>
+            <returns>A list of ids of the beta requests that where successfully processed.</returns>
+            <param name="betaRequestIds">List of beta requests to send invites.</param>
+            <response code="200">Returns the beta requests ids that where invited.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.UserBetaRequest">
+            <summary>
+            Model that provides a user representation of an EmailInvite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserBetaRequest.Id">
+            <summary>
+            Gets or sets the beta request id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserBetaRequest.EmailAddress">
+            <summary>
+            Gets or sets the email for the beta request.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserBetaRequest.Version">
+            <summary>
+            Gets or sets the version of the resource.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserBetaRequest.RegistrationDatetime">
+            <summary>
+            Gets or sets the date when the request was created.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserBetaRequest.CreateFromDbModel(HealthGateway.Database.Models.BetaRequest)">
+            <summary>
+            Constructs a UserBetaRequest from a BetaRequest model.
+            </summary>
+            <param name="models">A beta request models.</param>
+            <returns>A new UserBetaRequest.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserBetaRequest.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.BetaRequest})">
+            <summary>
+            Constructs a List of UserBetaRequest from a list of BetaRequest models.
+            </summary>
+            <param name="models">List of beta request models.</param>
+            <returns>A list of UserBetaRequest.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.BetaRequestService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.BetaRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.BetaRequestService},HealthGateway.Database.Delegates.IBetaRequestDelegate,HealthGateway.Common.Services.IEmailQueueService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.BetaRequestService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="betaRequestDelegate">The email delegate to interact with the DB.</param>
+            <param name="emailQueueService">The email service to queue emails.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.BetaRequestService.GetPendingBetaRequests">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.BetaRequestService.SendInvites(System.Collections.Generic.List{System.String},System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.Admin.Services.IBetaRequestService">
+            <summary>
+            Service that provides functionality to access and create requests for beta access.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IBetaRequestService.GetPendingBetaRequests">
+            <summary>
+            Retrieves the beta requests where the user does not have an invite yet.
+            </summary>
+            <returns>returns the beta request for the user if found.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IBetaRequestService.SendInvites(System.Collections.Generic.List{System.String},System.String)">
+            <summary>
+            Saves the user profile to the database.
+            </summary>
+            <param name="betaRequestIds">The beta request ids to send invites to.</param>
+            <param name="hostUrl">The host url for referal purposes.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="T:HealthGateway.AdminWebClient.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.AdminWebClient.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.AdminWebClient.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+    </members>
+</doc>

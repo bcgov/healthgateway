@@ -29,5 +29,10 @@ namespace HealthGateway.Common.Constants
         /// Name of the beta confirmation email template.
         /// </summary>
         public const string BETA_CONFIRMATION_TEMPLATE = "BetaConfirmation";
+
+        /// <summary>
+        /// Name of the invite email template.
+        /// </summary>
+        public const string INVITE_TEMPLATE = "Invite";
     }
 }

@@ -297,6 +297,15 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
+                    ProgramCode = AuditApplication.AdminWebClient,
+                    Description = "Admin Client",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 });
         }
 
