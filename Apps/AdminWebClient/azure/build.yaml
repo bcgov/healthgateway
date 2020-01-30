@@ -1,0 +1,95 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Apps/AdminWebClient
+  App.Name: adminwebclient
+  App.FunctionalTests: $(App.Home)/test/functional
+
+pr: none
+
+trigger:
+ batch: 'true'
+ branches:
+   include:
+     - dev
+ paths:
+   include:
+     - Apps/AdminWebClient
+     - Apps/Common
+ 
+pool:
+  name: 'HealthGateway'
+
+steps:
+- task: Npm@1
+  displayName: Install NPM Packages
+  inputs:
+    command: 'install'
+    workingDir: '$(App.Home)/src/ClientApp'
+
+#- task: DotNetCoreCLI@2
+#  displayName: Run dotnet Tests
+#  inputs:
+#    command: 'test'
+#    projects: '$(App.Home)/test/unit/WebClientTests.csproj'
+#    testRunTitle: 'WebClient'
+
+#- script: |
+#    set -e
+#    dotnet test \
+#      test/unit/WebClientTests.csproj \
+#      /p:CollectCoverage=true \
+#      /p:CoverletOutputFormat=opencover \
+#      --logger:"xunit;LogFileName=results.xml" \
+#      -r ./xUnitResults 
+#    npm --prefix src/ClientApp test
+#    dotnet sonarscanner begin \
+#      /d:sonar.verbose=false \
+#      /k:"webclient_dev" \
+#      /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
+#      /d:sonar.login="$(sonar.login)" \
+#      /d:sonar.scm.disabled="true" \
+#      /d:sonar.typescript.test.reportPaths="../sonar_reports/jest.out/lcov.info" \
+#      /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs" \
+#      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+#      /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" \
+#      /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" \
+#      /d:sonar.test.inclusions="**/*.test.ts"
+#    dotnet build    
+#    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+#    echo "$@" >&2
+#  displayName: 'Perform Static Code Analysis'
+#  continueOnError: 'false'
+#  workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+
+- task: DotNetCoreCLI@2
+  displayName: Publish Admin WebClient
+  inputs:
+    modifyOutputPath: false
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(App.Home)/src'
+    arguments: '-o $(Build.BinariesDirectory)'
+    zipAfterPublish: false
+
+- script: |
+    set -e
+    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
+    oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+  displayName: 'Build OpenShift Image and push to Image Stream'
+
+- task: CopyFiles@2
+  displayName: Copy Functional Tests to Staging
+  inputs:
+    SourceFolder: '$(App.FunctionalTests)'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Pipeline Artifacts'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+

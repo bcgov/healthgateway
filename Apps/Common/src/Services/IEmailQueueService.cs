@@ -84,6 +84,13 @@ namespace HealthGateway.Common.Services
         void QueueInviteEmail(Guid inviteEmailId);
 
         /// <summary>
+        /// Looks up an Email Template in the database.
+        /// </summary>
+        /// <param name="templateName">The name of the template.</param>
+        /// <returns>The populated Email template or null if not found.</returns>
+        EmailTemplate GetEmailTemplate(string templateName);
+
+        /// <summary>
         /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
         /// </summary>
         /// <param name="toEmail">The To email address.</param>

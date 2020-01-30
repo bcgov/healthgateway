@@ -1,0 +1,37 @@
+name: PR$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Apps/AdminWebClient
+  App.Name: adminwebclient
+
+pool:
+  name: 'HealthGateway'
+
+trigger: none
+
+pr:
+  branches:
+   include:
+   - dev  
+  paths:
+   include:
+   - Apps/AdminWebClient
+   - Apps/Common
+   
+steps:
+- task: Npm@1
+  displayName: Install NPM Packages
+  inputs:
+    command: 'install'
+    workingDir: '$(App.Home)/src/ClientApp'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Admin WebClient'
+  inputs:
+    modifyOutputPath: false
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(App.Home)/src'
+    arguments: '-o $(Build.BinariesDirectory)'
+    zipAfterPublish: false

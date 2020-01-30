@@ -15,28 +15,29 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
-    using System;
+    using System.Linq;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
+    using System;
 
     /// <inheritdoc />
     public class BetaRequestService : IBetaRequestService
     {
         private readonly ILogger logger;
         private readonly IBetaRequestDelegate betaRequestDelegate;
-        //private readonly IEmailQueueService emailQueueService;
+        private readonly IEmailQueueService emailQueueService;
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string HOST_TEMPLATE_VARIABLE = "host";
+        private const string INVITE_KEY_TEMPLATE_VARIABLE = "inviteKey";
+        private const string EMAIL_TO_TEMPLATE_VARIABLE = "emailTo";
 #pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
@@ -45,11 +46,11 @@ namespace HealthGateway.Admin.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="betaRequestDelegate">The email delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        public BetaRequestService(ILogger<BetaRequestService> logger, IBetaRequestDelegate betaRequestDelegate)
+        public BetaRequestService(ILogger<BetaRequestService> logger, IBetaRequestDelegate betaRequestDelegate, IEmailQueueService emailQueueService)
         {
             this.logger = logger;
             this.betaRequestDelegate = betaRequestDelegate;
-            //this.emailQueueService = emailQueueService;
+            this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc />
@@ -62,57 +63,40 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        /*public RequestResult<List<UserBetaRequest>> SendInvites(List<UserBetaRequest> betaRequests, string hostUrl)
+        public RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string hostUrl)
         {
-            Contract.Requires(betaRequest != null);
-            Contract.Requires(!string.IsNullOrEmpty(betaRequest.HdId));
-            this.logger.LogTrace($"Creating a beta request... {JsonConvert.SerializeObject(betaRequest)}");
+            this.logger.LogTrace($"Sending invites to beta requests... {JsonConvert.SerializeObject(betaRequestIds)}");
 
-            // If there is a previous request, update it isntead of creating a new one
-            BetaRequest previousRequest = this.betaRequestDelegate.GetBetaRequest(betaRequest.HdId).Payload;
-            if (previousRequest != null)
-            {
-                RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
-                DBResult<BetaRequest> insertResult = this.betaRequestDelegate.UpdateBetaRequest(betaRequest);
-                if (insertResult.Status == DBStatusCode.Updated)
-                {
-                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE, keyValues);
-                    requestResult.ResourcePayload = insertResult.Payload;
-                    requestResult.ResultStatus = ResultType.Success;
-                    this.logger.LogDebug($"Finished updating beta request. {JsonConvert.SerializeObject(insertResult)}");
-                }
-                else
-                {
-                    requestResult.ResultMessage = insertResult.Message;
-                    requestResult.ResultStatus = ResultType.Error;
-                }
+            // Get the requets that still need to be invited
+            List<BetaRequest> pendingRequests = this.betaRequestDelegate.GetPendingBetaRequest().Payload;
 
-                return requestResult;
-            }
-            else
+            List<BetaRequest> requestsToInvite = pendingRequests.Where(b => betaRequestIds.Contains(b.HdId)).ToList();
+
+            RequestResult<List<string>> requestResult = new RequestResult<List<string>>();
+            requestResult.ResourcePayload = new List<string>();
+            foreach (BetaRequest betaRequest in requestsToInvite)
             {
-                betaRequest.CreatedBy = betaRequest.HdId;
-                betaRequest.UpdatedBy = betaRequest.HdId;
-                DBResult<BetaRequest> insertResult = this.betaRequestDelegate.InsertBetaRequest(betaRequest);
-                RequestResult<BetaRequest> requestResult = new RequestResult<BetaRequest>();
-                if (insertResult.Status == DBStatusCode.Created)
-                {
-                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE, keyValues);
-                    requestResult.ResourcePayload = insertResult.Payload;
-                    requestResult.ResultStatus = ResultType.Success;
-                    this.logger.LogDebug($"Finished creating beta request. {JsonConvert.SerializeObject(insertResult)}");
-                }
-                else
-                {
-                    requestResult.ResultMessage = insertResult.Message;
-                    requestResult.ResultStatus = ResultType.Error;
-                }
-                return requestResult;
+                EmailInvite invite = new EmailInvite();
+                invite.InviteKey = Guid.NewGuid();
+                invite.HdId = betaRequest.HdId;
+                invite.ExpireDate = DateTime.MaxValue;
+
+                Dictionary<string, string> keyValues = new Dictionary<string, string>();
+                keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                keyValues.Add(INVITE_KEY_TEMPLATE_VARIABLE, invite.InviteKey.ToString());
+                keyValues.Add(EMAIL_TO_TEMPLATE_VARIABLE, betaRequest.EmailAddress);
+                invite.Email = this.emailQueueService.ProcessTemplate(betaRequest.EmailAddress, this.emailQueueService.GetEmailTemplate(EmailTemplateName.INVITE_TEMPLATE), keyValues);
+                this.emailQueueService.QueueNewInviteEmail(invite);
+
+                requestResult.ResourcePayload.Add(betaRequest.HdId);
+                requestResult.ResultStatus = ResultType.Success;
             }
-        }*/
+            this.logger.LogDebug($"Finished sending beta requests invites.");
+            this.logger.LogDebug($"Requets to invite: {JsonConvert.SerializeObject(betaRequestIds)}");
+            this.logger.LogDebug($"Invited: {JsonConvert.SerializeObject(requestResult.ResourcePayload)}");
+            requestResult.ResultStatus = ResultType.Success;
+
+            return requestResult;
+        }
     }
 }

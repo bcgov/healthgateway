@@ -48,6 +48,6 @@ namespace HealthGateway.Database.Constant
         /// <summary>
         /// Represents the Admin Client application.
         /// </summary>
-        public const string AdminWebClient = "IMM";
+        public const string AdminWebClient = "ADMIN";
     }
 }

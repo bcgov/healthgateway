@@ -27,6 +27,16 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.BetaRequestController.SendBetaRequestsInvites(System.Collections.Generic.List{System.String})">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user email invite json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Models.UserBetaRequest">
             <summary>
             Model that provides a user representation of an EmailInvite.
@@ -65,7 +75,7 @@
         <member name="T:HealthGateway.Admin.Services.BetaRequestService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.BetaRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.BetaRequestService},HealthGateway.Database.Delegates.IBetaRequestDelegate)">
+        <member name="M:HealthGateway.Admin.Services.BetaRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.BetaRequestService},HealthGateway.Database.Delegates.IBetaRequestDelegate,HealthGateway.Common.Services.IEmailQueueService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.BetaRequestService"/> class.
             </summary>
@@ -74,6 +84,9 @@
             <param name="emailQueueService">The email service to queue emails.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.BetaRequestService.GetPendingBetaRequests">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.BetaRequestService.SendInvites(System.Collections.Generic.List{System.String},System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.IBetaRequestService">
@@ -86,6 +99,14 @@
             Retrieves the beta requests where the user does not have an invite yet.
             </summary>
             <returns>returns the beta request for the user if found.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IBetaRequestService.SendInvites(System.Collections.Generic.List{System.String},System.String)">
+            <summary>
+            Saves the user profile to the database.
+            </summary>
+            <param name="betaRequestIds">The beta request ids to send invites to.</param>
+            <param name="hostUrl">The host url for referal purposes.</param>
+            <returns>The wrapped user profile.</returns>
         </member>
         <member name="T:HealthGateway.AdminWebClient.Program">
             <summary>
