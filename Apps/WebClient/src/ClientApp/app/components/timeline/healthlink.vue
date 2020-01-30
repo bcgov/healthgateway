@@ -1,75 +1,73 @@
 <style lang="scss" scoped>
 .box {
-  margin: 100px auto;
   width: 160px;
-  background: white;
-  border-radius: 15px;
   border: none;
-}
-
-.stretched-link::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  pointer-events: auto;
-  content: "";
-  background-color: rgba(0, 0, 0, 0);
-}
-.stretched-link::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  pointer-events: auto;
-  content: "";
-  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
 }
 </style>
 
 <template>
   <b-card
-    :title="currentCard.title"
-    class="box d-none d-lg-block shadow mb-5 bg-white rounded"
+    class="box d-none d-lg-block mx-auto bg-white border-0 rounded shadow"
+    no-body
   >
-    <a
-      href="https://www.healthlinkbc.ca/services-and-resources/about-8-1-1 "
-      target="_blank"
-      class="stretched-link"
-    ></a>
-    <b-card-text>{{ currentCard.description }}</b-card-text>
+    <b-card-body @click="handleClick()">
+      <img
+        class="img-fluid px-4"
+        :src="currentCard.imageSrc"
+        width="auto"
+        height="auto"
+        :alt="currentCard.title"
+      />
+      <a></a>
+      <b-card-text class="mt-3">{{ currentCard.description }}</b-card-text>
+    </b-card-body>
   </b-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+import PhoneImage from "@/assets/images/timeline/8-1-1.png";
+import HealthlinkImage from "@/assets/images/timeline/healthlink.png";
+
 interface Healthcard {
   title: string;
   description: string;
+  imageSrc: string;
 }
+
 @Component
 export default class HealthlinkSidebarComponent extends Vue {
-  private currentCard: Healthcard = { title: "", description: "" };
+  private currentCard: Healthcard = {
+    title: "",
+    description: "",
+    imageSrc: ""
+  };
   private cardPool: Healthcard[] = [
     {
       title: "8-1-1",
       description:
-        "Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year."
+        "Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year.",
+      imageSrc: PhoneImage
     },
     {
       title: "Healthlink",
       description:
-        "HealthLink BC provides reliable non-emergency health information and advice in British Columbia."
+        "HealthLink BC provides reliable non-emergency health information and advice in British Columbia.",
+      imageSrc: HealthlinkImage
     }
   ];
   mounted() {
     let cardIndex: number = Math.floor(Math.random() * this.cardPool.length);
     this.currentCard = this.cardPool[cardIndex];
+  }
+
+  private handleClick(): void {
+    window.open(
+      "https://www.healthlinkbc.ca/services-and-resources/about-8-1-1 ",
+      "_blank"
+    );
   }
 }
 </script>
