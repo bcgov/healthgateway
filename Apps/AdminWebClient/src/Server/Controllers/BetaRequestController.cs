@@ -16,15 +16,13 @@
 namespace HealthGateway.Admin.Controllers
 {
     using System;
-    using System.Diagnostics.Contracts;
-    using System.Security.Claims;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Web API to handle user email interactions.
@@ -56,11 +54,10 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Validates an email invite.
+        /// Retrieves a list of pending beta requests.
         /// </summary>
         /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
+        /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
@@ -88,11 +85,11 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Validates an email invite.
+        /// Sends email invites to the beta requets with the given ids.
         /// </summary>
-        /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
+        /// <returns>A list of ids of the beta requests that where successfully processed.</returns>
+        /// <param name="betaRequestIds">List of beta requests to send invites.</param>
+        /// <response code="200">Returns the beta requests ids that where invited.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPatch]

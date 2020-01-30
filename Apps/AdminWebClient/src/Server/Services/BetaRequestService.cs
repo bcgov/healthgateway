@@ -91,7 +91,8 @@ namespace HealthGateway.Admin.Services
                 requestResult.ResourcePayload.Add(betaRequest.HdId);
                 requestResult.ResultStatus = ResultType.Success;
             }
-            this.logger.LogDebug($"Finished sending beta requests invites.");
+
+            this.logger.LogDebug("Finished sending beta requests invites.");
             this.logger.LogDebug($"Requets to invite: {JsonConvert.SerializeObject(betaRequestIds)}");
             this.logger.LogDebug($"Invited: {JsonConvert.SerializeObject(requestResult.ResourcePayload)}");
             requestResult.ResultStatus = ResultType.Success;

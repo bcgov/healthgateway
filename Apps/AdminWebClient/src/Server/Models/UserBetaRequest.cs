@@ -35,18 +35,20 @@ namespace HealthGateway.Admin.Models
         public string EmailAddress { get; set; } = null!;
 
         /// <summary>
-        /// Version of the resource.
+        /// Gets or sets the version of the resource.
         /// </summary>
-        public uint Version { get; set; }
+        public uint Version { get; set; } = 0;
 
         /// <summary>
-        /// Date when the request was created
+        /// Gets or sets the date when the request was created.
         /// </summary>
         public DateTime RegistrationDatetime { get; set; }
 
         /// <summary>
         /// Constructs a UserBetaRequest from a BetaRequest model.
         /// </summary>
+        /// <param name="models">A beta request models.</param>
+        /// <returns>A new UserBetaRequest.</returns>
         public static UserBetaRequest CreateFromDbModel(BetaRequest model)
         {
             return new UserBetaRequest()
@@ -61,6 +63,8 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Constructs a List of UserBetaRequest from a list of BetaRequest models.
         /// </summary>
+        /// <param name="models">List of beta request models.</param>
+        /// <returns>A list of UserBetaRequest.</returns>
         public static List<UserBetaRequest> CreateListFromDbModel(List<BetaRequest> models)
         {
             List<UserBetaRequest> newList = new List<UserBetaRequest>();

@@ -18,12 +18,8 @@ namespace HealthGateway.AdminWebClient
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SpaServices;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -32,9 +28,8 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.Extensions.Logging;
     using VueCliMiddleware;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Common.Services;
-    using Hangfire;
+    using HealthGateway.Database.Delegates;
 
     /// <summary>
     /// Configures the application during startup.
@@ -44,8 +39,6 @@ namespace HealthGateway.AdminWebClient
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
-
-        readonly static string CorsPolicy = "CorsPolicy";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
