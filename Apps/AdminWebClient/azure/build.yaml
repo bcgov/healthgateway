@@ -81,12 +81,12 @@ steps:
     oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
   displayName: 'Build OpenShift Image and push to Image Stream'
 
-- task: CopyFiles@2
-  displayName: Copy Functional Tests to Staging
-  inputs:
-    SourceFolder: '$(App.FunctionalTests)'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+# - task: CopyFiles@2
+#   displayName: Copy Functional Tests to Staging
+#   inputs:
+#     SourceFolder: '$(App.FunctionalTests)'
+#     Contents: '**'
+#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifacts'
