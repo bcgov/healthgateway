@@ -2,16 +2,18 @@ import { Module } from 'vuex';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { CounterState } from './types';
+import UserProfile from '@/models/UserProfile';
 import { RootState } from '../types';
 
-export const state: CounterState = {
-  counter: 0,
+export const state: UserProfile = {
+  username: '',
+  firstName: '',
+  lastName: '',
 };
 
 const namespaced: boolean = true;
 
-export const counter: Module<CounterState, RootState> = {
+export const userprofile: Module<UserProfile, RootState> = {
   namespaced,
   state,
   getters,

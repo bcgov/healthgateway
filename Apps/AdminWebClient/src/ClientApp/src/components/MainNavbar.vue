@@ -51,7 +51,9 @@ export default class MainNavbar extends Vue {
   private miniVariant: boolean = false;
   private right: boolean = true;
   private items = [
-    { title: 'Dashboard', icon: 'view_list', link: '/dashboard' },
+    { title: 'Dashboard', icon: 'view_quilt', link: '/dashboard' },
+    { title: 'Hangfire', icon: 'schedule', link: '/hangire' },
+    { title: 'Beta Invites', icon: 'account_box', link: '/beta-invites'},
   ];
 }
 </script>
