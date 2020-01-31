@@ -93,14 +93,14 @@ namespace HealthGateway.AdminWebClient
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-            
+        {           
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {
