@@ -27,10 +27,10 @@ namespace HealthGateway.Admin.Controllers
     /// <summary>
     /// Web API to handle user email interactions.
     /// </summary>
-    //[Authorize]
-    //[ApiVersion("1.0")]
-    [Route("v1/api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/api/[controller]")]
+    [Produces("application/json")]
     public class BetaRequestController
     {
         private readonly IBetaRequestService betaRequestService;

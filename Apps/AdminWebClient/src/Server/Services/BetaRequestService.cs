@@ -15,8 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
-    using System.Linq;
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -26,7 +27,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using System;
+
 
     /// <inheritdoc />
     public class BetaRequestService : IBetaRequestService
@@ -54,12 +55,18 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public List<UserBetaRequest> GetPendingBetaRequests()
+        public RequestResult<List<UserBetaRequest>> GetPendingBetaRequests()
         {
             this.logger.LogTrace($"Retrieving pending beta requests");
             DBResult<List<BetaRequest>> pendingBetaRequests = this.betaRequestDelegate.GetPendingBetaRequest();
             this.logger.LogDebug($"Finished retrieving pending requets: {JsonConvert.SerializeObject(pendingBetaRequests)}");
-            return UserBetaRequest.CreateListFromDbModel(pendingBetaRequests.Payload);
+            List<UserBetaRequest> betaRequests = UserBetaRequest.CreateListFromDbModel(pendingBetaRequests.Payload);
+            return new RequestResult<List<UserBetaRequest>>()
+            {
+                ResourcePayload = betaRequests,
+                ResultStatus = ResultType.Success,
+                TotalResultCount = betaRequests.Count
+            };
         }
 
         /// <inheritdoc />

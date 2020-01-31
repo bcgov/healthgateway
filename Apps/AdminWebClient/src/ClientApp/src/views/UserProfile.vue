@@ -11,7 +11,7 @@
         xs12
         md8
       >
-        <material-card
+        <v-card
           color="green"
           title="Edit Profile"
           text="Complete your profile"
@@ -111,13 +111,13 @@
               </v-layout>
             </v-container>
           </v-form>
-        </material-card>
+        </v-card>
       </v-flex>
       <v-flex
         xs12
         md4
       >
-        <material-card class="v-card-profile">
+        <v-card class="v-card-profile">
           <v-avatar
             slot="offset"
             class="mx-auto d-block"
@@ -136,7 +136,7 @@
               class="font-weight-light"
             >Follow</v-btn>
           </v-card-text>
-        </material-card>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>

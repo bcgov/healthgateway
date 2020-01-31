@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Constructs a UserBetaRequest from a BetaRequest model.
         /// </summary>
-        /// <param name="models">A beta request models.</param>
+        /// <param name="model">A beta request models.</param>
         /// <returns>A new UserBetaRequest.</returns>
         public static UserBetaRequest CreateFromDbModel(BetaRequest model)
         {
