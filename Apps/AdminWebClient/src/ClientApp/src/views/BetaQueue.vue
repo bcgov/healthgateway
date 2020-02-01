@@ -1,14 +1,36 @@
 <template>
-  <v-container fill-height fluid grid-list-xl>
-    <v-layout justify-center wrap>
-      <v-data-table
-        :headers="headers"
-        :items="desserts"
-        :items-per-page="5"
-        class="elevation-1"
-      ></v-data-table>
-    </v-layout>
-  </v-container>
+    <v-container>
+        <v-row justify="center">
+            <v-col md="9">
+                <v-row no-gutters>
+                    <h1>Beta user list</h1>
+                </v-row>
+                <v-row>
+                    <v-col no-gutters>
+                        <v-data-table
+                            v-model="selectedRequests"
+                            :headers="tableHeaders"
+                            :items="requestList"
+                            :items-per-page="5"
+                            show-select
+                        >
+                            <template v-slot:item.registrationDatetime="{ item }">
+                                <span>{{ formatDate(item.registrationDatetime) }}</span>
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                </v-row>
+                <v-row justify="end" no-gutters>
+                    <v-btn class="test" :disabled="selectedRequests.length === 0" @click="sendInvites()"
+                        >Send invites</v-btn
+                    >
+                </v-row>
+                <v-alert v-if="inviteSentCount > 0" class="mt-5" type="success" dismissible>
+                    Successfully added <strong>{{ inviteSentCount }}</strong> beta invite emails to be sent
+                </v-alert>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script lang="ts">
@@ -21,50 +43,69 @@ import container from "@/plugins/inversify.config";
 
 @Component
 export default class BetaQueueView extends Vue {
-  private isLoading: boolean = true;
-  private hasErrors: boolean = false;
+    private isLoading: boolean = true;
+    private hasErrors: boolean = false;
 
-  private headers: any[] = [
-    {
-      text: "Registration Date",
-      align: "left",
-      sortable: false,
-      value: "registrationDatetime"
-    },
-    { text: "Email", value: "emailAddress" }
-  ];
+    private selectedRequests: UserBetaRequest[] = [];
 
-  private desserts: UserBetaRequest[] = [];
+    private tableHeaders: any[] = [
+        {
+            text: "Registration Date",
+            value: "registrationDatetime"
+        },
+        { text: "Email", value: "emailAddress" }
+    ];
 
-  private betaRequestService!: IBetaRequestService;
+    private requestList: UserBetaRequest[] = [];
 
-  mounted() {
-    this.betaRequestService = container.get(
-      SERVICE_IDENTIFIER.BetaRequestService
-    );
+    private betaRequestService!: IBetaRequestService;
 
-    this.desserts.push({
-      id: "Some cool email",
-      emailAddress: "anEmail",
-      registrationDatetime: new Date(),
-      version: 1
-    });
+    private inviteSentCount: number = 0;
 
-    this.betaRequestService
-      .getPendingRequests()
-      .then(betaRequests => {
-        console.log("beta request:", betaRequests);
-        for (let result of betaRequests) {
-          this.desserts.push(result);
-        }
-      })
-      .catch(err => {
-        console.log("ERRRRORRRR", err);
-        this.hasErrors = true;
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
-  }
+    mounted() {
+        this.betaRequestService = container.get(SERVICE_IDENTIFIER.BetaRequestService);
+
+        this.betaRequestService
+            .getPendingRequests()
+            .then(betaRequests => {
+                for (let result of betaRequests) {
+                    this.requestList.push(result);
+                }
+            })
+            .catch(err => {
+                this.hasErrors = true;
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    private formatDate(date: Date): string {
+        return new Date(Date.parse(date + "Z")).toLocaleString();
+    }
+
+    private sendInvites(): void {
+        let selectedIds = this.selectedRequests.map(s => s.id);
+        this.betaRequestService
+            .sendBetaInvites(selectedIds)
+            .then(sucessfulInvites => {
+                console.log(this.requestList.length);
+                // remove the invites that where sucessfull
+                this.inviteSentCount = sucessfulInvites.length;
+                for (let sentId of sucessfulInvites) {
+                    var elementPos = this.requestList.map(r => r.id).indexOf(sentId);
+                    if (elementPos > -1) {
+                        this.requestList.splice(elementPos, 1);
+                    }
+                }
+                console.log(this.requestList.length);
+            })
+            .catch(err => {
+                this.hasErrors = true;
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
 }
 </script>

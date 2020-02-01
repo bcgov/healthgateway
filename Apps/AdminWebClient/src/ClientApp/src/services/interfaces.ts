@@ -10,7 +10,7 @@ export interface IConfigService {
 export interface IBetaRequestService {
   initialize(http: IHttpDelegate): void;
   getPendingRequests(): Promise<UserBetaRequest[]>;
-  putRequest(request: UserBetaRequest): Promise<UserBetaRequest>;
+  sendBetaInvites(requestsIds: string[]): Promise<string[]>;
 }
 
 export interface IHttpDelegate {
@@ -20,6 +20,11 @@ export interface IHttpDelegate {
   get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   post<T>(url: string, payload: Object): Promise<T>;
   put<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
+  patch<T>(
     url: string,
     payload: Object,
     headers?: Dictionary<string>
