@@ -36,6 +36,147 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.ConfigurationController">
+            <summary>
+            Web API to return Health Gateway configuration to approved clients.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.ConfigurationController.#ctor(HealthGateway.Admin.Services.IConfigurationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.ConfigurationController"/> class.
+            </summary>
+            <param name="service">The injected configuration service provider.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.ConfigurationController.Index">
+            <summary>
+            Returns the external Health Gateway configuration.
+            </summary>
+            <returns>The Health Gatway Configuration.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.AdminConfiguration">
+            <summary>
+            Configuration data to be used by the Health Gateway Admin.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.LogLevel">
+            <summary>
+            Gets or sets the logging level used by the Admin.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.Timeouts">
+            <summary>
+            Gets or sets the Admin timeout values.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.ExternalURLs">
+            <summary>
+            Gets or sets the ExternalURLs used by the Admin.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
+            <summary>
+            A collection of configuration items for use by Health Gateway and
+            approved applications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.OpenIdConnect">
+            <summary>
+            Gets or sets the OpenIdConnect configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.IdentityProviders">
+            <summary>
+            Gets or sets the List of Identity providers.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.Admin">
+            <summary>
+            Gets or sets the Health Gateway Webclient specific configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.ServiceEndpoints">
+            <summary>
+            Gets or sets the Service Endpoints.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.IdentityProviderConfiguration">
+            <summary>
+            An object representing a configured Health Gateway IdentityProvider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Id">
+            <summary>
+            Gets or sets the Id of the Identity Provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Name">
+            <summary>
+            Gets or sets the name of the Identity Provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Icon">
+            <summary>
+            Gets or sets the Font Awesome Icon that we recommend to use.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Hint">
+            <summary>
+            Gets or sets the Identity Provider hint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this identity provider
+            should be used.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">
+            <summary>
+            Configuration to be used by external clients for authentication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.Authority">
+            <summary>
+            Gets or sets the OpenIDConnect Authority.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.ClientId">
+            <summary>
+            Gets or sets the OpenIdConnect Client ID.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.ResponseType">
+            <summary>
+            Gets or sets the OpenIDConnect Response types.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.Scope">
+            <summary>
+            Gets or sets the OpenIDConnect Scopes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.Callbacks">
+            <summary>
+            Gets or sets the Callback URIs.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.TimeOutsConfiguration">
+            <summary>
+            Various timeout values used by the VUE Admin application.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.TimeOutsConfiguration.Idle">
+            <summary>
+            Gets or sets the idle time in seconds that the Admin will use
+            before it automatically logs the user out.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.TimeOutsConfiguration.LogoutRedirect">
+            <summary>
+            Gets or sets the amount of time in seconds after which the user will be
+            redirected from the logout page back to the home.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.UserBetaRequest">
             <summary>
             Model that provides a user representation of an EmailInvite.
@@ -65,7 +206,7 @@
             <summary>
             Constructs a UserBetaRequest from a BetaRequest model.
             </summary>
-            <param name="models">A beta request models.</param>
+            <param name="model">A beta request models.</param>
             <returns>A new UserBetaRequest.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Models.UserBetaRequest.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.BetaRequest})">
@@ -92,6 +233,24 @@
         <member name="M:HealthGateway.Admin.Services.BetaRequestService.SendInvites(System.Collections.Generic.List{System.String},System.String)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.Admin.Services.ConfigurationService">
+            <summary>
+            Provides external configuration data.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ConfigurationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.ConfigurationService},Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.ConfigurationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="configuration">Injected Configuration Provider.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ConfigurationService.GetConfiguration">
+            <summary>
+            Reads the external configuration and returns it to the caller.
+            </summary>
+            <returns>The external configuration data.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Services.IBetaRequestService">
             <summary>
             Service that provides functionality to access and create requests for beta access.
@@ -110,6 +269,17 @@
             <param name="betaRequestIds">The beta request ids to send invites to.</param>
             <param name="hostUrl">The host url for referal purposes.</param>
             <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.IConfigurationService">
+            <summary>
+            Admin configuration.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IConfigurationService.GetConfiguration">
+            <summary>
+            Creates and returns Configuration data for clients.
+            </summary>
+            <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
         <member name="T:HealthGateway.AdminWebClient.Program">
             <summary>

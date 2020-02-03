@@ -70,6 +70,7 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Add services
+            services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
 

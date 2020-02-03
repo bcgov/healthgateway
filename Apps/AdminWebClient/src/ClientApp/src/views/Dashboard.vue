@@ -1,16 +1,15 @@
 <template>
   <v-parallax dark src="@/assets/background.jpg" height="700">
-    <v-container app>
-    </v-container>
+    <v-container app> </v-container>
   </v-parallax>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Dashboard extends Vue {
-  public name = 'Dashboard';
+  public name = "Dashboard";
 }
 </script>
 
