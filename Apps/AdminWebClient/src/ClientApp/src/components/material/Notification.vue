@@ -17,13 +17,13 @@ export default {
   props: {
     elevation: {
       type: [Number, String],
-      default: 6,
+      default: 6
     },
     value: {
       type: Boolean,
-      default: true,
-    },
-  },
+      default: true
+    }
+  }
 };
 </script>
 

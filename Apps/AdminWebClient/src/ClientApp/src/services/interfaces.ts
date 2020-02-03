@@ -1,6 +1,6 @@
 import { Dictionary } from "vue-router/types/router";
 import UserBetaRequest from "@/models/userBetaRequest";
-import ExternalConfiguration from '@/models/externalConfiguration';
+import ExternalConfiguration from "@/models/externalConfiguration";
 
 export interface IConfigService {
   initialize(http: IHttpDelegate): void;
