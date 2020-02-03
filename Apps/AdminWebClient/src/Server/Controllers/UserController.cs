@@ -15,23 +15,32 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Configuration;
+
+    using System.Threading.Tasks;
 
     public class UserController : Controller
     {
         private ILogger<UserController> logger;
         private IConfiguration configuration;
 
-        [Anonymous]
+        [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login(string hint)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/dashboard" });
-            }      
-            return RedirectUri("/dashboard");
+            }
+            return Redirect("/dashboard");
         }
         public async Task<IActionResult> Logout()
         {
