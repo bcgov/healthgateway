@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Services
         /// Retrieves the beta requests where the user does not have an invite yet.
         /// </summary>
         /// <returns>returns the beta request for the user if found.</returns>
-        List<UserBetaRequest> GetPendingBetaRequests();
+        RequestResult<List<UserBetaRequest>> GetPendingBetaRequests();
 
         /// <summary>
         /// Saves the user profile to the database.
