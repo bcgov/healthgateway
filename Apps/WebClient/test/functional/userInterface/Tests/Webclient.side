@@ -2025,6 +2025,73 @@
       ],
       "value": ""
     }]
+  }, {
+    "id": "aee54535-bf50-44ec-a9a3-1487333856b0",
+    "name": "Profile - Right Info Card",
+    "commands": [{
+      "id": "29b9e90c-d592-446e-8ec4-77ae0f3a8e11",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "488dc957-7c3e-49ea-84d0-716eca85c50f",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "37f9bdaf-9ca6-443a-8636-dfe29c5b21f8",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "b19d85fc-f563-413a-ada8-6dd0bcd14c06",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.card-body",
+      "targets": [
+        ["css=.card-body", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div[3]/div/div", "xpath:idRelative"],
+        ["xpath=//main/div/div[2]/div[3]/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2c3f3ce7-07a1-4219-90f8-7243c4daddb5",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.card-text",
+      "targets": [
+        ["css=.card-text", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div[3]/div/div/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'HealthLink BC provides reliable non-emergency health information and advice in British Columbia.')]", "xpath:innerText"]
+      ],
+      "value": "cardText"
+    }, {
+      "id": "69dd4755-6790-408a-a37a-7759f6f69506",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return ${cardText} == \"HealthLink BC provides reliable non-emergency health information and advice in British Columbia.\" || ${cardText} == \"Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year.\" ",
+      "targets": [],
+      "value": "correctText"
+    }, {
+      "id": "fc36a2c5-245b-4503-8d17-87b7af0d4f7b",
+      "comment": "",
+      "command": "assert",
+      "target": "correctText",
+      "targets": [],
+      "value": "true"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2067,7 +2134,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f"]
+    "tests": ["c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f", "aee54535-bf50-44ec-a9a3-1487333856b0"]
   }, {
     "id": "261f5540-a1a0-4970-9eb2-c0bae8d29215",
     "name": "Menu",
