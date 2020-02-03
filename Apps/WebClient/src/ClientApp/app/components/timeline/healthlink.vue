@@ -1,8 +1,13 @@
 <style lang="scss" scoped>
 .box {
-  width: 160px;
   border: none;
   cursor: pointer;
+  font-size: 0.9rem;
+  max-width: 280px;
+}
+
+.card-image {
+  max-height: 140px;
 }
 </style>
 
@@ -13,7 +18,7 @@
   >
     <b-card-body @click="handleClick(currentCard.urlLink)">
       <img
-        class="img-fluid px-4"
+        class="img-fluid mx-auto d-block card-image"
         :src="currentCard.imageSrc"
         width="auto"
         height="auto"
@@ -28,7 +33,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import PhoneImage from "@/assets/images/timeline/8-1-1.png";
+import PhoneImage from "@/assets/images/timeline/811.png";
 import HealthlinkImage from "@/assets/images/timeline/healthlink.png";
 
 interface Healthcard {
