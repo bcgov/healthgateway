@@ -19,7 +19,6 @@ export class RestBetaRequestService implements IBetaRequestService {
       this.http
         .get<RequestResult<BetaRequest[]>>(`${this.BETA_REQUEST_BASE_URI}`)
         .then(requestResult => {
-          console.log(requestResult);
           this.handleResult(requestResult, resolve, reject);
         })
         .catch(err => {
