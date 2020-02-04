@@ -118,7 +118,7 @@ namespace HealthGateway.JobScheduler
             {
                 DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
-                AppPath = $"{this.GetBasePath()}{AuthorizationConstants.LogoutPath}",
+                AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
             });
 
             app.UseHangfireServer();
