@@ -1,8 +1,7 @@
-export default class AuthenticationData {
-  public accessToken?: string;
-  public idToken?: string;
-  public isChecked: boolean = false;
-  public scopes?: string[];
-  public eventsAreBound: boolean = false;
-  public error?: string;
+import UserProfile from "@/models/userProfile";
+
+export default interface AuthenticationData {
+  token: string;
+  isAuthenticated: boolean;
+  userProfile: UserProfile;
 }

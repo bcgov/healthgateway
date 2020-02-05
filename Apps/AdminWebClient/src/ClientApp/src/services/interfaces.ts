@@ -1,10 +1,18 @@
 import { Dictionary } from "vue-router/types/router";
+import AuthenticationData from "@/models/authenticationData";
 import UserBetaRequest from "@/models/userBetaRequest";
 import ExternalConfiguration from "@/models/externalConfiguration";
 
 export interface IConfigService {
   initialize(http: IHttpDelegate): void;
   getConfiguration(): Promise<ExternalConfiguration>;
+}
+
+export interface IAuthenticationService {
+  startLoginFlow(idpHint: string, redirectUri: string): void;
+  getAuthentication(): Promise<AuthenticationData>;
+  refreshToken(): Promise<AuthenticationData>;
+  destroyToken(): Promise<void>;
 }
 
 export interface IBetaRequestService {

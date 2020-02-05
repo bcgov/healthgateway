@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------
-//  Copyright © 2019 Province of British Columbia
+//  Copyright © 2020 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ namespace HealthGateway.Admin.Controllers
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Database.Models;
     using HealthGateway.Admin.Services;
+    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

@@ -15,6 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClient
 {
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -24,7 +27,10 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.IdentityModel.Logging;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.Extensions.Logging;
     using VueCliMiddleware;
     using HealthGateway.Admin.Services;
@@ -65,12 +71,14 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
-            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            //this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
+            this.ConfigureAuthenticationService(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
 
@@ -94,11 +102,12 @@ namespace HealthGateway.AdminWebClient
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {           
+        {
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
+
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -158,6 +167,75 @@ namespace HealthGateway.AdminWebClient
             {
                 spa.Options.SourcePath = "ClientApp";
             });
+        }
+
+        private void ConfigureAuthenticationService(IServiceCollection services)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(o =>
+             {
+                 this.configuration.GetSection("OpenIdConnect").Bind(o);
+                 if (string.IsNullOrEmpty(o.Authority))
+                 {
+                     this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
+                 }
+
+                 o.Events = new OpenIdConnectEvents()
+                 {
+                     OnTicketReceived = e =>
+                    {
+                        
+                        return Task.CompletedTask;
+                    },
+                     OnTokenValidated = ctx =>
+                     {
+                         JwtSecurityToken accessToken = ctx.SecurityToken;
+                         if (accessToken != null)
+                         {
+                             ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                             if (identity != null)
+                             {
+                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                             }
+                         }
+
+                         return Task.CompletedTask;
+                     },
+                     OnRedirectToIdentityProvider = ctx =>
+                     {
+                         if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
+                         {
+                             this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
+                             ctx.ProtocolMessage.SetParameter(
+                                    this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
+                         }
+                         else
+                         {
+                             if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                             {
+                                 this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                 ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                             }
+                         }
+
+                         return Task.FromResult(0);
+                     },
+                     OnAuthenticationFailed = c =>
+                     {
+                         c.HandleResponse();
+                         c.Response.StatusCode = 500;
+                         c.Response.ContentType = "text/plain";
+                         this.logger.LogError(c.Exception.ToString());
+                         return c.Response.WriteAsync(c.Exception.ToString());
+                     },
+                 };
+             });
         }
     }
 }
