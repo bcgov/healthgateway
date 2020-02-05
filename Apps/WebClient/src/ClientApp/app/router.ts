@@ -36,6 +36,7 @@ const ValidateEmailComponent = () =>
 Vue.use(VueRouter);
 
 const REGISTRATION_PATH = "/registration";
+const REGISTRATION_INFO_PATH = "/registrationInfo";
 
 const routes = [
   {
@@ -44,7 +45,7 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: "/registrationInfo",
+    path: REGISTRATION_INFO_PATH,
     component: RegistrationInfoComponent,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
@@ -109,7 +110,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.fullPath);
+  console.log(from.fullPath, to.fullPath);
   if (to.meta.requiresAuth || to.meta.requiresRegistration) {
     store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
       if (!hasAccess) {
@@ -124,11 +125,15 @@ router.beforeEach(async (to, from, next) => {
     let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
 
     // If the user is authenticated but not registered, the registration must be completed
+    let isRegistrationPath =
+      to.path.startsWith(REGISTRATION_PATH) ||
+      to.path.startsWith(REGISTRATION_INFO_PATH);
     if (
       userIsAuthenticated &&
       !userIsRegistered &&
       !to.meta.routeIsOidcCallback &&
-      !to.path.startsWith("/logout")
+      !to.path.startsWith("/logout") &&
+      !isRegistrationPath
     ) {
       next({ path: REGISTRATION_PATH });
     } else {

@@ -51,7 +51,6 @@ export class RestUserProfileService implements IUserProfileService {
     resolve: any,
     reject: any
   ) {
-    //console.log(requestResult);
     if (requestResult.resultStatus === ResultType.Success) {
       resolve(requestResult.resourcePayload);
     } else {

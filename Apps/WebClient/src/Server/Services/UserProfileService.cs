@@ -99,20 +99,21 @@ namespace HealthGateway.WebClient.Services
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    this.logger.LogWarning($"Invalid email invite code. {JsonConvert.SerializeObject(createProfileRequest)}");
                     return requestResult;
                 }
 
                 emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
+                bool hdidIsValid = string.IsNullOrEmpty(emailInvite.HdId) || (emailInvite.HdId == createProfileRequest.Profile.HdId);
 
                 // Fails if...
                 // Email invite not found or
                 // Email invite was already validated or
-                // Email invite must have a blank/null HDID or
+                // Email invite must have a blank/null HDID or be the same as the one in the request
                 // Email address doesn't match the invite
                 if (emailInvite == null ||
                     emailInvite.Validated ||
-                    !string.IsNullOrEmpty(emailInvite.HdId) ||
+                    !hdidIsValid ||
                     !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
                 {
                     requestResult.ResultStatus = ResultType.Error;
