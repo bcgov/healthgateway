@@ -31,9 +31,11 @@ export interface IAuthenticationService {
   getOidcUserProfile(): Promise<any>;
 }
 
-export interface IImmsService {
+export interface IImmunizationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getItems(): Promise<ImmunizationData[]>;
+  getPatientImmunizations(
+    hdid: string
+  ): Promise<RequestResult<ImmunizationData[]>>;
 }
 
 export interface IPatientService {
