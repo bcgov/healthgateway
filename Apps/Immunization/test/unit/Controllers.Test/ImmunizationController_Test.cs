@@ -45,12 +45,12 @@ namespace HealthGateway.Immunization.Test.Controller
             Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
-            Mock<IImmsService> svcMock = new Mock<IImmsService>();
+            Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
 
-            List<ImmsDataModel> expected = new List<ImmsDataModel>();
-            expected.Add(new ImmsDataModel()
+            List<ImmunizationView> expected = new List<ImmunizationView>();
+            expected.Add(new ImmunizationView()
             {
-                Vaccine = "test"
+                Name = "test"
             });
             svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(expected);
 
@@ -60,7 +60,7 @@ namespace HealthGateway.Immunization.Test.Controller
             JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);
 
             // Verify
-            IEnumerable<ImmsDataModel> actual = (List<ImmsDataModel>)result.Value;
+            IEnumerable<ImmunizationView> actual = (List<ImmunizationView>)result.Value;
 
             // Verify the result
             Assert.True(actual.IsDeepEqual(expected));

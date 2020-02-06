@@ -22,15 +22,15 @@ namespace HealthGateway.Immunization.Services
     /// <summary>
     /// The Immunization data service.
     /// </summary>
-    public class MockImmsService : IImmsService
+    public class MockImmunizationService : IImmunizationService
     {
         /// <inheritdoc/>
-        public IEnumerable<ImmsDataModel> GetImmunizations(string hdid)
+        public IEnumerable<ImmunizationView> GetImmunizations(string hdid)
         {
-            ImmsDataModel[] immunizations = new ImmsDataModel[17];
+            List<ImmunizationView> immunizations = new List<ImmunizationView>();
 
-            ImmsDataModel imz = new ImmsDataModel();
-            imz.Date = @"1999 Jun 10";
+            /*ImmunizationView imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"1999 Jun 10";
             imz.Vaccine = @"Diphtheria, Tetanus, Pertussis, Hepatitis B, Polio, Haemophilus Influenzae type b (DTaP-HB-IPV-Hib)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
@@ -43,8 +43,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Paedatric Nurse";
             immunizations[0] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"1999 Aug 14";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"1999 Aug 14";
             imz.Vaccine = @"DTaP-HB-IPV-Hib";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
@@ -57,8 +57,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Paedatric Nurse";
             immunizations[1] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"1999 Oct 28";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"1999 Oct 28";
             imz.Vaccine = @"DTaP-HB-IPV-Hib";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
@@ -71,8 +71,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Paedatric Nurse";
             immunizations[2] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"1999 Oct 28";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"1999 Oct 28";
             imz.Vaccine = @"DTaP-HB-IPV-Hib";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
@@ -85,8 +85,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Paedatric Nurse";
             immunizations[3] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2000 Apr 14";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2000 Apr 14";
             imz.Vaccine = @"Chickenpox (Varicella)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
@@ -99,8 +99,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[4] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2000 Apr 23";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2000 Apr 23";
             imz.Vaccine = @"Measles, Mumps, Rubella (MMR)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left vastus lateralis";
@@ -113,8 +113,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[5] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2000 Jul 11";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2000 Jul 11";
             imz.Vaccine = @"Influenza, inactivated (Flu)";
             imz.Dose = @"0.25 mL";
             imz.Site = @"left deltoid";
@@ -127,8 +127,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[6] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2000 Oct 30";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2000 Oct 30";
             imz.Vaccine = @"DTaP-IPV-Hib";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -141,8 +141,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[7] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2003 Sep 11";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2003 Sep 11";
             imz.Vaccine = @"Measles, Mumps, Rubella, Varicella  (MMRV)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -155,8 +155,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[8] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2003 Sep 11";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2003 Sep 11";
             imz.Vaccine = @"Tetanus, Diphtheria, Pertussis, Polio vaccine (Tdap-IPV)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -169,8 +169,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[9] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2011 Sep 22";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2011 Sep 22";
             imz.Vaccine = @"Human Papillomavirus (HPV)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -183,8 +183,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[10] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2013 Nov 2";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2013 Nov 2";
             imz.Vaccine = @"Tetanus, Diphtheria (Td)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -197,8 +197,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[11] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2014 Sep 9";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2014 Sep 9";
             imz.Vaccine = @"Meningococcal Quadrivalent";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -211,8 +211,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[12] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2014 Oct 2";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2014 Oct 2";
             imz.Vaccine = @"Influenza (Flu)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -225,8 +225,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[12] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2015 Oct 24";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2015 Oct 24";
             imz.Vaccine = @"Influenza (Flu)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -239,8 +239,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[13] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2016 Jul 1";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2016 Jul 1";
             imz.Vaccine = @"Tetanus, Diphtheria (Td)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -253,8 +253,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[14] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2017 Nov 2";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2017 Nov 2";
             imz.Vaccine = @"Influenza (Flu)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"right deltoid";
@@ -267,8 +267,8 @@ namespace HealthGateway.Immunization.Services
             imz.AdministeredBy = @"Public Health Nurse";
             immunizations[15] = imz;
 
-            imz = new ImmsDataModel();
-            imz.Date = @"2018 Oct 30";
+            imz = new ImmunizationView();
+            imz.OccurenceDateTime = @"2018 Oct 30";
             imz.Vaccine = @"Influenza (Flu)";
             imz.Dose = @"0.5 mL";
             imz.Site = @"left deltoid";
@@ -279,7 +279,7 @@ namespace HealthGateway.Immunization.Services
             imz.Route = string.Empty;
             imz.AdministeredAt = string.Empty;
             imz.AdministeredBy = string.Empty;
-            immunizations[16] = imz;
+            immunizations[16] = imz;*/
 
             return immunizations;
         }
