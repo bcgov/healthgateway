@@ -3,7 +3,7 @@ import {
   ExternalConfiguration,
   OpenIdConnectConfiguration
 } from "@/models/configData";
-import ImmsData from "@/models/immsData";
+import ImmsData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserFeedback from "@/models/userFeedback";

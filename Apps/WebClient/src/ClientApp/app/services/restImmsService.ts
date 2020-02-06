@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IImmsService, IHttpDelegate } from "@/services/interfaces";
-import ImmsData from "@/models/immsData";
+import ImmsData from "@/models/immunizationData";
 import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()

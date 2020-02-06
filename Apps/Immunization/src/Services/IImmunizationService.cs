@@ -21,13 +21,13 @@ namespace HealthGateway.Immunization.Services
     /// <summary>
     /// The Immunization data service.
     /// </summary>
-    public interface IImmsService
+    public interface IImmunizationService
     {
         /// <summary>
         /// Gets a list of immunization records.
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        IEnumerable<ImmsDataModel> GetImmunizations(string hdid);
+        IEnumerable<ImmunizationView> GetImmunizations(string hdid);
     }
 }

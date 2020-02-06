@@ -37,7 +37,7 @@ namespace HealthGateway.Immunization.Controllers
         /// <summary>
         /// Gets or sets the immunization data service.
         /// </summary>
-        private readonly IImmsService service;
+        private readonly IImmunizationService service;
 
         /// <summary>
         /// Gets or sets the http context accessor.
@@ -55,7 +55,7 @@ namespace HealthGateway.Immunization.Controllers
         /// <param name="svc">The immunization data service.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         /// <param name="authorizationService">The IAuthorizationService.</param>
-        public ImmunizationController(IImmsService svc, IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+        public ImmunizationController(IImmunizationService svc, IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             this.service = svc;
             this.httpContextAccessor = httpContextAccessor;
