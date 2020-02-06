@@ -54,7 +54,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Imms Service
-            services.AddSingleton<IImmsService, MockImmsService>();
+            services.AddSingleton<IImmunizationService, MockImmunizationService>();
         }
 
         /// <summary>

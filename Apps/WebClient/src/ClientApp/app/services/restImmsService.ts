@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IImmsService, IHttpDelegate } from "@/services/interfaces";
-import ImmsData from "@/models/immsData";
+import ImmunizationData from "@/models/immunizationData";
 import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
@@ -15,8 +15,8 @@ export class RestImmsService implements IImmsService {
     this.http = http;
   }
 
-  public getItems(): Promise<ImmsData[]> {
-    return this.http.getWithCors<ImmsData[]>(
+  public getItems(): Promise<ImmunizationData[]> {
+    return this.http.getWithCors<ImmunizationData[]>(
       `${this.baseUri}${this.IMMS_BASE_URI}items`
     );
   }
