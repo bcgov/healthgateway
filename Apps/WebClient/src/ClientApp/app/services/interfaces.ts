@@ -3,7 +3,7 @@ import {
   ExternalConfiguration,
   OpenIdConnectConfiguration
 } from "@/models/configData";
-import ImmsData from "@/models/immunizationData";
+import ImmunizationData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserFeedback from "@/models/userFeedback";
@@ -33,7 +33,7 @@ export interface IAuthenticationService {
 
 export interface IImmsService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getItems(): Promise<ImmsData[]>;
+  getItems(): Promise<ImmunizationData[]>;
 }
 
 export interface IPatientService {
