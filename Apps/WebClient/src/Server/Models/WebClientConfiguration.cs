@@ -41,6 +41,12 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ExternalURLs { get; set; }
+        public Dictionary<string, System.Uri> ExternalURLs { get; set; } = new Dictionary<string, System.Uri>();
+
+        /// <summary>
+        /// Gets or sets the state for each of our modules.
+        /// </summary>
+        #pragma warning disable CA2227 //disable read-only Dictionary
+        public Dictionary<string, bool> Modules { get; set; } = new Dictionary<string, bool>();
     }
 }
