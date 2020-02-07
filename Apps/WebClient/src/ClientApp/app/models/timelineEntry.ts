@@ -1,6 +1,7 @@
 export enum EntryType {
   Medication,
   Laboratory,
+  Immunization,
   NONE
 }
 
