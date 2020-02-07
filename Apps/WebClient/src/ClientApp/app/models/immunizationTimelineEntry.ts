@@ -21,7 +21,6 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
   }
 }
 
-
 class ImmunizationViewModel {
   public name?: string;
   public status?: string;

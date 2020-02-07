@@ -108,13 +108,7 @@ $radius: 15px;
                     </div>
                   </div>
                 </div>
-                <div v-else-if="isLoading">
-                  <div class="d-flex align-items-center">
-                    <strong>Loading...</strong>
-                    <b-spinner class="ml-5"></b-spinner>
-                  </div>
-                </div>
-                <div v-else-if="hasErrors" class="pt-1">
+                <div v-if="hasErrors" class="pt-1">
                   <b-alert :show="hasErrors" variant="danger">
                     <h5>Error</h5>
                     <span
