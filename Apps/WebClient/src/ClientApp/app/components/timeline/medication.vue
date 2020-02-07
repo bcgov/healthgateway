@@ -45,10 +45,7 @@ $radius: 15px;
   <b-col>
     <b-row class="entryHeading">
       <b-col class="icon leftPane">
-        <font-awesome-icon
-          :icon="getEntryIcon(entry)"
-          size="2x"
-        ></font-awesome-icon>
+        <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>
       </b-col>
       <b-col class="entryTitle">
         {{ entry.medication.brandName }}
@@ -187,11 +184,11 @@ export default class MedicationTimelineComponent extends Vue {
 
   private detailsVisible = false;
 
-  get detailsLoaded(): boolean {
+  private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.pharmacyLoaded;
   }
 
-  private getEntryIcon(entry: any): IconDefinition {
+  private get entryIcon(): IconDefinition {
     return faPills;
   }
 
