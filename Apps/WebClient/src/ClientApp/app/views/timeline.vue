@@ -124,7 +124,7 @@
               <b-col>
                 <hr class="dateBreakLine" />
               </b-col>
-              <MedicationComponent
+              <EntryCardComponent
                 v-for="(entry, index) in dateGroup.entries"
                 :key="entry.id"
                 :datekey="dateGroup.key"
@@ -164,7 +164,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import moment from "moment";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import MedicationTimelineComponent from "@/components/timeline/medication.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
@@ -180,7 +180,7 @@ interface DateGroup {
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
-    MedicationComponent: MedicationTimelineComponent,
+    EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
     FeedbackComponent
   }
@@ -275,6 +275,7 @@ export default class TimelineComponent extends Vue {
       entry.filterApplies(this.filterText)
     );
   }
+
   private get dateGroups(): DateGroup[] {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
