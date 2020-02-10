@@ -13,7 +13,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
   public prescriptionIdentifier: string;
 
   public constructor(model: MedicationStatement) {
-    super("id-" + Math.random(), model.dispensedDate, EntryType.Medication);
+    super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);
     this.pharmacy = new PharmacyViewModel(model.pharmacyId);
     this.medication = new MedicationViewModel(model.medicationSumary);
 

@@ -412,6 +412,11 @@
             Gets or sets the ExternalURLs used by the Webclient.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.Modules">
+            <summary>
+            Gets or sets the state for each of our modules.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Program">
             <summary>
             The entry point for the project.

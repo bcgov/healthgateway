@@ -362,6 +362,7 @@ export default class RegistrationComponent extends Vue {
               console.log("beta request:", betaRequest);
               if (betaRequest) {
                 this.email = betaRequest.emailAddress;
+                this.emailConfirmation = this.email;
                 this.waitlistTempEmail = this.email;
                 this.waitlistEdditable = false;
               } else {

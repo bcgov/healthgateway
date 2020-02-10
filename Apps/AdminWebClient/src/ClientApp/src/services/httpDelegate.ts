@@ -74,7 +74,6 @@ export default class HttpDelegate implements IHttpDelegate {
       let config: AxiosRequestConfig = {
         headers
       };
-      console.log("Config:", config);
       Axios.put(url, payload, config)
         .then(response => {
           return resolve(response.data);
@@ -96,7 +95,6 @@ export default class HttpDelegate implements IHttpDelegate {
       let config: AxiosRequestConfig = {
         headers
       };
-      console.log("Config:", config);
       Axios.patch(url, payload, config)
         .then(response => {
           return resolve(response.data);
