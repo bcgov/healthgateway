@@ -45,7 +45,7 @@ namespace HealthGateway.Common.Models.IAM
         /// <summary>
         /// Gets or sets the user's roles in the IAM application realm.
         /// </summary>       
-        public string[] realmRoles { get; set; }
+        public string?[] realmRoles { get; set; } = new string[0];
 
         /// <summary>
         /// Gets or sets the user's username.
