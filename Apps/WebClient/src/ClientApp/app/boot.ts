@@ -13,7 +13,7 @@ import router from "@/router";
 import store from "@/store/store";
 import {
   IAuthenticationService,
-  IImmunizationService,
+  IImmsService,
   IPatientService,
   IMedicationService,
   IHttpDelegate,
@@ -49,8 +49,8 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const authService: IAuthenticationService = container.get(
     SERVICE_IDENTIFIER.AuthenticationService
   );
-  const immunizationService: IImmunizationService = container.get(
-    SERVICE_IDENTIFIER.ImmunizationService
+  const immsService: IImmsService = container.get(
+    SERVICE_IDENTIFIER.ImmsService
   );
   const patientService: IPatientService = container.get(
     SERVICE_IDENTIFIER.PatientService
@@ -73,7 +73,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
-  immunizationService.initialize(config, httpDelegate);
+  immsService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);

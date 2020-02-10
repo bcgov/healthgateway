@@ -6,7 +6,6 @@ namespace HealthGateway.Immunization.Test.Controller
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Authorization;
-    using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
@@ -48,12 +47,12 @@ namespace HealthGateway.Immunization.Test.Controller
 
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
 
-            List<ImmunizationView> immunizations = new List<ImmunizationView>();
-            immunizations.Add(new ImmunizationView()
+            List<ImmunizationView> expected = new List<ImmunizationView>();
+            expected.Add(new ImmunizationView()
             {
                 Name = "test"
             });
-            svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(immunizations);
+            svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(expected);
 
             ImmunizationController controller = new ImmunizationController(svcMock.Object, httpContextAccessorMock.Object, authzMock.Object);
 
@@ -61,10 +60,10 @@ namespace HealthGateway.Immunization.Test.Controller
             JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);
 
             // Verify
-            RequestResult<List<ImmunizationView>> actual = (RequestResult<List<ImmunizationView>>)result.Value;
+            IEnumerable<ImmunizationView> actual = (List<ImmunizationView>)result.Value;
 
             // Verify the result
-            Assert.True(actual.ResourcePayload.IsDeepEqual(immunizations));
+            Assert.True(actual.IsDeepEqual(expected));
         }
     }
 }

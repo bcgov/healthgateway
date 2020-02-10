@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System;
     using System.Collections.Generic;
     using HealthGateway.Immunization.Models;
     using Newtonsoft.Json;
@@ -29,46 +28,6 @@ namespace HealthGateway.Immunization.Services
         public IEnumerable<ImmunizationView> GetImmunizations(string hdid)
         {
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
-
-            immunizations.Add(new ImmunizationView()
-            {
-                Id = "test_id_1",
-                ImmunizationAgentCode = "test_agent_code_1",
-                ImmunizationAgentDisplay = "test_agent_display_1",
-                Name = "test_name_1",
-                OccurrenceDateTime = DateTime.Now,
-                Status = "Completed",
-            });
-
-            immunizations.Add(new ImmunizationView()
-            {
-                Id = "test_id_2",
-                ImmunizationAgentCode = "test_agent_code_2",
-                ImmunizationAgentDisplay = "test_agent_display_2",
-                Name = "test_name_2",
-                OccurrenceDateTime = DateTime.Parse("01/28/2020"),
-                Status = "Completed",
-            });
-
-            immunizations.Add(new ImmunizationView()
-            {
-                Id = "test_id_3",
-                ImmunizationAgentCode = "test_agent_code_3",
-                ImmunizationAgentDisplay = "test_agent_display_3",
-                Name = "test_name_3",
-                OccurrenceDateTime = DateTime.Parse("01/28/2020"),
-                Status = "Completed",
-            });
-
-            immunizations.Add(new ImmunizationView()
-            {
-                Id = "test_id_4",
-                ImmunizationAgentCode = "test_agent_code_4",
-                ImmunizationAgentDisplay = "test_agent_display_4",
-                Name = "test_name_4",
-                OccurrenceDateTime = DateTime.Parse("01/22/2020"),
-                Status = "Completed",
-            });
 
             /*ImmunizationView imz = new ImmunizationView();
             imz.OccurenceDateTime = @"1999 Jun 10";

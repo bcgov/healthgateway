@@ -68,7 +68,7 @@
           <b-col>
             <div class="form-group has-filter">
               <font-awesome-icon
-                :icon="searchIcon"
+                :icon="getIcon()"
                 class="form-control-feedback"
                 fixed-width
               ></font-awesome-icon>
@@ -124,9 +124,9 @@
               <b-col>
                 <hr class="dateBreakLine" />
               </b-col>
-              <EntryCardComponent
+              <MedicationComponent
                 v-for="(entry, index) in dateGroup.entries"
-                :key="entry.type + '-' + entry.id"
+                :key="entry.id"
                 :datekey="dateGroup.key"
                 :entry="entry"
                 :index="index"
@@ -153,22 +153,18 @@
 import Vue from "vue";
 import { Component, Watch, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import {
-  IMedicationService,
-  IImmunizationService
-} from "@/services/interfaces";
+import { IMedicationService } from "@/services/interfaces";
 import container from "@/inversify.config";
 import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import moment from "moment";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
+import MedicationTimelineComponent from "@/components/timeline/medication.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
@@ -184,7 +180,7 @@ interface DateGroup {
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
-    EntryCardComponent: EntryCardTimelineComponent,
+    MedicationComponent: MedicationTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
     FeedbackComponent
   }
@@ -195,8 +191,7 @@ export default class TimelineComponent extends Vue {
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
-  private isMedicationLoading: boolean = false;
-  private isImmunizationLoading: boolean = false;
+  private isLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
@@ -207,26 +202,21 @@ export default class TimelineComponent extends Vue {
 
   mounted() {
     this.fechMedicationStatements();
-    this.fechImmunizations();
   }
 
-  private get unverifiedEmail(): boolean {
+  get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
   }
 
-  private get searchIcon(): IconDefinition {
+  private getIcon(): IconDefinition {
     return faSearch;
-  }
-
-  private get isLoading(): boolean {
-    return this.isMedicationLoading || this.isImmunizationLoading;
   }
 
   private fechMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
-    this.isMedicationLoading = true;
+    this.isLoading = true;
     medicationService
       .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
@@ -237,7 +227,11 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-          this.applyTimelineFilter();
+          if (!this.filterText) {
+            this.visibleTimelineEntries = this.timelineEntries;
+          } else {
+            this.applyTimelineFilter();
+          }
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
           this.protectiveWordAttempts++;
@@ -254,38 +248,7 @@ export default class TimelineComponent extends Vue {
         console.log(err);
       })
       .finally(() => {
-        this.isMedicationLoading = false;
-      });
-  }
-
-  private fechImmunizations() {
-    const immunizationService: IImmunizationService = container.get(
-      SERVICE_IDENTIFIER.ImmunizationService
-    );
-    this.isImmunizationLoading = true;
-    immunizationService
-      .getPatientImmunizations(this.user.hdid)
-      .then(results => {
-        if (results.resultStatus == ResultType.Success) {
-          // Add the immunization entries to the timeline list
-          for (let result of results.resourcePayload) {
-            this.timelineEntries.push(new ImmunizationTimelineEntry(result));
-          }
-          this.applyTimelineFilter();
-        } else {
-          console.log(
-            "Error returned from the immunization call: " +
-              results.resultMessage
-          );
-          this.hasErrors = true;
-        }
-      })
-      .catch(err => {
-        this.hasErrors = true;
-        console.log(err);
-      })
-      .finally(() => {
-        this.isImmunizationLoading = false;
+        this.isLoading = false;
       });
   }
 
@@ -308,15 +271,10 @@ export default class TimelineComponent extends Vue {
 
   @Watch("filterText")
   private applyTimelineFilter() {
-    if (!this.filterText) {
-      this.visibleTimelineEntries = this.timelineEntries;
-    } else {
-      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
-        entry.filterApplies(this.filterText)
-      );
-    }
+    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+      entry.filterApplies(this.filterText)
+    );
   }
-
   private get dateGroups(): DateGroup[] {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
@@ -340,9 +298,7 @@ export default class TimelineComponent extends Vue {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
-        entries: groups[dateKey].sort((a, b) =>
-          a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        )
+        entries: groups[dateKey]
       };
     });
     return this.sortGroup(groupArrays);

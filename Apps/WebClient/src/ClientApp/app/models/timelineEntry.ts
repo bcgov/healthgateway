@@ -1,20 +1,19 @@
 export enum EntryType {
   Medication,
-  Immunization,
   Laboratory,
   NONE
 }
 
 // The base timeline entry model
 export default abstract class TimelineEntry {
-  public readonly id: string;
-  public readonly type: EntryType;
+  public readonly id?: string;
   public readonly date?: Date;
+  public readonly type: EntryType;
 
-  public constructor(id: string, type: EntryType, date?: Date) {
+  public constructor(id: string, date?: Date, type?: EntryType) {
     this.id = id;
-    this.type = type;
     this.date = date;
+    this.type = type ? type : EntryType.NONE;
   }
 
   public abstract filterApplies(filterText: string): boolean;

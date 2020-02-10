@@ -16,12 +16,9 @@
 namespace HealthGateway.Immunization.Controllers
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -68,17 +65,17 @@ namespace HealthGateway.Immunization.Controllers
         /// <summary>
         /// Gets a json list of immunization records.
         /// </summary>
-        /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="patient">The hdid patient id.</param>
         /// <returns>a list of immunization records.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
+        [HttpGet("")]
         [Produces("application/json")]
-        [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetImmunizations(string hdid)
+        public async Task<IActionResult> GetImmunizations([FromQuery]string patient)
         {
+            string hdid = patient; // actually what the patient ID parameter is, named patient for HL7 FHIR
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
@@ -86,18 +83,7 @@ namespace HealthGateway.Immunization.Controllers
                 return new ForbidResult();
             }
 
-            List<ImmunizationView> immunizations = this.service.GetImmunizations(hdid).ToList();
-
-            RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
-            {
-                ResourcePayload = immunizations,
-                PageIndex = 0,
-                PageSize = immunizations.Count,
-                TotalResultCount = immunizations.Count,
-                ResultStatus = ResultType.Success,
-            };
-
-            return new JsonResult(result);
+            return new JsonResult(this.service.GetImmunizations(hdid));
         }
     }
 }

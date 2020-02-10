@@ -1,7 +1,7 @@
 const SERVICE_IDENTIFIER = {
   ConfigService: Symbol.for("ConfigService"),
   AuthenticationService: Symbol.for("AuthService"),
-  ImmunizationService: Symbol.for("ImmunizationService"),
+  ImmsService: Symbol.for("ImmsService"),
   PatientService: Symbol.for("PatientService"),
   MedicationService: Symbol.for("MedicationService"),
   UserProfileService: Symbol.for("UserProfileService"),

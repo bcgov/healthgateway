@@ -48,25 +48,12 @@ namespace HealthGateway.Immunization
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
-            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
-
-            // Add Services
+            // Imms Service
             services.AddSingleton<IImmunizationService, MockImmunizationService>();
         }
 
@@ -77,10 +64,9 @@ namespace HealthGateway.Immunization
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseForwardHeaders(app);
+            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseAuth(app);
-            this.startupConfig.UseRest(app);
         }
     }
 }

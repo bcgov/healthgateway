@@ -6,7 +6,7 @@ import SERVICE_IDENTIFIER, {
 } from "@/constants/serviceIdentifiers";
 import {
   IAuthenticationService,
-  IImmunizationService,
+  IImmsService,
   IConfigService,
   IHttpDelegate,
   IPatientService,
@@ -18,7 +18,7 @@ import {
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
-import { RestImmunizationService } from "@/services/restImmunizationService";
+import { RestImmsService } from "@/services/restImmsService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestMedicationService } from "@/services/restMedicationService";
@@ -37,8 +37,8 @@ container
   .to(RestAuthenticationService)
   .inSingletonScope();
 container
-  .bind<IImmunizationService>(SERVICE_IDENTIFIER.ImmunizationService)
-  .to(RestImmunizationService)
+  .bind<IImmsService>(SERVICE_IDENTIFIER.ImmsService)
+  .to(RestImmsService)
   .inSingletonScope();
 container
   .bind<IPatientService>(SERVICE_IDENTIFIER.PatientService)
