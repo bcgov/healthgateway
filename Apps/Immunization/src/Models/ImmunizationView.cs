@@ -23,32 +23,32 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationView
     {
         /// <summary>
-        /// Gets or sets the Immunization id
+        /// Gets or sets the Immunization id.
         /// </summary>
-        public string Id { get; set; } = "";
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization name
+        /// Gets or sets the Immunization name.
         /// </summary>
         public string? Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the Immunization status (completed | not-done)
+        /// Gets or sets the Immunization status (completed | not-done).
         /// </summary>
-        public string Status { get; set; } = "";
+        public string Status { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization agent code
+        /// Gets or sets the Immunization agent code.
         /// </summary>
         public string? ImmunizationAgentCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the Immunization agent display
+        /// Gets or sets the Immunization agent display.
         /// </summary>
         public string? ImmunizationAgentDisplay { get; set; }
 
         /// <summary>
-        /// Gets or sets the Immunization occurence date time
+        /// Gets or sets the Immunization occurence date time.
         /// </summary>
         public DateTime OccurrenceDateTime { get; set; } = new DateTime();
     }

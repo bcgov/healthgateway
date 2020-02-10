@@ -1,12 +1,12 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import ImmunizationData from "@/models/immunizationData";
 
-// The medication timeline entry model
+// The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
   public immunization: ImmunizationViewModel;
 
   public constructor(model: ImmunizationData) {
-    super(model.id, model.occurrenceDateTime, EntryType.Immunization);
+    super(model.id, EntryType.Immunization, model.occurrenceDateTime);
     this.immunization = new ImmunizationViewModel(model);
   }
 
