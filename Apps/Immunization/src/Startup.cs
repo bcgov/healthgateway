@@ -67,7 +67,8 @@ namespace HealthGateway.Immunization
             });
 
             // Add Services
-            services.AddSingleton<IImmunizationService, MockImmunizationService>();
+            services.AddSingleton<IImmunizationService, ImmunizationService>();
+            services.AddSingleton<IImmunizationSummaryDelegate, ImmunizationSummaryDelegate>();
         }
 
         /// <summary>
