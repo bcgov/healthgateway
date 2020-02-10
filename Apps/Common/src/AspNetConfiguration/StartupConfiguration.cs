@@ -18,6 +18,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System;
     using System.IO;
     using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
@@ -90,6 +91,16 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
+
+            services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback =
+                    (httpRequestMessage, cert, cetChain, policyErrors) =>
+                    {
+                        return true;
+                    }
+            });
 
             services
                 .AddRazorPages()
