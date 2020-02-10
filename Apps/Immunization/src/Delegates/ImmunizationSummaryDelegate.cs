@@ -13,37 +13,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegates
+namespace HealthGateway.Immunization.Delegates
 {
     using System;
     using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
-    using HealthGateway.Medication.Models;
+    using HealthGateway.Immunization.Models;
+    using Hl7.Fhir.Model;
+    using Hl7.Fhir.Serialization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Implementation that uses HTTP to retrieve patient information.
+    /// Implementation that uses HTTP to retrieve immunization information.
     /// </summary>
-    public class RestPatientDelegate : IPatientDelegate
+    public class ImmunizationSummaryDelegate : IImmunizationSummaryDelegate
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestPatientDelegate"/> class.
+        /// Initializes a new instance of the <see cref="ImmunizationSummaryDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public RestPatientDelegate(
-            ILogger<RestPatientDelegate> logger,
+        public ImmunizationSummaryDelegate(
+            ILogger<ImmunizationSummaryDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
@@ -53,47 +56,61 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
+        public async Task<Bundle> GetImmunizationSummary(string phn)
         {
-            string retrievedPhn;
+            Bundle responseMessage;
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting patient phn... {hdid}");
+            this.logger.LogTrace($"Getting immunization summary... {phn}");
 
             using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", authorization);
+
+                // client.DefaultRequestHeaders.Add("Authorization", authorization);
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
+                client.BaseAddress = new Uri(this.configuration.GetSection("Panorama").GetValue<string>("Url"));
 
-                using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
+                using (StringContent httpContent = new StringContent("{'phn':'9735353315','dob':'19670602'}", Encoding.UTF8, MediaTypeNames.Application.Json))
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
+                    httpContent.Headers.Add("X-API-Key", "C10A9A2A8D804E9DA7978BD7CAC1A013");
+                    httpContent.Headers.Add("X-PHN", "{ 'phn':'9735353315','dob':'19670602' }");
+
+                    using (HttpResponseMessage response = await client.PostAsync(new Uri("api/ImmsSummary", UriKind.Relative), httpContent).ConfigureAwait(true))
                     {
-                        Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                        retrievedPhn = responseMessage.PersonalHealthNumber;
-                    }
-                    else
-                    {
-                        this.logger.LogError($"Error getting patient phn. {hdid}, {payload}");
-                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                        this.logger.LogDebug($"FHIR Payload: {payload}");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            FhirJsonParser parser = new FhirJsonParser();
+                            try
+                            {
+                                responseMessage = parser.Parse<Bundle>(payload);
+                                foreach (var e in responseMessage.Entry)
+                                {
+                                    Console.WriteLine(e);
+                                }
+
+                                this.logger.LogDebug($"FHIR Parsed.");
+                            }
+                            catch (FormatException e)
+                            {
+                                this.logger.LogError($"FHIR Failed to be parsed. {e.ToString()}");
+                            }
+                        }
+                        else
+                        {
+                            this.logger.LogError($"Error getting immunization summary. {phn}, {payload}");
+                            throw new HttpRequestException($"Unable to connect to PHSAImmunization: ${response.StatusCode}");
+                        }
                     }
                 }
 
                 timer.Stop();
-                if (string.IsNullOrEmpty(retrievedPhn))
-                {
-                    this.logger.LogDebug($"Finished getting patient phn. {hdid}, PHN not found, Time Elapsed: {timer.Elapsed}");
-                }
-                else
-                {
-                    this.logger.LogDebug($"Finished getting patient phn. {hdid}, {retrievedPhn.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
-                }
+                this.logger.LogDebug($"Finished getting immunization summary. {phn}, Time Elapsed: {timer.Elapsed}");
 
-                return retrievedPhn;
+                return responseMessage;
             }
         }
     }

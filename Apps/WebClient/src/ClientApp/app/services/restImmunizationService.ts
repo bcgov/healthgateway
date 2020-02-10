@@ -33,6 +33,7 @@ export class RestImmunizationService implements IImmunizationService {
           resultStatus: ResultType.Success,
           totalResultCount: 0
         });
+        return;
       }
 
       this.http
