@@ -28,6 +28,7 @@ namespace HealthGateway.Immunization.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Immunization controller.
@@ -39,6 +40,8 @@ namespace HealthGateway.Immunization.Controllers
     [TypeFilter(typeof(AvailabilityFilter))]
     public class ImmunizationController : ControllerBase
     {
+        private readonly ILogger logger;
+
         /// <summary>
         /// Gets or sets the immunization data service.
         /// </summary>
@@ -57,11 +60,17 @@ namespace HealthGateway.Immunization.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationController"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The immunization data service.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         /// <param name="authorizationService">The IAuthorizationService.</param>
-        public ImmunizationController(IImmunizationService svc, IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+        public ImmunizationController(
+            ILogger<ImmunizationController> logger,
+            IImmunizationService svc,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
+            this.logger = logger;
             this.service = svc;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
@@ -82,6 +91,8 @@ namespace HealthGateway.Immunization.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> GetImmunizations(string hdid)
         {
+            this.logger.LogDebug($"Getting immunizations from controller... {hdid}");
+
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
@@ -99,6 +110,8 @@ namespace HealthGateway.Immunization.Controllers
                 TotalResultCount = immunizations.Count,
                 ResultStatus = ResultType.Success,
             };
+
+            this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
 
             return new JsonResult(result);
         }

@@ -45,8 +45,10 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public IEnumerable<ImmunizationView> GetImmunizations(string hdid)
         {
+            this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
             this.immunizationDelegate.GetImmunizationBundle("1234");
+            this.logger.LogDebug($"Finished getting immunization records {immunizations.Count}");
             return immunizations;
         }
     }

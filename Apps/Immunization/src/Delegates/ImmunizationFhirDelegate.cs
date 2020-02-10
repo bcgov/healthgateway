@@ -61,7 +61,7 @@ namespace HealthGateway.Immunization.Delegates
             Bundle responseMessage = new Bundle();
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting immunization summary... {phn}");
+            this.logger.LogDebug($"Getting immunization summary... {phn}");
 
             using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
