@@ -17,6 +17,7 @@ namespace HealthGateway.Immunization.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Immunization.Models;
+    using Hl7.Fhir.Model;
 
     /// <summary>
     /// Interface that defines a delegate to retrieve patient information.
@@ -28,6 +29,6 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         /// <param name="phn">The patient hdid.</param>
         /// <returns>The immunization summary.</returns>
-        Task<ImmunizationSummary> GetImmunizationSummary(string phn);
+        Task<Bundle> GetImmunizationSummary(string phn);
     }
 }

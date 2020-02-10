@@ -58,7 +58,7 @@ namespace HealthGateway.Immunization.Delegates
         /// <inheritdoc/>
         public async Task<Bundle> GetImmunizationSummary(string phn)
         {
-            Bundle responseMessage;
+            Bundle responseMessage = new Bundle();
             Stopwatch timer = new Stopwatch();
             timer.Start();
             this.logger.LogTrace($"Getting immunization summary... {phn}");
@@ -102,7 +102,7 @@ namespace HealthGateway.Immunization.Delegates
                         else
                         {
                             this.logger.LogError($"Error getting immunization summary. {phn}, {payload}");
-                            throw new HttpRequestException($"Unable to connect to PHSAImmunization: ${response.StatusCode}");
+                            throw new HttpRequestException($"Unable to connect to Panorama: ${response.StatusCode}");
                         }
                     }
                 }
