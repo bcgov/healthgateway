@@ -13,19 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.IAM.Admin.Delegates
+namespace HealthGateway.Common.Models.IAM
 {
-    using HealthGateway.Common.Models.IAM;
-    public interface IUserDelegate
+    using System;
+
+    public class UserRepresentation
     {
-        public UserRepresentation FindUser(string username);
+        public DateTime? createdTimestamp { get; set; }
 
-        public UserRepresentation GetUser(string userId);
+        public string? email { get; set; }
 
-        public int UserCount();
+        public string? firstName { get; set; }
 
-        public void DeleteUser(string userId);
+        public string? lastName { get; set; }
 
+        public string[] realmRoles { get; set; }
+
+        public string? username { get; set; }
+
+        public string? id { get; set; }
     }
-}
 
+}
