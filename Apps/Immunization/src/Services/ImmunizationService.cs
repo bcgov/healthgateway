@@ -46,7 +46,7 @@ namespace HealthGateway.Immunization.Services
         public IEnumerable<ImmunizationView> GetImmunizations(string hdid)
         {
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
-            this.immunizationDelegate.GetImmunizationBundle("1234");
+            this.immunizationDelegate.GetImmunizationBundle(string.Empty);
             return immunizations;
         }
     }

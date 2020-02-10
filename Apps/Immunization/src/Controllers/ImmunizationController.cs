@@ -32,7 +32,6 @@ namespace HealthGateway.Immunization.Controllers
     /// <summary>
     /// The Immunization controller.
     /// </summary>
-    [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
@@ -90,6 +89,24 @@ namespace HealthGateway.Immunization.Controllers
             }
 
             List<ImmunizationView> immunizations = this.service.GetImmunizations(hdid).ToList();
+
+            RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
+            {
+                ResourcePayload = immunizations,
+                PageIndex = 0,
+                PageSize = immunizations.Count,
+                TotalResultCount = immunizations.Count,
+                ResultStatus = ResultType.Success,
+            };
+
+            return new JsonResult(result);
+        }
+
+        [HttpGet]
+        [Produces("application/json")]
+        public IActionResult GetImmunizations()
+        {
+            List<ImmunizationView> immunizations = this.service.GetImmunizations(string.Empty).ToList();
 
             RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
             {

@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization
 
             // Add Services
             services.AddSingleton<IImmunizationService, ImmunizationService>();
-            services.AddSingleton<IImmunizationFhirDelegate, ImmunizationFhirDelegate>();
+            services.AddSingleton<IImmunizationFhirDelegate, ImmunizationMockFhirDelegate>();
         }
 
         /// <summary>
