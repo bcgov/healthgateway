@@ -13,27 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Immunization.Models
 {
-    using System.Net.Http;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// A custom http client factory service.
+    /// The PHSA immunization request.
     /// </summary>
-    public interface IHttpClientService
+    public class ImmunizationRequest
     {
         /// <summary>
-        /// Creates a new default instance of HttpClient.
+        /// Gets or sets the patient PHN.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateDefaultHttpClient();
-
+        [JsonProperty("phn")]
+        public string? PersonalHealthNumber { get; set; }
 
         /// <summary>
-        /// Creates a new unstrusted ssl HttpClient.
+        /// Gets or sets the patient date of birth.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateUntrustedHttpClient();
+        [JsonProperty("dob")]
+        public string? DateOfBirth { get; set; }
     }
 }

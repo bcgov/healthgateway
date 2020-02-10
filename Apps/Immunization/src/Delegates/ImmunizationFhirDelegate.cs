@@ -56,14 +56,15 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Bundle> GetImmunizationBundle(string phn)
+        public async Task<Bundle> GetImmunizationBundle(ImmunizationRequest request)
         {
             Bundle responseMessage = new Bundle();
+            string requestJson = JsonConvert.SerializeObject(request);
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogDebug($"Getting immunization summary... {phn}");
+            this.logger.LogDebug($"Getting immunization summary... {requestJson}");
 
-            using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
+            using (HttpClient client = this.httpClientService.CreateUntrustedHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
 
@@ -72,11 +73,10 @@ namespace HealthGateway.Immunization.Delegates
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.BaseAddress = new Uri(this.configuration.GetSection("Panorama").GetValue<string>("Url"));
 
-                using (StringContent httpContent = new StringContent("{'phn':'9735353315','dob':'19670602'}", Encoding.UTF8, MediaTypeNames.Application.Json))
+                using (StringContent httpContent = new StringContent(requestJson, Encoding.UTF8, MediaTypeNames.Application.Json))
                 {
-                    httpContent.Headers.Add("X-API-Key", "C10A9A2A8D804E9DA7978BD7CAC1A013");
-                    httpContent.Headers.Add("X-PHN", "{ 'phn':'9735353315','dob':'19670602' }");
-
+                    httpContent.Headers.Add("X-API-Key", this.configuration.GetSection("Panorama").GetValue<string>("ApiKey"));
+                    httpContent.Headers.Add("X-PHN", requestJson);
                     using (HttpResponseMessage response = await client.PostAsync(new Uri("api/ImmsSummary", UriKind.Relative), httpContent).ConfigureAwait(true))
                     {
                         string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -84,31 +84,19 @@ namespace HealthGateway.Immunization.Delegates
                         if (response.IsSuccessStatusCode)
                         {
                             FhirJsonParser parser = new FhirJsonParser();
-                            try
-                            {
-                                responseMessage = parser.Parse<Bundle>(payload);
-                                foreach (var e in responseMessage.Entry)
-                                {
-                                    Console.WriteLine(e);
-                                }
-
-                                this.logger.LogDebug($"FHIR Parsed.");
-                            }
-                            catch (FormatException e)
-                            {
-                                this.logger.LogError($"FHIR Failed to be parsed. {e.ToString()}");
-                            }
+                            responseMessage = parser.Parse<Bundle>(payload);
+                            this.logger.LogDebug($"FHIR Parsed. {responseMessage}");
                         }
                         else
                         {
-                            this.logger.LogError($"Error getting immunization summary. {phn}, {payload}");
+                            this.logger.LogError($"Error getting immunization summary. {requestJson}, {payload}");
                             throw new HttpRequestException($"Unable to connect to Panorama: ${response.StatusCode}");
                         }
                     }
                 }
 
                 timer.Stop();
-                this.logger.LogDebug($"Finished getting immunization summary. {phn}, Time Elapsed: {timer.Elapsed}");
+                this.logger.LogDebug($"Finished getting immunization summary. {requestJson}, Time Elapsed: {timer.Elapsed}");
 
                 return responseMessage;
             }
