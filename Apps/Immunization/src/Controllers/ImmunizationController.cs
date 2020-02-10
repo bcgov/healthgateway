@@ -19,6 +19,7 @@ namespace HealthGateway.Immunization.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -32,6 +33,7 @@ namespace HealthGateway.Immunization.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [TypeFilter(typeof(AvailabilityFilter))]
     public class ImmunizationController : ControllerBase
     {
         /// <summary>
@@ -68,8 +70,9 @@ namespace HealthGateway.Immunization.Controllers
         /// <param name="patient">The hdid patient id.</param>
         /// <returns>a list of immunization records.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable.</response>
         [HttpGet("")]
         [Produces("application/json")]
         [Authorize(Policy = "PatientOnly")]
