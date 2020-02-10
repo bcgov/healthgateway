@@ -17,20 +17,44 @@ namespace HealthGateway.Common.Models.IAM
 {
     using System;
 
+    /// <summary>
+    /// Class that represents the user model in the IAM account system.
+    /// </summary>
     public class UserRepresentation
     {
+        /// <summary>
+        /// Gets or sets the user created timestamp.
+        /// </summary>
         public DateTime? createdTimestamp { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user's email.
+        /// </summary>      
         public string? email { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user's first name.
+        /// </summary>          
         public string? firstName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user's last name.
+        /// </summary>  
         public string? lastName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user's roles in the IAM application realm.
+        /// </summary>       
         public string[] realmRoles { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user's username.
+        /// </summary> 
         public string? username { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user's unique account identifier.
+        /// </summary> 
         public string? id { get; set; }
     }
 
