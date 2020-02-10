@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -67,7 +68,8 @@ namespace HealthGateway.Immunization
             });
 
             // Add Services
-            services.AddSingleton<IImmunizationService, MockImmunizationService>();
+            services.AddSingleton<IImmunizationService, ImmunizationService>();
+            services.AddSingleton<IImmunizationFhirDelegate, ImmunizationFhirDelegate>();
         }
 
         /// <summary>
