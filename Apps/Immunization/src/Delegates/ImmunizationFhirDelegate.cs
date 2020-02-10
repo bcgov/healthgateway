@@ -33,20 +33,20 @@ namespace HealthGateway.Immunization.Delegates
     /// <summary>
     /// Implementation that uses HTTP to retrieve immunization information.
     /// </summary>
-    public class ImmunizationSummaryDelegate : IImmunizationSummaryDelegate
+    public class ImmunizationFhirDelegate : IImmunizationFhirDelegate
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationSummaryDelegate"/> class.
+        /// Initializes a new instance of the <see cref="ImmunizationFhirDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public ImmunizationSummaryDelegate(
-            ILogger<ImmunizationSummaryDelegate> logger,
+        public ImmunizationFhirDelegate(
+            ILogger<ImmunizationFhirDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
@@ -56,7 +56,7 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Bundle> GetImmunizationSummary(string phn)
+        public async Task<Bundle> GetImmunizationBundle(string phn)
         {
             Bundle responseMessage = new Bundle();
             Stopwatch timer = new Stopwatch();

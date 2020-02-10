@@ -22,13 +22,13 @@ namespace HealthGateway.Immunization.Delegates
     /// <summary>
     /// Interface that defines a delegate to retrieve patient information.
     /// </summary>
-    public interface IImmunizationSummaryDelegate
+    public interface IImmunizationFhirDelegate
     {
         /// <summary>
         /// Gets the immunization summary for the provided phn.
         /// </summary>
         /// <param name="phn">The patient hdid.</param>
-        /// <returns>The immunization summary.</returns>
-        Task<Bundle> GetImmunizationSummary(string phn);
+        /// <returns>The immunization fhir bundle.</returns>
+        Task<Bundle> GetImmunizationBundle(string phn);
     }
 }

@@ -27,28 +27,27 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly ILogger logger;
-        private readonly IImmunizationSummaryDelegate immunizationSummaryDelegate;
+        private readonly IImmunizationFhirDelegate immunizationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="immunizationSummaryDelegate">The injected drug lookup delegate.</param>
+        /// <param name="immunizationDelegate">The injected immunization delegate.</param>
         public ImmunizationService(
             ILogger<ImmunizationService> logger,
-            IImmunizationSummaryDelegate immunizationSummaryDelegate)
+            IImmunizationFhirDelegate immunizationDelegate)
         {
             this.logger = logger;
-            this.immunizationSummaryDelegate = immunizationSummaryDelegate;
+            this.immunizationDelegate = immunizationDelegate;
         }
 
         /// <inheritdoc/>
         public IEnumerable<ImmunizationView> GetImmunizations(string hdid)
         {
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
-            this.immunizationSummaryDelegate.GetImmunizationSummary("1234");
+            this.immunizationDelegate.GetImmunizationBundle("1234");
             return immunizations;
         }
-
     }
 }
