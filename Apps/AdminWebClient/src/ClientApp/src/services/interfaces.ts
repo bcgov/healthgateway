@@ -1,5 +1,6 @@
 import { Dictionary } from "vue-router/types/router";
 import UserBetaRequest from "@/models/userBetaRequest";
+import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
 
 export interface IConfigService {
@@ -11,6 +12,12 @@ export interface IBetaRequestService {
   initialize(http: IHttpDelegate): void;
   getPendingRequests(): Promise<UserBetaRequest[]>;
   sendBetaInvites(requestsIds: string[]): Promise<string[]>;
+}
+
+export interface IUserFeedbackService {
+  initialize(http: IHttpDelegate): void;
+  getFeedbackList(): Promise<UserFeedback[]>;
+  markReviewed(id: string): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

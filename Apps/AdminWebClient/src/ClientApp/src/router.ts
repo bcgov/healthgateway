@@ -2,6 +2,7 @@ import Vue from "vue";
 import Dashboard from "@/views/Dashboard.vue";
 import BetaQueue from "@/views/BetaQueue.vue";
 import VueRouter from "vue-router";
+import FeedbackView from '@/views/Feedback.vue';
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,11 @@ const routes = [
     path: "/beta-invites",
     name: "beta-invites",
     component: BetaQueue
+  },
+  {
+    path: "/user-feedback",
+    name: "user-feedback",
+    component: FeedbackView
   },
   { path: "*", redirect: "/" }
 ];
