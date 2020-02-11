@@ -17,10 +17,17 @@
               :headers="tableHeaders"
               :items="feedbackList"
               :items-per-page="5"
-              @click:row="markReviewed"
             >
               <template v-slot:item.createdDateTime="{ item }">
                 <span>{{ formatDate(item.createdDateTime) }}</span>
+              </template>
+              <template v-slot:item.isReviewed="{ item }">
+                <td>
+                  <v-btn class="mx-2" dark small @click="markReviewed(item)">
+                    <v-icon color="green" dark v-if="item.isReviewed">fa-check</v-icon>
+                    <v-icon color="red" dark v-if="!item.isReviewed">fa-times</v-icon>
+                  </v-btn>
+                </td>
               </template>
             </v-data-table>
           </v-col>
@@ -60,19 +67,23 @@ export default class FeedbackView extends Vue {
   private tableHeaders: any[] = [
     {
       text: "Date",
-      value: "createdDateTime"
+      value: "createdDateTime",
+      width: '20%'      
     },
     {
-      text: "Satisfied",
-      value: "isSatisfied"
+      text: "Satisfied?",
+      value: "isSatisfied",
+      width: '10%'      
     },
     {
       text: "Comments",
-      value: "comments"
+      value: "comments",
+      width: '65%'      
     },
     {
-      text: "Status",
-      value: "isReviewed"
+      text: "Reviewed?",
+      value: "isReviewed",
+      width: '5%'
     }
   ];
 
@@ -85,9 +96,14 @@ export default class FeedbackView extends Vue {
       SERVICE_IDENTIFIER.UserFeedbackService
     );
 
+    this.loadFeedbackList();
+  }
+
+  private loadFeedbackList() {
     this.userFeedbackService
       .getFeedbackList()
       .then(userFeedbacks => {
+        this.feedbackList = [];
         this.feedbackList.push(...userFeedbacks);
       })
       .catch(err => {
@@ -110,7 +126,7 @@ export default class FeedbackView extends Vue {
   private markReviewed(feedback: UserFeedback): void {
     this.isLoading = true;
     this.userFeedbackService
-      .markReviewed(feedback.id)
+      .markReviewed(feedback.id, feedback.version)
       .then(sucessfulInvites => {
         this.showFeedback = true;
         this.bannerFeedback = {
@@ -118,6 +134,7 @@ export default class FeedbackView extends Vue {
           title: "Feedback Reviewed",
           message: "Successfully Reviewed User Feedback."
         };
+        this.loadFeedbackList();
       })
       .catch(err => {
         this.showFeedback = true;

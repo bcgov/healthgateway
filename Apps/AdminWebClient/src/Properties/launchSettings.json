@@ -4,6 +4,14 @@
     "anonymousAuthentication": true
   },
   "profiles": {
+    "HealthGateway.Admin": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
     "HealthGateway.AdminWebClient": {
       "commandName": "Project",
       "launchBrowser": true,

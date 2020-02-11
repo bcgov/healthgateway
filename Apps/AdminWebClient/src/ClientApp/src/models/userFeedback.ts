@@ -14,4 +14,7 @@ export default interface UserFeedback {
 
   // Gets or sets the date when the feedback was created.
   createdDateTime: Date;
+
+  // Gets or sets the row concurrency version.
+  version: string;
 }
