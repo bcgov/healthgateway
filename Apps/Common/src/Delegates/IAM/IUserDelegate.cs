@@ -13,18 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.IAM.Admin.Delegates
+namespace HealthGateway.Common.Delegates.IAM
 {
+
+using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     using HealthGateway.Common.Models.IAM;
+
     public interface IUserDelegate
     {
-        public UserRepresentation FindUser(string username);
+        Task<List<UserRepresentation>> FindUser(string username);
 
-        public UserRepresentation GetUser(string userId);
+        Task<UserRepresentation> GetUser(string userId);
 
-        public int UserCount();
+        Task<int> UserCount();
 
-        public void DeleteUser(string userId);
+        Task<int> DeleteUser(string userId);
 
     }
 }
