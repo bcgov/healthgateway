@@ -126,7 +126,7 @@ export default class FeedbackView extends Vue {
   private toggleReviewed(feedback: UserFeedback): void {
     this.isLoading = true;
     this.userFeedbackService
-      .toggleReviewed(feedback.id, feedback.version)
+      .toggleReviewed(feedback.id, feedback.version, !feedback.isReviewed)
       .then(sucessfulInvites => {
         this.showFeedback = true;
         this.bannerFeedback = {
