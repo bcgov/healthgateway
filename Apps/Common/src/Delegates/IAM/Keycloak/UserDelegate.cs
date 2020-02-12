@@ -19,6 +19,11 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Net.Mime;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Delegates.IAM;
@@ -29,7 +34,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
 
 
     /// <summary>
-    /// The Keycloak User admin delegate.
+    /// Class implementation of <see cref="IUserDelegate"/> that uses http REST to connect to Keycloak.
     /// </summary>
     public class UserDelegate : IUserDelegate
     {
@@ -37,24 +42,56 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
 
+        private string authorization; // JWT to embed in header when making calls to RESTful API
+
+
         public UserDelegate(
-            ILogger<UserDelegate> logger,
-            IHttpClientService httpClientService,
-            IConfiguration configuration,
-            IAuthService authService)
+        ILogger<UserDelegate> logger,
+        IHttpClientService httpClientService,
+        IConfiguration configuration,
+        IAuthService authService)
         {
-            Task<List<UserRepresentation>> FindUser(string username)
+            this.logger = logger;
+            this.httpClientService = httpClientService;
+            this.configuration = configuration;
+        }
+        public async Task<List<UserRepresentation>> FindUser(string username, string email, string lastName)
+        {
+             using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", authorization);
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.BaseAddress = new Uri(this.configuration.GetSection("KeyCloakAdmin").GetValue<string>("FindUserUrl"));
 
-            }
-            
-            Task<int> DeleteUser(string userId)
-            {
-
-            }
+                using (HttpResponseMessage response = await client.GetAsync(new Uri($"?username={username}", UriKind.Relative)).ConfigureAwait(true))
+                {
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        List<UserRepresentation> userList = JsonConvert.DeserializeObject<List<UserRepresentation>>(payload);
+                        
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Error getting user '{username}'");
+                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                    }
+                }
 
 
         }
 
+        Task<int> DeleteUser(string userId)
+        {
+
+        }
+
+         
+
+
     }
+
+}
 }
