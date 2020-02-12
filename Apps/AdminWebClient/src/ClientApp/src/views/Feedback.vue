@@ -123,10 +123,10 @@ export default class FeedbackView extends Vue {
     return new Date(Date.parse(date + "Z")).toLocaleString();
   }
 
-  private markReviewed(feedback: UserFeedback): void {
+  private toggleReviewed(feedback: UserFeedback): void {
     this.isLoading = true;
     this.userFeedbackService
-      .markReviewed(feedback.id, feedback.version)
+      .toggleReviewed(feedback.id, feedback.version)
       .then(sucessfulInvites => {
         this.showFeedback = true;
         this.bannerFeedback = {

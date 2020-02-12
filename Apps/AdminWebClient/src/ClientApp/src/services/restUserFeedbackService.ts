@@ -28,14 +28,14 @@ export class RestUserFeedbackService implements IUserFeedbackService {
     });
   }
 
-  public markReviewed(id: string, version: string): Promise<boolean> {
+  public toggleReviewed(id: string, version: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       let headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";
       this.http
         .patch<RequestResult<boolean>>(
           `${this.USER_FEEDBACK_BASE_URI}`,
-          JSON.stringify(id),
+          JSON.stringify({ id, version }),
           headers
         )
         .then(requestResult => {
