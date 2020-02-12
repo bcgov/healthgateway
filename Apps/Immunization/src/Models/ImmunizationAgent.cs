@@ -16,36 +16,20 @@
 namespace HealthGateway.Immunization.Models
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
-    /// The Immunization record data model.
+    /// The Immunization agent data model.
     /// </summary>
-    public class ImmunizationView
+    public class ImmunizationAgent
     {
         /// <summary>
-        /// Gets or sets the Immunization id.
+        /// Gets or sets the Immunization Agent code.
         /// </summary>
-        public string Id { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Immunization name.
         /// </summary>
         public string? Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Immunization status (completed | not-done).
-        /// </summary>
-        public string Status { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization occurence date time.
-        /// </summary>
-        public DateTime OccurrenceDateTime { get; set; } = System.DateTime.MinValue;
-
-        /// <summary>
-        /// Gets the List of Immunization agents.
-        /// </summary>
-        public List<ImmunizationAgent> ImmunizationAgents { get; } = new List<ImmunizationAgent>();
     }
 }

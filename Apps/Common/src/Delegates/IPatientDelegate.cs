@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// Interface that defines a delegate to retrieve patient information.
@@ -29,5 +30,13 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns>The patient phn.</returns>
         Task<string> GetPatientPHNAsync(string hdid, string authorization);
+
+        /// <summary>
+        /// Gets the patient phn.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="authorization">Authorization for the call.</param>
+        /// <returns>The patient phn.</returns>
+        Task<Patient> GetPatientAsync(string hdid, string authorization);
     }
 }

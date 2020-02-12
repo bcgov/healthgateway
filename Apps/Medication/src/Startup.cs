@@ -17,10 +17,9 @@
 namespace HealthGateway.Medication
 {
     using System.Collections.Generic;
-    using System.Net.Http;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authentication;
-    using HealthGateway.Database.Context;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
@@ -28,10 +27,8 @@ namespace HealthGateway.Medication
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Configures the application during startup.

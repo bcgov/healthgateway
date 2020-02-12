@@ -19,10 +19,12 @@ namespace HealthGateway.Patient.Test
     using Microsoft.Extensions.Logging;
     using Moq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
-    using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using ServiceReference;
+    using System;
+    using System.Globalization;
 
     public class PatientService_Test
     {
@@ -35,6 +37,7 @@ namespace HealthGateway.Patient.Test
             string expectedResponseCode = "BCHCIM.GD.0.0013";
             string expectedFirstName = "John";
             string expectedLastName = "Doe";
+            DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson identifiedPerson =
@@ -64,6 +67,10 @@ namespace HealthGateway.Patient.Test
                                     }
                                 }
                             }
+                        },
+                        birthTime = new TS()
+                        {
+                            value = "20001231"
                         }
                     }
                 };
@@ -107,6 +114,7 @@ namespace HealthGateway.Patient.Test
             Assert.Equal(expectedPhn, actual.PersonalHealthNumber);
             Assert.Equal(expectedFirstName, actual.FirstName);
             Assert.Equal(expectedLastName, actual.LastName);
+            Assert.Equal(expectedBirthDate, actual.Birthdate);
         }
     }
 }

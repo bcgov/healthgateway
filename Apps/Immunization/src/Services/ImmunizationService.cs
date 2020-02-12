@@ -15,11 +15,18 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Delegates;
+    using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Immunization data service.
@@ -27,33 +34,73 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly ILogger logger;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IImmunizationFhirDelegate immunizationDelegate;
+        private readonly IPatientDelegate patientDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="immunizationDelegate">The injected immunization delegate.</param>
+        /// <param name="httpAccessor">The injected http context accessor provider.</param>
+        /// <param name="immunizationDelegateFactory">The factory to create immunization delegates.</param>
+        /// <param name="patientDelegate">The injected patient delegate.</param>
         public ImmunizationService(
             ILogger<ImmunizationService> logger,
-            IImmunizationFhirDelegate immunizationDelegate)
+            IHttpContextAccessor httpAccessor,
+            IImmunizationDelegateFactory immunizationDelegateFactory,
+            IPatientDelegate patientDelegate)
         {
             this.logger = logger;
-            this.immunizationDelegate = immunizationDelegate;
-        }
+            this.httpContextAccessor = httpAccessor;
+            this.immunizationDelegate = immunizationDelegateFactory.CreateInstance();
+            this.patientDelegate = patientDelegate;
+    }
 
         /// <inheritdoc/>
-        public IEnumerable<ImmunizationView> GetImmunizations(string hdid)
+        public async Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
-            this.immunizationDelegate.GetImmunizationBundle(new ImmunizationRequest()
+            ImmunizationRequest request = await this.GetImmunizationRequest(hdid).ConfigureAwait(true);
+            Hl7.Fhir.Model.Bundle fhirBundle = await this.immunizationDelegate.GetImmunizationBundle(request).ConfigureAwait(true);
+            IEnumerable<Hl7.Fhir.Model.Immunization> immmsLiist = fhirBundle.Entry
+                                                                            .Where(r => r.Resource is Hl7.Fhir.Model.Immunization)
+                                                                            .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
+            foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
             {
-                PersonalHealthNumber = "9735353315",
-                DateOfBirth = "19670602",
-            });
+                ImmunizationView immunizationView = new ImmunizationView
+                {
+                    Id = entry.Id,
+                    Name = entry.VaccineCode.Text,
+                    Status = entry.Status.ToString() !,
+                    OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString() !, CultureInfo.InvariantCulture),
+                };
+                foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
+                {
+                    ImmunizationAgent immunizationAgent = new ImmunizationAgent
+                    {
+                        Code = code.Code,
+                        Name = code.Display,
+                    };
+                    immunizationView.ImmunizationAgents.Add(immunizationAgent);
+                }
+
+                immunizations.Add(immunizationView);
+            }
+
             this.logger.LogDebug($"Finished getting immunization records {immunizations.Count}");
             return immunizations;
+        }
+
+        private async Task<ImmunizationRequest> GetImmunizationRequest(string hdid)
+        {
+            ImmunizationRequest request = new ImmunizationRequest();
+            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+            Patient p = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
+            request.PersonalHealthNumber = p.PersonalHealthNumber;
+            request.DateOfBirth = p.Birthdate;
+            return request;
         }
     }
 }
