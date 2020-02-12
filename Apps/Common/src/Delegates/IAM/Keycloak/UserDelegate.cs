@@ -55,7 +55,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             this.httpClientService = httpClientService;
             this.configuration = configuration;
         }
-        public async Task<List<UserRepresentation>> FindUser(string username, string email, string lastName)
+        public async Task<List<UserRepresentation>> FindUser(string username)
         {
              using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
@@ -67,11 +67,14 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
 
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"?username={username}", UriKind.Relative)).ConfigureAwait(true))
                 {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
-                        List<UserRepresentation> userList = JsonConvert.DeserializeObject<List<UserRepresentation>>(payload);
-                        
+                        var options = new JsonSerializerOptions
+                        {
+                            AllowTrailingCommas = true
+                        };
+                        List<UserRepresentation> userList = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);   
                     }
                     else
                     {

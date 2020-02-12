@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
     public interface IUserDelegate
     {
-        Task<List<UserRepresentation>> FindUser(string username, string email, string lastName);
+        Task<List<UserRepresentation>> FindUser(string username);
 
         Task<UserRepresentation> GetUser(string userId);
 
