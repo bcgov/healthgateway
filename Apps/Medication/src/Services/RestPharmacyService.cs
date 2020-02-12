@@ -18,6 +18,7 @@ namespace HealthGateway.Medication.Services
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;

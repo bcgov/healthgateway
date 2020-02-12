@@ -15,10 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.Medication.Delegates;
-    using HealthGateway.Medication.Models;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using System;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
@@ -41,7 +43,7 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldGetPHN()
         {
-            Patient expected = new Patient("1234", "000", "Test", "Gateway");
+            Patient expected = new Patient("1234", "000", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture));
             Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {

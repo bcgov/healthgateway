@@ -18,11 +18,12 @@ namespace HealthGateway.Patient.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
+    using System.Text.Json;
+    using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
-    using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using ServiceReference;
 
     /// <summary>
@@ -68,7 +69,7 @@ namespace HealthGateway.Patient.Services
             {
                 retVal = new Patient();
                 this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
-                this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)}");
+                this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(retVal)}");
                 return retVal;
             }
 
@@ -80,7 +81,7 @@ namespace HealthGateway.Patient.Services
             {
                 retVal = new Patient();
                 this.logger.LogWarning($"Client Registry returned a person with the deceasedIndicator set to true. No PHN was populated. {deceasedInd}");
-                this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)}");
+                this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(retVal)}");
                 return retVal;
             }
 
@@ -105,10 +106,12 @@ namespace HealthGateway.Patient.Services
             string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
             string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
             string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
-            retVal = new Patient(hdid, phn, givenNames, lastNames);
+            string? dobStr = ((TS)retrievedPerson.identifiedPerson.birthTime).value; // yyyyMMdd
+            DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+            retVal = new Patient(hdid, phn, givenNames, lastNames, dob);
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting patient. {JsonConvert.SerializeObject(retVal)} Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(retVal)} Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
 

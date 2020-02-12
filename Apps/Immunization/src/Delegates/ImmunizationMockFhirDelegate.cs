@@ -15,13 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
-    using System;
-    using System.Diagnostics;
     using System.IO;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
@@ -29,7 +23,6 @@ namespace HealthGateway.Immunization.Delegates
     using Hl7.Fhir.Serialization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve immunization information.
@@ -57,7 +50,7 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Bundle> GetImmunizationBundle(string phn)
+        public async Task<Bundle> GetImmunizationBundle(ImmunizationRequest request)
         {
             string filename = @"MockImmunizationResponse.json";
             string msg = File.ReadAllText(filename);

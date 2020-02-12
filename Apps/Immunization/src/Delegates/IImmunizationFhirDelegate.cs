@@ -25,10 +25,10 @@ namespace HealthGateway.Immunization.Delegates
     public interface IImmunizationFhirDelegate
     {
         /// <summary>
-        /// Gets the immunization summary for the provided phn.
+        /// Gets the immunization fhir bundle for the provided phn and dob.
         /// </summary>
-        /// <param name="phn">The patient hdid.</param>
+        /// <param name="request">The immunization request.</param>
         /// <returns>The immunization fhir bundle.</returns>
-        Task<Bundle> GetImmunizationBundle(string phn);
+        Task<Bundle> GetImmunizationBundle(ImmunizationRequest request);
     }
 }
