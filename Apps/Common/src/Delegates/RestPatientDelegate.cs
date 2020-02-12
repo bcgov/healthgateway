@@ -16,11 +16,11 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
-    using System.Text.Json;
     using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -56,14 +56,16 @@ namespace HealthGateway.Common.Delegates
         public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
             string retrievedPhn = string.Empty;
-            Patient p = await GetPatientAsync(hdid, authorization).ConfigureAwait(true);
+            Patient p = await this.GetPatientAsync(hdid, authorization).ConfigureAwait(true);
             if (p != null)
             {
                 retrievedPhn = p.PersonalHealthNumber;
             }
+
             return retrievedPhn;
         }
 
+        /// <inheritdoc/>
         public async Task<Patient> GetPatientAsync(string hdid, string authorization)
         {
             Stopwatch timer = new Stopwatch();

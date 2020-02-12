@@ -54,7 +54,8 @@ namespace HealthGateway.Immunization.Test.Controller
             {
                 Name = "test"
             });
-            svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(immunizations);
+
+            svcMock.Setup(m => m.GetImmunizations(hdid)).ReturnsAsync(immunizations);
 
             ImmunizationController controller = new ImmunizationController(
                 new Mock<ILogger<ImmunizationController>>().Object,

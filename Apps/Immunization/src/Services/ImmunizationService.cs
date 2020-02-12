@@ -18,14 +18,15 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Delegates;
+    using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Immunization data service.
@@ -42,17 +43,17 @@ namespace HealthGateway.Immunization.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="immunizationDelegate">The injected immunization delegate.</param>
+        /// <param name="immunizationDelegateFactory">The factory to create immunization delegates.</param>
         /// <param name="patientDelegate">The injected patient delegate.</param>
         public ImmunizationService(
             ILogger<ImmunizationService> logger,
             IHttpContextAccessor httpAccessor,
-            IImmunizationFhirDelegate immunizationDelegate,
+            IImmunizationDelegateFactory immunizationDelegateFactory,
             IPatientDelegate patientDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
-            this.immunizationDelegate = immunizationDelegate;
+            this.immunizationDelegate = immunizationDelegateFactory.CreateInstance();
             this.patientDelegate = patientDelegate;
     }
 
@@ -60,15 +61,34 @@ namespace HealthGateway.Immunization.Services
         public async Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
-
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
             ImmunizationRequest request = await this.GetImmunizationRequest(hdid).ConfigureAwait(true);
-            //var results = await this.immunizationDelegate.GetImmunizationBundle(request).ConfigureAwait(true);
-            var results = await this.immunizationDelegate.GetImmunizationBundle(new ImmunizationRequest()
+            Hl7.Fhir.Model.Bundle fhirBundle = await this.immunizationDelegate.GetImmunizationBundle(request).ConfigureAwait(true);
+            IEnumerable<Hl7.Fhir.Model.Immunization> immmsLiist = fhirBundle.Entry
+                                                                            .Where(r => r.Resource is Hl7.Fhir.Model.Immunization)
+                                                                            .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
+            foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
             {
-                PersonalHealthNumber = "9735353315",
-                DateOfBirth = DateTime.ParseExact("19670602", "yyyyMMdd", CultureInfo.InvariantCulture),
-            }).ConfigureAwait(true);
+                ImmunizationView iv = new ImmunizationView
+                {
+                    Id = entry.Id,
+                    Name = entry.VaccineCode.Text,
+                    Status = entry.Status.ToString() !,
+                    OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString() !, CultureInfo.InvariantCulture),
+                };
+                foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
+                {
+                    ImmunizationAgent ia = new ImmunizationAgent
+                    {
+                        Code = code.Code,
+                        Name = code.Display,
+                    };
+                    iv.ImmunizationAgents.Add(ia);
+                }
+
+                immunizations.Add(iv);
+            }
+
             this.logger.LogDebug($"Finished getting immunization records {immunizations.Count}");
             return immunizations;
         }
