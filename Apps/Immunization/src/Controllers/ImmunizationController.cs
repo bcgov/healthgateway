@@ -33,6 +33,7 @@ namespace HealthGateway.Immunization.Controllers
     /// <summary>
     /// The Immunization controller.
     /// </summary>
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
