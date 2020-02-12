@@ -27,9 +27,7 @@ using System.Collections.Generic;
 
         Task<UserRepresentation> GetUser(string userId);
 
-        Task<int> UserCount();
-
-        Task<int> DeleteUser(string userId);
+        Task DeleteUser(string userId);
 
     }
 }

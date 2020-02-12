@@ -26,6 +26,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
     using System.Threading.Tasks;
 
     using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Common.Delegates.IAM;
     using HealthGateway.Common.Models.IAM;
     using HealthGateway.Common.Services;
@@ -33,17 +34,36 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
     using Microsoft.Extensions.Logging;
 
 
+
+
     /// <summary>
     /// Class implementation of <see cref="IUserDelegate"/> that uses http REST to connect to Keycloak.
     /// </summary>
     public class UserDelegate : IUserDelegate
     {
+        public const string KEYCLOAKADMIN = "KeycloakAdmin";
+        public const string FINDUSERURL = "FindUserUrl";
+        public const string DELETEUSERURL = "DeleteUserUrl";
+        public const string GETUSERURL = "GetUserUrl";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
+        private readonly IAuthService authService;
 
-        private string authorization; // JWT to embed in header when making calls to RESTful API
+        private HttpClient GethttpClient(Uri baseUri)
+        {
+            using (HttpClient _client = this.httpClientService.CreateDefaultHttpClient())
+            {
+                _client.DefaultRequestHeaders.Accept.Clear();
+                _client.DefaultRequestHeaders.Add("Authorization", this.getAuthorization());
+                _client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                _client.BaseAddress = baseUri;
+                return _client;
+            }
+        }
 
+        public string? authorization { get; set; } = String.Empty; // Json Web Token as string for Header for RESTful API call
 
         public UserDelegate(
         ILogger<UserDelegate> logger,
@@ -54,17 +74,27 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
+            this.authService = authService;
         }
+
+        private string? getAuthorization()
+        {
+            if (String.IsNullOrEmpty(this.authorization))
+            {
+                // The authorization has not been set by way of a user authentication, so we will 
+                // use system account access methods.
+                JWTModel model = this.authService.AuthenticateService();
+                this.authorization = model.AccessToken;
+            }
+            return this.authorization;
+        }
+
         public async Task<List<UserRepresentation>> FindUser(string username)
         {
-             using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
-            {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", authorization);
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configuration.GetSection("KeyCloakAdmin").GetValue<string>("FindUserUrl"));
+            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(FINDUSERURL));
 
+            using (HttpClient client = this.GethttpClient(baseUri))
+            {
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"?username={username}", UriKind.Relative)).ConfigureAwait(true))
                 {
                     string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -74,27 +104,67 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                         {
                             AllowTrailingCommas = true
                         };
-                        List<UserRepresentation> userList = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);   
+                        List<UserRepresentation> userList = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
                     }
                     else
                     {
-                        this.logger.LogError($"Error getting user '{username}'");
+                        this.logger.LogError($"Error finding user '{username}'");
                         throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                     }
                 }
-
-
+            }
         }
 
-        Task<int> DeleteUser(string userId)
+        public async Task<UserRepresentation> GetUser(string userId)
         {
+            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
 
+            using (HttpClient client = this.GethttpClient(baseUri))
+            {
+                using (HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true))
+                {
+                    string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var options = new JsonSerializerOptions
+                        {
+                            AllowTrailingCommas = true
+                        };
+                        List<UserRepresentation> userList = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Error getting user '{userId}'");
+                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                    }
+                }
+            }
         }
 
-         
+        public async Task DeleteUser(string userId)
+        {
+            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
+            using (HttpClient client = this.GethttpClient(baseUri))
+            {
+                using (HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true))
+                {
+                    string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var options = new JsonSerializerOptions
+                        {
+                            AllowTrailingCommas = true
+                        };
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Error getting user '{userId}'");
+                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                    }
+                }
+            }
+        }
 
     }
-
-}
 }
