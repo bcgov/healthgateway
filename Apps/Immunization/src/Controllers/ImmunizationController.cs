@@ -100,7 +100,7 @@ namespace HealthGateway.Immunization.Controllers
                 return new ForbidResult();
             }
 
-            List<ImmunizationView> immunizations = this.service.GetImmunizations(hdid).ToList();
+            List<ImmunizationView> immunizations = (await this.service.GetImmunizations(hdid).ConfigureAwait(true)).ToList();
 
             RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
             {

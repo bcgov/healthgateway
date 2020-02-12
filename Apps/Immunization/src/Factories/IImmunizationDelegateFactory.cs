@@ -13,26 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Immunization.Factories
 {
     using System;
-    using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Delegates;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// The PHSA immunization request.
+    /// Creates the Immunization Delegate dynamically.
     /// </summary>
-    public class ImmunizationRequest
+    public interface IImmunizationDelegateFactory
     {
         /// <summary>
-        /// Gets or sets the patient PHN.
+        /// Returns a new instance of IImunizationFhirDelegate via configuration.
         /// </summary>
-        [JsonPropertyName("phn")]
-        public string? PersonalHealthNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets the patient date of birth.
-        /// </summary>
-        [JsonPropertyName("dob")]
-        public DateTime? DateOfBirth { get; set; }
+        /// <returns>The IImunizationFhirDelegate.</returns>
+        public IImmunizationFhirDelegate CreateInstance();
     }
 }

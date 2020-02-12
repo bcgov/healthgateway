@@ -1,0 +1,123 @@
+﻿{
+  "resourceType": "Bundle",
+  "id": "11201291-3c70-4e0d-a60e-d82f1f1718eb",
+  "type": "message",
+  "timestamp": "2020-01-29T11:40:14.8819212-08:00",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "3089612_47520252",
+        "identifier": [
+          {
+            "system": "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-id",
+            "value": "47520252"
+          }
+        ],
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "https//ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-agent-code",
+              "code": "407737004",
+              "display": "Zoster"
+            }
+          ],
+          "text": "Shingles"
+        },
+        "patient": {
+          "reference": "Patient/patient1"
+        },
+        "occurrenceDateTime": "2020-01-22T00:00:00-08:00"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "3089612_47520253",
+        "identifier": [
+          {
+            "system": "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-id",
+            "value": "47520253"
+          }
+        ],
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "https//ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-agent-code",
+              "code": "BCYSCT_AG077",
+              "display": "Influenza-Inactivated"
+            }
+          ],
+          "text": "Influenza-Inactivated"
+        },
+        "patient": {
+          "reference": "Patient/patient1"
+        },
+        "occurrenceDateTime": "2019-11-20T00:00:00-08:00"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "3089612_47520254",
+        "identifier": [
+          {
+            "system": "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-id",
+            "value": "47520254"
+          }
+        ],
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "https//ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-agent-code",
+              "code": "59999009",
+              "display": "Td"
+            }
+          ],
+          "text": "Tetanus, Diphtheria"
+        },
+        "patient": {
+          "reference": "Patient/patient1"
+        },
+        "occurrenceDateTime": "2019-11-20T00:00:00-08:00"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient1",
+        "extension": [
+          {
+            "url": "http://fhir.infoway-inforoute.ca/StructureDefinition/ca-bc-client-health-region",
+            "valueCodeableConcept": {
+              "text": "Burnaby"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://fhir.infoway-inforoute.ca/registry/NamingSystem/bc-patient-healthcare-identifier",
+            "value": "9735353315"
+          },
+          {
+            "system": "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-client-identifier",
+            "value": "3089612"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Protervity",
+            "given": [ "Bonnet" ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1967-06-02"
+      }
+    }
+  ]
+}

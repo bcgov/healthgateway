@@ -41,4 +41,7 @@
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Factories\" />
+  </ItemGroup>
 </Project>

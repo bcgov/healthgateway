@@ -16,7 +16,7 @@
 namespace HealthGateway.Patient.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Patient.Models;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// The Patient data service.

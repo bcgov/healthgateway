@@ -20,6 +20,7 @@ namespace HealthGateway.Medication.Test
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;

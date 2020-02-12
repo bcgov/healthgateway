@@ -29,25 +29,26 @@ namespace HealthGateway.Common.Filters
     /// </summary>using Microsoft.AspNetCore.Mvc.Filters
     public class AvailabilityFilter : IAsyncActionFilter
     {
-        private IConfiguration configuration { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="AvailabilityFilter"/> class.
         /// </summary>
-        /// <param name="configuration">The injected configuration</param> 
+        /// <param name="configuration">The injected configuration.</param>
         public AvailabilityFilter(IConfiguration configuration)
         {
-            this.configuration = configuration;
+            this.Configuration = configuration;
         }
+
+        private IConfiguration Configuration { get; set; }
 
         /// <inheritdoc/>
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             RouteValueDictionary routeValues = context.HttpContext.Request.RouteValues;
             string controllerDisabledKey = @$"{typeof(AvailabilityFilter).Name}:{routeValues["controller"]}";
-            bool controllerDisabled = this.configuration.GetValue<bool>(controllerDisabledKey);
+            bool controllerDisabled = this.Configuration.GetValue<bool>(controllerDisabledKey);
             string actionDisabledKey = @$"{controllerDisabledKey}.{routeValues["action"]}";
-            bool actionDisabled = this.configuration.GetValue<bool>(actionDisabledKey);
-            if(controllerDisabled || actionDisabled)
+            bool actionDisabled = this.Configuration.GetValue<bool>(actionDisabledKey);
+            if (controllerDisabled || actionDisabled)
             {
                 context.Result = new StatusCodeResult(StatusCodes.Status503ServiceUnavailable);
             }

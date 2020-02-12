@@ -13,8 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models
+
+namespace HealthGateway.Common.Models
 {
+    using System;
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// The patient data model.
     /// </summary>
@@ -38,32 +42,44 @@ namespace HealthGateway.Medication.Models
         /// <param name="phn">The patient personal health number.</param>
         /// <param name="firstName">The patient first name.</param>
         /// <param name="lastName">The patient last name.</param>
-        public Patient(string hdid, string phn, string firstName, string lastName)
+        /// <param name="birthDate">The date of birth for the patient.</param>
+        public Patient(string hdid, string phn, string firstName, string lastName, DateTime birthDate)
         {
             this.HdId = hdid;
             this.PersonalHealthNumber = phn;
             this.FirstName = firstName;
             this.LastName = lastName;
+            this.Birthdate = birthDate;
         }
 
         /// <summary>
         /// Gets or sets the health directed identifier.
         /// </summary>
+        [JsonPropertyName("hdid")]
         public string HdId { get; set; }
 
         /// <summary>
         /// Gets or sets the patient PHN.
         /// </summary>
+        [JsonPropertyName("personalhealthnumber")]
         public string PersonalHealthNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the patient first name.
         /// </summary>
+        [JsonPropertyName("firstname")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Gets or sets the patient last name.
         /// </summary>
+        [JsonPropertyName("lastname")]
         public string LastName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the patients date of birth.
+        /// </summary>
+        [JsonPropertyName("birthdate")]
+        public DateTime Birthdate { get; set; }
     }
 }
