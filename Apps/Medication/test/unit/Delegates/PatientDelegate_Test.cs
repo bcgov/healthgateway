@@ -43,7 +43,7 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public async Task ShouldGetPHN()
         {
-            Patient expected = new Patient("1234", "000", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture));
+            Patient expected = new Patient("1234", "", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture));
             Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {

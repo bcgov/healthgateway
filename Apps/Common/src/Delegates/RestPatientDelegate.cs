@@ -56,10 +56,10 @@ namespace HealthGateway.Common.Delegates
         public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
             string retrievedPhn = string.Empty;
-            Patient p = await this.GetPatientAsync(hdid, authorization).ConfigureAwait(true);
-            if (p != null)
+            Patient patient = await this.GetPatientAsync(hdid, authorization).ConfigureAwait(true);
+            if (patient != null)
             {
-                retrievedPhn = p.PersonalHealthNumber;
+                retrievedPhn = patient.PersonalHealthNumber;
             }
 
             return retrievedPhn;

@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization.Services
                                                                             .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
             foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
             {
-                ImmunizationView iv = new ImmunizationView
+                ImmunizationView immunizationView = new ImmunizationView
                 {
                     Id = entry.Id,
                     Name = entry.VaccineCode.Text,
@@ -78,15 +78,15 @@ namespace HealthGateway.Immunization.Services
                 };
                 foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
                 {
-                    ImmunizationAgent ia = new ImmunizationAgent
+                    ImmunizationAgent immunizationAgent = new ImmunizationAgent
                     {
                         Code = code.Code,
                         Name = code.Display,
                     };
-                    iv.ImmunizationAgents.Add(ia);
+                    immunizationView.ImmunizationAgents.Add(immunizationAgent);
                 }
 
-                immunizations.Add(iv);
+                immunizations.Add(immunizationView);
             }
 
             this.logger.LogDebug($"Finished getting immunization records {immunizations.Count}");
