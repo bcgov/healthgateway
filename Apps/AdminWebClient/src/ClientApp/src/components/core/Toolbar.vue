@@ -59,15 +59,19 @@ a {
 
 <script lang="ts">
 import { Component, Vue, Watch, Ref } from "vue-property-decorator";
+import { Route } from "vue-router";
 import { State, Action, Getter } from "vuex-class";
 
 import { mapMutations } from "vuex";
 
 @Component
 export default class ToolbarComponent extends Vue {
-  @Action("setState", { namespace: "drawer" }) setDrawerState: any;
-  @Getter("isOpen", { namespace: "drawer" }) isDrawerOpen: boolean;
-  @Getter("isAuthenticated", { namespace: "auth" }) isLoggedIn: boolean;
+  @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
+    isDrawerOpen
+  }: any) => void;
+  @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+  @Getter("isAuthenticated", { namespace: "auth" })
+  private isLoggedIn!: boolean;
 
   private title: string = "";
   private responsive: boolean = false;
@@ -83,7 +87,7 @@ export default class ToolbarComponent extends Vue {
 
   @Watch("$route")
   public onIsAppIdleChanged(idle: boolean) {
-    this.title = this.$route.name;
+    this.title = this.$route.name || "";
   }
 
   private toggleDrawer() {

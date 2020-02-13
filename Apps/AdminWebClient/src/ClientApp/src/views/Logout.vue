@@ -1,7 +1,10 @@
 <template>
   <v-layout class="fill-height">
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <v-row justify="center">You have been logged out</v-row>
+    <v-row justify="center">
+      <span v-if="isAuthenticated">Logging out...</span>
+      <span v-else>You have been logged out</span>
+    </v-row>
   </v-layout>
 </template>
 
@@ -19,14 +22,14 @@ const namespace: string = "auth";
 })
 export default class LoginView extends Vue {
   public name = "Dashboard";
-  @Action("logout", { namespace }) logout: any;
-  @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
+  @Action("logout", { namespace }) private logout!: () => Promise<void>;
+  @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
   private isLoading: boolean = true;
 
   mounted() {
     this.isLoading = true;
     if (this.isAuthenticated) {
-      this.logout().then(result => {
+      this.logout().then(() => {
         this.isLoading = false;
       });
     } else {
