@@ -100,7 +100,6 @@ objects:
             terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
-        serviceAccount: ${NAME}
         terminationGracePeriodSeconds: 30
     test: false
     triggers:
