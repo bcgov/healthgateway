@@ -56,7 +56,7 @@ $radius: 15px;
       <b-col>
         <b-row>
           <b-col>
-            {{ entry.immunization.immunizationAgentDisplay }}
+            {{ entry.immunization.agent }}
           </b-col>
         </b-row>
         <b-row>
@@ -86,14 +86,27 @@ $radius: 15px;
               <div>
                 <div class="detailSection">
                   <div>
-                    <strong>Agent Code:</strong>
-                    {{ entry.immunization.agentDisplay }}
+                    <strong>Status:</strong>
+                    {{ entry.immunization.status }}
                   </div>
                 </div>
                 <div class="detailSection">
                   <div>
-                    <strong>Status:</strong>
-                    {{ entry.immunization.status }}
+                    <strong>Agents</strong>
+                  </div>
+                  <div
+                    v-for="(agent, i) in entry.immunization.agents"
+                    :key="i"
+                    class="detailSection ml-4"
+                  >
+                    <div>
+                      <strong>Code:</strong>
+                      {{ agent.code }}
+                    </div>
+                    <div>
+                      <strong>Name:</strong>
+                      {{ agent.display }}
+                    </div>
                   </div>
                 </div>
               </div>
