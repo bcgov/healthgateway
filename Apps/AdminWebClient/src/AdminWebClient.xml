@@ -53,6 +53,28 @@
             </summary>
             <returns>The Health Gatway Configuration.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.UserFeedbackController">
+            <summary>
+            Web API to handle user feedback review.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.UserFeedbackController"/> class.
+            </summary>
+            <param name="betaRequestService">The injected user email service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.GetFeedbackList">
+            <summary>
+            Retrieves a list of user feedbacks.
+            </summary>
+            <returns>The list of user feedbacks.</returns>
+            <response code="200">Returns the list of user feedbacks.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Models.AdminConfiguration">
             <summary>
             Configuration data to be used by the Health Gateway Admin.
@@ -215,6 +237,36 @@
             </summary>
             <param name="models">List of beta request models.</param>
             <returns>A list of UserBetaRequest.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.UserFeedback">
+            <summary>
+            Model that provides a user representation of a user feedback.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedback.Id">
+            <summary>
+            Gets or sets the user feedback id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedback.Comments">
+            <summary>
+            Gets or sets the feedback comments.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedback.IsSatisfied">
+            <summary>
+            Gets or sets the value indicating whether the user is satisfied or not.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedback.IsReviewed">
+            <summary>
+            Gets or sets the value indicating whether the feedback is reviewed or not.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedback.CreatedDateTime">
+            <summary>
+            Gets or sets the date when the feedback was created.
+            </summary>
         </member>
         <member name="T:HealthGateway.Admin.Services.BetaRequestService">
             <inheritdoc />

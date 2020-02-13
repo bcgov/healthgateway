@@ -70,7 +70,8 @@ export default class MainNavbar extends Vue {
   private items = [
     { title: "Dashboard", icon: "view_quilt", link: "/dashboard" },
     { title: "Hangfire", icon: "schedule", link: "/hangire" },
-    { title: "Beta Invites", icon: "account_box", link: "/beta-invites" }
+    { title: "Beta Invites", icon: "account_box", link: "/beta-invites" },
+    { title: "Feedback Review", icon: "comment", link: "/user-feedback" },
   ];
 }
 </script>

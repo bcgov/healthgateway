@@ -5,11 +5,13 @@ import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import {
   IHttpDelegate,
   IBetaRequestService,
-  IConfigService
+  IConfigService,
+  IUserFeedbackService
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestBetaRequestService } from "@/services/restBetaRequestService";
+import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 
 let container = new Container();
 container
@@ -19,6 +21,10 @@ container
 container
   .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)
   .to(RestBetaRequestService)
+  .inSingletonScope();
+container
+  .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
+  .to(RestUserFeedbackService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

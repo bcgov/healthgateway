@@ -9,29 +9,28 @@
     <v-row justify="center">
       <v-col md="9">
         <v-row no-gutters>
-          <h1>Beta user list</h1>
+          <h1>User Feedback list</h1>
         </v-row>
         <v-row>
           <v-col no-gutters>
             <v-data-table
-              v-model="selectedRequests"
               :headers="tableHeaders"
-              :items="requestList"
+              :items="feedbackList"
               :items-per-page="5"
-              show-select
             >
-              <template v-slot:item.registrationDatetime="{ item }">
-                <span>{{ formatDate(item.registrationDatetime) }}</span>
+              <template v-slot:item.createdDateTime="{ item }">
+                <span>{{ formatDate(item.createdDateTime) }}</span>
+              </template>
+              <template v-slot:item.isReviewed="{ item }">
+                <td>
+                  <v-btn class="mx-2" dark small @click="markReviewed(item)">
+                    <v-icon color="green" dark v-if="item.isReviewed">fa-check</v-icon>
+                    <v-icon color="red" dark v-if="!item.isReviewed">fa-times</v-icon>
+                  </v-btn>
+                </td>
               </template>
             </v-data-table>
           </v-col>
-        </v-row>
-        <v-row justify="end" no-gutters>
-          <v-btn
-            :disabled="selectedRequests.length === 0"
-            @click="sendInvites()"
-            >Send invites</v-btn
-          >
         </v-row>
       </v-col>
     </v-row>
@@ -41,8 +40,8 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Vuetify, { VLayout } from "vuetify/lib";
-import { IBetaRequestService } from "@/services/interfaces";
-import UserBetaRequest from "@/models/userBetaRequest";
+import { IUserFeedbackService } from "@/services/interfaces";
+import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import LoadingComponent from "@/components/Loading.vue";
@@ -56,7 +55,7 @@ import { ResultType } from "@/constants/resulttype";
     BannerFeedbackComponent
   }
 })
-export default class BetaQueueView extends Vue {
+export default class FeedbackView extends Vue {
   private isLoading: boolean = true;
   private showFeedback: boolean = false;
   private bannerFeedback: BannerFeedback = {
@@ -65,36 +64,54 @@ export default class BetaQueueView extends Vue {
     message: ""
   };
 
-  private selectedRequests: UserBetaRequest[] = [];
-
   private tableHeaders: any[] = [
     {
-      text: "Registration Date",
-      value: "registrationDatetime"
+      text: "Date",
+      value: "createdDateTime",
+      width: '20%'      
     },
-    { text: "Email", value: "emailAddress" }
+    {
+      text: "Satisfied?",
+      value: "isSatisfied",
+      width: '10%'      
+    },
+    {
+      text: "Comments",
+      value: "comments",
+      width: '65%'      
+    },
+    {
+      text: "Reviewed?",
+      value: "isReviewed",
+      width: '5%'
+    }
   ];
 
-  private requestList: UserBetaRequest[] = [];
+  private feedbackList: UserFeedback[] = [];
 
-  private betaRequestService!: IBetaRequestService;
+  private userFeedbackService!: IUserFeedbackService;
 
   mounted() {
-    this.betaRequestService = container.get(
-      SERVICE_IDENTIFIER.BetaRequestService
+    this.userFeedbackService = container.get(
+      SERVICE_IDENTIFIER.UserFeedbackService
     );
 
-    this.betaRequestService
-      .getPendingRequests()
-      .then(betaRequests => {
-        this.requestList.push(...betaRequests);
+    this.loadFeedbackList();
+  }
+
+  private loadFeedbackList() {
+    this.userFeedbackService
+      .getFeedbackList()
+      .then(userFeedbacks => {
+        this.feedbackList = [];
+        this.feedbackList.push(...userFeedbacks);
       })
       .catch(err => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Loaded loading pending beta requests"
+          message: "Error loading user feedbacks"
         };
       })
       .finally(() => {
@@ -106,32 +123,25 @@ export default class BetaQueueView extends Vue {
     return new Date(Date.parse(date + "Z")).toLocaleString();
   }
 
-  private sendInvites(): void {
+  private toggleReviewed(feedback: UserFeedback): void {
     this.isLoading = true;
-    let selectedIds = this.selectedRequests.map(s => s.id);
-    this.betaRequestService
-      .sendBetaInvites(selectedIds)
+    this.userFeedbackService
+      .toggleReviewed(feedback.id, feedback.version, !feedback.isReviewed)
       .then(sucessfulInvites => {
-        // remove the invites that where sucessfull
-        for (let sentId of sucessfulInvites) {
-          var elementPos = this.requestList.map(r => r.id).indexOf(sentId);
-          if (elementPos > -1) {
-            this.requestList.splice(elementPos, 1);
-          }
-        }
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Success,
-          title: "Invites queued",
-          message: `Successfully added ${sucessfulInvites.length} invite emails to be sent`
+          title: "Feedback Reviewed",
+          message: "Successfully Reviewed User Feedback."
         };
+        this.loadFeedbackList();
       })
       .catch(err => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Sending invites failed, please try again"
+          message: "Reviewing feedback failed, please try again."
         };
       })
       .finally(() => {
