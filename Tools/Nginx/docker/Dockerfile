@@ -7,4 +7,3 @@ RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 
 RUN addgroup nginx root
 USER nginx
-s
