@@ -21,6 +21,7 @@ namespace HealthGateway.Immunization.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
@@ -28,7 +29,6 @@ namespace HealthGateway.Immunization.Delegates
     using Hl7.Fhir.Serialization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve immunization information.
@@ -59,7 +59,7 @@ namespace HealthGateway.Immunization.Delegates
         public async Task<Bundle> GetImmunizationBundle(ImmunizationRequest request)
         {
             Bundle responseMessage = new Bundle();
-            string requestJson = JsonConvert.SerializeObject(request);
+            string requestJson = JsonSerializer.Serialize(request);
             Stopwatch timer = new Stopwatch();
             timer.Start();
             this.logger.LogDebug($"Getting immunization summary... {requestJson}");

@@ -30,9 +30,9 @@ namespace HealthGateway.Immunization.Models
         public string? PersonalHealthNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient date of birth.
+        /// Gets or sets the patient date of birth in YYYYMMDD format.
         /// </summary>
         [JsonPropertyName("dob")]
-        public DateTime? DateOfBirth { get; set; }
+        public string? DateOfBirth { get; set; }
     }
 }
