@@ -19,12 +19,33 @@ namespace HealthGateway.Common.Delegates.IAM
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.IAM;
 
+    /// <summary>
+    /// The UserDelegate IAM Admin Service interface.
+    /// </summary>
     public interface IUserDelegate
     {
+        /// <summary>
+        /// Look up a user by username.
+        /// </summary>
+        /// <param name="username">The username of the User account in IAM system.</param>
+        /// <param name="authorization">Authorization for the call.</param>
+        /// <returns>A candidate result list of UserRepresentation objects.</returns>
         Task<List<UserRepresentation>> FindUser(string username, string authorization);
 
+        /// <summary>
+        /// Look up a user by username.
+        /// </summary>
+        /// <param name="userId">The unique userId (surrogate key) of the User account in IAM system.</param>
+        /// <param name="authorization">Authorization for the call.</param>
+        /// <returns>A resulting UserRepresentation object.</returns>
         Task<UserRepresentation> GetUser(string userId, string authorization);
 
+        /// <summary>
+        /// Delete a User from teh IAM system.
+        /// </summary>
+        /// <param name="userId">The unique userId (surrogate key) of the User account in IAM system.</param>
+        /// <param name="authorization">Authorization for the call.</param>
+        /// <returns></returns>
         Task DeleteUser(string userId, string authorization);
     }
 }

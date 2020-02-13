@@ -60,16 +60,22 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             }
         }
 
-        public UserDelegate(
-        ILogger<UserDelegate> logger,
-        IHttpClientService httpClientService,
-        IConfiguration configuration)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserDelegate"/> class.
+        /// </summary>
+        /// <param name="logger">The injected logger provider.</param>
+        /// <param name="httpClientService">injected HTTP client service.</param>
+        /// <param name="configuration">Injected configuration.</param>
+        public UserDelegate(ILogger<UserDelegate> logger,
+                IHttpClientService httpClientService,
+                IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
         }
 
+        /// <inheritdoc/>
         public async Task<List<UserRepresentation>> FindUser(string username, string authorization)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(FINDUSERURL));
@@ -96,6 +102,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             }
         }
 
+        /// <inheritdoc/>
         public async Task<UserRepresentation> GetUser(string userId, string authorization)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
@@ -122,6 +129,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             }
         }
 
+        /// <inheritdoc/>
         public async Task DeleteUser(string userId, string authorization)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
@@ -146,6 +154,5 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                 }
             }
         }
-
     }
 }
