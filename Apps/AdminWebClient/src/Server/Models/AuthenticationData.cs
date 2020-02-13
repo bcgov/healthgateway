@@ -1,5 +1,5 @@
-﻿//-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+//-------------------------------------------------------------------------
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,30 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models
+namespace HealthGateway.Admin.Services
 {
-    using System.Collections.Generic;
+    using HealthGateway.Admin.Models;
 
     /// <summary>
-    /// A collection of configuration items for use by Health Gateway and
-    /// approved applications.
+    /// The authentication data from the ASP.Net Core Authentication cookie.
     /// </summary>
-    public class ExternalConfiguration
+    public class AuthenticationData
     {
         /// <summary>
-        /// Gets or sets the OpenIdConnect configuration.
+        /// Gets or sets a value indicating whether the client has been authenticated or not.
+        /// Token and User properties should only be accessed if this value is true.
         /// </summary>
-        public OpenIdConnectConfiguration OpenIdConnect { get; set; }
+        public bool IsAuthenticated { get; set; }
 
         /// <summary>
-        /// Gets or sets the Health Gateway Webclient specific configuration.
+        /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
         /// </summary>
-        public AdminConfiguration Admin { get; set; }
+        public string Token { get; set; } = "";
 
         /// <summary>
-        /// Gets or sets the Service Endpoints.
+        /// Gets or sets the authenticated user, <see cref="User"/>.
         /// </summary>
-        #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; }
+        public UserProfile User { get; set; }
     }
 }

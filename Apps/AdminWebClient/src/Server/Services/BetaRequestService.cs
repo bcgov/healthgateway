@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Services
             {
                 ResourcePayload = betaRequests,
                 ResultStatus = ResultType.Success,
-                TotalResultCount = betaRequests.Count
+                TotalResultCount = betaRequests.Count,
             };
         }
 

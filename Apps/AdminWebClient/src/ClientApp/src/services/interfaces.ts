@@ -1,4 +1,5 @@
 import { Dictionary } from "vue-router/types/router";
+import AuthenticationData from "@/models/authenticationData";
 import UserBetaRequest from "@/models/userBetaRequest";
 import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
@@ -6,6 +7,14 @@ import ExternalConfiguration from "@/models/externalConfiguration";
 export interface IConfigService {
   initialize(http: IHttpDelegate): void;
   getConfiguration(): Promise<ExternalConfiguration>;
+}
+
+export interface IAuthenticationService {
+  initialize(http: IHttpDelegate): void;
+  startLoginFlow(redirectUri: string): void;
+  getAuthentication(): Promise<AuthenticationData>;
+  refreshToken(): Promise<AuthenticationData>;
+  destroyToken(): Promise<void>;
 }
 
 export interface IBetaRequestService {
@@ -17,7 +26,11 @@ export interface IBetaRequestService {
 export interface IUserFeedbackService {
   initialize(http: IHttpDelegate): void;
   getFeedbackList(): Promise<UserFeedback[]>;
-  toggleReviewed(id: string, version: string, isReviewed: boolean): Promise<boolean>;
+  toggleReviewed(
+    id: string,
+    version: string,
+    isReviewed: boolean
+  ): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

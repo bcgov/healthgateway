@@ -1,5 +1,5 @@
-﻿//-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+//-------------------------------------------------------------------------
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,34 +16,23 @@
 namespace HealthGateway.Admin.Models
 {
     /// <summary>
-    /// An object representing a configured Health Gateway IdentityProvider.
+    /// The User object representing the current Authenticated User.
     /// </summary>
-    public class IdentityProviderConfiguration
+    public class UserProfile
     {
         /// <summary>
-        /// Gets or sets the Id of the Identity Provider.
+        /// Gets or sets the ID of the user.
         /// </summary>
-        public string Id { get; set;  }
+        public string Id { get; set; } = "";
 
         /// <summary>
-        /// Gets or sets the name of the Identity Provider.
+        /// Gets or sets the common name of the user.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the Font Awesome Icon that we recommend to use.
+        /// Gets or sets the users email.
         /// </summary>
-        public string Icon { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Identity Provider hint.
-        /// </summary>
-        public string Hint { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this identity provider
-        /// should be used.
-        /// </summary>
-        public bool Disabled { get; set; }
+        public string Email { get; set; }
     }
 }

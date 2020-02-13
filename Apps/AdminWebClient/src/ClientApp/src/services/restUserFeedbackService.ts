@@ -28,7 +28,11 @@ export class RestUserFeedbackService implements IUserFeedbackService {
     });
   }
 
-  public toggleReviewed(id: string, version: string, isReviewed: boolean): Promise<boolean> {
+  public toggleReviewed(
+    id: string,
+    version: string,
+    isReviewed: boolean
+  ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       let headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";

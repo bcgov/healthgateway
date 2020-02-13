@@ -8,9 +8,6 @@
     ></BannerFeedbackComponent>
     <v-row justify="center">
       <v-col md="9">
-        <v-row no-gutters>
-          <h1>User Feedback list</h1>
-        </v-row>
         <v-row>
           <v-col no-gutters>
             <v-data-table
@@ -24,8 +21,12 @@
               <template v-slot:item.isReviewed="{ item }">
                 <td>
                   <v-btn class="mx-2" dark small @click="markReviewed(item)">
-                    <v-icon color="green" dark v-if="item.isReviewed">fa-check</v-icon>
-                    <v-icon color="red" dark v-if="!item.isReviewed">fa-times</v-icon>
+                    <v-icon v-if="item.isReviewed" color="green" dark
+                      >fa-check</v-icon
+                    >
+                    <v-icon v-if="!item.isReviewed" color="red" dark
+                      >fa-times</v-icon
+                    >
                   </v-btn>
                 </td>
               </template>
@@ -44,8 +45,8 @@ import { IUserFeedbackService } from "@/services/interfaces";
 import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import LoadingComponent from "@/components/Loading.vue";
-import BannerFeedbackComponent from "@/components/BannerFeedback.vue";
+import LoadingComponent from "@/components/core/Loading.vue";
+import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import { ResultType } from "@/constants/resulttype";
 
@@ -68,22 +69,22 @@ export default class FeedbackView extends Vue {
     {
       text: "Date",
       value: "createdDateTime",
-      width: '20%'      
+      width: "20%"
     },
     {
       text: "Satisfied?",
       value: "isSatisfied",
-      width: '10%'      
+      width: "10%"
     },
     {
       text: "Comments",
       value: "comments",
-      width: '65%'      
+      width: "65%"
     },
     {
       text: "Reviewed?",
       value: "isReviewed",
-      width: '5%'
+      width: "5%"
     }
   ];
 
