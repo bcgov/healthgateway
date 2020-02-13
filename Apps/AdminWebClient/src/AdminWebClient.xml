@@ -15,16 +15,6 @@
             </summary>
             <param name="authenticationService">The injected auth service provider.</param>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Login(System.String)">
-            <param name="redirectPath">The redirect uri after successful authentication.</param>
-            <returns>An IActionResult which results in a redirect.</returns>
-        </member>
-        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Logout">
-            <summary>
-            Performs the logout of the application.
-            </summary>
-            <returns>A SignoutResult containing the redirect uri.</returns>
-        </member>
         <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.GetAuthenticationData">
             <summary>
             Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
@@ -34,6 +24,16 @@
             This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
             </remarks>
             <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Login(System.String)">
+            <param name="redirectPath">The redirect uri after successful authentication.</param>
+            <returns>An IActionResult which results in a redirect.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Logout">
+            <summary>
+            Performs the logout of the application.
+            </summary>
+            <returns>A SignoutResult containing the redirect uri.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Controllers.BetaRequestController">
             <summary>

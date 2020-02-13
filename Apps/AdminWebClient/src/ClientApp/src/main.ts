@@ -1,7 +1,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import Vue from "vue";
-import "./plugins/axios";
 import vuetify from "./plugins/vuetify";
 import App from "./App.vue";
 import router from "./router";
@@ -12,7 +11,8 @@ import dateFilter from "@/filters/date.filter";
 import {
   IHttpDelegate,
   IBetaRequestService,
-  IConfigService
+  IConfigService,
+  IAuthenticationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -28,7 +28,12 @@ const httpDelegate: IHttpDelegate = container.get(
 const configService: IConfigService = container.get(
   SERVICE_IDENTIFIER.ConfigService
 );
+const authenticationService: IAuthenticationService = container.get(
+  SERVICE_IDENTIFIER.AuthenticationService
+);
+
 configService.initialize(httpDelegate);
+authenticationService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   // Retrieve service interfaces

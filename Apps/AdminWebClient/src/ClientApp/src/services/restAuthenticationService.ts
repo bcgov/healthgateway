@@ -1,17 +1,18 @@
-import axios, { AxiosResponse } from "axios";
-import { IAuthenticationService } from "@/services/interfaces";
-
+import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
 import "reflect-metadata";
-
 import AuthenticationData from "@/models/authenticationData";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-  private readonly GET_AUTH_URI: string = "api/GetAuthenticationData"; // This app's backend service to perform authentication (keeper of the client secret)
-  private readonly HTTP_HEADER_AUTH: string = "Authorization"; // Auth key for ensuring we send the base64 token
+  private readonly AUTH_BASE_URI: string = "v1/api/Authentication";
+  private http!: IHttpDelegate;
 
-  public startLoginFlow(idpHint: string, relativeToPath: string): void {
+  public initialize(http: IHttpDelegate): void {
+    this.http = http;
+  }
+
+  public startLoginFlow(relativeToPath: string): void {
     // Handle OIDC login by setting a hint that the AuthServer needs to know which IdP to route to
     // The server-side backend keeps the client secret needed to route to KeyCloak AS
     // We get back a JWT signed if the authentication was successful
@@ -19,26 +20,24 @@ export class RestAuthenticationService implements IAuthenticationService {
 
     var fullRedirectUrl = new URL(relativeToPath, window.location.href);
 
-    let queryParams = `?idpHint=${idpHint}&redirectUri=${fullRedirectUrl.href}`;
+    var authPathUrl = new URL(
+      this.AUTH_BASE_URI + "/Login",
+      window.location.href
+    );
 
-    var authPathUrl = new URL("/Auth/Login", window.location.href);
+    let queryParams = `?redirectUri=${fullRedirectUrl.href}`;
     let fullPath = authPathUrl + queryParams;
+
     console.log(fullPath);
     window.location.href = fullPath;
   }
 
   public getAuthentication(): Promise<AuthenticationData> {
     return new Promise((resolve, reject) => {
-      axios
-        .get<AuthenticationData>(this.GET_AUTH_URI)
-        .then((response: AxiosResponse) => {
-          // Verify that the object is correct.
-          if (response.data instanceof Object) {
-            let credentials: AuthenticationData = response.data;
-            return resolve(credentials);
-          } else {
-            return reject("invalid authentication data");
-          }
+      this.http
+        .getWithCors<AuthenticationData>(`${this.AUTH_BASE_URI}/`)
+        .then(result => {
+          return resolve(result);
         })
         .catch(err => {
           console.log("Fetch error:" + err.toString());

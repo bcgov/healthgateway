@@ -31,6 +31,7 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
+    [Authorize]
     public class BetaRequestController
     {
         private readonly IBetaRequestService betaRequestService;
@@ -63,24 +64,6 @@ namespace HealthGateway.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBetaRequests()
         {
-            /*ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-
-            // Validate that the query parameter matches the user claims
-            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }*/
-
             return new JsonResult(this.betaRequestService.GetPendingBetaRequests());
         }
 
@@ -93,27 +76,8 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPatch]
-        //[Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> SendBetaRequestsInvites(List<string> betaRequestIds)
         {
-            /*ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-
-            // Validate that the query parameter matches the user claims
-            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }*/
-
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer?

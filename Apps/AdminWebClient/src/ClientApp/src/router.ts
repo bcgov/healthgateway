@@ -1,6 +1,8 @@
 import Vue from "vue";
-import Dashboard from "@/views/Dashboard.vue";
-import BetaQueue from "@/views/BetaQueue.vue";
+import store from "@/store/store";
+import LoginView from "@/views/Login.vue";
+import DashboardView from "@/views/Dashboard.vue";
+import BetaQueueView from "@/views/BetaQueue.vue";
 import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
@@ -8,18 +10,27 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "dashboard",
-    component: Dashboard
+    name: "Dashboard",
+    component: DashboardView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: LoginView,
+    meta: { requiresAuth: false }
   },
   {
     path: "/hangfire",
     name: "hangfire",
-    component: Dashboard
+    component: BetaQueueView,
+    meta: { requiresAuth: true }
   },
   {
     path: "/beta-invites",
-    name: "beta-invites",
-    component: BetaQueue
+    name: "Beta user list",
+    component: BetaQueueView,
+    meta: { requiresAuth: true }
   },
   { path: "*", redirect: "/" }
 ];
@@ -31,8 +42,16 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.fullPath);
-  next();
+  if (to.meta.requiresAuth) {
+    let isAuthenticated = store.getters["auth/isAuthenticated"];
+    if (!isAuthenticated) {
+      next({ path: "/login", query: { redirect: to.path } });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

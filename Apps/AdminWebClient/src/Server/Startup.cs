@@ -20,22 +20,23 @@ namespace HealthGateway.AdminWebClient
     using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
+    using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Database.Delegates;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.SpaServices;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.IdentityModel.Logging;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using VueCliMiddleware;
-    using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
 
     /// <summary>
     /// Configures the application during startup.
@@ -64,16 +65,15 @@ namespace HealthGateway.AdminWebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            IdentityModelEventSource.ShowPII = true; //To show detail of error and see the problem
+            //To show detail of error and see the problem.
+            IdentityModelEventSource.ShowPII = true;
 
             this.logger.LogDebug("Configure Services...");
 
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
-            //this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.ConfigureAuthenticationService(services);
-            this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Add services
@@ -124,17 +124,6 @@ namespace HealthGateway.AdminWebClient
                 app.UseHsts();
             }
 
-            /*app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-            app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
-
-            // app.UseRequestLocalization();
-            //app.UseCors(CorsPolicy);
-
-            app.UseAuthentication();
-            app.UseAuthorization();*/
-
             if (!env.IsDevelopment())
             {
                 app.UseResponseCompression();
@@ -152,14 +141,11 @@ namespace HealthGateway.AdminWebClient
                         endpoints.MapToVueCliProxy(
                             "{*path}",
                             new SpaOptions { SourcePath = "ClientApp" },
-                            npmScript: (System.Diagnostics.Debugger.IsAttached) ? "serve" : null,
+                            npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
                             regex: "Compiled successfully",
                             forceKill: true
-                            );
+                        );
                     }
-
-                    // Add MapRazorPages if the app uses Razor Pages. Since Endpoint Routing includes support for many frameworks, adding Razor Pages is now opt -in.
-                    //endpoints.MapRazorPages();
                 }
             );
 
@@ -178,64 +164,54 @@ namespace HealthGateway.AdminWebClient
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie()
-            .AddOpenIdConnect(o =>
-             {
-                 this.configuration.GetSection("OpenIdConnect").Bind(o);
-                 if (string.IsNullOrEmpty(o.Authority))
-                 {
-                     this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
-                 }
+            .AddOpenIdConnect(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                };
+                this.configuration.GetSection("OpenIdConnect").Bind(options);
+                if (string.IsNullOrEmpty(options.Authority))
+                {
+                    this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
+                }
 
-                 o.Events = new OpenIdConnectEvents()
-                 {
-                     OnTicketReceived = e =>
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = ctx =>
                     {
-                        
+                        JwtSecurityToken accessToken = ctx.SecurityToken;
+                        if (accessToken != null)
+                        {
+                            ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                            if (identity != null)
+                            {
+                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                            }
+                        }
+
                         return Task.CompletedTask;
                     },
-                     OnTokenValidated = ctx =>
-                     {
-                         JwtSecurityToken accessToken = ctx.SecurityToken;
-                         if (accessToken != null)
-                         {
-                             ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
-                             if (identity != null)
-                             {
-                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
-                             }
-                         }
+                    OnRedirectToIdentityProvider = ctx =>
+                    {
+                        if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                        {
+                            this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                            ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                        }
 
-                         return Task.CompletedTask;
-                     },
-                     OnRedirectToIdentityProvider = ctx =>
-                     {
-                         if (ctx.Properties.Items.ContainsKey(this.configuration["KeyCloak:IDPHintKey"]))
-                         {
-                             this.logger.LogDebug("Adding IDP Hint passed in from client to provider");
-                             ctx.ProtocolMessage.SetParameter(
-                                    this.configuration["KeyCloak:IDPHintKey"], ctx.Properties.Items[this.configuration["KeyCloak:IDPHintKey"]]);
-                         }
-                         else
-                         {
-                             if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
-                             {
-                                 this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                 ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
-                             }
-                         }
-
-                         return Task.FromResult(0);
-                     },
-                     OnAuthenticationFailed = c =>
-                     {
-                         c.HandleResponse();
-                         c.Response.StatusCode = 500;
-                         c.Response.ContentType = "text/plain";
-                         this.logger.LogError(c.Exception.ToString());
-                         return c.Response.WriteAsync(c.Exception.ToString());
-                     },
-                 };
-             });
+                        return Task.FromResult(0);
+                    },
+                    OnAuthenticationFailed = c =>
+                    {
+                        c.HandleResponse();
+                        c.Response.StatusCode = 500;
+                        c.Response.ContentType = "text/plain";
+                        this.logger.LogError(c.Exception.ToString());
+                        return c.Response.WriteAsync(c.Exception.ToString());
+                    },
+                };
+            });
         }
     }
 }

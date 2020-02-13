@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Controllers
 {
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -41,16 +40,20 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// The default page for the auth controller.
+        /// Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
         /// </summary>
-        /// <returns>The default view.</returns>
-        /*[ApiExplorerSettings(IgnoreApi = true)]
-        [Route("/Authentication")]
-        [Authorize]
-        public IActionResult Index()
+        /// <remarks>
+        /// The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
+        /// This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
+        /// </remarks>
+        /// <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
+        [HttpGet]
+        [ProducesResponseType(200)]
+        public AuthenticationData GetAuthenticationData()
         {
-            return this.View();
-        }*/
+            AuthenticationData authData = this.authenticationService.GetAuthenticationData();
+            return authData;
+        }
 
         /// <summary>
         /// Performs an OpenIdConnect Challenge.
@@ -59,8 +62,8 @@ namespace HealthGateway.Admin.Controllers
         /// <param name="redirectPath">The redirect uri after successful authentication.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
         [HttpGet]
-        [Route("Login/{redirectPath}")]
-        public IActionResult Login(string redirectPath = "")
+        [Route("Login/{redirectPath?}")]
+        public IActionResult Login(string? redirectPath = "/")
         {
             return new ChallengeResult(
                 OpenIdConnectDefaults.AuthenticationScheme, this.authenticationService.GetAuthenticationProperties(redirectPath));
@@ -75,25 +78,6 @@ namespace HealthGateway.Admin.Controllers
         public IActionResult Logout()
         {
             return this.authenticationService.Logout();
-        }
-
-        /// <summary>
-        /// Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
-        /// </summary>
-        /// <remarks>
-        /// The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
-        /// This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
-        /// </remarks>
-        /// <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
-        [HttpGet]
-        /*[Route("/api/[controller]/v{version:apiVersion}/GetAuthenticationData")]
-        [Route("/api/[controller]/GetAuthenticationData")]
-        [Route("/api/GetAuthenticationData")]*/
-        [ProducesResponseType(200)]
-        public AuthenticationData GetAuthenticationData()
-        {
-            AuthenticationData authData = this.authenticationService.GetAuthenticationData();
-            return authData;
         }
     }
 }

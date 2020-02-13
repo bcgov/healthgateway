@@ -1,5 +1,7 @@
 <template>
-  <v-app id="mysegement">
+  <v-app id="healthGatewayAdmin">
+    <ToolbarComponent />
+
     <MainNavbar title="HealthGateway Admin" />
     <v-content>
       <router-view />
@@ -11,11 +13,12 @@
 <script lang="ts">
 import MainNavbar from "@/components/MainNavbar.vue";
 import Footer from "@/components/Footer.vue";
+import ToolbarComponent from "@/components/core/Toolbar.vue";
 
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { MainNavbar, Footer }
+  components: { MainNavbar, Footer, ToolbarComponent }
 })
 export default class App extends Vue {}
 </script>

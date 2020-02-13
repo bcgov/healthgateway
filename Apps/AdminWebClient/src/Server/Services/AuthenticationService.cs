@@ -98,12 +98,6 @@ namespace HealthGateway.Admin.Services
             {
                 RedirectUri = redirectPath,
             };
-            authProps.Items.Add(this.configuration["KeyCloak:IDPHintKey"], "idir");
-
-            /*if (!string.IsNullOrEmpty(hint))
-            {
-                authProps.Items.Add(this.configuration["KeyCloak:IDPHintKey"], hint);
-            }*/
 
             return authProps;
         }

@@ -8,9 +8,7 @@
     ></BannerFeedbackComponent>
     <v-row justify="center">
       <v-col md="9">
-        <v-row no-gutters>
-          <h1>Beta user list</h1>
-        </v-row>
+        
         <v-row>
           <v-col no-gutters>
             <v-data-table
@@ -96,7 +94,7 @@ export default class BetaQueueView extends Vue {
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Loaded loading pending beta requests"
+          message: "Failed to load pending beta requests"
         };
       })
       .finally(() => {

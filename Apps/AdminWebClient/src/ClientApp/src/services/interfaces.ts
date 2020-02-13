@@ -9,7 +9,8 @@ export interface IConfigService {
 }
 
 export interface IAuthenticationService {
-  startLoginFlow(idpHint: string, redirectUri: string): void;
+  initialize(http: IHttpDelegate): void;
+  startLoginFlow(redirectUri: string): void;
   getAuthentication(): Promise<AuthenticationData>;
   refreshToken(): Promise<AuthenticationData>;
   destroyToken(): Promise<void>;
