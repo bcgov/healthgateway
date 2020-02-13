@@ -64,7 +64,7 @@ objects:
       name: ${NAME}
     name: ${NAME}
   spec:
-    replicas: 2
+    replicas: 1
     selector:
       name: ${NAME}
       deploymentconfig: ${NAME}
