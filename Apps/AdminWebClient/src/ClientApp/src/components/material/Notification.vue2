@@ -27,7 +27,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .v-alert--notification {
   border-radius: 4px !important;
   border-top: none !important;

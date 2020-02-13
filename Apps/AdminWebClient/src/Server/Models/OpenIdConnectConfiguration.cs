@@ -45,7 +45,12 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the Callback URIs.
         /// </summary>
-        #pragma warning disable CA2227 //disable read-only Dictionary
+#pragma warning disable CA2227 //disable read-only Dictionary
         public Dictionary<string, System.Uri> Callbacks { get; set; }
+
+        public bool SaveTokens { get; set; }
+        public bool GetClaimsFromUserInfoEndpoint { get; set; }
+        public string SignedOutRedirectUri { get; set; }
+        public bool RequireHttpsMetadata { get; set; }
     }
 }

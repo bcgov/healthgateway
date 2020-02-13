@@ -1,5 +1,5 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import ImmunizationData from "@/models/immunizationData";
+import ImmunizationData, { ImmunizationAgent } from "@/models/immunizationData";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
@@ -11,11 +11,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
   }
 
   public filterApplies(filterText: string): boolean {
-    var text =
-      (this.immunization.name! || "") +
-      (this.immunization.status! || "") +
-      (this.immunization.agentCode! || "") +
-      (this.immunization.agentDisplay! || "");
+    var agentNames = this.immunization.agents.map(function(agent) {
+      return agent.display;
+    });
+
+    var text = (this.immunization.name! || "") + (agentNames.toString() || "");
     text = text.toUpperCase();
     return text.includes(filterText.toUpperCase());
   }
@@ -24,15 +24,28 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 class ImmunizationViewModel {
   public name?: string;
   public status?: string;
-  public agentCode?: string;
-  public agentDisplay?: string;
+  public agents: ImmunizationAgentViewModel[];
   public occurrenceDateTime: Date;
 
   constructor(model: ImmunizationData) {
     this.name = model.name;
     this.status = model.status;
-    this.agentCode = model.immunizationAgentCode;
-    this.agentDisplay = model.immunizationAgentDisplay;
     this.occurrenceDateTime = model.occurrenceDateTime;
+    this.agents = [];
+
+    for (let index = 0; index < model.immunizationAgents.length; index++) {
+      const agent = model.immunizationAgents[index];
+
+      this.agents.push(new ImmunizationAgentViewModel(agent));
+    }
+  }
+}
+
+class ImmunizationAgentViewModel {
+  public code?: string;
+  public display?: string;
+  constructor(model: ImmunizationAgent) {
+    this.code = model.code;
+    this.display = model.name;
   }
 }
