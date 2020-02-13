@@ -6,4 +6,5 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 
 RUN addgroup nginx root
+EXPOSE 8443
 USER nginx
