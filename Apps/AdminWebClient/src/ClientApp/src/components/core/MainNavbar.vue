@@ -58,13 +58,15 @@
 <script lang="ts">
 import { Action, Getter } from "vuex-class";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
-import BackgroundImage from "@/assets/images/background.jpg";
 
 @Component
 export default class MainNavbar extends Vue {
-  @Action("setState", { namespace: "drawer" }) public setDrawerState: any;
-  @Getter("isOpen", { namespace: "drawer" }) public isDrawerOpen: boolean;
-  @Getter("isAuthenticated", { namespace: "auth" }) isAuthenticated: boolean;
+  @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
+    isDrawerOpen
+  }: any) => void;
+  @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+  @Getter("isAuthenticated", { namespace: "auth" })
+  private isAuthenticated!: boolean;
 
   private isOpen: boolean = true;
   private drawer: boolean = false;
@@ -72,7 +74,7 @@ export default class MainNavbar extends Vue {
   private color: string = "success";
 
   private logo: string = "favicon.ico";
-  private image: string = BackgroundImage;
+  private image: string = "/assets/images/background.jpg";
 
   private items = [
     {
