@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import VueRouter, { Route } from "vue-router";
 import { State, Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/core/Loading.vue";
 
@@ -20,17 +21,19 @@ const namespace: string = "auth";
 })
 export default class LoginView extends Vue {
   public name = "Dashboard";
-  @Action("login", { namespace }) login: any;
-  @Getter("isAuthenticated", { namespace }) isAuthenticated: boolean;
+  @Action("login", { namespace }) private login!: ({
+    redirectPath
+  }: any) => Promise<void>;
+  @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
 
   private isLoading: boolean = true;
   private redirectPath: string = "";
-  private routeHandler = "";
+  private routeHandler!: VueRouter;
 
   mounted() {
     this.isLoading = true;
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
-      this.redirectPath = this.$route.query.redirect;
+      this.redirectPath = this.$route.query.redirect.toString();
     } else {
       this.redirectPath = "/";
     }
