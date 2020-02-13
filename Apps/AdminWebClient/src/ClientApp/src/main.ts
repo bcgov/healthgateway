@@ -12,7 +12,8 @@ import {
   IHttpDelegate,
   IBetaRequestService,
   IConfigService,
-  IAuthenticationService
+  IAuthenticationService,
+  IUserFeedbackService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -40,9 +41,13 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const betaRequestService: IBetaRequestService = container.get(
     SERVICE_IDENTIFIER.BetaRequestService
   );
+  const userFeedbackService: IUserFeedbackService = container.get(
+    SERVICE_IDENTIFIER.UserFeedbackService
+  );
 
   // Initialize services
   betaRequestService.initialize(httpDelegate);
+  userFeedbackService.initialize(httpDelegate);
   initializeVue();
 });
 

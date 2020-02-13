@@ -5,6 +5,7 @@ import LogoutView from "@/views/Logout.vue";
 import DashboardView from "@/views/Dashboard.vue";
 import BetaQueueView from "@/views/BetaQueue.vue";
 import VueRouter from "vue-router";
+import FeedbackView from "@/views/Feedback.vue";
 
 Vue.use(VueRouter);
 
@@ -39,6 +40,12 @@ const routes = [
     path: "/beta-invites",
     name: "Beta user list",
     component: BetaQueueView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/user-feedback",
+    name: "User Feedback list",
+    component: FeedbackView,
     meta: { requiresAuth: true }
   },
   { path: "*", redirect: "/" }

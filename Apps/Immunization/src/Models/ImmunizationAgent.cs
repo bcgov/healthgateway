@@ -13,27 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Immunization.Models
 {
-    using System.Net.Http;
+    using System;
 
     /// <summary>
-    /// A custom http client factory service.
+    /// The Immunization agent data model.
     /// </summary>
-    public interface IHttpClientService
+    public class ImmunizationAgent
     {
         /// <summary>
-        /// Creates a new default instance of HttpClient.
+        /// Gets or sets the Immunization Agent code.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateDefaultHttpClient();
-
+        public string Code { get; set; } = string.Empty;
 
         /// <summary>
-        /// Creates a new unstrusted ssl HttpClient.
+        /// Gets or sets the Immunization name.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateUntrustedHttpClient();
+        public string? Name { get; set; }
     }
 }

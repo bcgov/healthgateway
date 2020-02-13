@@ -47,15 +47,28 @@ namespace HealthGateway.Common.Services
         public HttpClient CreateDefaultHttpClient()
         {
             HttpClient retVal = this.httpClientFactory.CreateClient();
+            return SetTimeout(retVal);
+        }
+
+        /// <inheritdoc />
+        public HttpClient CreateUntrustedHttpClient()
+        {
+            HttpClient retVal = this.httpClientFactory.CreateClient("HttpClientWithSSLUntrusted");
+            return SetTimeout(retVal);
+        }
+
+        /// <inheritdoc />
+        public HttpClient SetTimeout(HttpClient client)
+        {
             string timeout = this.configService.GetSection("HttpClient").GetValue<string>("Timeout");
 
             if (!string.IsNullOrEmpty(timeout))
             {
                 // Timeout should be in timespan format: 00:01:00
-                retVal.Timeout = TimeSpan.Parse(timeout, CultureInfo.CurrentCulture);
+                client.Timeout = TimeSpan.Parse(timeout, CultureInfo.CurrentCulture);
             }
 
-            return retVal;
+            return client;
         }
     }
 }

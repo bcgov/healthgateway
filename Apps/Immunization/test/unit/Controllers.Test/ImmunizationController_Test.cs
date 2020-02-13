@@ -4,6 +4,7 @@ namespace HealthGateway.Immunization.Test.Controller
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading.Tasks;
+    using Castle.Core.Logging;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Models;
@@ -13,7 +14,7 @@ namespace HealthGateway.Immunization.Test.Controller
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -53,9 +54,14 @@ namespace HealthGateway.Immunization.Test.Controller
             {
                 Name = "test"
             });
-            svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(immunizations);
 
-            ImmunizationController controller = new ImmunizationController(svcMock.Object, httpContextAccessorMock.Object, authzMock.Object);
+            svcMock.Setup(m => m.GetImmunizations(hdid)).ReturnsAsync(immunizations);
+
+            ImmunizationController controller = new ImmunizationController(
+                new Mock<ILogger<ImmunizationController>>().Object,
+                svcMock.Object,
+                httpContextAccessorMock.Object,
+                authzMock.Object);
 
             // Act
             JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);

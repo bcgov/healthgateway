@@ -16,12 +16,13 @@
 namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Configures the application during startup.
@@ -67,7 +68,11 @@ namespace HealthGateway.Immunization
             });
 
             // Add Services
-            services.AddSingleton<IImmunizationService, MockImmunizationService>();
+            services.AddTransient<IImmunizationService, ImmunizationService>();
+            services.AddSingleton<IImmunizationDelegateFactory, ImmunizationDelegateFactory>();
+
+            // Add delegates
+            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
         }
 
         /// <summary>

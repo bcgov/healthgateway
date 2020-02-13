@@ -13,22 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.Immunization.Delegates
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Immunization.Models;
+    using Hl7.Fhir.Model;
 
     /// <summary>
-    /// The Immunization data service.
+    /// Interface that defines a delegate to retrieve patient information.
     /// </summary>
-    public interface IImmunizationService
+    public interface IImmunizationFhirDelegate
     {
         /// <summary>
-        /// Gets a list of immunization records.
+        /// Gets the immunization fhir bundle for the provided phn and dob.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid);
+        /// <param name="request">The immunization request.</param>
+        /// <returns>The immunization fhir bundle.</returns>
+        Task<Bundle> GetImmunizationBundle(ImmunizationRequest request);
     }
 }

@@ -13,19 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve patient information.
@@ -55,46 +55,52 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
         {
-            string retrievedPhn;
+            string retrievedPhn = string.Empty;
+            Patient patient = await this.GetPatientAsync(hdid, authorization).ConfigureAwait(true);
+            if (patient != null)
+            {
+                retrievedPhn = patient.PersonalHealthNumber;
+            }
+
+            return retrievedPhn;
+        }
+
+        /// <inheritdoc/>
+        public async Task<Patient> GetPatientAsync(string hdid, string authorization)
+        {
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting patient phn... {hdid}");
-
-            using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
+            Patient? patient = null;
+            this.logger.LogTrace($"Getting patient... {hdid}");
+            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", authorization);
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
+            using HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true);
+            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            if (response.IsSuccessStatusCode)
             {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", authorization);
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
-
-                using (HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true))
-                {
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Patient responseMessage = JsonConvert.DeserializeObject<Patient>(payload);
-                        retrievedPhn = responseMessage.PersonalHealthNumber;
-                    }
-                    else
-                    {
-                        this.logger.LogError($"Error getting patient phn. {hdid}, {payload}");
-                        throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
-                    }
-                }
-
-                timer.Stop();
-                if (string.IsNullOrEmpty(retrievedPhn))
-                {
-                    this.logger.LogDebug($"Finished getting patient phn. {hdid}, PHN not found, Time Elapsed: {timer.Elapsed}");
-                }
-                else
-                {
-                    this.logger.LogDebug($"Finished getting patient phn. {hdid}, {retrievedPhn.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
-                }
-
-                return retrievedPhn;
+                patient = JsonSerializer.Deserialize<Patient>(payload);
             }
+            else
+            {
+                this.logger.LogError($"Error getting patient. {hdid}, {payload}");
+                throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+            }
+
+            timer.Stop();
+            if (string.IsNullOrEmpty(patient.PersonalHealthNumber))
+            {
+                this.logger.LogDebug($"Finished getting patient. {hdid}, PHN not found, Time Elapsed: {timer.Elapsed}");
+            }
+            else
+            {
+                this.logger.LogDebug($"Finished getting patient. {hdid}, {patient.PersonalHealthNumber.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
+            }
+
+            return patient;
         }
     }
 }

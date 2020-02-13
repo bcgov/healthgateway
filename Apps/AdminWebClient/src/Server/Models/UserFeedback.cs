@@ -13,27 +13,38 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Admin.Models
 {
-    using System.Net.Http;
+    using System;
 
     /// <summary>
-    /// A custom http client factory service.
+    /// Model that provides a user representation of a user feedback.
     /// </summary>
-    public interface IHttpClientService
+    public class UserFeedback
     {
         /// <summary>
-        /// Creates a new default instance of HttpClient.
+        /// Gets or sets the user feedback id.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateDefaultHttpClient();
-
+        public string Id { get; set; } = null!;
 
         /// <summary>
-        /// Creates a new unstrusted ssl HttpClient.
+        /// Gets or sets the feedback comments.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateUntrustedHttpClient();
+        public string Comments { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the user is satisfied or not.
+        /// </summary>
+        public bool IsSatisfied { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the feedback is reviewed or not.
+        /// </summary>
+        public bool IsReviewed { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the date when the feedback was created.
+        /// </summary>
+        public DateTime CreatedDateTime { get; set; }
     }
 }

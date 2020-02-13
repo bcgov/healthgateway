@@ -13,27 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Immunization.Factories
 {
-    using System.Net.Http;
+    using System;
+    using HealthGateway.Immunization.Delegates;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// A custom http client factory service.
+    /// Creates the Immunization Delegate dynamically.
     /// </summary>
-    public interface IHttpClientService
+    public interface IImmunizationDelegateFactory
     {
         /// <summary>
-        /// Creates a new default instance of HttpClient.
+        /// Returns a new instance of IImunizationFhirDelegate via configuration.
         /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateDefaultHttpClient();
-
-
-        /// <summary>
-        /// Creates a new unstrusted ssl HttpClient.
-        /// </summary>
-        /// <returns>The HttpClient.</returns>
-        HttpClient CreateUntrustedHttpClient();
+        /// <returns>The IImunizationFhirDelegate.</returns>
+        public IImmunizationFhirDelegate CreateInstance();
     }
 }

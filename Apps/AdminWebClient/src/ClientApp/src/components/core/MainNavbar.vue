@@ -89,7 +89,8 @@ export default class MainNavbar extends Vue {
       title: "Beta Invites",
       icon: "account_box",
       to: "/beta-invites"
-    }
+    },
+    { title: "Feedback Review", icon: "comment", to: "/user-feedback" }
   ];
 
   mounted() {
