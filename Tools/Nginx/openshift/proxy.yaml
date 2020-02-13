@@ -85,6 +85,7 @@ objects:
           deploymentconfig: ${NAME}
       spec:
         containers:
+          - env:
             image: ${NAME}
             imagePullPolicy: Always
             name: ${NAME}
@@ -101,10 +102,6 @@ objects:
         restartPolicy: Always
         serviceAccount: ${NAME}
         terminationGracePeriodSeconds: 30
-        hostAliases:
-        - ip: "10.248.101.18"
-          hostnames:
-          - "test-citz.healthbc.org"
     test: false
     triggers:
       - type: ConfigChange
