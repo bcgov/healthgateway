@@ -13,7 +13,7 @@ a {
 </style>
 
 <template>
-  <v-app-bar app id="core-toolbar" flat>
+  <v-app-bar id="core-toolbar" app flat>
     <div class="v-toolbar-title">
       <v-toolbar-title class="tertiary--text font-weight-light">
         <v-btn
@@ -21,7 +21,7 @@ a {
           class="default v-btn--simple"
           dark
           icon
-          @click.stop="onClickBtn"
+          @click.stop="toggleDrawer"
         >
           <v-icon>mdi-view-list</v-icon>
         </v-btn>
@@ -30,16 +30,27 @@ a {
     </div>
 
     <v-spacer />
-    <v-toolbar-items v-if="isLoggedIn">
+    <v-toolbar-items>
       <v-flex align-center layout py-2>
         <router-link
+          v-if="isLoggedIn"
           v-ripple
           class="toolbar-items"
           to="/logout"
           color="tertiary"
         >
           Logout
-          <v-icon>mdi-exit-to-app</v-icon>
+          <v-icon>mdi-logout</v-icon>
+        </router-link>
+        <router-link
+          v-else
+          v-ripple
+          class="toolbar-items"
+          to="/"
+          color="tertiary"
+        >
+          Login
+          <v-icon>mdi-login</v-icon>
         </router-link>
       </v-flex>
     </v-toolbar-items>
@@ -52,12 +63,10 @@ import { State, Action, Getter } from "vuex-class";
 
 import { mapMutations } from "vuex";
 
-const namespace: string = "drawer";
-
 @Component
 export default class ToolbarComponent extends Vue {
-  @Action("setState", { namespace }) setDrawer: any;
-  @Getter("isOpen", { namespace }) isOpen: boolean;
+  @Action("setState", { namespace: "drawer" }) setDrawerState: any;
+  @Getter("isOpen", { namespace: "drawer" }) isDrawerOpen: boolean;
   @Getter("isAuthenticated", { namespace: "auth" }) isLoggedIn: boolean;
 
   private title: string = "";
@@ -77,14 +86,10 @@ export default class ToolbarComponent extends Vue {
     this.title = this.$route.name;
   }
 
-  onClickBtn() {
-    console.log(this.isOpen)
-    this.setDrawer({ isDrawerOpen: !this.isOpen });
+  private toggleDrawer() {
+    this.setDrawerState({ isDrawerOpen: !this.isDrawerOpen });
   }
-  onClick() {
-    //
-  }
-  onResponsiveInverted() {
+  private onResponsiveInverted() {
     if (window.innerWidth < 959) {
       this.responsive = true;
     } else {
@@ -92,33 +97,4 @@ export default class ToolbarComponent extends Vue {
     }
   }
 }
-
-/*export default {
-  data: () => ({}),
-
-  mounted() {
-    this.onResponsiveInverted();
-    window.addEventListener("resize", this.onResponsiveInverted);
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.onResponsiveInverted);
-  },
-
-  methods: {
-    ...mapMutations("app", ["setDrawer", "toggleDrawer"]),
-    onClickBtn() {
-      this.setDrawer(!this.$store.state.app.drawer);
-    },
-    onClick() {
-      //
-    },
-    onResponsiveInverted() {
-      if (window.innerWidth < 991) {
-        this.responsive = true;
-      } else {
-        this.responsive = false;
-      }
-    }
-  }
-};*/
 </script>

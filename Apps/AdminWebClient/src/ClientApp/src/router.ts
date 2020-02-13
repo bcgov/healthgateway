@@ -1,6 +1,7 @@
 import Vue from "vue";
 import store from "@/store/store";
 import LoginView from "@/views/Login.vue";
+import LogoutView from "@/views/Logout.vue";
 import DashboardView from "@/views/Dashboard.vue";
 import BetaQueueView from "@/views/BetaQueue.vue";
 import VueRouter from "vue-router";
@@ -16,15 +17,23 @@ const routes = [
   },
   {
     path: "/login",
-    name: "login",
+    name: "Login",
     component: LoginView,
     meta: { requiresAuth: false }
   },
   {
-    path: "/hangfire",
-    name: "hangfire",
-    component: BetaQueueView,
-    meta: { requiresAuth: true }
+    path: "/logout",
+    name: "Logout",
+    component: LogoutView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: "/job-scheduler",
+    name: "JobScheduler",
+    meta: { requiresAuth: true },
+    beforeEnter() {
+      location.href = store.getters["config/serviceEndpoints"]["JobScheduler"];
+    }
   },
   {
     path: "/beta-invites",

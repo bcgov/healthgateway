@@ -56,7 +56,12 @@ export class RestAuthenticationService implements IAuthenticationService {
   public destroyToken(): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log("Starting Logout flow....");
-      var authPathUrl = new URL("/Auth/Logout", window.location.href);
+
+      var authPathUrl = new URL(
+        this.AUTH_BASE_URI + "/Logout",
+        window.location.href
+      );
+
       window.location.href = authPathUrl.href;
       this.expireSiteMinderCookie();
     });

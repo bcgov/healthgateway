@@ -3,32 +3,11 @@ export default class ExternalConfiguration {
   // Gets or sets the OpenIdConnect configuration.
   public openIdConnect!: OpenIdConnectConfiguration;
 
-  // Gets or sets the List of Identity providers.
-  public identityProviders!: IdentityProviderConfiguration[];
-
   // Gets or sets the Health Gateway Admin specific configuration.
   public admin!: AdminClientConfiguration;
 
   // Gets or sets the Service Endpoints.
   public serviceEndpoints!: { [id: string]: string };
-}
-
-// An object representing a configured Health Gateway IdentityProvider.
-export class IdentityProviderConfiguration {
-  // Gets or sets the Id of the Identity Provider.
-  public id!: string;
-
-  // Gets or sets the name of the Identity Provider.
-  public name!: string;
-
-  // Gets or sets the Font Awesome Icon that we recommend to use.
-  public icon?: string;
-
-  // Gets or sets the Identity Provider hint.
-  public hint?: string;
-
-  // Gets or sets a value indicating whether this identity provider should be used.
-  public disabled?: boolean;
 }
 
 // Configuration to be used by external clients for authentication.

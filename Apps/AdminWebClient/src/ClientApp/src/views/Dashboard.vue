@@ -10,9 +10,11 @@
 </style>
 
 <template>
-  <v-parallax dark src="@/assets/background.jpg" height="700">
-    <v-container app> </v-container>
-  </v-parallax>
+  <v-layout class="fill-height">
+    <v-row justify="center">
+      Dashboard goes here
+    </v-row>
+  </v-layout>
 </template>
 
 <script lang="ts">

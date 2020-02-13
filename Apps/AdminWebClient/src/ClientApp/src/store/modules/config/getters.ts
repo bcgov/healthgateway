@@ -1,16 +1,14 @@
 import { GetterTree } from "vuex";
 import { RootState, ConfigState } from "@/models/storeState";
 import {
-  IdentityProviderConfiguration,
   OpenIdConnectConfiguration,
   AdminClientConfiguration
 } from "@/models/externalConfiguration";
 
 export const getters: GetterTree<ConfigState, RootState> = {
-  identityProviders(state: ConfigState): IdentityProviderConfiguration[] {
+  serviceEndpoints(state: ConfigState): { [id: string]: string } {
     const { config } = state;
-    const { identityProviders = [] } = config;
-    return identityProviders;
+    return config.serviceEndpoints;
   },
   openIdConnect(state: ConfigState): OpenIdConnectConfiguration {
     const { config } = state;

@@ -8,7 +8,6 @@
     ></BannerFeedbackComponent>
     <v-row justify="center">
       <v-col md="9">
-        
         <v-row>
           <v-col no-gutters>
             <v-data-table
@@ -43,8 +42,8 @@ import { IBetaRequestService } from "@/services/interfaces";
 import UserBetaRequest from "@/models/userBetaRequest";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import LoadingComponent from "@/components/Loading.vue";
-import BannerFeedbackComponent from "@/components/BannerFeedback.vue";
+import LoadingComponent from "@/components/core/Loading.vue";
+import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import { ResultType } from "@/constants/resulttype";
 

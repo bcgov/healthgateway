@@ -115,11 +115,6 @@
             Gets or sets the OpenIdConnect configuration.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.IdentityProviders">
-            <summary>
-            Gets or sets the List of Identity providers.
-            </summary>
-        </member>
         <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.Admin">
             <summary>
             Gets or sets the Health Gateway Webclient specific configuration.
@@ -128,37 +123,6 @@
         <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.ServiceEndpoints">
             <summary>
             Gets or sets the Service Endpoints.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.Admin.Models.IdentityProviderConfiguration">
-            <summary>
-            An object representing a configured Health Gateway IdentityProvider.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Id">
-            <summary>
-            Gets or sets the Id of the Identity Provider.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Name">
-            <summary>
-            Gets or sets the name of the Identity Provider.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Icon">
-            <summary>
-            Gets or sets the Font Awesome Icon that we recommend to use.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Hint">
-            <summary>
-            Gets or sets the Identity Provider hint.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Disabled">
-            <summary>
-            Gets or sets a value indicating whether this identity provider
-            should be used.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">
