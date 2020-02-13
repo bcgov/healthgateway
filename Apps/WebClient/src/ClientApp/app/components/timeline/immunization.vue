@@ -56,11 +56,6 @@ $radius: 15px;
       <b-col>
         <b-row>
           <b-col>
-            {{ entry.immunization.agent }}
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
             <b-btn
               v-b-toggle="'entryDetails-' + index + '-' + datekey"
               variant="link"
