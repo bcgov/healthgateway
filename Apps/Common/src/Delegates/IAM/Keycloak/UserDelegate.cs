@@ -25,8 +25,6 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
     using System.Text.Json;
     using System.Threading.Tasks;
 
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
     using HealthGateway.Common.Delegates.IAM;
     using HealthGateway.Common.Models.IAM;
     using HealthGateway.Common.Services;
@@ -48,14 +46,13 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
-        private readonly IAuthService authService;
 
-        private HttpClient GethttpClient(Uri baseUri)
+        private HttpClient GethttpClient(Uri baseUri, string authorization)
         {
             using (HttpClient _client = this.httpClientService.CreateDefaultHttpClient())
             {
                 _client.DefaultRequestHeaders.Accept.Clear();
-                _client.DefaultRequestHeaders.Add("Authorization", this.getAuthorization());
+                _client.DefaultRequestHeaders.Add("Authorization", authorization);
                 _client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 _client.BaseAddress = baseUri;
@@ -63,37 +60,21 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             }
         }
 
-        public string? authorization { get; set; } = String.Empty; // Json Web Token as string for Header for RESTful API call
-
         public UserDelegate(
         ILogger<UserDelegate> logger,
         IHttpClientService httpClientService,
-        IConfiguration configuration,
-        IAuthService authService)
+        IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
-            this.authService = authService;
         }
 
-        private string? getAuthorization()
-        {
-            if (String.IsNullOrEmpty(this.authorization))
-            {
-                // The authorization has not been set by way of a user authentication, so we will 
-                // use system account access methods.
-                JWTModel model = this.authService.AuthenticateService();
-                this.authorization = model.AccessToken;
-            }
-            return this.authorization;
-        }
-
-        public async Task<List<UserRepresentation>> FindUser(string username)
+        public async Task<List<UserRepresentation>> FindUser(string username, string authorization)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(FINDUSERURL));
 
-            using (HttpClient client = this.GethttpClient(baseUri))
+            using (HttpClient client = this.GethttpClient(baseUri, authorization))
             {
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"?username={username}", UriKind.Relative)).ConfigureAwait(true))
                 {
@@ -115,11 +96,11 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             }
         }
 
-        public async Task<UserRepresentation> GetUser(string userId)
+        public async Task<UserRepresentation> GetUser(string userId, string authorization)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
 
-            using (HttpClient client = this.GethttpClient(baseUri))
+            using (HttpClient client = this.GethttpClient(baseUri, authorization))
             {
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true))
                 {
@@ -141,11 +122,11 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
             }
         }
 
-        public async Task DeleteUser(string userId)
+        public async Task DeleteUser(string userId, string authorization)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
-            using (HttpClient client = this.GethttpClient(baseUri))
+            using (HttpClient client = this.GethttpClient(baseUri, authorization))
             {
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true))
                 {

@@ -15,20 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates.IAM
 {
-
-using System.Collections.Generic;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
-
     using HealthGateway.Common.Models.IAM;
 
     public interface IUserDelegate
     {
-        Task<List<UserRepresentation>> FindUser(string username);
+        Task<List<UserRepresentation>> FindUser(string username, string authorization);
 
-        Task<UserRepresentation> GetUser(string userId);
+        Task<UserRepresentation> GetUser(string userId, string authorization);
 
-        Task DeleteUser(string userId);
-
+        Task DeleteUser(string userId, string authorization);
     }
 }
 
