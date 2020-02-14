@@ -30,9 +30,19 @@ namespace HealthGateway.Immunization.Models
         public string? PersonalHealthNumber { get; set; }
 
         /// <summary>
+        /// Gets or sets the patient date of birth.
+        /// </summary>
+        [JsonIgnore]        
+        public DateTime? DateOfBirth { get; set; }
+
+
+        /// <summary>
         /// Gets or sets the patient date of birth in YYYYMMDD format.
         /// </summary>
         [JsonPropertyName("dob")]
-        public string? DateOfBirth { get; set; }
+        public string? FormattedDateOfBirth {
+        get { return this.DateOfBirth?.ToString("yyyyMMdd"); }
+        set { this.DateOfBirth = DateTime.Parse(value ?? ""); }
+    }
     }
 }

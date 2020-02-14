@@ -99,7 +99,7 @@ namespace HealthGateway.Immunization.Services
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             Patient p = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
             request.PersonalHealthNumber = p.PersonalHealthNumber;
-            request.DateOfBirth = p.Birthdate.ToString("yyyyMMdd");
+            request.DateOfBirth = p.Birthdate;
             return request;
         }
     }
