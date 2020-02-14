@@ -1,6 +1,6 @@
 {
-  "name": "asp-net-core-vue-starter",
-  "short_name": "asp-net-core-vue-starter",
+  "name": "Health Gateway Admin",
+  "short_name": "HG Admin",
   "icons": [
     {
       "src": "/img/icons/android-chrome-192x192.png",
