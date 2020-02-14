@@ -46,7 +46,7 @@ namespace HealthGateway.Common.Delegates.IAM
         /// <param name="userId">The unique userId (surrogate key) of the User account in IAM system.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns></returns>
-        Task DeleteUser(string userId, string authorization);
+        Task<int> DeleteUser(string userId, string authorization);
     }
 }
 

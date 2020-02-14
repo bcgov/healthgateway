@@ -78,6 +78,8 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
         /// <inheritdoc/>
         public async Task<List<UserRepresentation>> FindUser(string username, string authorization)
         {
+            List<UserRepresentation> usersReturned;
+
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(FINDUSERURL));
 
             using (HttpClient client = this.GethttpClient(baseUri, authorization))
@@ -91,7 +93,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                         {
                             AllowTrailingCommas = true
                         };
-                        List<UserRepresentation> userList = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
+                        usersReturned = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
                     }
                     else
                     {
@@ -99,12 +101,14 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                         throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                     }
                 }
+                return usersReturned;
             }
         }
 
         /// <inheritdoc/>
         public async Task<UserRepresentation> GetUser(string userId, string authorization)
         {
+            UserRepresentation userReturned;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
 
             using (HttpClient client = this.GethttpClient(baseUri, authorization))
@@ -118,7 +122,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                         {
                             AllowTrailingCommas = true
                         };
-                        List<UserRepresentation> userList = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
+                        userReturned = JsonSerializer.Deserialize<UserRepresentation>(json, options);
                     }
                     else
                     {
@@ -126,12 +130,14 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                         throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                     }
                 }
+                return userReturned;
             }
         }
 
         /// <inheritdoc/>
-        public async Task DeleteUser(string userId, string authorization)
+        public async Task<int> DeleteUser(string userId, string authorization)
         {
+            int returnCode = 0;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
             using (HttpClient client = this.GethttpClient(baseUri, authorization))
@@ -141,17 +147,19 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                     string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
-                        var options = new JsonSerializerOptions
+                        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
                         {
                             AllowTrailingCommas = true
                         };
                     }
                     else
                     {
+                        returnCode = -1;
                         this.logger.LogError($"Error getting user '{userId}'");
                         throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
                     }
                 }
+                return returnCode;
             }
         }
     }
