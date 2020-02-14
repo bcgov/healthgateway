@@ -6,7 +6,7 @@
 
 <template>
   <v-navigation-drawer
-    v-if="isAuthenticated"
+    v-if="isAuthorized"
     id="app-drawer"
     v-model="isOpen"
     app
@@ -65,8 +65,8 @@ export default class MainNavbar extends Vue {
     isDrawerOpen
   }: any) => void;
   @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
-  @Getter("isAuthenticated", { namespace: "auth" })
-  private isAuthenticated!: boolean;
+  @Getter("isAuthorized", { namespace: "auth" })
+  private isAuthorized!: boolean;
 
   private isOpen: boolean = true;
   private drawer: boolean = false;

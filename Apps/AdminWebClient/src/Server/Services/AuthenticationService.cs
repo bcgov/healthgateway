@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Services
 {
     using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Security.Claims;
     using HealthGateway.Admin.Models;
     using Microsoft.AspNetCore.Authentication;
@@ -37,6 +38,8 @@ namespace HealthGateway.Admin.Services
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IConfiguration configuration;
 
+        private readonly string validUserRole;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
         /// </summary>
@@ -48,6 +51,7 @@ namespace HealthGateway.Admin.Services
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
+            this.validUserRole = configuration.GetSection("OpenIdConnect").GetValue<string>("UserRole");
         }
 
         /// <summary>
@@ -68,7 +72,7 @@ namespace HealthGateway.Admin.Services
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
-                authData.Token = user.FindFirstValue("access_token");
+                authData.IsAuthorized = user.Claims.Where(c => c.Type == "user_realm_roles" && c.Value == this.validUserRole).Select(c => c.Value == this.validUserRole).FirstOrDefault();
             }
 
             return authData;
