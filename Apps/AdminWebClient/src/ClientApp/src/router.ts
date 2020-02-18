@@ -24,7 +24,7 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: "/signout",
+    path: "/signoff",
     name: "Logout",
     component: LogoutView,
     meta: { requiresAuth: false }
