@@ -16,8 +16,11 @@
 namespace HealthGateway.Admin.Controllers
 {
     using HealthGateway.Admin.Services;
+    using HealthGateway.Common.Authorization.Admin;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Authentication and Authorization controller.
@@ -29,14 +32,20 @@ namespace HealthGateway.Admin.Controllers
     public class AuthenticationController : Controller
     {
         private readonly IAuthenticationService authenticationService;
+        private readonly ILogger<AuthenticationController> logger;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationController"/> class.
         /// </summary>
         /// <param name="authenticationService">The injected auth service provider.</param>
-        public AuthenticationController(IAuthenticationService authenticationService)
+        /// <param name="logger">The injected logger provider.</param>
+        /// <param name="httpContextAccessor">The injected httpContextAccessor.</param>
+        public AuthenticationController(IAuthenticationService authenticationService, ILogger<AuthenticationController> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.authenticationService = authenticationService;
+            this.logger = logger;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -61,20 +70,25 @@ namespace HealthGateway.Admin.Controllers
         ///// <param name="idpHint">A value to pass to KeyCloak to select the Identity Provider.</param>
         /// <param name="redirectPath">The redirect uri after successful authentication.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
-        [HttpGet]
-        [Route("Login/{redirectPath?}")]
-        public IActionResult Login(string? redirectPath = "/")
+        [HttpGet(AuthorizationConstants.LoginPath)]
+        public IActionResult Login()
         {
-            return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, this.authenticationService.GetAuthenticationProperties(redirectPath));
+            if (!this.HttpContext.User.Identity.IsAuthenticated)
+            {
+                this.logger.LogDebug("Issuing Challenge result");
+                return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
+            }
+
+            this.logger.LogDebug("Redirecting to dashboard");
+            string basePath = this.httpContextAccessor.HttpContext.Request.PathBase.Value;
+            return new RedirectResult($"{basePath}/");
         }
 
         /// <summary>
         /// Performs the logout of the application.
         /// </summary>
         /// <returns>A SignoutResult containing the redirect uri.</returns>
-        [HttpGet]
-        [Route("Logout")]
+        [HttpGet(AuthorizationConstants.LogoutPath)]
         public IActionResult Logout()
         {
             return this.authenticationService.Logout();
