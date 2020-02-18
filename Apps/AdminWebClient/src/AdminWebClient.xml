@@ -108,14 +108,12 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.UpdateReviewState(HealthGateway.Admin.Models.UserFeedbackView)">
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.UpdateUserFeedback(HealthGateway.Admin.Models.UserFeedbackView)">
             <summary>
             Sends email invites to the beta requets with the given ids.
             </summary>
             <returns>A list of ids of the beta requests that where successfully processed.</returns>
-            <param name="id">List of beta requests to send invites.</param>
-            <param name="version">List of beta requests to send invites.</param>
-            <param name="isReviewed">List of beta requests to send invites.</param>
+            <param name="feedback">user feedback to update.</param>
             <response code="200">Returns the beta requests ids that where invited.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
