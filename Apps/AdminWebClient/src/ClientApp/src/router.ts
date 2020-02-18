@@ -18,13 +18,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: "/login",
+    path: "/signin",
     name: "Login",
     component: LoginView,
     meta: { requiresAuth: false }
   },
   {
-    path: "/logout",
+    path: "/signout",
     name: "Logout",
     component: LogoutView,
     meta: { requiresAuth: false }
@@ -68,7 +68,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     let isAuthenticated = store.getters["auth/isAuthenticated"];
     if (!isAuthenticated) {
-      next({ path: "/login", query: { redirect: to.path } });
+      next({ path: "/signin", query: { redirect: to.path } });
     } else {
       let isAuthorized = store.getters["auth/isAuthorized"];
       if (!isAuthorized) {

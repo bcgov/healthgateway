@@ -36,7 +36,7 @@ a {
           v-if="isLoggedIn"
           v-ripple
           class="toolbar-items"
-          to="/logout"
+          to="/signout"
           color="tertiary"
         >
           Logout
