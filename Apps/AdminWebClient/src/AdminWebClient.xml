@@ -9,11 +9,13 @@
             The Authentication and Authorization controller.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.#ctor(HealthGateway.Admin.Services.IAuthenticationService)">
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.#ctor(HealthGateway.Admin.Services.IAuthenticationService,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Controllers.AuthenticationController},Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.AuthenticationController"/> class.
             </summary>
             <param name="authenticationService">The injected auth service provider.</param>
+            <param name="logger">The injected logger provider.</param>
+            <param name="httpContextAccessor">The injected httpContextAccessor.</param>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.GetAuthenticationData">
             <summary>
@@ -25,7 +27,7 @@
             </remarks>
             <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Login(System.String)">
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Login">
             <param name="redirectPath">The redirect uri after successful authentication.</param>
             <returns>An IActionResult which results in a redirect.</returns>
         </member>
@@ -460,6 +462,19 @@
             This method gets called by the runtime. Use this method to add services to the container.
             </summary>
             <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The passed in Application Builder.</param>
+            <param name="env">The passed in Environment.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.ConfigureAuthenticationService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This sets up the OIDC authentication for Hangfire.
+            </summary>
+            <param name="services">The passed in IServiceCollection.</param>
         </member>
     </members>
 </doc>

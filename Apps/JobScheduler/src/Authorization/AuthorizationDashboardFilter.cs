@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler.Authorization
 {
     using System.Security.Claims;
     using Hangfire.Dashboard;
+    using HealthGateway.Common.Authorization.Admin;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
