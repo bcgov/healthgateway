@@ -20,7 +20,7 @@
               </template>
               <template v-slot:item.isReviewed="{ item }">
                 <td>
-                  <v-btn class="mx-2" dark small @click="markReviewed(item)">
+                  <v-btn class="mx-2" dark small @click="toggleReviewed(item)">
                     <v-icon v-if="item.isReviewed" color="green" dark
                       >fa-check</v-icon
                     >
@@ -126,8 +126,9 @@ export default class FeedbackView extends Vue {
 
   private toggleReviewed(feedback: UserFeedback): void {
     this.isLoading = true;
+    feedback.isReviewed = !feedback.isReviewed;
     this.userFeedbackService
-      .toggleReviewed(feedback.id, feedback.version, !feedback.isReviewed)
+      .toggleReviewed(feedback)
       .then(sucessfulInvites => {
         this.showFeedback = true;
         this.bannerFeedback = {

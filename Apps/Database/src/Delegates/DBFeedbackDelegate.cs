@@ -16,7 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
-    using System.Diagnostics.Contracts;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
@@ -66,31 +67,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserFeedback> UpdateUserFeedback(UserFeedback feedback)
+        public void UpdateUserFeedback(UserFeedback feedback)
         {
-            this.logger.LogTrace($"Updating user feedback in DB... {JsonSerializer.Serialize(feedback)}");
-            DBResult<UserFeedback> result = this.GetUserFeedback(feedback.Id);
-            if (result.Status == DBStatusCode.Read)
-            {
-                // Copy certain attributes into the fetched User Feedback
-                result.Payload.IsSatisfied = feedback.IsSatisfied;
-                result.Payload.Comment = feedback.Comment;
-                result.Payload.UpdatedBy = feedback.UpdatedBy;
-                result.Payload.Version = feedback.Version;
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    result.Status = DBStatusCode.Concurrency;
-                    result.Message = e.Message;
-                }
-            }
-
-            this.logger.LogDebug($"Finished updating user feedback in DB. {JsonSerializer.Serialize(result)}");
-            return result;
+            this.logger.LogTrace($"Updating the user feedback in DB... {feedback}");
+            this.dbContext.Update<UserFeedback>(feedback);
+            this.dbContext.SaveChanges();
+            this.logger.LogDebug($"Finished updating feedback in DB. {JsonSerializer.Serialize(feedback)}");
         }
 
         /// <inheritdoc />
@@ -99,6 +81,18 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
             UserFeedback feedback = this.dbContext.UserFeedback.Find(feedbackId);
             DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+            result.Payload = feedback;
+            result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<List<UserFeedback>> GetAllUserFeedbackEntries()
+        {
+            this.logger.LogTrace($"Getting all user feedback entries");
+            List<UserFeedback> feedback = this.dbContext.UserFeedback.OrderBy(f => f.CreatedDateTime).ToList();
+            DBResult<List<UserFeedback>> result = new DBResult<List<UserFeedback>>();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");

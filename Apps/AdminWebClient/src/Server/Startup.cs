@@ -83,11 +83,13 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
+            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
 
             // Add delegates
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
+            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
 
             // Configure SPA 
             services.AddControllersWithViews();
