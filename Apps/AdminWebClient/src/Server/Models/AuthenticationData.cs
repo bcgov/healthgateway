@@ -29,6 +29,11 @@ namespace HealthGateway.Admin.Services
         public bool IsAuthenticated { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the client has been authorized for this app or not.
+        /// </summary>
+        public bool IsAuthorized { get; set; }
+
+        /// <summary>
         /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
         /// </summary>
         public string Token { get; set; } = "";

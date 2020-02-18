@@ -6,6 +6,7 @@ import DashboardView from "@/views/Dashboard.vue";
 import BetaQueueView from "@/views/BetaQueue.vue";
 import VueRouter from "vue-router";
 import FeedbackView from "@/views/Feedback.vue";
+import UnauthorizedView from "@/views/Unauthorized.vue";
 
 Vue.use(VueRouter);
 
@@ -48,6 +49,12 @@ const routes = [
     component: FeedbackView,
     meta: { requiresAuth: true }
   },
+  {
+    path: "/unauthorized",
+    name: "Unauthorized",
+    component: UnauthorizedView,
+    meta: { requiresAuth: false }
+  },
   { path: "*", redirect: "/" }
 ];
 
@@ -63,7 +70,12 @@ router.beforeEach(async (to, from, next) => {
     if (!isAuthenticated) {
       next({ path: "/login", query: { redirect: to.path } });
     } else {
-      next();
+      let isAuthorized = store.getters["auth/isAuthorized"];
+      if (!isAuthorized) {
+        next({ path: "/unauthorized" });
+      } else {
+        next();
+      }
     }
   } else {
     next();

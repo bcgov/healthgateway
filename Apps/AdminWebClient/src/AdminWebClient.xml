@@ -294,6 +294,11 @@
             Token and User properties should only be accessed if this value is true.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Services.AuthenticationData.IsAuthorized">
+            <summary>
+            Gets or sets a value indicating whether the client has been authorized for this app or not.
+            </summary>
+        </member>
         <member name="P:HealthGateway.Admin.Services.AuthenticationData.Token">
             <summary>
             Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.

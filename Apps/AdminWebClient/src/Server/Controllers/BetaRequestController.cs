@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize]
+    [Authorize(Roles = "AdminUser")]
     public class BetaRequestController
     {
         private readonly IBetaRequestService betaRequestService;
