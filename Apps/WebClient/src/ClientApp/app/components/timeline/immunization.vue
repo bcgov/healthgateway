@@ -56,65 +56,7 @@ $radius: 15px;
       <b-col>
         <b-row>
           <b-col>
-            <b-btn
-              v-b-toggle="'entryDetails-' + index + '-' + datekey"
-              variant="link"
-              class="detailsButton"
-              @click="toggleDetails(entry)"
-            >
-              <span class="when-opened">
-                <font-awesome-icon
-                  icon="chevron-down"
-                  aria-hidden="true"
-                ></font-awesome-icon
-              ></span>
-              <span class="when-closed">
-                <font-awesome-icon
-                  icon="chevron-up"
-                  aria-hidden="true"
-                ></font-awesome-icon
-              ></span>
-              <span v-if="detailsVisible">Hide Details</span>
-              <span v-else>View Details</span>
-            </b-btn>
-            <b-collapse :id="'entryDetails-' + index + '-' + datekey">
-              <div>
-                <div class="detailSection">
-                  <div>
-                    <strong>Status:</strong>
-                    {{ entry.immunization.status }}
-                  </div>
-                </div>
-                <div class="detailSection">
-                  <div>
-                    <strong>Agents</strong>
-                  </div>
-                  <div
-                    v-for="(agent, i) in entry.immunization.agents"
-                    :key="i"
-                    class="detailSection ml-4"
-                  >
-                    <div>
-                      <strong>Code:</strong>
-                      {{ agent.code }}
-                    </div>
-                    <div>
-                      <strong>Name:</strong>
-                      {{ agent.display }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div v-if="hasErrors" class="pt-1">
-                <b-alert :show="hasErrors" variant="danger">
-                  <h5>Error</h5>
-                  <span
-                    >An unexpected error occured while processing the
-                    request.</span
-                  >
-                </b-alert>
-              </div>
-            </b-collapse>
+            {{ entry.immunization.agents }}
           </b-col>
         </b-row>
       </b-col>
@@ -137,15 +79,8 @@ export default class ImmunizationTimelineComponent extends Vue {
   private isLoading: boolean = false;
   private hasErrors: boolean = false;
 
-  private detailsVisible = false;
-
   private get entryIcon(): IconDefinition {
     return faSyringe;
-  }
-
-  private toggleDetails(immunizationEntry: ImmunizationTimelineEntry): void {
-    this.detailsVisible = !this.detailsVisible;
-    this.hasErrors = false;
   }
 }
 </script>

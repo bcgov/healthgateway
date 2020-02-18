@@ -11,11 +11,9 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
   }
 
   public filterApplies(filterText: string): boolean {
-    var agentNames = this.immunization.agents.map(function(agent) {
-      return agent.display;
-    });
-
-    var text = (this.immunization.name! || "") + (agentNames.toString() || "");
+    var text =
+      (this.immunization.name! || "") +
+      (this.immunization.agents.toString() || "");
     text = text.toUpperCase();
     return text.includes(filterText.toUpperCase());
   }
@@ -24,28 +22,17 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 class ImmunizationViewModel {
   public name?: string;
   public status?: string;
-  public agents: ImmunizationAgentViewModel[];
+  public agents: string;
   public occurrenceDateTime: Date;
 
   constructor(model: ImmunizationData) {
     this.name = model.name;
     this.status = model.status;
     this.occurrenceDateTime = model.occurrenceDateTime;
-    this.agents = [];
-
-    for (let index = 0; index < model.immunizationAgents.length; index++) {
-      const agent = model.immunizationAgents[index];
-
-      this.agents.push(new ImmunizationAgentViewModel(agent));
-    }
-  }
-}
-
-class ImmunizationAgentViewModel {
-  public code?: string;
-  public display?: string;
-  constructor(model: ImmunizationAgent) {
-    this.code = model.code;
-    this.display = model.name;
+    this.agents = model.immunizationAgents
+      .map(function(agent) {
+        return agent.name;
+      })
+      .join(",");
   }
 }

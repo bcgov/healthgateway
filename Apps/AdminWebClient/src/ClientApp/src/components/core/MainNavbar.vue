@@ -74,7 +74,7 @@ export default class MainNavbar extends Vue {
   private color: string = "success";
 
   private logo: string = "favicon.ico";
-  private image: string = "/assets/images/background.jpg";
+  private image: string = "./assets/images/background.jpg";
 
   private items = [
     {
