@@ -16,12 +16,14 @@
 namespace HealthGateway.AdminWebClient
 {
     using System.IdentityModel.Tokens.Jwt;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -100,21 +102,24 @@ namespace HealthGateway.AdminWebClient
             JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app">The passed in Application Builder.</param>
+        /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
-            this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
-
+            this.startupConfig.UseHttp(app);
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {
-                this.logger.LogInformation("ENVIRONENT is Development");
+                this.logger.LogInformation("Environment is Development");
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -155,15 +160,25 @@ namespace HealthGateway.AdminWebClient
             });
         }
 
+        /// <summary>
+        /// This sets up the OIDC authentication for Hangfire.
+        /// </summary>
+        /// <param name="services">The passed in IServiceCollection.</param>
         private void ConfigureAuthenticationService(IServiceCollection services)
         {
+            string basePath = this.GetBasePath();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = AuthorizationConstants.CookieName;
+                options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+            })
             .AddOpenIdConnect(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -205,13 +220,26 @@ namespace HealthGateway.AdminWebClient
                     OnAuthenticationFailed = c =>
                     {
                         c.HandleResponse();
-                        c.Response.StatusCode = 500;
+                        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
                         c.Response.ContentType = "text/plain";
                         this.logger.LogError(c.Exception.ToString());
                         return c.Response.WriteAsync(c.Exception.ToString());
                     },
                 };
             });
+        }
+
+        private string GetBasePath()
+        {
+            string basePath = string.Empty;
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            if (section.GetValue<bool>("Enabled", false))
+            {
+                basePath = section.GetValue<string>("BasePath");
+            }
+
+            this.logger.LogDebug($"JobScheduler basePath = {basePath}");
+            return basePath;
         }
     }
 }

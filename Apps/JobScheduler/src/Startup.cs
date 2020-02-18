@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
 namespace HealthGateway.JobScheduler
 {
     using System;
-    using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
@@ -39,6 +39,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
+    using HealthGateway.Common.Authorization.Admin;
 
     /// <summary>
     /// The startup class.
