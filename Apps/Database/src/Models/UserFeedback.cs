@@ -28,6 +28,8 @@ namespace HealthGateway.Database.Models
 
         public bool IsSatisfied { get; set; }
 
+        public bool IsReviewed { get; set; }
+
         [MaxLength(500)]
         public string? Comment { get; set; }
     }

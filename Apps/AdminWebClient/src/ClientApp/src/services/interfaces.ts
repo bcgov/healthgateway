@@ -26,11 +26,7 @@ export interface IBetaRequestService {
 export interface IUserFeedbackService {
   initialize(http: IHttpDelegate): void;
   getFeedbackList(): Promise<UserFeedback[]>;
-  toggleReviewed(
-    id: string,
-    version: string,
-    isReviewed: boolean
-  ): Promise<boolean>;
+  toggleReviewed(feedback: UserFeedback): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

@@ -28,22 +28,22 @@ export class RestUserFeedbackService implements IUserFeedbackService {
     });
   }
 
-  public toggleReviewed(
-    id: string,
-    version: string,
-    isReviewed: boolean
-  ): Promise<boolean> {
+  public toggleReviewed(feedback: UserFeedback): Promise<boolean> {
     return new Promise((resolve, reject) => {
       let headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";
       this.http
-        .patch<RequestResult<boolean>>(
+        .patch<boolean>(
           `${this.USER_FEEDBACK_BASE_URI}`,
-          JSON.stringify({ id, version, isReviewed }),
+          JSON.stringify(feedback),
           headers
         )
         .then(requestResult => {
-          this.handleResult(requestResult, resolve, reject);
+          if (requestResult) {
+            resolve(true);
+          } else {
+            reject("Error toggling user feedback");
+          }
         })
         .catch(err => {
           console.log(err);

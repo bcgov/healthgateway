@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -37,8 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// UpdatedDateTime will overridden by our framework.
         /// </summary>
         /// <param name="feedback">The feedback to update.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedback> UpdateUserFeedback(UserFeedback feedback);
+        void UpdateUserFeedback(UserFeedback feedback);
 
         /// <summary>
         /// Fetches the UserFeedback from the database.
@@ -46,5 +46,11 @@ namespace HealthGateway.Database.Delegates
         /// <param name="feedbackId">The unique feedback id to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<UserFeedback> GetUserFeedback(Guid feedbackId);
+
+        /// <summary>
+        /// Fetches the UserFeedback from the database.
+        /// </summary>
+        /// <returns>A DB result which encapsulates the return objects and status.</returns>
+        DBResult<List<UserFeedback>> GetAllUserFeedbackEntries();
     }
 }

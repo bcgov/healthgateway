@@ -13,38 +13,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models
+namespace HealthGateway.Admin.Services
 {
-    using System;
+    using System.Collections.Generic;
+    using HealthGateway.Admin.Models;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Model that provides a user representation of a user feedback.
+    /// Service that provides functionality to access and create requests for beta access.
     /// </summary>
-    public class UserFeedback
+    public interface IUserFeedbackService
     {
         /// <summary>
-        /// Gets or sets the user feedback id.
+        /// Retrieves the beta requests where the user does not have an invite yet.
         /// </summary>
-        public string Id { get; set; } = null!;
+        /// <returns>returns the beta request for the user if found.</returns>
+        RequestResult<List<UserFeedbackView>> GetUserFeedback();
 
         /// <summary>
-        /// Gets or sets the feedback comments.
+        /// Updates the user feedback.
         /// </summary>
-        public string Comments { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the value indicating whether the user is satisfied or not.
-        /// </summary>
-        public bool IsSatisfied { get; set; } = false;
-
-        /// <summary>
-        /// Gets or sets the value indicating whether the feedback is reviewed or not.
-        /// </summary>
-        public bool IsReviewed { get; set; } = false;
-
-        /// <summary>
-        /// Gets or sets the date when the feedback was created.
-        /// </summary>
-        public DateTime CreatedDateTime { get; set; }
+        /// <param name="feedback">The user feedback to update.</param>
+        /// <returns>True if the call was success.</returns>
+        bool UpdateFeedbackReview(UserFeedbackView feedback);
     }
 }

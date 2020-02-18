@@ -89,11 +89,11 @@
             Web API to handle user feedback review.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.#ctor">
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.#ctor(HealthGateway.Admin.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.UserFeedbackController"/> class.
             </summary>
-            <param name="betaRequestService">The injected user email service.</param>
+            <param name="feedbackService">The injected user feedback service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
             <param name="authorizationService">The injected authorization service.</param>
         </member>
@@ -104,6 +104,18 @@
             <returns>The list of user feedbacks.</returns>
             <response code="200">Returns the list of user feedbacks.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.UpdateReviewState(HealthGateway.Admin.Models.UserFeedbackView)">
+            <summary>
+            Sends email invites to the beta requets with the given ids.
+            </summary>
+            <returns>A list of ids of the beta requests that where successfully processed.</returns>
+            <param name="id">List of beta requests to send invites.</param>
+            <param name="version">List of beta requests to send invites.</param>
+            <param name="isReviewed">List of beta requests to send invites.</param>
+            <response code="200">Returns the beta requests ids that where invited.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
         <member name="T:HealthGateway.Admin.Models.AdminConfiguration">
@@ -233,35 +245,54 @@
             <param name="models">List of beta request models.</param>
             <returns>A list of UserBetaRequest.</returns>
         </member>
-        <member name="T:HealthGateway.Admin.Models.UserFeedback">
+        <member name="T:HealthGateway.Admin.Models.UserFeedbackView">
             <summary>
             Model that provides a user representation of a user feedback.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.UserFeedback.Id">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Id">
             <summary>
             Gets or sets the user feedback id.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.UserFeedback.Comments">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Comment">
             <summary>
             Gets or sets the feedback comments.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.UserFeedback.IsSatisfied">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.IsSatisfied">
             <summary>
             Gets or sets the value indicating whether the user is satisfied or not.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.UserFeedback.IsReviewed">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.IsReviewed">
             <summary>
             Gets or sets the value indicating whether the feedback is reviewed or not.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.UserFeedback.CreatedDateTime">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.CreatedDateTime">
             <summary>
             Gets or sets the date when the feedback was created.
             </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Version">
+            <summary>
+            Gets or sets the version of the resource.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedback)">
+            <summary>
+            Constructs a UserFeedbackView from a UserFeedback model.
+            </summary>
+            <param name="model">A user feedback request models.</param>
+            <returns>A new UserFeedbackView.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedback})">
+            <summary>
+            Constructs a List of UserFeedbackView from a list of UserFeedback models.
+            </summary>
+            <param name="models">List of user feedback models.</param>
+            <returns>A list of UserFeedbackView.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.UserProfile">
             <summary>
@@ -429,6 +460,40 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.IUserFeedbackService">
+            <summary>
+            Service that provides functionality to access and create requests for beta access.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.GetUserFeedback">
+            <summary>
+            Retrieves the beta requests where the user does not have an invite yet.
+            </summary>
+            <returns>returns the beta request for the user if found.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.UpdateFeedbackReview(HealthGateway.Admin.Models.UserFeedbackView)">
+            <summary>
+            Updates the user feedback.
+            </summary>
+            <param name="feedback">The user feedback to update.</param>
+            <returns>True if the call was success.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.UserFeedbackService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserFeedbackService},HealthGateway.Database.Delegates.IFeedbackDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.BetaRequestService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="feedbackDelegate">The feedeback delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.GetUserFeedback">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.UpdateFeedbackReview(HealthGateway.Admin.Models.UserFeedbackView)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.AdminWebClient.Program">
             <summary>
