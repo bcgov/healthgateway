@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.JobScheduler.Authorization
+namespace HealthGateway.Common.Authorization.Admin
 {
     /// <summary>
     /// A class with constants representing the various authorization settings not needing to be comfigurable.
@@ -33,6 +33,6 @@ namespace HealthGateway.JobScheduler.Authorization
         /// <summary>
         /// Represents the name of the auth cookie.
         /// </summary>
-        public const string CookieName = "HealthGateway_JobScheduler";
+        public const string CookieName = "HealthGatewayAdmin";
     }
 }
