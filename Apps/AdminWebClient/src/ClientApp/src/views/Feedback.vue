@@ -78,7 +78,7 @@ export default class FeedbackView extends Vue {
     },
     {
       text: "Comments",
-      value: "comments",
+      value: "comment",
       width: "65%"
     },
     {
