@@ -113,8 +113,8 @@ namespace HealthGateway.AdminWebClient
         {
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
