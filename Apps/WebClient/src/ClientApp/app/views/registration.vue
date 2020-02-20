@@ -286,7 +286,6 @@ import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
-//import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
 import { WebClientConfiguration } from "@/models/configData";
 import BetaRequest from "@/models/betaRequest";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -307,7 +306,6 @@ export default class RegistrationComponent extends Vue {
   @Prop() inviteKey?: string;
   @Prop() inviteEmail?: string;
 
-  //private readonly termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";

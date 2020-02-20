@@ -23,7 +23,7 @@ import { RestMedicationService } from "@/services/restMedicationService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserEmailService } from "@/services/restUserEmailService";
-import { RestBetaRequestService } from "../services/restBetaRequestService";
+import { RestBetaRequestService } from "@/services/restBetaRequestService";
 
 let container = new Container();
 container
