@@ -7,6 +7,12 @@ export default interface UserProfile {
 
   // The user email.
   email: string;
+
+  // Flag to know if the terms of service have been updated since last login
+  hasTermsOfServiceUpdated: boolean;
+
+  // Datetime of the user's last login
+  lastLoginDate: Date;
 }
 
 export interface CreateUserRequest {

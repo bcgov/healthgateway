@@ -36,10 +36,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IUserEmailService } from "@/services/interfaces";
 import { Action, Getter } from "vuex-class";
-import container from "@/inversify.config";
+import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";

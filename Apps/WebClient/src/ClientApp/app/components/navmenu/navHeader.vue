@@ -82,8 +82,8 @@ import { Prop, Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
 import { IAuthenticationService } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {

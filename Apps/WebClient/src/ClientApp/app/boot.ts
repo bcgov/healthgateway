@@ -6,7 +6,7 @@ import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
-import "@/registerComponentHooks";
+import "@/plugins/registerComponentHooks";
 
 const App = () => import(/* webpackChunkName: "app" */ "@/app.vue");
 import router from "@/router";
@@ -23,10 +23,8 @@ import {
   IUserEmailService,
   IBetaRequestService
 } from "@/services/interfaces";
-import SERVICE_IDENTIFIER, {
-  DELEGATE_IDENTIFIER
-} from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 

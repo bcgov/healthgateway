@@ -32,9 +32,18 @@ input {
 }
 </style>
 <template>
-  <b-container>
+  <b-container class="py-5">
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    <div v-if="!isLoading" class="py-5">
+    <b-row>
+      <b-col>
+        <b-alert :show="hasErrors" dismissible variant="danger">
+          <h4>Error</h4>
+          <p>An unexpected error occured while processing the request:</p>
+          <span>{{ errorMessage }}</span>
+        </b-alert>
+      </b-col>
+    </b-row>
+    <div v-if="!isLoading && termsOfService !== ''">
       <b-row v-if="isRegistrationClosed">
         <b-col>
           <div id="pageTitle">
@@ -50,11 +59,6 @@ input {
       </b-row>
       <b-row v-else-if="isRegistrationInviteOnly && !inviteKey">
         <b-col>
-          <b-alert :show="hasErrors" dismissible variant="danger">
-            <h4>Error</h4>
-            <p>An unexpected error occured while processing the request:</p>
-            <span>{{ errorMessage }}</span>
-          </b-alert>
           <div id="pageTitle">
             <h1 id="Subject">
               Enter your email to join the waitlist
@@ -174,11 +178,6 @@ input {
       <b-form v-else ref="registrationForm" @submit.prevent="onSubmit">
         <b-row class="my-3">
           <b-col>
-            <b-alert :show="hasErrors" dismissible variant="danger">
-              <h4>Error</h4>
-              <p>An unexpected error occured while processing the request:</p>
-              <span>{{ errorMessage }}</span>
-            </b-alert>
             <div id="pageTitle">
               <h1 id="Subject">
                 Terms of Service
@@ -280,14 +279,14 @@ import {
   IAuthenticationService,
   IBetaRequestService
 } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import { required, requiredIf, sameAs, email } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
-import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
+//import termsAndConditionsHTML from "@/assets/docs/termsAndConditions.html";
 import { WebClientConfiguration } from "@/models/configData";
 import BetaRequest from "@/models/betaRequest";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -308,7 +307,7 @@ export default class RegistrationComponent extends Vue {
   @Prop() inviteKey?: string;
   @Prop() inviteEmail?: string;
 
-  private readonly termsOfService: string = termsAndConditionsHTML;
+  //private readonly termsOfService: string = termsAndConditionsHTML;
   private emailOptout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
@@ -317,7 +316,8 @@ export default class RegistrationComponent extends Vue {
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
   private submitStatus: string = "";
-  private isLoading: boolean = true;
+  private loadingUserData: boolean = true;
+  private loadingTermsOfService: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
 
@@ -328,6 +328,8 @@ export default class RegistrationComponent extends Vue {
   private waitlistEmailConfirmation: string = "";
 
   private waitlistedSuccessfully = false;
+
+  private termsOfService: string = "";
 
   mounted() {
     this.betaRequestService = container.get(
@@ -347,6 +349,7 @@ export default class RegistrationComponent extends Vue {
     );
 
     // Load the user name
+    this.loadingUserData = true;
     var authenticationService: IAuthenticationService = container.get(
       SERVICE_IDENTIFIER.AuthenticationService
     );
@@ -373,16 +376,18 @@ export default class RegistrationComponent extends Vue {
               this.hasErrors = true;
             })
             .finally(() => {
-              this.isLoading = false;
+              this.loadingUserData = false;
             });
         } else {
-          this.isLoading = false;
+          this.loadingUserData = false;
         }
       })
       .catch(() => {
         this.hasErrors = true;
-        this.isLoading = false;
+        this.loadingUserData = false;
       });
+
+    this.loadTermsOfService();
   }
 
   validations() {
@@ -404,6 +409,10 @@ export default class RegistrationComponent extends Vue {
     };
   }
 
+  get isLoading(): boolean {
+    return this.loadingTermsOfService || this.loadingUserData;
+  }
+
   get fullName(): string {
     return this.oidcUser.given_name + " " + this.oidcUser.family_name;
   }
@@ -420,6 +429,23 @@ export default class RegistrationComponent extends Vue {
       return !!this.inviteEmail;
     }
     return false;
+  }
+
+  private loadTermsOfService(): void {
+    this.loadingTermsOfService = true;
+    this.userProfileService
+      .getTermsOfService()
+      .then(result => {
+        console.log(result);
+        this.termsOfService = result.content;
+      })
+      .catch(err => {
+        console.log(err);
+        this.handleError("Please refresh your browser.");
+      })
+      .finally(() => {
+        this.loadingTermsOfService = false;
+      });
   }
 
   private isValid(param: any): boolean | undefined {
@@ -440,7 +466,7 @@ export default class RegistrationComponent extends Vue {
     } else {
       this.submitStatus = "PENDING";
 
-      this.isLoading = true;
+      this.loadingTermsOfService = true;
       this.userProfileService
         .createProfile({
           profile: {
@@ -463,12 +489,10 @@ export default class RegistrationComponent extends Vue {
           );
         })
         .catch(err => {
-          this.hasErrors = true;
-          this.errorMessage = err;
-          console.log(err);
+          this.handleError(err);
         })
         .finally(() => {
-          this.isLoading = false;
+          this.loadingTermsOfService = false;
         });
     }
 
@@ -522,6 +546,12 @@ export default class RegistrationComponent extends Vue {
     this.email = this.waitlistTempEmail;
     this.waitlistEmailConfirmation = "";
     this.$v.$reset();
+  }
+
+  private handleError(error: string): void {
+    this.hasErrors = true;
+    this.errorMessage = error;
+    console.log(error);
   }
 }
 </script>

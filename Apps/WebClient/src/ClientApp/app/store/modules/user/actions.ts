@@ -5,8 +5,8 @@ import {
   IUserProfileService,
   IUserEmailService
 } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";

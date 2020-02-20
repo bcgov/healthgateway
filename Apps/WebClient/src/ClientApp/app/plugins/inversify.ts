@@ -1,4 +1,4 @@
-const SERVICE_IDENTIFIER = {
+export const SERVICE_IDENTIFIER = {
   ConfigService: Symbol.for("ConfigService"),
   AuthenticationService: Symbol.for("AuthService"),
   ImmunizationService: Symbol.for("ImmunizationService"),
@@ -13,5 +13,3 @@ const SERVICE_IDENTIFIER = {
 export const DELEGATE_IDENTIFIER = {
   HttpDelegate: Symbol.for("HttpDelegate")
 };
-
-export default SERVICE_IDENTIFIER;

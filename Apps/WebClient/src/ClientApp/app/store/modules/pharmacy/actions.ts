@@ -1,11 +1,10 @@
 import { ActionTree, Commit } from "vuex";
 
 import { IMedicationService } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { RootState, PharmacyState } from "@/models/storeState";
 import Pharmacy from "@/models/pharmacy";
-import { ResultType } from "@/constants/resulttype";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);

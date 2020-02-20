@@ -26,6 +26,11 @@ export const mutations: MutationTree<UserState> = {
       "acceptedTermsOfService",
       userProfile ? userProfile.acceptedTermsOfService : false
     );
+    Vue.set(
+      state.user,
+      "hasTermsOfServiceUpdated",
+      userProfile ? userProfile.hasTermsOfServiceUpdated : false
+    );
     state.error = false;
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;
