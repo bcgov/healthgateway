@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Delegates.IAM
         /// Look up a user by username.
         /// </summary>
         /// <param name="username">The username of the User account in IAM system.</param>
-        /// <param name="authorization">Authorization for the call.</param>
+        /// <param name="authorization">Authorization JWT for the call.</param>
         /// <returns>A candidate result list of UserRepresentation objects.</returns>
         Task<List<UserRepresentation>> FindUser(string username, string authorization);
 

@@ -47,12 +47,17 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
 
-        private HttpClient GethttpClient(Uri baseUri, string authorization)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserDelegate"/> class.
+        /// </summary>
+        /// <param name="logger">The injected logger provider.</param>
+        /// <param name="httpClientService">injected HTTP client service.</param>
+        /// <param name="configuration">Injected configuration.</param>        private HttpClient GethttpClient(Uri baseUri, string base64BearerToken)
         {
             using (HttpClient _client = this.httpClientService.CreateDefaultHttpClient())
             {
                 _client.DefaultRequestHeaders.Accept.Clear();
-                _client.DefaultRequestHeaders.Add("Authorization", authorization);
+                _client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + base64BearerToken);
                 _client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 _client.BaseAddress = baseUri;
@@ -135,12 +140,12 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
         }
 
         /// <inheritdoc/>
-        public async Task<int> DeleteUser(string userId, string authorization)
+        public async Task<int> DeleteUser(string userId, string base64BearerToken)
         {
             int returnCode = 0;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
-            using (HttpClient client = this.GethttpClient(baseUri, authorization))
+            using (HttpClient client = this.GethttpClient(baseUri, base64BearerToken))
             {
                 using (HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true))
                 {
