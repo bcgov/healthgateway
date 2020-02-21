@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
@@ -41,36 +42,9 @@ namespace HealthGateway.Database.Context
         public GatewayDbContext(DbContextOptions<GatewayDbContext> options)
             : base(options)
         {
-            Assembly? assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
-            if (assembly != null)
-            {
-                Stream? resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
-                if (resourceStream != null)
-                {
-                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                    {
-                        this.emailValidationTemplate = reader.ReadToEnd();
-                    }
-                }
-
-                resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
-                if (resourceStream != null)
-                {
-                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                    {
-                        this.emailInviteTemplate = reader.ReadToEnd();
-                    }
-                }
-
-                resourceStream = assembly.GetManifestResourceStream("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html");
-                if (resourceStream != null)
-                {
-                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                    {
-                        this.emailBetaConfirmationTemplate = reader.ReadToEnd();
-                    }
-                }
-            }
+            this.emailValidationTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
+            this.emailInviteTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
+            this.emailBetaConfirmationTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html");
         }
 
 #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
@@ -94,6 +68,7 @@ namespace HealthGateway.Database.Context
         public DbSet<UserProfile> UserProfile { get; set; } = null!;
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
         public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
+        public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -158,10 +133,32 @@ namespace HealthGateway.Database.Context
                     .HasPrincipalKey(k => k.ProgramCode)
                     .HasForeignKey(k => k.ProgramCode);
 
+            // Create Foreign keys for Legal Agreements
+            modelBuilder.Entity<LegalAgreement>()
+                .HasOne<LegalAgreementTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.LegalAgreementCode)
+                .HasForeignKey(k => k.LegalAgreementCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
             this.SeedAuditTransactionResults(modelBuilder);
+            this.SeedLegalAgreements(modelBuilder);
+        }
+
+        /// <summary>
+        /// Reads a resource file into a string.
+        /// </summary>
+        /// <param name="resource">The fully qualified resource to read ie "HealthGateway.Database.Assets.Legal.TermsOfService.txt".</param>
+        /// <returns>The contents of the file read.</returns>
+        private static string ReadResource(string resource)
+        {
+            Assembly? assembly = Assembly.GetAssembly(typeof(GatewayDbContext));
+            Stream? resourceStream = assembly!.GetManifestResourceStream(resource);
+            using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
+            return reader.ReadToEnd();
         }
 
         private void SeedAuditTransactionResults(ModelBuilder modelBuilder)
@@ -412,6 +409,36 @@ namespace HealthGateway.Database.Context
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Legal Agreement types and the agreements.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedLegalAgreements(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<LegalAgreementTypeCode>().HasData(
+                new LegalAgreementTypeCode
+                {
+                    LegalAgreementCode = AgreementType.TermsofService,
+                    Description = "Terms of Service",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+            modelBuilder.Entity<LegalAgreement>().HasData(
+                new LegalAgreement // Terms of Service as of Launch
+                {
+                    Id = Guid.Parse("f5acf1de-2f5f-431e-955d-a837d5854182"),
+                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20191206.html"),
+                    EffectiveDate = Convert.ToDateTime("2019/12/06", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
