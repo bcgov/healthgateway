@@ -1,8 +1,8 @@
 import { ActionTree, Commit } from "vuex";
 
 import { IConfigService } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { RootState, ConfigState } from "@/models/storeState";
 import { ExternalConfiguration } from "@/models/configData";
 

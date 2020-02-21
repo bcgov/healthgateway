@@ -14,6 +14,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
+import { TermsOfService } from "@/models/termsOfService";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -61,6 +62,7 @@ export interface IUserProfileService {
   initialize(http: IHttpDelegate): void;
   createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
   getProfile(hdid: string): Promise<UserProfile>;
+  getTermsOfService(): Promise<TermsOfService>;
 }
 
 export interface IUserFeedbackService {

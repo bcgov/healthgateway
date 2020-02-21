@@ -3,7 +3,7 @@ import Vue from "vue";
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
-import { SnowplowWindow } from "@/extensions";
+import { SnowplowWindow } from "@/plugins/extensions";
 declare let window: SnowplowWindow;
 
 const ProfileComponent = () =>

@@ -157,8 +157,8 @@ import {
   IMedicationService,
   IImmunizationService
 } from "@/services/interfaces";
-import container from "@/inversify.config";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
