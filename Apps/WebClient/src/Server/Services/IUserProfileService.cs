@@ -30,7 +30,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrappeed user profile.</returns>
-        RequestResult<UserProfile> GetUserProfile(string hdid);
+        RequestResult<UserProfileModel> GetUserProfile(string hdid);
 
         /// <summary>
         /// Saves the user profile to the database.
@@ -38,6 +38,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfile> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri);
+        RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri);
+
+        /// <summary>
+        /// Gets the most recent updated terms of service.
+        /// </summary>
+        /// <returns>The wrapped terms of service.</returns>
+        RequestResult<TermsOfServiceModel> GetLastTermsOfService();
     }
 }
