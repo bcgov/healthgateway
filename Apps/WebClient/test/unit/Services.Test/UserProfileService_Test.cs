@@ -48,6 +48,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
+            expected.HasTermsOfServiceUpdated = true;
 
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
@@ -60,6 +61,11 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
 
+            Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new Mock<ILegalAgreementDelegate>();
+            legalAgreementDelegateMock
+                .Setup(s => s.GetActiveByAgreementType(Database.Constant.AgreementType.TermsofService))
+                .Returns(new DBResult<LegalAgreement>() { Payload = new LegalAgreement() { Id = Guid.NewGuid(), LegalText = "", EffectiveDate = DateTime.Now } });
+
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
@@ -67,7 +73,7 @@ namespace HealthGateway.WebClient.Test.Services
                 emailInviteDelegateMock.Object,
                 configServiceMock.Object,
                 emailer.Object,
-                new Mock<ILegalAgreementDelegate>().Object
+                legalAgreementDelegateMock.Object
             );
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
