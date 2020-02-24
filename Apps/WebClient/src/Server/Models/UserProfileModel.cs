@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System;
-
 namespace HealthGateway.WebClient.Models
 {
+    using System;
+
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
     /// </summary>
@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Models
         public string? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating whether the user needs to be notified about new terms of service.
+        /// Gets or sets a value indicating whether the user needs to be notified about new terms of service.
         /// </summary>
         public bool HasTermsOfServiceUpdated { get; set; }
 
@@ -46,10 +46,12 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the user last login date.
         /// </summary>
         public DateTime? LastLoginDate { get; set; }
-        
+
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
         /// </summary>
+        /// <param name="model">The user profile database model.</param>
+        /// <returns>The user profile model.</returns>
         public static UserProfileModel CreateFromDbModel(HealthGateway.Database.Models.UserProfile model)
         {
             return new UserProfileModel()
@@ -59,6 +61,6 @@ namespace HealthGateway.WebClient.Models
                 Email = model.Email,
                 LastLoginDate = model.LastLoginDate
             };
-        }    
+        }
     }
 }
