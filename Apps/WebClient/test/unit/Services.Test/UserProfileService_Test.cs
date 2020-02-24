@@ -64,8 +64,10 @@ namespace HealthGateway.WebClient.Test.Services
                 emailDelegateMock.Object,
                 emailInviteDelegateMock.Object,
                 configServiceMock.Object,
-                emailer.Object);
-            RequestResult<UserProfile> actualResult = service.GetUserProfile(hdid);
+                emailer.Object,
+                new Mock<ILegalAgreementDelegate>().Object
+            );
+            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected.Payload));
@@ -102,10 +104,11 @@ namespace HealthGateway.WebClient.Test.Services
                 emailDelegateMock.Object,
                 emailInviteDelegateMock.Object,
                 configServiceMock.Object,
-                emailer.Object);
+                emailer.Object,
+                new Mock<ILegalAgreementDelegate>().Object);
 
 
-            RequestResult<UserProfile> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"));
+            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"));
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(insertResult.Payload));

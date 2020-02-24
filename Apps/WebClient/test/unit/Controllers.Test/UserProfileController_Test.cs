@@ -45,8 +45,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 AcceptedTermsOfService = true
             };
 
-            RequestResult<UserProfile> expected = new RequestResult<UserProfile> {
-                ResourcePayload = userProfile,
+            RequestResult<UserProfileModel> expected = new RequestResult<UserProfileModel> {
+                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
                 ResultStatus = Common.Constants.ResultType.Success
             };
 
@@ -116,9 +116,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Profile = userProfile
             };
 
-            RequestResult<UserProfile> expected = new RequestResult<UserProfile>
+            RequestResult<UserProfileModel> expected = new RequestResult<UserProfileModel>
             {
-                ResourcePayload = userProfile,
+                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
                 ResultStatus = Common.Constants.ResultType.Success
             };
 

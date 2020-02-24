@@ -142,7 +142,7 @@ namespace HealthGateway.WebClient.Controllers
         [Route("/termsofservice")]
         public IActionResult GetLastTermsOfService()
         {
-            RequestResult<TermsOfServiceModel> result = this.userProfileService.GetLastTermsOfService();
+            RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();
             return new JsonResult(result);
         }
     }
