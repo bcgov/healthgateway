@@ -36,7 +36,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the date the terms of service becomes active.
         /// </summary>
-        public DateTime? DateActive { get; set; }
+        public DateTime? EffectiveDate { get; set; }
 
         /// <summary>
         /// Constructs a TermsOfService model from a LegalAgreement database model.

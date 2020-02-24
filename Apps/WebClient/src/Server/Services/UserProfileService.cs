@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Services
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
             userProfile.HasTermsOfServiceUpdated =
-                (termsOfServiceResult.ResourcePayload?.DateActive > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
+                (termsOfServiceResult.ResourcePayload?.EffectiveDate > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
 
             return new RequestResult<UserProfileModel>()
             {
