@@ -123,11 +123,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.userProfileService.GetActiveTermsOfService();
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
-
-            result.ResourcePayload.HasTermsOfServiceUpdated = 
-                (termsOfServiceResult.ResourcePayload?.DateActive > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
             return new JsonResult(result);
         }
 

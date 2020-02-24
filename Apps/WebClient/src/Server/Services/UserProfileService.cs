@@ -75,11 +75,17 @@ namespace HealthGateway.WebClient.Services
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug($"Finished getting user profile. {JsonConvert.SerializeObject(retVal)}");
 
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
+            UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
+            userProfile.HasTermsOfServiceUpdated =
+                (termsOfServiceResult.ResourcePayload?.DateActive > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
+
             return new RequestResult<UserProfileModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
                 ResultMessage = retVal.Message,
-                ResourcePayload = UserProfileModel.CreateFromDbModel(retVal.Payload),
+                ResourcePayload = userProfile,
             };
         }
 
