@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
-    using System;
-
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
     /// </summary>
@@ -43,23 +41,17 @@ namespace HealthGateway.WebClient.Models
         public bool HasTermsOfServiceUpdated { get; set; }
 
         /// <summary>
-        /// Gets or sets the user last login date.
-        /// </summary>
-        public DateTime? LastLoginDate { get; set; }
-
-        /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
         /// </summary>
         /// <param name="model">The user profile database model.</param>
         /// <returns>The user profile model.</returns>
-        public static UserProfileModel CreateFromDbModel(HealthGateway.Database.Models.UserProfile model)
+        public static UserProfileModel CreateFromDbModel(Database.Models.UserProfile model)
         {
             return new UserProfileModel()
             {
                 HdId = model.HdId,
                 AcceptedTermsOfService = model.AcceptedTermsOfService,
-                Email = model.Email,
-                LastLoginDate = model.LastLoginDate
+                Email = model.Email
             };
         }
     }

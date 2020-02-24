@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
-        private readonly ITermsOfServiceDelegate termsOfServiceDelegate;
+        private readonly ILegalAgreementDelegate legalAgreementDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -49,15 +49,15 @@ namespace HealthGateway.WebClient.Services
         /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="configuration">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        /// <param name="termsOfServiceDelegate">The terms of service delegate.</param>
+        /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
         public UserProfileService(
-            ILogger<UserProfileService> logger, 
-            IProfileDelegate profileDelegate, 
-            IEmailDelegate emailDelegate, 
-            IEmailInviteDelegate emailInviteDelegate, 
-            IConfigurationService configuration, 
+            ILogger<UserProfileService> logger,
+            IProfileDelegate profileDelegate,
+            IEmailDelegate emailDelegate,
+            IEmailInviteDelegate emailInviteDelegate,
+            IConfigurationService configuration,
             IEmailQueueService emailQueueService,
-            ITermsOfServiceDelegate termsOfServiceDelegate)
+            ILegalAgreementDelegate legalAgreementDelegate)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Services
             this.emailInviteDelegate = emailInviteDelegate;
             this.configurationService = configuration;
             this.emailQueueService = emailQueueService;
-            this.termsOfServiceDelegate = termsOfServiceDelegate;
+            this.legalAgreementDelegate = legalAgreementDelegate;
         }
 
         /// <inheritdoc />
@@ -165,9 +165,10 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<TermsOfServiceModel> GetLastTermsOfService() {
-            this.logger.LogTrace($"Getting terms of service...");
-            DBResult<object> retVal = this.termsOfServiceDelegate.GetLast();
+        public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
+        {
+            this.logger.LogTrace($"Getting active terms of service...");
+            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(AgreementType.TermsofService);
             this.logger.LogDebug($"Finished getting terms of service. {JsonConvert.SerializeObject(retVal)}");
 
             return new RequestResult<TermsOfServiceModel>()

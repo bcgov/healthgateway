@@ -26,7 +26,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the terms of service id.
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the terms of service html.
@@ -36,18 +36,20 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the date the terms of service becomes active.
         /// </summary>
-        public DateTime DateActive { get; set; }
+        public DateTime? DateActive { get; set; }
 
         /// <summary>
-        /// Constructs a TermsOfService model from a TermsOfService database model.
+        /// Constructs a TermsOfService model from a LegalAgreement database model.
         /// </summary>
-        public static TermsOfServiceModel CreateFromDbModel(object model)
+        /// <param name="model">The legal agreement database model.</param>
+        /// <returns>The terms of service model.</returns>
+        public static TermsOfServiceModel CreateFromDbModel(LegalAgreement model)
         {
             return new TermsOfServiceModel()
             {
-                Id = Guid.NewGuid(),
-                DateActive = DateTime.Now,
-                Content = ""
+                Id = model?.Id,
+                DateActive = model?.EffectiveDate!.Value,
+                Content = model?.LegalText,
             };
         }
     }

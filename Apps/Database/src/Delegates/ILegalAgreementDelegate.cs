@@ -15,25 +15,20 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Operations to be performed in the DB for the TermsOfService.
     /// </summary>
-    public interface ITermsOfServiceDelegate
+    public interface ILegalAgreementDelegate
     {
         /// <summary>
-        /// Creates a TermsOfService object in the database.
+        /// Fetches the last active Legal Agreement from the database of the specified agreement type.
         /// </summary>
-        /// <param name="termsOfService">The terms of service to insert.</param>
+        /// <param name="agreementType">The agreement type to filter the result.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<object> Insert(object termsOfService);
-
-        /// <summary>
-        /// Fetches the last TermsOfService from the database.
-        /// </summary>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<object> GetLast();
+        DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode);
     }
 }

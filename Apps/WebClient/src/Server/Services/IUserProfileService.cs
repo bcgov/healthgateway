@@ -41,9 +41,9 @@ namespace HealthGateway.WebClient.Services
         RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri);
 
         /// <summary>
-        /// Gets the most recent updated terms of service.
+        /// Gets the most recent active terms of service.
         /// </summary>
         /// <returns>The wrapped terms of service.</returns>
-        RequestResult<TermsOfServiceModel> GetLastTermsOfService();
+        RequestResult<TermsOfServiceModel> GetActiveTermsOfService();
     }
 }

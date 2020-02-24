@@ -24,22 +24,21 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
-    public class DBTermsOfServiceDelegate : ITermsOfServiceDelegate
+    public class DBLegalAgreementDelegate : ILegalAgreementDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBTermsOfServiceDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBLegalAgreementDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBTermsOfServiceDelegate(
-            ILogger<DBTermsOfServiceDelegate> logger,
+        public DBLegalAgreementDelegate(
+            ILogger<DBLegalAgreementDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -47,15 +46,19 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<object> GetLast()
+        public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
         {
-            throw new NotImplementedException();
-        }
+            LegalAgreement legalAgreement = this.dbContext.LegalAgreement
+                .Where(la => la.EffectiveDate >= DateTime.UtcNow)
+                .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
+                .OrderByDescending(la => la.EffectiveDate)
+                .FirstOrDefault();
 
-        /// <inheritdoc />
-        public DBResult<object> Insert(object termsOfService)
-        {
-            throw new NotImplementedException();
+            return new DBResult<LegalAgreement>()
+            {
+                Payload = legalAgreement,
+                Status = Constant.DBStatusCode.Read
+            };
         }
     }
 }
