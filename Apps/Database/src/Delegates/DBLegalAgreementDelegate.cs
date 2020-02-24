@@ -49,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
         {
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
-                .Where(la => la.EffectiveDate >= DateTime.UtcNow)
+                .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)
                 .FirstOrDefault();
