@@ -17,6 +17,9 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
@@ -125,7 +128,14 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid);
+            string rawIssuedAt = user.FindFirst(c => c.Type == "iat").Value;
+
+            // Issued at comes in the JWT as seconds after 1970-01-01
+            DateTime jwtIssuedAt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddSeconds(int.Parse(rawIssuedAt, CultureInfo.CurrentCulture));
+
+            RequestResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid, jwtIssuedAt);
+
             return new JsonResult(result);
         }
     }

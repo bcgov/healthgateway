@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -42,5 +43,10 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(254)]
         public string? Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last login date time.
+        /// </summary>
+        public DateTime? LastLogin { get; set; }
     }
 }

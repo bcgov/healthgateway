@@ -29,8 +29,9 @@ namespace HealthGateway.WebClient.Services
         /// Gets the user profile model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="lastLogin">The date of last login performed by the user.</param>
         /// <returns>The wrappeed user profile.</returns>
-        RequestResult<UserProfile> GetUserProfile(string hdid);
+        RequestResult<UserProfile> GetUserProfile(string hdid, DateTime lastLogin);
 
         /// <summary>
         /// Saves the user profile to the database.

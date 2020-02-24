@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Text.Json;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -27,8 +28,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.WebClient.Constant;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
-
+    
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
@@ -59,11 +59,16 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfile> GetUserProfile(string hdid)
+        public RequestResult<UserProfile> GetUserProfile(string hdid, DateTime lastLogin)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
-            this.logger.LogDebug($"Finished getting user profile. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
+
+            this.logger.LogTrace($"Updating user last login... {hdid}");
+            retVal.Payload.LastLogin = lastLogin;
+            DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
+            this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
 
             return new RequestResult<UserProfile>()
             {
@@ -77,7 +82,7 @@ namespace HealthGateway.WebClient.Services
         public RequestResult<UserProfile> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
         {
             Contract.Requires(createProfileRequest != null && hostUri != null);
-            this.logger.LogTrace($"Creating user profile... {JsonConvert.SerializeObject(createProfileRequest)}");
+            this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
 
@@ -87,7 +92,7 @@ namespace HealthGateway.WebClient.Services
             {
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultMessage = "Registration is closed";
-                this.logger.LogWarning($"Registration is closed. {JsonConvert.SerializeObject(createProfileRequest)}");
+                this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
                 return requestResult;
             }
 
@@ -99,7 +104,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite code. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    this.logger.LogWarning($"Invalid email invite code. {JsonSerializer.Serialize(createProfileRequest)}");
                     return requestResult;
                 }
 
@@ -118,7 +123,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    this.logger.LogWarning($"Invalid email invite. {JsonSerializer.Serialize(createProfileRequest)}");
                     return requestResult;
                 }
             }
@@ -150,7 +155,7 @@ namespace HealthGateway.WebClient.Services
                 requestResult.ResultStatus = ResultType.Success;
             }
 
-            this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(insertResult)}");
+            this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
             return requestResult;
         }
     }

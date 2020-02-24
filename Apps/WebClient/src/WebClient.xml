@@ -547,11 +547,12 @@
             The User Profile service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.DateTime)">
             <summary>
             Gets the user profile model.
             </summary>
             <param name="hdid">The requested user hdid.</param>
+            <param name="lastLogin">The date of last login performed by the user.</param>
             <returns>The wrappeed user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
@@ -610,7 +611,7 @@
             <param name="configuration">The configuration service.</param>
             <param name="emailQueueService">The email service to queue emails.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.DateTime)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
