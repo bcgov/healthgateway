@@ -53,6 +53,20 @@
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
+        <b-alert :show="hasNewTermsOfService" dismissible variant="info">
+          <h4>Updated Terms of Service</h4>
+          <span>
+            The Terms of Service has been updated since your last login. You can
+            review them
+            <router-link
+              id="termsOfServiceLink"
+              variant="primary"
+              to="/termsOfService"
+            >
+              here</router-link
+            >.
+          </span>
+        </b-alert>
         <b-alert :show="unverifiedEmail" dismissible variant="info">
           <h4>Unverified email</h4>
           <span>
@@ -212,6 +226,10 @@ export default class TimelineComponent extends Vue {
 
   private get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
+  }
+
+  private get hasNewTermsOfService(): boolean {
+    return this.user.hasTermsOfServiceUpdated;
   }
 
   private get searchIcon(): IconDefinition {
