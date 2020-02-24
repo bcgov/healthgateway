@@ -62,6 +62,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.GetUserProfile(hdid)).Returns(expected);
+            userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,

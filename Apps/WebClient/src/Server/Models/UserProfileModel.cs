@@ -49,9 +49,9 @@ namespace HealthGateway.WebClient.Models
         {
             return new UserProfileModel()
             {
-                HdId = model.HdId,
-                AcceptedTermsOfService = model.AcceptedTermsOfService,
-                Email = model.Email
+                HdId = model!.HdId,
+                AcceptedTermsOfService = model!.AcceptedTermsOfService,
+                Email = model!.Email,
             };
         }
     }
