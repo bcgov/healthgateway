@@ -124,6 +124,60 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
+            //result.ResourcePayload.PlannedDeletionDateTime = new DateTime(2020, 2, 27);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Deletes a user profile.
+        /// </summary>
+        /// <returns>The user profile model wrapped in a request result.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the user profile json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpDelete]
+        [Route("{hdid}")]
+        public async Task<IActionResult> DeleteUserProfile(string hdid)
+        {
+            Contract.Requires(hdid != null);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            var isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
+            result.ResourcePayload.PlannedDeletionDateTime = new DateTime(2020, 2, 27);
+            return new JsonResult(result);
+        }
+        /// <summary>
+        /// Restore a user profile.
+        /// </summary>
+        /// <returns>The user profile model wrapped in a request result.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the user profile json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/recover")]
+        public async Task<IActionResult> RecoverUserProfile(string hdid)
+        {
+            Contract.Requires(hdid != null);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            var isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
+            result.ResourcePayload.PlannedDeletionDateTime = null;
             return new JsonResult(result);
         }
 

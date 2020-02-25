@@ -58,8 +58,6 @@ export const actions: ActionTree<UserState, RootState> = {
             isRegistered = false;
           }
 
-          userProfile.plannedDeletionDateTime = new Date(2020, 1, 26);
-
           commit("setProfileUserData", userProfile);
 
           // If registered retrieve the invite as well

@@ -201,18 +201,50 @@ input {
                 to="/termsOfService"
                 class="p-0"
               >
-                Terms Of Service
+                Terms of Service
               </router-link>
             </div>
             <div>
               <b-button
-                v-if="isActiveProfile"
-                id="deleteAccountBtn"
+                v-if="isActiveProfile && !showDeletionWarning"
+                id="showDeletionWarningBtn"
                 class="p-0 pt-2"
                 variant="link"
-                @click="removeAccount()"
-                >Delete my account
+                @click="showDeletionWarningBtn()"
+                >Delete My Account
               </b-button>
+              <b-row v-if="showDeletionWarning">
+                <b-col class="font-weight-bold text-danger text-center">
+                  <hr />
+                  <font-awesome-icon
+                    icon="exclamation-triangle"
+                    aria-hidden="true"
+                  ></font-awesome-icon>
+                  Your account will be marked for deletion, preventing you from
+                  accessing your information on the Health Gateway. After a set
+                  period of time it will be deleted permanently.
+                </b-col>
+              </b-row>
+              <b-row
+                v-if="showDeletionWarning"
+                class="mb-3 justify-content-end"
+              >
+                <b-col class="text-right">
+                  <b-button
+                    id="cancelDeleteBtn"
+                    class="mx-2 actionButton"
+                    @click="cancelDelete()"
+                    >Cancel
+                  </b-button>
+                  <b-button
+                    id="deleteAccountBtn"
+                    class="mx-2 actionButton"
+                    variant="danger"
+                    @click="removeAccount()"
+                    >Delete
+                  </b-button>
+                </b-col>
+              </b-row>
             </div>
           </b-col>
         </b-row>
@@ -288,6 +320,8 @@ export default class ProfileComponent extends Vue {
   private userEmailService: IUserEmailService;
   private userProfileService: IUserProfileService;
   private userProfile: UserProfile;
+
+  private showDeletionWarning = false;
 
   private timeForDeletion: number = -1;
 
@@ -379,7 +413,7 @@ export default class ProfileComponent extends Vue {
       return undefined;
     }
 
-    let endDate = moment(this.user.deletionDateTime);
+    let endDate = moment(this.user.plannedDeletionDateTime);
     this.timeForDeletion = endDate.diff(moment());
   }
 
@@ -486,6 +520,14 @@ export default class ProfileComponent extends Vue {
       });
   }
 
+  private showDeletionWarningBtn(): void {
+    this.showDeletionWarning = true;
+  }
+
+  private cancelDelete(): void {
+    this.showDeletionWarning = false;
+  }
+
   private removeAccount(): void {
     this.isLoading = true;
     this.deleteAccount({
@@ -493,6 +535,7 @@ export default class ProfileComponent extends Vue {
     })
       .then(() => {
         console.log("success!");
+        this.showDeletionWarning = false;
       })
       .catch(err => {
         this.hasErrors = true;

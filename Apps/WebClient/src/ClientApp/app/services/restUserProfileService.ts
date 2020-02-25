@@ -48,7 +48,7 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public deleteAccount(hdid: string): Promise<boolean> {
+  public deleteAccount(hdid: string): Promise<UserProfile> {
     return new Promise((resolve, reject) => {
       this.http
         .delete<RequestResult<UserProfile>>(
@@ -64,11 +64,11 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public recoverAccount(hdid: string): Promise<boolean> {
+  public recoverAccount(hdid: string): Promise<UserProfile> {
     return new Promise((resolve, reject) => {
       this.http
-        .patch<RequestResult<UserProfile>>(
-          `${this.USER_PROFILE_BASE_URI}/${hdid}`
+        .get<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
         )
         .then(requestResult => {
           this.handleResult(requestResult, resolve, reject);

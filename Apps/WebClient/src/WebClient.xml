@@ -230,6 +230,26 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.DeleteUserProfile(System.String)">
+            <summary>
+            Deletes a user profile.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.RecoverUserProfile(System.String)">
+            <summary>
+            Restore a user profile.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetLastTermsOfService">
             <summary>
             Gets the terms of service json.
@@ -356,7 +376,7 @@
             Gets or sets the terms of service html.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.DateActive">
+        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.EffectiveDate">
             <summary>
             Gets or sets the date the terms of service becomes active.
             </summary>
@@ -446,6 +466,11 @@
         <member name="P:HealthGateway.WebClient.Models.UserProfileModel.HasTermsOfServiceUpdated">
             <summary>
             Gets or sets a value indicating whether the user needs to be notified about new terms of service.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.PlannedDeletionDateTime">
+            <summary>
+            Gets or sets the value indicating the date when the user profile will be deleted
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Models.UserProfileModel.CreateFromDbModel(HealthGateway.Database.Models.UserProfile)">

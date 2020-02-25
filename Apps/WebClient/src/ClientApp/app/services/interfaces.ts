@@ -63,8 +63,8 @@ export interface IUserProfileService {
   createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
   getProfile(hdid: string): Promise<UserProfile>;
   getTermsOfService(): Promise<TermsOfService>;
-  deleteAccount(hdid: string): Promise<boolean>;
-  recoverAccount(hdid: string): Promise<boolean>;
+  deleteAccount(hdid: string): Promise<UserProfile>;
+  recoverAccount(hdid: string): Promise<UserProfile>;
 }
 
 export interface IUserFeedbackService {
