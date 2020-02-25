@@ -180,7 +180,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Getting active terms of service...");
             DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(AgreementType.TermsofService);
-            this.logger.LogDebug($"Finished getting terms of service. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting terms of service. {JsonSerializer.Serialize(retVal)}");
 
             return new RequestResult<TermsOfServiceModel>()
             {

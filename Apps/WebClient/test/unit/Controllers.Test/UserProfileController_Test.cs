@@ -32,6 +32,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Microsoft.AspNetCore.Http.Headers;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
+    using System.Collections.Generic;
 
     public class UserProfileControllerTest
     {
@@ -50,8 +51,13 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success
             };
 
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
+            List<Claim> claimsList = new List<Claim>();
+            claimsList.Add(new Claim("iat", "123"));
 
+            List<ClaimsIdentity> claimsIdentityList = new List<ClaimsIdentity>();
+            claimsIdentityList.Add(new ClaimsIdentity(claimsList));
+
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentityList);
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext.User).Returns(claimsPrincipal);
 
@@ -61,7 +67,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(AuthorizationResult.Success);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.GetUserProfile(hdid)).Returns(expected);
+            userProfileServiceMock.Setup(s => s.GetUserProfile(hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
 
             UserProfileController service = new UserProfileController(

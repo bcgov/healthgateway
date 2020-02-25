@@ -132,9 +132,7 @@ namespace HealthGateway.WebClient.Controllers
             DateTime jwtIssuedAt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(int.Parse(rawIssuedAt, CultureInfo.CurrentCulture));
 
-            RequestResult<UserProfile> result = this.userProfileService.GetUserProfile(hdid, jwtIssuedAt);
-
-            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
+            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtIssuedAt);
             return new JsonResult(result);
         }
 

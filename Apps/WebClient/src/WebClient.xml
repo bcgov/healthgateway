@@ -356,7 +356,7 @@
             Gets or sets the terms of service html.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.DateActive">
+        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.EffectiveDate">
             <summary>
             Gets or sets the date the terms of service becomes active.
             </summary>

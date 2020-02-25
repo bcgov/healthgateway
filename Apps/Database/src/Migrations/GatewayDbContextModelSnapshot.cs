@@ -1931,9 +1931,6 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasColumnType("character varying(60)")
