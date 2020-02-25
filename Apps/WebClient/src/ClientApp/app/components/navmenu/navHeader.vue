@@ -116,6 +116,8 @@ export default class HeaderComponent extends Vue {
   @Getter("userIsRegistered", {
     namespace: user
   })
+  @Getter("userIsActive", { namespace: user })
+  userIsActive: boolean;
   userIsRegistered: boolean;
 
   private authenticationService: IAuthenticationService;
@@ -140,7 +142,9 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
-    return this.oidcIsAuthenticated && this.userIsRegistered;
+    return (
+      this.oidcIsAuthenticated && this.userIsRegistered && this.userIsActive
+    );
   }
 
   get greeting(): string {

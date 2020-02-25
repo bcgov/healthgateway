@@ -37,128 +37,182 @@ input {
           </h1>
           <hr />
         </div>
-        <b-row class="mb-3">
-          <b-col>
-            <label for="profileNames">Full Name</label>
-            <div id="profileNames">
-              {{ fullName }}
-            </div>
-          </b-col>
-        </b-row>
-        <b-row class="mb-3">
-          <b-col>
-            <label for="lastLoginDate">Last Login Date</label>
-            <div id="lastLoginDate">
-              {{ lastLoginDate }}
-            </div>
-          </b-col>
-        </b-row>
-        <b-row class="mb-3">
-          <b-col>
-            <label for="email">Email Address</label>
-            <b-button
-              v-if="!isEdditable"
-              id="editEmail"
-              class="mx-auto"
-              variant="link"
-              @click="makeEdditable()"
-              >Edit
-            </b-button>
-            <b-button
-              v-if="email"
-              id="removeEmail"
-              class="text-danger"
-              variant="link"
-              @click="
-                makeEdditable();
-                removeEmail();
-              "
-            >
-              Remove
-            </b-button>
-            <div class="form-inline">
-              <b-form-input
-                id="email"
-                v-model="$v.email.$model"
-                type="email"
-                :placeholder="isEdditable ? 'Your email address' : 'Empty'"
-                :disabled="!isEdditable"
-                :state="isValid($v.email)"
-              />
-              <div v-if="!emailVerified && !isEdditable && email" class="ml-3">
-                (Not Verified)
+        <div v-if="isActiveProfile">
+          <b-row class="mb-3">
+            <b-col>
+              <label for="profileNames">Full Name</label>
+              <div id="profileNames">
+                {{ fullName }}
               </div>
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col>
+              <label for="lastLoginDate">Last Login Date</label>
+              <div id="lastLoginDate">
+                {{ lastLoginDate }}
+              </div>
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col>
+              <label for="email">Email Address</label>
               <b-button
-                v-if="!emailVerified && !isEdditable && email"
-                id="resendEmail"
-                variant="warning"
-                class="ml-auto"
-                :disabled="verificationSent"
-                @click="sendUserEmailUpdate()"
-                >Resend Verification
+                v-if="!isEdditable"
+                id="editEmail"
+                class="mx-auto"
+                variant="link"
+                @click="makeEdditable()"
+                >Edit
               </b-button>
-            </div>
-            <b-form-invalid-feedback :state="isValid($v.email)">
-              Valid email is required
-            </b-form-invalid-feedback>
-            <b-form-invalid-feedback :state="$v.email.newEmail">
-              New email must be different from the previous one
-            </b-form-invalid-feedback>
-          </b-col>
-        </b-row>
-        <b-row v-if="isEdditable" class="mb-3">
-          <b-col>
-            <b-form-input
-              id="emailConfirmation"
-              v-model="$v.emailConfirmation.$model"
-              type="email"
-              placeholder="Confirm your email address"
-              :state="isValid($v.emailConfirmation)"
-            />
-            <b-form-invalid-feedback :state="$v.emailConfirmation.sameAsEmail">
-              Emails must match
-            </b-form-invalid-feedback>
-          </b-col>
-        </b-row>
-        <b-row v-if="!email && tempEmail">
-          <b-col class="font-weight-bold text-primary text-center">
-            <font-awesome-icon
-              icon="exclamation-triangle"
-              aria-hidden="true"
-            ></font-awesome-icon>
-            Removing your email address will disable future communications from
-            the Health Gateway
-          </b-col>
-        </b-row>
-        <b-row v-if="isEdditable" class="mb-3 justify-content-end">
-          <b-col class="text-right">
-            <b-button
-              id="cancelBtn"
-              class="mx-2 actionButton"
-              @click="cancelEdit()"
-              >Cancel
-            </b-button>
-            <b-button
-              id="saveBtn"
-              variant="primary"
-              class="mx-2 actionButton"
-              :disabled="tempEmail === email"
-              @click="saveEdit()"
-              >Save
-            </b-button>
-          </b-col>
-        </b-row>
+              <b-button
+                v-if="email"
+                id="removeEmail"
+                class="text-danger"
+                variant="link"
+                @click="
+                  makeEdditable();
+                  removeEmail();
+                "
+              >
+                Remove
+              </b-button>
+              <div class="form-inline">
+                <b-form-input
+                  id="email"
+                  v-model="$v.email.$model"
+                  type="email"
+                  :placeholder="isEdditable ? 'Your email address' : 'Empty'"
+                  :disabled="!isEdditable"
+                  :state="isValid($v.email)"
+                />
+                <div
+                  v-if="!emailVerified && !isEdditable && email"
+                  class="ml-3"
+                >
+                  (Not Verified)
+                </div>
+                <b-button
+                  v-if="!emailVerified && !isEdditable && email"
+                  id="resendEmail"
+                  variant="warning"
+                  class="ml-auto"
+                  :disabled="verificationSent"
+                  @click="sendUserEmailUpdate()"
+                  >Resend Verification
+                </b-button>
+              </div>
+              <b-form-invalid-feedback :state="isValid($v.email)">
+                Valid email is required
+              </b-form-invalid-feedback>
+              <b-form-invalid-feedback :state="$v.email.newEmail">
+                New email must be different from the previous one
+              </b-form-invalid-feedback>
+            </b-col>
+          </b-row>
+          <b-row v-if="isEdditable" class="mb-3">
+            <b-col>
+              <b-form-input
+                id="emailConfirmation"
+                v-model="$v.emailConfirmation.$model"
+                type="email"
+                placeholder="Confirm your email address"
+                :state="isValid($v.emailConfirmation)"
+              />
+              <b-form-invalid-feedback
+                :state="$v.emailConfirmation.sameAsEmail"
+              >
+                Emails must match
+              </b-form-invalid-feedback>
+            </b-col>
+          </b-row>
+          <b-row v-if="!email && tempEmail">
+            <b-col class="font-weight-bold text-primary text-center">
+              <font-awesome-icon
+                icon="exclamation-triangle"
+                aria-hidden="true"
+              ></font-awesome-icon>
+              Removing your email address will disable future communications
+              from the Health Gateway
+            </b-col>
+          </b-row>
+          <b-row v-if="isEdditable" class="mb-3 justify-content-end">
+            <b-col class="text-right">
+              <b-button
+                id="cancelBtn"
+                class="mx-2 actionButton"
+                @click="cancelEdit()"
+                >Cancel
+              </b-button>
+              <b-button
+                id="saveBtn"
+                variant="primary"
+                class="mx-2 actionButton"
+                :disabled="tempEmail === email"
+                @click="saveEdit()"
+                >Save
+              </b-button>
+            </b-col>
+          </b-row>
+        </div>
+        <div v-else-if="!isLoading">
+          <b-row class="mb-3">
+            <b-col>
+              <font-awesome-icon
+                icon="exclamation-triangle"
+                aria-hidden="true"
+                class="text-danger"
+              ></font-awesome-icon>
+              <label for="deletionWarning">
+                Account marked for deletion
+              </label>
+              <div id="deletionWarning">
+                Your account has been deactivated from the site and will be
+                permanently deleted. If you wish to recover your account click
+                on the "Recover Account" button before the time expires.
+              </div>
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col>
+              <label for="lastLoginDate">Time remaining for deletion: </label>
+              {{ timeForDeletionString }}
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col>
+              <b-button
+                id="recoverBtn"
+                class="mx-auto"
+                variant="warning"
+                @click="restoreAccount()"
+                >Recover Account
+              </b-button>
+            </b-col>
+          </b-row>
+        </div>
         <b-row class="mb-3">
           <b-col>
-            <label for="other">Other</label>
-            <div id="other">
+            <label>Other</label>
+            <div>
               <router-link
                 id="termsOfService"
                 variant="primary"
                 to="/termsOfService"
+                class="p-0"
               >
                 Terms Of Service
               </router-link>
+            </div>
+            <div>
+              <b-button
+                v-if="isActiveProfile"
+                id="deleteAccountBtn"
+                class="p-0 pt-2"
+                variant="link"
+                @click="removeAccount()"
+                >Delete my account
+              </b-button>
             </div>
           </b-col>
         </b-row>
@@ -211,7 +265,12 @@ export default class ProfileComponent extends Vue {
   oidcIsAuthenticated: boolean;
   @Action("getUserEmail", { namespace: userNamespace }) getUserEmail;
   @Action("updateUserEmail", { namespace: userNamespace }) updateUserEmail;
+  @Action("deleteAccount", { namespace: userNamespace }) deleteAccount;
+  @Action("recoverAccount", { namespace: userNamespace }) recoverAccount;
+
   @Getter("user", { namespace: userNamespace }) user: User;
+  @Getter("userIsActive", { namespace: userNamespace })
+  isActiveProfile: boolean;
 
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
@@ -229,6 +288,10 @@ export default class ProfileComponent extends Vue {
   private userEmailService: IUserEmailService;
   private userProfileService: IUserProfileService;
   private userProfile: UserProfile;
+
+  private timeForDeletion: number = -1;
+
+  private interval: any;
 
   mounted() {
     this.userProfileService = container.get<IUserProfileService>(
@@ -277,6 +340,11 @@ export default class ProfileComponent extends Vue {
         this.hasErrors = true;
         this.isLoading = false;
       });
+
+    this.calculateTimeForDeletion();
+    this.interval = setInterval(() => {
+      this.calculateTimeForDeletion();
+    }, 1000);
   }
 
   validations() {
@@ -304,6 +372,38 @@ export default class ProfileComponent extends Vue {
 
   private get lastLoginDate(): string {
     return moment(this.userProfile).format("lll");
+  }
+
+  private calculateTimeForDeletion(): void {
+    if (this.isActiveProfile) {
+      return undefined;
+    }
+
+    let endDate = moment(this.user.deletionDateTime);
+    this.timeForDeletion = endDate.diff(moment());
+  }
+
+  private get timeForDeletionString(): string {
+    if (this.isActiveProfile) {
+      return "";
+    }
+
+    let duration = moment.duration(this.timeForDeletion);
+    let timeRemaining = duration.asDays();
+    if (timeRemaining > 1) {
+      return Math.floor(timeRemaining).toString() + " days";
+    }
+    timeRemaining = duration.asHours();
+    if (timeRemaining > 1) {
+      return Math.floor(timeRemaining).toString() + " hours";
+    }
+    timeRemaining = duration.asMinutes();
+    if (timeRemaining > 1) {
+      return Math.floor(timeRemaining).toString() + " minutes";
+    }
+
+    timeRemaining = duration.asSeconds();
+    return Math.floor(timeRemaining).toString() + " seconds";
   }
 
   private isValid(param: any): boolean | undefined {
@@ -367,6 +467,40 @@ export default class ProfileComponent extends Vue {
     this.$v.$touch();
     this.email = "";
     this.emailConfirmation = "";
+  }
+
+  private restoreAccount(): void {
+    this.isLoading = true;
+    this.recoverAccount({
+      hdid: this.user.hdid
+    })
+      .then(() => {
+        console.log("success!");
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  }
+
+  private removeAccount(): void {
+    this.isLoading = true;
+    this.deleteAccount({
+      hdid: this.user.hdid
+    })
+      .then(() => {
+        console.log("success!");
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
   }
 }
 </script>

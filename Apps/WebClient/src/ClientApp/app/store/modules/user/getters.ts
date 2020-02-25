@@ -10,5 +10,9 @@ export const getters: GetterTree<UserState, RootState> = {
   userIsRegistered(state: UserState): boolean {
     const { user } = state;
     return user === undefined ? false : user.acceptedTermsOfService;
+  },
+  userIsActive(state: UserState): boolean {
+    const { user } = state;
+    return !user.deletionDateTime;
   }
 };

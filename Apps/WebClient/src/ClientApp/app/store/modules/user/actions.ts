@@ -58,6 +58,8 @@ export const actions: ActionTree<UserState, RootState> = {
             isRegistered = false;
           }
 
+          userProfile.plannedDeletionDateTime = new Date(2020, 1, 26);
+
           commit("setProfileUserData", userProfile);
 
           // If registered retrieve the invite as well
@@ -99,10 +101,38 @@ export const actions: ActionTree<UserState, RootState> = {
   },
   updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log(hdid, emailAddress);
       userEmailService
         .updateEmail(hdid, emailAddress)
         .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  deleteAccount({ commit }, { hdid }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .deleteAccount(hdid)
+        .then(userProfile => {
+          commit("setProfileUserData", userProfile);
+          resolve();
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  recoverAccount({ commit }, { hdid }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .recoverAccount(hdid)
+        .then(userProfile => {
+          console.log("User Profile: ", userProfile);
+          commit("setProfileUserData", userProfile);
           resolve();
         })
         .catch(error => {

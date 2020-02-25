@@ -31,6 +31,11 @@ export const mutations: MutationTree<UserState> = {
       "hasTermsOfServiceUpdated",
       userProfile ? userProfile.hasTermsOfServiceUpdated : false
     );
+    Vue.set(
+      state.user,
+      "deletionDateTime",
+      userProfile ? userProfile.plannedDeletionDateTime : undefined
+    );
     state.error = false;
     state.statusMessage = "success";
     state.stateType = StateType.INITIALIZED;

@@ -63,6 +63,8 @@ export interface IUserProfileService {
   createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
   getProfile(hdid: string): Promise<UserProfile>;
   getTermsOfService(): Promise<TermsOfService>;
+  deleteAccount(hdid: string): Promise<boolean>;
+  recoverAccount(hdid: string): Promise<boolean>;
 }
 
 export interface IUserFeedbackService {
@@ -94,4 +96,10 @@ export interface IHttpDelegate {
     payload: Object,
     headers?: Dictionary<string>
   ): Promise<T>;
+  patch<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
+  delete<T>(url: string, headers?: Dictionary<string>): Promise<T>;
 }
