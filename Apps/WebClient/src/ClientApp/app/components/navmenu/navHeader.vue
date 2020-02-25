@@ -145,9 +145,6 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
-    console.log("oidcIsAuthenticated", this.oidcIsAuthenticated);
-    console.log("userIsRegistered", this.userIsRegistered);
-    console.log("userIsActive", this.userIsActive);
     return (
       this.oidcIsAuthenticated && this.userIsRegistered && this.userIsActive
     );

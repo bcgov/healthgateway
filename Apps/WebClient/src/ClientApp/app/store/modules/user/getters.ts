@@ -9,10 +9,6 @@ export const getters: GetterTree<UserState, RootState> = {
   },
   userIsRegistered(state: UserState): boolean {
     const { user } = state;
-    console.log(
-      "HERE",
-      user === undefined ? false : user.acceptedTermsOfService
-    );
     return user === undefined ? false : user.acceptedTermsOfService;
   },
   userIsActive(state: UserState): boolean {
