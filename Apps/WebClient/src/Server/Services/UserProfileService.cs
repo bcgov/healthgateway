@@ -23,8 +23,8 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Constant;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
@@ -38,6 +38,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
+        private readonly ILegalAgreementDelegate legalAgreementDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -48,7 +49,15 @@ namespace HealthGateway.WebClient.Services
         /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="configuration">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
-        public UserProfileService(ILogger<UserProfileService> logger, IProfileDelegate profileDelegate, IEmailDelegate emailDelegate, IEmailInviteDelegate emailInviteDelegate, IConfigurationService configuration, IEmailQueueService emailQueueService)
+        /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
+        public UserProfileService(
+            ILogger<UserProfileService> logger,
+            IProfileDelegate profileDelegate,
+            IEmailDelegate emailDelegate,
+            IEmailInviteDelegate emailInviteDelegate,
+            IConfigurationService configuration,
+            IEmailQueueService emailQueueService,
+            ILegalAgreementDelegate legalAgreementDelegate)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
@@ -56,10 +65,11 @@ namespace HealthGateway.WebClient.Services
             this.emailInviteDelegate = emailInviteDelegate;
             this.configurationService = configuration;
             this.emailQueueService = emailQueueService;
+            this.legalAgreementDelegate = legalAgreementDelegate;
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfile> GetUserProfile(string hdid, DateTime lastLogin)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime lastLogin)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
@@ -70,23 +80,29 @@ namespace HealthGateway.WebClient.Services
             DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
             this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
 
-            return new RequestResult<UserProfile>()
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
+            UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
+            userProfile.HasTermsOfServiceUpdated =
+                (termsOfServiceResult.ResourcePayload?.EffectiveDate > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
+
+            return new RequestResult<UserProfileModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
                 ResultMessage = retVal.Message,
-                ResourcePayload = retVal.Payload,
+                ResourcePayload = userProfile,
             };
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfile> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
+        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
         {
             Contract.Requires(createProfileRequest != null && hostUri != null);
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
 
-            RequestResult<UserProfile> requestResult = new RequestResult<UserProfile>();
+            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
 
             if (registrationStatus == RegistrationStatus.Closed)
             {
@@ -151,12 +167,27 @@ namespace HealthGateway.WebClient.Services
                     this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
                 }
 
-                requestResult.ResourcePayload = insertResult.Payload;
+                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
                 requestResult.ResultStatus = ResultType.Success;
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
             return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
+        {
+            this.logger.LogTrace($"Getting active terms of service...");
+            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(AgreementType.TermsofService);
+            this.logger.LogDebug($"Finished getting terms of service. {JsonConvert.SerializeObject(retVal)}");
+
+            return new RequestResult<TermsOfServiceModel>()
+            {
+                ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
+                ResultMessage = retVal.Message,
+                ResourcePayload = TermsOfServiceModel.CreateFromDbModel(retVal.Payload),
+            };
         }
     }
 }
