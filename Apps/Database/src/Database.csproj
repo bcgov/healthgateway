@@ -58,6 +58,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
-    <None Remove="Assets\docs\EmailWaitlistTemplate %28copy%29.html" />
   </ItemGroup>
 </Project>
