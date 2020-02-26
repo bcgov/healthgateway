@@ -132,19 +132,19 @@ namespace HealthGateway.Common.Auditing
             switch (assemblyName.Name)
             {
                 case "Configuration":
-                    return AuditApplication.Configuration;
+                    return ApplicationType.Configuration;
                 case "testhost":
-                    return AuditApplication.Configuration;
+                    return ApplicationType.Configuration;
                 case "WebClient":
-                    return AuditApplication.WebClient;
+                    return ApplicationType.WebClient;
                 case "Immunization":
-                    return AuditApplication.Immunization;
+                    return ApplicationType.Immunization;
                 case "Patient":
-                    return AuditApplication.Patient;
+                    return ApplicationType.Patient;
                 case "Medication":
-                    return AuditApplication.Medication;
+                    return ApplicationType.Medication;
                 case "AdminWebClient":
-                    return AuditApplication.AdminWebClient;
+                    return ApplicationType.AdminWebClient;
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }

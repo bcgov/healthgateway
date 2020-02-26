@@ -38,7 +38,7 @@ namespace HealthGateway.CommonTests.Auditing
             ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
             AuditEvent expected = new AuditEvent()
             {
-                ApplicationType = AuditApplication.Configuration,
+                ApplicationType = ApplicationType.Configuration,
                 ClientIP = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",

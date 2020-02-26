@@ -20,14 +20,15 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user profile model.
+    /// Represents a historical view of the <see cref="UserProfile"/> class.
+    /// This object needs to be in-sync with the UserProfile object.
+    /// This object only exists for code first database generation.
     /// </summary>
-    public class UserProfile : AuditableEntity
+    public class UserProfileHistory : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        [Key]
         [Column("UserProfileId")]
         [MaxLength(52)]
         public string HdId { get; set; } = null!;
@@ -59,5 +60,23 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the users last login datetime.
         /// </summary>
         public DateTime? LastLoginDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        [Column("UserProfileHistoryId")]
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the operation that created this history row.
+        /// </summary>
+        [Required]
+        public string Operation { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the datetime the operation was performed.
+        /// </summary>
+        [Required]
+        public DateTime OperationDateTime { get; set; } = DateTime.MaxValue;
     }
 }
