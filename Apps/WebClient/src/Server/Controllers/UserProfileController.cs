@@ -126,7 +126,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            string rawIssuedAt = user.FindFirst(c => c.Type == "iat").Value;
+            string rawIssuedAt = user.FindFirst(c => c.Type == "auth_time").Value;
 
             // Issued at comes in the JWT as seconds after 1970-01-01
             DateTime jwtIssuedAt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
@@ -162,6 +162,7 @@ namespace HealthGateway.WebClient.Controllers
             result.ResourcePayload.PlannedDeletionDateTime = new DateTime(2020, 2, 26);
             return new JsonResult(result);
         }
+
         /// <summary>
         /// Restore a user profile.
         /// </summary>
@@ -197,7 +198,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Route("/termsofservice")]
+        [Route("termsofservice")]
         public IActionResult GetLastTermsOfService()
         {
             RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();

@@ -52,7 +52,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             };
 
             List<Claim> claimsList = new List<Claim>();
-            claimsList.Add(new Claim("iat", "123"));
+            claimsList.Add(new Claim("auth_time", "123"));
 
             List<ClaimsIdentity> claimsIdentityList = new List<ClaimsIdentity>();
             claimsIdentityList.Add(new ClaimsIdentity(claimsList));

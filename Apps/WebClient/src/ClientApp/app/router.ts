@@ -83,7 +83,7 @@ const routes = [
   {
     path: "/termsOfService",
     component: TermsOfServiceComponent,
-    meta: { requiresAuth: false, roles: ["user"] }
+    meta: { requiresAuth: true, roles: ["user"] }
   },
   {
     path: "/login",
@@ -163,6 +163,7 @@ function handleUserIsAuthorized(to: Route, from: Route, next: any) {
   } else if (
     userIsRegistered &&
     !userIsActive &&
+    !to.path.startsWith("/termsOfService") &&
     !to.path.startsWith("/profile")
   ) {
     next({ path: "/profile" });

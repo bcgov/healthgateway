@@ -470,7 +470,12 @@
         </member>
         <member name="P:HealthGateway.WebClient.Models.UserProfileModel.PlannedDeletionDateTime">
             <summary>
-            Gets or sets the value indicating the date when the user profile will be deleted
+            Gets or sets the value indicating the date when the user profile will be deleted.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.LastLoginDateTime">
+            <summary>
+            Gets or sets the value indicating the date when the user last logon.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Models.UserProfileModel.CreateFromDbModel(HealthGateway.Database.Models.UserProfile)">
