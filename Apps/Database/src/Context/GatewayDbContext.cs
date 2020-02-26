@@ -31,10 +31,6 @@ namespace HealthGateway.Database.Context
     /// </summary>
     public class GatewayDbContext : BaseDbContext
     {
-        private string? emailValidationTemplate;
-        private string? emailInviteTemplate;
-        private string? emailBetaConfirmationTemplate;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
         /// </summary>
@@ -42,9 +38,6 @@ namespace HealthGateway.Database.Context
         public GatewayDbContext(DbContextOptions<GatewayDbContext> options)
             : base(options)
         {
-            this.emailValidationTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
-            this.emailInviteTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
-            this.emailBetaConfirmationTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html");
         }
 
 #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
@@ -398,7 +391,7 @@ namespace HealthGateway.Database.Context
                     Name = "Registration",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Email Verification ${Environment}",
-                    Body = this.emailValidationTemplate,
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html"),
                     Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -406,15 +399,14 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
-                });
-            modelBuilder.Entity<EmailTemplate>().HasData(
+                },
                 new EmailTemplate
                 {
                     Id = Guid.Parse("896f8f2e-3bed-400b-acaf-51dd6082b4bd"),
                     Name = "Invite",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Private Invitation",
-                    Body = this.emailInviteTemplate,
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html"),
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -422,15 +414,14 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
-                });
-            modelBuilder.Entity<EmailTemplate>().HasData(
+                },
                 new EmailTemplate
                 {
                     Id = Guid.Parse("2ab5d4aa-c4c9-4324-a753-cde4e21e7612"),
                     Name = "BetaConfirmation",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Waitlist Confirmation",
-                    Body = this.emailBetaConfirmationTemplate,
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html"),
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -438,8 +429,7 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
-                });
-            modelBuilder.Entity<EmailTemplate>().HasData(
+                },
                 new EmailTemplate
                 {
                     Id = Guid.Parse("eb695050-e2fb-4933-8815-3d4656e4541d"),
@@ -448,6 +438,51 @@ namespace HealthGateway.Database.Context
                     Subject = "Health Gateway Updated Terms of Service ",
                     Body = ReadResource("HealthGateway.Database.Assets.docs.EmailUpdatedTermsofService.html"),
                     Priority = EmailPriority.Low,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("79503a38-c14a-4992-b2fe-5586629f552e"),
+                    Name = "AccountClosed",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Account Closed ",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountClosed.html"),
+                    Priority = EmailPriority.Standard,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("2fe8c825-d4de-4884-be6a-01a97b466425"),
+                    Name = "Health Gateway Account Recovered",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "AccountRecovered",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRecovered.html"),
+                    Priority = EmailPriority.Standard,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("d9898318-4e53-4074-9979-5d24bd370055"),
+                    Name = "AccountRemoved",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Account Closure Complete",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRemoved.html"),
+                    Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
                     CreatedBy = UserId.DefaultUser,
