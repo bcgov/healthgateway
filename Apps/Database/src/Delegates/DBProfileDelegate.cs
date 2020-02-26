@@ -113,7 +113,7 @@ namespace HealthGateway.Database.Delegates
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
                                 .Where(p => // p. < afterDate &&
-                                    p.ClosedDate == null && p.Email != null)
+                                    p.ClosedDateTime == null && p.Email != null)
                                 .OrderBy(o => o.CreatedDateTime)
                                 .Skip(offset)
                                 .Take(pagesize)

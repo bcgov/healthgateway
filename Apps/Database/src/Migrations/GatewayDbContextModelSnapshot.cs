@@ -1997,7 +1997,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("ClosedDate")
+                    b.Property<DateTime?>("ClosedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
@@ -2012,7 +2012,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
-                    b.Property<Guid?>("KeyCloakId")
+                    b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("LastLoginDateTime")
@@ -2047,7 +2047,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("ClosedDate")
+                    b.Property<DateTime?>("ClosedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
@@ -2068,7 +2068,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 
-                    b.Property<Guid?>("KeyCloakId")
+                    b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("LastLoginDateTime")

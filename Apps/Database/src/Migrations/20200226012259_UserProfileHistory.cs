@@ -20,14 +20,20 @@ namespace HealthGateway.Database.Migrations
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 
-    public partial class UserProfileLastLogin : Migration
+    public partial class UserProfileHistory : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "LastLoginDateTime",
+                name: "ClosedDateTime",
                 schema: "gateway",
-                table: "UserProfileHistory",
+                table: "UserProfile",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "IdentityManagementId",
+                schema: "gateway",
+                table: "UserProfile",
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
@@ -35,6 +41,31 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "UserProfile",
                 nullable: true);
+
+            migrationBuilder.CreateTable(
+                name: "UserProfileHistory",
+                schema: "gateway",
+                columns: table => new
+                {
+                    UserProfileHistoryId = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
+                    UserProfileId = table.Column<string>(maxLength: 52, nullable: false),
+                    AcceptedTermsOfService = table.Column<bool>(nullable: false),
+                    Email = table.Column<string>(maxLength: 254, nullable: true),
+                    ClosedDateTime = table.Column<DateTime>(nullable: true),
+                    IdentityManagementId = table.Column<Guid>(nullable: true),
+                    LastLoginDateTime = table.Column<DateTime>(nullable: true),
+                    Operation = table.Column<string>(nullable: false),
+                    OperationDateTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfileHistory", x => x.UserProfileHistoryId);
+                });
 
             string schema = "gateway";
             string triggerFunction = @$"
@@ -46,10 +77,10 @@ AS $BODY$
 BEGIN
     IF(TG_OP = 'DELETE') THEN
         INSERT INTO ""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"",
-                    ""UserProfileId"", ""AcceptedTermsOfService"", ""Email"", ""ClosedDate"", ""KeyCloakId"",						 
+                    ""UserProfileId"", ""AcceptedTermsOfService"", ""Email"", ""ClosedDateTime"", ""IdentityManagementId"",						 
 				    ""LastLoginDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"") 
 		VALUES(uuid_generate_v4(), TG_OP, now(),
-               old.""UserProfileId"", old.""AcceptedTermsOfService"", old.""Email"", old.""ClosedDate"", old.""KeyCloakId"",
+               old.""UserProfileId"", old.""AcceptedTermsOfService"", old.""Email"", old.""ClosedDateTime"", old.""IdentityManagementId"",
                old.""LastLoginDateTime"", old.""CreatedBy"", old.""CreatedDateTime"", old.""UpdatedBy"", old.""UpdatedDateTime"");
         RETURN old;
     END IF;
@@ -71,10 +102,19 @@ CREATE TRIGGER ""UserProfileHistoryTrigger""
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "UserProfileHistory",
+                schema: "gateway");
+
             migrationBuilder.DropColumn(
-                name: "LastLoginDateTime",
+                name: "ClosedDateTime",
                 schema: "gateway",
-                table: "UserProfileHistory");
+                table: "UserProfile");
+
+            migrationBuilder.DropColumn(
+                name: "IdentityManagementId",
+                schema: "gateway",
+                table: "UserProfile");
 
             migrationBuilder.DropColumn(
                 name: "LastLoginDateTime",

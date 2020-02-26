@@ -1,5 +1,5 @@
 ﻿//-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200225230116_UserProfileHistory")]
+    [Migration("20200226012259_UserProfileHistory")]
     partial class UserProfileHistory
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2015,7 +2015,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("ClosedDate")
+                    b.Property<DateTime?>("ClosedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
@@ -2030,8 +2030,11 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
-                    b.Property<Guid?>("KeyCloakId")
+                    b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastLoginDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2062,7 +2065,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("ClosedDate")
+                    b.Property<DateTime?>("ClosedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
@@ -2083,8 +2086,11 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 
-                    b.Property<Guid?>("KeyCloakId")
+                    b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastLoginDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Operation")
                         .IsRequired()

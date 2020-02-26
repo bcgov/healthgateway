@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Fetches the last active Legal Agreement from the database of the specified agreement type.
         /// </summary>
-        /// <param name="agreementType">The agreement type to filter the result.</param>
+        /// <param name="agreementTypeCode">The agreement type to filter the result.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode);
     }

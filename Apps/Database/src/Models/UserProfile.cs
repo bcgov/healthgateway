@@ -45,15 +45,15 @@ namespace HealthGateway.Database.Models
         public string? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets the Closed date of the account.
+        /// Gets or sets the Closed datetime of the account.
         /// After an account has been closed for n amount of days the row is physically deleted.
         /// </summary>
-        public DateTime? ClosedDate { get; set; }
+        public DateTime? ClosedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the KeyCloak identifer of the user.
+        /// Gets or sets the External Identity Management identifer for the user.
         /// </summary>
-        public Guid? KeyCloakId { get; set; }
+        public Guid? IdentityManagementId { get; set; }
 
         /// <summary>
         /// Gets or sets the users last login datetime.
