@@ -47,14 +47,14 @@ namespace HealthGateway.Common.Services
         public HttpClient CreateDefaultHttpClient()
         {
             HttpClient retVal = this.httpClientFactory.CreateClient();
-            return SetTimeout(retVal);
+            return this.SetTimeout(retVal);
         }
 
         /// <inheritdoc />
         public HttpClient CreateUntrustedHttpClient()
         {
             HttpClient retVal = this.httpClientFactory.CreateClient("HttpClientWithSSLUntrusted");
-            return SetTimeout(retVal);
+            return this.SetTimeout(retVal);
         }
 
         /// <inheritdoc />

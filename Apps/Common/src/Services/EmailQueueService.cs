@@ -63,33 +63,34 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, string templateName, bool commit = true)
+        public void QueueNewEmail(string toEmail, string templateName, bool shouldCommit = true)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
-            this.QueueNewEmail(toEmail, templateName, keyValues, commit);
+            this.QueueNewEmail(toEmail, templateName, keyValues, shouldCommit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool commit = true)
+        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
-            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, commit);
+            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, shouldCommit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool commit = true)
+        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
-            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), commit);
+            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(Email email, bool commit = true)
+        public void QueueNewEmail(Email email, bool shouldCommit = true)
         {
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
-            this.emailDelegate.InsertEmail(email, commit);
-            if (commit)
+            this.emailDelegate.InsertEmail(email, shouldCommit);
+            if (shouldCommit)
             {
                 BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
             }
+
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
         }
 

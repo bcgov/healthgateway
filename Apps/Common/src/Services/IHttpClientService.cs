@@ -29,7 +29,6 @@ namespace HealthGateway.Common.Services
         /// <returns>The HttpClient.</returns>
         HttpClient CreateDefaultHttpClient();
 
-
         /// <summary>
         /// Creates a new unstrusted ssl HttpClient.
         /// </summary>
