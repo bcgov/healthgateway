@@ -47,9 +47,15 @@ namespace HealthGateway.Database.Delegates
         void AddApplicationSetting(ApplicationSetting appSetting);
 
         /// <summary>
-        /// Writes a audit event to the database.
+        /// Deletes an application setting.
         /// </summary>
-        /// <param name="appSetting">The applciation setting to delete.</param>
+        /// <param name="appSetting">The application setting to insert or update.</param>
         void DeleteApplicationSetting(ApplicationSetting appSetting);
+
+        /// <summary>
+        /// Updates an application setting.
+        /// </summary>
+        /// <param name="appSetting">The application setting to insert or update.</param>
+        void UpdateApplicationSetting(ApplicationSetting appSetting);
     }
 }

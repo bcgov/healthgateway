@@ -54,8 +54,9 @@ namespace HealthGateway.Database.Delegates
         /// Inserts an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
+        /// <param name="commit">If true, the record will be written to the DB immediately.</param>
         /// <returns>Returns the guid of the saved email.</returns>
-        Guid InsertEmail(Email email);
+        Guid InsertEmail(Email email, bool commit = true);
 
         /// <summary>
         /// Updates an email using a populated Email object.

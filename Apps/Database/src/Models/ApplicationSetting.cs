@@ -48,6 +48,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Key name.
         /// </summary>
         [Required]
+        [MaxLength(250)]
         public string? Key { get; set; }
 
         /// <summary>

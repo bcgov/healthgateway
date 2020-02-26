@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
+    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -45,5 +47,15 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The unique profile key to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<UserProfile> GetUserProfile(string hdId);
+
+        /// <summary>
+        /// Returns the list of all UserProfiles who have an email address and have
+        /// logged in before the lastLoggedIn date.
+        /// </summary>
+        /// <param name="lastLoggedIn">The profiles must have logged in prior to this date.</param>
+        /// <param name="page">The page to request, defaults to 0.</param>
+        /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
+        /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
+        DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime lastLoggedIn, int page = 0, int pagesize = 500);
     }
 }

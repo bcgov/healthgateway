@@ -63,30 +63,33 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, string templateName)
+        public void QueueNewEmail(string toEmail, string templateName, bool commit = true)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
-            this.QueueNewEmail(toEmail, templateName, keyValues);
+            this.QueueNewEmail(toEmail, templateName, keyValues, commit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues)
+        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool commit = true)
         {
-            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues);
+            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, commit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool commit = true)
         {
-            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues));
+            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), commit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(Email email)
+        public void QueueNewEmail(Email email, bool commit = true)
         {
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
-            this.emailDelegate.InsertEmail(email);
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+            this.emailDelegate.InsertEmail(email, commit);
+            if (commit)
+            {
+                BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+            }
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
         }
 

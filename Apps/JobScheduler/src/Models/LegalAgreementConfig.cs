@@ -20,14 +20,14 @@ namespace Healthgateway.JobScheduler.Models
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents the RocketChat Configuration.
+    /// Represents the LegalAgreement Configuration.
     /// </summary>
-    public class LegalDocument
+    public class LegalAgreementConfig
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LegalDocument"/> class.
+        /// Initializes a new instance of the <see cref="LegalAgreementConfig"/> class.
         /// </summary>
-        public LegalDocument()
+        public LegalAgreementConfig()
         {
         }
 
@@ -45,5 +45,20 @@ namespace Healthgateway.JobScheduler.Models
         /// Gets or sets the application setting key to look up the last processed date.
         /// </summary>
         public string LastCheckedKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the email template to use for notifications.
+        /// </summary>
+        public string EmailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location to review the agreement relative to the host.
+        /// </summary>
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contact email for the agreement.
+        /// </summary>
+        public string ContactEmail { get; set; }
     }
 }
