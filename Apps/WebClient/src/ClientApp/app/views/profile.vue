@@ -164,12 +164,12 @@ input {
                 class="text-danger"
               ></font-awesome-icon>
               <label for="deletionWarning">
-                Account marked for deletion
+                Account marked for removal
               </label>
               <div id="deletionWarning">
-                Your account has been deactivated from the site and will be
-                permanently deleted. If you wish to recover your account click
-                on the "Recover Account" button before the time expires.
+                Your account has been deactivated. If you wish to recover your
+                account click on the "Recover Account" button before the time
+                expires.
               </div>
             </b-col>
           </b-row>
@@ -185,7 +185,7 @@ input {
                 id="recoverBtn"
                 class="mx-auto"
                 variant="warning"
-                @click="restoreAccount()"
+                @click="recoverAccount()"
                 >Recover Account
               </b-button>
             </b-col>
@@ -206,42 +206,39 @@ input {
             </div>
             <div>
               <b-button
-                v-if="isActiveProfile && !showDeletionWarning"
-                id="showDeletionWarningBtn"
+                v-if="isActiveProfile && !showCloseWarning"
+                id="showCloseWarningBtn"
                 class="p-0 pt-2"
                 variant="link"
-                @click="showDeletionWarningBtn()"
-                >Delete My Account
+                @click="showCloseWarningBtn()"
+                >Close My Account
               </b-button>
-              <b-row v-if="showDeletionWarning">
+              <b-row v-if="showCloseWarning">
                 <b-col class="font-weight-bold text-danger text-center">
                   <hr />
                   <font-awesome-icon
                     icon="exclamation-triangle"
                     aria-hidden="true"
                   ></font-awesome-icon>
-                  Your account will be marked for deletion, preventing you from
+                  Your account will be marked for removal, preventing you from
                   accessing your information on the Health Gateway. After a set
-                  period of time it will be deleted permanently.
+                  period of time it will be removed permanently.
                 </b-col>
               </b-row>
-              <b-row
-                v-if="showDeletionWarning"
-                class="mb-3 justify-content-end"
-              >
+              <b-row v-if="showCloseWarning" class="mb-3 justify-content-end">
                 <b-col class="text-right">
                   <b-button
-                    id="cancelDeleteBtn"
-                    class="mx-2 actionButton"
-                    @click="cancelDelete()"
+                    id="cancelCloseBtn"
+                    class="mx-2"
+                    @click="cancelClose()"
                     >Cancel
                   </b-button>
                   <b-button
-                    id="deleteAccountBtn"
-                    class="mx-2 actionButton"
+                    id="closeAccountBtn"
+                    class="mx-2"
                     variant="danger"
-                    @click="removeAccount()"
-                    >Delete
+                    @click="closeAccount()"
+                    >Close Account
                   </b-button>
                 </b-col>
               </b-row>
@@ -297,8 +294,9 @@ export default class ProfileComponent extends Vue {
   oidcIsAuthenticated: boolean;
   @Action("getUserEmail", { namespace: userNamespace }) getUserEmail;
   @Action("updateUserEmail", { namespace: userNamespace }) updateUserEmail;
-  @Action("deleteAccount", { namespace: userNamespace }) deleteAccount;
-  @Action("recoverAccount", { namespace: userNamespace }) recoverAccount;
+  @Action("closeUserAccount", { namespace: userNamespace }) closeUserAccount;
+  @Action("recoverUserAccount", { namespace: userNamespace })
+  recoverUserAccount;
 
   @Getter("user", { namespace: userNamespace }) user: User;
   @Getter("userIsActive", { namespace: userNamespace })
@@ -321,7 +319,7 @@ export default class ProfileComponent extends Vue {
   private userProfileService: IUserProfileService;
   private userProfile: UserProfile;
 
-  private showDeletionWarning = false;
+  private showCloseWarning = false;
 
   private timeForDeletion: number = -1;
 
@@ -425,19 +423,24 @@ export default class ProfileComponent extends Vue {
     let duration = moment.duration(this.timeForDeletion);
     let timeRemaining = duration.asDays();
     if (timeRemaining > 1) {
-      return Math.floor(timeRemaining).toString() + " days";
+      return this.pluralize(timeRemaining, "day");
     }
     timeRemaining = duration.asHours();
     if (timeRemaining > 1) {
-      return Math.floor(timeRemaining).toString() + " hours";
+      return this.pluralize(timeRemaining, "hour");
     }
     timeRemaining = duration.asMinutes();
     if (timeRemaining > 1) {
-      return Math.floor(timeRemaining).toString() + " minutes";
+      return this.pluralize(timeRemaining, "minute");
     }
 
     timeRemaining = duration.asSeconds();
-    return Math.floor(timeRemaining).toString() + " seconds";
+    return this.pluralize(timeRemaining, "seconds");
+  }
+
+  private pluralize(count: number, message: string): string {
+    let roundCount = Math.floor(count);
+    return roundCount.toString() + " " + message + (roundCount > 1 ? "s" : "");
   }
 
   private isValid(param: any): boolean | undefined {
@@ -503,9 +506,9 @@ export default class ProfileComponent extends Vue {
     this.emailConfirmation = "";
   }
 
-  private restoreAccount(): void {
+  private recoverAccount(): void {
     this.isLoading = true;
-    this.recoverAccount({
+    this.recoverUserAccount({
       hdid: this.user.hdid
     })
       .then(() => {
@@ -520,22 +523,22 @@ export default class ProfileComponent extends Vue {
       });
   }
 
-  private showDeletionWarningBtn(): void {
-    this.showDeletionWarning = true;
+  private showCloseWarningBtn(): void {
+    this.showCloseWarning = true;
   }
 
-  private cancelDelete(): void {
-    this.showDeletionWarning = false;
+  private cancelClose(): void {
+    this.showCloseWarning = false;
   }
 
-  private removeAccount(): void {
+  private closeAccount(): void {
     this.isLoading = true;
-    this.deleteAccount({
+    this.closeUserAccount({
       hdid: this.user.hdid
     })
       .then(() => {
         console.log("success!");
-        this.showDeletionWarning = false;
+        this.showCloseWarning = false;
       })
       .catch(err => {
         this.hasErrors = true;

@@ -48,7 +48,7 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public deleteAccount(hdid: string): Promise<UserProfile> {
+  public closeAccount(hdid: string): Promise<UserProfile> {
     return new Promise((resolve, reject) => {
       this.http
         .delete<RequestResult<UserProfile>>(

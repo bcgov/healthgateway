@@ -110,10 +110,10 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     });
   },
-  deleteAccount({ commit }, { hdid }): Promise<void> {
+  closeUserAccount({ commit }, { hdid }): Promise<void> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .deleteAccount(hdid)
+        .closeAccount(hdid)
         .then(userProfile => {
           commit("setProfileUserData", userProfile);
           resolve();
@@ -124,7 +124,7 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     });
   },
-  recoverAccount({ commit }, { hdid }): Promise<void> {
+  recoverUserAccount({ commit }, { hdid }): Promise<void> {
     return new Promise((resolve, reject) => {
       userProfileService
         .recoverAccount(hdid)

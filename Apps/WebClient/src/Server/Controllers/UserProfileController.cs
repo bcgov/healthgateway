@@ -129,7 +129,7 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Deletes a user profile.
+        /// Closes a user profile.
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
@@ -138,7 +138,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Route("{hdid}")]
-        public async Task<IActionResult> DeleteUserProfile(string hdid)
+        public async Task<IActionResult> CloseUserProfile(string hdid)
         {
             Contract.Requires(hdid != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -151,7 +151,7 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
-            result.ResourcePayload.PlannedDeletionDateTime = new DateTime(2020, 2, 27);
+            result.ResourcePayload.PlannedDeletionDateTime = new DateTime(2020, 2, 26);
             return new JsonResult(result);
         }
         /// <summary>
