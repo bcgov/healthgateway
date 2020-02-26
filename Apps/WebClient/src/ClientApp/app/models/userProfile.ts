@@ -13,6 +13,9 @@ export default interface UserProfile {
 
   // Datetime of the user's last login
   lastLoginDate: Date;
+
+  // Date when the user profile will be deleted
+  plannedDeletionDateTime: Date | undefined;
 }
 
 export interface CreateUserRequest {

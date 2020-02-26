@@ -48,6 +48,38 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
+  public closeAccount(hdid: string): Promise<UserProfile> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .delete<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}`
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
+  public recoverAccount(hdid: string): Promise<UserProfile> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
   public getTermsOfService(): Promise<TermsOfService> {
     return new Promise((resolve, reject) => {
       this.http

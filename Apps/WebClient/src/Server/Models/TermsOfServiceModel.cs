@@ -48,7 +48,7 @@ namespace HealthGateway.WebClient.Models
             return new TermsOfServiceModel()
             {
                 Id = model?.Id,
-                DateActive = model?.EffectiveDate!.Value,
+                EffectiveDate = model?.EffectiveDate!.Value,
                 Content = model?.LegalText,
             };
         }
