@@ -17,6 +17,7 @@
 #pragma warning disable CS1591
 namespace HealthGateway.Database.Migrations
 {
+
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 

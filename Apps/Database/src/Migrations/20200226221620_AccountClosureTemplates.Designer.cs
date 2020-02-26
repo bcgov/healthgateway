@@ -26,7 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200226220138_AccountClosureTemplates")]
+    [Migration("20200226221620_AccountClosureTemplates")]
     partial class AccountClosureTemplates
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
