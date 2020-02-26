@@ -86,6 +86,8 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+            services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
+            services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
 
             // Add app
             services.AddTransient<FedDrugJob>();
@@ -133,6 +135,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<HNClientTestJob>(this.configuration, "HNClientTest", j => j.Process());
+            SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
 
             app.UseStaticFiles(new StaticFileOptions
             {

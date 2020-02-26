@@ -13,46 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace Healthgateway.JobScheduler.Models
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The user profile model.
+    /// Represents the RocketChat Configuration.
     /// </summary>
-    public class UserProfile : AuditableEntity
+    public class LegalDocument
     {
         /// <summary>
-        /// Gets or sets the user hdid.
+        /// Initializes a new instance of the <see cref="LegalDocument"/> class.
         /// </summary>
-        [Key]
-        [Column("UserProfileId")]
-        [MaxLength(52)]
-        public string HdId { get; set; } = null!;
+        public LegalDocument()
+        {
+        }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user accepted the terms of service.
+        /// Gets or sets the Legal Document name.
         /// </summary>
-        [Required]
-        public bool AcceptedTermsOfService { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user email.
+        /// Gets or sets the Legal Agreement code.
         /// </summary>
-        [MaxLength(254)]
-        public string? Email { get; set; }
+        public string Code { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Closed date of the account.
-        /// After an account has been closed for n amount of days the row is physically deleted.
+        /// Gets or sets the application setting key to look up the last processed date.
         /// </summary>
-        public DateTime? ClosedDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the KeyCloak identifer of the user.
-        /// </summary>
-        public Guid? KeyCloakId { get; set; }
+        public string LastCheckedKey { get; set; } = string.Empty;
     }
 }

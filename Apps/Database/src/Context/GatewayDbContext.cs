@@ -69,6 +69,8 @@ namespace HealthGateway.Database.Context
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
         public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
         public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
+        public DbSet<ApplicationSetting> ApplicationSetting { get; set; } = null!;
+        public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -141,11 +143,20 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.LegalAgreementCode)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Create Foreign keys for Application Settings
+            modelBuilder.Entity<ApplicationSetting>()
+                    .HasOne<ProgramTypeCode>()
+                    .WithMany()
+                    .HasPrincipalKey(k => k.ProgramCode)
+                    .HasForeignKey(k => k.Application)
+                    .OnDelete(DeleteBehavior.Restrict);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
             this.SeedAuditTransactionResults(modelBuilder);
             this.SeedLegalAgreements(modelBuilder);
+            this.SeedApplicationSettings(modelBuilder);
         }
 
         /// <summary>
@@ -252,7 +263,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Configuration,
+                    ProgramCode = ApplicationType.Configuration,
                     Description = "Configuration Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -261,7 +272,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.WebClient,
+                    ProgramCode = ApplicationType.WebClient,
                     Description = "Web Client",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -270,7 +281,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Immunization,
+                    ProgramCode = ApplicationType.Immunization,
                     Description = "Immunization Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -279,7 +290,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Patient,
+                    ProgramCode = ApplicationType.Patient,
                     Description = "Patient Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -288,7 +299,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Medication,
+                    ProgramCode = ApplicationType.Medication,
                     Description = "Medication Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -297,8 +308,17 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.AdminWebClient,
+                    ProgramCode = ApplicationType.AdminWebClient,
                     Description = "Admin Client",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
+                    ProgramCode = ApplicationType.JobScheduler,
+                    Description = "Job Scheduler",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
@@ -438,7 +458,28 @@ namespace HealthGateway.Database.Context
                     Id = Guid.Parse("f5acf1de-2f5f-431e-955d-a837d5854182"),
                     LegalAgreementCode = AgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20191206.html"),
-                    EffectiveDate = Convert.ToDateTime("2019/12/06", CultureInfo.InvariantCulture),
+                    EffectiveDate = this.DefaultSeedDate,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Application settings.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedApplicationSettings(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ApplicationSetting>().HasData(
+                new ApplicationSetting
+                {
+                    Id = Guid.Parse("5f279ba2-8e7b-4b1d-8c69-467d94dcb7fb"),
+                    Application = ApplicationType.JobScheduler,
+                    Component = "NotifyUpdatedLegalAgreementsJob",
+                    Key = "ToS-Last-Checked",
+                    Value = this.DefaultSeedDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

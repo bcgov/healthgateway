@@ -20,39 +20,39 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user profile model.
+    /// A data store for application settings that are updated at runntime.
     /// </summary>
-    public class UserProfile : AuditableEntity
+    public class ApplicationSetting : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the user hdid.
+        /// Gets or sets the id.
         /// </summary>
-        [Key]
-        [Column("UserProfileId")]
-        [MaxLength(52)]
-        public string HdId { get; set; } = null!;
+        [Column("ApplicationSettingsId")]
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user accepted the terms of service.
+        /// Gets or sets the application name.
         /// </summary>
         [Required]
-        public bool AcceptedTermsOfService { get; set; }
+        [MaxLength(10)]
+        public string? Application { get; set; }
 
         /// <summary>
-        /// Gets or sets the user email.
+        /// Gets or sets the component name.
         /// </summary>
-        [MaxLength(254)]
-        public string? Email { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string? Component { get; set; }
 
         /// <summary>
-        /// Gets or sets the Closed date of the account.
-        /// After an account has been closed for n amount of days the row is physically deleted.
+        /// Gets or sets the Key name.
         /// </summary>
-        public DateTime? ClosedDate { get; set; }
+        [Required]
+        public string? Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the KeyCloak identifer of the user.
+        /// Gets or sets the value.
         /// </summary>
-        public Guid? KeyCloakId { get; set; }
+        public string? Value { get; set; }
     }
 }

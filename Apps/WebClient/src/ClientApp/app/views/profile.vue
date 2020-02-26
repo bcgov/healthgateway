@@ -47,6 +47,14 @@ input {
         </b-row>
         <b-row class="mb-3">
           <b-col>
+            <label for="lastLoginDate">Last Login Date</label>
+            <div id="lastLoginDate">
+              {{ lastLoginDate }}
+            </div>
+          </b-col>
+        </b-row>
+        <b-row class="mb-3">
+          <b-col>
             <label for="email">Email Address</label>
             <b-button
               v-if="!isEdditable"
@@ -140,6 +148,20 @@ input {
             </b-button>
           </b-col>
         </b-row>
+        <b-row class="mb-3">
+          <b-col>
+            <label for="other">Other</label>
+            <div id="other">
+              <router-link
+                id="termsOfService"
+                variant="primary"
+                to="/termsOfService"
+              >
+                Terms Of Service
+              </router-link>
+            </div>
+          </b-col>
+        </b-row>
       </div>
     </div>
   </div>
@@ -158,6 +180,7 @@ import {
   not
 } from "vuelidate/lib/validators";
 import {
+  IUserProfileService,
   IUserEmailService,
   IAuthenticationService
 } from "@/services/interfaces";
@@ -166,8 +189,11 @@ import container from "@/plugins/inversify.config";
 import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserProfile from "@/models/userProfile";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
+
 library.add(faExclamationTriangle);
 
 const userNamespace: string = "user";
@@ -201,21 +227,29 @@ export default class ProfileComponent extends Vue {
   private tempEmail: string = "";
   private submitStatus: string = "";
   private userEmailService: IUserEmailService;
+  private userProfileService: IUserProfileService;
+  private userProfile: UserProfile;
 
   mounted() {
-    // Load the user name and current email
-    var authenticationService: IAuthenticationService = container.get(
-      SERVICE_IDENTIFIER.AuthenticationService
+    this.userProfileService = container.get<IUserProfileService>(
+      SERVICE_IDENTIFIER.UserProfileService
     );
 
     this.userEmailService = container.get<IUserEmailService>(
       SERVICE_IDENTIFIER.UserEmailService
     );
 
+    // Load the user name and current email
+    let authenticationService = container.get<IAuthenticationService>(
+      SERVICE_IDENTIFIER.AuthenticationService
+    );
+
     this.isLoading = true;
     var oidcUserPromise = authenticationService.getOidcUserProfile();
     var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
-    Promise.all([oidcUserPromise, userEmailPromise])
+    var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
+
+    Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
       .then(results => {
         // Load oidc user details
         if (results[0]) {
@@ -228,6 +262,11 @@ export default class ProfileComponent extends Vue {
           this.email = userEmailInvite.emailAddress;
           this.emailVerified = userEmailInvite.validated;
           this.verificationSent = this.emailVerified;
+        }
+
+        if (results[2]) {
+          // Load user profile
+          this.userProfile = results[2];
         }
 
         this.isLoading = false;
@@ -259,8 +298,12 @@ export default class ProfileComponent extends Vue {
     };
   }
 
-  get fullName(): string {
+  private get fullName(): string {
     return this.oidcUser.given_name + " " + this.oidcUser.family_name;
+  }
+
+  private get lastLoginDate(): string {
+    return moment(this.userProfile).format("lll");
   }
 
   private isValid(param: any): boolean | undefined {
