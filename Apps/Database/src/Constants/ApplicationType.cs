@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Constant
     /// <summary>
     /// The application type being recorded in the DB.
     /// </summary>
-    public static class AuditApplication
+    public static class ApplicationType
     {
         /// <summary>
         /// Represents the Configuration application.
@@ -49,5 +49,10 @@ namespace HealthGateway.Database.Constant
         /// Represents the Admin Client application.
         /// </summary>
         public const string AdminWebClient = "ADMIN";
+
+        /// <summary>
+        /// Represents the Job Scheduler application.
+        /// </summary>
+        public const string JobScheduler = "JOBS";
     }
 }

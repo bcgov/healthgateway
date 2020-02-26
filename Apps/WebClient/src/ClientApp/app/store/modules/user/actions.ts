@@ -99,10 +99,38 @@ export const actions: ActionTree<UserState, RootState> = {
   },
   updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log(hdid, emailAddress);
       userEmailService
         .updateEmail(hdid, emailAddress)
         .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  closeUserAccount({ commit }, { hdid }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .closeAccount(hdid)
+        .then(userProfile => {
+          commit("setProfileUserData", userProfile);
+          resolve();
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  recoverUserAccount({ commit }, { hdid }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .recoverAccount(hdid)
+        .then(userProfile => {
+          console.log("User Profile: ", userProfile);
+          commit("setProfileUserData", userProfile);
           resolve();
         })
         .catch(error => {

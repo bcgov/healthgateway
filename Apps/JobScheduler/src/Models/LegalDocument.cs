@@ -13,22 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Delegates
+namespace Healthgateway.JobScheduler.Models
 {
+    using System;
     using System.Collections.Generic;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Operations to be performed in the DB for the TermsOfService.
+    /// Represents the RocketChat Configuration.
     /// </summary>
-    public interface ILegalAgreementDelegate
+    public class LegalDocument
     {
         /// <summary>
-        /// Fetches the last active Legal Agreement from the database of the specified agreement type.
+        /// Initializes a new instance of the <see cref="LegalDocument"/> class.
         /// </summary>
-        /// <param name="agreementTypeCode">The agreement type to filter the result.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode);
+        public LegalDocument()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the Legal Document name.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Legal Agreement code.
+        /// </summary>
+        public string Code { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the application setting key to look up the last processed date.
+        /// </summary>
+        public string LastCheckedKey { get; set; } = string.Empty;
     }
 }
