@@ -122,5 +122,21 @@ namespace HealthGateway.Database.Delegates
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        {
+            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            int offset = page * pagesize;
+            result.Payload = this.dbContext.UserProfile
+                                .Where(p => (p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime) &&
+                                    p.Email != null)
+                                .OrderBy(o => o.ClosedDateTime)
+                                .Skip(offset)
+                                .Take(pagesize)
+                                .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
     }
 }

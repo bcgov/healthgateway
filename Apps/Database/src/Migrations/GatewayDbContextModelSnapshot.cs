@@ -1195,9 +1195,9 @@ namespace HealthGateway.Database.Migrations
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FormatCode = "HTML",
                             From = "HG_Donotreply@gov.bc.ca",
-                            Name = "Health Gateway Account Recovered",
+                            Name = "AccountRecovered",
                             Priority = 10,
-                            Subject = "AccountRecovered",
+                            Subject = "Health Gateway Account Recovered",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u

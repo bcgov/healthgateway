@@ -23,6 +23,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
@@ -40,7 +41,6 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
-    using HealthGateway.Common.Services;
 
     /// <summary>
     /// The startup class.
@@ -141,6 +141,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<HNClientTestJob>(this.configuration, "HNClientTest", j => j.Process());
             SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
+            SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
 
             app.UseStaticFiles(new StaticFileOptions
             {
