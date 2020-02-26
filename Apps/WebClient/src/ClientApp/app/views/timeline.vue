@@ -53,6 +53,20 @@
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
+        <b-alert :show="hasNewTermsOfService" dismissible variant="info">
+          <h4>Updated Terms of Service</h4>
+          <span>
+            The Terms of Service has been updated since your last login. You can
+            review them
+            <router-link
+              id="termsOfServiceLink"
+              variant="primary"
+              to="/termsOfService"
+            >
+              here</router-link
+            >.
+          </span>
+        </b-alert>
         <b-alert :show="unverifiedEmail" dismissible variant="info">
           <h4>Unverified email</h4>
           <span>
@@ -68,7 +82,7 @@
           <b-col>
             <div class="form-group has-filter">
               <font-awesome-icon
-                :icon="getIcon()"
+                :icon="searchIcon"
                 class="form-control-feedback"
                 fixed-width
               ></font-awesome-icon>
@@ -124,9 +138,9 @@
               <b-col>
                 <hr class="dateBreakLine" />
               </b-col>
-              <MedicationComponent
+              <EntryCardComponent
                 v-for="(entry, index) in dateGroup.entries"
-                :key="entry.id"
+                :key="entry.type + '-' + entry.id"
                 :datekey="dateGroup.key"
                 :entry="entry"
                 :index="index"
@@ -153,18 +167,22 @@
 import Vue from "vue";
 import { Component, Watch, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import { IMedicationService } from "@/services/interfaces";
-import container from "@/inversify.config";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import {
+  IMedicationService,
+  IImmunizationService
+} from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import moment from "moment";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import MedicationTimelineComponent from "@/components/timeline/medication.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
@@ -180,7 +198,7 @@ interface DateGroup {
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
-    MedicationComponent: MedicationTimelineComponent,
+    EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
     FeedbackComponent
   }
@@ -191,7 +209,8 @@ export default class TimelineComponent extends Vue {
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
-  private isLoading: boolean = false;
+  private isMedicationLoading: boolean = false;
+  private isImmunizationLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
@@ -202,21 +221,30 @@ export default class TimelineComponent extends Vue {
 
   mounted() {
     this.fechMedicationStatements();
+    this.fechImmunizations();
   }
 
-  get unverifiedEmail(): boolean {
+  private get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
   }
 
-  private getIcon(): IconDefinition {
+  private get hasNewTermsOfService(): boolean {
+    return this.user.hasTermsOfServiceUpdated;
+  }
+
+  private get searchIcon(): IconDefinition {
     return faSearch;
+  }
+
+  private get isLoading(): boolean {
+    return this.isMedicationLoading || this.isImmunizationLoading;
   }
 
   private fechMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
-    this.isLoading = true;
+    this.isMedicationLoading = true;
     medicationService
       .getPatientMedicationStatements(this.user.hdid, protectiveWord)
       .then(results => {
@@ -227,11 +255,7 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
-          if (!this.filterText) {
-            this.visibleTimelineEntries = this.timelineEntries;
-          } else {
-            this.applyTimelineFilter();
-          }
+          this.applyTimelineFilter();
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
           this.protectiveWordAttempts++;
@@ -248,7 +272,38 @@ export default class TimelineComponent extends Vue {
         console.log(err);
       })
       .finally(() => {
-        this.isLoading = false;
+        this.isMedicationLoading = false;
+      });
+  }
+
+  private fechImmunizations() {
+    const immunizationService: IImmunizationService = container.get(
+      SERVICE_IDENTIFIER.ImmunizationService
+    );
+    this.isImmunizationLoading = true;
+    immunizationService
+      .getPatientImmunizations(this.user.hdid)
+      .then(results => {
+        if (results.resultStatus == ResultType.Success) {
+          // Add the immunization entries to the timeline list
+          for (let result of results.resourcePayload) {
+            this.timelineEntries.push(new ImmunizationTimelineEntry(result));
+          }
+          this.applyTimelineFilter();
+        } else {
+          console.log(
+            "Error returned from the immunization call: " +
+              results.resultMessage
+          );
+          this.hasErrors = true;
+        }
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isImmunizationLoading = false;
       });
   }
 
@@ -271,10 +326,15 @@ export default class TimelineComponent extends Vue {
 
   @Watch("filterText")
   private applyTimelineFilter() {
-    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
-      entry.filterApplies(this.filterText)
-    );
+    if (!this.filterText) {
+      this.visibleTimelineEntries = this.timelineEntries;
+    } else {
+      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+        entry.filterApplies(this.filterText)
+      );
+    }
   }
+
   private get dateGroups(): DateGroup[] {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
@@ -298,7 +358,9 @@ export default class TimelineComponent extends Vue {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
-        entries: groups[dateKey]
+        entries: groups[dateKey].sort((a, b) =>
+          a.type > b.type ? 1 : a.type < b.type ? -1 : 0
+        )
       };
     });
     return this.sortGroup(groupArrays);

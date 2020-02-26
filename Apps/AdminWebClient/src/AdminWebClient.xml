@@ -4,6 +4,39 @@
         <name>AdminWebClient</name>
     </assembly>
     <members>
+        <member name="T:HealthGateway.Admin.Controllers.AuthenticationController">
+            <summary>
+            The Authentication and Authorization controller.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.#ctor(HealthGateway.Admin.Services.IAuthenticationService,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Controllers.AuthenticationController},Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.AuthenticationController"/> class.
+            </summary>
+            <param name="authenticationService">The injected auth service provider.</param>
+            <param name="logger">The injected logger provider.</param>
+            <param name="httpContextAccessor">The injected httpContextAccessor.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.GetAuthenticationData">
+            <summary>
+            Reads the ASP.Net Core Authentication cookie (if available) and provides Authentication data.
+            </summary>
+            <remarks>
+            The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
+            This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
+            </remarks>
+            <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Login">
+            <param name="redirectPath">The redirect uri after successful authentication.</param>
+            <returns>An IActionResult which results in a redirect.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Logout">
+            <summary>
+            Performs the logout of the application.
+            </summary>
+            <returns>A SignoutResult containing the redirect uri.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.BetaRequestController">
             <summary>
             Web API to handle user email interactions.
@@ -53,6 +86,38 @@
             </summary>
             <returns>The Health Gatway Configuration.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.UserFeedbackController">
+            <summary>
+            Web API to handle user feedback review.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.#ctor(HealthGateway.Admin.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.UserFeedbackController"/> class.
+            </summary>
+            <param name="feedbackService">The injected user feedback service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.GetFeedbackList">
+            <summary>
+            Retrieves a list of user feedbacks.
+            </summary>
+            <returns>The list of user feedbacks.</returns>
+            <response code="200">Returns the list of user feedbacks.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.UpdateUserFeedback(HealthGateway.Admin.Models.UserFeedbackView)">
+            <summary>
+            Sends email invites to the beta requets with the given ids.
+            </summary>
+            <returns>A list of ids of the beta requests that where successfully processed.</returns>
+            <param name="feedback">user feedback to update.</param>
+            <response code="200">Returns the beta requests ids that where invited.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Models.AdminConfiguration">
             <summary>
             Configuration data to be used by the Health Gateway Admin.
@@ -84,11 +149,6 @@
             Gets or sets the OpenIdConnect configuration.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.IdentityProviders">
-            <summary>
-            Gets or sets the List of Identity providers.
-            </summary>
-        </member>
         <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.Admin">
             <summary>
             Gets or sets the Health Gateway Webclient specific configuration.
@@ -97,37 +157,6 @@
         <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.ServiceEndpoints">
             <summary>
             Gets or sets the Service Endpoints.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.Admin.Models.IdentityProviderConfiguration">
-            <summary>
-            An object representing a configured Health Gateway IdentityProvider.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Id">
-            <summary>
-            Gets or sets the Id of the Identity Provider.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Name">
-            <summary>
-            Gets or sets the name of the Identity Provider.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Icon">
-            <summary>
-            Gets or sets the Font Awesome Icon that we recommend to use.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Hint">
-            <summary>
-            Gets or sets the Identity Provider hint.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Admin.Models.IdentityProviderConfiguration.Disabled">
-            <summary>
-            Gets or sets a value indicating whether this identity provider
-            should be used.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">
@@ -216,6 +245,133 @@
             <param name="models">List of beta request models.</param>
             <returns>A list of UserBetaRequest.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Models.UserFeedbackView">
+            <summary>
+            Model that provides a user representation of a user feedback.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Id">
+            <summary>
+            Gets or sets the user feedback id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Comment">
+            <summary>
+            Gets or sets the feedback comments.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.IsSatisfied">
+            <summary>
+            Gets or sets the value indicating whether the user is satisfied or not.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.IsReviewed">
+            <summary>
+            Gets or sets the value indicating whether the feedback is reviewed or not.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.CreatedDateTime">
+            <summary>
+            Gets or sets the date when the feedback was created.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Version">
+            <summary>
+            Gets or sets the version of the resource.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedback)">
+            <summary>
+            Constructs a UserFeedbackView from a UserFeedback model.
+            </summary>
+            <param name="model">A user feedback request models.</param>
+            <returns>A new UserFeedbackView.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedback})">
+            <summary>
+            Constructs a List of UserFeedbackView from a list of UserFeedback models.
+            </summary>
+            <param name="models">List of user feedback models.</param>
+            <returns>A list of UserFeedbackView.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.UserProfile">
+            <summary>
+            The User object representing the current Authenticated User.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserProfile.Id">
+            <summary>
+            Gets or sets the ID of the user.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserProfile.Name">
+            <summary>
+            Gets or sets the common name of the user.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserProfile.Email">
+            <summary>
+            Gets or sets the users email.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.AuthenticationData">
+            <summary>
+            The authentication data from the ASP.Net Core Authentication cookie.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Services.AuthenticationData.IsAuthenticated">
+            <summary>
+            Gets or sets a value indicating whether the client has been authenticated or not.
+            Token and User properties should only be accessed if this value is true.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Services.AuthenticationData.IsAuthorized">
+            <summary>
+            Gets or sets a value indicating whether the client has been authorized for this app or not.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Services.AuthenticationData.Token">
+            <summary>
+            Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Services.AuthenticationData.User">
+            <summary>
+            Gets or sets the authenticated user, <see cref="P:HealthGateway.Admin.Services.AuthenticationData.User"/>.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.AuthenticationService">
+            <summary>
+            Authentication and Authorization Service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.AuthenticationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.AuthenticationService},Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.AuthenticationService"/> class.
+            </summary>
+            <param name="httpContextAccessor">Injected HttpContext Provider.</param>
+            <param name="configuration">Injected Configuration Provider.</param>
+            <param name="logger">Injected Logger Provider.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.AuthenticationService.GetAuthenticationData">
+            <summary>
+            Authenticates the request based on the current context.
+            </summary>
+            <returns>The AuthData containing the token and user information.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.AuthenticationService.Logout">
+            <summary>
+            Clears the authorization data from the context.
+            </summary>
+            <returns>The signout confirmation followed by the redirect uri.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.AuthenticationService.GetAuthenticationProperties(System.String)">
+            <summary>
+            Returns the authentication properties with the populated hint and redirect URL.
+            </summary>
+            <returns> The AuthenticationProperties.</returns>
+            <param name="redirectPath">The URI to redirect to after logon.</param>
+        </member>
         <member name="T:HealthGateway.Admin.Services.BetaRequestService">
             <inheritdoc />
         </member>
@@ -251,6 +407,30 @@
             </summary>
             <returns>The external configuration data.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Services.IAuthenticationService">
+            <summary>
+            Authentication and Authorization Service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IAuthenticationService.GetAuthenticationData">
+            <summary>
+            Authenticates the request based on the current context.
+            </summary>
+            <returns>The AuthData containing the token and user information.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IAuthenticationService.Logout">
+            <summary>
+            Clears the authorization data from the context.
+            </summary>
+            <returns>The signout confirmation followed by the redirect uri.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IAuthenticationService.GetAuthenticationProperties(System.String)">
+            <summary>
+            Returns the authentication properties with the populated hint and redirect URL.
+            </summary>
+            <returns> The AuthenticationProperties.</returns>
+            <param name="redirectPath">The URI to redirect to after logon.</param>
+        </member>
         <member name="T:HealthGateway.Admin.Services.IBetaRequestService">
             <summary>
             Service that provides functionality to access and create requests for beta access.
@@ -280,6 +460,40 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.IUserFeedbackService">
+            <summary>
+            Service that provides functionality to access and create requests for beta access.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.GetUserFeedback">
+            <summary>
+            Retrieves the beta requests where the user does not have an invite yet.
+            </summary>
+            <returns>returns the beta request for the user if found.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.UpdateFeedbackReview(HealthGateway.Admin.Models.UserFeedbackView)">
+            <summary>
+            Updates the user feedback.
+            </summary>
+            <param name="feedback">The user feedback to update.</param>
+            <returns>True if the call was success.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.UserFeedbackService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserFeedbackService},HealthGateway.Database.Delegates.IFeedbackDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.BetaRequestService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="feedbackDelegate">The feedeback delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.GetUserFeedback">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.UpdateFeedbackReview(HealthGateway.Admin.Models.UserFeedbackView)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.AdminWebClient.Program">
             <summary>
@@ -316,6 +530,19 @@
             This method gets called by the runtime. Use this method to add services to the container.
             </summary>
             <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The passed in Application Builder.</param>
+            <param name="env">The passed in Environment.</param>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Startup.ConfigureAuthenticationService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This sets up the OIDC authentication for Hangfire.
+            </summary>
+            <param name="services">The passed in IServiceCollection.</param>
         </member>
     </members>
 </doc>

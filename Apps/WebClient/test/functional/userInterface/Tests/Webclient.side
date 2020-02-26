@@ -783,7 +783,7 @@
         ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
         ["xpath=//div[3]/div/div/div", "xpath:position"]
       ],
-      "value": "Jan 29, 2019"
+      "value": "Jan 29, 2020"
     }, {
       "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
       "comment": "",
@@ -2092,6 +2092,93 @@
       "targets": [],
       "value": "true"
     }]
+  }, {
+    "id": "ea0c5793-cfaf-4b48-8902-870aa52db970",
+    "name": "Timeline - Immunization Details",
+    "commands": [{
+      "id": "cf40608d-e106-4de0-91e9-d6f1f348f0d2",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d3fe34a2-7346-4f15-b655-da40ab6b8b5e",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "1080cd19-81d9-4684-a3e2-0d0c45948fec",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "b463ba78-4820-40ce-9a58-fa3a83ff12ad",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row > .btn",
+      "targets": [
+        ["css=.row > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"]
+      ],
+      "value": "Date (Newest)"
+    }, {
+      "id": "ae3049b5-0599-4b65-abb5-d1001a775b9d",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "a745a52c-b73f-4b78-9b59-8d7ee3d86c2e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(3) .date",
+      "targets": [
+        ["css=.row:nth-child(3) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div[2]/div[3]/div/div", "xpath:position"]
+      ],
+      "value": "Jan 22, 2020"
+    }, {
+      "id": "d1ac4e1a-2650-4708-a6a0-a0aaff0c54d2",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(3) > .row:nth-child(4) .entryTitle",
+      "targets": [
+        ["css=.row:nth-child(3) > .row:nth-child(4) .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div[4]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div[4]/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Shingles"
+    }, {
+      "id": "451d1fe1-a700-4128-8afe-385595ee68cc",
+      "command": "assertText",
+      "target": "css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col",
+      "targets": [
+        ["css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div[4]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div[2]/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "Zoster"
+    }, {
+      "id": "98c790b4-1e83-49e4-9c35-f17b922680d3",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2120,7 +2207,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

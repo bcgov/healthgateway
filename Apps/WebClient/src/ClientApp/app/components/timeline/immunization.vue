@@ -1,0 +1,86 @@
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+$radius: 15px;
+
+.entryHeading {
+  border-radius: 25px;
+}
+
+.entryTitle {
+  background-color: $soft_background;
+  color: $primary;
+  padding: 13px 15px;
+  font-weight: bold;
+}
+
+.icon {
+  background-color: $primary;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  border-radius: $radius 0px 0px $radius;
+}
+
+.leftPane {
+  width: 60px;
+  max-width: 60px;
+}
+
+.detailsButton {
+  padding: 0px;
+}
+
+.detailSection {
+  margin-top: 15px;
+}
+
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
+}
+</style>
+
+<template>
+  <b-col>
+    <b-row class="entryHeading">
+      <b-col class="icon leftPane">
+        <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>
+      </b-col>
+      <b-col class="entryTitle">
+        {{ entry.immunization.name }}
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col class="leftPane"></b-col>
+      <b-col>
+        <b-row>
+          <b-col>
+            {{ entry.immunization.agents }}
+          </b-col>
+        </b-row>
+      </b-col>
+    </b-row>
+  </b-col>
+</template>
+
+<script lang="ts">
+import Vue from "vue";
+import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import { Prop, Component } from "vue-property-decorator";
+
+import { faSyringe, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+
+@Component
+export default class ImmunizationTimelineComponent extends Vue {
+  @Prop() entry!: ImmunizationTimelineEntry;
+  @Prop() index!: number;
+  @Prop() datekey!: string;
+  private isLoading: boolean = false;
+  private hasErrors: boolean = false;
+
+  private get entryIcon(): IconDefinition {
+    return faSyringe;
+  }
+}
+</script>

@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <Folder Include="Wrapper\" />
+    <Folder Include="Assets\Legal\" />
   </ItemGroup>
 
 
@@ -52,5 +53,9 @@
     <EmbeddedResource Include="Assets\docs\EmailInviteTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailWaitlistTemplate.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\Legal\TermsOfService.20191206.html" />
   </ItemGroup>
 </Project>

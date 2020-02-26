@@ -15,21 +15,30 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClient
 {
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
+    using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Database.Delegates;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.SpaServices;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.IdentityModel.Logging;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using VueCliMiddleware;
-    using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
 
     /// <summary>
     /// Configures the application during startup.
@@ -58,26 +67,29 @@ namespace HealthGateway.AdminWebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            IdentityModelEventSource.ShowPII = true; //To show detail of error and see the problem
+            //To show detail of error and see the problem.
+            IdentityModelEventSource.ShowPII = true;
 
             this.logger.LogDebug("Configure Services...");
 
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
-            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
-            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.ConfigureAuthenticationService(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
+            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
 
             // Add delegates
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
+            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
 
             // Configure SPA 
             services.AddControllersWithViews();
@@ -92,9 +104,13 @@ namespace HealthGateway.AdminWebClient
             JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app">The passed in Application Builder.</param>
+        /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {           
+        {
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
@@ -105,7 +121,7 @@ namespace HealthGateway.AdminWebClient
 
             if (env.IsDevelopment())
             {
-                this.logger.LogInformation("ENVIRONENT is Development");
+                this.logger.LogInformation("Environment is Development");
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -114,17 +130,6 @@ namespace HealthGateway.AdminWebClient
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
-            /*app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-            app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
-
-            // app.UseRequestLocalization();
-            //app.UseCors(CorsPolicy);
-
-            app.UseAuthentication();
-            app.UseAuthorization();*/
 
             if (!env.IsDevelopment())
             {
@@ -143,14 +148,11 @@ namespace HealthGateway.AdminWebClient
                         endpoints.MapToVueCliProxy(
                             "{*path}",
                             new SpaOptions { SourcePath = "ClientApp" },
-                            npmScript: (System.Diagnostics.Debugger.IsAttached) ? "serve" : null,
+                            npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
                             regex: "Compiled successfully",
                             forceKill: true
-                            );
+                        );
                     }
-
-                    // Add MapRazorPages if the app uses Razor Pages. Since Endpoint Routing includes support for many frameworks, adding Razor Pages is now opt -in.
-                    //endpoints.MapRazorPages();
                 }
             );
 
@@ -158,6 +160,88 @@ namespace HealthGateway.AdminWebClient
             {
                 spa.Options.SourcePath = "ClientApp";
             });
+        }
+
+        /// <summary>
+        /// This sets up the OIDC authentication for Hangfire.
+        /// </summary>
+        /// <param name="services">The passed in IServiceCollection.</param>
+        private void ConfigureAuthenticationService(IServiceCollection services)
+        {
+            string basePath = this.GetBasePath();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = AuthorizationConstants.CookieName;
+                options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+            })
+            .AddOpenIdConnect(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                };
+                this.configuration.GetSection("OpenIdConnect").Bind(options);
+                if (string.IsNullOrEmpty(options.Authority))
+                {
+                    this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
+                }
+
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = ctx =>
+                    {
+                        JwtSecurityToken accessToken = ctx.SecurityToken;
+                        if (accessToken != null)
+                        {
+                            ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                            if (identity != null)
+                            {
+                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProvider = ctx =>
+                    {
+                        if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                        {
+                            this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                            ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                        }
+
+                        return Task.FromResult(0);
+                    },
+                    OnAuthenticationFailed = c =>
+                    {
+                        c.HandleResponse();
+                        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        c.Response.ContentType = "text/plain";
+                        this.logger.LogError(c.Exception.ToString());
+                        return c.Response.WriteAsync(c.Exception.ToString());
+                    },
+                };
+            });
+        }
+
+        private string GetBasePath()
+        {
+            string basePath = string.Empty;
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            if (section.GetValue<bool>("Enabled", false))
+            {
+                basePath = section.GetValue<string>("BasePath");
+            }
+
+            this.logger.LogDebug($"JobScheduler basePath = {basePath}");
+            return basePath;
         }
     }
 }

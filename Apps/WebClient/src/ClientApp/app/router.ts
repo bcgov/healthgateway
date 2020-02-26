@@ -3,7 +3,7 @@ import Vue from "vue";
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
-import { SnowplowWindow } from "@/extensions";
+import { SnowplowWindow } from "@/plugins/extensions";
 declare let window: SnowplowWindow;
 
 const ProfileComponent = () =>
@@ -32,6 +32,8 @@ const TimelineComponent = () =>
   import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
 const ValidateEmailComponent = () =>
   import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
+const TermsOfServiceComponent = () =>
+  import(/* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue");
 
 Vue.use(VueRouter);
 
@@ -76,6 +78,11 @@ const routes = [
   {
     path: "/timeline",
     component: TimelineComponent,
+    meta: { requiresRegistration: true, roles: ["user"] }
+  },
+  {
+    path: "/termsOfService",
+    component: TermsOfServiceComponent,
     meta: { requiresRegistration: true, roles: ["user"] }
   },
   {

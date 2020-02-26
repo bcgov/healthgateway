@@ -16,12 +16,13 @@
 namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Configures the application during startup.
@@ -48,13 +49,30 @@ namespace HealthGateway.Immunization
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
+            this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
 
-            // Imms Service
-            services.AddSingleton<IImmunizationService, MockImmunizationService>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("allowAny", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+            // Add Services
+            services.AddTransient<IImmunizationService, ImmunizationService>();
+            services.AddSingleton<IImmunizationDelegateFactory, ImmunizationDelegateFactory>();
+
+            // Add delegates
+            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
         }
 
         /// <summary>
@@ -64,9 +82,10 @@ namespace HealthGateway.Immunization
         public void Configure(IApplicationBuilder app)
         {
             this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseAuth(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseAuth(app);
+            this.startupConfig.UseRest(app);
         }
     }
 }

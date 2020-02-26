@@ -1,0 +1,142 @@
+apiVersion: template.openshift.io/v1
+apiVersion: v1
+kind: Template
+metadata:
+  name: ${NAME}-template
+  annotations:
+    description: "Template for Nginx reverse proxy"
+    tags: "proxy"
+objects:
+
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: ${NAME}
+
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}-build
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:${VERSION}
+    postCommit: {}
+    resources:
+      limits:
+        cpu: "2"
+        memory: 2Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: ${SOURCE_CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      type: Docker
+      noCache: true
+      dockerStrategy:
+        from:
+          kind: DockerImage
+          name: 'nginx:mainline-alpine'
+    successfulBuildsHistoryLimit: 2
+    failedBuildsHistoryLimit: 2
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+    - github:
+        secretReference:
+          name: ${NAME}-hooksecret
+      type: GitHub
+
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      name: ${NAME}
+    name: ${NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}
+      deploymentconfig: ${NAME}
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: ${NAME}
+          deploymentconfig: ${NAME}
+      spec:
+        containers:
+          - env:
+            image: ${NAME}
+            imagePullPolicy: Always
+            name: ${NAME}
+            resources: 
+              limits:
+                cpu: 1000m
+                memory: 1024Mi
+              requests:
+                cpu: 250m
+                memory: 512Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+      - type: ConfigChange
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - ${NAME}
+          from:
+            kind: ImageStreamTag
+            name: '${NAME}:latest'
+        type: ImageChange
+
+parameters:
+- description: The name of the Proxy service
+  displayName: Name
+  name: NAME
+  required: true
+  value: phsa-proxy
+- description: The version to tag to the image
+  displayName: version
+  name: VERSION
+  required: true
+  value: latest
+- description: The source repository
+  name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/bcgov/healthgateway.git
+- description: The build source context
+  name: SOURCE_CONTEXT_DIR
+  required: true
+  value: Tools/Nginx/docker
+- description: The repository branch to build from
+  name: SOURCE_REPOSITORY_REF
+  required: true
+  value: dev
+- description: The secret to be used for GitHub webhook integration
+  name: GIT_WEBHOOK_SECRET
+  generate: expression
+  from: "[a-zA-Z0-9]{24}"

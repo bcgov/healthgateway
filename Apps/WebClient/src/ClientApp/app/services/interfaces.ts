@@ -14,6 +14,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
+import { TermsOfService } from "@/models/termsOfService";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -31,9 +32,11 @@ export interface IAuthenticationService {
   getOidcUserProfile(): Promise<any>;
 }
 
-export interface IImmsService {
+export interface IImmunizationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getItems(): Promise<ImmunizationData[]>;
+  getPatientImmunizations(
+    hdid: string
+  ): Promise<RequestResult<ImmunizationData[]>>;
 }
 
 export interface IPatientService {
@@ -59,6 +62,7 @@ export interface IUserProfileService {
   initialize(http: IHttpDelegate): void;
   createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
   getProfile(hdid: string): Promise<UserProfile>;
+  getTermsOfService(): Promise<TermsOfService>;
 }
 
 export interface IUserFeedbackService {

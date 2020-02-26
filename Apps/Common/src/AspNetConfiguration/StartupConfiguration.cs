@@ -16,8 +16,8 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
-    using System.IO;
     using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Authorization;
@@ -35,13 +35,11 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
-    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
@@ -90,6 +88,16 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks();
+
+            services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback =
+                    (httpRequestMessage, cert, cetChain, policyErrors) =>
+                    {
+                        return true;
+                    }
+            });
 
             services
                 .AddRazorPages()

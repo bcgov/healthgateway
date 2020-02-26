@@ -29,12 +29,6 @@ namespace HealthGateway.Admin.Models
         public OpenIdConnectConfiguration OpenIdConnect { get; set; }
 
         /// <summary>
-        /// Gets or sets the List of Identity providers.
-        /// </summary>
-        #pragma warning disable CA1819 //disable should not return arrays
-        public IdentityProviderConfiguration[] IdentityProviders { get; set; }
-
-        /// <summary>
         /// Gets or sets the Health Gateway Webclient specific configuration.
         /// </summary>
         public AdminConfiguration Admin { get; set; }

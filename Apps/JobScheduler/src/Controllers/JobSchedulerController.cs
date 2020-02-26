@@ -15,12 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Controllers
 {
-    using HealthGateway.JobScheduler.Authorization;
+    using HealthGateway.Common.Authorization.Admin;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

@@ -1,18 +1,3 @@
-<template>
-  <v-parallax dark src="@/assets/background.jpg" height="700">
-    <v-container app> </v-container>
-  </v-parallax>
-</template>
-
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-
-@Component
-export default class Dashboard extends Vue {
-  public name = "Dashboard";
-}
-</script>
-
 <style scoped>
 .v-btn {
   background-size: 100%;
@@ -23,3 +8,20 @@ export default class Dashboard extends Vue {
   border: none;
 }
 </style>
+
+<template>
+  <v-layout class="fill-height">
+    <v-row justify="center">
+      Dashboard goes here
+    </v-row>
+  </v-layout>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+
+@Component
+export default class Dashboard extends Vue {
+  public name = "Dashboard";
+}
+</script>

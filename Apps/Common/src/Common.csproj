@@ -58,5 +58,7 @@
     <Folder Include="Constants\" />
     <Folder Include="Services\" />
     <Folder Include="Jobs\" />
+    <Folder Include="Delegates\" />
+    <Folder Include="Authorization\Admin\" />
   </ItemGroup>
 </Project>

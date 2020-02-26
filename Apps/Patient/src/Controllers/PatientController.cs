@@ -18,8 +18,8 @@ namespace HealthGateway.PatientService.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Models;
     using HealthGateway.Patient.Services;
-    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

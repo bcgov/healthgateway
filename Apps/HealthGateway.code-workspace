@@ -1,39 +1,38 @@
 {
-	"folders": [
-		{
-			"path": "Common"
-		},
-		{
-			"path": "Immunization"
-		},
-		{
-			"path": "Patient"
-		},
-		{
-			"path": "HNClient"
-		},
-		{
-			"path": "Medication"
-		},
-		{
-			"path": "DBMaintainer"
-		},
-		{
-			"path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
-		},
-		{
-			"path": "Database"
-		},
-		{
-			"path": "WebClient"
-		},
-		{
-			"path": "JobScheduler"
-		},
-		{
-			"path": "AdminWebClient"
-		}
-	],
-	"settings": {
-	}
+  "folders": [
+    {
+      "path": "AdminWebClient"
+    },
+    {
+      "path": "Common"
+    },
+    {
+      "path": "Database"
+    },
+    {
+      "path": "DBMaintainer"
+    },
+    {
+      "path": "HNClient"
+    },
+    {
+      "path": "Immunization"
+    },
+    {
+      "path": "JobScheduler"
+    },
+    {
+      "path": "Medication"
+    },
+    {
+      "path": "Patient"
+    },
+    {
+      "path": "WebClient"
+    },
+    {
+      "path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
+    }
+  ],
+  "settings": {}
 }
