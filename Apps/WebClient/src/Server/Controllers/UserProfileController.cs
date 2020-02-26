@@ -126,11 +126,11 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            string rawIssuedAt = user.FindFirst(c => c.Type == "auth_time").Value;
+            string rowAuthTime = user.FindFirst(c => c.Type == "auth_time").Value;
 
-            // Issued at comes in the JWT as seconds after 1970-01-01
+            // Auth time at comes in the JWT as seconds after 1970-01-01
             DateTime jwtIssuedAt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                .AddSeconds(int.Parse(rawIssuedAt, CultureInfo.CurrentCulture));
+                .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtIssuedAt);
             return new JsonResult(result);
