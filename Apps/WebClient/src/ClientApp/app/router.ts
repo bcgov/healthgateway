@@ -83,7 +83,7 @@ const routes = [
   {
     path: "/termsOfService",
     component: TermsOfServiceComponent,
-    meta: { requiresRegistration: true, roles: ["user"] }
+    meta: { requiresAuth: false, roles: ["user"] }
   },
   {
     path: "/login",
@@ -119,11 +119,11 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   console.log(from.fullPath, to.fullPath);
   if (to.meta.requiresAuth || to.meta.requiresRegistration) {
-    store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
-      if (!hasAccess) {
+    store.dispatch("auth/oidcCheckAccess", to).then(isAuthorized => {
+      if (!isAuthorized) {
         next({ path: "/login", query: { redirect: to.fullPath } });
       } else {
-        handleUserHasAccess(to, from, next);
+        handleUserIsAuthorized(to, from, next);
       }
     });
   } else {
@@ -153,11 +153,19 @@ router.afterEach((to, from) => {
   window.snowplow("trackPageView");
 });
 
-function handleUserHasAccess(to: Route, from: Route, next: any) {
-  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
+function handleUserIsAuthorized(to: Route, from: Route, next: any) {
   let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+  let userIsActive: boolean = store.getters["user/userIsActive"];
+
+  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
     next({ path: "/timeline" });
+  } else if (
+    userIsRegistered &&
+    !userIsActive &&
+    !to.path.startsWith("/profile")
+  ) {
+    next({ path: "/profile" });
   } else if (to.meta.requiresRegistration && !userIsRegistered) {
     next({ path: REGISTRATION_PATH });
   } else {

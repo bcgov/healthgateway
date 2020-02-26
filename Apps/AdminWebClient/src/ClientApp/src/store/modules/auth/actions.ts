@@ -33,7 +33,6 @@ export const actions: ActionTree<AuthState, RootState> = {
     });
   },
   login({ commit }, { redirectPath }): Promise<void> {
-    console.log("HERE WE ARE");
     const authService: IAuthenticationService = container.get<
       IAuthenticationService
     >(SERVICE_IDENTIFIER.AuthenticationService);
