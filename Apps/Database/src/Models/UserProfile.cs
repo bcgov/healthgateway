@@ -54,5 +54,10 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the KeyCloak identifer of the user.
         /// </summary>
         public Guid? KeyCloakId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users last login datetime.
+        /// </summary>
+        public DateTime? LastLoginDateTime { get; set; }
     }
 }

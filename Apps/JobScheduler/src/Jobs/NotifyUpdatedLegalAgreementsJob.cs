@@ -26,6 +26,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System.Globalization;
+    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Validates that the HNClient Endpoint is responding correctly.
@@ -49,6 +50,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="applicationSettingsDelegate">The application settings delegate.</param>
+        /// <param name="legalAgreementDelegate">The legal agreement delegate.</param>
         /// <param name="dbContext">The db context to use.</param>
         public NotifyUpdatedLegalAgreementsJob(
             IConfiguration configuration,
@@ -76,14 +78,23 @@ namespace Healthgateway.JobScheduler.Jobs
             foreach (LegalDocument document in documents)
             {
                 this.logger.LogInformation($"Processing {document.Name}, looking up Legal Agreement code {document.Code}");
-                // TODO: Pull the ToS from the DB
-                this.logger.LogInformation($"Fetching {document.LastCheckedKey} from application settings");
-                ApplicationSetting lastCheckedSetting = this.applicationSettingsDelegate.GetApplicationSetting(ApplicationType.JobScheduler, this.GetType().Name, document.LastCheckedKey);
-                this.logger.LogInformation($"Found {document.LastCheckedKey} with value of {lastCheckedSetting.Value}");
-                DateTime lastChecked = System.DateTime.Parse(lastCheckedSetting.Value!, CultureInfo.InvariantCulture);
-                // TODO: Compare dates between the setting and the TOS Effective
-                // TODO: Pull All profiles
-                // TODO: For each profile send email template
+                DBResult<LegalAgreement> result = this.legalAgreementDelegate.GetActiveByAgreementType(document.Code);
+                if (result.Status == DBStatusCode.Read)
+                {
+                    this.logger.LogInformation($"Fetching {document.LastCheckedKey} from application settings");
+                    ApplicationSetting lastCheckedSetting = this.applicationSettingsDelegate.GetApplicationSetting(ApplicationType.JobScheduler, this.GetType().Name, document.LastCheckedKey);
+                    this.logger.LogInformation($"Found {document.LastCheckedKey} with value of {lastCheckedSetting.Value}");
+                    DateTime lastChecked = System.DateTime.Parse(lastCheckedSetting.Value!, CultureInfo.InvariantCulture);
+                    if (result.Payload.EffectiveDate > lastChecked)
+                    {
+                        // TODO: Pull All profiles
+                        // TODO: For each profile send email template
+                    }
+                }
+                else
+                {
+                    this.logger.LogCritical($"Unable to read {document.Name} from the DB ABORTING...");
+                }
             }
         }
     }

@@ -20,6 +20,7 @@ namespace HealthGateway.JobScheduler
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Context;
@@ -39,7 +40,6 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
-    using HealthGateway.Common.Authorization.Admin;
 
     /// <summary>
     /// The startup class.

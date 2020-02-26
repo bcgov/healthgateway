@@ -107,17 +107,18 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<UserProfile> GetAllUserProfilesAfter(DateTime afterDate, int page, int pagesize = 500)
+        public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime afterDate, int page, int pagesize = 500)
         {
+            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
             int offset = page * pagesize;
-            this.dbContext.UserProfile
-                                //.Where(p => p.LastLogin < afterDate &&
-                                //p.ClosedDateTime == null && p.email != null)
+            result.Payload = this.dbContext.UserProfile
+                                .Where(p => // p. < afterDate &&
+                                    p.ClosedDate == null && p.Email != null)
                                 .OrderBy(o => o.CreatedDateTime)
                                 .Skip(offset)
                                 .Take(pagesize)
                                 .ToList();
-            return new List<UserProfile>();
+            return result;
         }
     }
 }

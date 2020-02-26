@@ -57,6 +57,11 @@ namespace HealthGateway.Database.Models
         public Guid? KeyCloakId { get; set; }
 
         /// <summary>
+        /// Gets or sets the users last login datetime.
+        /// </summary>
+        public DateTime? LastLoginDateTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the id.
         /// </summary>
         [Column("UserProfileHistoryId")]

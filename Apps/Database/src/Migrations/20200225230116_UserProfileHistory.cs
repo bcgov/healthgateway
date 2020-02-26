@@ -59,38 +59,6 @@ namespace HealthGateway.Database.Migrations
                 {
                     table.PrimaryKey("PK_UserProfileHistory", x => x.UserProfileHistoryId);
                 });
-
-            string schema = "gateway";
-            string triggerFunction = @$"
-CREATE FUNCTION {schema}.""UserProfileHistoryFunction""()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    IF(TG_OP = 'DELETE') THEN
-        INSERT INTO ""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"",
-                    ""UserProfileId"", ""AcceptedTermsOfService"", ""Email"", ""ClosedDate"", ""KeyCloakId"",						 
-				    ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"") 
-		VALUES(uuid_generate_v4(), TG_OP, now(),
-               old.""UserProfileId"", old.""AcceptedTermsOfService"", old.""Email"", old.""ClosedDate"", old.""KeyCloakId"",
-               old.""CreatedBy"", old.""CreatedDateTime"", old.""UpdatedBy"", old.""UpdatedDateTime"");
-        RETURN old;
-    END IF;
-END;$BODY$;
-ALTER FUNCTION {schema}.""UserProfileHistoryFunction""()
-    OWNER TO gateway;";
-
-            string trigger = @$"
-CREATE TRIGGER ""UserProfileHistoryTrigger""
-    AFTER DELETE
-    ON {schema}.""UserProfile""
-    FOR EACH ROW
-    EXECUTE PROCEDURE {schema}.""UserProfileHistoryFunction""();";
-
-            migrationBuilder.Sql(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
-            migrationBuilder.Sql(triggerFunction);
-            migrationBuilder.Sql(trigger);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -108,11 +76,6 @@ CREATE TRIGGER ""UserProfileHistoryTrigger""
                 name: "KeyCloakId",
                 schema: "gateway",
                 table: "UserProfile");
-
-            string schema = "gateway";
-            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserProfileHistoryTrigger"" ON {schema}.""UserProfile""");
-            migrationBuilder.Sql(@$"DROP FUNCTION IF EXISTS {schema}.""UserProfileHistoryFunction""();");
-            migrationBuilder.Sql(@"DROP EXTENSION IF EXISTS ""uuid-ossp"";");
         }
     }
 }
