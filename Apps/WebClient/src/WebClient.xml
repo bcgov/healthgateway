@@ -640,7 +640,7 @@
             The User Profile service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.DateTime)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
             <summary>
             Gets the user profile model.
             </summary>
@@ -711,7 +711,7 @@
             <param name="emailQueueService">The email service to queue emails.</param>
             <param name="legalAgreementDelegate">The terms of service delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.DateTime)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">

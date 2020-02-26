@@ -69,22 +69,26 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime lastLogin)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
 
-            this.logger.LogTrace($"Updating user last login... {hdid}");
-            retVal.Payload.LastLogin = lastLogin;
-            DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
-            this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
+            if (lastLogin.HasValue)
+            {
+                this.logger.LogTrace($"Updating user last login... {hdid}");
+                retVal.Payload.LastLoginDateTime = lastLogin;
+                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
+                this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
+            }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
             userProfile.HasTermsOfServiceUpdated =
-                (termsOfServiceResult.ResourcePayload?.EffectiveDate > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
+                retVal.Payload.LastLoginDateTime.HasValue &&
+                termsOfServiceResult.ResourcePayload?.EffectiveDate > retVal.Payload.LastLoginDateTime;
 
             return new RequestResult<UserProfileModel>()
             {
