@@ -80,9 +80,17 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public void AddApplicationSetting(ApplicationSetting appSetting)
         {
-            this.logger.LogTrace($"Setting {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
+            this.logger.LogTrace($"Adding {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
             this.dbContext.ApplicationSetting.Add(appSetting);
-            this.logger.LogTrace($"Finished Setting {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
+            this.logger.LogTrace($"Finished Adding {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
+        }
+
+        /// <inheritdoc />
+        public void UpdateApplicationSetting(ApplicationSetting appSetting)
+        {
+            this.logger.LogTrace($"Updating {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
+            this.dbContext.ApplicationSetting.Update(appSetting);
+            this.logger.LogTrace($"Finished updating {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
         }
     }
 }

@@ -40,6 +40,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
+    using HealthGateway.Common.Services;
 
     /// <summary>
     /// The startup class.
@@ -88,6 +89,10 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
             services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
+            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
+            services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
+            services.AddTransient<IEmailQueueService, EmailQueueService>();
 
             // Add app
             services.AddTransient<FedDrugJob>();

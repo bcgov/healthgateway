@@ -151,6 +151,11 @@ namespace HealthGateway.Database.Context
                     .HasForeignKey(k => k.Application)
                     .OnDelete(DeleteBehavior.Restrict);
 
+            // Create unique index for app/component/key on app settings
+            modelBuilder.Entity<ApplicationSetting>()
+                    .HasIndex(i => new { i.Application, i.Component, i.Key })
+                    .IsUnique();
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -426,6 +431,22 @@ namespace HealthGateway.Database.Context
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Waitlist Confirmation",
                     Body = this.emailBetaConfirmationTemplate,
+                    Priority = EmailPriority.Low,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+            modelBuilder.Entity<EmailTemplate>().HasData(
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("eb695050-e2fb-4933-8815-3d4656e4541d"),
+                    Name = "TermsOfService",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Updated Terms of Service ",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailUpdatedTermsofService.html"),
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,

@@ -54,6 +54,7 @@
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailWaitlistTemplate.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />
+    <EmbeddedResource Include="Assets\docs\EmailUpdatedTermsofService.html" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />

@@ -79,11 +79,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public Guid InsertEmail(Email email)
+        public Guid InsertEmail(Email email, bool shouldCommit = true)
         {
             this.logger.LogTrace($"Inserting email to DB... {email}");
             this.dbContext.Add<Email>(email);
-            this.dbContext.SaveChanges();
+            if (shouldCommit)
+            {
+                this.dbContext.SaveChanges();
+            }
+
             this.logger.LogDebug($"Finished inserting email to DB. {JsonSerializer.Serialize(email)}");
             return email.Id;
         }
