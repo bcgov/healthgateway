@@ -39,7 +39,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
 
         private readonly IConfiguration configuration;
-        private readonly ILogger<NotifyUpdatedLegalAgreementsJob> logger;
+        private readonly ILogger<CloseAccountJob> logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
         private readonly GatewayDbContext dbContext;
@@ -58,7 +58,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="dbContext">The db context to use.</param>
         public CloseAccountJob(
             IConfiguration configuration,
-            ILogger<NotifyUpdatedLegalAgreementsJob> logger,
+            ILogger<CloseAccountJob> logger,
             IProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             GatewayDbContext dbContext)
