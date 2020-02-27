@@ -80,6 +80,16 @@ namespace HealthGateway.WebClient.Services
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
 
+            if (retVal.Status == DBStatusCode.NotFound)
+            {
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
+                    ResultMessage = retVal.Message,
+                    ResourcePayload = null,
+                };
+            }
+
             if (lastLogin.HasValue)
             {
                 this.logger.LogTrace($"Updating user last login... {hdid}");
