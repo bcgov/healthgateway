@@ -35,9 +35,9 @@
     ]
   },
   "include": [
-    "app/**/*.ts",
-    "app/**/*.vue",
-    "test/**/*.ts"
+    "./app/**/*.ts",
+    "./app/**/*.vue",
+    "./test/**/*.ts"
   ],
   "exclude": [
     "node_modules"
