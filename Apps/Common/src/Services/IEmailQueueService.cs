@@ -32,7 +32,8 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
-        void QueueNewEmail(string toEmail, string templateName);
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        void QueueNewEmail(string toEmail, string templateName, bool shouldCommit = true);
 
         /// <summary>
         /// Queues a new email based on a template name.
@@ -42,7 +43,8 @@ namespace HealthGateway.Common.Services
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues);
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true);
 
         /// <summary>
         /// Queues an email using a resolved template.
@@ -51,14 +53,16 @@ namespace HealthGateway.Common.Services
         /// <param name="toEmail">The To email address.</param>
         /// <param name="emailTemplate">The resolved Email Template.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues);
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true);
 
         /// <summary>
         /// Queues an email using a populated Email object.
         /// A new email will be added to the database.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
-        void QueueNewEmail(Email email);
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        void QueueNewEmail(Email email, bool shouldCommit = true);
 
         /// <summary>
         /// Queues a new email invite.

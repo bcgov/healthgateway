@@ -31,10 +31,6 @@ namespace HealthGateway.Database.Context
     /// </summary>
     public class GatewayDbContext : BaseDbContext
     {
-        private string? emailValidationTemplate;
-        private string? emailInviteTemplate;
-        private string? emailBetaConfirmationTemplate;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
         /// </summary>
@@ -42,9 +38,6 @@ namespace HealthGateway.Database.Context
         public GatewayDbContext(DbContextOptions<GatewayDbContext> options)
             : base(options)
         {
-            this.emailValidationTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html");
-            this.emailInviteTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html");
-            this.emailBetaConfirmationTemplate = ReadResource("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html");
         }
 
 #pragma warning disable CS1591, SA1516, SA1600 // Ignore docs for clarity.
@@ -69,6 +62,8 @@ namespace HealthGateway.Database.Context
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
         public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
         public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
+        public DbSet<ApplicationSetting> ApplicationSetting { get; set; } = null!;
+        public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -141,11 +136,25 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.LegalAgreementCode)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Create Foreign keys for Application Settings
+            modelBuilder.Entity<ApplicationSetting>()
+                    .HasOne<ProgramTypeCode>()
+                    .WithMany()
+                    .HasPrincipalKey(k => k.ProgramCode)
+                    .HasForeignKey(k => k.Application)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+            // Create unique index for app/component/key on app settings
+            modelBuilder.Entity<ApplicationSetting>()
+                    .HasIndex(i => new { i.Application, i.Component, i.Key })
+                    .IsUnique();
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
             this.SeedAuditTransactionResults(modelBuilder);
             this.SeedLegalAgreements(modelBuilder);
+            this.SeedApplicationSettings(modelBuilder);
         }
 
         /// <summary>
@@ -252,7 +261,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Configuration,
+                    ProgramCode = ApplicationType.Configuration,
                     Description = "Configuration Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -261,7 +270,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.WebClient,
+                    ProgramCode = ApplicationType.WebClient,
                     Description = "Web Client",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -270,7 +279,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Immunization,
+                    ProgramCode = ApplicationType.Immunization,
                     Description = "Immunization Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -279,7 +288,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Patient,
+                    ProgramCode = ApplicationType.Patient,
                     Description = "Patient Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -288,7 +297,7 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.Medication,
+                    ProgramCode = ApplicationType.Medication,
                     Description = "Medication Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -297,8 +306,17 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
-                    ProgramCode = AuditApplication.AdminWebClient,
+                    ProgramCode = ApplicationType.AdminWebClient,
                     Description = "Admin Client",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
+                    ProgramCode = ApplicationType.JobScheduler,
+                    Description = "Job Scheduler",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
@@ -373,7 +391,7 @@ namespace HealthGateway.Database.Context
                     Name = "Registration",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Email Verification ${Environment}",
-                    Body = this.emailValidationTemplate,
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html"),
                     Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -381,15 +399,14 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
-                });
-            modelBuilder.Entity<EmailTemplate>().HasData(
+                },
                 new EmailTemplate
                 {
                     Id = Guid.Parse("896f8f2e-3bed-400b-acaf-51dd6082b4bd"),
                     Name = "Invite",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Private Invitation",
-                    Body = this.emailInviteTemplate,
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html"),
                     Priority = EmailPriority.Low,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
@@ -397,16 +414,75 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
-                });
-            modelBuilder.Entity<EmailTemplate>().HasData(
+                },
                 new EmailTemplate
                 {
                     Id = Guid.Parse("2ab5d4aa-c4c9-4324-a753-cde4e21e7612"),
                     Name = "BetaConfirmation",
                     From = "HG_Donotreply@gov.bc.ca",
                     Subject = "Health Gateway Waitlist Confirmation",
-                    Body = this.emailBetaConfirmationTemplate,
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html"),
                     Priority = EmailPriority.Low,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("eb695050-e2fb-4933-8815-3d4656e4541d"),
+                    Name = "TermsOfService",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Updated Terms of Service ",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailUpdatedTermsofService.html"),
+                    Priority = EmailPriority.Low,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("79503a38-c14a-4992-b2fe-5586629f552e"),
+                    Name = "AccountClosed",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Account Closed ",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountClosed.html"),
+                    Priority = EmailPriority.Standard,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("2fe8c825-d4de-4884-be6a-01a97b466425"),
+                    Name = "AccountRecovered",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Account Recovered",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRecovered.html"),
+                    Priority = EmailPriority.Standard,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("d9898318-4e53-4074-9979-5d24bd370055"),
+                    Name = "AccountRemoved",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Account Closure Complete",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRemoved.html"),
+                    Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
                     FormatCode = EmailFormat.HTML,
                     CreatedBy = UserId.DefaultUser,
@@ -438,7 +514,28 @@ namespace HealthGateway.Database.Context
                     Id = Guid.Parse("f5acf1de-2f5f-431e-955d-a837d5854182"),
                     LegalAgreementCode = AgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20191206.html"),
-                    EffectiveDate = Convert.ToDateTime("2019/12/06", CultureInfo.InvariantCulture),
+                    EffectiveDate = this.DefaultSeedDate,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Application settings.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedApplicationSettings(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ApplicationSetting>().HasData(
+                new ApplicationSetting
+                {
+                    Id = Guid.Parse("5f279ba2-8e7b-4b1d-8c69-467d94dcb7fb"),
+                    Application = ApplicationType.JobScheduler,
+                    Component = "NotifyUpdatedLegalAgreementsJob",
+                    Key = "ToS-Last-Checked",
+                    Value = this.DefaultSeedDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

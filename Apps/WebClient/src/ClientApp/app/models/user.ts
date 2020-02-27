@@ -4,5 +4,5 @@ export default class User {
   public hasEmail: boolean = false;
   public verifiedEmail: boolean = false;
   public hasTermsOfServiceUpdated: boolean = false;
-  public plannedDeletionDateTime: Date | undefined;
+  public closedDateTime: Date | undefined;
 }

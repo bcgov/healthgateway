@@ -50,7 +50,7 @@ input {
             <b-col>
               <label for="lastLoginDate">Last Login Date</label>
               <div id="lastLoginDate">
-                {{ lastLoginDate }}
+                {{ lastLoginDateString }}
               </div>
             </b-col>
           </b-row>
@@ -175,7 +175,7 @@ input {
           </b-row>
           <b-row class="mb-3">
             <b-col>
-              <label for="lastLoginDate">Time remaining for deletion: </label>
+              <label>Time remaining for deletion: </label>
               {{ timeForDeletionString }}
             </b-col>
           </b-row>
@@ -273,6 +273,7 @@ import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserProfile from "@/models/userProfile";
+import { WebClientConfiguration } from "@/models/configData";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
@@ -311,10 +312,13 @@ export default class ProfileComponent extends Vue {
   @Action("recoverUserAccount", { namespace: userNamespace })
   recoverUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
 
-  @Getter("user", { namespace: userNamespace }) user: User;
+  @Getter("user", { namespace: userNamespace }) user!: User;
 
   @Getter("userIsActive", { namespace: userNamespace })
   isActiveProfile!: boolean;
+
+  @Getter("webClient", { namespace: "config" })
+  webClientConfig!: WebClientConfiguration;
 
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
@@ -329,9 +333,12 @@ export default class ProfileComponent extends Vue {
 
   private tempEmail: string = "";
   private submitStatus: string = "";
-  private userEmailService: IUserEmailService;
-  private userProfileService: IUserProfileService;
-  private userProfile: UserProfile;
+  private userEmailService!: IUserEmailService;
+  private userProfileService!: IUserProfileService;
+  private userProfile!: UserProfile;
+
+  private lastLoginDateString: string = "";
+  private plannedDeletionDateTime: Date = new Date();
 
   private showCloseWarning = false;
 
@@ -376,6 +383,9 @@ export default class ProfileComponent extends Vue {
         if (results[2]) {
           // Load user profile
           this.userProfile = results[2];
+          this.lastLoginDateString = moment(
+            this.userProfile.lastLoginDateTime
+          ).format("lll");
         }
 
         this.isLoading = false;
@@ -416,21 +426,18 @@ export default class ProfileComponent extends Vue {
     return this.oidcUser.given_name + " " + this.oidcUser.family_name;
   }
 
-  private get lastLoginDate(): string {
-    return moment(this.userProfile).format("lll");
-  }
-
   private calculateTimeForDeletion(): void {
     if (this.isActiveProfile) {
       return undefined;
     }
 
-    let endDate = moment(this.user.plannedDeletionDateTime);
+    let endDate = moment(this.user.closedDateTime);
+    endDate.add(this.webClientConfig.hoursForDeletion, "h");
     this.timeForDeletion = endDate.diff(moment());
   }
 
   private get timeForDeletionString(): string {
-    if (this.isActiveProfile) {
+    if (this.isActiveProfile || this.timeForDeletion < 0) {
       return "";
     }
 

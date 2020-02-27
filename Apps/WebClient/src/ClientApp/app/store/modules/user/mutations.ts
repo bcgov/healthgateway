@@ -33,8 +33,8 @@ export const mutations: MutationTree<UserState> = {
     );
     Vue.set(
       state.user,
-      "plannedDeletionDateTime",
-      userProfile ? userProfile.plannedDeletionDateTime : undefined
+      "closedDateTime",
+      userProfile ? userProfile.closedDateTime : undefined
     );
     console.log(state.user);
     state.error = false;

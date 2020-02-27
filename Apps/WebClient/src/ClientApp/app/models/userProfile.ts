@@ -12,10 +12,10 @@ export default interface UserProfile {
   hasTermsOfServiceUpdated: boolean;
 
   // Datetime of the user's last login
-  lastLoginDate: Date;
+  lastLoginDateTime: Date;
 
   // Date when the user profile will be deleted
-  plannedDeletionDateTime: Date | undefined;
+  closedDateTime: Date | undefined;
 }
 
 export interface CreateUserRequest {

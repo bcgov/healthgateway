@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,36 +13,47 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.Database.Models
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     /// <summary>
-    /// A class with constants representing the various email template names.
+    /// A data store for application settings that are updated at runntime.
     /// </summary>
-    public static class EmailTemplateName
+    public class ApplicationSetting : AuditableEntity
     {
         /// <summary>
-        /// Name of the registration email template.
+        /// Gets or sets the id.
         /// </summary>
-        public const string REGISTRATION_TEMPLATE = "Registration";
+        [Column("ApplicationSettingsId")]
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Name of the beta confirmation email template.
+        /// Gets or sets the application name.
         /// </summary>
-        public const string BETA_CONFIRMATION_TEMPLATE = "BetaConfirmation";
+        [Required]
+        [MaxLength(10)]
+        public string? Application { get; set; }
 
         /// <summary>
-        /// Name of the invite email template.
+        /// Gets or sets the component name.
         /// </summary>
-        public const string INVITE_TEMPLATE = "Invite";
+        [Required]
+        [MaxLength(50)]
+        public string? Component { get; set; }
 
         /// <summary>
-        /// Name of the close account email template.
+        /// Gets or sets the Key name.
         /// </summary>
-        public const string ACCOUNT_CLOSED = "AccountClosed";
+        [Required]
+        [MaxLength(250)]
+        public string? Key { get; set; }
 
         /// <summary>
-        /// Name of the recover account email template.
+        /// Gets or sets the value.
         /// </summary>
-        public const string ACCOUNT_RECOVERED = "AccountRecovered";
+        public string? Value { get; set; }
     }
 }
