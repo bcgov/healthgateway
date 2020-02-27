@@ -84,9 +84,7 @@ BEGIN
                old.""LastLoginDateTime"", old.""CreatedBy"", old.""CreatedDateTime"", old.""UpdatedBy"", old.""UpdatedDateTime"");
         RETURN old;
     END IF;
-END;$BODY$;
-ALTER FUNCTION {schema}.""UserProfileHistoryFunction""()
-    OWNER TO gateway;";
+END;$BODY$;";
 
             string trigger = @$"
 CREATE TRIGGER ""UserProfileHistoryTrigger""
