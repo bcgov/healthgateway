@@ -76,7 +76,7 @@ CREATE FUNCTION {schema}.""UserProfileHistoryFunction""()
 AS $BODY$
 BEGIN
     IF(TG_OP = 'DELETE') THEN
-        INSERT INTO ""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"",
+        INSERT INTO {schema}.""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"",
                     ""UserProfileId"", ""AcceptedTermsOfService"", ""Email"", ""ClosedDateTime"", ""IdentityManagementId"",						 
 				    ""LastLoginDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"") 
 		VALUES(uuid_generate_v4(), TG_OP, now(),
