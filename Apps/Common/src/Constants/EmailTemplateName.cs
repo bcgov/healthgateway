@@ -34,5 +34,15 @@ namespace HealthGateway.Common.Constants
         /// Name of the invite email template.
         /// </summary>
         public const string INVITE_TEMPLATE = "Invite";
+
+        /// <summary>
+        /// Name of the close account email template.
+        /// </summary>
+        public const string ACCOUNT_CLOSED = "AccountClosed";
+
+        /// <summary>
+        /// Name of the recover account email template.
+        /// </summary>
+        public const string ACCOUNT_RECOVERED = "AccountRecovered";
     }
 }

@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
 
     /// <summary>
@@ -40,6 +39,22 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
         RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri);
+
+        /// <summary>
+        /// Closed the user profile.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="hostUrl">The host of the email validation endpoint.</param>
+        /// <returns>The wrapped user profile.</returns>
+        RequestResult<UserProfileModel> CloseUserProfile(string hdid, string hostUrl);
+
+        /// <summary>
+        /// Recovers the user profile.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="hostUrl">The host of the email validation endpoint.</param>
+        /// <returns>The wrapped user profile.</returns>
+        RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl);
 
         /// <summary>
         /// Gets the most recent active terms of service.

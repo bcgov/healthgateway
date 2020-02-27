@@ -468,14 +468,15 @@
             Gets or sets a value indicating whether the user needs to be notified about new terms of service.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.PlannedDeletionDateTime">
-            <summary>
-            Gets or sets the value indicating the date when the user profile will be deleted.
-            </summary>
-        </member>
         <member name="P:HealthGateway.WebClient.Models.UserProfileModel.LastLoginDateTime">
             <summary>
             Gets or sets the value indicating the date when the user last logon.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.ClosedDateTime">
+            <summary>
+            Gets or sets the Closed datetime of the account.
+            After an account has been closed for n amount of days the row is physically deleted.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Models.UserProfileModel.CreateFromDbModel(HealthGateway.Database.Models.UserProfile)">
@@ -513,6 +514,11 @@
         <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.Modules">
             <summary>
             Gets or sets the state for each of our modules.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.HoursForDeletion">
+            <summary>
+            Gets or sets the number of hours until an account is removed after being closed.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Program">
@@ -661,6 +667,22 @@
             <param name="hostUri">The host of the email validation endpoint.</param>
             <returns>The wrapped user profile.</returns>
         </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.String)">
+            <summary>
+            Closed the user profile.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="hostUrl">The host of the email validation endpoint.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.RecoverUserProfile(System.String,System.String)">
+            <summary>
+            Recovers the user profile.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="hostUrl">The host of the email validation endpoint.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetActiveTermsOfService">
             <summary>
             Gets the most recent active terms of service.
@@ -720,6 +742,12 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.RecoverUserProfile(System.String,System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetActiveTermsOfService">

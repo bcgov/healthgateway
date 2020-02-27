@@ -158,8 +158,12 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
-            result.ResourcePayload.PlannedDeletionDateTime = new DateTime(2020, 2, 26);
+            string referer = this.httpContextAccessor.HttpContext.Request
+                .GetTypedHeaders()
+                .Referer?
+                .GetLeftPart(UriPartial.Authority);
+
+            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, referer);
             return new JsonResult(result);
         }
 
@@ -185,8 +189,12 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid);
-            result.ResourcePayload.PlannedDeletionDateTime = null;
+            string referer = this.httpContextAccessor.HttpContext.Request
+                .GetTypedHeaders()
+                .Referer?
+                .GetLeftPart(UriPartial.Authority);
+
+            RequestResult<UserProfileModel> result = this.userProfileService.RecoverUserProfile(hdid, referer);
             return new JsonResult(result);
         }
 

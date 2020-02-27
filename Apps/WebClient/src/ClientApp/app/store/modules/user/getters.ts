@@ -13,6 +13,6 @@ export const getters: GetterTree<UserState, RootState> = {
   },
   userIsActive(state: UserState): boolean {
     const { user } = state;
-    return user === undefined ? false : !user.plannedDeletionDateTime;
+    return user === undefined ? false : !user.closedDateTime;
   }
 };

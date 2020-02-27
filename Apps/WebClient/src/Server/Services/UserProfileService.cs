@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Text.Json;
     using HealthGateway.Common.Constants;
@@ -23,12 +24,12 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Constant;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
-    
+
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
@@ -39,6 +40,10 @@ namespace HealthGateway.WebClient.Services
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
+
+#pragma warning disable SA1310 // Disable _ in variable name
+        private const string HOST_TEMPLATE_VARIABLE = "host";
+#pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -176,6 +181,86 @@ namespace HealthGateway.WebClient.Services
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, string hostUrl)
+        {
+            //Contract.Requires(hdid != null && hostUri != null);
+            this.logger.LogTrace($"Closing user profile... {hdid}");
+
+            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
+
+            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
+
+            DBResult<UserProfile> retrieveResult = this.profileDelegate.GetUserProfile(hdid);
+
+            if (retrieveResult.Status == DBStatusCode.Read)
+            {
+                UserProfile profile = retrieveResult.Payload;
+                if (profile.ClosedDateTime != null)
+                {
+                    this.logger.LogTrace("Finished. Profile already Closed");
+                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profile);
+                    requestResult.ResultStatus = ResultType.Success;
+                    return requestResult;
+                }
+
+                profile.ClosedDateTime = DateTime.Now;
+                DBResult<UserProfile> updateResult = profileDelegate.UpdateUserProfile(profile);
+                if (profile.Email != null)
+                {
+                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
+                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_CLOSED, keyValues);
+                }
+
+                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
+                requestResult.ResultStatus = ResultType.Success;
+                this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
+            }
+
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
+        {
+            //Contract.Requires(hdid != null && hostUri != null);
+            this.logger.LogTrace($"Recovering user profile... {hdid}");
+
+            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
+
+            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
+
+            DBResult<UserProfile> retrieveResult = this.profileDelegate.GetUserProfile(hdid);
+
+            if (retrieveResult.Status == DBStatusCode.Read)
+            {
+                UserProfile profile = retrieveResult.Payload;
+                if (profile.ClosedDateTime == null)
+                {
+                    this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
+                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profile);
+                    requestResult.ResultStatus = ResultType.Success;
+                    return requestResult;
+                }
+
+                profile.ClosedDateTime = null;
+                DBResult<UserProfile> updateResult = profileDelegate.UpdateUserProfile(profile);
+                if (profile.Email != null)
+                {
+                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
+                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_RECOVERED, keyValues);
+                }
+
+                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
+                requestResult.ResultStatus = ResultType.Success;
+                this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
+            }
+
             return requestResult;
         }
 
