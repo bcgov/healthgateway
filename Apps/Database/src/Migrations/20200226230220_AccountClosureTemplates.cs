@@ -17,7 +17,6 @@
 #pragma warning disable CS1591
 namespace HealthGateway.Database.Migrations
 {
-
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -96,7 +95,7 @@ namespace HealthGateway.Database.Migrations
                         </tr>
                     </table>
                 </body>
-                </html>", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "HTML", "HG_Donotreply@gov.bc.ca", "Health Gateway Account Recovered", 10, "AccountRecovered", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                </html>", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "HTML", "HG_Donotreply@gov.bc.ca", "AccountRecovered", 10, "Health Gateway Account Recovered", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
                     { new Guid("d9898318-4e53-4074-9979-5d24bd370055"), @"<!doctype html>
                 <html lang=""en"">
                 <head>

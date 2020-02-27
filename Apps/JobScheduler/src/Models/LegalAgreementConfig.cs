@@ -34,31 +34,31 @@ namespace Healthgateway.JobScheduler.Models
         /// <summary>
         /// Gets or sets the Legal Document name.
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Legal Agreement code.
         /// </summary>
-        public string Code { get; set; } = string.Empty;
+        public string Code { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the application setting key to look up the last processed date.
         /// </summary>
-        public string LastCheckedKey { get; set; } = string.Empty;
+        public string LastCheckedKey { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the email template to use for notifications.
         /// </summary>
-        public string EmailTemplate { get; set; }
+        public string EmailTemplate { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the location to review the agreement relative to the host.
         /// </summary>
-        public string Path { get; set; }
+        public string Path { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the contact email for the agreement.
         /// </summary>
-        public string ContactEmail { get; set; }
+        public string ContactEmail { get; set; } = null!;
     }
 }

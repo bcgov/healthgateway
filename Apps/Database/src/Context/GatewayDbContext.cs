@@ -463,9 +463,9 @@ namespace HealthGateway.Database.Context
                 new EmailTemplate
                 {
                     Id = Guid.Parse("2fe8c825-d4de-4884-be6a-01a97b466425"),
-                    Name = "Health Gateway Account Recovered",
+                    Name = "AccountRecovered",
                     From = "HG_Donotreply@gov.bc.ca",
-                    Subject = "AccountRecovered",
+                    Subject = "Health Gateway Account Recovered",
                     Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRecovered.html"),
                     Priority = EmailPriority.Standard,
                     EffectiveDate = this.DefaultSeedDate,
