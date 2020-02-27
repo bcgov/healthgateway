@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new UserProfile
             {
                 HdId = hdid,
-                AcceptedTermsOfService = true
+                AcceptedTermsOfService = true,
             };
 
             DBResult<UserProfile> userProfileDBResult = new DBResult<UserProfile>
@@ -48,7 +48,6 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-            expected.HasTermsOfServiceUpdated = true;
 
             LegalAgreement termsOfService = new LegalAgreement() {
                 Id = Guid.NewGuid(),
@@ -82,7 +81,7 @@ namespace HealthGateway.WebClient.Test.Services
                 emailer.Object,
                 legalAgreementDelegateMock.Object
             );
-            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid, DateTime.Now);
+            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
