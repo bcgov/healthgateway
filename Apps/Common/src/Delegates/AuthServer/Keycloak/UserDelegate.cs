@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates.IAM.Keycloak
+namespace HealthGateway.Common.Delegates.AuthServer.Keycloak
 {
     using System;
     using System.Collections.Generic;
@@ -25,8 +25,8 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
     using System.Text.Json;
     using System.Threading.Tasks;
 
-    using HealthGateway.Common.Delegates.IAM;
-    using HealthGateway.Common.Models.IAM;
+    using HealthGateway.Common.Delegates.AuthServer;
+    using HealthGateway.Common.Models.AuthServer;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -39,12 +39,36 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
     /// </summary>
     public class UserDelegate : IUserDelegate
     {
+        /// <summary>
+        /// Configuration Key for the KeycloakAdmin entry point.
+        /// </summary>
         public const string KEYCLOAKADMIN = "KeycloakAdmin";
+        /// <summary>
+        /// Configuration Key for the Find User Url.
+        /// </summary>
         public const string FINDUSERURL = "FindUserUrl";
+        /// <summary>
+        /// Configuration Key for the Delete User Url.
+        /// </summary>
         public const string DELETEUSERURL = "DeleteUserUrl";
+        /// <summary>
+        /// Configuration Key for the Get User Url.
+        /// </summary>
         public const string GETUSERURL = "GetUserUrl";
+
+        /// <summary>
+        /// The injected logger delegate.
+        /// </summary>
         private readonly ILogger logger;
+
+        /// <summary>
+        /// The injected HttpClientService delegate.
+        /// </summary>
         private readonly IHttpClientService httpClientService;
+
+        /// <summary>
+        /// The injected configuration delegate.
+        /// </summary>
         private readonly IConfiguration configuration;
 
         /// <summary>
@@ -52,28 +76,11 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
-        /// <param name="configuration">Injected configuration.</param>        private HttpClient GethttpClient(Uri baseUri, string base64BearerToken)
-        {
-            using (HttpClient _client = this.httpClientService.CreateDefaultHttpClient())
-            {
-                _client.DefaultRequestHeaders.Accept.Clear();
-                _client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + base64BearerToken);
-                _client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                _client.BaseAddress = baseUri;
-                return _client;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger provider.</param>
-        /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="configuration">Injected configuration.</param>
-        public UserDelegate(ILogger<UserDelegate> logger,
-                IHttpClientService httpClientService,
-                IConfiguration configuration)
+        public UserDelegate(
+            ILogger<UserDelegate> logger,
+            IHttpClientService httpClientService,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
@@ -96,7 +103,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                     {
                         var options = new JsonSerializerOptions
                         {
-                            AllowTrailingCommas = true
+                            AllowTrailingCommas = true,
                         };
                         usersReturned = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
                     }
@@ -125,7 +132,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                     {
                         var options = new JsonSerializerOptions
                         {
-                            AllowTrailingCommas = true
+                            AllowTrailingCommas = true,
                         };
                         userReturned = JsonSerializer.Deserialize<UserRepresentation>(json, options);
                     }
@@ -154,7 +161,7 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                     {
                         JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
                         {
-                            AllowTrailingCommas = true
+                            AllowTrailingCommas = true,
                         };
                     }
                     else
@@ -165,6 +172,24 @@ namespace HealthGateway.Common.Delegates.IAM.Keycloak
                     }
                 }
                 return returnCode;
+            }
+        }
+
+        /// <summary>
+        /// Retuns an HttpClient for the AuthService to be invoked.
+        /// </summary>
+        /// <param name="baseUri">The uri of the service endpoint.</param>
+        /// <param name="base64BearerToken">The JSON Web Token.</param>
+        private HttpClient GethttpClient(Uri baseUri, string base64BearerToken)
+        {
+            using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + base64BearerToken);
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.BaseAddress = baseUri;
+                return client;
             }
         }
     }

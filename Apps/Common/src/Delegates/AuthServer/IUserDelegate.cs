@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates.IAM
+namespace HealthGateway.Common.Delegates.AuthServer
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models.IAM;
+    using HealthGateway.Common.Models.AuthServer;
 
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.
@@ -27,7 +27,7 @@ namespace HealthGateway.Common.Delegates.IAM
         /// <summary>
         /// Look up a user by username.
         /// </summary>
-        /// <param name="username">The username of the User account in IAM system.</param>
+        /// <param name="username">The username of the User account in the Authorization Server.</param>
         /// <param name="authorization">Authorization JWT for the call.</param>
         /// <returns>A candidate result list of UserRepresentation objects.</returns>
         Task<List<UserRepresentation>> FindUser(string username, string authorization);
@@ -35,7 +35,7 @@ namespace HealthGateway.Common.Delegates.IAM
         /// <summary>
         /// Look up a user by username.
         /// </summary>
-        /// <param name="userId">The unique userId (surrogate key) of the User account in IAM system.</param>
+        /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
         Task<UserRepresentation> GetUser(string userId, string authorization);
@@ -43,7 +43,7 @@ namespace HealthGateway.Common.Delegates.IAM
         /// <summary>
         /// Delete a User from teh IAM system.
         /// </summary>
-        /// <param name="userId">The unique userId (surrogate key) of the User account in IAM system.</param>
+        /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns></returns>
         Task<int> DeleteUser(string userId, string authorization);
