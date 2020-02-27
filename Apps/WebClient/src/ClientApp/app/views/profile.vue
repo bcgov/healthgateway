@@ -403,7 +403,7 @@ export default class ProfileComponent extends Vue {
   }
 
   private get lastLoginDate(): string {
-    return moment(this.userProfile).format("lll");
+    return moment(this.userProfile.lastLoginDateTime).format("lll");
   }
 
   private calculateTimeForDeletion(): void {

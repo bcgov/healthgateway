@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Text.Json;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -27,8 +28,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.WebClient.Constant;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
-
+    
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
@@ -69,17 +69,26 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
-            this.logger.LogDebug($"Finished getting user profile. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
+
+            if (lastLogin.HasValue)
+            {
+                this.logger.LogTrace($"Updating user last login... {hdid}");
+                retVal.Payload.LastLoginDateTime = lastLogin;
+                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
+                this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
+            }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
             userProfile.HasTermsOfServiceUpdated =
-                (termsOfServiceResult.ResourcePayload?.EffectiveDate > DateTime.UtcNow.AddYears(-1)); // TODO: TO BE UPDATED WITH LAST LOGIN DATE
+                retVal.Payload.LastLoginDateTime.HasValue &&
+                termsOfServiceResult.ResourcePayload?.EffectiveDate > retVal.Payload.LastLoginDateTime;
 
             return new RequestResult<UserProfileModel>()
             {
@@ -93,7 +102,7 @@ namespace HealthGateway.WebClient.Services
         public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
         {
             Contract.Requires(createProfileRequest != null && hostUri != null);
-            this.logger.LogTrace($"Creating user profile... {JsonConvert.SerializeObject(createProfileRequest)}");
+            this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
 
@@ -103,7 +112,7 @@ namespace HealthGateway.WebClient.Services
             {
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultMessage = "Registration is closed";
-                this.logger.LogWarning($"Registration is closed. {JsonConvert.SerializeObject(createProfileRequest)}");
+                this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
                 return requestResult;
             }
 
@@ -115,7 +124,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite code. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    this.logger.LogWarning($"Invalid email invite code. {JsonSerializer.Serialize(createProfileRequest)}");
                     return requestResult;
                 }
 
@@ -134,7 +143,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite. {JsonConvert.SerializeObject(createProfileRequest)}");
+                    this.logger.LogWarning($"Invalid email invite. {JsonSerializer.Serialize(createProfileRequest)}");
                     return requestResult;
                 }
             }
@@ -166,7 +175,7 @@ namespace HealthGateway.WebClient.Services
                 requestResult.ResultStatus = ResultType.Success;
             }
 
-            this.logger.LogDebug($"Finished creating user profile. {JsonConvert.SerializeObject(insertResult)}");
+            this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
             return requestResult;
         }
 
@@ -175,7 +184,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Getting active terms of service...");
             DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(AgreementType.TermsofService);
-            this.logger.LogDebug($"Finished getting terms of service. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting terms of service. {JsonSerializer.Serialize(retVal)}");
 
             return new RequestResult<TermsOfServiceModel>()
             {

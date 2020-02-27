@@ -42,11 +42,15 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         public bool HasTermsOfServiceUpdated { get; set; }
 
-
         /// <summary>
-        /// Gets or sets the value indicating the date when the user profile will be deleted
+        /// Gets or sets the value indicating the date when the user profile will be deleted.
         /// </summary>
         public DateTime? PlannedDeletionDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating the date when the user last logon.
+        /// </summary>
+        public DateTime? LastLoginDateTime { get; set; }
 
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
@@ -60,7 +64,9 @@ namespace HealthGateway.WebClient.Models
                 HdId = model.HdId,
                 AcceptedTermsOfService = model.AcceptedTermsOfService,
                 Email = model.Email,
-                //PlannedDeletionDateTime = model!.PlannedDeletionDateTime; // TODO
+                LastLoginDateTime = model.LastLoginDateTime,
+
+                // PlannedDeletionDateTime = model!.PlannedDeletionDateTime; // TODO
             };
         }
     }

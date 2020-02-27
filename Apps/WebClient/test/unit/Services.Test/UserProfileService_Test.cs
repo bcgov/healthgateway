@@ -59,6 +59,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
+            profileDelegateMock.Setup(s => s.UpdateUserProfile(userProfile)).Returns(userProfileDBResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
@@ -81,7 +82,7 @@ namespace HealthGateway.WebClient.Test.Services
                 emailer.Object,
                 legalAgreementDelegateMock.Object
             );
-            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
+            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid, DateTime.Now);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
