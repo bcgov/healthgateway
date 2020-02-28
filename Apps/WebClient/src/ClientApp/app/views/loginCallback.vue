@@ -8,6 +8,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import VueRouter, { Route } from "vue-router";
 import User from "@/models/user";
 
 @Component

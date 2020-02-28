@@ -292,18 +292,33 @@ export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
     namespace: authNamespace
   })
-  oidcIsAuthenticated: boolean;
-  @Action("getUserEmail", { namespace: userNamespace }) getUserEmail;
-  @Action("updateUserEmail", { namespace: userNamespace }) updateUserEmail;
-  @Action("closeUserAccount", { namespace: userNamespace }) closeUserAccount;
-  @Action("recoverUserAccount", { namespace: userNamespace })
-  recoverUserAccount;
+  oidcIsAuthenticated!: boolean;
 
-  @Getter("user", { namespace: userNamespace }) user: User;
+  @Action("getUserEmail", { namespace: userNamespace })
+  getUserEmail!: ({ hdid }: { hdid: string }) => Promise<UserEmailInvite>;
+
+  @Action("updateUserEmail", { namespace: userNamespace })
+  updateUserEmail!: ({
+    hdid,
+    emailAddress
+  }: {
+    hdid: string;
+    emailAddress: string;
+  }) => Promise<void>;
+
+  @Action("closeUserAccount", { namespace: userNamespace })
+  closeUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
+
+  @Action("recoverUserAccount", { namespace: userNamespace })
+  recoverUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
+
+  @Getter("user", { namespace: userNamespace }) user!: User;
+
   @Getter("userIsActive", { namespace: userNamespace })
-  isActiveProfile: boolean;
+  isActiveProfile!: boolean;
+
   @Getter("webClient", { namespace: "config" })
-  webClientConfig: WebClientConfiguration;
+  webClientConfig!: WebClientConfiguration;
 
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
@@ -318,9 +333,9 @@ export default class ProfileComponent extends Vue {
 
   private tempEmail: string = "";
   private submitStatus: string = "";
-  private userEmailService: IUserEmailService;
-  private userProfileService: IUserProfileService;
-  private userProfile: UserProfile;
+  private userEmailService!: IUserEmailService;
+  private userProfileService!: IUserProfileService;
+  private userProfile!: UserProfile;
 
   private lastLoginDateString: string = "";
   private plannedDeletionDateTime: Date = new Date();
@@ -467,7 +482,7 @@ export default class ProfileComponent extends Vue {
     this.$v.$reset();
   }
 
-  private saveEdit(): void {
+  private saveEdit(event: any): void {
     this.$v.$touch();
     console.log(this.$v);
     if (this.$v.$invalid) {
