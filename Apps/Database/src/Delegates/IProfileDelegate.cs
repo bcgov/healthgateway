@@ -52,11 +52,11 @@ namespace HealthGateway.Database.Delegates
         /// Returns the list of all UserProfiles who have an email address and have
         /// logged in before the lastLoggedIn date.
         /// </summary>
-        /// <param name="lastLoggedIn">The profiles must have logged in prior to this date.</param>
+        /// <param name="filterDateTime">The profiles must have logged in prior to this date.</param>
         /// <param name="page">The page to request, defaults to 0.</param>
         /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime lastLoggedIn, int page = 0, int pagesize = 500);
+        DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500);
 
         /// <summary>
         /// Returns the list of all UserProfiles who have a closed date earlier than the supplied filter datetime.

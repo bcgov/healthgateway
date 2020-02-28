@@ -90,7 +90,11 @@ namespace Healthgateway.JobScheduler.Jobs
                 foreach (UserProfile profile in profileResult.Payload)
                 {
                     this.dbContext.UserProfile.Remove(profile);
-                    this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
+                    if (!string.IsNullOrWhiteSpace(profile.Email))
+                    {
+                        this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
+                    }
+
                     // TODO: Remove Keycloak user
                 }
 

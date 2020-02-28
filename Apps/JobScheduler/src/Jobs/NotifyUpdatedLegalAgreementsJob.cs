@@ -122,7 +122,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 DBResult<List<UserProfile>> profileResult;
                 do
                 {
-                    profileResult = this.profileDelegate.GetAllUserProfilesAfter(lastChecked, page, this.profilesPageSize);
+                    profileResult = this.profileDelegate.GetAllUserProfilesAfter(agreement.EffectiveDate.Value.Date, page, this.profilesPageSize);
                     foreach (UserProfile profile in profileResult.Payload)
                     {
                         this.emailService.QueueNewEmail(profile.Email!, config.EmailTemplate, keyValues, false);

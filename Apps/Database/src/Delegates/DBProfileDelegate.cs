@@ -107,14 +107,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime lastLoggedIn, int page = 0, int pagesize = 500)
+        public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
         {
             DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => (p.LastLoginDateTime != null && p.LastLoginDateTime < lastLoggedIn) &&
-                                    p.ClosedDateTime == null &&
-                                    p.Email != null)
+                                .Where(p => (p.LastLoginDateTime == null ||
+                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                             p.ClosedDateTime == null &&
+                                             !string.IsNullOrWhiteSpace(p.Email))
                                 .OrderBy(o => o.CreatedDateTime)
                                 .Skip(offset)
                                 .Take(pagesize)
@@ -129,8 +130,7 @@ namespace HealthGateway.Database.Delegates
             DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => (p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime) &&
-                                    p.Email != null)
+                                .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
                                 .OrderBy(o => o.ClosedDateTime)
                                 .Skip(offset)
                                 .Take(pagesize)
