@@ -95,7 +95,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
 
-                    // TODO: Remove Keycloak user
+                    // TODO: Call KeycloakUserAdmin.DeleteUser
                 }
 
                 this.logger.LogInformation($"Removed and sent emails for {profileResult.Payload.Count} closed profiles");
