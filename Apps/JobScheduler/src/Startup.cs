@@ -20,8 +20,10 @@ namespace HealthGateway.JobScheduler
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
@@ -39,7 +41,6 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
-    using HealthGateway.Common.Authorization.Admin;
 
     /// <summary>
     /// The startup class.
@@ -86,6 +87,14 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+            services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
+            services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
+            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
+            services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
+            services.AddTransient<IEmailQueueService, EmailQueueService>();
+
+            // TODO: Add injection for KeyCload User
 
             // Add app
             services.AddTransient<FedDrugJob>();
@@ -133,6 +142,8 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<HNClientTestJob>(this.configuration, "HNClientTest", j => j.Process());
+            SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
+            SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
 
             app.UseStaticFiles(new StaticFileOptions
             {

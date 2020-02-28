@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -42,5 +43,21 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(254)]
         public string? Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Closed datetime of the account.
+        /// After an account has been closed for n amount of days the row is physically deleted.
+        /// </summary>
+        public DateTime? ClosedDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the External Identity Management identifer for the user.
+        /// </summary>
+        public Guid? IdentityManagementId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users last login datetime.
+        /// </summary>
+        public DateTime? LastLoginDateTime { get; set; }
     }
 }

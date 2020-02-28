@@ -96,7 +96,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                     (httpRequestMessage, cert, cetChain, policyErrors) =>
                     {
                         return true;
-                    }
+                    },
             });
 
             services

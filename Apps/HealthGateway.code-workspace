@@ -1,36 +1,51 @@
 {
   "folders": [
     {
+      "name": "ClientApp",
+      "path": "WebClient/src/ClientApp"
+    },
+    {
+      "name": "AdminWebClient",
       "path": "AdminWebClient"
     },
     {
+      "name": "Common",
       "path": "Common"
     },
     {
+      "name": "Database",
       "path": "Database"
     },
     {
+      "name": "DBMaintainer",
       "path": "DBMaintainer"
     },
     {
+      "name": "HNClient",
       "path": "HNClient"
     },
     {
+      "name": "Immunization",
       "path": "Immunization"
     },
     {
+      "name": "JobScheduler",
       "path": "JobScheduler"
     },
     {
+      "name": "Medication",
       "path": "Medication"
     },
     {
+      "name": "Patient",
       "path": "Patient"
     },
     {
+      "name": "WebClient",
       "path": "WebClient"
     },
     {
+      "name": "Dolphin",
       "path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
     }
   ],

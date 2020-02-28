@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new UserProfile
             {
                 HdId = hdid,
-                AcceptedTermsOfService = true
+                AcceptedTermsOfService = true,
             };
 
             DBResult<UserProfile> userProfileDBResult = new DBResult<UserProfile>
@@ -48,7 +48,6 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-            expected.HasTermsOfServiceUpdated = true;
 
             LegalAgreement termsOfService = new LegalAgreement() {
                 Id = Guid.NewGuid(),
@@ -59,6 +58,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
+            profileDelegateMock.Setup(s => s.UpdateUserProfile(userProfile)).Returns(userProfileDBResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();

@@ -230,6 +230,26 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CloseUserProfile(System.String)">
+            <summary>
+            Closes a user profile.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.RecoverUserProfile(System.String)">
+            <summary>
+            Restore a user profile.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetLastTermsOfService">
             <summary>
             Gets the terms of service json.
@@ -356,7 +376,7 @@
             Gets or sets the terms of service html.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.DateActive">
+        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.EffectiveDate">
             <summary>
             Gets or sets the date the terms of service becomes active.
             </summary>
@@ -448,6 +468,17 @@
             Gets or sets a value indicating whether the user needs to be notified about new terms of service.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.LastLoginDateTime">
+            <summary>
+            Gets or sets the value indicating the date when the user last logon.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.ClosedDateTime">
+            <summary>
+            Gets or sets the Closed datetime of the account.
+            After an account has been closed for n amount of days the row is physically deleted.
+            </summary>
+        </member>
         <member name="M:HealthGateway.WebClient.Models.UserProfileModel.CreateFromDbModel(HealthGateway.Database.Models.UserProfile)">
             <summary>
             Constructs a UserProfile model from a UserProfile database model.
@@ -483,6 +514,11 @@
         <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.Modules">
             <summary>
             Gets or sets the state for each of our modules.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.HoursForDeletion">
+            <summary>
+            Gets or sets the number of hours until an account is removed after being closed.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Program">
@@ -615,11 +651,12 @@
             The User Profile service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
             <summary>
             Gets the user profile model.
             </summary>
             <param name="hdid">The requested user hdid.</param>
+            <param name="lastLogin">The date of last login performed by the user.</param>
             <returns>The wrappeed user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
@@ -628,6 +665,22 @@
             </summary>
             <param name="createProfileRequest">The request to create a user profile model.</param>
             <param name="hostUri">The host of the email validation endpoint.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.String)">
+            <summary>
+            Closed the user profile.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="hostUrl">The host of the email validation endpoint.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.RecoverUserProfile(System.String,System.String)">
+            <summary>
+            Recovers the user profile.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="hostUrl">The host of the email validation endpoint.</param>
             <returns>The wrapped user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetActiveTermsOfService">
@@ -685,10 +738,16 @@
             <param name="emailQueueService">The email service to queue emails.</param>
             <param name="legalAgreementDelegate">The terms of service delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.RecoverUserProfile(System.String,System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetActiveTermsOfService">

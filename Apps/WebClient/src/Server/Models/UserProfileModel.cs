@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System;
+
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
     /// </summary>
@@ -41,17 +43,35 @@ namespace HealthGateway.WebClient.Models
         public bool HasTermsOfServiceUpdated { get; set; }
 
         /// <summary>
+        /// Gets or sets the value indicating the date when the user last logon.
+        /// </summary>
+        public DateTime? LastLoginDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Closed datetime of the account.
+        /// After an account has been closed for n amount of days the row is physically deleted.
+        /// </summary>
+        public DateTime? ClosedDateTime { get; set; }
+
+        /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
         /// </summary>
         /// <param name="model">The user profile database model.</param>
         /// <returns>The user profile model.</returns>
         public static UserProfileModel CreateFromDbModel(Database.Models.UserProfile model)
         {
+            if (model == null)
+            {
+                return null!;
+            }
+
             return new UserProfileModel()
             {
-                HdId = model!.HdId,
-                AcceptedTermsOfService = model!.AcceptedTermsOfService,
-                Email = model!.Email,
+                HdId = model.HdId,
+                AcceptedTermsOfService = model.AcceptedTermsOfService,
+                Email = model.Email,
+                LastLoginDateTime = model.LastLoginDateTime,
+                ClosedDateTime = model.ClosedDateTime,
             };
         }
     }
