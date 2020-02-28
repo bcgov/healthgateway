@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization
 {
     using System.Diagnostics.Contracts;
     using System.Security.Claims;

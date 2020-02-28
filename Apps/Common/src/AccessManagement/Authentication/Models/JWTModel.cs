@@ -13,46 +13,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication.Models
+namespace HealthGateway.Common.AccessManagement.Authentication.Models
 {
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
+
 
     /// <summary>
     /// The json web token model.
     /// </summary>
-    [JsonObject("")]
     public class JWTModel : IAuthModel
     {
         /// <inheritdoc/>
-        [JsonProperty("access_token")]
+        [JsonPropertyName("access_token")]
         public string? AccessToken { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("expires_in")]
+        [JsonPropertyName("expires_in")]
         public int? ExpiresIn { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("refresh_expires_in")]
+        [JsonPropertyName("refresh_expires_in")]
         public int? RefreshExpiresIn { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("refresh_token")]
+        [JsonPropertyName("refresh_token")]
         public string? RefreshToken { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("token_type")]
+        [JsonPropertyName("token_type")]
         public string? TokenType { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("not-before-policy")]
+        [JsonPropertyName("not-before-policy")]
         public int? NotBeforePolicy { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("session_state")]
+        [JsonPropertyName("session_state")]
         public string? SessionState { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("scope")]
+        [JsonPropertyName("scope")]
         public string? Scope { get; set; }
     }
 }

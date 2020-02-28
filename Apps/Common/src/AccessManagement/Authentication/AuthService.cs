@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication
+namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Authentication
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            IConfigurationSection? configSection = config.GetSection("AuthService");
+            IConfigurationSection? configSection = config?.GetSection("AuthService");
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
             this.TokenRequest = new ClientCredentialsTokenRequest()
@@ -70,7 +70,7 @@ namespace HealthGateway.Common.Authentication
             this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
 
-            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
+            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
@@ -80,30 +80,25 @@ namespace HealthGateway.Common.Authentication
             JWTModel authModel = new JWTModel();
             try
             {
-                using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                // Create content for keycloak
+                IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
                 {
-                    // Create content for keycloak
-                    IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
-                    {
                         new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId!),
                         new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
                         new KeyValuePair<string, string>("audience", this.TokenRequest.Audience!),
                         new KeyValuePair<string, string>("grant_type", @"client_credentials"),
                     };
-                    using (var content = new FormUrlEncodedContent(keycloakParams))
-                    {
-                        content.Headers.Clear();
-                        content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                using var content = new FormUrlEncodedContent(keycloakParams);
+                content.Headers.Clear();
+                content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
-                        using (HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true))
-                        {
-                            string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                            this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
-                            response.EnsureSuccessStatusCode();
-                            authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
-                        }
-                    }
-                }
+                using HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true);
+
+                string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
+                response.EnsureSuccessStatusCode();
+                authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
             }
             catch (HttpRequestException e)
             {

@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.AuthServer
+namespace HealthGateway.Common.AccessManagment.Administration.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Class that represents the user model in the Authorization Server's user accounts.
@@ -25,36 +26,43 @@ namespace HealthGateway.Common.Models.AuthServer
         /// <summary>
         /// Gets or sets the user created timestamp.
         /// </summary>
+        [JsonPropertyName("createdTimeStamp")]
         public DateTime? CreatedTimestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the user's email.
         /// </summary>
+        [JsonPropertyName("email")]
         public string? Email { get; set; }
 
         /// <summary>
         /// Gets or sets the user's first name.
         /// </summary>
+        [JsonPropertyName("firstName")]
         public string? FirstName { get; set; }
 
         /// <summary>
         /// Gets or sets the user's last name.
         /// </summary>
+        [JsonPropertyName("lastName")]
         public string? LastName { get; set; }
 
         /// <summary>
         /// Gets the user's roles in the AuthServer's application realm.
         /// </summary>
-        public ArraySegment<string> RealmRoles { get; } = Array.Empty<string>();
+        [JsonPropertyName("realmRoles")]
+        public string[] RealmRoles { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the user's username.
         /// </summary>
+        [JsonPropertyName("username")]
         public string? Username { get; set; }
 
         /// <summary>
         /// Gets or sets the user's unique account identifier.
         /// </summary>
+        [JsonPropertyName("id")]
         public string? UserId { get; set; }
     }
 

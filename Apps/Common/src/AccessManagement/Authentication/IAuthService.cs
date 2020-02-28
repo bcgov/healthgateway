@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication
+namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
     /// The authorization service interface.

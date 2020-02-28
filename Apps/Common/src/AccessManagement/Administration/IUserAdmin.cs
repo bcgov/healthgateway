@@ -13,16 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates.AuthServer
+namespace HealthGateway.Common.AccessManagment.Administration
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models.AuthServer;
+    using HealthGateway.Common.AccessManagment.Administration.Models;
 
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.
     /// </summary>
-    public interface IUserDelegate
+    public interface IUserAdmin
     {
         /// <summary>
         /// Look up a user by username.

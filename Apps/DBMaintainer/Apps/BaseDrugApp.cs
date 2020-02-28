@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------
-//  Copyright © 2019 Province of British Columbia
+//  Copyright © 2019-2020 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ namespace HealthGateway.DrugMaintainer.Apps
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.FileDownload;
-    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;

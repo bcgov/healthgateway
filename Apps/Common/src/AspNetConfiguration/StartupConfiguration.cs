@@ -19,8 +19,8 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Auditing;
-    using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
