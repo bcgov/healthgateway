@@ -25,7 +25,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Authorization;
-    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using System;
