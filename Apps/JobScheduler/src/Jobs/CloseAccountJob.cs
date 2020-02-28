@@ -80,7 +80,7 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Process()
         {
-            DateTime deleteDate = DateTime.Now.Date.AddDays(this.daysBeforeDeletion);
+            DateTime deleteDate = DateTime.UtcNow.Date.AddDays(this.daysBeforeDeletion);
             this.logger.LogInformation($"Looking for closed accounts that are earlier than {deleteDate}");
             int page = 0;
             DBResult<List<UserProfile>> profileResult;

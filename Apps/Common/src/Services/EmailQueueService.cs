@@ -84,6 +84,11 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueNewEmail(Email email, bool shouldCommit = true)
         {
+            if (string.IsNullOrWhiteSpace(email.To))
+            {
+                throw new ArgumentNullException(nameof(email.To), "Email To cannot be null or whitespace");
+            }
+
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
             this.emailDelegate.InsertEmail(email, shouldCommit);
             if (shouldCommit)
@@ -117,6 +122,11 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueNewInviteEmail(EmailInvite invite)
         {
+            if (invite.Email == null || string.IsNullOrWhiteSpace(invite.Email.To))
+            {
+                throw new ArgumentNullException(nameof(invite.Email), "Invite Email To cannot be null or whitespace");
+            }
+
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
             this.emailInviteDelegate.Insert(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
