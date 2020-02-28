@@ -94,6 +94,8 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
 
+            // TODO: Add injection for KeyCload User
+
             // Add app
             services.AddTransient<FedDrugJob>();
             services.AddTransient<ProvincialDrugJob>();

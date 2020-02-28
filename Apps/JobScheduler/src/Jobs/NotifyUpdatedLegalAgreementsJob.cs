@@ -115,9 +115,9 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 Dictionary<string, string> keyValues = new Dictionary<string, string>();
                 keyValues.Add("host", this.host);
-                keyValues.Add("Path", config.Path);
-                keyValues.Add("EffectiveDate", agreement.EffectiveDate.Value.ToString("MMMM dd, yyyy", CultureInfo.InvariantCulture));
-                keyValues.Add("ContactEmail", config.ContactEmail);
+                keyValues.Add("path", config.Path);
+                keyValues.Add("effectivedate", agreement.EffectiveDate.Value.ToString("MMMM dd, yyyy", CultureInfo.InvariantCulture));
+                keyValues.Add("contactemail", config.ContactEmail);
                 int page = 0;
                 DBResult<List<UserProfile>> profileResult;
                 do
