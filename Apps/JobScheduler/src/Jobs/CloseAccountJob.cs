@@ -33,7 +33,7 @@ namespace Healthgateway.JobScheduler.Jobs
     {
         private const string JobKey = "CloseAccounts";
         private const string ProfilesPageSizeKey = "ProfilesPageSize";
-        private const string DaysDeletionKey = "DaysBeforeDeletion";
+        private const string HoursDeletionKey = "HoursBeforeDeletion";
         private const string EmailTemplateKey = "EmailTemplate";
         private const string HostKey = "Host";
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
@@ -44,7 +44,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IEmailQueueService emailService;
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
-        private readonly int daysBeforeDeletion;
+        private readonly int hoursBeforeDeletion;
         private readonly string emailTemplate;
         private readonly string host;
 
@@ -70,17 +70,17 @@ namespace Healthgateway.JobScheduler.Jobs
             this.dbContext = dbContext;
             this.profilesPageSize = this.configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
             this.host = this.configuration.GetValue<string>($"{HostKey}");
-            this.daysBeforeDeletion = this.configuration.GetValue<int>($"{JobKey}:{DaysDeletionKey}") * -1;
+            this.hoursBeforeDeletion = this.configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = this.configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
         }
 
         /// <summary>
-        /// Deletes any closed accounts that are over n days old.
+        /// Deletes any closed accounts that are over n hours old.
         /// </summary>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Process()
         {
-            DateTime deleteDate = DateTime.UtcNow.Date.AddDays(this.daysBeforeDeletion);
+            DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
             this.logger.LogInformation($"Looking for closed accounts that are earlier than {deleteDate}");
             int page = 0;
             DBResult<List<UserProfile>> profileResult;
