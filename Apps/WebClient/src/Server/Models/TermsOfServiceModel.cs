@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ namespace HealthGateway.WebClient.Models
             return new TermsOfServiceModel()
             {
                 Id = model?.Id,
-                DateActive = model?.EffectiveDate!.Value,
+                EffectiveDate = model?.EffectiveDate!.Value,
                 Content = model?.LegalText,
             };
         }
