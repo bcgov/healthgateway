@@ -90,6 +90,7 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
+            DateTime? previousLastLogin = retVal.Payload.LastLoginDateTime;
             if (lastLogin.HasValue)
             {
                 this.logger.LogTrace($"Updating user last login... {hdid}");
@@ -102,8 +103,8 @@ namespace HealthGateway.WebClient.Services
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
             userProfile.HasTermsOfServiceUpdated =
-                retVal.Payload.LastLoginDateTime.HasValue &&
-                termsOfServiceResult.ResourcePayload?.EffectiveDate > retVal.Payload.LastLoginDateTime;
+                previousLastLogin.HasValue &&
+                termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin.Value;
 
             return new RequestResult<UserProfileModel>()
             {
