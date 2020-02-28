@@ -135,6 +135,7 @@ namespace Healthgateway.JobScheduler.Jobs
                             smtpClient.Send(EmailJob.PrepareMessage(email));
                             email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
                             email.EmailStatusCode = EmailStatus.Processed;
+                            email.SentDateTime = DateTime.UtcNow;
                             this.emailDelegate.UpdateEmail(email);
                         }
                         catch (SmtpCommandException e)
