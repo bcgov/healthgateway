@@ -6,7 +6,7 @@ namespace HealthGateway.Immunization.Test.Controller
     using System.Threading.Tasks;
     using Castle.Core.Logging;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
