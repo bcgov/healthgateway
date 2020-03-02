@@ -3,7 +3,6 @@
 
 .column-wrapper {
   border: 1px;
-  //red solid;
 }
 
 #pageTitle {
