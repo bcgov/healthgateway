@@ -157,7 +157,7 @@ namespace HealthGateway.Common.AccessManagment.Administration
             {
                 returnCode = -1;
                 this.logger.LogError($"Error getting user '{userId}'");
-                throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                throw new HttpRequestException($"Unable to connect to DeleteUser: ${response.StatusCode}");
             }
             return returnCode;
         }
