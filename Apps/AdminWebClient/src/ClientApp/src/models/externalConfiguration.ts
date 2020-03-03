@@ -32,6 +32,8 @@ export class AdminClientConfiguration {
   public timeouts?: TimeOutsConfiguration;
   // Gets or sets the ExternalURLs used by the Admin.
   public externalURLs?: { [id: string]: string };
+  // Gets or sets the admin home path.
+  public adminHome?: string;
 }
 
 // Various timeout values used by the VUE Admin application.

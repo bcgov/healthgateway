@@ -138,6 +138,11 @@
             Gets or sets the ExternalURLs used by the Admin.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.AdminHome">
+            <summary>
+            Gets or sets the Admin home path.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
             <summary>
             A collection of configuration items for use by Health Gateway and
