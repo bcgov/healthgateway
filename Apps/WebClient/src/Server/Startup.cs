@@ -20,7 +20,7 @@ namespace HealthGateway.WebClient
     using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
-    using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Delegates;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;

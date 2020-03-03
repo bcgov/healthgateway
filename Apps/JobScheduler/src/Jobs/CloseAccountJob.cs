@@ -110,7 +110,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
                     JWTModel jwtModel = this.authService.AuthenticateService();
-                    int result = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId, jwtModel.AccessToken);
+                    int result = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken!);
                 }
 
                 this.logger.LogInformation($"Removed and sent emails for {profileResult.Payload.Count} closed profiles");

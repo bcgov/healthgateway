@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Delegates;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
