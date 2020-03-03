@@ -41,6 +41,10 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The startup class.
@@ -188,16 +192,51 @@ namespace HealthGateway.JobScheduler
             })
             .AddOpenIdConnect(options =>
             {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.SaveTokens = false;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.Scope.Add("openid");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                 };
                 this.configuration.GetSection("OpenIdConnect").Bind(options);
+                if (string.IsNullOrEmpty(options.Authority))
+                {
+                    this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
+                }
+
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = ctx =>
+                    {
+                        JwtSecurityToken accessToken = ctx.SecurityToken;
+                        if (accessToken != null)
+                        {
+                            ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                            if (identity != null)
+                            {
+                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProvider = ctx =>
+                    {
+                        if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                        {
+                            this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                            ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                        }
+
+                        return Task.FromResult(0);
+                    },
+                    OnAuthenticationFailed = c =>
+                    {
+                        c.HandleResponse();
+                        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        c.Response.ContentType = "text/plain";
+                        this.logger.LogError(c.Exception.ToString());
+                        return c.Response.WriteAsync(c.Exception.ToString());
+                    },
+                };
             });
         }
 
