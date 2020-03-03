@@ -4,61 +4,260 @@
   "name": "AdminUI",
   "url": "https://dev.healthgateway.gov.bc.ca",
   "tests": [{
-    "id": "bef7c50b-f000-428e-a6d5-d074a4f2770f",
-    "name": "Keycloak Login",
+    "id": "e3904868-f0f2-460c-a696-66824a8cc8da",
+    "name": "Validate Menu and Links",
     "commands": [{
-      "id": "cdfa8311-94e3-47b7-bd18-9fb171a893bf",
+      "id": "7dc1dd0c-e853-441c-80aa-7551801e2bd3",
       "comment": "",
       "command": "run",
-      "target": "Logout",
+      "target": "Admin IDIR Login",
       "targets": [],
       "value": ""
     }, {
-      "id": "73e386a8-3d19-47fa-bbd9-c7fbe428f223",
+      "id": "79af64c2-4a19-4aed-988f-e9b2bab81800",
       "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogin",
+      "command": "//assert",
+      "target": "",
+      "targets": [],
+      "value": "Validate Job Scheduler menu"
+    }, {
+      "id": "ab224272-f831-4e31-aacf-ce185e990425",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.ma-3:nth-child(4)",
       "targets": [
-        ["linkText=Login", "linkText"],
-        ["css=.ml-auto > .nav-link", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+        ["css=.ma-3:nth-child(4)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[2]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/job-scheduler')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"]
       ],
       "value": ""
     }, {
-      "id": "b3512904-da46-4b43-8c79-be9fd477c92e",
+      "id": "81b2017f-9bad-48b2-ba82-c41a5f2c0034",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.ma-3:nth-child(4) > .v-list-item__title",
+      "targets": [
+        ["css=.ma-3:nth-child(4) > .v-list-item__title", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[2]/div[2]", "xpath:idRelative"],
+        ["xpath=//a[2]/div[2]", "xpath:position"]
+      ],
+      "value": "JobScheduler"
+    }, {
+      "id": "3a44fe23-e139-49d7-b1af-489bd5a14de0",
+      "comment": "",
+      "command": "//assert",
+      "target": "",
+      "targets": [],
+      "value": "Validate Beta Invites"
+    }, {
+      "id": "f07952b3-820b-4eb6-ba89-abc673cddd49",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.ma-3:nth-child(5)",
+      "targets": [
+        ["css=.ma-3:nth-child(5)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[3]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/beta-invites')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "1babd2e0-e08a-4387-96d4-19fbddd6677a",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.ma-3:nth-child(5) > .v-list-item__title",
+      "targets": [],
+      "value": "Beta Invites"
+    }, {
+      "id": "9d19766c-d317-44f3-83aa-b5d85095b34e",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ma-3:nth-child(5)",
+      "targets": [
+        ["css=.ma-3:nth-child(5)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[3]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/beta-invites')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ac88ebd4-21a8-481c-970e-3be6dd5079f1",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.v-toolbar__title",
+      "targets": [
+        ["css=.v-toolbar__title", "css:finder"],
+        ["xpath=//header[@id='core-toolbar']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div/div/div", "xpath:position"]
+      ],
+      "value": "Beta user list"
+    }, {
+      "id": "ef2ee8a6-c87a-493e-815f-ba8065e57138",
+      "comment": "",
+      "command": "//assert",
+      "target": "",
+      "targets": [],
+      "value": "Validates Feedback Review menu"
+    }, {
+      "id": "8f4894c8-4242-47f6-8592-85b584c4aded",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.ma-3:nth-child(6)",
+      "targets": [
+        ["css=.ma-3:nth-child(6)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[4]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/user-feedback')]", "xpath:href"],
+        ["xpath=//a[4]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "918bdc91-d506-489a-971c-6f257d407c4b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.ma-3:nth-child(6) > .v-list-item__title",
+      "targets": [
+        ["css=.ma-3:nth-child(6) > .v-list-item__title", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[4]/div[2]", "xpath:idRelative"],
+        ["xpath=//a[4]/div[2]", "xpath:position"]
+      ],
+      "value": "Feedback Review"
+    }, {
+      "id": "a5806beb-deec-4a0f-bd17-55c872c3eccd",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ma-3:nth-child(6)",
+      "targets": [
+        ["css=.ma-3:nth-child(6)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a[4]", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/user-feedback')]", "xpath:href"],
+        ["xpath=//a[4]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2aa70dbb-a590-4eda-9a08-3d0543865b4b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.v-toolbar__title",
+      "targets": [
+        ["css=.v-toolbar__title", "css:finder"],
+        ["xpath=//header[@id='core-toolbar']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div/div/div", "xpath:position"]
+      ],
+      "value": "User Feedback list"
+    }, {
+      "id": "fbeb59fb-09ff-446f-995a-9a64fc0a552e",
+      "comment": "",
+      "command": "//assert",
+      "target": "",
+      "targets": [],
+      "value": "Validate Dashboard menu"
+    }, {
+      "id": "a58dacdb-3ecf-419b-993e-0b21d98ecb0c",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.ma-3:nth-child(3)",
+      "targets": [
+        ["css=.ma-3:nth-child(3)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/admin/')])[2]", "xpath:href"],
+        ["xpath=//div[3]/div/div/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "fc32b9bd-46fd-45c8-846e-9594ea67d3df",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.ma-3:nth-child(3) > .v-list-item__title",
+      "targets": [
+        ["css=.ma-3:nth-child(3) > .v-list-item__title", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a/div[2]", "xpath:idRelative"],
+        ["xpath=//a/div[2]", "xpath:position"]
+      ],
+      "value": "Dashboard"
+    }, {
+      "id": "f4bae02c-ba03-4ca2-b706-7cb736495b9b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ma-3:nth-child(3)",
+      "targets": [
+        ["css=.ma-3:nth-child(3)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/admin/')])[2]", "xpath:href"],
+        ["xpath=//div[3]/div/div/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7df76e8d-be7f-45a1-af18-96b97bd815e9",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.v-toolbar__title",
+      "targets": [
+        ["css=.v-toolbar__title", "css:finder"],
+        ["xpath=//header[@id='core-toolbar']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div/div/div", "xpath:position"]
+      ],
+      "value": "Dashboard"
+    }]
+  }, {
+    "id": "718595b6-709e-48b0-bbdc-6bd10ab4d0b4",
+    "name": "Admin IDIR Login",
+    "commands": [{
+      "id": "dd71b642-3243-4a09-a204-88e3884b46a2",
+      "comment": "",
+      "command": "run",
+      "target": "Logout Admin",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9d0feb4d-41b9-4dff-af66-36fa961ab088",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.v-progress-circular__overlay",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "06135763-86f9-4796-91e7-fcd76db1401d",
       "comment": "",
       "command": "executeScript",
       "target": "return prompt('USERNAME');",
       "targets": [],
       "value": "username"
     }, {
-      "id": "729d4bfe-f63c-4236-8f30-e1246dc120bd",
+      "id": "150b9d5f-484a-441a-975f-33fe09553afa",
       "comment": "",
       "command": "executeScript",
       "target": "return prompt('PASSWORD');",
       "targets": [],
       "value": "password"
     }, {
-      "id": "f3a88b04-b387-44c2-96d1-3e1ac9603919",
+      "id": "e6d9dd52-9876-4a36-917f-7dca20115789",
       "comment": "",
-      "command": "click",
-      "target": "id=KeyCloakBtn",
+      "command": "assertElementNotPresent",
+      "target": "css=.justify-center:nth-child(1)",
       "targets": [
-        ["css=#gitBtn td:nth-child(2)", "css:finder"],
-        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
-        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
-        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+        ["css=.justify-center:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='healthGatewayAdmin']/div[2]/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div", "xpath:position"]
       ],
       "value": ""
     }, {
-      "id": "d8f9088f-298d-4c17-baed-34e34ca048c2",
+      "id": "140078e6-ede3-45f0-abd6-0b559c6aa328",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.form-element:nth-child(1) > .control-label",
+      "targets": [
+        ["css=.form-element:nth-child(1) > .control-label", "css:finder"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/label", "xpath:idRelative"],
+        ["xpath=//label", "xpath:position"],
+        ["xpath=//label[contains(.,'IDIR Username')]", "xpath:innerText"]
+      ],
+      "value": "IDIR Username"
+    }, {
+      "id": "ad322d0e-09bc-45d8-9d00-e9f8fa53c658",
       "comment": "",
       "command": "type",
-      "target": "id=username",
+      "target": "id=user",
       "targets": [
         ["id=user", "id"],
         ["name=user", "name"],
@@ -69,7 +268,7 @@
       ],
       "value": "${username}"
     }, {
-      "id": "df0f93cd-defc-4084-bebd-72e270374bae",
+      "id": "1a80c18a-4d08-439d-9b06-5c6a03fef98c",
       "comment": "",
       "command": "type",
       "target": "id=password",
@@ -83,7 +282,7 @@
       ],
       "value": "${password}"
     }, {
-      "id": "2d65176b-692c-4a55-8567-ac678de9fb3b",
+      "id": "450bf6d3-9f16-4232-a543-dde2128ab031",
       "comment": "",
       "command": "sendKeys",
       "target": "id=password",
@@ -97,240 +296,125 @@
       ],
       "value": "${KEY_ENTER}"
     }, {
-      "id": "b8e52b1b-85db-4917-bc02-f57c552c8928",
+      "id": "5517e5ec-786a-4132-b9d2-0153d23e9809",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.v-list-item:nth-child(1)",
+      "targets": [
+        ["css=.v-list-item:nth-child(1)", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "068465b2-e61a-4265-8171-0f1acc513d8f",
       "comment": "",
       "command": "assertText",
-      "target": "id=subject",
+      "target": "css=.title",
       "targets": [
-        ["id=subject", "id"],
-        ["css=#subject", "css:finder"],
-        ["xpath=//h1[@id='subject']", "xpath:attributes"],
-        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
+        ["css=.title", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/div/div[2]/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div", "xpath:position"]
       ],
-      "value": "Health Care Timeline"
+      "value": "HealthGateway"
+    }, {
+      "id": "10779594-7035-4ad7-b9f3-8caf0b550a09",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.v-list-item__subtitle",
+      "targets": [
+        ["css=.v-list-item__subtitle", "css:finder"],
+        ["xpath=//nav[@id='app-drawer']/div/div/div[3]/div/div/div/div[2]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]", "xpath:position"]
+      ],
+      "value": "Admin"
     }]
   }, {
-    "id": "bcc6fc9a-fa06-48b8-8a47-5f18abee6a6c",
-    "name": "Logout",
+    "id": "13dca92e-7a69-4a8a-acee-7cd85cc0a293",
+    "name": "Logout Admin",
     "commands": [{
-      "id": "d7e8dffe-363b-48a2-acde-305cd96304b5",
+      "id": "714b3ce1-ffe1-4714-a63c-dce67e621a22",
       "comment": "",
       "command": "open",
-      "target": "/",
+      "target": "/admin",
       "targets": [],
       "value": ""
     }, {
-      "id": "247bd563-f06e-4d8a-ba14-670fc44b559a",
+      "id": "617b006d-344c-4667-912e-e023c60e30bc",
       "comment": "",
-      "command": "//pause",
-      "target": "3000",
+      "command": "pause",
+      "target": "1500",
       "targets": [],
       "value": ""
     }, {
-      "id": "53b17a30-f6de-485c-a795-1419a023f963",
+      "id": "d42193ab-8c57-4388-a3b7-2cfb494faf7c",
       "comment": "",
-      "command": "setWindowSize",
-      "target": "1280x800",
+      "command": "waitForElementNotPresent",
+      "target": "css=.v-progress-circular__overlay",
       "targets": [],
-      "value": ""
+      "value": "30000"
     }, {
-      "id": "65d48656-2a78-4d0e-b579-5be5729fa1c1",
+      "id": "472861e9-3d96-4a58-b4a1-c12e7e055170",
       "comment": "",
       "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
+      "target": "xpath=//a[contains(@href, '/admin/signoff')]",
       "targets": [],
       "value": "loggedin"
     }, {
-      "id": "a567eef1-45a3-4c63-b95b-a9f3e11857cf",
+      "id": "92db0c36-fcc9-4a0f-9a22-a384457c7648",
       "comment": "",
       "command": "if",
       "target": "${loggedin} > 0",
       "targets": [],
       "value": ""
     }, {
-      "id": "1553708d-65a9-4805-bd82-71718f8d7e64",
+      "id": "3b02e34d-2477-4645-9b69-0d2166cd40c5",
       "comment": "",
       "command": "click",
-      "target": "id=menuBtndUser__BV_button_",
+      "target": "linkText=Logout",
       "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
+        ["linkText=Logout", "linkText"],
+        ["css=.toolbar-items", "css:finder"],
         ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
+        ["xpath=//header[@id='core-toolbar']/div/div[3]/div/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/signoff')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Logout ')]", "xpath:innerText"]
       ],
       "value": ""
     }, {
-      "id": "20bed1ce-40a1-416e-8964-9db200734ff9",
-      "comment": "",
-      "command": "click",
-      "target": "id=menuBtnLogout",
-      "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "65c0274c-8b1f-4510-bae3-0b31fd1ee350",
+      "id": "784c3a8f-f778-49dd-bbe2-7836a0935573",
       "comment": "",
       "command": "assertText",
-      "target": "css=strong",
+      "target": "css=span:nth-child(1)",
       "targets": [
-        ["css=strong", "css:finder"],
-        ["xpath=//div[@id='app-root']/main/div/div/div/div/h3/strong", "xpath:idRelative"],
-        ["xpath=//strong", "xpath:position"],
-        ["xpath=//strong[contains(.,'You signed out of your account')]", "xpath:innerText"]
+        ["css=span:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='healthGatewayAdmin']/div/main/div/div/div[2]/span", "xpath:idRelative"],
+        ["xpath=//div[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'You have been logged out')]", "xpath:innerText"]
       ],
-      "value": "You signed out of your account"
+      "value": "You have been logged out"
     }, {
-      "id": "409761ad-6043-4a03-b0d5-156be0cf22d4",
+      "id": "07c854ea-e5de-442a-9c30-4c7c043f817e",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Login",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.toolbar-items", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//header[@id='core-toolbar']/div/div[3]/div/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/admin/')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Login ')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "69bdf97c-1e98-44c4-b4d1-042b66440a1e",
       "comment": "",
       "command": "end",
       "target": "",
       "targets": [],
-      "value": ""
-    }]
-  }, {
-    "id": "c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f",
-    "name": "JobScheduler Link",
-    "commands": [{
-      "id": "ede5cfc6-61e8-4eb1-a3e9-3b24511b4183",
-      "comment": "",
-      "command": "//run",
-      "target": "Keycloak Login",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "18b240e1-f075-49b3-84e2-c1afc2f6fc74",
-      "comment": "",
-      "command": "//assertText",
-      "target": "id=subject",
-      "targets": [],
-      "value": "Health Care Timeline"
-    }, {
-      "id": "c82d03f5-c0c9-4096-92ac-27c489b005c7",
-      "comment": "",
-      "command": "//waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [],
-      "value": "30000"
-    }, {
-      "id": "f02a7944-54c9-488e-846d-ca8781d6611d",
-      "comment": "",
-      "command": "open",
-      "target": "/admin",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "65ebbc99-b154-4770-a456-ad57acb21935",
-      "comment": "",
-      "command": "click",
-      "target": "css=.mdi",
-      "targets": [
-        ["css=.mdi", "css:finder"],
-        ["xpath=//div[@id='mainnavbar']/header/div/button/span/i", "xpath:idRelative"],
-        ["xpath=//span/i", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "1992e345-d9d5-4bf9-a2f6-870962877c41",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=.v-list-item:nth-child(2) .v-list-item__title",
-      "targets": [
-        ["css=.v-list-item:nth-child(2) .v-list-item__title", "css:finder"],
-        ["xpath=//div[@id='mainnavbar']/nav/div/div/a[2]/div[2]/div", "xpath:idRelative"],
-        ["xpath=//a[2]/div[2]/div", "xpath:position"]
-      ],
-      "value": "Hangfire"
-    }, {
-      "id": "52ee9e55-3359-4296-bc4d-b9ce8e2a3dec",
-      "comment": "",
-      "command": "click",
-      "target": "css=.v-list-item:nth-child(2)",
-      "targets": [
-        ["css=.v-list-item:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='mainnavbar']/nav/div/div/a[2]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/admin/hangire')]", "xpath:href"],
-        ["xpath=//a[2]", "xpath:position"]
-      ],
-      "value": ""
-    }]
-  }, {
-    "id": "e3904868-f0f2-460c-a696-66824a8cc8da",
-    "name": "Beta Invites Link",
-    "commands": [{
-      "id": "7dc1dd0c-e853-441c-80aa-7551801e2bd3",
-      "comment": "",
-      "command": "//run",
-      "target": "Keycloak Login",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "de106501-5040-4185-af30-bfa1ddb27afb",
-      "comment": "",
-      "command": "//assertText",
-      "target": "id=subject",
-      "targets": [],
-      "value": "Health Care Timeline"
-    }, {
-      "id": "edb85a83-9073-450e-a0df-c656ca8c1ee2",
-      "comment": "",
-      "command": "//waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [],
-      "value": "30000"
-    }, {
-      "id": "2cc2bc52-08c5-4855-87ba-0be464eb3f4a",
-      "comment": "",
-      "command": "open",
-      "target": "/admin",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "e1ae77e4-4838-44b8-a45f-905eadb28bcc",
-      "comment": "",
-      "command": "click",
-      "target": "css=.mdi",
-      "targets": [
-        ["css=.mdi", "css:finder"],
-        ["xpath=//div[@id='mainnavbar']/header/div/button/span/i", "xpath:idRelative"],
-        ["xpath=//span/i", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "8f31bc0e-8fbe-4c10-83cb-5ec108425e55",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=.v-list-item:nth-child(3) .v-list-item__title",
-      "targets": [
-        ["css=.v-list-item:nth-child(3) .v-list-item__title", "css:finder"],
-        ["xpath=//div[@id='mainnavbar']/nav/div/div/a[3]/div[2]/div", "xpath:idRelative"],
-        ["xpath=//a[3]/div[2]/div", "xpath:position"]
-      ],
-      "value": "Beta Invites"
-    }, {
-      "id": "f4bae02c-ba03-4ca2-b706-7cb736495b9b",
-      "comment": "",
-      "command": "click",
-      "target": "css=.v-list-item:nth-child(3)",
-      "targets": [
-        ["css=.v-list-item:nth-child(3)", "css:finder"],
-        ["xpath=//div[@id='mainnavbar']/nav/div/div/a[3]", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/admin/beta-invites')]", "xpath:href"],
-        ["xpath=//a[3]", "xpath:position"]
-      ],
       "value": ""
     }]
   }],
@@ -340,7 +424,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["e3904868-f0f2-460c-a696-66824a8cc8da", "c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f"]
+    "tests": ["e3904868-f0f2-460c-a696-66824a8cc8da"]
   }],
   "urls": ["https://dev.healthgateway.gov.bc.ca/", "http://localhost:5000/"],
   "plugins": []

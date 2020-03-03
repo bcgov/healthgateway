@@ -2163,6 +2163,7 @@
       "value": "Shingles"
     }, {
       "id": "451d1fe1-a700-4128-8afe-385595ee68cc",
+      "comment": "",
       "command": "assertText",
       "target": "css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col",
       "targets": [
@@ -2178,6 +2179,188 @@
       "target": "",
       "targets": [],
       "value": ""
+    }]
+  }, {
+    "id": "66f0a809-06cf-4ef9-a7cf-cfd83f95b77c",
+    "name": "Profile page - Account Closure",
+    "commands": [{
+      "id": "e3370688-f961-4234-9866-3d03edc29542",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login Account Closure",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "15c11b67-6a7a-48ed-b220-5b799c926d03",
+      "comment": "",
+      "command": "open",
+      "target": "/profile",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "0b2037ad-25ae-4505-8bef-4aaa00623316",
+      "comment": "",
+      "command": "click",
+      "target": "id=showCloseWarningBtn",
+      "targets": [
+        ["id=showCloseWarningBtn", "id"],
+        ["css=#showCloseWarningBtn", "css:finder"],
+        ["xpath=//button[@id='showCloseWarningBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[3]/div/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Close My Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6c47fda0-6bba-49a6-af7c-f7ee80de8856",
+      "comment": "",
+      "command": "click",
+      "target": "id=closeAccountBtn",
+      "targets": [
+        ["id=closeAccountBtn", "id"],
+        ["css=#closeAccountBtn", "css:finder"],
+        ["xpath=//button[@id='closeAccountBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[3]/div/div[2]/div[2]/div/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Close Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "51b72a4e-c3bc-45a4-8c6d-674f827ae1cd",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=label:nth-child(2)",
+      "targets": [],
+      "value": "Account marked for removal"
+    }, {
+      "id": "bf08be46-d294-4ce3-9714-a76c80cfb897",
+      "comment": "",
+      "command": "click",
+      "target": "id=recoverBtn",
+      "targets": [
+        ["id=recoverBtn", "id"],
+        ["css=#recoverBtn", "css:finder"],
+        ["xpath=//button[@id='recoverBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[2]/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Recover Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3e8ed202-3ac2-4a60-b15c-58ebb9187b81",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=profileNames",
+      "targets": [],
+      "value": "Account Closure"
+    }]
+  }, {
+    "id": "fd636116-f207-402d-9672-8017e1720ba5",
+    "name": "Keycloak Login Account Closure",
+    "commands": [{
+      "id": "3aa93cb7-0a8d-461e-b707-5e2d3966a144",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "0c133b66-cfe3-4321-aca9-5c27d1a36cd4",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "46bb32de-1435-46fa-a00f-c88ed7b7615e",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('ACCOUNT CLOSURE USERNAME');",
+      "targets": [],
+      "value": "username"
+    }, {
+      "id": "d3e9c228-f792-4efb-bf0f-49771d4dfb32",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('ACCOUNT CLOSURE PASSWORD');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "27bdc0af-86a1-4aef-a968-5cd1ba7bb8e6",
+      "comment": "",
+      "command": "click",
+      "target": "id=KeyCloakBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ba51168b-cade-46a4-bfd7-a3de592fe060",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${username}"
+    }, {
+      "id": "cf7d4057-6adb-43da-a642-ce37e2a94475",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "571ff44c-d849-483b-b75b-415235b0018b",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "dac9e836-edb7-48de-bf5d-72590462adf6",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
+      ],
+      "value": "Health Care Timeline"
     }]
   }],
   "suites": [{
