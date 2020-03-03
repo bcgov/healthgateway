@@ -118,7 +118,7 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
             using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
             try
             {
-                Task<string> jsonResult = this.Get(client, requestUri);
+                Task<string> jsonResult = this.Delete(client, requestUri);
             }
             catch (Exception e)
             {
@@ -135,6 +135,19 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
             if (!response.IsSuccessStatusCode)
             {
                 this.logger.LogError($"Error performing Get Request to Keycloak Admin API: ${uri.ToString()}'");
+                throw new HttpRequestException($"Unable to connect to Keycloak: ${response.StatusCode}");
+            }
+
+            return jsonString;
+        }
+
+        private async Task<string> Delete(HttpClient client, Uri uri)
+        {
+            HttpResponseMessage response = await client.DeleteAsync(uri).ConfigureAwait(true);
+            string jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            if (!response.IsSuccessStatusCode)
+            {
+                this.logger.LogError($"Error performing Delete Request to Keycloak Admin API: ${uri.ToString()}'");
                 throw new HttpRequestException($"Unable to connect to Keycloak: ${response.StatusCode}");
             }
 
