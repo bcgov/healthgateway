@@ -68,14 +68,24 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
         public JWTModel AuthenticateService()
         {
             this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
-            Task<IAuthModel> authenticating = this.ClientCredentialsAuth(); // @todo: maybe cache this in future for efficiency
+            Task<IAuthModel> authenticating = this.ClientCredentialsAuthentication(); // @todo: maybe cache this in future for efficiency
 
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
 
-        private async Task<IAuthModel> ClientCredentialsAuth()
+        /// <inheritdoc/>
+        public JWTModel Authenticate(string username, string password)
+        {
+            this.logger.LogDebug($"Authenticating User... {username!}");
+            Task<IAuthModel> authenticating = this.DirectGrantAuthentication(username, password); // @todo: maybe cache this in future for efficiency
+
+            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
+            this.logger.LogDebug($"Finished authenticating User (direct grant).");
+            return jwtModel;
+        }
+        private async Task<IAuthModel> ClientCredentialsAuthentication()
         {
             JWTModel authModel = new JWTModel();
             try
@@ -88,6 +98,42 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
                         new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
                         new KeyValuePair<string, string>("audience", this.TokenRequest.Audience!),
                         new KeyValuePair<string, string>("grant_type", @"client_credentials"),
+                    };
+                using var content = new FormUrlEncodedContent(keycloakParams);
+                content.Headers.Clear();
+                content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+
+                using HttpResponseMessage response = await client.PostAsync(this.TokenUri, content).ConfigureAwait(true);
+
+                string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
+                response.EnsureSuccessStatusCode();
+                authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogError($"Error Message ${e.Message}");
+            }
+
+            return authModel;
+        }
+
+        private async Task<IAuthModel> DirectGrantAuthentication(string username, string password)
+        {
+            JWTModel authModel = new JWTModel();
+            try
+            {
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                // Create content for keycloak
+                IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
+                {
+                        new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId!),
+                        new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
+                        new KeyValuePair<string, string>("grant_type", @"password"),
+                        new KeyValuePair<string, string>("audience", this.TokenRequest.Audience!),
+                        new KeyValuePair<string, string>("scope", @"openid"),
+                        new KeyValuePair<string, string>("username", username!),
+                        new KeyValuePair<string, string>("password", password!)
                     };
                 using var content = new FormUrlEncodedContent(keycloakParams);
                 content.Headers.Clear();
