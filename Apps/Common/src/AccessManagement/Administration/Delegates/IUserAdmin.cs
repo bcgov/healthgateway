@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagment.Administration.Delegate
+namespace HealthGateway.Common.AccessManagment.Administration.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authentication
+namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
 {
     using System;
     using System.Collections.Generic;
