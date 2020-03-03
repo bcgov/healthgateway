@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagment.Administration
+namespace HealthGateway.Common.AccessManagment.Administration.Delegate
 {
     using System;
     using System.Collections.Generic;
@@ -104,7 +104,7 @@ namespace HealthGateway.Common.AccessManagment.Administration
             else
             {
                 this.logger.LogError($"Error finding user '{username}'");
-                throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                throw new HttpRequestException($"Unable to connect to Keycloak FindUser: ${response.StatusCode}");
             }
 
             return usersReturned;
@@ -132,7 +132,7 @@ namespace HealthGateway.Common.AccessManagment.Administration
             else
             {
                 this.logger.LogError($"Error getting user '{userId}'");
-                throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                throw new HttpRequestException($"Unable to connect to Keycloak GetUser: ${response.StatusCode}");
             }
             return userReturned;
         }
@@ -157,7 +157,7 @@ namespace HealthGateway.Common.AccessManagment.Administration
             {
                 returnCode = -1;
                 this.logger.LogError($"Error getting user '{userId}'");
-                throw new HttpRequestException($"Unable to connect to DeleteUser: ${response.StatusCode}");
+                throw new HttpRequestException($"Unable to connect to Keycloak DeleteUser: ${response.StatusCode}");
             }
             return returnCode;
         }
