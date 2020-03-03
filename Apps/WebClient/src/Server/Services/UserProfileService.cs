@@ -196,9 +196,8 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, string hostUrl)
+        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl)
         {
-            //Contract.Requires(hdid != null && hostUri != null);
             this.logger.LogTrace($"Closing user profile... {hdid}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
@@ -219,7 +218,8 @@ namespace HealthGateway.WebClient.Services
                 }
 
                 profile.ClosedDateTime = DateTime.Now;
-                DBResult<UserProfile> updateResult = profileDelegate.UpdateUserProfile(profile);
+                profile.IdentityManagementId = userId;
+                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
@@ -238,7 +238,6 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
         {
-            //Contract.Requires(hdid != null && hostUri != null);
             this.logger.LogTrace($"Recovering user profile... {hdid}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
@@ -258,8 +257,10 @@ namespace HealthGateway.WebClient.Services
                     return requestResult;
                 }
 
+                // Remove values set for deletion
                 profile.ClosedDateTime = null;
-                DBResult<UserProfile> updateResult = profileDelegate.UpdateUserProfile(profile);
+                profile.IdentityManagementId = null;
+                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
