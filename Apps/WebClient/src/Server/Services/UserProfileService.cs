@@ -182,7 +182,7 @@ namespace HealthGateway.WebClient.Services
                     this.emailInviteDelegate.Update(emailInvite);
                 }
 
-                if (!string.IsNullOrEmpty(email))
+                if (!string.IsNullOrWhiteSpace(email))
                 {
                     this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
                 }
@@ -220,7 +220,7 @@ namespace HealthGateway.WebClient.Services
 
                 profile.ClosedDateTime = DateTime.Now;
                 DBResult<UserProfile> updateResult = profileDelegate.UpdateUserProfile(profile);
-                if (profile.Email != null)
+                if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
@@ -260,7 +260,7 @@ namespace HealthGateway.WebClient.Services
 
                 profile.ClosedDateTime = null;
                 DBResult<UserProfile> updateResult = profileDelegate.UpdateUserProfile(profile);
-                if (profile.Email != null)
+                if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
