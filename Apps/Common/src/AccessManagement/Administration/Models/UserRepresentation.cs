@@ -63,7 +63,7 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         /// Gets or sets the user's unique account identifier.
         /// </summary>
         [JsonPropertyName("id")]
-        public string? UserId { get; set; }
+        public Guid? UserId { get; set; }
     }
 
 }

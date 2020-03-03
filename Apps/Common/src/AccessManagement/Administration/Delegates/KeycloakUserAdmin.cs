@@ -82,84 +82,63 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<List<UserRepresentation>> FindUser(string username, string authorization)
-        {
-            List<UserRepresentation> usersReturned;
-
-            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(FINDUSERURL));
-
-            using HttpClient client = this.GethttpClient(baseUri, authorization);
-
-            using HttpResponseMessage response = await client.GetAsync(new Uri($"?username={username}", UriKind.Relative)).ConfigureAwait(true);
-
-            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            if (response.IsSuccessStatusCode)
-            {
-                var options = new JsonSerializerOptions
-                {
-                    AllowTrailingCommas = true,
-                };
-                usersReturned = JsonSerializer.Deserialize<List<UserRepresentation>>(json, options);
-            }
-            else
-            {
-                this.logger.LogError($"Error finding user '{username}'");
-                throw new HttpRequestException($"Unable to connect to Keycloak FindUser: ${response.StatusCode}");
-            }
-
-            return usersReturned;
-
-        }
-
-        /// <inheritdoc/>
-        public async Task<UserRepresentation> GetUser(string userId, string authorization)
+        public  UserRepresentation GetUser(Guid userId, string base64BearerToken)
         {
             UserRepresentation userReturned;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
 
-            using HttpClient client = this.GethttpClient(baseUri, authorization);
-            using HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true);
+            Uri requestUri = new Uri($"/{userId}", UriKind.Relative);
 
-            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            if (response.IsSuccessStatusCode)
+            using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
+            try
             {
+                Task<string> jsonResult =  this.Get(client, requestUri);
+                string json = jsonResult.Result;
                 var options = new JsonSerializerOptions
                 {
                     AllowTrailingCommas = true,
                 };
                 userReturned = JsonSerializer.Deserialize<UserRepresentation>(json, options);
+                return userReturned;
+
             }
-            else
+            catch (Exception e)
             {
-                this.logger.LogError($"Error getting user '{userId}'");
-                throw new HttpRequestException($"Unable to connect to Keycloak GetUser: ${response.StatusCode}");
+                this.logger.LogError($"DeleteUser failed: ${e.ToString()}");
+                return new UserRepresentation();
             }
-            return userReturned;
         }
 
         /// <inheritdoc/>
-        public async Task<int> DeleteUser(string userId, string base64BearerToken)
+        public int DeleteUser(Guid userId, string base64BearerToken)
         {
-            int returnCode = 0;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
+            Uri requestUri = new Uri($"/{userId}", UriKind.Relative);
 
             using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
-            using HttpResponseMessage response = await client.GetAsync(new Uri($"/{userId}", UriKind.Relative)).ConfigureAwait(true);
-            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-                {
-                    AllowTrailingCommas = true,
-                };
+                Task<string> jsonResult = this.Get(client, requestUri);
             }
-            else
+            catch (Exception e)
             {
-                returnCode = -1;
-                this.logger.LogError($"Error getting user '{userId}'");
-                throw new HttpRequestException($"Unable to connect to Keycloak DeleteUser: ${response.StatusCode}");
+                this.logger.LogError($"DeleteUser failed: ${e.ToString()}");
+                return -1;
             }
-            return returnCode;
+            return 0;
+        }
+
+        private async Task<string> Get(HttpClient client, Uri uri)
+        {
+            HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(true);
+            string jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            if (!response.IsSuccessStatusCode)
+            {
+                this.logger.LogError($"Error performing Get Request to Keycloak Admin API: ${uri.ToString()}'");
+                throw new HttpRequestException($"Unable to connect to Keycloak: ${response.StatusCode}");
+            }
+
+            return jsonString;
         }
 
         /// <summary>

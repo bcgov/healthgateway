@@ -15,8 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Administration.Delegates
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+    using System;
     using HealthGateway.Common.AccessManagement.Administration.Models;
 
     /// <summary>
@@ -27,18 +26,10 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
         /// <summary>
         /// Look up a user by username.
         /// </summary>
-        /// <param name="username">The username of the User account in the Authorization Server.</param>
-        /// <param name="authorization">Authorization JWT for the call.</param>
-        /// <returns>A candidate result list of UserRepresentation objects.</returns>
-        Task<List<UserRepresentation>> FindUser(string username, string authorization);
-
-        /// <summary>
-        /// Look up a user by username.
-        /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
-        Task<UserRepresentation> GetUser(string userId, string authorization);
+        UserRepresentation GetUser(Guid userId, string authorization);
 
         /// <summary>
         /// Delete a User from teh IAM system.
@@ -46,7 +37,7 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns></returns>
-        Task<int> DeleteUser(string userId, string authorization);
+        int DeleteUser(Guid userId, string authorization);
     }
 }
 

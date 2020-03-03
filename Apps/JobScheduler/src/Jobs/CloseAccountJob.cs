@@ -20,7 +20,9 @@ namespace Healthgateway.JobScheduler.Jobs
     using Hangfire;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.AccessManagement.Authentication.Delegates;
-    using HealthGateway.Common.AccessManagement.
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.AccessManagement.Administration.Delegates;
+    using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -46,6 +48,8 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IEmailQueueService emailService;
 
         private readonly IAuthService authService;
+
+        private readonly IUserAdmin userAdminDelegate;
     
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
@@ -60,6 +64,8 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="logger">The logger to use.</param>
         /// <param name="profileDelegate">The profile delegate.</param>
         /// <param name="emailService">The email service.</param>
+        /// <param name="authService">The OAuth2 authentication service.</param>
+        /// <param name="userAdminDelegate">The AccessManagement userAdmin delegate.</param>
         /// <param name="dbContext">The db context to use.</param>
         public CloseAccountJob(
             IConfiguration configuration,
@@ -67,13 +73,15 @@ namespace Healthgateway.JobScheduler.Jobs
             IProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             IAuthService authService,
-
+            IUserAdmin userAdminDelegate,
             GatewayDbContext dbContext)
         {
             this.configuration = configuration;
             this.logger = logger;
             this.profileDelegate = profileDelegate;
             this.emailService = emailService;
+            this.authService = authService;
+            this.userAdminDelegate = userAdminDelegate;
             this.dbContext = dbContext;
             this.profilesPageSize = this.configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
             this.host = this.configuration.GetValue<string>($"{HostKey}");
@@ -101,8 +109,8 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
-
-                    // TODO: Call KeycloakUserAdmin.DeleteUser
+                    JWTModel jwtModel = this.authService.AuthenticateService();
+                    int result = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId, jwtModel.AccessToken);
                 }
 
                 this.logger.LogInformation($"Removed and sent emails for {profileResult.Payload.Count} closed profiles");
