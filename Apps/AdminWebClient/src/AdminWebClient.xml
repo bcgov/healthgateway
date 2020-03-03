@@ -138,11 +138,6 @@
             Gets or sets the ExternalURLs used by the Admin.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.AdminHome">
-            <summary>
-            Gets or sets the Admin home path.
-            </summary>
-        </member>
         <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
             <summary>
             A collection of configuration items for use by Health Gateway and
@@ -162,6 +157,21 @@
         <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.ServiceEndpoints">
             <summary>
             Gets or sets the Service Endpoints.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.ForwardProxies">
+            <summary>
+            Gets or sets the forward proxies configuration.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.ForwardProxiesConfiguration">
+            <summary>
+            The forward proxies configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ForwardProxiesConfiguration.BasePath">
+            <summary>
+            Gets or sets the base path.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">

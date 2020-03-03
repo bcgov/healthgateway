@@ -23,7 +23,7 @@ export class RestAuthenticationService implements IAuthenticationService {
 
     var fullRedirectUrl = new URL(relativeToPath, window.location.href);
 
-    var authPathUrl = new URL(`${this.config.admin.adminHome}/Login`, window.location.href);
+    var authPathUrl = new URL(`${this.config.forwardProxies.basePath}/Login`, window.location.href);
 
     let queryParams = `?redirectUri=${fullRedirectUrl.href}`;
     let fullPath = authPathUrl + queryParams;
@@ -57,7 +57,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     return new Promise((resolve, reject) => {
       console.log("Starting Logout flow....");
 
-      var authPathUrl = new URL(`${this.config.admin.adminHome}/Logout`, window.location.href);
+      var authPathUrl = new URL(`${this.config.forwardProxies.basePath}/Logout`, window.location.href);
 
       window.location.href = authPathUrl.href;
       this.expireSiteMinderCookie();

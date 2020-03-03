@@ -37,10 +37,5 @@ namespace HealthGateway.Admin.Models
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
         public Dictionary<string, System.Uri> ExternalURLs { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Admin home path.
-        /// </summary>
-        public string? AdminHome { get; set; }
     }
 }

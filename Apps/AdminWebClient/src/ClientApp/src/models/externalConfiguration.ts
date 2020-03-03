@@ -8,6 +8,8 @@ export default class ExternalConfiguration {
 
   // Gets or sets the Service Endpoints.
   public serviceEndpoints!: { [id: string]: string };
+
+  public forwardProxies!: ForwardProxiesConfiguration;
 }
 
 // Configuration to be used by external clients for authentication.
@@ -32,8 +34,11 @@ export class AdminClientConfiguration {
   public timeouts?: TimeOutsConfiguration;
   // Gets or sets the ExternalURLs used by the Admin.
   public externalURLs?: { [id: string]: string };
-  // Gets or sets the admin home path.
-  public adminHome?: string;
+}
+
+// Forward proxies configuration.
+export class ForwardProxiesConfiguration {
+    public basePath?: string;
 }
 
 // Various timeout values used by the VUE Admin application.
