@@ -19,6 +19,8 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Collections.Generic;
     using Hangfire;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.AccessManagement.Authentication.Delegates;
+    using HealthGateway.Common.AccessManagement.
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -42,6 +44,9 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ILogger<CloseAccountJob> logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
+
+        private readonly IAuthService authService;
+    
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
         private readonly int hoursBeforeDeletion;
@@ -61,6 +66,8 @@ namespace Healthgateway.JobScheduler.Jobs
             ILogger<CloseAccountJob> logger,
             IProfileDelegate profileDelegate,
             IEmailQueueService emailService,
+            IAuthService authService,
+
             GatewayDbContext dbContext)
         {
             this.configuration = configuration;

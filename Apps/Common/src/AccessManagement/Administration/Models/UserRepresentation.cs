@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagment.Administration.Models
+namespace HealthGateway.Common.AccessManagement.Administration.Models
 {
     using System;
     using System.Text.Json.Serialization;
