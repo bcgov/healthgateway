@@ -122,7 +122,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 DBResult<List<UserProfile>> profileResult;
                 do
                 {
-                    profileResult = this.profileDelegate.GetAllUserProfilesAfter(agreement.EffectiveDate.Value.Date, page, this.profilesPageSize);
+                    profileResult = this.profileDelegate.GetAllUserProfilesAfter(agreement.EffectiveDate.Value, page, this.profilesPageSize);
                     foreach (UserProfile profile in profileResult.Payload)
                     {
                         this.emailService.QueueNewEmail(profile.Email!, config.EmailTemplate, keyValues, false);
@@ -136,7 +136,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 }
                 while (profileResult.Payload.Count == this.profilesPageSize);
                 this.logger.LogInformation($"Completed sending emails after processing {page} page(s) with pagesize set to {this.profilesPageSize}");
-                lastCheckedSetting.Value = DateTime.UtcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+                lastCheckedSetting.Value = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                 this.logger.LogInformation($"Saving rundate of {lastCheckedSetting.Value} to DB");
                 this.dbContext.SaveChanges();
             }
