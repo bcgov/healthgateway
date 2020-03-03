@@ -44,9 +44,10 @@ namespace HealthGateway.WebClient.Services
         /// Closed the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="userId">The user id.</param>
         /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> CloseUserProfile(string hdid, string hostUrl);
+        RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl);
 
         /// <summary>
         /// Recovers the user profile.
