@@ -667,11 +667,12 @@
             <param name="hostUri">The host of the email validation endpoint.</param>
             <returns>The wrapped user profile.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.Guid,System.String)">
             <summary>
             Closed the user profile.
             </summary>
             <param name="hdid">The requested user hdid.</param>
+            <param name="userId">The user id.</param>
             <param name="hostUrl">The host of the email validation endpoint.</param>
             <returns>The wrapped user profile.</returns>
         </member>
@@ -744,7 +745,7 @@
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.Guid,System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.RecoverUserProfile(System.String,System.String)">

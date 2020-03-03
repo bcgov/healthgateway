@@ -64,7 +64,7 @@
               variant="primary"
               to="/termsOfService"
             >
-              here </router-link
+              here</router-link
             >.
           </span>
         </b-alert>
