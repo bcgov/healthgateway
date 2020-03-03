@@ -163,7 +163,10 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer?
                 .GetLeftPart(UriPartial.Authority);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, referer);
+            // Retrieve the user identity id from the claims
+            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId, referer);
             return new JsonResult(result);
         }
 
