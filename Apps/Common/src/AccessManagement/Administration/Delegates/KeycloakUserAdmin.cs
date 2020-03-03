@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagment.Administration.Delegate
+namespace HealthGateway.Common.AccessManagement.Administration.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace HealthGateway.Common.AccessManagment.Administration.Delegate
     using System.Text.Json;
     using System.Threading.Tasks;
 
-    using HealthGateway.Common.AccessManagment.Administration.Models;
+    using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

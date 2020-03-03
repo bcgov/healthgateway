@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagment.Administration.Delegate
+namespace HealthGateway.Common.AccessManagement.Administration.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagment.Administration.Models;
+    using HealthGateway.Common.AccessManagement.Administration.Models;
 
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.
