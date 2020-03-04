@@ -37,12 +37,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// Authenticates as a 'system account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateSystem();
+        JWTModel AuthenticateAsSystem();
 
         /// <summary>
         /// Authenticates a user with direct grant, no user intervention, i.e.a basic auth as system login
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>        
-        JWTModel Authenticate(string username, string password);
+        JWTModel AuthenticateAsUser(string username, string password);
     }
 }
