@@ -69,7 +69,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateNote(string hdid, [FromBody] NoteModel model)
+        public async Task<IActionResult> CreateNote(string hdid, [FromBody] Database.Models.Note model)
         {
             // Validate that the query parameter matches the post body
             if (string.IsNullOrEmpty(hdid) ||
@@ -89,7 +89,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            //RequestResult<NoteModel> result = this.noteService.CreateNote(model);
+            //RequestResult<Database.Models.Note> result = this.noteService.CreateNote(model);
             return new JsonResult(new object());
         }
 
@@ -114,7 +114,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            //RequestResult<IEnumerable<NoteModel>> result = this.noteService.GetAll(hdid);
+            //RequestResult<IEnumerable<Database.Models.Note>> result = this.noteService.GetAll(hdid);
             return new JsonResult(new object());
         }
     }
