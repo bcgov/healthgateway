@@ -13,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
+#pragma warning disable CS1591
 namespace HealthGateway.Database.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class UpdateVerifyEmailTemplate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
