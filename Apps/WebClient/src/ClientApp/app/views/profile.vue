@@ -456,7 +456,7 @@ export default class ProfileComponent extends Vue {
     }
 
     timeRemaining = duration.asSeconds();
-    return this.pluralize(timeRemaining, "seconds");
+    return this.pluralize(timeRemaining, "second");
   }
 
   private pluralize(count: number, message: string): string {
