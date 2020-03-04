@@ -64,6 +64,7 @@ namespace HealthGateway.Database.Context
         public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
         public DbSet<ApplicationSetting> ApplicationSetting { get; set; } = null!;
         public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
+        public DbSet<Note> Note { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -148,6 +149,13 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<ApplicationSetting>()
                     .HasIndex(i => new { i.Application, i.Component, i.Key })
                     .IsUnique();
+
+            // Create Foreign keys for User Notes
+            modelBuilder.Entity<Note>()
+                    .HasOne<UserProfile>()
+                    .WithMany()
+                    .HasPrincipalKey(k => k.HdId)
+                    .HasForeignKey(k => k.HdId);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
