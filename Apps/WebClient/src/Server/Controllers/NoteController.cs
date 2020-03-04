@@ -67,26 +67,25 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateNote(string hdid, [FromBody] Database.Models.Note model)
+        public async Task<IActionResult> CreateNote([FromBody] Database.Models.Note model)
         {
-            // Validate that the query parameter matches the post body
-            if (string.IsNullOrEmpty(hdid) ||
-                model == null ||
-                !hdid.Equals(model!.HdId, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
             AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
+            }
+
+            // Validate that the jwt hdid matches the post body
+            if (model == null ||
+                !userHdid.Equals(model!.HdId, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
             }
 
             //RequestResult<Database.Models.Note> result = this.noteService.CreateNote(model);
@@ -102,12 +101,12 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Route("{hdid}")]
-        public async Task<IActionResult> GetAll(string hdid)
+        public async Task<IActionResult> GetAll()
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
             var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
                 .ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
