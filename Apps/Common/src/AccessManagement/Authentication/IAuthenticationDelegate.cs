@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
+namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -21,7 +21,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
     /// <summary>
     /// The authorization service interface.
     /// </summary>
-    public interface IAuthService
+    public interface IAuthenticationDelegate
     {
         /// <summary>
         /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard).
@@ -34,9 +34,15 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
         Uri TokenUri { get; }
 
         /// <summary>
-        /// Authenticates this service, using Client Credentials Grant.
+        /// Authenticates as a 'system account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateService();
+        JWTModel AuthenticateSystem();
+
+        /// <summary>
+        /// Authenticates a user with direct grant, no user intervention, i.e.a basic auth as system login
+        /// </summary>
+        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>        
+        JWTModel Authenticate(string username, string password);
     }
 }

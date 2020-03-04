@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
+namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
@@ -28,26 +28,27 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
     /// <summary>
     /// The Authorization service.
     /// </summary>
-    public class AuthService : IAuthService
+    public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        private readonly ILogger<AuthService> logger;
+        const string  CONFIGSECTIONNAME = "ClientAuthentication";
+        private readonly ILogger<AuthenticationDelegate> logger;
 
         private readonly IHttpClientService httpClientService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthService"/> class.
+        /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="config">The configuration.</param>
         /// <param name="httpClientService">The injected http client service.</param>
-        public AuthService(
-            ILogger<AuthService> logger,
+        public AuthenticationDelegate(
+            ILogger<AuthenticationDelegate> logger,
             IConfiguration config,
             IHttpClientService httpClientService)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            IConfigurationSection? configSection = config?.GetSection("AuthService");
+            IConfigurationSection? configSection = config?.GetSection(CONFIGSECTIONNAME);
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
             this.TokenRequest = new ClientCredentialsTokenRequest()
@@ -65,10 +66,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
         public Uri TokenUri { get; }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateService()
+        public JWTModel AuthenticateAsSystem()
         {
             this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
-            Task<IAuthModel> authenticating = this.ClientCredentialsAuthentication(); // @todo: maybe cache this in future for efficiency
+            Task<IAuthModel> authenticating = this.ClientCredentialsAuthentication();
 
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
@@ -76,10 +77,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
         }
 
         /// <inheritdoc/>
-        public JWTModel Authenticate(string username, string password)
+        public JWTModel AuthenticateAsUser(string username, string password)
         {
             this.logger.LogDebug($"Authenticating User... {username!}");
-            Task<IAuthModel> authenticating = this.DirectGrantAuthentication(username, password); // @todo: maybe cache this in future for efficiency
+            Task<IAuthModel> authenticating = this.DirectGrantAuthentication(username, password);
 
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating User (direct grant).");
@@ -92,14 +93,14 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 // Create content for keycloak
-                IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
+                IEnumerable<KeyValuePair<string, string>> oauthParams = new[]
                 {
                         new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId!),
                         new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
                         new KeyValuePair<string, string>("audience", this.TokenRequest.Audience!),
                         new KeyValuePair<string, string>("grant_type", @"client_credentials"),
-                    };
-                using var content = new FormUrlEncodedContent(keycloakParams);
+                };
+                using var content = new FormUrlEncodedContent(oauthParams);
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
@@ -125,7 +126,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 // Create content for keycloak
-                IEnumerable<KeyValuePair<string, string>> keycloakParams = new[]
+                IEnumerable<KeyValuePair<string, string>> oauthParams = new[]
                 {
                         new KeyValuePair<string, string>("client_id", this.TokenRequest.ClientId!),
                         new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
@@ -135,7 +136,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Delegates
                         new KeyValuePair<string, string>("username", username!),
                         new KeyValuePair<string, string>("password", password!)
                     };
-                using var content = new FormUrlEncodedContent(keycloakParams);
+                using var content = new FormUrlEncodedContent(oauthParams);
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
