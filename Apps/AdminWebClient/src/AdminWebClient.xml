@@ -159,6 +159,21 @@
             Gets or sets the Service Endpoints.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Models.ExternalConfiguration.ForwardProxies">
+            <summary>
+            Gets or sets the forward proxies configuration.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.ForwardProxiesConfiguration">
+            <summary>
+            The forward proxies configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ForwardProxiesConfiguration.BasePath">
+            <summary>
+            Gets or sets the base path.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">
             <summary>
             Configuration to be used by external clients for authentication.

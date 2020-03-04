@@ -34,7 +34,6 @@ const authenticationService: IAuthenticationService = container.get(
 );
 
 configService.initialize(httpDelegate);
-authenticationService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   // Retrieve service interfaces
@@ -46,6 +45,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   );
 
   // Initialize services
+  authenticationService.initialize(httpDelegate, config);
   betaRequestService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
   initializeVue();

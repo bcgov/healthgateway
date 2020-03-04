@@ -38,5 +38,10 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         #pragma warning disable CA2227 //disable read-only Dictionary
         public Dictionary<string, System.Uri> ServiceEndpoints { get; set; }
+
+        /// <summary>
+        /// Gets or sets the forward proxies configuration.
+        /// </summary>
+        public ForwardProxiesConfiguration ForwardProxies { get; set; }
     }
 }
