@@ -51,6 +51,12 @@ namespace HealthGateway.Database.Constant
         Concurrency = 60,
 
         /// <summary>
+        /// Represents that the caller requested that the service/delegate not commit.
+        /// The caller is responsible for concurrency and other handling.
+        /// </summary>
+        Deferred = 70,
+
+        /// <summary>
         /// Represents that an error occurred
         /// </summary>
         Error = 0,
