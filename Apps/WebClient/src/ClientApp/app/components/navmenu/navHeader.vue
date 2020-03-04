@@ -51,6 +51,17 @@
               <font-awesome-icon icon="user"></font-awesome-icon> Profile
             </router-link>
           </b-dropdown-item>
+          <b-dropdown-item
+            v-if="displayMenu"
+            href="https://github.com/bcgov/healthgateway/wiki"
+          >
+            <a
+              href="https://github.com/bcgov/healthgateway/wiki"
+              target="_blank"
+            >
+              <font-awesome-icon icon="info-circle"></font-awesome-icon> About
+            </a>
+          </b-dropdown-item>
           <b-dropdown-item>
             <router-link id="menuBtnLogout" variant="primary" to="/logout">
               <font-awesome-icon icon="sign-out-alt"></font-awesome-icon> Logout
@@ -71,13 +82,18 @@ import { Prop, Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
 import { IAuthenticationService } from "@/services/interfaces";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStream,
+  faSignOutAlt,
+  faInfoCircle
+} from "@fortawesome/free-solid-svg-icons";
 library.add(faStream);
 library.add(faSignOutAlt);
+library.add(faInfoCircle);
 
 interface ILanguage {
   code: string;
@@ -93,14 +109,19 @@ export default class HeaderComponent extends Vue {
     namespace: auth
   })
   oidcIsAuthenticated: boolean;
+
   @Getter("user", {
     namespace: user
   })
   user: User;
+
   @Getter("userIsRegistered", {
     namespace: user
   })
   userIsRegistered: boolean;
+
+  @Getter("userIsActive", { namespace: user })
+  userIsActive: boolean;
 
   private authenticationService: IAuthenticationService;
 
@@ -124,7 +145,9 @@ export default class HeaderComponent extends Vue {
   }
 
   get displayMenu(): boolean {
-    return this.oidcIsAuthenticated && this.userIsRegistered;
+    return (
+      this.oidcIsAuthenticated && this.userIsRegistered && this.userIsActive
+    );
   }
 
   get greeting(): string {

@@ -4,15 +4,17 @@ namespace HealthGateway.Immunization.Test.Controller
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading.Tasks;
+    using Castle.Core.Logging;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -45,25 +47,30 @@ namespace HealthGateway.Immunization.Test.Controller
             Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
-            Mock<IImmsService> svcMock = new Mock<IImmsService>();
+            Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
 
-            List<ImmsDataModel> expected = new List<ImmsDataModel>();
-            expected.Add(new ImmsDataModel()
+            List<ImmunizationView> immunizations = new List<ImmunizationView>();
+            immunizations.Add(new ImmunizationView()
             {
-                Vaccine = "test"
+                Name = "test"
             });
-            svcMock.Setup(m => m.GetImmunizations(hdid)).Returns(expected);
 
-            ImmunizationController controller = new ImmunizationController(svcMock.Object, httpContextAccessorMock.Object, authzMock.Object);
+            svcMock.Setup(m => m.GetImmunizations(hdid)).ReturnsAsync(immunizations);
+
+            ImmunizationController controller = new ImmunizationController(
+                new Mock<ILogger<ImmunizationController>>().Object,
+                svcMock.Object,
+                httpContextAccessorMock.Object,
+                authzMock.Object);
 
             // Act
             JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);
 
             // Verify
-            IEnumerable<ImmsDataModel> actual = (List<ImmsDataModel>)result.Value;
+            RequestResult<List<ImmunizationView>> actual = (RequestResult<List<ImmunizationView>>)result.Value;
 
             // Verify the result
-            Assert.True(actual.IsDeepEqual(expected));
+            Assert.True(actual.ResourcePayload.IsDeepEqual(immunizations));
         }
     }
 }

@@ -57,6 +57,10 @@ export class WebClientConfiguration {
   public registrationStatus?: RegistrationStatus;
   // Gets or sets the ExternalURLs used by the Webclient.
   public externalURLs?: { [id: string]: string };
+  // Gets or sets the Module state.
+  public modules!: { [id: string]: boolean };
+  // Gets or sets the hours for deletion.
+  public hoursForDeletion?: number;
 }
 
 // Various timeout values used by the VUE WebClient application.

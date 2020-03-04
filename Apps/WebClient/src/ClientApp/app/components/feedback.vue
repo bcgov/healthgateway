@@ -130,8 +130,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import container from "@/inversify.config";
-import SERVICE_IDENTIFIER from "@/constants/serviceIdentifiers";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IUserFeedbackService } from "@/services/interfaces";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faComments } from "@fortawesome/free-solid-svg-icons";

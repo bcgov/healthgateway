@@ -43,6 +43,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="email">Email to be set for the user.</param>
+        /// <param name="hostUri">The host uri for referal purposes.</param>
         /// <returns>returns true if the email invite was sucessfully created.</returns>
         bool UpdateUserEmail(string hdid, string email, Uri hostUri);
     }

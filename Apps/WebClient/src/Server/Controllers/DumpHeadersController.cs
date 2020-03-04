@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Diagnostics;
     using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +22,7 @@ namespace HealthGateway.WebClient.Controllers
     /// HomeController for Vue WebClient app.
     /// </summary>
     [IgnoreAudit]
+    [TypeFilter(typeof(AvailabilityFilter))]
     public class DumpHeadersController : Controller
     {
         /// <summary>

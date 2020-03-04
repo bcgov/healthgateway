@@ -44,9 +44,9 @@ namespace HealthGateway.DrugMaintainer.Apps
                 throw new ApplicationException($"The zip file contained {files.Length} CSV files, very confused.");
             }
             this.logger.LogInformation("Parsing Provincial PharmaCare file");
-            this.drugDbContext.AddRange(this.parser.ParsePharmaCareDrugFile(files[0], downloadedFile));
-            this.AddFileToDB(downloadedFile);
             this.RemoveOldFiles(downloadedFile);
+            this.AddFileToDB(downloadedFile);
+            this.drugDbContext.AddRange(this.parser.ParsePharmaCareDrugFile(files[0], downloadedFile));
             this.logger.LogInformation("Saving PharmaCare Drugs");
             this.drugDbContext.SaveChanges();
         }

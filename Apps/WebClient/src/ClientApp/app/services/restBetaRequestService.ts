@@ -15,7 +15,7 @@ export class RestBetaRequestService implements IBetaRequestService {
   }
 
   public getRequest(hdid: string): Promise<BetaRequest> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.http
         .get<BetaRequest>(`${this.BETA_REQUEST_BASE_URI}/${hdid}`)
         .then(betaRequest => {
@@ -23,7 +23,7 @@ export class RestBetaRequestService implements IBetaRequestService {
         })
         .catch(err => {
           console.log(err);
-          return resolve(err);
+          return reject(err);
         });
     });
   }
@@ -43,7 +43,7 @@ export class RestBetaRequestService implements IBetaRequestService {
         })
         .catch(err => {
           console.log(err);
-          return resolve(err);
+          return reject(err);
         });
     });
   }

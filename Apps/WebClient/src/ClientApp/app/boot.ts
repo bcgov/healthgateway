@@ -4,17 +4,16 @@ import VueRouter from "vue-router";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import i18n from "@/i18n";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
-import "@/registerComponentHooks";
+import "@/plugins/registerComponentHooks";
 
 const App = () => import(/* webpackChunkName: "app" */ "@/app.vue");
 import router from "@/router";
 import store from "@/store/store";
 import {
   IAuthenticationService,
-  IImmsService,
+  IImmunizationService,
   IPatientService,
   IMedicationService,
   IHttpDelegate,
@@ -24,10 +23,8 @@ import {
   IUserEmailService,
   IBetaRequestService
 } from "@/services/interfaces";
-import SERVICE_IDENTIFIER, {
-  DELEGATE_IDENTIFIER
-} from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
+import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
@@ -50,8 +47,8 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const authService: IAuthenticationService = container.get(
     SERVICE_IDENTIFIER.AuthenticationService
   );
-  const immsService: IImmsService = container.get(
-    SERVICE_IDENTIFIER.ImmsService
+  const immunizationService: IImmunizationService = container.get(
+    SERVICE_IDENTIFIER.ImmunizationService
   );
   const patientService: IPatientService = container.get(
     SERVICE_IDENTIFIER.PatientService
@@ -74,7 +71,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
-  immsService.initialize(config, httpDelegate);
+  immunizationService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
@@ -103,7 +100,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 function initializeVue() {
   new Vue({
     el: "#app-root",
-    i18n: i18n,
     store,
     router,
     render: h => h(App)

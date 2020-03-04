@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Services
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;

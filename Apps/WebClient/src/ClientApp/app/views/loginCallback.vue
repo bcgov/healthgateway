@@ -8,6 +8,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import VueRouter, { Route } from "vue-router";
 import User from "@/models/user";
 
 @Component
@@ -38,7 +39,7 @@ export default class LoginCallbackComponent extends Vue {
       })
       .catch(err => {
         // Login failed redirect it back to the login page.
-        console.error(err);
+        console.error("LoginCallback Error:", err);
         this.clearStorage();
         this.$router.push({ path: "/login", query: { isRetry: "true" } });
       });

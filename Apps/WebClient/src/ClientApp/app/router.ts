@@ -3,6 +3,9 @@ import Vue from "vue";
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
+import { SnowplowWindow } from "@/plugins/extensions";
+declare let window: SnowplowWindow;
+
 const ProfileComponent = () =>
   import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingComponent = () =>
@@ -29,10 +32,13 @@ const TimelineComponent = () =>
   import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
 const ValidateEmailComponent = () =>
   import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
+const TermsOfServiceComponent = () =>
+  import(/* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue");
 
 Vue.use(VueRouter);
 
 const REGISTRATION_PATH = "/registration";
+const REGISTRATION_INFO_PATH = "/registrationInfo";
 
 const routes = [
   {
@@ -41,7 +47,7 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: "/registrationInfo",
+    path: REGISTRATION_INFO_PATH,
     component: RegistrationInfoComponent,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
@@ -75,6 +81,11 @@ const routes = [
     meta: { requiresRegistration: true, roles: ["user"] }
   },
   {
+    path: "/termsOfService",
+    component: TermsOfServiceComponent,
+    meta: { requiresAuth: true, roles: ["user"] }
+  },
+  {
     path: "/login",
     component: LoginComponent,
     props: (route: Route) => ({
@@ -106,13 +117,13 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.fullPath);
+  console.log(from.fullPath, to.fullPath);
   if (to.meta.requiresAuth || to.meta.requiresRegistration) {
-    store.dispatch("auth/oidcCheckAccess", to).then(hasAccess => {
-      if (!hasAccess) {
+    store.dispatch("auth/oidcCheckAccess", to).then(isAuthorized => {
+      if (!isAuthorized) {
         next({ path: "/login", query: { redirect: to.fullPath } });
       } else {
-        handleUserHasAccess(to, from, next);
+        handleUserIsAuthorized(to, from, next);
       }
     });
   } else {
@@ -121,11 +132,15 @@ router.beforeEach(async (to, from, next) => {
     let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
 
     // If the user is authenticated but not registered, the registration must be completed
+    let isRegistrationPath =
+      to.path.startsWith(REGISTRATION_PATH) ||
+      to.path.startsWith(REGISTRATION_INFO_PATH);
     if (
       userIsAuthenticated &&
       !userIsRegistered &&
       !to.meta.routeIsOidcCallback &&
-      !to.path.startsWith("/logout")
+      !to.path.startsWith("/logout") &&
+      !isRegistrationPath
     ) {
       next({ path: REGISTRATION_PATH });
     } else {
@@ -134,11 +149,24 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-function handleUserHasAccess(to: Route, from: Route, next: any) {
-  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
+router.afterEach((to, from) => {
+  window.snowplow("trackPageView");
+});
+
+function handleUserIsAuthorized(to: Route, from: Route, next: any) {
   let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+  let userIsActive: boolean = store.getters["user/userIsActive"];
+
+  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
     next({ path: "/timeline" });
+  } else if (
+    userIsRegistered &&
+    !userIsActive &&
+    !to.path.startsWith("/termsOfService") &&
+    !to.path.startsWith("/profile")
+  ) {
+    next({ path: "/profile" });
   } else if (to.meta.requiresRegistration && !userIsRegistered) {
     next({ path: REGISTRATION_PATH });
   } else {

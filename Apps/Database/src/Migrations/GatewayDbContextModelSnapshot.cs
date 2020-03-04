@@ -116,6 +116,76 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("ActiveIngredient");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.ApplicationSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ApplicationSettingsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Application")
+                        .IsRequired()
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("Component")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("character varying(250)")
+                        .HasMaxLength(250);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Application", "Component", "Key")
+                        .IsUnique();
+
+                    b.ToTable("ApplicationSetting");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("5f279ba2-8e7b-4b1d-8c69-467d94dcb7fb"),
+                            Application = "JOBS",
+                            Component = "NotifyUpdatedLegalAgreementsJob",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Key = "ToS-Last-Checked",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Value = "05/01/2019",
+                            Version = 0u
+                        });
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.AuditEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -875,9 +945,9 @@ namespace HealthGateway.Database.Migrations
             <td></td>
             <td>
                 <h1 style = ""font-size:18px;"">Almost there!</h1>
-                <p>We've received a request to register your email address for a Ministry of Health Gateway account.</p>
+                <p>We've received a request to register your email address for a Health Gateway account.</p>
                 <p>To activate your account, please verify your email by clicking the link:</p>
-                <a style = ""color:#1292c5;font-weight:600;"" href = ""${ActivationHost}/ValidateEmail/${InviteKey}""> Health Gateway account verification </a>
+                <a style = ""color:#1292c5;font-weight:600;"" href = ""${ActivationHost}/ValidateEmail/${InviteKey}""> Health Gateway Account Verification </a>
             </td>
             <td></td>
         </tr>
@@ -938,6 +1008,244 @@ namespace HealthGateway.Database.Migrations
                             Name = "Invite",
                             Priority = 1,
                             Subject = "Health Gateway Private Invitation",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("2ab5d4aa-c4c9-4324-a753-cde4e21e7612"),
+                            Body = @"<!doctype html>
+    <html lang=""en"">
+    <head></head>
+    <body style=""margin:0"">
+    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
+        <tr style=""background:#036;"">
+            <th width=""45""></th>
+            <th width=""350"" align=""left"" style=""text-align:left;"">
+                <div role=""img"" aria-label=""Health Gateway Logo"">
+                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo""/>
+                </div>
+            </th>
+            <th width=""""></th>
+        </tr>
+        <tr>
+            <td colspan=""3"" height=""20""></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <h1 style=""font-size:18px;"">Good day,</h1>
+                <p>Thank you for joining the wait list to be an early user of the Health Gateway.</p>
+                <p>You will receive an email in the near future with a registration link.</p>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "BetaConfirmation",
+                            Priority = 1,
+                            Subject = "Health Gateway Waitlist Confirmation",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("eb695050-e2fb-4933-8815-3d4656e4541d"),
+                            Body = @"<!doctype html>
+<html lang=""en"">
+<head>
+</head>
+<body style=""margin:0"">
+    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
+        <tr style=""background:#036;"">
+            <th width=""45""></th>
+            <th width=""350"" align=""left"" style=""text-align:left;"">
+                <div role=""img"" aria-label=""Health Gateway Logo"">
+                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
+                </div>
+            </th>
+            <th width=""""></th>
+        </tr>
+        <tr>
+            <td colspan=""3"" height=""20""></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <h1 style=""font-size:18px;"">Hi,</h1>
+                <p>
+                    You are receiving this email as a user of the Health Gateway. We have updated our Terms of Service, effective ${effectivedate}.
+                </p>
+                <p>For more information, we encourage you to review the full <a href=""${host}/${path}"">Terms of Service</a> and check out the <a href=""https://github.com/bcgov/healthgateway/wiki"">release notes</a> for a summary of new features.</p>
+                <p>If you have any questions or wish to provide any feedback, please contact <a href=""mailto:${contactemail}"">${contactemail}</a>.</p>
+                <p>Regards,</p>
+                <p>Health Gateway Team</p>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "TermsOfService",
+                            Priority = 1,
+                            Subject = "Health Gateway Updated Terms of Service ",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("79503a38-c14a-4992-b2fe-5586629f552e"),
+                            Body = @"<!doctype html>
+<html lang=""en"">
+<head>
+</head>
+<body style=""margin:0"">
+    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
+        <tr style=""background:#036;"">
+            <th width=""45""></th>
+            <th width=""350"" align=""left"" style=""text-align:left;"">
+                <div role=""img"" aria-label=""Health Gateway Logo"">
+                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
+                </div>
+            </th>
+            <th width=""""></th>
+        </tr>
+        <tr>
+            <td colspan=""3"" height=""20""></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <h1 style=""font-size:18px;"">Hi,</h1>
+                <p>
+                    You have closed your Health Gateway account. If you would like to recover your account, please login to Health Gateway within the next 30 days and click “Recover Account”. No further action is required if you want your account and personally entered information to be removed from the Health Gateway after this time period.
+                </p>
+                <p>Thanks,</p>
+                <p>Health Gateway Team</p>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "AccountClosed",
+                            Priority = 1,
+                            Subject = "Health Gateway Account Closed ",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("2fe8c825-d4de-4884-be6a-01a97b466425"),
+                            Body = @"<!doctype html>
+<html lang=""en"">
+<head>
+</head>
+<body style=""margin:0"">
+    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
+        <tr style=""background:#036;"">
+            <th width=""45""></th>
+            <th width=""350"" align=""left"" style=""text-align:left;"">
+                <div role=""img"" aria-label=""Health Gateway Logo"">
+                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
+                </div>
+            </th>
+            <th width=""""></th>
+        </tr>
+        <tr>
+            <td colspan=""3"" height=""20""></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <h1 style=""font-size:18px;"">Hi,</h1>
+                <p>
+                    You have successfully recovered your Health Gateway account. You may continue to use the service as you did before.
+                </p>
+                <p>Thanks,</p>
+                <p>Health Gateway Team</p>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "AccountRecovered",
+                            Priority = 1,
+                            Subject = "Health Gateway Account Recovered",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("d9898318-4e53-4074-9979-5d24bd370055"),
+                            Body = @"<!doctype html>
+<html lang=""en"">
+<head>
+</head>
+<body style=""margin:0"">
+    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
+        <tr style=""background:#036;"">
+            <th width=""45""></th>
+            <th width=""350"" align=""left"" style=""text-align:left;"">
+                <div role=""img"" aria-label=""Health Gateway Logo"">
+                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
+                </div>
+            </th>
+            <th width=""""></th>
+        </tr>
+        <tr>
+            <td colspan=""3"" height=""20""></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <h1 style=""font-size:18px;"">Hi,</h1>
+                <p>
+                    Your Health Gateway account closure has been completed. Your account and personally entered information have been removed from the application. You are welcome to register again for the Health Gateway in the future.
+                </p>
+                <p>Thanks,</p>
+                <p>Health Gateway Team</p>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "AccountRemoved",
+                            Priority = 1,
+                            Subject = "Health Gateway Account Closure Complete",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1048,6 +1356,219 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Form");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.LegalAgreement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("LegalAgreementsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("EffectiveDate")
+                        .IsRequired()
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("LegalAgreementCode")
+                        .IsRequired()
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("LegalText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LegalAgreementCode");
+
+                    b.ToTable("LegalAgreement");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f5acf1de-2f5f-431e-955d-a837d5854182"),
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LegalAgreementCode = "ToS",
+                            LegalText = @"<p><strong>HealthGateway Terms of Service</strong></p>
+<p>
+    Use of this service is governed by the following terms and conditions. Please read these terms and conditions
+    carefully, as by using this website you will be deemed to have agreed to them. If you do not agree with these terms
+    and conditions, do not use this service.
+</p>
+<p>
+    The Health Gateway provides BC residents with access to their health information empowering patients and their
+    families to manage their health care. In accessing your health information through this service, you acknowledge
+    that the information within does not represent a comprehensive record of your health care in BC. No personal health
+    information will be stored within the Health Gateway application. Each time you login, your health information will
+    be fetched from information systems within BC and purged upon logout. If you choose to share your health information
+    accessed through the website with a family member or caregiver, you are responsible for all the actions they take
+    with respect to the use of your information.
+</p>
+<p>
+    This service is not intended to provide you with medical advice nor replace the care provided by qualified health
+    care professionals. If you have questions or concerns about your health, please contact your care provider.
+</p>
+<p>
+    The personal information you provide (Name and Email) will be used for the purpose of connecting your Health Gateway
+    account to your BC Services Card account under the authority of section 33(a) of the Freedom of Information and
+    Protection of Privacy Act. This will be done through the BC Services Identity Assurance Service. Once your identity
+    is verified using your BC Services Card, you will be able to view your health records from various health
+    information systems in one place. Health Gateway’s collection of your personal information is under the authority of
+    section 26(c) of the Freedom of Information and Protection of Privacy Act.
+</p>
+<p>
+    If you have any questions about our collection or use of personal information, please direct your inquiries to the
+    Health Gateway team:
+</p>
+<p>
+    <i
+        ><div>Nino Samson</div>
+        <div>Product Owner, Health Gateway</div>
+        <div>Telephone: 778-974-2712</div>
+        <div>Email: nino.samson@gov.bc.ca</div>
+    </i>
+</p>
+
+<p><strong>Limitation of Liabilities</strong></p>
+<p>
+    Under no circumstances will the Government of British Columbia be liable to any person or business entity for any
+    direct, indirect, special, incidental, consequential, or other damages based on any use of this website or any other
+    website to which this site is linked, including, without limitation, any lost profits, business interruption, or
+    loss of programs or information, even if the Government of British Columbia has been specifically advised of the
+    possibility of such damages.
+</p>",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        });
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.LegalAgreementTypeCode", b =>
+                {
+                    b.Property<string>("LegalAgreementCode")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("LegalAgreementCode");
+
+                    b.ToTable("LegalAgreementTypeCode");
+
+                    b.HasData(
+                        new
+                        {
+                            LegalAgreementCode = "ToS",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Terms of Service",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        });
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.Note", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("NoteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("HdId")
+                        .IsRequired()
+                        .HasColumnName("UserProfileId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<DateTime>("JournalDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("character varying(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("Title")
+                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HdId");
+
+                    b.ToTable("Note");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>
@@ -1427,6 +1948,26 @@ namespace HealthGateway.Database.Migrations
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
+                        },
+                        new
+                        {
+                            ProgramCode = "ADMIN",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Admin Client",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            ProgramCode = "JOBS",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Job Scheduler",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
                         });
                 });
 
@@ -1670,6 +2211,9 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("IsReviewed")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsSatisfied")
                         .HasColumnType("boolean");
 
@@ -1702,6 +2246,9 @@ namespace HealthGateway.Database.Migrations
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("ClosedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("character varying(60)")
@@ -1713,6 +2260,12 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
+
+                    b.Property<Guid?>("IdentityManagementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastLoginDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -1731,6 +2284,69 @@ namespace HealthGateway.Database.Migrations
                     b.HasKey("HdId");
 
                     b.ToTable("UserProfile");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserProfileHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("UserProfileHistoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("AcceptedTermsOfService")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ClosedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("character varying(254)")
+                        .HasMaxLength(254);
+
+                    b.Property<string>("HdId")
+                        .IsRequired()
+                        .HasColumnName("UserProfileId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<Guid?>("IdentityManagementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastLoginDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OperationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserProfileHistory");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
@@ -1791,6 +2407,15 @@ namespace HealthGateway.Database.Migrations
                         .WithOne("ActiveIngredient")
                         .HasForeignKey("HealthGateway.Database.Models.ActiveIngredient", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.ApplicationSetting", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.ProgramTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("Application")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1874,6 +2499,24 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
                         .WithOne("Form")
                         .HasForeignKey("HealthGateway.Database.Models.Form", "DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.LegalAgreement", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.LegalAgreementTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("LegalAgreementCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.Note", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                        .WithMany()
+                        .HasForeignKey("HdId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

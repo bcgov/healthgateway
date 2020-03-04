@@ -15,7 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Diagnostics.Contracts;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
@@ -101,6 +103,39 @@ namespace HealthGateway.Database.Delegates
             result.Payload = profile;
             result.Status = profile != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting user profile from DB. {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        {
+            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            int offset = page * pagesize;
+            result.Payload = this.dbContext.UserProfile
+                                .Where(p => (p.LastLoginDateTime == null ||
+                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                             p.ClosedDateTime == null &&
+                                             !string.IsNullOrWhiteSpace(p.Email))
+                                .OrderBy(o => o.CreatedDateTime)
+                                .Skip(offset)
+                                .Take(pagesize)
+                                .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        {
+            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            int offset = page * pagesize;
+            result.Payload = this.dbContext.UserProfile
+                                .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
+                                .OrderBy(o => o.ClosedDateTime)
+                                .Skip(offset)
+                                .Take(pagesize)
+                                .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
     }

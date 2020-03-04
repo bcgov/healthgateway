@@ -13,15 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
 namespace HealthGateway.JobScheduler
 {
     using System;
-    using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
@@ -39,6 +41,10 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The startup class.
@@ -85,6 +91,14 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+            services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
+            services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
+            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
+            services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
+            services.AddTransient<IEmailQueueService, EmailQueueService>();
+
+            // TODO: Add injection for KeyCload User
 
             // Add app
             services.AddTransient<FedDrugJob>();
@@ -118,7 +132,7 @@ namespace HealthGateway.JobScheduler
             {
                 DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                 Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
-                AppPath = $"{this.GetBasePath()}{AuthorizationConstants.LogoutPath}",
+                AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
             });
 
             app.UseHangfireServer();
@@ -132,6 +146,8 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<HNClientTestJob>(this.configuration, "HNClientTest", j => j.Process());
+            SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
+            SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -176,16 +192,51 @@ namespace HealthGateway.JobScheduler
             })
             .AddOpenIdConnect(options =>
             {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.SaveTokens = false;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.Scope.Add("openid");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                 };
                 this.configuration.GetSection("OpenIdConnect").Bind(options);
+                if (string.IsNullOrEmpty(options.Authority))
+                {
+                    this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
+                }
+
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = ctx =>
+                    {
+                        JwtSecurityToken accessToken = ctx.SecurityToken;
+                        if (accessToken != null)
+                        {
+                            ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                            if (identity != null)
+                            {
+                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProvider = ctx =>
+                    {
+                        if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                        {
+                            this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                            ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                        }
+
+                        return Task.FromResult(0);
+                    },
+                    OnAuthenticationFailed = c =>
+                    {
+                        c.HandleResponse();
+                        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        c.Response.ContentType = "text/plain";
+                        this.logger.LogError(c.Exception.ToString());
+                        return c.Response.WriteAsync(c.Exception.ToString());
+                    },
+                };
             });
         }
 

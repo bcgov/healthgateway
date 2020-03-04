@@ -3,11 +3,8 @@ import { RootState, AuthState } from "@/models/storeState";
 import { Route } from "vue-router";
 
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import SERVICE_IDENTIFIER, {
-  DELEGATE_IDENTIFIER
-} from "@/constants/serviceIdentifiers";
-import container from "@/inversify.config";
-import { RestUserProfileService } from "@/services/restUserProfileService";
+import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 
 function routeIsOidcCallback(route: Route): boolean {
   if (route.meta.isOidcCallback) {
@@ -125,6 +122,7 @@ export const actions: ActionTree<AuthState, RootState> = {
     });
   },
   clearStorage(context) {
+    authService.clearStaleState();
     authService.removeUser().finally(() => {
       httpDelegate.unsetAuthorizationHeader();
       context.commit("unsetOidcAuth");

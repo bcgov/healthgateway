@@ -3,9 +3,11 @@ import { IHttpDelegate, IUserProfileService } from "@/services/interfaces";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import { TermsOfService } from "@/models/termsOfService";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
+  private readonly FETCH_ERROR: string = "Fetch error:";
   private readonly USER_PROFILE_BASE_URI: string = "v1/api/UserProfile";
   private http!: IHttpDelegate;
 
@@ -23,7 +25,7 @@ export class RestUserProfileService implements IUserProfileService {
           this.handleResult(requestResult, resolve, reject);
         })
         .catch(err => {
-          console.log("Fetch error:" + err.toString());
+          console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
     });
@@ -40,7 +42,55 @@ export class RestUserProfileService implements IUserProfileService {
           this.handleResult(requestResult, resolve, reject);
         })
         .catch(err => {
-          console.log("Fetch error:" + err.toString());
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
+  public closeAccount(hdid: string): Promise<UserProfile> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .delete<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}`
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
+  public recoverAccount(hdid: string): Promise<UserProfile> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get<RequestResult<UserProfile>>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
+  public getTermsOfService(): Promise<TermsOfService> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get<RequestResult<TermsOfService>>(
+          `${this.USER_PROFILE_BASE_URI}/TermsOfService`
+        )
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
     });
@@ -51,7 +101,6 @@ export class RestUserProfileService implements IUserProfileService {
     resolve: any,
     reject: any
   ) {
-    //console.log(requestResult);
     if (requestResult.resultStatus === ResultType.Success) {
       resolve(requestResult.resourcePayload);
     } else {

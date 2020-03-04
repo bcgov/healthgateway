@@ -16,12 +16,10 @@
 namespace HealthGateway.Common.Auditing
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
     using HealthGateway.Database.Constant;
-    using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
@@ -82,7 +80,10 @@ namespace HealthGateway.Common.Auditing
             auditEvent.ApplicationType = this.GetApplicationType();
             auditEvent.TransactionResultCode = this.GetTransactionResultType(context.Response.StatusCode);
             auditEvent.ApplicationSubject = hdid;
-            auditEvent.TransactionName = context.Request.Path;
+
+            RouteValueDictionary routeValues = context.Request.RouteValues;
+            auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
+
             auditEvent.Trace = context.TraceIdentifier;
             auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
             RouteData routeData = context.GetRouteData();
@@ -131,17 +132,19 @@ namespace HealthGateway.Common.Auditing
             switch (assemblyName.Name)
             {
                 case "Configuration":
-                    return AuditApplication.Configuration;
+                    return ApplicationType.Configuration;
                 case "testhost":
-                    return AuditApplication.Configuration;
+                    return ApplicationType.Configuration;
                 case "WebClient":
-                    return AuditApplication.WebClient;
+                    return ApplicationType.WebClient;
                 case "Immunization":
-                    return AuditApplication.Immunization;
+                    return ApplicationType.Immunization;
                 case "Patient":
-                    return AuditApplication.Patient;
+                    return ApplicationType.Patient;
                 case "Medication":
-                    return AuditApplication.Medication;
+                    return ApplicationType.Medication;
+                case "AdminWebClient":
+                    return ApplicationType.AdminWebClient;
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }

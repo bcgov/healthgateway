@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Context;
@@ -97,6 +99,18 @@ namespace HealthGateway.Database.Delegates
             result.Payload = betaRequest;
             result.Status = betaRequest != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting the beta request from DB. {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<List<BetaRequest>> GetPendingBetaRequest()
+        {
+            this.logger.LogTrace("Getting pending beta requests from DB...");
+            DBResult<List<BetaRequest>> result = new DBResult<List<BetaRequest>>();
+            List<BetaRequest> betaRequests = this.dbContext.BetaRequest.Where(b => !this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId)).ToList();
+            result.Payload = betaRequests;
+            result.Status = betaRequests != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            this.logger.LogDebug($"Finished getting pending beta request from DB. {JsonSerializer.Serialize(result)}");
             return result;
         }
     }

@@ -77,6 +77,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import VueRouter, { Route } from "vue-router";
 import LoadingComponent from "@/components/loading.vue";
 import {
   IdentityProviderConfiguration,
@@ -100,11 +101,11 @@ export default class LoginComponent extends Vue {
 
   private isLoading: boolean = true;
   private redirectPath: string = "";
-  private routeHandler = undefined;
+  private routeHandler!: VueRouter;
 
   mounted() {
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
-      this.redirectPath = this.$route.query.redirect;
+      this.redirectPath = this.$route.query.redirect.toString();
     } else {
       this.redirectPath = "/timeline";
     }

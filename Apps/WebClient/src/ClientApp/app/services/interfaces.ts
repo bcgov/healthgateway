@@ -3,7 +3,7 @@ import {
   ExternalConfiguration,
   OpenIdConnectConfiguration
 } from "@/models/configData";
-import ImmsData from "@/models/immsData";
+import ImmunizationData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserFeedback from "@/models/userFeedback";
@@ -14,6 +14,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
+import { TermsOfService } from "@/models/termsOfService";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -31,9 +32,11 @@ export interface IAuthenticationService {
   getOidcUserProfile(): Promise<any>;
 }
 
-export interface IImmsService {
+export interface IImmunizationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getItems(): Promise<ImmsData[]>;
+  getPatientImmunizations(
+    hdid: string
+  ): Promise<RequestResult<ImmunizationData[]>>;
 }
 
 export interface IPatientService {
@@ -59,6 +62,9 @@ export interface IUserProfileService {
   initialize(http: IHttpDelegate): void;
   createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
   getProfile(hdid: string): Promise<UserProfile>;
+  getTermsOfService(): Promise<TermsOfService>;
+  closeAccount(hdid: string): Promise<UserProfile>;
+  recoverAccount(hdid: string): Promise<UserProfile>;
 }
 
 export interface IUserFeedbackService {
@@ -90,4 +96,10 @@ export interface IHttpDelegate {
     payload: Object,
     headers?: Dictionary<string>
   ): Promise<T>;
+  patch<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
+  delete<T>(url: string, headers?: Dictionary<string>): Promise<T>;
 }

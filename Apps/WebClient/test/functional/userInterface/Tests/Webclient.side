@@ -783,7 +783,7 @@
         ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
         ["xpath=//div[3]/div/div/div", "xpath:position"]
       ],
-      "value": "Jan 29, 2019"
+      "value": "Jan 29, 2020"
     }, {
       "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
       "comment": "",
@@ -1889,7 +1889,7 @@
         ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[5]/div", "xpath:idRelative"],
         ["xpath=//div[5]/div", "xpath:position"]
       ],
-      "value": " Removing your email will prevent future communication about your healthrecords"
+      "value": "Removing your email address will disable future communications from the Health Gateway"
     }, {
       "id": "96347150-5448-4d97-918c-a0c1509e1b92",
       "comment": "",
@@ -1970,6 +1970,398 @@
       ],
       "value": ""
     }]
+  }, {
+    "id": "44eb2eaa-1a39-4e1b-bc1e-23f54f30a5bd",
+    "name": "About",
+    "commands": [{
+      "id": "b0281574-b263-4b67-a160-b402a082f8fa",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "774cf1d5-6299-4e93-a3bb-7f22d78ca4e4",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "b1118892-ddf1-4f8f-aa9b-5a419d9fd89d",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "5c4f3630-f846-4309-8167-c84daa71603c",
+      "comment": "",
+      "command": "click",
+      "target": "css=#menuBtndUser__BV_button_ > span",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "10b8bd78-4cd4-4722-84c0-6a4b60b2645a",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=li:nth-child(4) > .dropdown-item > a",
+      "targets": [
+        ["css=li:nth-child(4) > .dropdown-item > a", "css:finder"],
+        ["xpath=//a[contains(text(),'About')]", "xpath:link"],
+        ["xpath=//li[@id='menuBtndUser']/ul/li[4]/a/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, 'https://github.com/bcgov/healthgateway/wiki')])[2]", "xpath:href"],
+        ["xpath=//li[4]/a/a", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "aee54535-bf50-44ec-a9a3-1487333856b0",
+    "name": "Profile - Right Info Card",
+    "commands": [{
+      "id": "29b9e90c-d592-446e-8ec4-77ae0f3a8e11",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "488dc957-7c3e-49ea-84d0-716eca85c50f",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "37f9bdaf-9ca6-443a-8636-dfe29c5b21f8",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "b19d85fc-f563-413a-ada8-6dd0bcd14c06",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.card-body",
+      "targets": [
+        ["css=.card-body", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div[3]/div/div", "xpath:idRelative"],
+        ["xpath=//main/div/div[2]/div[3]/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2c3f3ce7-07a1-4219-90f8-7243c4daddb5",
+      "comment": "",
+      "command": "storeText",
+      "target": "css=.card-text",
+      "targets": [
+        ["css=.card-text", "css:finder"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div[3]/div/div/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'HealthLink BC provides reliable non-emergency health information and advice in British Columbia.')]", "xpath:innerText"]
+      ],
+      "value": "cardText"
+    }, {
+      "id": "69dd4755-6790-408a-a37a-7759f6f69506",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return ${cardText} == \"HealthLink BC provides reliable non-emergency health information and advice in British Columbia.\" || ${cardText} == \"Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year.\" ",
+      "targets": [],
+      "value": "correctText"
+    }, {
+      "id": "fc36a2c5-245b-4503-8d17-87b7af0d4f7b",
+      "comment": "",
+      "command": "assert",
+      "target": "correctText",
+      "targets": [],
+      "value": "true"
+    }]
+  }, {
+    "id": "ea0c5793-cfaf-4b48-8902-870aa52db970",
+    "name": "Timeline - Immunization Details",
+    "commands": [{
+      "id": "cf40608d-e106-4de0-91e9-d6f1f348f0d2",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d3fe34a2-7346-4f15-b655-da40ab6b8b5e",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "1080cd19-81d9-4684-a3e2-0d0c45948fec",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "b463ba78-4820-40ce-9a58-fa3a83ff12ad",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row > .btn",
+      "targets": [
+        ["css=.row > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"]
+      ],
+      "value": "Date (Newest)"
+    }, {
+      "id": "ae3049b5-0599-4b65-abb5-d1001a775b9d",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div", "xpath:position"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "a745a52c-b73f-4b78-9b59-8d7ee3d86c2e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(3) .date",
+      "targets": [
+        ["css=.row:nth-child(3) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div[2]/div[3]/div/div", "xpath:position"]
+      ],
+      "value": "Jan 22, 2020"
+    }, {
+      "id": "d1ac4e1a-2650-4708-a6a0-a0aaff0c54d2",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(3) > .row:nth-child(4) .entryTitle",
+      "targets": [
+        ["css=.row:nth-child(3) > .row:nth-child(4) .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div[4]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div[4]/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Shingles"
+    }, {
+      "id": "451d1fe1-a700-4128-8afe-385595ee68cc",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col",
+      "targets": [
+        ["css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div[4]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div[2]/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "Zoster"
+    }, {
+      "id": "98c790b4-1e83-49e4-9c35-f17b922680d3",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "66f0a809-06cf-4ef9-a7cf-cfd83f95b77c",
+    "name": "Profile page - Account Closure",
+    "commands": [{
+      "id": "e3370688-f961-4234-9866-3d03edc29542",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login Account Closure",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "15c11b67-6a7a-48ed-b220-5b799c926d03",
+      "comment": "",
+      "command": "open",
+      "target": "/profile",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "0b2037ad-25ae-4505-8bef-4aaa00623316",
+      "comment": "",
+      "command": "click",
+      "target": "id=showCloseWarningBtn",
+      "targets": [
+        ["id=showCloseWarningBtn", "id"],
+        ["css=#showCloseWarningBtn", "css:finder"],
+        ["xpath=//button[@id='showCloseWarningBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[3]/div/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Close My Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6c47fda0-6bba-49a6-af7c-f7ee80de8856",
+      "comment": "",
+      "command": "click",
+      "target": "id=closeAccountBtn",
+      "targets": [
+        ["id=closeAccountBtn", "id"],
+        ["css=#closeAccountBtn", "css:finder"],
+        ["xpath=//button[@id='closeAccountBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[3]/div/div[2]/div[2]/div/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Close Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "51b72a4e-c3bc-45a4-8c6d-674f827ae1cd",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=label:nth-child(2)",
+      "targets": [],
+      "value": "Account marked for removal"
+    }, {
+      "id": "bf08be46-d294-4ce3-9714-a76c80cfb897",
+      "comment": "",
+      "command": "click",
+      "target": "id=recoverBtn",
+      "targets": [
+        ["id=recoverBtn", "id"],
+        ["css=#recoverBtn", "css:finder"],
+        ["xpath=//button[@id='recoverBtn']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div[2]/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Recover Account')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3e8ed202-3ac2-4a60-b15c-58ebb9187b81",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=profileNames",
+      "targets": [],
+      "value": "Account Closure"
+    }]
+  }, {
+    "id": "fd636116-f207-402d-9672-8017e1720ba5",
+    "name": "Keycloak Login Account Closure",
+    "commands": [{
+      "id": "3aa93cb7-0a8d-461e-b707-5e2d3966a144",
+      "comment": "",
+      "command": "run",
+      "target": "Logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "0c133b66-cfe3-4321-aca9-5c27d1a36cd4",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "46bb32de-1435-46fa-a00f-c88ed7b7615e",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('ACCOUNT CLOSURE USERNAME');",
+      "targets": [],
+      "value": "username"
+    }, {
+      "id": "d3e9c228-f792-4efb-bf0f-49771d4dfb32",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return prompt('ACCOUNT CLOSURE PASSWORD');",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "27bdc0af-86a1-4aef-a968-5cd1ba7bb8e6",
+      "comment": "",
+      "command": "click",
+      "target": "id=KeyCloakBtn",
+      "targets": [
+        ["css=#gitBtn td:nth-child(2)", "css:finder"],
+        ["xpath=//button[@id='gitBtn']/tr/td[2]", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button/tr/td[2]", "xpath:position"],
+        ["xpath=//td[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ba51168b-cade-46a4-bfd7-a3de592fe060",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=user", "id"],
+        ["name=user", "name"],
+        ["css=#user", "css:finder"],
+        ["xpath=//input[@id='user']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "${username}"
+    }, {
+      "id": "cf7d4057-6adb-43da-a642-ce37e2a94475",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "571ff44c-d849-483b-b75b-415235b0018b",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "dac9e836-edb7-48de-bf5d-72590462adf6",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
+      ],
+      "value": "Health Care Timeline"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -1998,7 +2390,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",
@@ -2012,7 +2404,14 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f"]
+    "tests": ["c77cdf85-dfb9-4611-bf4d-a6d8dec8d01f", "aee54535-bf50-44ec-a9a3-1487333856b0"]
+  }, {
+    "id": "261f5540-a1a0-4970-9eb2-c0bae8d29215",
+    "name": "Menu",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["44eb2eaa-1a39-4e1b-bc1e-23f54f30a5bd"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/", "https://dev.healthgateway.gov.bc.ca/"],
   "plugins": []

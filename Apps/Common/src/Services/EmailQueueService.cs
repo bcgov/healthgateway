@@ -17,9 +17,9 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text.RegularExpressions;
     using Hangfire;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -37,9 +37,9 @@ namespace HealthGateway.Common.Services
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
         private const string ENVIRONMENT_VARIABLE = "Environment";
-        private const string REGISTRATION_TEMPLATE = "Registration";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly IWebHostEnvironment enviroment;
         private readonly ILogger logger;
 
@@ -47,36 +47,55 @@ namespace HealthGateway.Common.Services
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="emailDelegate">The delegate to be used.</param>
+        /// <param name="emailDelegate">Email delegate to be used.</param>
+        /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
         /// <param name="enviroment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IEmailDelegate emailDelegate,
+            IEmailInviteDelegate emailInviteDelegate,
             IWebHostEnvironment enviroment)
         {
             this.logger = logger;
             this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             this.enviroment = enviroment;
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues)
+        public void QueueNewEmail(string toEmail, string templateName, bool shouldCommit = true)
         {
-            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues);
+            Dictionary<string, string> keyValues = new Dictionary<string, string>();
+            this.QueueNewEmail(toEmail, templateName, keyValues, shouldCommit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
-            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues));
+            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, shouldCommit);
         }
 
         /// <inheritdoc />
-        public void QueueNewEmail(Email email)
+        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
+            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit);
+        }
+
+        /// <inheritdoc />
+        public void QueueNewEmail(Email email, bool shouldCommit = true)
+        {
+            if (string.IsNullOrWhiteSpace(email.To))
+            {
+                throw new ArgumentNullException(nameof(email.To), "Email To cannot be null or whitespace");
+            }
+
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
-            this.emailDelegate.InsertEmail(email);
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+            this.emailDelegate.InsertEmail(email, shouldCommit);
+            if (shouldCommit)
+            {
+                BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+            }
+
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
         }
 
@@ -95,7 +114,7 @@ namespace HealthGateway.Common.Services
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
-            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(REGISTRATION_TEMPLATE), keyValues);
+            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.REGISTRATION_TEMPLATE), keyValues);
 
             this.QueueNewInviteEmail(invite);
         }
@@ -103,8 +122,13 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public void QueueNewInviteEmail(EmailInvite invite)
         {
+            if (invite.Email == null || string.IsNullOrWhiteSpace(invite.Email.To))
+            {
+                throw new ArgumentNullException(nameof(invite.Email), "Invite Email To cannot be null or whitespace");
+            }
+
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
-            this.emailDelegate.InsertEmailInvite(invite);
+            this.emailInviteDelegate.Insert(invite);
             BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
             this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
         }
@@ -136,7 +160,6 @@ namespace HealthGateway.Common.Services
             return email;
         }
 
-
         /// <summary>
         /// A string to scan for keys marked up as ${KEYNAME} to replace.
         /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
@@ -150,7 +173,7 @@ namespace HealthGateway.Common.Services
             // the mustaches match one of those in the dictionary.  If so it then replaces the match
             // with the value in the dictionary.
             return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
-               m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value) ?
+               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
                data[m.Groups[1].Value] : m.Value);
         }
 

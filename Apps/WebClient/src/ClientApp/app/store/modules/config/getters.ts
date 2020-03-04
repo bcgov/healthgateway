@@ -4,7 +4,7 @@ import {
   IdentityProviderConfiguration,
   OpenIdConnectConfiguration,
   WebClientConfiguration
-} from "@/models/ConfigData";
+} from "@/models/configData";
 
 export const getters: GetterTree<ConfigState, RootState> = {
   identityProviders(state: ConfigState): IdentityProviderConfiguration[] {

@@ -361,6 +361,7 @@ MigrationBackup/
 
 node_modules/
 .node_modules/
+dist/
 built/*
 tests/cases/rwc/*
 tests/cases/test262/*
