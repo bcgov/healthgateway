@@ -2,7 +2,7 @@
 @import "@/assets/scss/_variables.scss";
 
 .column-wrapper {
-  border: 1px; //red solid;
+  border: 1px;
 }
 
 #pageTitle {
@@ -20,6 +20,7 @@
 .dateBreakLine {
   border-top: dashed 2px $primary;
 }
+
 .date {
   padding-top: 0px;
   color: $primary;
@@ -56,8 +57,8 @@
         <b-alert :show="hasNewTermsOfService" dismissible variant="info">
           <h4>Updated Terms of Service</h4>
           <span>
-            The Terms of Service has been updated since your last login. You can
-            review them
+            The Terms of Service have been updated since your last login. You
+            can review them
             <router-link
               id="termsOfServiceLink"
               variant="primary"

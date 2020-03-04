@@ -2,14 +2,17 @@ import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
 import "reflect-metadata";
 import AuthenticationData from "@/models/authenticationData";
+import ExternalConfiguration from "@/models/externalConfiguration";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
   private readonly AUTH_BASE_URI: string = "v1/api/Authentication";
   private http!: IHttpDelegate;
+  private config!: ExternalConfiguration;
 
-  public initialize(http: IHttpDelegate): void {
+  public initialize(http: IHttpDelegate, config: ExternalConfiguration): void {
     this.http = http;
+    this.config = config;
   }
 
   public startLoginFlow(relativeToPath: string): void {
@@ -20,7 +23,7 @@ export class RestAuthenticationService implements IAuthenticationService {
 
     var fullRedirectUrl = new URL(relativeToPath, window.location.href);
 
-    var authPathUrl = new URL("/admin/Login", window.location.href);
+    var authPathUrl = new URL(`${this.config.forwardProxies.basePath}/Login`, window.location.href);
 
     let queryParams = `?redirectUri=${fullRedirectUrl.href}`;
     let fullPath = authPathUrl + queryParams;
@@ -54,7 +57,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     return new Promise((resolve, reject) => {
       console.log("Starting Logout flow....");
 
-      var authPathUrl = new URL("/admin/Logout", window.location.href);
+      var authPathUrl = new URL(`${this.config.forwardProxies.basePath}/Logout`, window.location.href);
 
       window.location.href = authPathUrl.href;
       this.expireSiteMinderCookie();
