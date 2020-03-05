@@ -12,7 +12,8 @@ import {
   IUserProfileService,
   IUserFeedbackService,
   IUserEmailService,
-  IBetaRequestService
+  IBetaRequestService,
+  IUserNoteService
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
@@ -24,6 +25,7 @@ import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserEmailService } from "@/services/restUserEmailService";
 import { RestBetaRequestService } from "@/services/restBetaRequestService";
+import { RestUserNoteService } from "@/services/restUserNoteService";
 
 let container = new Container();
 container
@@ -61,6 +63,10 @@ container
 container
   .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)
   .to(RestBetaRequestService)
+  .inSingletonScope();
+container
+  .bind<IUserNoteService>(SERVICE_IDENTIFIER.UserNoteService)
+  .to(RestUserNoteService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)
