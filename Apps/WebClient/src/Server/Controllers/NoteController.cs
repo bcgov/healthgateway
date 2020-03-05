@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
     using Microsoft.AspNetCore.Authorization;
@@ -33,6 +34,7 @@ namespace HealthGateway.WebClient.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [TypeFilter(typeof(AvailabilityFilter))]
     public class NoteController
     {
         private readonly object noteService;
