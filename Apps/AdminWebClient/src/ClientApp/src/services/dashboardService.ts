@@ -1,7 +1,5 @@
 import { injectable } from "inversify";
 import { IHttpDelegate, IDashboardService } from "@/services/interfaces";
-import UserFeedback from "@/models/userFeedback";
-import RequestResult from "@/models/requestResult";
 
 @injectable()
 export class DashboardService implements IDashboardService {
@@ -15,7 +13,7 @@ export class DashboardService implements IDashboardService {
   public getRegisteredUsersCount(): Promise<number> {
     return new Promise((resolve, reject) => {
       this.http
-        .get<RequestResult<UserFeedback[]>>(`${this.BASE_URI}`)
+        .get<number>(`${this.BASE_URI}`)
         .then(requestResult => {
           resolve(requestResult);
         })
