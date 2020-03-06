@@ -43,13 +43,29 @@
   color: #aaa;
   padding: 12px;
 }
+
+.btn-light {
+  border-color: $primary;
+  color: $primary;
+}
 </style>
 <template>
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row class="my-3 fluid justify-content-md-center">
-      <b-col class="col-3 column-wrapper"></b-col>
-      <b-col id="timeline" class="col-12 col-lg-6 column-wrapper">
+      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper">
+        <b-row>
+          <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-12 col-xs-8 col-lg-8">
+            <b-button variant="light" class="w-100 visible-lg-block">
+              <font-awesome-icon icon="edit" aria-hidden="true" />
+              Add Note
+            </b-button>
+          </b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2">&nbsp;</b-col>
+        </b-row>
+      </b-col>
+      <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
         <b-alert :show="hasErrors" dismissible variant="danger">
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
@@ -150,7 +166,7 @@
           </div>
         </div>
       </b-col>
-      <b-col class="col-3 column-wrapper">
+      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper">
         <HealthlinkComponent />
       </b-col>
     </b-row>
