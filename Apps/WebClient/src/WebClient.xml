@@ -110,6 +110,48 @@
             </summary>
             <returns>The default view.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.NoteController">
+            <summary>
+            Web API to handle patient notes interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.NoteService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.NoteController"/> class.
+            </summary>
+            <param name="noteService">The injected patient notes service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Posts a patient note json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="model">The patient note request model.</param>
+            <response code="200">The note record was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.GetAll">
+            <summary>
+            Gets all notes for the specified user.
+            </summary>
+            <returns>The list of notes model wrapped in a request result.</returns>
+            <response code="200">Returns the list of notes.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.Get(System.Guid)">
+            <summary>
+            Gets a single notes by its id.
+            </summary>
+            <returns>The note model wrapped in a request result.</returns>
+            <param name="noteId">The note id.</param>
+            <response code="200">Returns the note model.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.RobotsController">
             <summary>
             Dynamic Robots.txt for search engines.
@@ -605,6 +647,27 @@
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.INoteService">
+            <summary>
+            Service to interact with the Note Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.CreateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Creates a note in the backend.
+            </summary>
+            <param name="note">The note to create.</param>
+            <returns>A note wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets all the notes for the given hdId.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <param name="page">The page of data to fetch indexed from 0.</param>
+            <param name="pageSize">The amount of records per page.</param>
+            <returns>A List of notes wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserEmailService">
             <summary>
             The User Email service.
@@ -689,6 +752,22 @@
             Gets the most recent active terms of service.
             </summary>
             <returns>The wrapped terms of service.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.NoteService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.INoteDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.NoteService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="noteDelegate">Injected Note delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.CreateNote(HealthGateway.Database.Models.Note)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserEmailService">
             <inheritdoc />

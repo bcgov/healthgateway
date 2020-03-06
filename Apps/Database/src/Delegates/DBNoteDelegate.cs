@@ -92,7 +92,7 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DBStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {

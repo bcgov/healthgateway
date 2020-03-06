@@ -16,13 +16,13 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
-    using System.Globalization;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -37,7 +37,7 @@ namespace HealthGateway.WebClient.Controllers
     [TypeFilter(typeof(AvailabilityFilter))]
     public class NoteController
     {
-        private readonly object noteService;
+        private readonly NoteService noteService;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -50,7 +50,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="authorizationService">The injected authorization service.</param>
         public NoteController(
-            object noteService,
+            NoteService noteService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
@@ -89,8 +89,8 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            //RequestResult<Database.Models.Note> result = this.noteService.CreateNote(model);
-            return new JsonResult(new object());
+            RequestResult<Database.Models.Note> result = this.noteService.CreateNote(model);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -113,8 +113,8 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            //RequestResult<IEnumerable<Database.Models.Note>> result = this.noteService.GetAll(hdid);
-            return new JsonResult(new object());
+            RequestResult<IEnumerable<Database.Models.Note>> result = this.noteService.GetNotes(userHdid);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -139,9 +139,10 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            //RequestResult<Database.Models.Note> result = this.noteService.Get(noteId);
+            // RequestResult<Database.Models.Note> result = this.noteService.Get(noteId);
 
             // TODO: Compare note hdid with current jwt hdid.
+            // TODO: Do we need to implement this?
             return new JsonResult(new object());
         }
     }
