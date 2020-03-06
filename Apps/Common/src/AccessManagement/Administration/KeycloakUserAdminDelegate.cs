@@ -13,10 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Administration.Delegates
+namespace HealthGateway.Common.AccessManagement.Administration
 {
     using System;
-    using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
@@ -29,9 +28,9 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Class implementation of <see cref="IUserAdmin"/> that uses http REST to connect to Keycloak.
+    /// Class implementation of <see cref="IUserAdminDelegate"/> that uses http REST to connect to Keycloak.
     /// </summary>
-    public class KeycloakUserAdmin : IUserAdmin
+    public class KeycloakUserAdminDelegate : IUserAdminDelegate
     {
         /// <summary>
         /// Configuration Key for the KeycloakAdmin entry point.
@@ -66,13 +65,13 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
         private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="KeycloakUserAdmin"/> class.
+        /// Initializes a new instance of the <see cref="KeycloakUserAdminDelegate"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="configuration">Injected configuration.</param>
-        public KeycloakUserAdmin(
-            ILogger<KeycloakUserAdmin> logger,
+        public KeycloakUserAdminDelegate(
+            ILogger<KeycloakUserAdminDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {

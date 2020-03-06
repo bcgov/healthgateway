@@ -19,10 +19,9 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Collections.Generic;
     using Hangfire;
     using HealthGateway.Common.Services;
-    using HealthGateway.Common.AccessManagement.Authentication.Delegates;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.AccessManagement.Administration.Delegates;
-    using HealthGateway.Common.AccessManagement.Administration.Models;
+    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -47,9 +46,9 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
 
-        private readonly IAuthService authService;
+        private readonly IAuthenticationDelegate authDelegate;
 
-        private readonly IUserAdmin userAdminDelegate;
+        private readonly IUserAdminDelegate userAdminDelegate;
     
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
@@ -64,7 +63,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="logger">The logger to use.</param>
         /// <param name="profileDelegate">The profile delegate.</param>
         /// <param name="emailService">The email service.</param>
-        /// <param name="authService">The OAuth2 authentication service.</param>
+        /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="userAdminDelegate">The AccessManagement userAdmin delegate.</param>
         /// <param name="dbContext">The db context to use.</param>
         public CloseAccountJob(
@@ -72,15 +71,15 @@ namespace Healthgateway.JobScheduler.Jobs
             ILogger<CloseAccountJob> logger,
             IProfileDelegate profileDelegate,
             IEmailQueueService emailService,
-            IAuthService authService,
-            IUserAdmin userAdminDelegate,
+            IAuthenticationDelegate authDelegate,
+            IUserAdminDelegate userAdminDelegate,
             GatewayDbContext dbContext)
         {
             this.configuration = configuration;
             this.logger = logger;
             this.profileDelegate = profileDelegate;
             this.emailService = emailService;
-            this.authService = authService;
+            this.authDelegate = authDelegate;
             this.userAdminDelegate = userAdminDelegate;
             this.dbContext = dbContext;
             this.profilesPageSize = this.configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
@@ -109,7 +108,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
-                    JWTModel jwtModel = this.authService.AuthenticateService();
+                    JWTModel jwtModel = this.authDelegate.AuthenticateAsUser();
                     int result = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken!);
                 }
 

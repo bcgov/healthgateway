@@ -20,7 +20,7 @@ namespace HealthGateway.WebClient
     using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
-    using HealthGateway.Common.AccessManagement.Authentication.Delegates;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -76,7 +76,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
-            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();

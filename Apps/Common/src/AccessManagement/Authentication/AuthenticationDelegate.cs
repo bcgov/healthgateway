@@ -56,7 +56,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 Audience = configSection.GetValue<string>("Audience"),
                 ClientId = configSection.GetValue<string>("ClientId"),
                 ClientSecret = configSection.GetValue<string>("ClientSecret"),
+                Username = configSection.GetValue<string>("Username"),
+                Password = configSection.GetValue<string>("Password")
             };
+
         }
 
         /// <inheritdoc/>
@@ -69,7 +72,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public JWTModel AuthenticateAsSystem()
         {
             this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
-            Task<IAuthModel> authenticating = this.ClientCredentialsAuthentication();
+            Task<IAuthModel> authenticating = this.ClientCredentialsGrant();
 
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
@@ -77,16 +80,16 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsUser(string username, string password)
+        public JWTModel AuthenticateAsUser()
         {
-            this.logger.LogDebug($"Authenticating User... {username!}");
-            Task<IAuthModel> authenticating = this.DirectGrantAuthentication(username, password);
+            this.logger.LogDebug($"Authenticating User... {TokenRequest.Username!}");
+            Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant();
 
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating User (direct grant).");
             return jwtModel;
         }
-        private async Task<IAuthModel> ClientCredentialsAuthentication()
+        private async Task<IAuthModel> ClientCredentialsGrant()
         {
             JWTModel authModel = new JWTModel();
             try
@@ -119,7 +122,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return authModel;
         }
 
-        private async Task<IAuthModel> DirectGrantAuthentication(string username, string password)
+        private async Task<IAuthModel> ResourceOwnerPasswordGrant()
         {
             JWTModel authModel = new JWTModel();
             try
@@ -132,9 +135,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                         new KeyValuePair<string, string>("client_secret", this.TokenRequest.ClientSecret!),
                         new KeyValuePair<string, string>("grant_type", @"password"),
                         new KeyValuePair<string, string>("audience", this.TokenRequest.Audience!),
-                        new KeyValuePair<string, string>("scope", @"openid"),
-                        new KeyValuePair<string, string>("username", username!),
-                        new KeyValuePair<string, string>("password", password!)
+                        new KeyValuePair<string, string>("scope", this.TokenRequest.Scope!),
+                        new KeyValuePair<string, string>("username", this.TokenRequest.Username!),
+                        new KeyValuePair<string, string>("password", this.TokenRequest.Password!)
                     };
                 using var content = new FormUrlEncodedContent(oauthParams);
                 content.Headers.Clear();

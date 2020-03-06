@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Administration.Delegates
+namespace HealthGateway.Common.AccessManagement.Administration
 {
     using System;
     using HealthGateway.Common.AccessManagement.Administration.Models;
@@ -21,7 +21,7 @@ namespace HealthGateway.Common.AccessManagement.Administration.Delegates
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.
     /// </summary>
-    public interface IUserAdmin
+    public interface IUserAdminDelegate
     {
         /// <summary>
         /// Look up a user by username.

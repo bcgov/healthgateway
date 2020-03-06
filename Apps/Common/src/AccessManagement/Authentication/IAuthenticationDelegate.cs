@@ -20,6 +20,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
     /// <summary>
     /// The authorization service interface.
+    /// This supports direct grant for OAuth2 Client Credentials Grant flows 
+    /// and Resource Owner Password Grant flows.
     /// </summary>
     public interface IAuthenticationDelegate
     {
@@ -40,9 +42,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         JWTModel AuthenticateAsSystem();
 
         /// <summary>
-        /// Authenticates a user with direct grant, no user intervention, i.e.a basic auth as system login
+        /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>        
-        JWTModel AuthenticateAsUser(string username, string password);
+        JWTModel AuthenticateAsUser();
     }
 }
