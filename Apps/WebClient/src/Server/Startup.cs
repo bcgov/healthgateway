@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Rewrite;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
@@ -155,6 +156,14 @@ namespace HealthGateway.WebClient
                     spa.UseReactDevelopmentServer("dev");
                 }
             });
+
+            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWWW)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
+            }
         }
     }
 }

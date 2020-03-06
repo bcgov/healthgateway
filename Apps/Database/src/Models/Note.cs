@@ -13,52 +13,47 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Models
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     /// <summary>
-    /// The set of programs.
+    /// A user entered Note.
     /// </summary>
-    public enum DBStatusCode
+    public class Note : AuditableEntity
     {
         /// <summary>
-        /// Represents that an object was created.
+        /// Gets or sets the id.
         /// </summary>
-        Created = 10,
+        [Column("NoteId")]
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Represents that an object was read.
+        /// Gets or sets the user hdid.
         /// </summary>
-        Read = 20,
+        [Required]
+        [Column("UserProfileId")]
+        [MaxLength(52)]
+        public string HdId { get; set; } = null!;
 
         /// <summary>
-        /// Represents that an object was updated.
+        /// Gets or sets the title.
         /// </summary>
-        Updated = 30,
+        [MaxLength(100)]
+        public string? Title { get; set; }
 
         /// <summary>
-        /// Represents than an object was deleted.
+        /// Gets or sets the text of the note.
         /// </summary>
-        Deleted = 40,
+        [MaxLength(1000)]
+        public string? Text { get; set; }
 
         /// <summary>
-        /// Represents that an object was not found.
+        /// Gets or sets the Note timeline datetime.
         /// </summary>
-        NotFound = 50,
-
-        /// <summary>
-        /// Represents that a concurrency error occurred.
-        /// </summary>
-        Concurrency = 60,
-
-        /// <summary>
-        /// Represents that the caller requested that the service/delegate not commit.
-        /// The caller is responsible for concurrency and other handling.
-        /// </summary>
-        Deferred = 70,
-
-        /// <summary>
-        /// Represents that an error occurred
-        /// </summary>
-        Error = 0,
+        [Required]
+        public DateTime JournalDateTime { get; set; }
     }
 }

@@ -83,17 +83,23 @@ import {
   faUser,
   faAddressCard,
   faUserSecret,
+  faEdit,
   faChevronUp,
   faChevronDown,
-  faSpinner
+  faSpinner,
+  faCheckCircle,
+  faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
   faAddressCard,
   faUserSecret,
+  faEdit,
   faChevronUp,
   faChevronDown,
-  faSpinner
+  faSpinner,
+  faCheckCircle,
+  faTimesCircle
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
