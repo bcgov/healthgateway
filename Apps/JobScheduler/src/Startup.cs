@@ -220,10 +220,10 @@ namespace HealthGateway.JobScheduler
                     },
                     OnRedirectToIdentityProvider = ctx =>
                     {
-                        if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                        if (!string.IsNullOrEmpty(this.configuration["Keycloak:IDPHint"]))
                         {
                             this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                            ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                            ctx.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
                         }
 
                         return Task.FromResult(0);
