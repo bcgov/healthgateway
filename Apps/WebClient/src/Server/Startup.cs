@@ -105,14 +105,6 @@ namespace HealthGateway.WebClient
         {
             Contract.Requires(env != null);
 
-            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWWW)
-            {
-                RewriteOptions rewriteOption = new RewriteOptions()
-                    .AddRedirectToWwwPermanent();
-                app.UseRewriter(rewriteOption);
-            }
-
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
@@ -125,6 +117,14 @@ namespace HealthGateway.WebClient
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+            }
+
+            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWWW)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
             }
 
             app.UseStaticFiles(new StaticFileOptions
