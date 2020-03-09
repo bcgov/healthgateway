@@ -7,13 +7,15 @@ import {
   IBetaRequestService,
   IConfigService,
   IAuthenticationService,
-  IUserFeedbackService
+  IUserFeedbackService,
+  IDashboardService
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestBetaRequestService } from "@/services/restBetaRequestService";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
+import { DashboardService } from '@/services/dashboardService';
 
 let container = new Container();
 container
@@ -31,6 +33,10 @@ container
 container
   .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
   .to(RestUserFeedbackService)
+  .inSingletonScope();
+container
+  .bind<IDashboardService>(SERVICE_IDENTIFIER.DashboardService)
+  .to(DashboardService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

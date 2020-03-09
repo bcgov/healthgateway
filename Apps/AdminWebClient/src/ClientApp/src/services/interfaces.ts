@@ -29,6 +29,11 @@ export interface IUserFeedbackService {
   toggleReviewed(feedback: UserFeedback): Promise<boolean>;
 }
 
+export interface IDashboardService {
+  initialize(http: IHttpDelegate): void;
+  getRegisteredUsersCount(): Promise<number>;
+}
+
 export interface IHttpDelegate {
   unsetAuthorizationHeader(): void;
   setAuthorizationHeader(accessToken: string): void;
