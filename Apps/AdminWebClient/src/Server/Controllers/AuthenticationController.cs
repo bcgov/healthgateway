@@ -67,8 +67,6 @@ namespace HealthGateway.Admin.Controllers
         /// <summary>
         /// Performs an OpenIdConnect Challenge.
         /// </summary>
-        ///// <param name="idpHint">A value to pass to KeyCloak to select the Identity Provider.</param>
-        /// <param name="redirectPath">The redirect uri after successful authentication.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
         [HttpGet(AuthorizationConstants.LoginPath)]
         public IActionResult Login()
