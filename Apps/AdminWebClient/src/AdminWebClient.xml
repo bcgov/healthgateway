@@ -28,7 +28,9 @@
             <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Login">
-            <param name="redirectPath">The redirect uri after successful authentication.</param>
+            <summary>
+            Performs an OpenIdConnect Challenge.
+            </summary>
             <returns>An IActionResult which results in a redirect.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.AuthenticationController.Logout">

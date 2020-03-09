@@ -28,11 +28,11 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the common name of the user.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the users email.
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }

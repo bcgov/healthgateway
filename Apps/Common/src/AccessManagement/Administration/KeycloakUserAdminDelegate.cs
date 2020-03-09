@@ -36,14 +36,17 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// Configuration Key for the KeycloakAdmin entry point.
         /// </summary>
         public const string KEYCLOAKADMIN = "KeycloakAdmin";
+
         /// <summary>
         /// Configuration Key for the Find User Url.
         /// </summary>
         public const string FINDUSERURL = "FindUserUrl";
+
         /// <summary>
         /// Configuration Key for the Delete User Url.
         /// </summary>
         public const string DELETEUSERURL = "DeleteUserUrl";
+
         /// <summary>
         /// Configuration Key for the Get User Url.
         /// </summary>
@@ -76,7 +79,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
             IConfiguration configuration)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
+            this.httpClientService = httpClientService!;
             this.configuration = configuration;
         }
 
@@ -85,10 +88,9 @@ namespace HealthGateway.Common.AccessManagement.Administration
         {
             UserRepresentation userReturned;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
-
             Uri requestUri = new Uri($"/{userId}", UriKind.Relative);
-
             using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
+
             try
             {
                 Task<string> jsonResult =  this.Get(client, requestUri);
@@ -98,12 +100,13 @@ namespace HealthGateway.Common.AccessManagement.Administration
                     AllowTrailingCommas = true,
                 };
                 userReturned = JsonSerializer.Deserialize<UserRepresentation>(json, options);
-                return userReturned;
 
+                return userReturned;
             }
             catch (Exception e)
             {
                 this.logger.LogError($"DeleteUser failed: ${e.ToString()}");
+
                 return new UserRepresentation();
             }
         }
@@ -122,8 +125,10 @@ namespace HealthGateway.Common.AccessManagement.Administration
             catch (Exception e)
             {
                 this.logger.LogError($"DeleteUser failed: ${e.ToString()}");
+
                 return -1;
             }
+
             return 0;
         }
 
@@ -167,8 +172,8 @@ namespace HealthGateway.Common.AccessManagement.Administration
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             client.BaseAddress = baseUri;
-            return client;
 
+            return client;
         }
     }
 }

@@ -27,16 +27,16 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the Drug Identification Number for the prescribed medication.
         /// </summary>
-        public string DIN { get; set; }
+        public string? DIN { get; set; }
 
         /// <summary>
         /// Gets or sets the Federal Drug Data Source.
         /// </summary>
-        public FederalDrugSource FederalData { get; set; }
+        public FederalDrugSource? FederalData { get; set; }
 
         /// <summary>
         /// Gets or sets the Provincial Drug Data Source.
         /// </summary>
-        public ProvincialDrugSource ProvincialData { get; set; }
+        public ProvincialDrugSource? ProvincialData { get; set; }
     }
 }

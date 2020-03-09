@@ -110,6 +110,48 @@
             </summary>
             <returns>The default view.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.NoteController">
+            <summary>
+            Web API to handle patient notes interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(System.Object,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.NoteController"/> class.
+            </summary>
+            <param name="noteService">The injected patient notes service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Posts a patient note json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="model">The patient note request model.</param>
+            <response code="200">The note record was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.GetAll">
+            <summary>
+            Gets all notes for the specified user.
+            </summary>
+            <returns>The list of notes model wrapped in a request result.</returns>
+            <response code="200">Returns the list of notes.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.Get(System.Guid)">
+            <summary>
+            Gets a single notes by its id.
+            </summary>
+            <returns>The note model wrapped in a request result.</returns>
+            <param name="noteId">The note id.</param>
+            <response code="200">Returns the note model.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.RobotsController">
             <summary>
             Dynamic Robots.txt for search engines.

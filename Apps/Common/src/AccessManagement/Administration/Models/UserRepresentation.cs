@@ -65,5 +65,4 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         [JsonPropertyName("id")]
         public Guid? UserId { get; set; }
     }
-
 }
