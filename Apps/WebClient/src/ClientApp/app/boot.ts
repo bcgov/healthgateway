@@ -21,7 +21,8 @@ import {
   IUserProfileService,
   IUserFeedbackService,
   IUserEmailService,
-  IBetaRequestService
+  IBetaRequestService,
+  IUserNoteService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -68,6 +69,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const betaRequestService: IBetaRequestService = container.get(
     SERVICE_IDENTIFIER.BetaRequestService
   );
+  const userNoteService: IUserNoteService = container.get(
+    SERVICE_IDENTIFIER.UserNoteService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -78,6 +82,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   userFeedbackService.initialize(httpDelegate);
   betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
+  userNoteService.initialize(httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,

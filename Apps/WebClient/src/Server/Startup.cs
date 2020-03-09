@@ -106,6 +106,7 @@ namespace HealthGateway.WebClient
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
+
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
@@ -119,6 +120,14 @@ namespace HealthGateway.WebClient
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            /*bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWWW)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
+            }*/
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -158,14 +167,6 @@ namespace HealthGateway.WebClient
                     spa.UseReactDevelopmentServer("dev");
                 }
             });
-
-            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWWW)
-            {
-                RewriteOptions rewriteOption = new RewriteOptions()
-                    .AddRedirectToWwwPermanent();
-                app.UseRewriter(rewriteOption);
-            }
         }
     }
 }

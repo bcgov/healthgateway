@@ -15,6 +15,7 @@ import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
 import { TermsOfService } from "@/models/termsOfService";
+import UserNote from "@/models/userNote";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -83,6 +84,14 @@ export interface IBetaRequestService {
   initialize(http: IHttpDelegate): void;
   getRequest(hdid: string): Promise<BetaRequest>;
   putRequest(request: BetaRequest): Promise<BetaRequest>;
+}
+
+export interface IUserNoteService {
+  initialize(http: IHttpDelegate): void;
+  getNotes(): Promise<RequestResult<UserNote[]>>;
+  createNote(note: UserNote): Promise<UserNote>;
+  updateNote(noteId: string): Promise<UserNote>;
+  deleteNote(noteId: string): Promise<void>;
 }
 
 export interface IHttpDelegate {
