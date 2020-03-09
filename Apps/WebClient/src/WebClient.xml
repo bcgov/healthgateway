@@ -647,6 +647,27 @@
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.INoteService">
+            <summary>
+            Service to interact with the Note Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.CreateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Creates a note in the backend.
+            </summary>
+            <param name="note">The note to create.</param>
+            <returns>A note wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets all the notes for the given hdId.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <param name="page">The page of data to fetch indexed from 0.</param>
+            <param name="pageSize">The amount of records per page.</param>
+            <returns>A List of notes wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserEmailService">
             <summary>
             The User Email service.
@@ -731,6 +752,22 @@
             Gets the most recent active terms of service.
             </summary>
             <returns>The wrapped terms of service.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.NoteService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.INoteDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.NoteService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="noteDelegate">Injected Note delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.CreateNote(HealthGateway.Database.Models.Note)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserEmailService">
             <inheritdoc />

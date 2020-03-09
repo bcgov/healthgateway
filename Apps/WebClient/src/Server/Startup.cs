@@ -78,6 +78,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<INoteService, NoteService>();
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
@@ -86,6 +87,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
+            services.AddTransient<INoteDelegate, DBNoteDelegate>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
