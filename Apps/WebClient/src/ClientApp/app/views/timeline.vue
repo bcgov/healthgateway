@@ -268,9 +268,10 @@ export default class TimelineComponent extends Vue {
   }
 
   beforeRouteLeave(to, from, next) {
-    if (this.isAddingNote && confirm(this.unsavedChangesText)) {
-      next();
+    if (this.isAddingNote && !confirm(this.unsavedChangesText)) {
+      return;
     }
+    next();
   }
 
   private onBrowserClose(event: BeforeUnloadEvent) {
