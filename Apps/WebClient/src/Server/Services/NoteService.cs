@@ -21,6 +21,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -41,9 +42,15 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> CreateNote(Note note)
+        public RequestResult<Note> CreateNote(CreateNoteRequest note)
         {
-            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
+            DBResult<Note> dbNote = this.noteDelegate.AddNote(new Note()
+            {
+                Text = note.Text,
+                Title = note.Title,
+                JournalDateTime = note.JournalDateTime,
+                HdId = note.HdId,
+            });
             RequestResult<Note> result = new RequestResult<Note>()
             {
                 ResourcePayload = dbNote.Payload,

@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { IHttpDelegate, IUserNoteService } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
+import { ResultType } from '@/constants/resulttype';
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -29,7 +30,17 @@ export class RestUserNoteService implements IUserNoteService {
   NOT_IMPLENTED: string = "Method not implemented.";
 
   public createNote(note: UserNote): Promise<UserNote> {
-    throw new Error(this.NOT_IMPLENTED);
+    return new Promise((resolve, reject) => {
+      this.http
+        .post<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, note)
+        .then(result => {
+          return this.handleResult(result, resolve, reject);
+        })
+        .catch(err => {
+          console.log(err);
+          return reject(err);
+        });
+    });
   }
 
   public updateNote(noteId: string): Promise<UserNote> {
@@ -38,5 +49,18 @@ export class RestUserNoteService implements IUserNoteService {
 
   public deleteNote(noteId: string): Promise<void> {
     throw new Error(this.NOT_IMPLENTED);
+  }
+
+
+  private handleResult(
+    requestResult: RequestResult<any>,
+    resolve: any,
+    reject: any
+  ) {
+    if (requestResult.resultStatus === ResultType.Success) {
+      resolve(requestResult.resourcePayload);
+    } else {
+      reject(requestResult.resultMessage);
+    }
   }
 }
