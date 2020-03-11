@@ -18,7 +18,7 @@ $radius: 15px;
 
 .editableEntryTitle {
   background-color: $soft_background;
-  padding: 9px 15px 9px 15px;
+  padding: 9px 0px 9px 15px;
   width: 100%;
   margin: 0px;
 }
@@ -48,13 +48,17 @@ $radius: 15px;
 .detailSection {
   margin-top: 15px;
 }
+
+.editableEntryDetails {
+  padding-left: 30px;
+}
 </style>
 
 <template>
   <b-col>
     <b-form @submit="onSubmit" @reset="onReset">
       <b-row class="entryHeading">
-        <b-col class="d-flex px-0">
+        <b-col class="d-flex" :class="!editing ? 'px-0' : ''">
           <div class="icon leftPane">
             <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>
           </div>
@@ -92,7 +96,7 @@ $radius: 15px;
                 <span v-else-if="entry.textSummary != entry.text">Read More</span>
               </b-btn>
             </b-col>
-            <b-col v-if="editing">
+            <b-col v-if="editing" class="editableEntryDetails">
               <b-form-textarea
                 id="text"
                 v-model="text"
