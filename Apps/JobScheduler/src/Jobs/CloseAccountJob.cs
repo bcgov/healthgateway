@@ -108,7 +108,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
-                    JWTModel jwtModel = this.authDelegate.AuthenticateAsUser();
+                    JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
                     int result = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken!);
                 }
 
