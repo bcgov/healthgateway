@@ -19,6 +19,8 @@ namespace HealthGateway.JobScheduler
     using System;
     using Hangfire;
     using Hangfire.PostgreSql;
+    using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.FileDownload;
@@ -98,8 +100,9 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
 
-            // TODO: Add injection for KeyCload User
-
+            // Add injection for KeyCloak User Admin
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
             // Add app
             services.AddTransient<FedDrugJob>();
             services.AddTransient<ProvincialDrugJob>();
