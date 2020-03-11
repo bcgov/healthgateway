@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Controllers
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
+    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -37,7 +38,7 @@ namespace HealthGateway.WebClient.Controllers
     [TypeFilter(typeof(AvailabilityFilter))]
     public class NoteController
     {
-        private readonly NoteService noteService;
+        private readonly INoteService noteService;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -50,7 +51,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="authorizationService">The injected authorization service.</param>
         public NoteController(
-            NoteService noteService,
+            INoteService noteService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
@@ -69,7 +70,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateNote([FromBody] Database.Models.Note model)
+        public async Task<IActionResult> CreateNote([FromBody] CreateNoteRequest model)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -82,13 +83,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            // Validate that the jwt hdid matches the post body
-            if (model == null ||
-                !userHdid.Equals(model!.HdId, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
+            model.HdId = userHdid;
             RequestResult<Database.Models.Note> result = this.noteService.CreateNote(model);
             return new JsonResult(result);
         }

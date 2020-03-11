@@ -23,6 +23,13 @@
       :entry="entry"
       :index="index"
     />
+    <NoteComponent
+      v-if="entry.type === EntryType.Note"
+      :key="entry.id"
+      :datekey="datekey"
+      :entry="entry"
+      :index="index"
+    />
   </b-row>
 </template>
 
@@ -34,11 +41,13 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import { Prop, Component } from "vue-property-decorator";
 import MedicationTimelineComponent from "./medication.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
+import NoteTimelineComponent from "./note.vue";
 
 @Component({
   components: {
     MedicationComponent: MedicationTimelineComponent,
-    ImmunizationComponent: ImmunizationTimelineComponent
+    ImmunizationComponent: ImmunizationTimelineComponent,
+    NoteComponent: NoteTimelineComponent
   }
 })
 export default class EntrycardTimelineComponent extends Vue {
