@@ -60,5 +60,6 @@
     <Folder Include="Jobs\" />
     <Folder Include="Delegates\" />
     <Folder Include="Authorization\Admin\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
 </Project>
