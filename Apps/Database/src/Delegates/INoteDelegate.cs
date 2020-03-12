@@ -63,5 +63,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
         public DBResult<Note> UpdateNote(Note note, bool commit = true);
+
+        /// <summary>
+        /// Deletes the supplied note.
+        /// </summary>
+        /// <param name="note">The note to be deleted in the backend.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <returns>A Note wrapped in a DBResult.</returns>
+        public DBResult<Note> DeleteNote(Note note, bool commit = true);
     }
 }

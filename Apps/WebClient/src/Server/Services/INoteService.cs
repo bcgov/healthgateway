@@ -47,5 +47,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="note">The note to update.</param>
         /// <returns>The updated Note.</returns>
         public RequestResult<Note> UpdateNote(Note note);
+
+        /// <summary>
+        /// Deletes the given note from the backend.
+        /// </summary>
+        /// <param name="note">The note to delete.</param>
+        /// <returns>The deleted note wrapped in a RequestResult.</returns>
+        public RequestResult<Note> DeleteNote(Note note);
     }
 }
