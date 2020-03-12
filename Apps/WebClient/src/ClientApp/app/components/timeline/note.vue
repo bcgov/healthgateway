@@ -64,19 +64,17 @@ $radius: 15px;
           </div>
           <div v-if="!editing" class="entryTitle">{{ entry.title }}</div>
           <b-row v-else class="editableEntryTitle">
-            <b-form-input
-              v-model="title"
-              class="col-lg-7 col-md-7 col-6"
-              type="text"
-              placeholder="Title"
-              maxlength="100"
-            />
-            <b-form-input
-              v-model="date"
-              class="col-lg-5 col-md-5 col-6"
-              required
-              type="date"
-            ></b-form-input>
+            <b-col class="p-0 col-lg-7 col-md-7 col-6">
+              <b-form-input
+                v-model="title"
+                type="text"
+                placeholder="Title"
+                maxlength="100"
+              />
+            </b-col>
+            <b-col class="p-0 pl-1 col-lg-5 col-md-5 col-6">
+              <b-form-input v-model="date" required type="date"></b-form-input>
+            </b-col>
           </b-row>
         </b-col>
       </b-row>
