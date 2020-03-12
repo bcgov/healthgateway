@@ -58,6 +58,7 @@
           <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
           <b-col class="col-12 col-xs-8 col-lg-8">
             <b-button
+              v-if="config.modules['Note'] == true"
               variant="light"
               class="w-100 visible-lg-block"
               :disabled="isAddingNote"
@@ -220,7 +221,7 @@ import NoteTimelineComponent from "@/components/timeline/note.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
-import TimelineEntry from "../models/timelineEntry";
+import { WebClientConfiguration } from "@/models/configData";
 
 const namespace: string = "user";
 
@@ -244,6 +245,7 @@ Component.registerHooks(["beforeRouteLeave"]);
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
+  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
 
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];

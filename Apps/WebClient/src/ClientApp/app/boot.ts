@@ -82,7 +82,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   userFeedbackService.initialize(httpDelegate);
   betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
-  userNoteService.initialize(httpDelegate);
+  userNoteService.initialize(config, httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,
