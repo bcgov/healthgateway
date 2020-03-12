@@ -28,6 +28,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the id.
         /// </summary>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("NoteId")]
         public Guid Id { get; set; }
 
