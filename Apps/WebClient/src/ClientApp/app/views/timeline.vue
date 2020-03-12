@@ -155,7 +155,7 @@
           <div id="timeData">
             <b-row v-if="isAddingNote" class="pb-5">
               <NoteTimelineComponent
-                :isAddMode="true"
+                :is-add-mode="true"
                 @close="isAddingNote = false"
                 @on-note-added="onNoteAdded"
               />

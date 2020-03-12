@@ -214,6 +214,7 @@ export default class NoteTimelineComponent extends Vue {
   private updateNote() {
     this.noteService
       .updateNote({
+        id: this.entry.id,
         text: this.text,
         title: this.title,
         journalDateTime: this.date,
@@ -221,7 +222,7 @@ export default class NoteTimelineComponent extends Vue {
         hdid: this.user.hdid
       })
       .then(result => {
-        this.entry = result;
+        this.entry = new NoteTimelineEntry(result);
         this.isEditMode = false;
       })
       .catch(() => {
@@ -248,7 +249,7 @@ export default class NoteTimelineComponent extends Vue {
   private edit(): void {
     this.text = this.entry.text;
     this.title = this.entry.title;
-    this.date = moment(this.entry.journalDateTime)
+    this.date = moment(this.entry.date)
       .toISOString()
       .slice(0, 10);
     this.isEditMode = true;
