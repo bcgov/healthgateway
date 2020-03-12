@@ -18,7 +18,6 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models;
 
     /// <summary>
     /// Service to interact with the Note Delegate.
@@ -30,7 +29,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="note">The note to create.</param>
         /// <returns>A note wrapped in a RequestResult.</returns>
-        public RequestResult<Note> CreateNote(CreateNoteRequest note);
+        public RequestResult<Note> CreateNote(Note note);
 
         /// <summary>
         /// Gets all the notes for the given hdId.

@@ -123,7 +123,7 @@
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
             <param name="authorizationService">The injected authorization service.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(HealthGateway.WebClient.Models.CreateNoteRequest)">
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(HealthGateway.Database.Models.Note)">
             <summary>
             Posts a patient note json to be inserted into the database.
             </summary>
@@ -138,7 +138,7 @@
             Puts a patient note json to be updated in the database.
             </summary>
             <returns>The updated Note wrapped in a RequestResult.</returns>
-            <param name="model">The patient note.</param>
+            <param name="note">The patient note.</param>
             <response code="200">The note was saved.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -687,7 +687,7 @@
             Service to interact with the Note Delegate.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.INoteService.CreateNote(HealthGateway.WebClient.Models.CreateNoteRequest)">
+        <member name="M:HealthGateway.WebClient.Services.INoteService.CreateNote(HealthGateway.Database.Models.Note)">
             <summary>
             Creates a note in the backend.
             </summary>
@@ -806,7 +806,7 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="noteDelegate">Injected Note delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.NoteService.CreateNote(HealthGateway.WebClient.Models.CreateNoteRequest)">
+        <member name="M:HealthGateway.WebClient.Services.NoteService.CreateNote(HealthGateway.Database.Models.Note)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.NoteService.GetNotes(System.String,System.Int32,System.Int32)">

@@ -42,15 +42,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> CreateNote(CreateNoteRequest note)
+        public RequestResult<Note> CreateNote(Note note)
         {
-            DBResult<Note> dbNote = this.noteDelegate.AddNote(new Note()
-            {
-                Text = note.Text,
-                Title = note.Title,
-                JournalDateTime = note.JournalDateTime,
-                HdId = note.HdId,
-            });
+            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
             RequestResult<Note> result = new RequestResult<Note>()
             {
                 ResourcePayload = dbNote.Payload,
