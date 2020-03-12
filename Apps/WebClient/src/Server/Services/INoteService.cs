@@ -40,5 +40,13 @@ namespace HealthGateway.WebClient.Services
         /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of notes wrapped in a RequestResult.</returns>
         public RequestResult<IEnumerable<Note>> GetNotes(string hdId, int page = 0, int pageSize = 500);
+
+        /// <summary>
+        /// Updates the given note in the backend.
+        /// Any changes to HDID will be ignored.
+        /// </summary>
+        /// <param name="note">The note to update.</param>
+        /// <returns>The updated Note.</returns>
+        public RequestResult<Note> UpdateNote(Note note);
     }
 }

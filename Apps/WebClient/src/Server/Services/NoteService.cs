@@ -76,5 +76,18 @@ namespace HealthGateway.WebClient.Services
             };
             return result;
         }
+
+        /// <inheritdoc />
+        public RequestResult<Note> UpdateNote(Note note)
+        {
+            DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
+            RequestResult<Note> result = new RequestResult<Note>()
+            {
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultMessage = dbResult.Message,
+            };
+            return result;
+        }
     }
 }
