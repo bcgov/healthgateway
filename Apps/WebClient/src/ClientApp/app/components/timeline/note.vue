@@ -10,7 +10,7 @@ $radius: 15px;
 .entryTitle {
   background-color: $soft_background;
   color: $primary;
-  padding: 15px;
+  padding: 10px 15px;
   font-weight: bold;
   word-wrap: break-word;
   width: 100%;
@@ -58,11 +58,35 @@ $radius: 15px;
   <b-col>
     <b-form @submit="onSubmit" @reset="onReset">
       <b-row class="entryHeading">
-        <b-col class="d-flex" :class="!editing ? 'px-0' : ''">
+        <b-col class="d-flex" :class="!isEditing ? 'px-0' : ''">
           <div class="icon leftPane">
             <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>
           </div>
-          <div v-if="!editing" class="entryTitle">{{ entry.title }}</div>
+          <div v-if="!isEditing" class="entryTitle d-flex">
+            <div class="pt-1 w-100">
+              {{ entry.title }}
+            </div>
+            <div>
+              <!-- Right aligned nav items -->
+              <b-navbar-nav class="ml-auto">
+                <b-nav-item-dropdown right text="" :no-caret="true">
+                  <!-- Using 'button-content' slot -->
+                  <template slot="button-content">
+                    <font-awesome-icon
+                      :icon="menuIcon"
+                      size="1x"
+                    ></font-awesome-icon>
+                  </template>
+                  <b-dropdown-item @click="edit()">
+                    Edit
+                  </b-dropdown-item>
+                  <b-dropdown-item>
+                    Delete
+                  </b-dropdown-item>
+                </b-nav-item-dropdown>
+              </b-navbar-nav>
+            </div>
+          </div>
           <b-row v-else class="editableEntryTitle">
             <b-form-input
               v-model="title"
@@ -84,7 +108,7 @@ $radius: 15px;
         <b-col class="leftPane"></b-col>
         <b-col>
           <b-row>
-            <b-col v-if="!editing" class="entryDetails">
+            <b-col v-if="!isEditing" class="entryDetails">
               {{ !detailsVisible ? entry.textSummary : entry.text }}
               <b-btn
                 v-b-toggle="'entryDetails-' + entry.id"
@@ -96,7 +120,7 @@ $radius: 15px;
                 <span v-else-if="entry.textSummary != entry.text">Read More</span>
               </b-btn>
             </b-col>
-            <b-col v-if="editing" class="editableEntryDetails">
+            <b-col v-if="isEditing" class="editableEntryDetails">
               <b-form-textarea
                 id="text"
                 v-model="text"
@@ -107,7 +131,7 @@ $radius: 15px;
               ></b-form-textarea>
             </b-col>
           </b-row>
-          <b-row v-if="editing" class="py-2">
+          <b-row v-if="isEditing" class="py-2">
             <b-col class="d-flex flex-row-reverse">
               <div>
                 <b-btn variant="light" type="reset">
@@ -136,16 +160,19 @@ import Vue from "vue";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import { Prop, Component, Emit } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import { faEdit, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faEdit, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { IUserNoteService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import UserNote from "@/models/userNote";
+import moment from "moment";
+import User from "@/models/user";
 
 @Component
 export default class NoteTimelineComponent extends Vue {
-  @Prop() editing!: boolean;
+  @Prop() isAddMode!: boolean;
   @Prop() entry!: NoteTimelineEntry;
+  @Getter("user", { namespace: "user" }) user: User;
 
   private noteService: IUserNoteService;
   private text: string = "";
@@ -153,6 +180,7 @@ export default class NoteTimelineComponent extends Vue {
   private date: string = new Date().toISOString().slice(0, 10);
   private detailsVisible = false;
   private hasErrors: boolean = false;
+  private isEditMode: boolean = false;
 
   mounted() {
     this.noteService = container.get<IUserNoteService>(
@@ -163,17 +191,51 @@ export default class NoteTimelineComponent extends Vue {
     return faEdit;
   }
 
+  private get isEditing(): boolean {
+    return this.isAddMode || this.isEditMode;
+  }
+
+  private get menuIcon(): IconDefinition {
+    return faEllipsisV;
+  }
   private toggleDetails(): void {
     this.detailsVisible = !this.detailsVisible;
   }
 
   private onSubmit(evt: Event): void {
     evt.preventDefault();
+    if (this.isEditMode) {
+      this.updateNote();
+    } else if (this.isAddMode) {
+      this.createNote();
+    }
+  }
+
+  private updateNote() {
+    this.noteService
+      .updateNote({
+        text: this.text,
+        title: this.title,
+        journalDateTime: this.date,
+        version: this.entry.version,
+        hdid: this.user.hdid
+      })
+      .then(result => {
+        this.entry = result;
+        this.isEditMode = false;
+      })
+      .catch(() => {
+        this.hasErrors = true;
+      });
+  }
+
+  private createNote() {
     this.noteService
       .createNote({
         text: this.text,
         title: this.title,
-        journalDateTime: this.date
+        journalDateTime: this.date,
+        hdid: this.user.hdid
       })
       .then(result => {
         this.onNoteAdded(result);
@@ -183,8 +245,18 @@ export default class NoteTimelineComponent extends Vue {
       });
   }
 
+  private edit(): void {
+    this.text = this.entry.text;
+    this.title = this.entry.title;
+    this.date = moment(this.entry.journalDateTime)
+      .toISOString()
+      .slice(0, 10);
+    this.isEditMode = true;
+  }
+
   private onReset(): void {
     this.close();
+    this.isEditMode = false;
   }
 
   @Emit()
