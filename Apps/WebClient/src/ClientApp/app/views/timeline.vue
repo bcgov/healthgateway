@@ -173,6 +173,7 @@
                 :datekey="dateGroup.key"
                 :entry="entry"
                 :index="index"
+                @on-change="onCardUpdated"
               />
             </b-row>
           </div>
@@ -219,6 +220,7 @@ import NoteTimelineComponent from "@/components/timeline/note.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
+import TimelineEntry from "../models/timelineEntry";
 
 const namespace: string = "user";
 
@@ -402,6 +404,12 @@ export default class TimelineComponent extends Vue {
     if (note) {
       this.timelineEntries.push(new NoteTimelineEntry(note));
     }
+  }
+
+  private onCardUpdated(entry: TimelineEntry) {
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    this.timelineEntries.splice(index, 1);
+    this.timelineEntries.push(entry);
   }
 
   private onProtectiveWordSubmit(value: string) {

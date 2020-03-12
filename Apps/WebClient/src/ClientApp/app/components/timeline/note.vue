@@ -222,8 +222,8 @@ export default class NoteTimelineComponent extends Vue {
         hdid: this.user.hdid
       })
       .then(result => {
-        this.entry = new NoteTimelineEntry(result);
         this.isEditMode = false;
+        this.onNoteUpdated(result);
       })
       .catch(() => {
         this.hasErrors = true;
@@ -268,6 +268,11 @@ export default class NoteTimelineComponent extends Vue {
   @Emit()
   public onNoteAdded(note: UserNote) {
     return note;
+  }
+
+  @Emit()
+  public onNoteUpdated(note: UserNote) {
+    return new NoteTimelineEntry(note);
   }
 }
 </script>
