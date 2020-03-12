@@ -4,7 +4,7 @@ import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 import { IMedicationService, IHttpDelegate } from "@/services/interfaces";
-import { ExternalConfiguration } from "@/models/configData";
+import { ExternalConfiguration, WebClientConfiguration } from "@/models/configData";
 import MedicationStatement from "@/models/medicationStatement";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { injectable } from "inversify";
@@ -104,6 +104,14 @@ let userGetters = {
   }
 };
 
+let configGetters = {
+  webClient: (): WebClientConfiguration => {
+    return {
+      modules: { Note: true }
+    };
+  }
+};
+
 function createWrapper(): Wrapper<TimelineComponent> {
   const localVue = createLocalVue();
   localVue.use(Vuex);
@@ -115,6 +123,10 @@ function createWrapper(): Wrapper<TimelineComponent> {
         namespaced: true,
         getters: userGetters,
         actions: userModule.actions
+      },
+      config: {
+        namespaced: true,
+        getters: configGetters
       }
     }
   });
