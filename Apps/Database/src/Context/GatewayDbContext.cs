@@ -150,6 +150,9 @@ namespace HealthGateway.Database.Context
                     .HasIndex(i => new { i.Application, i.Component, i.Key })
                     .IsUnique();
 
+            // Create Composite Key for User Notes
+            modelBuilder.Entity<Note>().HasKey(k => new { k.Id, k.HdId });
+
             // Create Foreign keys for User Notes
             modelBuilder.Entity<Note>()
                     .HasOne<UserProfile>()

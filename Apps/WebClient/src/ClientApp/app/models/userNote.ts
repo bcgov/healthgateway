@@ -13,4 +13,7 @@ export default interface UserNote {
 
   // Gets or sets the Note timeline datetime.
   journalDateTime: Date;
+
+  // Gets or sets the note db version.
+  version: number;
 }

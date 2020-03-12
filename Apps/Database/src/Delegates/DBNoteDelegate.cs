@@ -116,6 +116,7 @@ namespace HealthGateway.Database.Delegates
                 Status = DBStatusCode.Deferred,
             };
             this.dbContext.Note.Update(note);
+            this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
             if (commit)
             {
                 try

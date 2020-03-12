@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Controllers
     using HealthGateway.Common.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -64,13 +65,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a patient note json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="model">The patient note request model.</param>
+        /// <param name="note">The patient note request model.</param>
         /// <response code="200">The note record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateNote([FromBody] CreateNoteRequest model)
+        public async Task<IActionResult> CreateNote([FromBody] Note note)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -83,8 +84,37 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            model.HdId = userHdid;
-            RequestResult<Database.Models.Note> result = this.noteService.CreateNote(model);
+            note.HdId = userHdid;
+            note.CreatedBy = userHdid;
+            RequestResult<Database.Models.Note> result = this.noteService.CreateNote(note);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Puts a patient note json to be updated in the database.
+        /// </summary>
+        /// <returns>The updated Note wrapped in a RequestResult.</returns>
+        /// <param name="note">The patient note.</param>
+        /// <response code="200">The note was saved.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> UpdateNote([FromBody] Note note)
+        {
+            // Validate the hdid to be a patient.
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+            AuthorizationResult isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            note.UpdatedBy = userHdid;
+            RequestResult<Note> result = this.noteService.UpdateNote(note);
             return new JsonResult(result);
         }
 
@@ -110,35 +140,6 @@ namespace HealthGateway.WebClient.Controllers
 
             RequestResult<IEnumerable<Database.Models.Note>> result = this.noteService.GetNotes(userHdid);
             return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Gets a single notes by its id.
-        /// </summary>
-        /// <returns>The note model wrapped in a request result.</returns>
-        /// <param name="noteId">The note id.</param>
-        /// <response code="200">Returns the note model.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("{noteId}")]
-        public async Task<IActionResult> Get(Guid noteId)
-        {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
-            // RequestResult<Database.Models.Note> result = this.noteService.Get(noteId);
-
-            // TODO: Compare note hdid with current jwt hdid.
-            // TODO: Do we need to implement this?
-            return new JsonResult(new object());
         }
     }
 }

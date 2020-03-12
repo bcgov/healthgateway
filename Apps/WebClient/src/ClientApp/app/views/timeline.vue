@@ -156,7 +156,7 @@
           <div id="timeData">
             <b-row v-if="isAddingNote" class="pb-5">
               <NoteTimelineComponent
-                :editing="true"
+                :is-add-mode="true"
                 @close="isAddingNote = false"
                 @on-note-added="onNoteAdded"
               />
@@ -174,6 +174,7 @@
                 :datekey="dateGroup.key"
                 :entry="entry"
                 :index="index"
+                @on-change="onCardUpdated"
               />
             </b-row>
           </div>
@@ -405,6 +406,12 @@ export default class TimelineComponent extends Vue {
     if (note) {
       this.timelineEntries.push(new NoteTimelineEntry(note));
     }
+  }
+
+  private onCardUpdated(entry: TimelineEntry) {
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    this.timelineEntries.splice(index, 1);
+    this.timelineEntries.push(entry);
   }
 
   private onProtectiveWordSubmit(value: string) {
