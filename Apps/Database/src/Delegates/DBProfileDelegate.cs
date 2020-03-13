@@ -138,5 +138,13 @@ namespace HealthGateway.Database.Delegates
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
+
+        /// <inheritdoc />
+        public int GetRegisteredUsersCount()
+        {
+            int result = this.dbContext.UserProfile
+                .Count(w => w.AcceptedTermsOfService);
+            return result;
+        }
     }
 }

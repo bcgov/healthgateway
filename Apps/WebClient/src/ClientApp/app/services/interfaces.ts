@@ -87,10 +87,10 @@ export interface IBetaRequestService {
 }
 
 export interface IUserNoteService {
-  initialize(http: IHttpDelegate): void;
+  initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
   getNotes(): Promise<RequestResult<UserNote[]>>;
   createNote(note: UserNote): Promise<UserNote>;
-  updateNote(noteId: string): Promise<UserNote>;
+  updateNote(note: UserNote): Promise<UserNote>;
   deleteNote(noteId: string): Promise<void>;
 }
 

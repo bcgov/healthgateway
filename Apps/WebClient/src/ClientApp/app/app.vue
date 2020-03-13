@@ -88,7 +88,8 @@ import {
   faChevronDown,
   faSpinner,
   faCheckCircle,
-  faTimesCircle
+  faTimesCircle,
+  faEllipsisV
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -99,7 +100,8 @@ library.add(
   faChevronDown,
   faSpinner,
   faCheckCircle,
-  faTimesCircle
+  faTimesCircle,
+  faEllipsisV
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
