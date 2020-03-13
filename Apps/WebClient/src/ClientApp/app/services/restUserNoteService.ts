@@ -63,8 +63,18 @@ export class RestUserNoteService implements IUserNoteService {
     });
   }
 
-  public updateNote(noteId: string): Promise<UserNote> {
-    throw new Error(this.NOT_IMPLENTED);
+  public updateNote(note: UserNote): Promise<UserNote> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .put<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, note)
+        .then(result => {
+          return this.handleResult(result, resolve, reject);
+        })
+        .catch(err => {
+          console.log(err);
+          return reject(err);
+        });
+    });
   }
 
   public deleteNote(noteId: string): Promise<void> {

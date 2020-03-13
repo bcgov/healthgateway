@@ -42,15 +42,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> CreateNote(CreateNoteRequest note)
+        public RequestResult<Note> CreateNote(Note note)
         {
-            DBResult<Note> dbNote = this.noteDelegate.AddNote(new Note()
-            {
-                Text = note.Text,
-                Title = note.Title,
-                JournalDateTime = note.JournalDateTime,
-                HdId = note.HdId,
-            });
+            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
             RequestResult<Note> result = new RequestResult<Note>()
             {
                 ResourcePayload = dbNote.Payload,
@@ -73,6 +67,32 @@ namespace HealthGateway.WebClient.Services
                 TotalResultCount = dbNotes.Payload.Count,
                 ResultStatus = dbNotes.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
                 ResultMessage = dbNotes.Message,
+            };
+            return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Note> UpdateNote(Note note)
+        {
+            DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
+            RequestResult<Note> result = new RequestResult<Note>()
+            {
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultMessage = dbResult.Message,
+            };
+            return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Note> DeleteNote(Note note)
+        {
+            DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
+            RequestResult<Note> result = new RequestResult<Note>()
+            {
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultMessage = dbResult.Message,
             };
             return result;
         }

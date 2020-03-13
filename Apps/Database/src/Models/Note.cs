@@ -27,13 +27,15 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("NoteId")]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        [Required]
+        [Key]
         [Column("UserProfileId")]
         [MaxLength(52)]
         public string HdId { get; set; } = null!;

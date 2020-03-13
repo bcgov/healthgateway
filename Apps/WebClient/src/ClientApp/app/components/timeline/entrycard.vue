@@ -29,6 +29,7 @@
       :datekey="datekey"
       :entry="entry"
       :index="index"
+      @on-note-updated="onChange"
     />
   </b-row>
 </template>
@@ -38,7 +39,7 @@ import Vue from "vue";
 
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 
-import { Prop, Component } from "vue-property-decorator";
+import { Prop, Component, Emit } from "vue-property-decorator";
 import MedicationTimelineComponent from "./medication.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
 import NoteTimelineComponent from "./note.vue";
@@ -57,6 +58,11 @@ export default class EntrycardTimelineComponent extends Vue {
 
   get EntryType(): EntryType {
     return EntryType;
+  }
+
+  @Emit()
+  public onChange(object: any) {
+    return object;
   }
 }
 </script>
