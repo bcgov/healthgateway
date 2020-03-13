@@ -53,7 +53,7 @@ Optionally, in **Step 10**, the client app retrieves userInfo by making an expli
 
 The last step, **Step 11** the user's JWT or bearer token is stored in session in the Browser to avoid repeatedly asking for the user to authenticate themselves. This is deleted upon logout.
 
-## Access control of Medications API and PharmaNet HL7v2 Interfaces via HNClien
+## Access control of Medications API and PharmaNet HL7v2 via HNClient
 
 The Health Gateway is composed of publicly accessible but medication service APIs that fetch Medications records. This  flow illustrates the protections of those APIs and the specific protections and grants needed to access the PharmaNet facade service HNClient running in a hosted Internet Information Services at provinical data centre. (outside of OpenShift). An HTTP Not Authorized '401' Error is returned whenever sufficient access is not met. The connection fot the HNClient services is limited to an client credentials grant OAuth2 flow only from the Medications Service. No other authenticated entity can access the HNClient endpoint.
 
