@@ -51,7 +51,7 @@ Optionally, in **Step 10**, the client app retrieves userInfo by making an expli
 
 The last step, **Step 11** the user's JWT or bearer token is stored in session in the Browser to avoid repeatedly asking for the user to authenticate themselves. This is deleted upon logout.
 
-## Access control of Medications API and PharmaNet
+## Access control of Medications API and PharmaNet HL7v2 Interfaces via HNClien
 
 The Health Gateway is composed of publicly accessible but medication service APIs that fetch Medications records. This  flow illustrates the protections of those APIs and the specific protections and grants needed to access the PharmaNet facade service HNClient running in a hosted Internet Information Services at provinical data centre. (outside of OpenShift). An HTTP Not Authorized '401' Error is returned whenever sufficient access is not met. The connection fot the HNClient services is limited to an client credentials grant OAuth2 flow only from the Medications Service. No other authenticated entity can access the HNClient endpoint.
 
@@ -63,7 +63,16 @@ The Health Gateway is composed of publicly accessible but medication service API
 
  The application now has the Citizen's PHN patient identifier to be used to get Medications, and in **Step 8** Medications are requested.  Once again, the Medications API endpoint uses the KeyCloak endpoint to verify the JWT **Step 9**. In **Step 10**, the MedicationsAPI service logs into KeyCloak to retrieve a valid Bearer token with the necessary scope and audience that HNClient is restricting access to, and then connects to HNClent service. HNClient validates and verifies the token provided by the Medications Service, **Step 11**, and then HNClient requests patient medication profile over HNI in **Step 12** by connecting to PharmaNet over secure endpoint route (HNSecure network), in **Step 12** to fetch medications history using an HL7v2 message structure (**Step 14**).   The Medications are returned as HL7v2 TRP to the MedicationsAPI **Step 15**.
 
- In **Step 16** the medications are returned to the browser to view.  
+ In **Step 16** the medications are returned to the browser to view.
+
+## Access to Complete Medication Dispense History using ODR and its Openshift Proxy
+
+ The OAuth OIDC flows in this integration are the same as with the Pharmanet HL7v2 interface access, but instead of needing to use OAuth2 Client Credentials Grant, the Medication microservice calls the ODR Proxy directly as it resides in the same OpenShift realm, or namespace.
+
+ <img src="diagrams/out/PharmaNet_ODR_Proxy_Flow.png"
+     alt="PharmaNet ODR Proxy Flow"
+     style="float: left; margin-right: 20px;" />  
+
 
 ## Citizen as Patient
 
