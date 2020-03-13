@@ -44,7 +44,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="protectiveWord">The protective word to validate.</param>
         /// <param name="userId">The user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
-        /// <returns></returns>
-        public Task<IEnumerable<MedicationHistoryResponse>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress);
+        /// <returns>The Medication History response.</returns>
+        public Task<MedicationHistoryResponse> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress);
     }
 }

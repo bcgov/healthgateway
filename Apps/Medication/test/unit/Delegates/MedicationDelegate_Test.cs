@@ -20,17 +20,30 @@ namespace HealthGateway.Medication.Test
     using System.Threading.Tasks;
     using Xunit;
     using System.Text.Json;
+    using HealthGateway.Medication.Delegates;
+    using HealthGateway.Common.Services;
+    using System.Net.Http;
+    using Moq;
+    using Microsoft.Extensions.Logging;
 
     public class MedicationDelegate_Test
     {
         private readonly IConfiguration configuration;
+
         public MedicationDelegate_Test()
         {
+            this.configuration = GetIConfigurationRoot(string.Empty);
         }
 
         [Fact]
         public async Task ValidateQueryModel()
         {
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
+            HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
+            IRestMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
+            await medStatementDelegate.GetMedicationStatementsAsync("912345678", string.Empty, string.Empty, string.Empty);
             MedicationHistoryQuery query = new MedicationHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
@@ -46,6 +59,16 @@ namespace HealthGateway.Medication.Test
             };
             string jsonString = JsonSerializer.Serialize(query, options);
             Assert.True(true);
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
+        {
+            return new ConfigurationBuilder()
+                // .SetBasePath(outputPath)
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .Build();
         }
     }
 }

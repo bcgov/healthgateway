@@ -38,7 +38,6 @@ namespace HealthGateway.Medication.Delegates
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configService;
-        private readonly ISequenceDelegate sequenceDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedStatementDelegate"/> class.
@@ -46,22 +45,20 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="sequenceDelegate">The injected sequence delegate.</param>
         public RestMedStatementDelegate(
             ILogger<RestMedStatementDelegate> logger,
             IHttpClientService httpClientService,
-            IConfiguration configuration,
-            ISequenceDelegate sequenceDelegate)
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configService = configuration;
-            this.sequenceDelegate = sequenceDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<MedicationHistoryResponse>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
+        public async Task<MedicationHistoryResponse> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
         {
+            MedicationHistoryResponse retVal = new MedicationHistoryResponse();
             Contract.Requires(phn != null);
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -69,6 +66,7 @@ namespace HealthGateway.Medication.Delegates
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.BaseAddress = new Uri(this.configService.GetSection("ODR")?.GetValue<string>("Url"));
+            string patientProfileEndpoint = this.configService.GetSection("ODR")?.GetValue<string>("PatientProfileEndpoint");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -88,17 +86,16 @@ namespace HealthGateway.Medication.Delegates
             HttpContent content = new StringContent(json);
             try
             {
-                HttpResponseMessage response = await client.PostAsync(string.Empty, content).ConfigureAwait(true);
+                HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
-                    // HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    // retVal = this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
+                    retVal = medicationHistory.Response;
                 }
                 else
                 {
-                    // this.logger.LogError($"Error getting medication statements. {phn.Substring(0, 3)}, {payload}");
-                    // retVal = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to connect to HNClient: {response.StatusCode}");
+                    this.logger.LogError($"Error getting medication statements. {phn.Substring(0, 3)}, {payload}");
                 }
             }
             catch (Exception e)
@@ -108,7 +105,7 @@ namespace HealthGateway.Medication.Delegates
 
             timer.Stop();
             // this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
-            return new List<MedicationHistoryResponse>();
+            return retVal;
         }
     }
 }
