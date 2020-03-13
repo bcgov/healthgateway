@@ -83,5 +83,18 @@ namespace HealthGateway.WebClient.Services
             };
             return result;
         }
+
+        /// <inheritdoc />
+        public RequestResult<Note> DeleteNote(Note note)
+        {
+            DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
+            RequestResult<Note> result = new RequestResult<Note>()
+            {
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultMessage = dbResult.Message,
+            };
+            return result;
+        }
     }
 }

@@ -119,6 +119,33 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
+        /// Deletes a note from the database.
+        /// </summary>
+        /// <returns>The deleted Note wrapped in a RequestResult.</returns>
+        /// <param name="note">The patient note.</param>
+        /// <response code="200">The note was deleted.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpDelete]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> DeleteNote([FromBody] Note note)
+        {
+            // Validate the hdid to be a patient.
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+            AuthorizationResult isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            RequestResult<Note> result = this.noteService.DeleteNote(note);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
         /// Gets all notes for the specified user.
         /// </summary>
         /// <returns>The list of notes model wrapped in a request result.</returns>

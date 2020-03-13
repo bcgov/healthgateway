@@ -134,5 +134,33 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished updating Note in DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<Note> DeleteNote(Note note, bool commit = true)
+        {
+            this.logger.LogTrace($"Deleting Note from DB...");
+            DBResult<Note> result = new DBResult<Note>()
+            {
+                Payload = note,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.Note.Remove(note);
+            this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+            this.logger.LogDebug($"Finished deleting Note in DB");
+            return result;
+        }
     }
 }
