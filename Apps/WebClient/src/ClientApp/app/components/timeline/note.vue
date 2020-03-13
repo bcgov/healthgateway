@@ -73,6 +73,7 @@ $radius: 15px;
                   <!-- Using 'button-content' slot -->
                   <template slot="button-content">
                     <font-awesome-icon
+                      class="noteMenu"
                       :icon="menuIcon"
                       size="1x"
                     ></font-awesome-icon>
@@ -90,6 +91,7 @@ $radius: 15px;
           <b-row v-else class="editableEntryTitle">
             <b-col class="p-0 col-lg-7 col-md-7 col-6">
               <b-form-input
+                id="title"
                 v-model="title"
                 type="text"
                 placeholder="Title"
@@ -97,7 +99,7 @@ $radius: 15px;
               />
             </b-col>
             <b-col class="p-0 pl-1 col-lg-5 col-md-5 col-6">
-              <b-form-input v-model="date" required type="date"></b-form-input>
+              <b-form-input id="date" v-model="date" required type="date" />
             </b-col>
           </b-row>
         </b-col>
