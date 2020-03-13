@@ -175,6 +175,7 @@
                 :entry="entry"
                 :index="index"
                 @on-change="onCardUpdated"
+                @on-remove="onCardRemoved"
               />
             </b-row>
           </div>
@@ -258,7 +259,8 @@ export default class TimelineComponent extends Vue {
   private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
-  private unsavedChangesText: string = "You have unsaved changes. Are you sure you want to leave?";
+  private unsavedChangesText: string =
+    "You have unsaved changes. Are you sure you want to leave?";
 
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
@@ -406,6 +408,11 @@ export default class TimelineComponent extends Vue {
     if (note) {
       this.timelineEntries.push(new NoteTimelineEntry(note));
     }
+  }
+
+  private onCardRemoved(entry: TimelineEntry) {
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    this.timelineEntries.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {

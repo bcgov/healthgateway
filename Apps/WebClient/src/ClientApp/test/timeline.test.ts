@@ -4,7 +4,10 @@ import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 import { IMedicationService, IHttpDelegate } from "@/services/interfaces";
-import { ExternalConfiguration, WebClientConfiguration } from "@/models/configData";
+import {
+  ExternalConfiguration,
+  WebClientConfiguration
+} from "@/models/configData";
 import MedicationStatement from "@/models/medicationStatement";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { injectable } from "inversify";
