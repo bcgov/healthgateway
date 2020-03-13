@@ -84,16 +84,20 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <inheritdoc/>
-        public  UserRepresentation GetUser(Guid userId, string base64BearerToken)
+        public UserRepresentation GetUser(Guid userId, string base64BearerToken)
         {
             UserRepresentation userReturned;
+
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
-            Uri requestUri = new Uri($"/{userId}", UriKind.Relative);
+            UriBuilder uriBuild = new UriBuilder(baseUri);
+            uriBuild.Path = $"/{userId}";
+            Uri requestUri = uriBuild.Uri;
+
             using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
 
             try
             {
-                Task<string> jsonResult =  this.Get(client, requestUri);
+                Task<string> jsonResult = this.Get(client, requestUri);
                 string json = jsonResult.Result;
                 var options = new JsonSerializerOptions
                 {
@@ -114,8 +118,10 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <inheritdoc/>
         public int DeleteUser(Guid userId, string base64BearerToken)
         {
+            this.logger.LogInformation($"Start DeleteUser : ${userId.ToString()}");
+
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
-            Uri requestUri = new Uri($"/{userId}", UriKind.Relative);
+            Uri requestUri = new Uri(baseUri, new Uri($"{userId}", UriKind.Relative));
 
             using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
             try
@@ -128,6 +134,8 @@ namespace HealthGateway.Common.AccessManagement.Administration
 
                 return -1;
             }
+
+            this.logger.LogInformation($"End DeleteUser : ${userId.ToString()}");
 
             return 0;
         }
@@ -154,6 +162,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
                 this.logger.LogError($"Error performing Delete Request to Keycloak Admin API: ${uri.ToString()}'");
                 throw new HttpRequestException($"Unable to connect to Keycloak: ${response.StatusCode}");
             }
+            this.logger.LogDebug($"Delete completed");
 
             return jsonString;
         }

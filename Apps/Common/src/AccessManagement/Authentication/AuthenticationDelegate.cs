@@ -23,7 +23,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// The Authorization service.
@@ -89,6 +89,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.logger.LogDebug($"Finished authenticating.");
             return jwtModel;
         }
+
         private async Task<IAuthModel> ClientCredentialsGrant()
         {
             JWTModel authModel = new JWTModel();
@@ -112,7 +113,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
             }
             catch (HttpRequestException e)
             {
@@ -148,7 +149,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: ${jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonConvert.DeserializeObject<JWTModel>(jwtTokenResponse);
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
             }
             catch (HttpRequestException e)
             {

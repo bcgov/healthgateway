@@ -18,10 +18,10 @@ namespace Healthgateway.JobScheduler.Jobs
     using System;
     using System.Collections.Generic;
     using Hangfire;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -49,7 +49,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IAuthenticationDelegate authDelegate;
 
         private readonly IUserAdminDelegate userAdminDelegate;
-    
+
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
         private readonly int hoursBeforeDeletion;
