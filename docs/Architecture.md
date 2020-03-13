@@ -2,7 +2,7 @@
 
 <img src="diagrams/out/2019-09-10-HealthGatewayArchitecture.png"
      alt="High-Leve HealthGateway Architecture"
-     style="float: left; margin-right: 10px;" />
+     style="float: left; margin-right: 5000px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;" />
 
 ## Accessing Existing Health Services
 
@@ -39,7 +39,9 @@ The Health Gateway is designed to use external identity providers (IdPs) integra
 
 <img src="diagrams/out/BCSC_OIDC_Flow.png"
      alt="OIDC Flow"
-     style="float: left; margin-right: 10px;" />
+     style="float: left; margin-right: 5000px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;" />
+  
+
 
 In **Step 1**, the user navigates to the Health Gateway on their browser.  The browser loads the Health Gateway application in **Step 2**. In **Step 3**, the user selects to login using their BC Services Card. **Step 4** submits an authentication request to KeyCloak (RedHat SSO) passing the selected identity provider choice, in this case 'bcsc'.  KeyCloak connects to the IAS, a provisioned Identity Provider (IdP), and in **Step 5**. KeyCloak submits an OAuth2 OIDC authentication request.
 
@@ -57,7 +59,7 @@ The Health Gateway is composed of publicly accessible but medication service API
 
 <img src="diagrams/out/PharmaNet_OAuth2_HNClient_Flow.png"
      alt="PharmaNet OAuth2 Flow"
-     style="float: left; margin-right: 10px;" />
+     style="float: left; margin-right: 5000px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;" />
 
  **Step 1** Begins the flow by loading the HealthGateway app into the Citizen's browser.   **Step 2** we repeat the login flow as described above.  The citizen then selects to get their Medications in **Step 3**.  The first thing we need is a subject identiifer as known to our provincial health records, namely the PHN.  A protected API call to GetPHN() is called in **Step 4**.  In **Step 5** the PatientAPI checks that the Bearer token (JWT) supplied is valid before proceeding to exchange the HDID (UserInfo.sub) for a PHN. Obtaining the PHN is done via a SOAP call to HCIM using the HL7v3 HCIM_IN_GetDemographics query in **Step 6**.  The PHN is returned to the HealthGateway Single Page App in the Browser in **Step 7**.
 
@@ -71,7 +73,7 @@ The Health Gateway is composed of publicly accessible but medication service API
 
  <img src="diagrams/out/PharmaNet_ODR_Proxy_Flow.png"
      alt="PharmaNet ODR Proxy Flow"
-     style="float: left; margin-right: 20px;" />  
+     style="float: left; margin-right: 5000px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;" />
 
 
 ## Citizen as Patient
