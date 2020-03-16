@@ -78,10 +78,10 @@ $radius: 15px;
                       size="1x"
                     ></font-awesome-icon>
                   </template>
-                  <b-dropdown-item @click="edit()">
+                  <b-dropdown-item @click="editNote()">
                     Edit
                   </b-dropdown-item>
-                  <b-dropdown-item>
+                  <b-dropdown-item @click="deleteNote()">
                     Delete
                   </b-dropdown-item>
                 </b-nav-item-dropdown>
@@ -116,8 +116,12 @@ $radius: 15px;
                 class="detailsButton"
                 @click="toggleDetails()"
               >
-                <span v-if="detailsVisible && entry.textSummary != entry.text">Hide Details</span>
-                <span v-else-if="entry.textSummary != entry.text">Read More</span>
+                <span v-if="detailsVisible && entry.textSummary != entry.text"
+                  >Hide Details</span
+                >
+                <span v-else-if="entry.textSummary != entry.text"
+                  >Read More</span
+                >
               </b-btn>
             </b-col>
             <b-col v-if="isEditing" class="editableEntryDetails">
@@ -160,7 +164,11 @@ import Vue from "vue";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import { Prop, Component, Emit } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import { faEllipsisV, faEdit, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsisV,
+  faEdit,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
 import { IUserNoteService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -246,13 +254,21 @@ export default class NoteTimelineComponent extends Vue {
       });
   }
 
-  private edit(): void {
+  private editNote(): void {
     this.text = this.entry.text;
     this.title = this.entry.title;
     this.date = moment(this.entry.date)
       .toISOString()
       .slice(0, 10);
     this.isEditMode = true;
+  }
+
+  private deleteNote(): void {
+    this.text = this.entry.id;
+    if (confirm("Are you sure you want to delete this note?")) {
+      this.noteService.deleteNote(this.entry);
+      this.onNoteDeleted(this.entry);
+    }
   }
 
   private onReset(): void {
@@ -263,6 +279,11 @@ export default class NoteTimelineComponent extends Vue {
   @Emit()
   public close() {
     return;
+  }
+
+  @Emit()
+  public onNoteDeleted(note: NoteTimelineEntry) {
+    return note;
   }
 
   @Emit()

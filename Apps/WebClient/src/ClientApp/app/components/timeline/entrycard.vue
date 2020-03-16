@@ -30,6 +30,7 @@
       :entry="entry"
       :index="index"
       @on-note-updated="onChange"
+      @on-note-deleted="onRemove"
     />
   </b-row>
 </template>
@@ -62,6 +63,11 @@ export default class EntrycardTimelineComponent extends Vue {
 
   @Emit()
   public onChange(object: any) {
+    return object;
+  }
+
+  @Emit()
+  public onRemove(object: any) {
     return object;
   }
 }
