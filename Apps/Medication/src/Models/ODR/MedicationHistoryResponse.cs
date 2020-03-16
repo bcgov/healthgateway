@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the set of MedicationResults.
         /// The set is boud by the other class properties.
         /// </summary>
-        [JsonPropertyName("medicationResultSet")]
+        [JsonPropertyName("records")]
         public IEnumerable<MedicationResult>? Results { get; set; }
 
     }

@@ -35,7 +35,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the Start date of the request.
         /// </summary>
         [JsonIgnore]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         /// <summary>
         /// Gets the FormattedStartDate.
@@ -50,7 +50,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the End date of the request.
         /// </summary>
         [JsonIgnore]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         /// <summary>
         /// Gets the FormattedEndDate.

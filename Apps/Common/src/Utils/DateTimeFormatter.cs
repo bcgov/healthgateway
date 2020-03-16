@@ -29,9 +29,9 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="datetime">The datetime to format.</param>
         /// <returns>A formatted string or empty if input is null.</returns>
-        public static string FormatDate(DateTime datetime)
+        public static string FormatDate(DateTime? datetime)
         {
-            return datetime != null ? datetime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : string.Empty;
+            return datetime != null ? datetime.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : string.Empty;
         }
     }
 }
