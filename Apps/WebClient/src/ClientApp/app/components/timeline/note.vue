@@ -73,14 +73,15 @@ $radius: 15px;
                   <!-- Using 'button-content' slot -->
                   <template slot="button-content">
                     <font-awesome-icon
+                      class="noteMenu"
                       :icon="menuIcon"
                       size="1x"
                     ></font-awesome-icon>
                   </template>
-                  <b-dropdown-item @click="edit()">
+                  <b-dropdown-item @click="editNote()">
                     Edit
                   </b-dropdown-item>
-                  <b-dropdown-item>
+                  <b-dropdown-item @click="deleteNote()">
                     Delete
                   </b-dropdown-item>
                 </b-nav-item-dropdown>
@@ -90,6 +91,7 @@ $radius: 15px;
           <b-row v-else class="editableEntryTitle">
             <b-col class="p-0 col-lg-7 col-md-7 col-6">
               <b-form-input
+                id="title"
                 v-model="title"
                 type="text"
                 placeholder="Title"
@@ -97,7 +99,7 @@ $radius: 15px;
               />
             </b-col>
             <b-col class="p-0 pl-1 col-lg-5 col-md-5 col-6">
-              <b-form-input v-model="date" required type="date"></b-form-input>
+              <b-form-input id="date" v-model="date" required type="date" />
             </b-col>
           </b-row>
         </b-col>
@@ -114,8 +116,12 @@ $radius: 15px;
                 class="detailsButton"
                 @click="toggleDetails()"
               >
-                <span v-if="detailsVisible && entry.textSummary != entry.text">Hide Details</span>
-                <span v-else-if="entry.textSummary != entry.text">Read More</span>
+                <span v-if="detailsVisible && entry.textSummary != entry.text"
+                  >Hide Details</span
+                >
+                <span v-else-if="entry.textSummary != entry.text"
+                  >Read More</span
+                >
               </b-btn>
             </b-col>
             <b-col v-if="isEditing" class="editableEntryDetails">
@@ -158,7 +164,11 @@ import Vue from "vue";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import { Prop, Component, Emit } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import { faEllipsisV, faEdit, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsisV,
+  faEdit,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
 import { IUserNoteService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -244,13 +254,21 @@ export default class NoteTimelineComponent extends Vue {
       });
   }
 
-  private edit(): void {
+  private editNote(): void {
     this.text = this.entry.text;
     this.title = this.entry.title;
     this.date = moment(this.entry.date)
       .toISOString()
       .slice(0, 10);
     this.isEditMode = true;
+  }
+
+  private deleteNote(): void {
+    this.text = this.entry.id;
+    if (confirm("Are you sure you want to delete this note?")) {
+      this.noteService.deleteNote(this.entry);
+      this.onNoteDeleted(this.entry);
+    }
   }
 
   private onReset(): void {
@@ -261,6 +279,11 @@ export default class NoteTimelineComponent extends Vue {
   @Emit()
   public close() {
     return;
+  }
+
+  @Emit()
+  public onNoteDeleted(note: NoteTimelineEntry) {
+    return note;
   }
 
   @Emit()

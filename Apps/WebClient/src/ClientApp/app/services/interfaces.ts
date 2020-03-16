@@ -91,7 +91,7 @@ export interface IUserNoteService {
   getNotes(): Promise<RequestResult<UserNote[]>>;
   createNote(note: UserNote): Promise<UserNote>;
   updateNote(note: UserNote): Promise<UserNote>;
-  deleteNote(noteId: string): Promise<void>;
+  deleteNote(note: UserNote): Promise<void>;
 }
 
 export interface IHttpDelegate {

@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { IHttpDelegate, IUserNoteService } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
-import { ResultType } from '@/constants/resulttype';
-import { ExternalConfiguration } from '@/models/configData';
+import { ResultType } from "@/constants/resulttype";
+import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -77,10 +77,19 @@ export class RestUserNoteService implements IUserNoteService {
     });
   }
 
-  public deleteNote(noteId: string): Promise<void> {
-    throw new Error(this.NOT_IMPLENTED);
+  public deleteNote(note: UserNote): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .delete<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, note)
+        .then(result => {
+          return this.handleResult(result, resolve, reject);
+        })
+        .catch(err => {
+          console.log(err);
+          return reject(err);
+        });
+    });
   }
-
 
   private handleResult(
     requestResult: RequestResult<any>,
