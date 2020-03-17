@@ -159,6 +159,7 @@ namespace HealthGateway.Database.Delegates
                     result.Message = e.Message;
                 }
             }
+
             this.logger.LogDebug($"Finished deleting Note in DB");
             return result;
         }

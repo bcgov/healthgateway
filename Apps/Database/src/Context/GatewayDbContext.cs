@@ -530,6 +530,17 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new LegalAgreement // Updated Terms of Service for Notes feature
+                {
+                    Id = Guid.Parse("ec438d12-f8e2-4719-8444-28e35d34674c"),
+                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200317.html"),
+                    EffectiveDate = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                 });
         }
 
