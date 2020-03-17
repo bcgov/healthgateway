@@ -2533,6 +2533,54 @@
         ["xpath=//form/div[2]/div[2]/div/div", "xpath:position"]
       ],
       "value": "Test Edit"
+    }, {
+      "id": "80adb3b9-2c5f-403b-9924-c987b0b804af",
+      "comment": "",
+      "command": "click",
+      "target": "css=.noteMenu",
+      "targets": [
+        ["css=.noteMenu > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "a1e95192-04af-40f1-b9d1-bcdba86eb15b",
+      "comment": "",
+      "command": "chooseOkOnNextConfirmation",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ec87e6c0-b485-4a5a-b57f-9217b199f6b5",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Delete",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e2f95c1a-d573-47ba-9b4e-efff881ff19a",
+      "comment": "",
+      "command": "assertConfirmation",
+      "target": "Are you sure you want to delete this note?",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "64147792-8080-4136-a838-c96520203168",
+      "comment": "",
+      "command": "webdriverChooseOkOnVisibleConfirmation",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "73918dc6-38c5-4bab-8a77-e64a4ee7151b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) > .row .entryTitle",
+      "targets": [
+        ["css=.row:nth-child(2) > .row .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[2]/div[3]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Shingles"
     }]
   }],
   "suites": [{
