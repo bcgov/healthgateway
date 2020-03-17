@@ -121,13 +121,13 @@ namespace HealthGateway.WebClient
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            /*bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
             if (redirectToWWW)
             {
                 RewriteOptions rewriteOption = new RewriteOptions()
                     .AddRedirectToWwwPermanent();
                 app.UseRewriter(rewriteOption);
-            }*/
+            }
 
             app.UseStaticFiles(new StaticFileOptions
             {
