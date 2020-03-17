@@ -3,8 +3,11 @@
 
 $radius: 15px;
 
-.entryHeading {
-  border-radius: 25px;
+.timelineCard {
+  border-radius: $radius $radius $radius $radius;
+  border-color: $soft_background;
+  border-style: solid;
+  border-width: 2px;
 }
 
 .entryTitle {
@@ -14,6 +17,8 @@ $radius: 15px;
   font-weight: bold;
   word-wrap: break-word;
   width: 100%;
+  margin-right: -1px;
+  border-radius: 0px $radius 0px 0px;
 }
 
 .editableEntryTitle {
@@ -21,6 +26,8 @@ $radius: 15px;
   padding: 9px 0px 9px 15px;
   width: 100%;
   margin: 0px;
+  margin-right: -1px;
+  border-radius: 0px $radius 0px 0px;
 }
 
 .entryDetails {
@@ -33,7 +40,7 @@ $radius: 15px;
   color: white;
   text-align: center;
   padding: 10px 15px;
-  border-radius: $radius 0px 0px $radius;
+  border-radius: $radius 0px 0px 0px;
 }
 
 .leftPane {
@@ -51,11 +58,12 @@ $radius: 15px;
 
 .editableEntryDetails {
   padding-left: 30px;
+  padding-right: 20px;
 }
 </style>
 
 <template>
-  <b-col>
+  <b-col class="timelineCard" :class="isEditing ? 'px-0' : ''">
     <b-form @submit="onSubmit" @reset="onReset">
       <b-row class="entryHeading">
         <b-col class="d-flex" :class="!isEditing ? 'px-0' : ''">
@@ -88,7 +96,7 @@ $radius: 15px;
               </b-navbar-nav>
             </div>
           </div>
-          <b-row v-else class="editableEntryTitle">
+          <b-row v-else class="editableEntryTitle pr-1">
             <b-col class="p-0 col-lg-7 col-md-7 col-6">
               <b-form-input
                 id="title"
@@ -135,7 +143,7 @@ $radius: 15px;
               ></b-form-textarea>
             </b-col>
           </b-row>
-          <b-row v-if="isEditing" class="py-2">
+          <b-row v-if="isEditing" class="py-2 pr-1">
             <b-col class="d-flex flex-row-reverse">
               <div>
                 <b-btn variant="light" type="reset">
