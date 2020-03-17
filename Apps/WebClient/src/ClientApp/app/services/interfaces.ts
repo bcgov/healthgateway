@@ -110,5 +110,9 @@ export interface IHttpDelegate {
     payload: Object,
     headers?: Dictionary<string>
   ): Promise<T>;
-  delete<T>(url: string, headers?: Dictionary<string>): Promise<T>;
+  delete<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
 }
