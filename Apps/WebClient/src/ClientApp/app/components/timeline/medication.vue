@@ -3,8 +3,11 @@
 
 $radius: 15px;
 
-.entryHeading {
-  border-radius: 25px;
+.timelineCard {
+  border-radius: $radius $radius $radius $radius;
+  border-color: $soft_background;
+  border-style: solid;
+  border-width: 2px;
 }
 
 .entryTitle {
@@ -12,6 +15,8 @@ $radius: 15px;
   color: $primary;
   padding: 13px 15px;
   font-weight: bold;
+  margin-right: -1px;
+  border-radius: 0px $radius 0px 0px;
 }
 
 .icon {
@@ -19,7 +24,7 @@ $radius: 15px;
   color: white;
   text-align: center;
   padding: 10px 0;
-  border-radius: $radius 0px 0px $radius;
+  border-radius: $radius 0px 0px 0px;
 }
 
 .leftPane {
@@ -42,7 +47,7 @@ $radius: 15px;
 </style>
 
 <template>
-  <b-col>
+  <b-col class="timelineCard">
     <b-row class="entryHeading">
       <b-col class="icon leftPane">
         <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>

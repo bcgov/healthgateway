@@ -155,11 +155,13 @@
           </div>
           <div id="timeData">
             <b-row v-if="isAddingNote" class="pb-5">
-              <NoteTimelineComponent
-                :is-add-mode="true"
-                @close="isAddingNote = false"
-                @on-note-added="onNoteAdded"
-              />
+              <b-col>
+                <NoteTimelineComponent
+                  :is-add-mode="true"
+                  @close="isAddingNote = false"
+                  @on-note-added="onNoteAdded"
+                />
+              </b-col>
             </b-row>
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
               <b-col cols="auto">
