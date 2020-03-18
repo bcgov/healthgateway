@@ -51,19 +51,17 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        private readonly IRestMedStatementDelegate medStatementDelegate;
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
         /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="medicationStatementService">The injected medication data service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor, IRestMedStatementDelegate medStatementDelegate)
+        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor)
         {
             this.medicationStatementService = medicationStatementService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
-            this.medStatementDelegate = medStatementDelegate;
         }
 
         /// <summary>
@@ -102,17 +100,6 @@ namespace HealthGateway.Medication.Controllers
                 result.PageSize = medicationStatements.Message.Count;
                 result.TotalResultCount = medicationStatements.Message.Count;
             }
-
-            return new JsonResult(result);
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Produces("application/json")]
-        [Route("ODR/{hdid}")]
-        public async Task<IActionResult> GetODRMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
-        {
-            var result = await this.medStatementDelegate.GetMedicationStatementsAsync("9123456789", string.Empty, "slaws", "8.8.8.8");
 
             return new JsonResult(result);
         }

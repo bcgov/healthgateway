@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Test
             svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
-            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, null);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
@@ -115,7 +115,7 @@ namespace HealthGateway.Medication.Test
                 .ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()) { Result = HealthGateway.Common.Constants.ResultType.Error, ResultMessage = errorMessage });
 
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, null);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
@@ -162,7 +162,7 @@ namespace HealthGateway.Medication.Test
             svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Failed);
 
-            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, null);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
