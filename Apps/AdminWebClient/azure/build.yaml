@@ -17,6 +17,7 @@ trigger:
    include:
      - Apps/AdminWebClient
      - Apps/Common
+     - Apps/Database
  
 pool:
   name: 'HealthGateway'

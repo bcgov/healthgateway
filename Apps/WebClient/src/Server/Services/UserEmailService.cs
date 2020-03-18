@@ -127,6 +127,7 @@ namespace HealthGateway.WebClient.Services
                     // Add the existing email to the queue
                     this.emailQueueService.QueueInviteEmail(emailInvite.Id);
                 }
+                
                 retVal = true;
                 this.logger.LogDebug($"Finished updating user email");
             }

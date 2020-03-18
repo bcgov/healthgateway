@@ -2362,6 +2362,226 @@
       ],
       "value": "Health Care Timeline"
     }]
+  }, {
+    "id": "99bd943e-bfd8-4762-a277-a30f08ef14de",
+    "name": "Timeline - Notes",
+    "commands": [{
+      "id": "77f0cbb6-c66f-4c99-8876-cbbc02c28f75",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "815bb7a6-02fc-4a3b-9477-de01d08c931f",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "02bf800d-869e-470a-abee-c01ebc9f9a54",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "390c1d05-d029-481e-8bcc-75cb21a0dba4",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "xpath=//button[contains(.,' Add Note')]",
+      "targets": [
+        ["css=.visible-lg-block", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/main/div/div[2]/div/div/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Add Note')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7bf90373-dd65-4997-858d-f62f114fe2cd",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//button[contains(.,' Add Note')]",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "655704da-a0a7-4d82-92dc-fbfb75da3dea",
+      "comment": "",
+      "command": "type",
+      "target": "id=title",
+      "targets": [
+        ["id=__BVID__150", "id"],
+        ["css=#\\__BVID__150", "css:finder"],
+        ["xpath=//input[@id='__BVID__150']", "xpath:attributes"],
+        ["xpath=//div[@id='timeData']/div/div/form/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "Note Title!"
+    }, {
+      "id": "48bf37d1-fe11-4488-8775-3a727099df16",
+      "comment": "",
+      "command": "type",
+      "target": "id=date",
+      "targets": [
+        ["id=__BVID__151", "id"],
+        ["css=#\\__BVID__151", "css:finder"],
+        ["xpath=//input[@id='__BVID__151']", "xpath:attributes"],
+        ["xpath=//div[@id='timeData']/div/div/form/div/div/div[2]/input[2]", "xpath:idRelative"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": "2050-01-01"
+    }, {
+      "id": "c3858261-dd08-4791-b2ab-05fe6ba8e76a",
+      "comment": "",
+      "command": "type",
+      "target": "id=text",
+      "targets": [
+        ["id=text", "id"],
+        ["css=#text", "css:finder"],
+        ["xpath=//textarea[@id='text']", "xpath:attributes"],
+        ["xpath=//div[@id='timeData']/div/div/form/div[2]/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "Test"
+    }, {
+      "id": "5de2964c-0fb7-4e58-994e-d761a6590c89",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//span[contains(.,'SAVE')]",
+      "targets": [
+        ["css=.btn:nth-child(2) > span", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/form/div[2]/div[2]/div[2]/div/div/button[2]/span", "xpath:idRelative"],
+        ["xpath=//button[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'SAVE')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "45ba7131-08ee-457a-902f-af49ba349436",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) > .row .entryTitle",
+      "targets": [
+        ["css=.row:nth-child(1) > .row .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/form/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//form/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Note Title!"
+    }, {
+      "id": "1c2f3c63-ca94-4c3e-9083-fa658ebaa145",
+      "comment": "",
+      "command": "click",
+      "target": "css=.noteMenu",
+      "targets": [
+        ["id=__BVID__60__BV_button_", "id"],
+        ["css=#\\__BVID__60__BV_button_", "css:finder"],
+        ["xpath=//a[@id='__BVID__60__BV_button_']", "xpath:attributes"],
+        ["xpath=//li[@id='__BVID__60']/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[5]", "xpath:href"],
+        ["xpath=//div[2]/ul/li/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cc15efca-6328-4a3b-8889-2424199a86ab",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Edit",
+      "targets": [
+        ["linkText=Edit", "linkText"],
+        ["css=.show > li:nth-child(1) > .dropdown-item", "css:finder"],
+        ["xpath=//a[contains(text(),'Edit')]", "xpath:link"],
+        ["xpath=//li[@id='__BVID__74']/ul/li/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '#')])[6]", "xpath:href"],
+        ["xpath=//div[2]/ul/li/ul/li/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Edit')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7ba48878-156c-41f4-9d65-ad1c1bb04d0e",
+      "comment": "",
+      "command": "type",
+      "target": "id=text",
+      "targets": [
+        ["id=text", "id"],
+        ["css=#text", "css:finder"],
+        ["xpath=//textarea[@id='text']", "xpath:attributes"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/form/div[2]/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "Test Edit"
+    }, {
+      "id": "416f82e3-bdad-4df1-b701-de9cc324d54c",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn:nth-child(2) > span",
+      "targets": [
+        ["css=.btn:nth-child(2) > span", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/form/div[2]/div[2]/div[2]/div/div/button[2]/span", "xpath:idRelative"],
+        ["xpath=//button[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'SAVE')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "bc5c0327-abc4-44ca-a633-807b25d183fe",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) > .row .entryDetails",
+      "targets": [
+        ["css=.row:nth-child(1) > .row .entryDetails", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/form/div[2]/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//form/div[2]/div[2]/div/div", "xpath:position"]
+      ],
+      "value": "Test Edit"
+    }, {
+      "id": "80adb3b9-2c5f-403b-9924-c987b0b804af",
+      "comment": "",
+      "command": "click",
+      "target": "css=.noteMenu",
+      "targets": [
+        ["css=.noteMenu > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "a1e95192-04af-40f1-b9d1-bcdba86eb15b",
+      "comment": "",
+      "command": "chooseOkOnNextConfirmation",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ec87e6c0-b485-4a5a-b57f-9217b199f6b5",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Delete",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e2f95c1a-d573-47ba-9b4e-efff881ff19a",
+      "comment": "",
+      "command": "assertConfirmation",
+      "target": "Are you sure you want to delete this note?",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "64147792-8080-4136-a838-c96520203168",
+      "comment": "",
+      "command": "webdriverChooseOkOnVisibleConfirmation",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "73918dc6-38c5-4bab-8a77-e64a4ee7151b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) > .row .entryTitle",
+      "targets": [
+        ["css=.row:nth-child(2) > .row .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[2]/div[3]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]", "xpath:position"]
+      ],
+      "value": "Shingles"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2390,7 +2610,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

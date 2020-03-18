@@ -18,6 +18,7 @@ trigger:
    include:
      - Apps/Patient
      - Apps/Common
+     - Apps/Database
 
 pool:
   name: 'HealthGateway'

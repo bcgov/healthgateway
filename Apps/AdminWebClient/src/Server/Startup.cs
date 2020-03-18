@@ -84,14 +84,16 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
+            services.AddTransient<IDashboardService, DashboardService>();
 
             // Add delegates
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
 
-            // Configure SPA 
+            // Configure SPA
             services.AddControllersWithViews();
 
             // In production, the Vue files will be served from this directory

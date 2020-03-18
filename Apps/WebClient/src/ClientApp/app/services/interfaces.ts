@@ -15,6 +15,7 @@ import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
 import { TermsOfService } from "@/models/termsOfService";
+import UserNote from "@/models/userNote";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -85,6 +86,14 @@ export interface IBetaRequestService {
   putRequest(request: BetaRequest): Promise<BetaRequest>;
 }
 
+export interface IUserNoteService {
+  initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+  getNotes(): Promise<RequestResult<UserNote[]>>;
+  createNote(note: UserNote): Promise<UserNote>;
+  updateNote(note: UserNote): Promise<UserNote>;
+  deleteNote(note: UserNote): Promise<void>;
+}
+
 export interface IHttpDelegate {
   unsetAuthorizationHeader(): void;
   setAuthorizationHeader(accessToken: string): void;
@@ -101,5 +110,9 @@ export interface IHttpDelegate {
     payload: Object,
     headers?: Dictionary<string>
   ): Promise<T>;
-  delete<T>(url: string, headers?: Dictionary<string>): Promise<T>;
+  delete<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
 }

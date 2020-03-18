@@ -13,52 +13,49 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Models
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     /// <summary>
-    /// The set of programs.
+    ///  A data store for cacheable objects.
     /// </summary>
-    public enum DBStatusCode
+    /// <typeparam name="T">The generic type to cache.</typeparam>
+    public class GenericCache<T> : AuditableEntity
+        where T : class
     {
         /// <summary>
-        /// Represents that an object was created.
+        /// Gets or sets the id.
         /// </summary>
-        Created = 10,
+        [Column("GenericCacheId")]
+        public virtual Guid Id { get; set; }
 
         /// <summary>
-        /// Represents that an object was read.
+        /// Gets or sets the Users HdId.
         /// </summary>
-        Read = 20,
+        [Required]
+        [MaxLength(54)]
+        public string? HdId { get; set; }
 
         /// <summary>
-        /// Represents that an object was updated.
+        /// Gets or sets the Timeline datetime.
         /// </summary>
-        Updated = 30,
+        [Required]
+        public DateTime? TimelineDateTime { get; set; }
 
         /// <summary>
-        /// Represents than an object was deleted.
+        /// Gets or sets serialized JSON object data.
         /// </summary>
-        Deleted = 40,
+        [Required]
+        [Column(TypeName = "jsonb")]
+        public T ObjectJSON { get; set; } = default!;
 
         /// <summary>
-        /// Represents that an object was not found.
+        /// Gets or sets the cache expiry datetime.
         /// </summary>
-        NotFound = 50,
-
-        /// <summary>
-        /// Represents that a concurrency error occurred.
-        /// </summary>
-        Concurrency = 60,
-
-        /// <summary>
-        /// Represents that the caller requested that the service/delegate not commit.
-        /// The caller is responsible for concurrency and other handling.
-        /// </summary>
-        Deferred = 70,
-
-        /// <summary>
-        /// Represents that an error occurred
-        /// </summary>
-        Error = 0,
+        [Required]
+        public DateTime? ExpiryDateTime { get; set; }
     }
 }
