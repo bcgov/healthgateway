@@ -43,14 +43,13 @@ namespace HealthGateway.Medication.Test
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
             HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
             IRestMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
-            MedicationHistoryResponse response = await medStatementDelegate.GetMedicationStatementsAsync("9735361219", string.Empty, string.Empty, string.Empty);
             MedicationHistoryQuery query = new MedicationHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
-                EndDate = System.DateTime.Parse("1990/12/31"),
+                EndDate = System.DateTime.Now,
                 PHN = "912345678",
             };
-
+            MedicationHistoryResponse response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

@@ -40,11 +40,11 @@ namespace HealthGateway.Medication.Delegates
         /// <summary>
         /// Returns a set of Medication Statements.
         /// </summary>
-        /// <param name="phn">The PHN to query.</param>
+        /// <param name="query">The medication statement query execute against the ODR.</param>
         /// <param name="protectiveWord">The protective word to validate.</param>
         /// <param name="userId">The user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>The Medication History response.</returns>
-        public Task<MedicationHistoryResponse> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress);
+        public Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress);
     }
 }

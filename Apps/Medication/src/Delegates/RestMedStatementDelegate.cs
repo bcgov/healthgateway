@@ -56,13 +56,13 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<MedicationHistoryResponse> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
+        public async Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress)
         {
             MedicationHistoryResponse retVal = new MedicationHistoryResponse();
-            Contract.Requires(phn != null);
+            Contract.Requires(query != null && query.PHN != null);
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting medication statements... {phn.Substring(0, 3)}");
+            this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.BaseAddress = new Uri(this.configService.GetSection("ODR")?.GetValue<string>("Url"));
@@ -70,10 +70,9 @@ namespace HealthGateway.Medication.Delegates
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            MedicationHistory request = new MedicationHistory();
-            MedicationHistoryQuery query = new MedicationHistoryQuery()
+            MedicationHistory request = new MedicationHistory()
             {
-                PHN = phn,
+                Query = query,
             };
             var options = new JsonSerializerOptions
             {
@@ -81,7 +80,6 @@ namespace HealthGateway.Medication.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            request.Query = query;
             string json = System.Text.Json.JsonSerializer.Serialize(request, options);
             HttpContent content = new StringContent(json);
             try
@@ -95,7 +93,7 @@ namespace HealthGateway.Medication.Delegates
                 }
                 else
                 {
-                    this.logger.LogError($"Error getting medication statements. {phn.Substring(0, 3)}, {payload}");
+                    this.logger.LogError($"Error getting medication statements. {query.PHN.Substring(0, 3)}, {payload}");
                 }
             }
             catch (Exception e)
