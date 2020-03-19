@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Net.Http;
@@ -25,7 +24,6 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -80,7 +78,7 @@ namespace HealthGateway.Medication.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            string json = System.Text.Json.JsonSerializer.Serialize(request, options);
+            string json = JsonSerializer.Serialize(request, options);
             HttpContent content = new StringContent(json);
             try
             {
