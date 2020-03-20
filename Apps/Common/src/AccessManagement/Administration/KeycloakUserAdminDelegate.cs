@@ -100,16 +100,16 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <summary>
-        /// Invokes HTTP DELETE on RESTful API
+        /// Deletes the User
         /// </summary>
-        /// <param name="client">The HttpClient to invoke.</param>
-        /// <param name="uri">The Uri</param>
+        /// <param name="userId">The user id to delete.</param>
+        /// <param name="token">The base64 access token</param>
         private async Task<int> DeleteUserAsync(string userId, string token)
         {
 
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
-            using HttpClient client = this.GetHttpClient(baseUri, token);
+            using HttpClient client = this.CreateHttpClient(baseUri, token);
             {
                 try
                 {
@@ -137,7 +137,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// </summary>
         /// <param name="baseUri">The uri of the service endpoint.</param>
         /// <param name="base64BearerToken">The JSON Web Token.</param>
-        private HttpClient GetHttpClient(Uri baseUri, string base64BearerToken)
+        private HttpClient CreateHttpClient(Uri baseUri, string base64BearerToken)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
@@ -146,21 +146,6 @@ namespace HealthGateway.Common.AccessManagement.Administration
             client.BaseAddress = baseUri;
 
             return client;
-        }
-
-        /// <summary>
-        /// Combines baseUri adding the relative path, avoiding missing forward slashes
-        /// </summary>
-        /// <param name="baseUri">The Uri to add to</param>
-        /// <param name="relativePath">The string representing the relative path to append.</param>    
-        /// <returns>a new Uri combining the baseUri and relativePath.</returns>
-        private Uri Combine(Uri baseUri, string relativePath)
-        {
-            string original = baseUri.OriginalString;
-            string relative = relativePath.StartsWith(@"/") ? relativePath.Substring(1) : relativePath;
-            string path = original.EndsWith(@"/") ? $"{original}{relativePath}" : $"{original}/{relativePath}";
-            Uri newUri = new Uri(path);
-            return newUri;
         }
     }
 }
