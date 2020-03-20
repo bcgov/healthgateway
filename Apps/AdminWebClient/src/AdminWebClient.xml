@@ -206,6 +206,26 @@
             Gets or sets the Callback URIs.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.SaveTokens">
+            <summary>
+            Gets or sets the SaveTokens flag.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.GetClaimsFromUserInfoEndpoint">
+            <summary>
+            Gets or sets whether to gather claims using the userinfo endpoint of the Auth Server.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.SignedOutRedirectUri">
+            <summary>
+            Gets or sets the Uri for the signed out redirection.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.RequireHttpsMetadata">
+            <summary>
+            Gets or sets whether Https Meta Data is required
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.TimeOutsConfiguration">
             <summary>
             Various timeout values used by the VUE Admin application.

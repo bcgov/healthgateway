@@ -27,16 +27,16 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// Look up a user by username.
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
-        /// <param name="authorization">Authorization for the call.</param>
+        /// <param name="token">Authorization for the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
-        UserRepresentation GetUser(Guid userId, string authorization);
+        UserRepresentation GetUser(Guid userId, string token);
 
         /// <summary>
         /// Delete a User from teh IAM system.
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
-        /// <param name="authorization">Authorization for the call.</param>
+        /// <param name="token">Authorization for the call.</param>
         /// <returns></returns>
-        int DeleteUser(Guid userId, string authorization);
+        int DeleteUser(Guid userId, string token);
     }
 }

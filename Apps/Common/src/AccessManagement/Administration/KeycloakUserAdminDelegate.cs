@@ -15,13 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Administration
 {
-    using System;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
-
+    using System;
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
@@ -86,85 +83,53 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <inheritdoc/>
         public UserRepresentation GetUser(Guid userId, string base64BearerToken)
         {
-            UserRepresentation userReturned;
+            this.logger.LogInformation($"Keycloak GetUser : {userId.ToString()}");
 
-            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GETUSERURL));
-            UriBuilder uriBuild = new UriBuilder(baseUri);
-            uriBuild.Path = $"/{userId}";
-            Uri requestUri = uriBuild.Uri;
-
-            using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
-
-            try
-            {
-                Task<string> jsonResult = this.Get(client, requestUri);
-                string json = jsonResult.Result;
-                var options = new JsonSerializerOptions
-                {
-                    AllowTrailingCommas = true,
-                };
-                userReturned = JsonSerializer.Deserialize<UserRepresentation>(json, options);
-
-                return userReturned;
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError($"DeleteUser failed: ${e.ToString()}");
-
-                return new UserRepresentation();
-            }
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public int DeleteUser(Guid userId, string base64BearerToken)
+        public int DeleteUser(Guid userId, string token)
         {
-            this.logger.LogInformation($"Start DeleteUser : ${userId.ToString()}");
+            this.logger.LogInformation($"Keycloak DeleteUser : {userId.ToString()}");
+            //this.logger.LogDebug($"Keycloak jwt : {base64BearerToken}");
+
+            Task<int> task = Task.Run( () => this.DeleteUserAsync(userId.ToString(), token));
+            return task.Result;
+
+        }
+
+        /// <summary>
+        /// Invokes HTTP DELETE on RESTful API
+        /// </summary>
+        /// <param name="client">The HttpClient to invoke.</param>
+        /// <param name="uri">The Uri</param>
+        private async Task<int> DeleteUserAsync(string userId, string token)
+        {
 
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
-            Uri requestUri = new Uri(baseUri, new Uri($"{userId}", UriKind.Relative));
 
-            using HttpClient client = this.GethttpClient(baseUri, base64BearerToken);
-            try
+            using HttpClient client = this.GetHttpClient(baseUri, token);
             {
-                Task<string> jsonResult = this.Delete(client, requestUri);
+                try
+                {
+                    HttpResponseMessage response = await client.DeleteAsync(userId).ConfigureAwait(true);
+                    if (!response.IsSuccessStatusCode) //in this case we are getting a HTTP 204 no content success
+                    {
+                        this.logger.LogError($"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}");
+                        return -1;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, $"Error performing DELETE Request: {userId}");
+                    return -1;
+                }
             }
-            catch (Exception e)
-            {
-                this.logger.LogError($"DeleteUser failed: ${e.ToString()}");
 
-                return -1;
-            }
-
-            this.logger.LogInformation($"End DeleteUser : ${userId.ToString()}");
+            this.logger.LogInformation($"UserDelete completed");
 
             return 0;
-        }
-
-        private async Task<string> Get(HttpClient client, Uri uri)
-        {
-            HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(true);
-            string jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            if (!response.IsSuccessStatusCode)
-            {
-                this.logger.LogError($"Error performing Get Request to Keycloak Admin API: ${uri.ToString()}'");
-                throw new HttpRequestException($"Unable to connect to Keycloak: ${response.StatusCode}");
-            }
-
-            return jsonString;
-        }
-
-        private async Task<string> Delete(HttpClient client, Uri uri)
-        {
-            HttpResponseMessage response = await client.DeleteAsync(uri).ConfigureAwait(true);
-            string jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            if (!response.IsSuccessStatusCode)
-            {
-                this.logger.LogError($"Error performing Delete Request to Keycloak Admin API: ${uri.ToString()}'");
-                throw new HttpRequestException($"Unable to connect to Keycloak: ${response.StatusCode}");
-            }
-            this.logger.LogDebug($"Delete completed");
-
-            return jsonString;
         }
 
         /// <summary>
@@ -172,17 +137,30 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// </summary>
         /// <param name="baseUri">The uri of the service endpoint.</param>
         /// <param name="base64BearerToken">The JSON Web Token.</param>
-        private HttpClient GethttpClient(Uri baseUri, string base64BearerToken)
+        private HttpClient GetHttpClient(Uri baseUri, string base64BearerToken)
         {
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + base64BearerToken);
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             client.BaseAddress = baseUri;
 
             return client;
+        }
+
+        /// <summary>
+        /// Combines baseUri adding the relative path, avoiding missing forward slashes
+        /// </summary>
+        /// <param name="baseUri">The Uri to add to</param>
+        /// <param name="relativePath">The string representing the relative path to append.</param>    
+        /// <returns>a new Uri combining the baseUri and relativePath.</returns>
+        private Uri Combine(Uri baseUri, string relativePath)
+        {
+            string original = baseUri.OriginalString;
+            string relative = relativePath.StartsWith(@"/") ? relativePath.Substring(1) : relativePath;
+            string path = original.EndsWith(@"/") ? $"{original}{relativePath}" : $"{original}/{relativePath}";
+            Uri newUri = new Uri(path);
+            return newUri;
         }
     }
 }
