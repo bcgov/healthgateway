@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Administration
 {
-
     using System.Net.Http;
     using System.Net;
     using System.Threading.Tasks;
