@@ -56,6 +56,15 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress)
         {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query), "Query cannot be null");
+            }
+            else if (query.PHN == null)
+            {
+                throw new ArgumentNullException(nameof(query), "Query PHN cannot be null");
+            }
+
             MedicationHistoryResponse retVal = new MedicationHistoryResponse();
             Contract.Requires(query != null && query.PHN != null);
             Stopwatch timer = new Stopwatch();
