@@ -15,8 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Administration
 {
+
     using System.Net.Http;
-    using System.Text.Json;
+    using System.Net;
     using System.Threading.Tasks;
     using System;
     using HealthGateway.Common.AccessManagement.Administration.Models;
@@ -34,11 +35,6 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// Configuration Key for the KeycloakAdmin entry point.
         /// </summary>
         public const string KEYCLOAKADMIN = "KeycloakAdmin";
-
-        /// <summary>
-        /// Configuration Key for the Find User Url.
-        /// </summary>
-        public const string FINDUSERURL = "FindUserUrl";
 
         /// <summary>
         /// Configuration Key for the Delete User Url.
@@ -94,13 +90,18 @@ namespace HealthGateway.Common.AccessManagement.Administration
         {
             this.logger.LogInformation($"Keycloak DeleteUser : {userId.ToString()}");
 
-            Task<int> task = Task.Run( () => this.DeleteUserAsync(userId.ToString(), jwtModel));
+            Task<int> task = Task.Run(async() => await this.DeleteUserAsync(userId.ToString(), jwtModel).ConfigureAwait(true));
+            task.Wait();
+            if (task.Exception != null)
+            {
+                throw new Exception("KeycloakUserAdminDelegate.DeleteUser() exception", task.Exception);
+            }
             return task.Result;
 
         }
 
         /// <summary>
-        /// Deletes the User
+        /// Deletes the User account from Keycloak
         /// </summary>
         /// <param name="userId">The user id to delete.</param>
         /// <param name="jwtModel">To get at the base64 access token</param>
@@ -111,23 +112,19 @@ namespace HealthGateway.Common.AccessManagement.Administration
 
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
             {
-                try
+                HttpResponseMessage response = await client.DeleteAsync(userId).ConfigureAwait(true);
+                if (!response.IsSuccessStatusCode) //Shouuld get a HTTP 204 no content success code from Keycloak API
                 {
-                    HttpResponseMessage response = await client.DeleteAsync(userId).ConfigureAwait(true);
-                    if (!response.IsSuccessStatusCode) //in this case we are getting a HTTP 204 no content success
+                    string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
+                    this.logger.LogError(msg);
+
+                    if (response.StatusCode != HttpStatusCode.NotFound) // suppress throwable if resource not found = already deleted
                     {
-                        this.logger.LogError($"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}");
-                        return -1;
+                        throw new HttpRequestException(msg);
                     }
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(ex, $"Error performing DELETE Request: {userId}");
                     return -1;
                 }
             }
-
-            this.logger.LogInformation($"UserDelete completed");
 
             return 0;
         }
