@@ -77,7 +77,12 @@ namespace HealthGateway.WebClient
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
+<<<<<<< HEAD
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+=======
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<INoteService, NoteService>();
+>>>>>>> origin/dev
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
@@ -86,6 +91,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
+            services.AddTransient<INoteDelegate, DBNoteDelegate>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -104,6 +110,7 @@ namespace HealthGateway.WebClient
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
+
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
@@ -116,6 +123,14 @@ namespace HealthGateway.WebClient
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+            }
+
+            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWWW)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
             }
 
             app.UseStaticFiles(new StaticFileOptions
@@ -156,14 +171,6 @@ namespace HealthGateway.WebClient
                     spa.UseReactDevelopmentServer("dev");
                 }
             });
-
-            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWWW)
-            {
-                RewriteOptions rewriteOption = new RewriteOptions()
-                    .AddRedirectToWwwPermanent();
-                app.UseRewriter(rewriteOption);
-            }
         }
     }
 }

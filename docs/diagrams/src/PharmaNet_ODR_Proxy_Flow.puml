@@ -1,0 +1,18 @@
+@startuml PharmaNet_ODR_Proxy_Flow
+autonumber
+    actor Citizen
+    Browser <-- HealthGateway : Begin
+    Browser <-> KeyCloak : OIDC Login Flow
+    Citizen -> Browser : Get Medications
+    Browser -> HealthGateway_PatientAPI : Get PHN (JWT, HDID)
+    HealthGateway_PatientAPI <-> KeyCloak : Check Authorization (JWT)
+    HealthGateway_PatientAPI <-> HCIM : HCIM_IN_GetDemographics 
+    Browser <-- HealthGateway_PatientAPI : Return PHN
+    Browser -> HealthGateway_MedicationsAPI : Get Medications (JWT, PHN)
+    HealthGateway_MedicationsAPI -> KeyCloak : Check Authorization (JWT)
+    HealthGateway_MedicationsAPI -> HealthGateway_PharmaNetODR_Proxy : Request Patient Medication Profile (* Private Openshift Route *)
+    HealthGateway_PharmaNetODR_Proxy <-> PharmaNet_ODR : Connect to PharmaNet ODR (X509, Basic Auth)
+    HealthGateway_PharmaNetODR_Proxy -> PharmaNet_ODR : Request Patient Medications (REST/JSON)
+    HealthGateway_MedicationsAPI <-- HealthGateway_PharmaNetODR_Proxy : Return JSON
+    Browser <-- HealthGateway_MedicationsAPI : Return Medications (JSON)
+@enduml

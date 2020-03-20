@@ -66,5 +66,11 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
         DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500);
+
+        /// <summary>
+        /// Returns the count of registered users from the database.
+        /// </summary>
+        /// <returns>The count of user profiles that accepted the terms of service.</returns>
+        int GetRegisteredUsersCount();
     }
 }

@@ -81,15 +81,20 @@ namespace HealthGateway.Database.Context
             {
                 if (entityEntry.Entity is IAuditable)
                 {
-                    IAuditable auditEntity = (IAuditable)entityEntry.Entity;
                     if (entityEntry.State == EntityState.Added)
                     {
                         // newly created records must have a createdby and date/time stamp associated to them
-                        auditEntity.CreatedDateTime = now;
+                        entityEntry.Property(nameof(IAuditable.CreatedDateTime)).CurrentValue = now;
+                    }
+                    else if (entityEntry.State == EntityState.Modified)
+                    {
+                        // Updated entriews cannot have thier createdBy and createdDateTime changed.
+                        entityEntry.Property(nameof(IAuditable.CreatedBy)).IsModified = false;
+                        entityEntry.Property(nameof(IAuditable.CreatedDateTime)).IsModified = false;
                     }
 
                     // set the updated by and date/time columns for both created and updated rows
-                    auditEntity.UpdatedDateTime = now;
+                    entityEntry.Property(nameof(IAuditable.UpdatedDateTime)).CurrentValue = now;
                 }
 
                 if (entityEntry.Entity is IConcurrencyGuard && entityEntry.State == EntityState.Modified)

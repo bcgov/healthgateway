@@ -20,42 +20,42 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// A user entered Note.
+    ///  A data store for cacheable objects.
     /// </summary>
-    public class Note : AuditableEntity
+    /// <typeparam name="T">The generic type to cache.</typeparam>
+    public class GenericCache<T> : AuditableEntity
+        where T : class
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("NoteId")]
-        public Guid Id { get; set; }
+        [Column("GenericCacheId")]
+        public virtual Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the user hdid.
-        /// </summary>
-        [Key]
-        [Column("UserProfileId")]
-        [MaxLength(52)]
-        public string HdId { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        [MaxLength(100)]
-        public string? Title { get; set; }
-
-        /// <summary>
-        /// Gets or sets the text of the note.
-        /// </summary>
-        [MaxLength(1000)]
-        public string? Text { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Note timeline datetime.
+        /// Gets or sets the Users HdId.
         /// </summary>
         [Required]
-        public DateTime JournalDateTime { get; set; }
+        [MaxLength(54)]
+        public string? HdId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Timeline datetime.
+        /// </summary>
+        [Required]
+        public DateTime? TimelineDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets serialized JSON object data.
+        /// </summary>
+        [Required]
+        [Column(TypeName = "jsonb")]
+        public T ObjectJSON { get; set; } = default!;
+
+        /// <summary>
+        /// Gets or sets the cache expiry datetime.
+        /// </summary>
+        [Required]
+        public DateTime? ExpiryDateTime { get; set; }
     }
 }

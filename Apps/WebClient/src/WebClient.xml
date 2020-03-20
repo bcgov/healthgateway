@@ -115,7 +115,11 @@
             Web API to handle patient notes interactions.
             </summary>
         </member>
+<<<<<<< HEAD
         <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(System.Object,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+=======
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.INoteService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+>>>>>>> origin/dev
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.NoteController"/> class.
             </summary>
@@ -128,11 +132,16 @@
             Posts a patient note json to be inserted into the database.
             </summary>
             <returns>The http status.</returns>
+<<<<<<< HEAD
             <param name="model">The patient note request model.</param>
+=======
+            <param name="note">The patient note request model.</param>
+>>>>>>> origin/dev
             <response code="200">The note record was saved.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+<<<<<<< HEAD
         <member name="M:HealthGateway.WebClient.Controllers.NoteController.GetAll">
             <summary>
             Gets all notes for the specified user.
@@ -149,6 +158,34 @@
             <returns>The note model wrapped in a request result.</returns>
             <param name="noteId">The note id.</param>
             <response code="200">Returns the note model.</response>
+=======
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.UpdateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Puts a patient note json to be updated in the database.
+            </summary>
+            <returns>The updated Note wrapped in a RequestResult.</returns>
+            <param name="note">The patient note.</param>
+            <response code="200">The note was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.DeleteNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Deletes a note from the database.
+            </summary>
+            <returns>The deleted Note wrapped in a RequestResult.</returns>
+            <param name="note">The patient note.</param>
+            <response code="200">The note was deleted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.GetAll">
+            <summary>
+            Gets all notes for the specified user.
+            </summary>
+            <returns>The list of notes model wrapped in a request result.</returns>
+            <response code="200">Returns the list of notes.</response>
+>>>>>>> origin/dev
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
@@ -300,6 +337,31 @@
             <response code="200">Returns the terms of service json.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CreateNoteRequest">
+            <summary>
+            Object that defines the request for creating a User.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.Text">
+            <summary>
+            Gets or sets the note text.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.Title">
+            <summary>
+            Gets or sets the note title.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.JournalDateTime">
+            <summary>
+            Gets or sets the note date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.HdId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.CreateUserRequest">
             <summary>
@@ -647,6 +709,42 @@
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.INoteService">
+            <summary>
+            Service to interact with the Note Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.CreateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Creates a note in the backend.
+            </summary>
+            <param name="note">The note to create.</param>
+            <returns>A note wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets all the notes for the given hdId.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <param name="page">The page of data to fetch indexed from 0.</param>
+            <param name="pageSize">The amount of records per page.</param>
+            <returns>A List of notes wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.UpdateNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Updates the given note in the backend.
+            Any changes to HDID will be ignored.
+            </summary>
+            <param name="note">The note to update.</param>
+            <returns>The updated Note.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.DeleteNote(HealthGateway.Database.Models.Note)">
+            <summary>
+            Deletes the given note from the backend.
+            </summary>
+            <param name="note">The note to delete.</param>
+            <returns>The deleted note wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserEmailService">
             <summary>
             The User Email service.
@@ -731,6 +829,28 @@
             Gets the most recent active terms of service.
             </summary>
             <returns>The wrapped terms of service.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.NoteService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.INoteDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.NoteService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="noteDelegate">Injected Note delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.CreateNote(HealthGateway.Database.Models.Note)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.UpdateNote(HealthGateway.Database.Models.Note)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.DeleteNote(HealthGateway.Database.Models.Note)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserEmailService">
             <inheritdoc />

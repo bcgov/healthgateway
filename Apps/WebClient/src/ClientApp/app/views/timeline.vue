@@ -57,7 +57,13 @@
         <b-row>
           <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
           <b-col class="col-12 col-xs-8 col-lg-8">
-            <b-button variant="light" class="w-100 visible-lg-block">
+            <b-button
+              v-if="config.modules['Note'] == true"
+              variant="light"
+              class="w-100 visible-lg-block"
+              :disabled="isAddingNote"
+              @click="isAddingNote = true"
+            >
               <font-awesome-icon icon="edit" aria-hidden="true" />
               Add Note
             </b-button>
@@ -106,7 +112,7 @@
               <b-form-input
                 v-model="filterText"
                 type="text"
-                placeholder="Filter"
+                placeholder=""
                 maxlength="50"
                 debounce="250"
               ></b-form-input>
@@ -148,6 +154,15 @@
             </b-row>
           </div>
           <div id="timeData">
+            <b-row v-if="isAddingNote" class="pb-5">
+              <b-col>
+                <NoteTimelineComponent
+                  :is-add-mode="true"
+                  @close="isAddingNote = false"
+                  @on-note-added="onNoteAdded"
+                />
+              </b-col>
+            </b-row>
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
               <b-col cols="auto">
                 <div class="date">{{ getHeadingDate(dateGroup.date) }}</div>
@@ -161,6 +176,8 @@
                 :datekey="dateGroup.key"
                 :entry="entry"
                 :index="index"
+                @on-change="onCardUpdated"
+                @on-remove="onCardRemoved"
               />
             </b-row>
           </div>
@@ -186,7 +203,8 @@ import { Component, Watch, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import {
   IMedicationService,
-  IImmunizationService
+  IImmunizationService,
+  IUserNoteService
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -195,14 +213,18 @@ import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import moment from "moment";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
+import NoteTimelineComponent from "@/components/timeline/note.vue";
 import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import UserNote from "@/models/userNote";
+import { WebClientConfiguration } from "@/models/configData";
 
 const namespace: string = "user";
 
@@ -211,34 +233,59 @@ interface DateGroup {
   entries: any;
 }
 
+// Register the router hooks with their names
+Component.registerHooks(["beforeRouteLeave"]);
+
 @Component({
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    FeedbackComponent
+    FeedbackComponent,
+    NoteTimelineComponent
   }
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
+  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
 
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
   private isMedicationLoading: boolean = false;
   private isImmunizationLoading: boolean = false;
+  private isNoteLoading: boolean = false;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
+  private isAddingNote: boolean = false;
+  private unsavedChangesText: string =
+    "You have unsaved changes. Are you sure you want to leave?";
 
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
-    this.fechMedicationStatements();
-    this.fechImmunizations();
+    this.fetchMedicationStatements();
+    this.fetchImmunizations();
+    this.fetchNotes();
+
+    window.addEventListener("beforeunload", this.onBrowserClose);
+  }
+
+  beforeRouteLeave(to, from, next) {
+    if (this.isAddingNote && !confirm(this.unsavedChangesText)) {
+      return;
+    }
+    next();
+  }
+
+  private onBrowserClose(event: BeforeUnloadEvent) {
+    if (this.isAddingNote) {
+      event.returnValue = this.unsavedChangesText;
+    }
   }
 
   private get unverifiedEmail(): boolean {
@@ -254,10 +301,14 @@ export default class TimelineComponent extends Vue {
   }
 
   private get isLoading(): boolean {
-    return this.isMedicationLoading || this.isImmunizationLoading;
+    return (
+      this.isMedicationLoading ||
+      this.isImmunizationLoading ||
+      this.isNoteLoading
+    );
   }
 
-  private fechMedicationStatements(protectiveWord?: string) {
+  private fetchMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
@@ -293,7 +344,7 @@ export default class TimelineComponent extends Vue {
       });
   }
 
-  private fechImmunizations() {
+  private fetchImmunizations() {
     const immunizationService: IImmunizationService = container.get(
       SERVICE_IDENTIFIER.ImmunizationService
     );
@@ -324,8 +375,56 @@ export default class TimelineComponent extends Vue {
       });
   }
 
+  private fetchNotes() {
+    const noteService: IUserNoteService = container.get(
+      SERVICE_IDENTIFIER.UserNoteService
+    );
+    this.isNoteLoading = true;
+    noteService
+      .getNotes()
+      .then(results => {
+        if (results.resultStatus == ResultType.Success) {
+          // Add the immunization entries to the timeline list
+          for (let result of results.resourcePayload) {
+            this.timelineEntries.push(new NoteTimelineEntry(result));
+          }
+          this.applyTimelineFilter();
+        } else {
+          console.log(
+            "Error returned from the note call: " + results.resultMessage
+          );
+          this.hasErrors = true;
+        }
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isNoteLoading = false;
+      });
+  }
+
+  private onNoteAdded(note: UserNote) {
+    this.isAddingNote = false;
+    if (note) {
+      this.timelineEntries.push(new NoteTimelineEntry(note));
+    }
+  }
+
+  private onCardRemoved(entry: TimelineEntry) {
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    this.timelineEntries.splice(index, 1);
+  }
+
+  private onCardUpdated(entry: TimelineEntry) {
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    this.timelineEntries.splice(index, 1);
+    this.timelineEntries.push(entry);
+  }
+
   private onProtectiveWordSubmit(value: string) {
-    this.fechMedicationStatements(value);
+    this.fetchMedicationStatements(value);
   }
 
   private onProtectiveWordCancel() {
