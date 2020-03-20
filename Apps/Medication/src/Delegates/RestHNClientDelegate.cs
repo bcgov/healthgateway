@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ namespace HealthGateway.Medication.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constant;
     using HealthGateway.Database.Delegates;
@@ -44,7 +44,7 @@ namespace HealthGateway.Medication.Delegates
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configService;
-        private readonly IAuthService authService;
+        private readonly IAuthenticationDelegate authDelegate;
         private readonly ISequenceDelegate sequenceDelegate;
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="pharmacyParser">The injected pharmacy hn parser.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="authService">The injected authService for client credentials grant (system account).</param>
+        /// <param name="authDelegate">The injected IAuthenticationDelegate for direct grant authentication.</param>
         /// <param name="sequenceDelegate">The injected sequence delegate.</param>
         public RestHNClientDelegate(
             ILogger<RestHNClientDelegate> logger,
@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Delegates
             IHNMessageParser<Pharmacy> pharmacyParser,
             IHttpClientService httpClientService,
             IConfiguration configuration,
-            IAuthService authService,
+            IAuthenticationDelegate authDelegate,
             ISequenceDelegate sequenceDelegate)
         {
             this.logger = logger;
@@ -71,7 +71,7 @@ namespace HealthGateway.Medication.Delegates
             this.pharmacyParser = pharmacyParser;
             this.httpClientService = httpClientService;
             this.configService = configuration;
-            this.authService = authService;
+            this.authDelegate = authDelegate;
             this.sequenceDelegate = sequenceDelegate;
         }
 
@@ -81,16 +81,16 @@ namespace HealthGateway.Medication.Delegates
             Contract.Requires(phn != null);
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting medication statements... {phn.Substring(0, 3)}");
+            this.logger.LogTrace($"Getting medication statements... {phn!.Substring(0, 3)}");
 
-            JWTModel jwtModel = this.authService.AuthenticateService();
+            JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
             HNMessage<List<MedicationStatement>> retVal;
             using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
+                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url")!);
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
@@ -129,13 +129,13 @@ namespace HealthGateway.Medication.Delegates
             timer.Start();
 
             HNMessage<Pharmacy> retVal;
-            JWTModel jwtModel = this.authService.AuthenticateService();
+            JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
             using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url"));
+                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url")!);
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);

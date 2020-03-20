@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication.Models
+namespace HealthGateway.Common.AccessManagement.Authentication.Models
 {
     /// <summary>
     /// The authorization model.

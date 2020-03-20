@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication.Models
+namespace HealthGateway.Common.AccessManagement.Authentication.Models
 {
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// OAuth2 OIDC Client Credentials Grant Token request information.
@@ -25,19 +25,38 @@ namespace HealthGateway.Common.Authentication.Models
         /// <summary>
         /// Gets or sets a unique identifier of the target API you want to access.
         /// </summary>
-        [JsonProperty("audience")]
+        [JsonPropertyName("audience")]
         public string? Audience { get; set; }
+
+        /// <summary>
+        /// Gets or sets scopes for the access.
+        /// </summary>
+        [JsonPropertyName("scope")]
+        public string? Scope { get; set; }
 
         /// <summary>
         /// Gets or sets the application's Client ID.
         /// </summary>
-        [JsonProperty("client_id")]
+        [JsonPropertyName("client_id")]
         public string? ClientId { get; set; }
 
         /// <summary>
         /// Gets or sets your application's Client Secret.
         /// </summary>
-        [JsonProperty("client_secret")]
+        [JsonPropertyName("client_secret")]
         public string? ClientSecret { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource owner username for OAuth 2 Rsource Owner Password Grant.
+        /// </summary>
+        [JsonPropertyName("username")]
+        public string? Username { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource owner password for OAuth 2 Rsource Owner Password Grant.
+        /// </summary>
+        [JsonPropertyName("password")]
+        public string? Password { get; set; }
+
     }
 }
