@@ -17,6 +17,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
 {
     using System;
     using HealthGateway.Common.AccessManagement.Administration.Models;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.
@@ -27,16 +28,16 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// Look up a user by username.
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
-        /// <param name="token">Authorization for the call.</param>
+        /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
-        UserRepresentation GetUser(Guid userId, string token);
+        UserRepresentation GetUser(Guid userId, JWTModel jwtModel);
 
         /// <summary>
         /// Delete a User from teh IAM system.
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
-        /// <param name="token">Authorization for the call.</param>
+        /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
         /// <returns></returns>
-        int DeleteUser(Guid userId, string token);
+        int DeleteUser(Guid userId, JWTModel jwtModel);
     }
 }

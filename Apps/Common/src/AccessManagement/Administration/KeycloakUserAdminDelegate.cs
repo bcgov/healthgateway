@@ -20,6 +20,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
     using System.Threading.Tasks;
     using System;
     using HealthGateway.Common.AccessManagement.Administration.Models;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -81,7 +82,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <inheritdoc/>
-        public UserRepresentation GetUser(Guid userId, string base64BearerToken)
+        public UserRepresentation GetUser(Guid userId, JWTModel jwtModel)
         {
             this.logger.LogInformation($"Keycloak GetUser : {userId.ToString()}");
 
@@ -89,12 +90,11 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <inheritdoc/>
-        public int DeleteUser(Guid userId, string token)
+        public int DeleteUser(Guid userId, JWTModel jwtModel)
         {
             this.logger.LogInformation($"Keycloak DeleteUser : {userId.ToString()}");
-            //this.logger.LogDebug($"Keycloak jwt : {base64BearerToken}");
 
-            Task<int> task = Task.Run( () => this.DeleteUserAsync(userId.ToString(), token));
+            Task<int> task = Task.Run( () => this.DeleteUserAsync(userId.ToString(), jwtModel));
             return task.Result;
 
         }
@@ -103,13 +103,13 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// Deletes the User
         /// </summary>
         /// <param name="userId">The user id to delete.</param>
-        /// <param name="token">The base64 access token</param>
-        private async Task<int> DeleteUserAsync(string userId, string token)
+        /// <param name="jwtModel">To get at the base64 access token</param>
+        private async Task<int> DeleteUserAsync(string userId, JWTModel jwtModel)
         {
 
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
-            using HttpClient client = this.CreateHttpClient(baseUri, token);
+            using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
             {
                 try
                 {
