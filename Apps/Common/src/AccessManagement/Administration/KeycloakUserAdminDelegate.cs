@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -111,19 +111,18 @@ namespace HealthGateway.Common.AccessManagement.Administration
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
-            {
-                HttpResponseMessage response = await client.DeleteAsync(userId).ConfigureAwait(true);
-                if (!response.IsSuccessStatusCode) //Shouuld get a HTTP 204 no content success code from Keycloak API
-                {
-                    string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
-                    this.logger.LogError(msg);
 
-                    if (response.StatusCode != HttpStatusCode.NotFound) // suppress throwable if resource not found = already deleted
-                    {
-                        throw new HttpRequestException(msg);
-                    }
-                    return -1;
+            HttpResponseMessage response = await client.DeleteAsync(userId).ConfigureAwait(true);
+            if (!response.IsSuccessStatusCode) //Shouuld get a HTTP 204 no content success code from Keycloak API
+            {
+                string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
+                this.logger.LogError(msg);
+
+                if (response.StatusCode != HttpStatusCode.NotFound) // suppress throwable if resource not found = already deleted
+                {
+                    throw new HttpRequestException(msg);
                 }
+                return -1;
             }
 
             return 0;

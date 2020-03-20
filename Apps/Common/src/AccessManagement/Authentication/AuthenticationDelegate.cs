@@ -51,15 +51,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             IConfigurationSection? configSection = config?.GetSection(CONFIGSECTIONNAME);
 
             this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
-            this.TokenRequest = new ClientCredentialsTokenRequest()
-            {
-                Audience = configSection.GetValue<string>("Audience"),
-                ClientId = configSection.GetValue<string>("ClientId"),
-                ClientSecret = configSection.GetValue<string>("ClientSecret"),
-                Username = configSection.GetValue<string>("Username"),
-                Password = configSection.GetValue<string>("Password")
-            };
-
+            this.TokenRequest = new ClientCredentialsTokenRequest();
+            configSection.Bind(this.TokenRequest); // Client ID, Client Secret, Audience, Username, Password
         }
 
         /// <inheritdoc/>
