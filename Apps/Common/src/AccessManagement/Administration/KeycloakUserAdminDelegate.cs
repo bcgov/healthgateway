@@ -107,7 +107,6 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <param name="jwtModel">To get at the base64 access token</param>
         private async Task<int> DeleteUserAsync(string userId, JWTModel jwtModel)
         {
-
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
