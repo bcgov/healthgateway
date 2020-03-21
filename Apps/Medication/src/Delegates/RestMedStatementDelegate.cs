@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Net.Http;
@@ -25,7 +24,6 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -58,6 +56,15 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress)
         {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query), "Query cannot be null");
+            }
+            else if (query.PHN == null)
+            {
+                throw new ArgumentNullException(nameof(query), "Query PHN cannot be null");
+            }
+
             MedicationHistoryResponse retVal = new MedicationHistoryResponse();
             Contract.Requires(query != null && query.PHN != null);
             Stopwatch timer = new Stopwatch();
@@ -80,7 +87,7 @@ namespace HealthGateway.Medication.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            string json = System.Text.Json.JsonSerializer.Serialize(request, options);
+            string json = JsonSerializer.Serialize(request, options);
             HttpContent content = new StringContent(json);
             try
             {

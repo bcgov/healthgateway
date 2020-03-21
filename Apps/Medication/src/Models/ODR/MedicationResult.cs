@@ -78,22 +78,10 @@ namespace HealthGateway.Medication.Models.ODR
         public string Directions { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Practioners given name.
+        /// Gets or sets the Practioners name.
         /// </summary>
-        [JsonPropertyName("firstName")]
-        public string PractitionerGivenName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or Sets the Practioners middle initial.
-        /// </summary>
-        [JsonPropertyName("middleInit")]
-        public string PractitionerMiddleInitial { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Practioners surname.
-        /// </summary>
-        [JsonPropertyName("LastName")]
-        public string PractitionerSurname { get; set; } = string.Empty;
+        [JsonPropertyName("practitioner")]
+        public Name? Practioner { get; set; }
 
         /// <summary>
         /// Gets or sets the Dispensing Pharmacy of the prescription.

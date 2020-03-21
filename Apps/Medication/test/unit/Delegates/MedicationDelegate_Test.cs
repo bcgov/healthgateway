@@ -47,7 +47,7 @@ namespace HealthGateway.Medication.Test
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
-                PHN = "912345678",
+                PHN = "9735361219",
             };
             MedicationHistoryResponse response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
             var options = new JsonSerializerOptions
