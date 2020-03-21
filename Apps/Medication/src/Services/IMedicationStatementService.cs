@@ -17,7 +17,9 @@ namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Models.ODR;
 
     /// <summary>
     /// The Medication data service.
@@ -25,11 +27,19 @@ namespace HealthGateway.Medication.Services
     public interface IMedicationStatementService
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Gets the patient medication statemets.
         /// </summary>
         /// <param name="hdid">The hdid to retrieve records for.</param>
         /// <param name="protectiveWord">The protective word.</param>
         /// <returns>A List of MedicationStatement models.</returns>
-        Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord);
+        Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord);
+
+        /// <summary>
+        /// Gets the patient medication history.
+        /// </summary>
+        /// <param name="hdid">The hdid to retrieve records for.</param>
+        /// <param name="protectiveWord">The protective word.</param>
+        /// <returns>A MedicationHistoryResponse models.</returns>
+        Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord);
     }
 }

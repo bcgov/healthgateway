@@ -24,10 +24,12 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Models.ODR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -68,7 +70,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
+        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
         {
             this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
@@ -82,8 +84,43 @@ namespace HealthGateway.Medication.Services
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
-            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(hnClientMedicationResult)}");
-            return hnClientMedicationResult;
+            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
+            {
+                ResultStatus = hnClientMedicationResult.Result,
+                ResultMessage = hnClientMedicationResult.ResultMessage,
+            };
+
+            if (result.ResultStatus == Common.Constants.ResultType.Success)
+            {
+                result.ResourcePayload = hnClientMedicationResult.Message;
+                result.PageIndex = 0;
+                result.PageSize = hnClientMedicationResult.Message.Count;
+                result.TotalResultCount = hnClientMedicationResult.Message.Count;
+            }
+
+            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(result)}");
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
+        {
+            this.logger.LogTrace($"Getting history of medication statements... {hdid}");
+
+            //TODO: use delegate to check for the protective word
+
+            //TODO: use delegate to retrieve result
+            MedicationHistoryResponse medicationHistoryResponse = new MedicationHistoryResponse();
+
+            RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>()
+            {
+                ResourcePayload = MedicationStatementHistory.FromODRModelList(medicationHistoryResponse.Results.ToList()),
+                TotalResultCount = medicationHistoryResponse.Pages
+            };
+
+            this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(medicationHistoryResponse)}");
+            return result;
         }
 
         private static Tuple<bool, string?> ValidateProtectiveWord(string? protectiveWord)
@@ -94,7 +131,6 @@ namespace HealthGateway.Medication.Services
             {
                 if (protectiveWord.Length >= MinLengthProtectiveWord && protectiveWord.Length <= MaxLengthProtectiveWord)
                 {
-                    // Regex regex = new Regex(@"[|~^\\&]+");
                     Regex regex = new Regex(@"^[0-9A-Za-z_]+$");
                     if (!regex.IsMatch(protectiveWord))
                     {

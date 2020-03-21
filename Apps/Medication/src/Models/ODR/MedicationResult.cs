@@ -63,13 +63,13 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the quantity of the prescription.
         /// </summary>
         [JsonPropertyName("quantity")]
-        public string Quantity { get; set; } = string.Empty;
+        public float Quantity { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the Refills for the prescription.
         /// </summary>
         [JsonPropertyName("refills")]
-        public string Refills { get; set; } = string.Empty;
+        public int Refills { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the Directions given for the prescription.

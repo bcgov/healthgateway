@@ -86,22 +86,10 @@ namespace HealthGateway.Medication.Controllers
                 return new ForbidResult();
             }
 
-            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
-            {
-                ResultStatus = medicationStatements.Result,
-                ResultMessage = medicationStatements.ResultMessage,
-            };
+            // Switch between both types of systems
+            return new JsonResult(await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true));
 
-            if (result.ResultStatus == Common.Constants.ResultType.Success)
-            {
-                result.ResourcePayload = medicationStatements.Message;
-                result.PageIndex = 0;
-                result.PageSize = medicationStatements.Message.Count;
-                result.TotalResultCount = medicationStatements.Message.Count;
-            }
-
-            return new JsonResult(result);
+            return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
         }
     }
 }
