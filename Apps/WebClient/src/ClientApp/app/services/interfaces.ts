@@ -48,6 +48,10 @@ export interface IPatientService {
 export interface IMedicationService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
   getPatientMedicationStatements(
+    hdid: string,
+    protectiveWord?: string
+  ): Promise<RequestResult<MedicationStatement[]>>;
+  getOdrPatientMedicationStatements(
     hdid: string
   ): Promise<RequestResult<MedicationStatement[]>>;
   getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;

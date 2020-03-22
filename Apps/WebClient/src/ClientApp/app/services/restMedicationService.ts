@@ -49,6 +49,24 @@ export class RestMedicationService implements IMedicationService {
     });
   }
 
+  public getOdrPatientMedicationStatements(
+    hdid: string
+  ): Promise<RequestResult<MedicationStatement[]>> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .getWithCors<RequestResult<MedicationStatement[]>>(
+          `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}odr/${hdid}`
+        )
+        .then(requestResult => {
+          resolve(requestResult);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
   public getMedicationInformation(
     drugIdentifier: string
   ): Promise<MedicationResult> {
