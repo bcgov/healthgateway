@@ -9,6 +9,10 @@
   text-decoration: none;
 }
 
+.dropdown-item {
+  text-decoration: none;
+}
+
 // Highlight focused links
 a:not(.btn):focus {
   color: $link-hover-color;

@@ -60,6 +60,10 @@ $radius: 15px;
   padding-left: 30px;
   padding-right: 20px;
 }
+
+.noteMenu {
+  color: $soft_text;
+}
 </style>
 
 <template>
@@ -86,10 +90,10 @@ $radius: 15px;
                       size="1x"
                     ></font-awesome-icon>
                   </template>
-                  <b-dropdown-item @click="editNote()">
+                  <b-dropdown-item class="menuItem" @click="editNote()">
                     Edit
                   </b-dropdown-item>
-                  <b-dropdown-item @click="deleteNote()">
+                  <b-dropdown-item class="menuItem" @click="deleteNote()">
                     Delete
                   </b-dropdown-item>
                 </b-nav-item-dropdown>
@@ -269,6 +273,7 @@ export default class NoteTimelineComponent extends Vue {
       .toISOString()
       .slice(0, 10);
     this.isEditMode = true;
+    this.onEditStarted(this.entry);
   }
 
   private deleteNote(): void {
@@ -280,13 +285,18 @@ export default class NoteTimelineComponent extends Vue {
   }
 
   private onReset(): void {
-    this.close();
+    this.onEditClose(this.entry);
     this.isEditMode = false;
   }
 
   @Emit()
-  public close() {
-    return;
+  public onEditClose(note: NoteTimelineEntry) {
+    return note;
+  }
+
+  @Emit()
+  public onEditStarted(note: NoteTimelineEntry) {
+    return note;
   }
 
   @Emit()
