@@ -25,5 +25,11 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
         int GetRegisteredUserCount();
+
+        /// <summary>
+        /// Retrieves the count of unregistered users that received an invite.
+        /// </summary>
+        /// <returns>The count of user profiles that received an invite but have not accepted the terms of service.</returns>
+        int GetUnregisteredInvitedUserCount();
     }
 }

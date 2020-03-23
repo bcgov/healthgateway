@@ -146,5 +146,15 @@ namespace HealthGateway.Database.Delegates
                 .Count(w => w.AcceptedTermsOfService);
             return result;
         }
+
+        /// <inheritdoc />
+        public int GeUnregisteredInvitedUsersCount()
+        {
+            int result = this.dbContext.BetaRequest
+                .Count(b =>
+                    this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId) &&
+                    !this.dbContext.UserProfile.Any(u => u.HdId == b.HdId && u.AcceptedTermsOfService));
+            return result;
+        }
     }
 }

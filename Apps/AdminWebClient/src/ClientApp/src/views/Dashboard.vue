@@ -22,6 +22,13 @@
               {{registeredUserCount}}</h1>
         </v-card>
       </v-col>
+      <v-col class="col-lg-3 col-md-6 col-sm-12">
+        <v-card class="text-center">
+          <h3>Unregistered Invited Users</h3>
+          <h1>
+              {{unregisteredInvitedUserCount}}</h1>
+        </v-card>
+      </v-col>
     </v-row>
   </v-layout>
 </template>
@@ -33,18 +40,28 @@ import container from "@/plugins/inversify.config";
 @Component
 export default class Dashboard extends Vue {
   private registeredUserCount: number = 0;
+  private unregisteredInvitedUserCount: number = 0;
   private dashboardService!: IDashboardService;
   mounted() {
     this.dashboardService = container.get(
       SERVICE_IDENTIFIER.DashboardService
     );
     this.getRegisteredUserCount();
+    this.getUnregisteredInvitedUserCount();
   }
   private getRegisteredUserCount() {
     this.dashboardService
       .getRegisteredUsersCount()
       .then(count => {
         this.registeredUserCount = count;
+      });
+  }
+
+  private getUnregisteredInvitedUserCount() {
+    this.dashboardService
+      .getUnregisteredInvitedUsersCount()
+      .then(count => {
+        this.unregisteredInvitedUserCount = count;
       });
   }
 }

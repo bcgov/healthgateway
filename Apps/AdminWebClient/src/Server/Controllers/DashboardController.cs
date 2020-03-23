@@ -56,5 +56,19 @@ namespace HealthGateway.Admin.Controllers
         {
             return new JsonResult(this.dashboardService.GetRegisteredUserCount());
         }
+
+        /// <summary>
+        /// Retrieves the count of unregistered users that received an invite.
+        /// </summary>
+        /// <returns>The count of unregistered users that received an invite.</returns>
+        /// <response code="200">Returns the count of unregistered users.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("UnregisteredInvitedCount")]
+        public IActionResult GetUnregisteredInvitedUserCount()
+        {
+            return new JsonResult(this.dashboardService.GetUnregisteredInvitedUserCount());
+        }
     }
 }

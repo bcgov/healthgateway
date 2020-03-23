@@ -36,5 +36,11 @@ namespace HealthGateway.Admin.Services
         {
             return this.userProfileDelegate.GetRegisteredUsersCount();
         }
+
+        /// <inheritdoc />
+        public int GetUnregisteredInvitedUserCount()
+        {
+            return this.userProfileDelegate.GeUnregisteredInvitedUsersCount();
+        }
     }
 }
