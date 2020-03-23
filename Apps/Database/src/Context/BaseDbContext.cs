@@ -92,6 +92,7 @@ namespace HealthGateway.Database.Context
                         entityEntry.Property(nameof(IAuditable.CreatedBy)).IsModified = false;
                         entityEntry.Property(nameof(IAuditable.CreatedDateTime)).IsModified = false;
                     }
+
                     // set the updated by and date/time columns for both created and updated rows
                     entityEntry.Property(nameof(IAuditable.UpdatedDateTime)).CurrentValue = now;
                 }

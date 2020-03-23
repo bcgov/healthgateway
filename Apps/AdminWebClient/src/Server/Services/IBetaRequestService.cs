@@ -36,6 +36,6 @@ namespace HealthGateway.Admin.Services
         /// <param name="betaRequestIds">The beta request ids to send invites to.</param>
         /// <param name="hostUrl">The host url for referal purposes.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string hostUrl);
+        RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string? hostUrl);
     }
 }

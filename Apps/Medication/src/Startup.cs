@@ -18,7 +18,7 @@ namespace HealthGateway.Medication
 {
     using System.Collections.Generic;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
@@ -72,7 +72,7 @@ namespace HealthGateway.Medication
             });
 
             // Add services
-            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();

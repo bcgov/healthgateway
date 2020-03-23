@@ -1,41 +1,41 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBMaintainer", "DBMaintainer\DBMaintainer.csproj", "{98359C43-F35C-45BB-850E-8E098D482709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBMaintainer", "DBMaintainer\DBMaintainer.csproj", "{98359C43-F35C-45BB-850E-8E098D482709}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HNClient", "HNClient\src\HNClient.csproj", "{3AD01EF1-A486-49EF-A9E2-C84474C82614}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HNClient", "HNClient\src\HNClient.csproj", "{3AD01EF1-A486-49EF-A9E2-C84474C82614}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HNClientTests", "HNClient\test\unit\HNClientTests.csproj", "{F4A94701-FC94-492F-9C45-A75CF9A64345}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HNClientTests", "HNClient\test\unit\HNClientTests.csproj", "{F4A94701-FC94-492F-9C45-A75CF9A64345}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Immunization", "Immunization\src\Immunization.csproj", "{1842E377-23AD-4A52-881E-F0B82E7893A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immunization", "Immunization\src\Immunization.csproj", "{1842E377-23AD-4A52-881E-F0B82E7893A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTests", "Common\test\unit\CommonTests.csproj", "{D55428F4-B07E-46AF-AB09-0F526701173F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTests", "Common\test\unit\CommonTests.csproj", "{D55428F4-B07E-46AF-AB09-0F526701173F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "WebClient\src\WebClient.csproj", "{4EF62115-3012-4911-B7AA-3B798231ADC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "WebClient\src\WebClient.csproj", "{4EF62115-3012-4911-B7AA-3B798231ADC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmunizationTests", "Immunization\test\unit\ImmunizationTests.csproj", "{30741500-8F59-45CF-B753-14EBE6EE275E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmunizationTests", "Immunization\test\unit\ImmunizationTests.csproj", "{30741500-8F59-45CF-B753-14EBE6EE275E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\src\Database.csproj", "{86D8658A-3997-4108-BB97-BB488F8E11EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\src\Database.csproj", "{86D8658A-3997-4108-BB97-BB488F8E11EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseTests", "Database\test\unit\DatabaseTests.csproj", "{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseTests", "Database\test\unit\DatabaseTests.csproj", "{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClientTests", "WebClient\test\unit\WebClientTests.csproj", "{622DA0CD-5DF2-4FF1-9BE6-524CA0549976}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClientTests", "WebClient\test\unit\WebClientTests.csproj", "{622DA0CD-5DF2-4FF1-9BE6-524CA0549976}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patient", "Patient\src\Patient.csproj", "{F70FE4EA-45C1-43FD-9844-E6538F5EB084}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patient", "Patient\src\Patient.csproj", "{F70FE4EA-45C1-43FD-9844-E6538F5EB084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientTests", "Patient\test\unit\PatientTests.csproj", "{66487699-BD22-4707-99F8-CBDE347ECE94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientTests", "Patient\test\unit\PatientTests.csproj", "{66487699-BD22-4707-99F8-CBDE347ECE94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobScheduler", "JobScheduler\src\JobScheduler.csproj", "{7919D2B4-49C0-4638-A325-76642AC1289E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler", "JobScheduler\src\JobScheduler.csproj", "{7919D2B4-49C0-4638-A325-76642AC1289E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminWebClient", "AdminWebClient\src\AdminWebClient.csproj", "{D1A4B196-FA92-4822-8C25-07D53A2903EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClient", "AdminWebClient\src\AdminWebClient.csproj", "{D1A4B196-FA92-4822-8C25-07D53A2903EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -241,8 +241,16 @@ Global
 		{7919D2B4-49C0-4638-A325-76642AC1289E}.Release|x86.Build.0 = Release|Any CPU
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|x64.Build.0 = Debug|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Debug|x86.Build.0 = Debug|Any CPU
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|x64.ActiveCfg = Release|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|x64.Build.0 = Release|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{D1A4B196-FA92-4822-8C25-07D53A2903EF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

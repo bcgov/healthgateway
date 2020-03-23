@@ -23,7 +23,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the brand name of the  medication.
         /// </summary>
-        public string PrescriptionIdentifier { get; set; }
+        public string? PrescriptionIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets the Prescription status.
@@ -38,12 +38,12 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the Surname of the Practitioner who prescribed the medication.
         /// </summary>
-        public string PractitionerSurname { get; set; }
+        public string? PractitionerSurname { get; set; }
 
         /// <summary>
         /// Gets or sets the directions as prescribed.
         /// </summary>
-        public string Directions { get; set; }
+        public string? Directions { get; set; }
 
         /// <summary>
         /// Gets or sets the date the medication was entered.
@@ -53,11 +53,11 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the pharmacy id.
         /// </summary>
-        public string PharmacyId { get; set; }
+        public string? PharmacyId { get; set; }
 
         /// <summary>
         /// Gets or sets the medication for the current MedicationStatement.
         /// </summary>
-        public MedicationSumary MedicationSumary { get; set; }
+        public MedicationSumary? MedicationSumary { get; set; }
     }
 }

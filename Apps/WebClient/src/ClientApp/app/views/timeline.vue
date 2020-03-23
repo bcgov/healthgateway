@@ -155,11 +155,13 @@
           </div>
           <div id="timeData">
             <b-row v-if="isAddingNote" class="pb-5">
-              <NoteTimelineComponent
-                :is-add-mode="true"
-                @close="isAddingNote = false"
-                @on-note-added="onNoteAdded"
-              />
+              <b-col>
+                <NoteTimelineComponent
+                  :is-add-mode="true"
+                  @on-edit-close="isAddingNote = false"
+                  @on-note-added="onNoteAdded"
+                />
+              </b-col>
             </b-row>
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
               <b-col cols="auto">
@@ -176,6 +178,8 @@
                 :index="index"
                 @on-change="onCardUpdated"
                 @on-remove="onCardRemoved"
+                @on-edit="onCardEdit"
+                @on-close="onCardClose"
               />
             </b-row>
           </div>
@@ -259,6 +263,7 @@ export default class TimelineComponent extends Vue {
   private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
+  private editIdList: string[] = [];
   private unsavedChangesText: string =
     "You have unsaved changes. Are you sure you want to leave?";
 
@@ -274,14 +279,17 @@ export default class TimelineComponent extends Vue {
   }
 
   beforeRouteLeave(to, from, next) {
-    if (this.isAddingNote && !confirm(this.unsavedChangesText)) {
+    if (
+      (this.isAddingNote || this.editIdList.length > 0) &&
+      !confirm(this.unsavedChangesText)
+    ) {
       return;
     }
     next();
   }
 
   private onBrowserClose(event: BeforeUnloadEvent) {
-    if (this.isAddingNote) {
+    if (this.isAddingNote || this.editIdList.length > 0) {
       event.returnValue = this.unsavedChangesText;
     }
   }
@@ -413,6 +421,15 @@ export default class TimelineComponent extends Vue {
   private onCardRemoved(entry: TimelineEntry) {
     const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
+  }
+
+  private onCardEdit(entry: TimelineEntry) {
+    this.editIdList.push(entry.id);
+  }
+
+  private onCardClose(entry: TimelineEntry) {
+    const index = this.editIdList.findIndex(e => e == entry.id);
+    this.editIdList.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {

@@ -19,7 +19,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;

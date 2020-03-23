@@ -41,6 +41,6 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Gets or sets the authenticated user, <see cref="User"/>.
         /// </summary>
-        public UserProfile User { get; set; }
+        public UserProfile? User { get; set; }
     }
 }

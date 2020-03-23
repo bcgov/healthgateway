@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------
-//  Copyright © 2019 Province of British Columbia
+//  Copyright © 2019-2020 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace HealthGateway.Immunization.Models
         /// <summary>
         /// Gets or sets the patient date of birth.
         /// </summary>
-        [JsonIgnore]        
+        [JsonIgnore]
         public DateTime? DateOfBirth { get; set; }
 
 
@@ -42,7 +42,7 @@ namespace HealthGateway.Immunization.Models
         [JsonPropertyName("dob")]
         public string? FormattedDateOfBirth {
         get { return this.DateOfBirth?.ToString("yyyyMMdd"); }
-        set { this.DateOfBirth = DateTime.Parse(value ?? ""); }
+        set { this.DateOfBirth = DateTime.Parse(value ?? string.Empty); }
     }
     }
 }
