@@ -62,7 +62,7 @@ namespace HealthGateway.Medication.Controllers
             Contract.Requires(drugIdentifier != null);
 
             // The database requires the dins to be the same size and padded with zeroes on the left
-            string paddedDin = drugIdentifier.PadLeft(8, '0');
+            string paddedDin = drugIdentifier!.PadLeft(8, '0');
             Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
 
             RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()

@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authorization
+using System;
+using System.Globalization;
+
+namespace HealthGateway.Common.Utils
 {
-    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// UserIsPatientRequirement is a custom IAuthorizationRequirement used to assert an authorization
-    /// that the hdid User claim (in the JWT) is the same as the Patient hdid (Patient ID) used in the resource
-    /// request.
+    /// Utilities for formatting Dates and Times for Health Gateway.
     /// </summary>
-    public class UserIsPatientRequirement : IAuthorizationRequirement
+    public static class DateTimeFormatter
     {
-        // blank on purpose
+        /// <summary>
+        /// Formats the supplied datetime as a date string.
+        /// </summary>
+        /// <param name="datetime">The datetime to format.</param>
+        /// <returns>A formatted string or empty if input is null.</returns>
+        public static string FormatDate(DateTime? datetime)
+        {
+            return datetime != null ? datetime.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : string.Empty;
+        }
     }
 }

@@ -25,32 +25,47 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the OpenIDConnect Authority.
         /// </summary>
-        public string Authority { get; set; }
+        public string? Authority { get; set; }
 
         /// <summary>
         /// Gets or sets the OpenIdConnect Client ID.
         /// </summary>
-        public string ClientId { get; set; }
+        public string? ClientId { get; set; }
 
         /// <summary>
         /// Gets or sets the OpenIDConnect Response types.
         /// </summary>
-        public string ResponseType { get; set; }
+        public string? ResponseType { get; set; }
 
         /// <summary>
         /// Gets or sets the OpenIDConnect Scopes.
         /// </summary>
-        public string Scope { get; set; }
+        public string? Scope { get; set; }
 
         /// <summary>
         /// Gets or sets the Callback URIs.
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> Callbacks { get; set; }
+        public Dictionary<string, System.Uri>? Callbacks { get; set; }
 
-        public bool SaveTokens { get; set; }
-        public bool GetClaimsFromUserInfoEndpoint { get; set; }
-        public string SignedOutRedirectUri { get; set; }
-        public bool RequireHttpsMetadata { get; set; }
+        /// <summary>
+        /// Gets or sets the SaveTokens flag.
+        /// </summary>
+        public bool? SaveTokens { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to gather claims using the userinfo endpoint of the Auth Server.
+        /// </summary>
+        public bool? GetClaimsFromUserInfoEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Uri for the signed out redirection.
+        /// </summary>
+        public string? SignedOutRedirectUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether Https Meta Data is required
+        /// </summary>
+        public bool? RequireHttpsMetadata { get; set; }
     }
 }

@@ -18,13 +18,15 @@ namespace HealthGateway.Medication.Controllers
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Models;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The Medication controller.
@@ -51,16 +53,23 @@ namespace HealthGateway.Medication.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
+        /// The Configuration injected.
+        /// </summary>
+        private readonly IConfiguration configuration;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
         /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="medicationStatementService">The injected medication data service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor)
+        /// <param name="configuration">The injected configuration provider.</param>
+        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             this.medicationStatementService = medicationStatementService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -85,22 +94,21 @@ namespace HealthGateway.Medication.Controllers
                 return new ForbidResult();
             }
 
-            HNMessage<List<MedicationStatement>> medicationStatements = await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
-            {
-                ResultStatus = medicationStatements.Result,
-                ResultMessage = medicationStatements.ResultMessage,
-            };
+            string medicationDataSource = this.configuration.GetSection("MedicationDataSource").Value;
 
-            if (result.ResultStatus == Common.Constants.ResultType.Success)
+            // Switch between both types of systems
+            if (medicationDataSource == "PharmaNet")
             {
-                result.ResourcePayload = medicationStatements.Message;
-                result.PageIndex = 0;
-                result.PageSize = medicationStatements.Message.Count;
-                result.TotalResultCount = medicationStatements.Message.Count;
+                return new JsonResult(await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true));
             }
-
-            return new JsonResult(result);
+            else if (medicationDataSource == "ODR")
+            {
+                return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
+            }
+            else
+            {
+                throw new KeyNotFoundException("No valid data source configured");
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the Admin timeout values.
         /// </summary>
-        public TimeOutsConfiguration Timeouts { get; set; }
+        public TimeOutsConfiguration? Timeouts { get; set; }
 
         /// <summary>
         /// Gets or sets the ExternalURLs used by the Admin.

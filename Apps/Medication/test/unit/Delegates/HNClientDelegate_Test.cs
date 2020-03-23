@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Test
 {
-    using HealthGateway.Common.Authentication;
-    using HealthGateway.Common.Authentication.Models;
+    using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Delegates;
@@ -67,8 +67,8 @@ namespace HealthGateway.Medication.Test
             HttpClient client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
 
-            Mock<IAuthService> authMock = new Mock<IAuthService>();
-            authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
+            Mock<IAuthenticationDelegate> authMock = new Mock<IAuthenticationDelegate>();
+            authMock.Setup(s => s.AuthenticateAsSystem()).Returns(new JWTModel());
 
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
             sequenceDelegateMock.Setup(s => s.GetNextValueForSequence(It.IsAny<string>())).Returns(101010);
@@ -113,8 +113,8 @@ namespace HealthGateway.Medication.Test
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
 
-            Mock<IAuthService> authMock = new Mock<IAuthService>();
-            authMock.Setup(s => s.AuthenticateService()).Returns(new JWTModel());
+            Mock<IAuthenticationDelegate> authMock = new Mock<IAuthenticationDelegate>();
+            authMock.Setup(s => s.AuthenticateAsSystem()).Returns(new JWTModel());
 
             Mock<ISequenceDelegate> sequenceDelegateMock = new Mock<ISequenceDelegate>();
             sequenceDelegateMock.Setup(s => s.GetNextValueForSequence(It.IsAny<string>())).Returns(101010);
