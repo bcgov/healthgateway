@@ -29,6 +29,7 @@ namespace HealthGateway.Medication.Test
     using System.Security.Principal;
     using System.Threading.Tasks;
     using Xunit;
+    using Microsoft.Extensions.Configuration;
 
     public class MedicationStatementController_Test
     {
@@ -63,10 +64,12 @@ namespace HealthGateway.Medication.Test
             svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new RequestResult<List<MedicationStatement>>() { ResourcePayload = new List<MedicationStatement>() });
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
 
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
+            Mock<IConfigurationSection> configurationSection = new Mock<IConfigurationSection>();
+            configurationSection.Setup(a => a.Value).Returns("PharmaNet");
+            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
+            configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
 
-            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, configServiceMock.Object);
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, configMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
@@ -122,7 +125,13 @@ namespace HealthGateway.Medication.Test
                 });
 
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
+
+            Mock<IConfigurationSection> configurationSection = new Mock<IConfigurationSection>();
+            configurationSection.Setup(a => a.Value).Returns("PharmaNet");
+            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
+            configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
+
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, configMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
@@ -169,7 +178,12 @@ namespace HealthGateway.Medication.Test
             svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new RequestResult<List<MedicationStatement>>());
             authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Failed);
 
-            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object);
+            Mock<IConfigurationSection> configurationSection = new Mock<IConfigurationSection>();
+            configurationSection.Setup(a => a.Value).Returns("PharmaNet");
+            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
+            configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
+
+            MedicationStatementController controller = new MedicationStatementController(authzMock.Object, svcMock.Object, httpContextAccessorMock.Object, configMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);

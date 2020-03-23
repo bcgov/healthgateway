@@ -34,7 +34,7 @@ namespace HealthGateway.Medication.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class MedicationStatementController : ControllerBase
     {
         /// <summary>
@@ -84,17 +84,17 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        //[Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
         {
-            /*ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
-            }*/
+            }
 
-            string medicationDataSource = this.configuration.GetValue<string>("MedicationDataSource");
+            string medicationDataSource = this.configuration.GetSection("MedicationDataSource").Value;
 
             // Switch between both types of systems
             if (medicationDataSource == "PharmaNet")
@@ -103,7 +103,6 @@ namespace HealthGateway.Medication.Controllers
             }
             else if (medicationDataSource == "ODR")
             {
-
                 return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
             }
             else
