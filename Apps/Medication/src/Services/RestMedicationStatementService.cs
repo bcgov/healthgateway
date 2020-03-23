@@ -24,10 +24,12 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Models.ODR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -44,6 +46,7 @@ namespace HealthGateway.Medication.Services
         private readonly IPatientDelegate patientDelegate;
         private readonly IHNClientDelegate hnClientDelegate;
         private readonly IDrugLookupDelegate drugLookupDelegate;
+        private readonly IMedStatementDelegate medicationStatementDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -53,22 +56,25 @@ namespace HealthGateway.Medication.Services
         /// <param name="patientService">The injected patientService patient registry provider.</param>
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
+        /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientService,
             IHNClientDelegate hnClientDelegate,
-            IDrugLookupDelegate drugLookupDelegate)
+            IDrugLookupDelegate drugLookupDelegate,
+            IMedStatementDelegate medicationStatementDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientService;
             this.hnClientDelegate = hnClientDelegate;
             this.drugLookupDelegate = drugLookupDelegate;
+            this.medicationStatementDelegate = medicationStatementDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
+        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
         {
             this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
@@ -82,8 +88,54 @@ namespace HealthGateway.Medication.Services
                 this.PopulateBrandName(hnClientMedicationResult.Message);
             }
 
-            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(hnClientMedicationResult)}");
-            return hnClientMedicationResult;
+            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
+            {
+                ResultStatus = hnClientMedicationResult.Result,
+                ResultMessage = hnClientMedicationResult.ResultMessage,
+            };
+
+            if (result.ResultStatus == Common.Constants.ResultType.Success)
+            {
+                result.ResourcePayload = hnClientMedicationResult.Message;
+                result.PageIndex = 0;
+                result.PageSize = hnClientMedicationResult.Message.Count;
+                result.TotalResultCount = hnClientMedicationResult.Message.Count;
+            }
+
+            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(result)}");
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
+        {
+            this.logger.LogTrace($"Getting history of medication statements... {hdid}");
+
+            // Retrieve the phn
+            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+            string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+
+            MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+            {
+                StartDate = System.DateTime.Parse("1990/01/01"),
+                EndDate = System.DateTime.Now,
+                PHN = phn,
+            };
+            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+            string ipv4Address = address.MapToIPv4().ToString();
+
+            MedicationHistoryResponse medicationHistoryResponse = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+
+            RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>()
+            {
+                ResourcePayload = MedicationStatementHistory.FromODRModelList(medicationHistoryResponse.Results.ToList()),
+                TotalResultCount = medicationHistoryResponse.Pages,
+                ResultStatus = ResultType.Success, // TODO:this should be retrieved from the result
+            };
+
+            this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(medicationHistoryResponse)}");
+            return result;
         }
 
         private static Tuple<bool, string?> ValidateProtectiveWord(string? protectiveWord)
@@ -94,7 +146,6 @@ namespace HealthGateway.Medication.Services
             {
                 if (protectiveWord.Length >= MinLengthProtectiveWord && protectiveWord.Length <= MaxLengthProtectiveWord)
                 {
-                    // Regex regex = new Regex(@"[|~^\\&]+");
                     Regex regex = new Regex(@"^[0-9A-Za-z_]+$");
                     if (!regex.IsMatch(protectiveWord))
                     {

@@ -69,5 +69,30 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the telephone type.
         /// </summary>
         public string PhoneType { get; set; }
+
+        /// <summary>
+        /// Creates a Pharamacy object from an ODR model.
+        /// </summary>
+        public static Pharmacy FromODRModel(ODR.Pharmacy? model)
+        {
+            if (model == null)
+            {
+                return new Pharmacy();
+            }
+
+            return new Pharmacy()
+            {
+                PharmacyId = model.PharmacyId,
+                Name = model.Name,
+                PhoneNumber = model.PhoneNumber,
+                AddressLine1 = model.Address.Line1,
+                AddressLine2 = model.Address.Line2,
+                City = model.Address.City,
+                CountryCode = model.Address.Country,
+                PostalCode = model.Address.PostalCode,
+                Province = model.Address.Province,
+
+            };
+        }
     }
 }

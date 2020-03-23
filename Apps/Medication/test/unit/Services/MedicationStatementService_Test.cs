@@ -31,6 +31,8 @@ namespace HealthGateway.Medication.Test
     using Moq;
     using Xunit;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Medication.Models.ODR;
+    using HealthGateway.Common.Models;
 
     public class MedicationService_Test
     {
@@ -80,52 +82,56 @@ namespace HealthGateway.Medication.Test
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new MedicationHistoryResponse());
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
-                drugLookupDelegateMock.Object);
+                drugLookupDelegateMock.Object,
+                medStatementDelegateMock.Object);
 
             // Run and Verify protective word too long
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, "TOOLONG4U");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, "TOOLONG4U");
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "SHORT");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "SHORT|");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "SHORT~");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "SHORT^");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "SHORT\\");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "SHORT&");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "Test|");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "      ");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatements(hdid, "Test|string");
-            Assert.True(actual.Result == Common.Constants.ResultType.Protected);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
         }
 
         [Fact]
@@ -169,16 +175,20 @@ namespace HealthGateway.Medication.Test
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new MedicationHistoryResponse());
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
-                drugLookupDelegateMock.Object);
+                drugLookupDelegateMock.Object,
+                medStatementDelegateMock.Object);
 
             // Run and Verify
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, protectiveWord);
-            Assert.True(actual.Result == Common.Constants.ResultType.Success);
+            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, protectiveWord);
+            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success);
         }
 
         [Fact]
@@ -221,18 +231,22 @@ namespace HealthGateway.Medication.Test
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new MedicationHistoryResponse());
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
-                drugLookupDelegateMock.Object);
+                drugLookupDelegateMock.Object,
+                medStatementDelegateMock.Object);
 
             // Act
-            HNMessage<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, null);
+            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, null);
 
             // Verify
-            Assert.True(actual.Message.Count == 0);
+            Assert.True(actual.ResourcePayload.Count == 0);
         }
     }
 }
