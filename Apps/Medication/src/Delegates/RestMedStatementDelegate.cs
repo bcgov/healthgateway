@@ -31,7 +31,7 @@ namespace HealthGateway.Medication.Delegates
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
     /// </summary>
-    public class RestMedStatementDelegate : IRestMedStatementDelegate
+    public class RestMedStatementDelegate : IMedStatementDelegate
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;

@@ -42,7 +42,7 @@ namespace HealthGateway.Medication.Test
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
             HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
-            IRestMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
+            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
             MedicationHistoryQuery query = new MedicationHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),

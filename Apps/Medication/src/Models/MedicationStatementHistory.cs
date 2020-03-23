@@ -65,7 +65,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
         /// </summary>
-        public Pharmacy DispensingPharmacy;
+        public Pharmacy DispensingPharmacy { get; set; }
 
         /// <summary>
         /// Creates a Medication statement history object from an ODR model.
@@ -78,7 +78,7 @@ namespace HealthGateway.Medication.Models
                 Directions = model.Directions,
                 DispensedDate = model.DispenseDate,
                 DispensingPharmacy = Pharmacy.FromODRModel(model.DispensingPharmacy),
-                PractitionerSurname = model.PractitionerSurname,
+                PractitionerSurname = model.Practioner != null ? model.Practioner.Surname : string.Empty,
                 PrescriptionIdentifier = model.PrescriptionNumber,
             };
         }

@@ -46,6 +46,7 @@ namespace HealthGateway.Medication.Services
         private readonly IPatientDelegate patientDelegate;
         private readonly IHNClientDelegate hnClientDelegate;
         private readonly IDrugLookupDelegate drugLookupDelegate;
+        private readonly IMedStatementDelegate medicationStatementDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -55,18 +56,21 @@ namespace HealthGateway.Medication.Services
         /// <param name="patientService">The injected patientService patient registry provider.</param>
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
+        /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientService,
             IHNClientDelegate hnClientDelegate,
-            IDrugLookupDelegate drugLookupDelegate)
+            IDrugLookupDelegate drugLookupDelegate,
+            IMedStatementDelegate medicationStatementDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientService;
             this.hnClientDelegate = hnClientDelegate;
             this.drugLookupDelegate = drugLookupDelegate;
+            this.medicationStatementDelegate = medicationStatementDelegate;
         }
 
         /// <inheritdoc/>
@@ -108,15 +112,26 @@ namespace HealthGateway.Medication.Services
         {
             this.logger.LogTrace($"Getting history of medication statements... {hdid}");
 
-            //TODO: use delegate to check for the protective word
+            // Retrieve the phn
+            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+            string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
 
-            //TODO: use delegate to retrieve result
-            MedicationHistoryResponse medicationHistoryResponse = new MedicationHistoryResponse();
+            MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+            {
+                StartDate = System.DateTime.Parse("1990/01/01"),
+                EndDate = System.DateTime.Now,
+                PHN = phn,
+            };
+            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+            string ipv4Address = address.MapToIPv4().ToString();
+
+            MedicationHistoryResponse medicationHistoryResponse = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
 
             RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>()
             {
                 ResourcePayload = MedicationStatementHistory.FromODRModelList(medicationHistoryResponse.Results.ToList()),
-                TotalResultCount = medicationHistoryResponse.Pages
+                TotalResultCount = medicationHistoryResponse.Pages,
+                ResultStatus = ResultType.Success, // TODO:this should be retrieved from the result
             };
 
             this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(medicationHistoryResponse)}");

@@ -15,27 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Delegates
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text.Json;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models.ODR;
-    using HealthGateway.Medication.Parsers;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
-    /// ODR Implementation for Rest Medication Statements.
+    /// Interface to retrieve Medication Statements.
     /// </summary>
-    public interface IRestMedStatementDelegate
+    public interface IMedStatementDelegate
     {
         /// <summary>
         /// Returns a set of Medication Statements.
@@ -45,6 +31,6 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="userId">The user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>The Medication History response.</returns>
-        public Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress);
+        Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress);
     }
 }
