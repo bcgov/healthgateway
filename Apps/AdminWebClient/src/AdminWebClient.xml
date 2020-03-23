@@ -108,6 +108,15 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetLoggedInUsersCount">
+            <summary>
+            Retrieves the count of logged in user in the last day.
+            </summary>
+            <returns>The count of logged in users in the current day.</returns>
+            <response code="200">Returns the list of user feedbacks.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.UserFeedbackController">
             <summary>
             Web API to handle user feedback review.
@@ -476,6 +485,9 @@
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetRegisteredUserCount">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetLoggedInUsersCount">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Admin.Services.IAuthenticationService">
             <summary>
             Authentication and Authorization Service.
@@ -540,6 +552,12 @@
             Retrieves the count of registered users.
             </summary>
             <returns>The count of user profiles that accepted the terms of service.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetLoggedInUsersCount">
+            <summary>
+            Retrieves the count of logged in users in the current day.
+            </summary>
+            <returns>The count of logged in user.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IUserFeedbackService">
             <summary>
