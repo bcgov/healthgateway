@@ -321,7 +321,7 @@ export default class TimelineComponent extends Vue {
     );
     this.isMedicationLoading = true;
 
-    const isOdrEnabled = this.config.webClient.modules["Odr"];
+    const isOdrEnabled = this.config.webClient.modules["MedicationHistory"];
     let promise: Promise<RequestResult<MedicationStatement[]>>;
 
     if (isOdrEnabled) {
