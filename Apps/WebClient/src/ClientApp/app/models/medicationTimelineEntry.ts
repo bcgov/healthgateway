@@ -3,6 +3,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import Pharmacy from "./pharmacy";
 import MedicationSumary from "./medicationSumary";
 import MedicationResult from "./medicationResult";
+import MedicationStatementHistory from './medicationStatementHistory';
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -12,10 +13,14 @@ export default class MedicationTimelineEntry extends TimelineEntry {
   public practitionerSurname: string;
   public prescriptionIdentifier: string;
 
-  public constructor(model: MedicationStatement) {
+  public constructor(model: MedicationStatement | MedicationStatementHistory) {
     super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);
-    this.pharmacy = new PharmacyViewModel(model.pharmacyId);
     this.medication = new MedicationViewModel(model.medicationSumary);
+
+    this.pharmacy = new PharmacyViewModel(model.pharmacyId);
+    if (model instanceof MedicationStatementHistory) {
+      this.pharmacy.populateFromModel(model.dispensingPharmacy);
+    }
 
     this.practitionerSurname = model.practitionerSurname || "N/A";
     this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
@@ -38,12 +43,14 @@ class PharmacyViewModel {
   public address?: string;
   public phoneType?: string;
   public phoneNumber?: string;
+  public isLoaded: boolean = false;
 
   constructor(id: string | undefined) {
     this.id = id ? id : "";
   }
 
   public populateFromModel(model: Pharmacy): void {
+    this.isLoaded = true;
     this.name = model.name;
     this.phoneType = model.phoneType;
     this.phoneNumber = model.phoneNumber;

@@ -51,8 +51,9 @@ export interface IMedicationService {
     hdid: string,
     protectiveWord?: string
   ): Promise<RequestResult<MedicationStatement[]>>;
-  getOdrPatientMedicationStatements(
-    hdid: string
+  getPatientMedicationStatementHistory(
+    hdid: string,
+    protectiveWord?: string
   ): Promise<RequestResult<MedicationStatement[]>>;
   getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;
   getPharmacyInfo(pharmacyId: string): Promise<Pharmacy>;

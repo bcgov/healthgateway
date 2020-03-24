@@ -325,8 +325,9 @@ export default class TimelineComponent extends Vue {
     let promise: Promise<RequestResult<MedicationStatement[]>>;
 
     if (isOdrEnabled) {
-      promise = medicationService.getOdrPatientMedicationStatements(
-        this.user.hdid
+      promise = medicationService.getPatientMedicationStatementHistory(
+        this.user.hdid,
+        protectiveWord
       );
     } else {
       promise = medicationService.getPatientMedicationStatements(

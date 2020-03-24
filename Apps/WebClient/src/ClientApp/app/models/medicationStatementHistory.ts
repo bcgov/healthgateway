@@ -1,17 +1,12 @@
 import MedicationSumary from "./medicationSumary";
+import Pharmacy from './pharmacy';
 
 // Medication statement model
-export default class ODRMedicationStatement {
+export default class MedicationStatementHistory {
   // The medication statement identifier.
-  public recordId?: string;
-  // The prescription identifier for this statement.
-  public rxNumber?: string;
+  public prescriptionIdentifier?: string;
   // Medication statement prescription status.
-  public rxStatus?: string;
-  // Medication statement quantity.
-  public quantity?: number;
-  // Medication statement refills.
-  public refills?: number;
+  public prescriptionStatus?: string;
   // Date the medication statement was dispensed.
   public dispensedDate?: Date;
   // Surname of the Practitioner who issued the medication statement.
@@ -24,4 +19,6 @@ export default class ODRMedicationStatement {
   public medicationSumary: MedicationSumary = new MedicationSumary();
   // The pharmacy where the medication was filled.
   public pharmacyId?: string;
+  // Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
+  public dispensingPharmacy: Pharmacy = new Pharmacy();
 }
