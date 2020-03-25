@@ -50,7 +50,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.httpClientService = httpClientService;
             IConfigurationSection? configSection = config?.GetSection(CONFIGSECTIONNAME);
 
-            this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
+            this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri", string.Empty));
             this.TokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.TokenRequest); // Client ID, Client Secret, Audience, Username, Password
         }
