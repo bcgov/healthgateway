@@ -27,7 +27,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the unique identifer for this record.
         /// </summary>
         [JsonPropertyName("recordId")]
-        public string Id { get; set; } = string.Empty;
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the dispenseDate.

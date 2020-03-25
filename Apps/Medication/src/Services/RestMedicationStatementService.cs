@@ -125,16 +125,19 @@ namespace HealthGateway.Medication.Services
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
 
-            MedicationHistoryResponse medicationHistoryResponse = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+            HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
 
-            RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>()
+            RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>();
+            result.ResultStatus = response.Result;
+            if (response.Result == ResultType.Success)
             {
-                ResourcePayload = MedicationStatementHistory.FromODRModelList(medicationHistoryResponse.Results.ToList()),
-                TotalResultCount = medicationHistoryResponse.Pages,
-                ResultStatus = ResultType.Success, // TODO:this should be retrieved from the result
-            };
+                result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.Message.Results.ToList());
+                result.PageSize = historyQuery.PageSize;
+                result.PageIndex = historyQuery.PageNumber;
+                result.TotalResultCount = response.Message.Records;
+            }
 
-            this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(medicationHistoryResponse)}");
+            this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(historyQuery)}");
             return result;
         }
 
