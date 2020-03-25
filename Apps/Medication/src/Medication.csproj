@@ -52,7 +52,6 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="Database\" />
     <Folder Include="Constants\" />
     <Folder Include="Models\ODR\" />

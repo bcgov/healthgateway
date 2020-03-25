@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Test
     using System.Net.Http;
     using Moq;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Medication.Models;
 
     public class MedicationDelegate_Test
     {
@@ -49,7 +50,7 @@ namespace HealthGateway.Medication.Test
                 EndDate = System.DateTime.Now,
                 PHN = "9735361219",
             };
-            MedicationHistoryResponse response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
+            HNMessage<MedicationHistoryResponse> response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

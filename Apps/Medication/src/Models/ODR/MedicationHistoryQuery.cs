@@ -26,12 +26,6 @@ namespace HealthGateway.Medication.Models.ODR
     public class MedicationHistoryQuery
     {
         /// <summary>
-        /// Gets or sets the Id of the request.
-        /// </summary>
-        [JsonPropertyName("uuid")]
-        public Guid Id { get; set; } = System.Guid.NewGuid();
-
-        /// <summary>
         /// Gets or sets the Start date of the request.
         /// </summary>
         [JsonIgnore]
