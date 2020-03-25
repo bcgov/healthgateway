@@ -52,5 +52,11 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<List<BetaRequest>> GetPendingBetaRequest();
+
+        /// <summary>
+        /// Returns the count of waitlisted users from the database.
+        /// </summary>
+        /// <returns>The count of users waiting for an invite.</returns>
+        int GetWaitlistCount();
     }
 }

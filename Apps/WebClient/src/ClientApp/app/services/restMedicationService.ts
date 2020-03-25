@@ -7,6 +7,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import { ResultType } from "@/constants/resulttype";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
+import MedicationStatementHistory from '../models/medicationStatementHistory';
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -36,6 +37,30 @@ export class RestMedicationService implements IMedicationService {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<RequestResult<MedicationStatement[]>>(
+          `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
+          headers
+        )
+        .then(requestResult => {
+          resolve(requestResult);
+        })
+        .catch(err => {
+          console.log(this.FETCH_ERROR + err.toString());
+          reject(err);
+        });
+    });
+  }
+
+  public getPatientMedicationStatementHistory(
+    hdid: string,
+    protectiveWord?: string
+  ): Promise<RequestResult<MedicationStatementHistory[]>> {
+    let headers: Dictionary<string> = {};
+    if (protectiveWord) {
+      headers["protectiveWord"] = protectiveWord;
+    }
+    return new Promise((resolve, reject) => {
+      this.http
+        .getWithCors<RequestResult<MedicationStatementHistory[]>>(
           `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
           headers
         )

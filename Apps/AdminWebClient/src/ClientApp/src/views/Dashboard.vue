@@ -19,14 +19,23 @@
         <v-card class="text-center">
           <h3>Registered Users</h3>
           <h1>
-              {{registeredUserCount}}</h1>
+            {{ registeredUserCount }}
+          </h1>
+        </v-card>
+      </v-col>
+      <v-col class="col-lg-3 col-md-6 col-sm-12">
+        <v-card class="text-center">
+          <h3>Waitlisted Users</h3>
+          <h1>
+            {{ waitlistedUserCount }}
+          </h1>
         </v-card>
       </v-col>
       <v-col class="col-lg-3 col-md-6 col-sm-12">
         <v-card class="text-center">
           <h3>Logged In Users Today</h3>
           <h1>
-              {{loggedInUsersCount}}
+            {{ loggedInUsersCount }}
           </h1>
         </v-card>
       </v-col>
@@ -42,27 +51,31 @@ import container from "@/plugins/inversify.config";
 export default class Dashboard extends Vue {
   private registeredUserCount: number = 0;
   private loggedInUsersCount: number = 0;
+  private waitlistedUserCount: number = 0;
   private dashboardService!: IDashboardService;
+
   mounted() {
-    this.dashboardService = container.get(
-      SERVICE_IDENTIFIER.DashboardService
-    );
+    this.dashboardService = container.get(SERVICE_IDENTIFIER.DashboardService);
     this.getRegisteredUserCount();
+    this.getWaitlistedUserCount();
   }
+
   private getRegisteredUserCount() {
-    this.dashboardService
-      .getRegisteredUsersCount()
-      .then(count => {
-        this.registeredUserCount = count;
-      });
+    this.dashboardService.getRegisteredUsersCount().then(count => {
+      this.registeredUserCount = count;
+    });
   }
 
   private getLoggedInUsersCount() {
-    this.dashboardService
-      .getLoggedInUsersCount()
-      .then(count => {
-        this.loggedInUsersCount = count;
-      });
+    this.dashboardService.getLoggedInUsersCount().then(count => {
+      this.loggedInUsersCount = count;
+    });
+  }
+
+  private getWaitlistedUserCount() {
+    this.dashboardService.getWaitlistedUsersCount().then(count => {
+      this.waitlistedUserCount = count;
+    });
   }
 }
 </script>
