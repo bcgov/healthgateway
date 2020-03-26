@@ -7,7 +7,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import { ResultType } from "@/constants/resulttype";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
-import MedicationStatementHistory from '../models/medicationStatementHistory';
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {

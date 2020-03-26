@@ -1,5 +1,5 @@
 import MedicationSumary from "./medicationSumary";
-import Pharmacy from './pharmacy';
+import Pharmacy from "./pharmacy";
 
 // Medication statement model
 export default class MedicationStatementHistory {
