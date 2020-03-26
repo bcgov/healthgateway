@@ -30,7 +30,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        const string  CONFIGSECTIONNAME = "ClientAuthentication";
+        private const string CONFIGSECTIONNAME = "ClientAuthentication";
         private readonly ILogger<AuthenticationDelegate> logger;
 
         private readonly IHttpClientService httpClientService;
@@ -50,7 +50,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.httpClientService = httpClientService;
             IConfigurationSection? configSection = config?.GetSection(CONFIGSECTIONNAME);
 
-            this.TokenUri = new Uri(configSection.GetValue<string>("TokenUri"));
+            string tokenUri = configSection.GetValue<string>("TokenUri", string.Empty);
+            if (!string.IsNullOrWhiteSpace(tokenUri))
+            {
+                this.TokenUri = new Uri(tokenUri);
+            }
+
             this.TokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.TokenRequest); // Client ID, Client Secret, Audience, Username, Password
         }
@@ -59,7 +64,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public ClientCredentialsTokenRequest TokenRequest { get; set; }
 
         /// <inheritdoc/>
-        public Uri TokenUri { get; }
+        public Uri? TokenUri { get; }
 
         /// <inheritdoc/>
         public JWTModel AuthenticateAsSystem()

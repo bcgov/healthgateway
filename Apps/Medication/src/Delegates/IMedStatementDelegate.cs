@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System.Threading.Tasks;
+    using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
 
     /// <summary>
@@ -28,9 +29,9 @@ namespace HealthGateway.Medication.Delegates
         /// </summary>
         /// <param name="query">The medication statement query execute against the ODR.</param>
         /// <param name="protectiveWord">The protective word to validate.</param>
-        /// <param name="userId">The user querying.</param>
+        /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
-        /// <returns>The Medication History response.</returns>
-        Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress);
+        /// <returns>The Medication History response wrapped in an HNMessage.</returns>
+        Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string hdid, string ipAddress);
     }
 }

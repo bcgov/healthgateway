@@ -24,6 +24,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
+    using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -54,7 +55,7 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<MedicationHistoryResponse> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string userId, string ipAddress)
+        public async Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string hdid, string ipAddress)
         {
             if (query == null)
             {
@@ -64,8 +65,7 @@ namespace HealthGateway.Medication.Delegates
             {
                 throw new ArgumentNullException(nameof(query), "Query PHN cannot be null");
             }
-
-            MedicationHistoryResponse retVal = new MedicationHistoryResponse();
+            HNMessage<MedicationHistoryResponse> retVal = new HNMessage<MedicationHistoryResponse>();
             Contract.Requires(query != null && query.PHN != null);
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -88,7 +88,7 @@ namespace HealthGateway.Medication.Delegates
                 WriteIndented = true,
             };
             string json = JsonSerializer.Serialize(request, options);
-            HttpContent content = new StringContent(json);
+            using HttpContent content = new StringContent(json);
             try
             {
                 HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
@@ -96,15 +96,19 @@ namespace HealthGateway.Medication.Delegates
                 if (response.IsSuccessStatusCode)
                 {
                     MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
-                    retVal = medicationHistory.Response;
+                    retVal.Message = medicationHistory.Response!;
                 }
                 else
                 {
+                    retVal.Result = Common.Constants.ResultType.Error;
+                    retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with readon ${response.ReasonPhrase}";
                     this.logger.LogError($"Error getting medication statements. {query.PHN.Substring(0, 3)}, {payload}");
                 }
             }
             catch (Exception e)
             {
+                retVal.Result = Common.Constants.ResultType.Error;
+                retVal.ResultMessage = e.ToString();
                 this.logger.LogError($"Unable to post message {e.ToString()}");
             }
 
