@@ -71,7 +71,7 @@ namespace HealthGateway.Medication.Test
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
             string protectedWord = await medStatementDelegate.GetProtectiveWord("9735361219", string.Empty, string.Empty);
 
-            Assert.True(protectedWord == string.Empty);
+            Assert.True(protectedWord == "test");
         }
         private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
         {

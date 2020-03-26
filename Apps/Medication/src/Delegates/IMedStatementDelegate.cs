@@ -72,6 +72,6 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>returns true if the supplied protectiveword</returns>
-        Task<bool> ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress);
+        bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress);
     }
 }

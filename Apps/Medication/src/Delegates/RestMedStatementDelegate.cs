@@ -24,6 +24,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
@@ -65,55 +66,63 @@ namespace HealthGateway.Medication.Delegates
             {
                 throw new ArgumentNullException(nameof(query), "Query PHN cannot be null");
             }
-            HNMessage<MedicationHistoryResponse> retVal = new HNMessage<MedicationHistoryResponse>();
-            Contract.Requires(query != null && query.PHN != null);
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
 
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.BaseAddress = new Uri(this.configService.GetSection("ODR")?.GetValue<string>("Url"));
-            string patientProfileEndpoint = this.configService.GetSection("ODR")?.GetValue<string>("PatientProfileEndpoint");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            MedicationHistory request = new MedicationHistory()
+            HNMessage<MedicationHistoryResponse> retVal = new HNMessage<MedicationHistoryResponse>();
+            if (this.ValidateProtectiveWord(query.PHN, protectiveWord, hdid, ipAddress))
             {
-                Query = query,
-            };
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-            string json = JsonSerializer.Serialize(request, options);
-            using HttpContent content = new StringContent(json);
-            try
-            {
-                HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+                this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
+
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                client.BaseAddress = new Uri(this.configService.GetSection("ODR").GetValue<string>("Url"));
+                string patientProfileEndpoint = this.configService.GetSection("ODR").GetValue<string>("PatientProfileEndpoint");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                MedicationHistory request = new MedicationHistory()
                 {
-                    MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
-                    retVal.Message = medicationHistory.Response!;
+                    Query = query,
+                };
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    WriteIndented = true,
+                };
+                string json = JsonSerializer.Serialize(request, options);
+                using HttpContent content = new StringContent(json);
+                try
+                {
+                    HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
+                        retVal.Message = medicationHistory.Response!;
+                    }
+                    else
+                    {
+                        retVal.Result = Common.Constants.ResultType.Error;
+                        retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with readon ${response.ReasonPhrase}";
+                        this.logger.LogError($"Error getting medication statements. {query.PHN.Substring(0, 3)}, {payload}");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
                     retVal.Result = Common.Constants.ResultType.Error;
-                    retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with readon ${response.ReasonPhrase}";
-                    this.logger.LogError($"Error getting medication statements. {query.PHN.Substring(0, 3)}, {payload}");
+                    retVal.ResultMessage = e.ToString();
+                    this.logger.LogError($"Unable to post message {e.ToString()}");
                 }
-            }
-            catch (Exception e)
-            {
-                retVal.Result = Common.Constants.ResultType.Error;
-                retVal.ResultMessage = e.ToString();
-                this.logger.LogError($"Unable to post message {e.ToString()}");
-            }
 
-            timer.Stop();
-            this.logger.LogDebug($"Finished getting medication statements, Time Elapsed: {timer.Elapsed}");
+                timer.Stop();
+                this.logger.LogDebug($"Finished getting medication statements, Time Elapsed: {timer.Elapsed}");
+            }
+            else
+            {
+                retVal.Result = Common.Constants.ResultType.Protected;
+                retVal.ResultMessage = ErrorMessages.ProtectiveWordErrorMessage;
+            }
             return retVal;
         }
 
@@ -126,8 +135,8 @@ namespace HealthGateway.Medication.Delegates
             this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.BaseAddress = new Uri(this.configService.GetSection("ODR")?.GetValue<string>("Url"));
-            string patientProfileEndpoint = this.configService.GetSection("ODR")?.GetValue<string>("ProtectiveWordEndpoint");
+            client.BaseAddress = new Uri(this.configService.GetSection("ODR").GetValue<string>("Url"));
+            string patientProfileEndpoint = this.configService.GetSection("ODR").GetValue<string>("ProtectiveWordEndpoint");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -154,7 +163,10 @@ namespace HealthGateway.Medication.Delegates
                 if (response.IsSuccessStatusCode)
                 {
                     ProtectiveWord protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
-                    retVal = protectiveWord.QueryResponse.Value;
+                    if (protectiveWord.QueryResponse != null && !string.IsNullOrEmpty(protectiveWord.QueryResponse.Value))
+                    {
+                        retVal = protectiveWord.QueryResponse.Value;
+                    }
                 }
                 else
                 {
@@ -184,9 +196,11 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<bool> ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
+        public bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
         {
-            throw new NotImplementedException();
+            string? pnetProtectedWord = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
+                                                                       .ConfigureAwait(true)).Result;
+            return pnetProtectedWord == null || pnetProtectedWord == protectiveWord;
         }
     }
 }
