@@ -117,9 +117,41 @@
                 debounce="250"
               ></b-form-input>
             </div>
-            <br />
           </b-col>
         </b-row>
+        <b-row align-h="start">
+          <b-col v-if="isMedicationEnabled" cols="3">
+            <b-form-checkbox
+              id="medicationFilter"
+              v-model="filterTypes"
+              name="medicationFilter"
+              value="Medication"
+            >
+              Medications
+            </b-form-checkbox>
+          </b-col>
+          <b-col v-if="isImmunizationEnabled" cols="3">
+            <b-form-checkbox
+              id="immunizationFilter"
+              v-model="filterTypes"
+              name="immunizationFilter"
+              value="Immunization"
+            >
+              Vaccinations
+            </b-form-checkbox>
+          </b-col>
+          <b-col v-if="isNoteEnabled" cols="3">
+            <b-form-checkbox
+              id="notesFilter"
+              v-model="filterTypes"
+              name="notesFilter"
+              value="Note"
+            >
+              Notes
+            </b-form-checkbox>
+          </b-col>
+        </b-row>
+        <br />
         <div v-if="!isLoading">
           <div id="listControlls">
             <b-row>
@@ -268,10 +300,14 @@ export default class TimelineComponent extends Vue {
   private unsavedChangesText: string =
     "You have unsaved changes. Are you sure you want to leave?";
 
+  private filterTypes: string[] = [];
+
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
+    this.initializeFilters();
+
     this.fetchMedicationStatements();
     this.fetchImmunizations();
     this.fetchNotes();
@@ -315,13 +351,40 @@ export default class TimelineComponent extends Vue {
     );
   }
 
+  private get isMedicationEnabled(): boolean {
+    return (
+      this.config.modules["MedicationHistory"] ||
+      this.config.modules["Medication"]
+    );
+  }
+
+  private get isImmunizationEnabled(): boolean {
+    return this.config.modules["Immunization"];
+  }
+
+  private get isNoteEnabled(): boolean {
+    return this.config.modules["Note"];
+  }
+
+  private initializeFilters(): void {
+    if (this.isMedicationEnabled) {
+      this.filterTypes.push("Medication");
+    }
+    if (this.isImmunizationEnabled) {
+      this.filterTypes.push("Immunization");
+    }
+    if (this.isNoteEnabled) {
+      this.filterTypes.push("Note");
+    }
+  }
+
   private fetchMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
     this.isMedicationLoading = true;
 
-    const isOdrEnabled = this.config.webClient.modules["MedicationHistory"];
+    const isOdrEnabled = this.config.modules["MedicationHistory"];
     let promise: Promise<RequestResult<MedicationStatement[]>>;
 
     if (isOdrEnabled) {
@@ -431,6 +494,7 @@ export default class TimelineComponent extends Vue {
     this.isAddingNote = false;
     if (note) {
       this.timelineEntries.push(new NoteTimelineEntry(note));
+      this.applyTimelineFilter();
     }
   }
 
@@ -472,14 +536,11 @@ export default class TimelineComponent extends Vue {
   }
 
   @Watch("filterText")
+  @Watch("filterTypes")
   private applyTimelineFilter() {
-    if (!this.filterText) {
-      this.visibleTimelineEntries = this.timelineEntries;
-    } else {
-      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
-        entry.filterApplies(this.filterText)
-      );
-    }
+    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+      entry.filterApplies(this.filterText, this.filterTypes)
+    );
   }
 
   private get dateGroups(): DateGroup[] {
