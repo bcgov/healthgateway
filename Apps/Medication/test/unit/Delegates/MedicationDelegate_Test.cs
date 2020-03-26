@@ -37,7 +37,7 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
-        public async Task ValidateQueryModel()
+        public async Task ValidateGetMedicationStatement()
         {
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
@@ -61,6 +61,18 @@ namespace HealthGateway.Medication.Test
             Assert.True(true);
         }
 
+        [Fact]
+        public async Task GetProtectiveWord()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
+            HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
+            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
+            string protectedWord = await medStatementDelegate.GetProtectiveWord("9735361219", string.Empty, string.Empty);
+
+            Assert.True(protectedWord == string.Empty);
+        }
         private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
         {
             return new ConfigurationBuilder()

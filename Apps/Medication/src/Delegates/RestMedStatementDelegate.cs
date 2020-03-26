@@ -113,8 +113,80 @@ namespace HealthGateway.Medication.Delegates
             }
 
             timer.Stop();
-            // this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting medication statements, Time Elapsed: {timer.Elapsed}");
             return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<string?> GetProtectiveWord(string phn, string hdid, string ipAddress)
+        {
+            string? retVal = null;
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
+
+            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            client.BaseAddress = new Uri(this.configService.GetSection("ODR")?.GetValue<string>("Url"));
+            string patientProfileEndpoint = this.configService.GetSection("ODR")?.GetValue<string>("ProtectiveWordEndpoint");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            ProtectiveWord request = new ProtectiveWord()
+            {
+                QueryResponse = new ProtectiveWordQueryResponse()
+                {
+                    PHN = phn,
+                    Operator = Constants.ProtectiveWordOperator.Get,
+                },
+            };
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                IgnoreNullValues = true,
+                WriteIndented = true,
+            };
+            string json = JsonSerializer.Serialize(request, options);
+            using HttpContent content = new StringContent(json);
+            try
+            {
+                HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                if (response.IsSuccessStatusCode)
+                {
+                    ProtectiveWord protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
+                    retVal = protectiveWord.QueryResponse.Value;
+                }
+                else
+                {
+                    this.logger.LogError($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason: ${response.ReasonPhrase}");
+                }
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError($"Unable to post message {e.ToString()}");
+            }
+
+            timer.Stop();
+            this.logger.LogDebug($"Finished getting Protective Word {phn.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> SetProtectiveWord(string phn, string newProtectiveWord, string protectiveWord, string hdid, string ipAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> DeleteProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
+        {
+            throw new NotImplementedException();
         }
     }
 }
