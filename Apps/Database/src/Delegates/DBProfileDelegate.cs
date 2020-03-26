@@ -148,6 +148,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public int GeUnregisteredInvitedUsersCount()
+        {
+            int result = this.dbContext.BetaRequest
+                .Count(b =>
+                    this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId) &&
+                    !this.dbContext.UserProfile.Any(u => u.HdId == b.HdId && u.AcceptedTermsOfService));
+            return result;
+        }
+
+        /// <inheritdoc />
         public int GetLoggedInUsersCount()
         {
             int result = this.dbContext.UserProfile
