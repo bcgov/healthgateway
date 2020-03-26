@@ -33,6 +33,8 @@ export interface IDashboardService {
   initialize(http: IHttpDelegate): void;
   getRegisteredUsersCount(): Promise<number>;
   getUnregisteredInvitedUsersCount(): Promise<number>;
+  getLoggedInUsersCount(): Promise<number>;
+  getWaitlistedUsersCount(): Promise<number>;
 }
 
 export interface IHttpDelegate {

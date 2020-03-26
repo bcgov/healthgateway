@@ -156,5 +156,13 @@ namespace HealthGateway.Database.Delegates
                     !this.dbContext.UserProfile.Any(u => u.HdId == b.HdId && u.AcceptedTermsOfService));
             return result;
         }
+
+        /// <inheritdoc />
+        public int GetLoggedInUsersCount()
+        {
+            int result = this.dbContext.UserProfile
+                .Count(u => u.LastLoginDateTime >= DateTime.Today.ToUniversalTime());
+            return result;
+        }
     }
 }

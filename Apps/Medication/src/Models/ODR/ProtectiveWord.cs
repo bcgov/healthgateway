@@ -13,35 +13,38 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Medication.Models.ODR
 {
+    using System;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Service that provides functionality to the admin dashboard.
+    /// The ProtectiveWord Request/Response model.
     /// </summary>
-    public interface IDashboardService
+    public class ProtectiveWord
     {
         /// <summary>
-        /// Retrieves the count of registered users.
+        /// Gets or sets the Id of the request.
         /// </summary>
-        /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        int GetRegisteredUserCount();
+        [JsonPropertyName("uuid")]
+        public Guid Id { get; set; } = default;
 
         /// <summary>
-        /// Retrieves the count of unregistered users that received an invite.
+        /// Gets or sets the HDID of the requestor.
         /// </summary>
-        /// <returns>The count of user profiles that received an invite but have not accepted the terms of service.</returns>
-        int GetUnregisteredInvitedUserCount();
+        [JsonPropertyName("hdid")]
+        public string RequestorHDID { get; set; } = string.Empty;
 
         /// <summary>
-        /// Retrieves the count of logged in users in the current day.
+        /// Gets or sets the IP of the requestor.
         /// </summary>
-        /// <returns>The count of logged in user.</returns>
-        int GetLoggedInUsersCount();
+        [JsonPropertyName("requestingIP")]
+        public string RequestorIP { get; set; } = string.Empty;
 
         /// <summary>
-        /// Retrieves the count of waitlisted users.
+        /// Gets or sets the QueryRequest for the MedicationHistory integration.
         /// </summary>
-        /// <returns>The count of users waiting for an invite.</returns>
-        int GetWaitlistUserCount();
+        [JsonPropertyName("maintainProtectiveWord")]
+        public ProtectiveWordQueryResponse? QueryResponse { get; set; }
     }
 }

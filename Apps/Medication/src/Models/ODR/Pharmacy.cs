@@ -13,35 +13,43 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Medication.Models.ODR
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Service that provides functionality to the admin dashboard.
+    /// Pharmacy model.
     /// </summary>
-    public interface IDashboardService
+    public class Pharmacy
     {
         /// <summary>
-        /// Retrieves the count of registered users.
+        /// Gets or sets the Pharmacy ID.
         /// </summary>
-        /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        int GetRegisteredUserCount();
+        [JsonPropertyName("pharmacyId")]
+        public string PharmacyId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Retrieves the count of unregistered users that received an invite.
+        /// Gets or sets the name of the Pharmacy.
         /// </summary>
-        /// <returns>The count of user profiles that received an invite but have not accepted the terms of service.</returns>
-        int GetUnregisteredInvitedUserCount();
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Retrieves the count of logged in users in the current day.
+        /// Gets or sets the address for the pharmacy.
         /// </summary>
-        /// <returns>The count of logged in user.</returns>
-        int GetLoggedInUsersCount();
+        [JsonPropertyName("siteAddress")]
+        public Address Address { get; set; } = new Address();
 
         /// <summary>
-        /// Retrieves the count of waitlisted users.
+        /// Gets or sets the Pharmacy's Phone number.
         /// </summary>
-        /// <returns>The count of users waiting for an invite.</returns>
-        int GetWaitlistUserCount();
+        [JsonPropertyName("phoneNumber")]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Pharmacy's Fax Number.
+        /// </summary>
+        [JsonPropertyName("faxNumber")]
+        public string FaxNumber { get; set; } = string.Empty;
     }
 }

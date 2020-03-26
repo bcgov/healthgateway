@@ -33,7 +33,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <summary>
         /// Gets the OAuth2 Auth Token URI.
         /// </summary>
-        Uri TokenUri { get; }
+        Uri? TokenUri { get; }
 
         /// <summary>
         /// Authenticates as a 'system account' concept, using OAuth 2.0 Client Credentials Grant.

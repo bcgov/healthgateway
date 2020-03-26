@@ -113,5 +113,13 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished getting pending beta request from DB. {JsonSerializer.Serialize(result)}");
             return result;
         }
+
+        /// <inheritdoc />
+        public int GetWaitlistCount()
+        {
+            int result = this.dbContext.BetaRequest
+                .Count(b => !this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId));
+            return result;
+        }
     }
 }

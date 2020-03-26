@@ -21,14 +21,19 @@ namespace HealthGateway.Admin.Services
     public class DashboardService : IDashboardService
     {
         private readonly IProfileDelegate userProfileDelegate;
+        private readonly IBetaRequestDelegate betaRequestDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        public DashboardService(IProfileDelegate userProfileDelegate)
+        /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
+        public DashboardService(
+            IProfileDelegate userProfileDelegate,
+            IBetaRequestDelegate betaRequestDelegate)
         {
             this.userProfileDelegate = userProfileDelegate;
+            this.betaRequestDelegate = betaRequestDelegate;
         }
 
         /// <inheritdoc />
@@ -41,6 +46,18 @@ namespace HealthGateway.Admin.Services
         public int GetUnregisteredInvitedUserCount()
         {
             return this.userProfileDelegate.GeUnregisteredInvitedUsersCount();
+        }
+
+        /// <inheritdoc />
+        public int GetLoggedInUsersCount()
+        {
+            return this.userProfileDelegate.GetLoggedInUsersCount();
+        }
+
+        /// <inheritdoc />
+        public int GetWaitlistUserCount()
+        {
+            return this.betaRequestDelegate.GetWaitlistCount();
         }
     }
 }

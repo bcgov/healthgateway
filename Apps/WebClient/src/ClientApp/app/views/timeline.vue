@@ -227,6 +227,7 @@ import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
 import { WebClientConfiguration } from "@/models/configData";
+import RequestResult from "@/models/requestResult";
 
 const namespace: string = "user";
 
@@ -319,8 +320,23 @@ export default class TimelineComponent extends Vue {
       SERVICE_IDENTIFIER.MedicationService
     );
     this.isMedicationLoading = true;
-    medicationService
-      .getPatientMedicationStatements(this.user.hdid, protectiveWord)
+
+    const isOdrEnabled = this.config.modules["MedicationHistory"];
+    let promise: Promise<RequestResult<MedicationStatement[]>>;
+
+    if (isOdrEnabled) {
+      promise = medicationService.getPatientMedicationStatementHistory(
+        this.user.hdid,
+        protectiveWord
+      );
+    } else {
+      promise = medicationService.getPatientMedicationStatements(
+        this.user.hdid,
+        protectiveWord
+      );
+    }
+
+    promise
       .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
