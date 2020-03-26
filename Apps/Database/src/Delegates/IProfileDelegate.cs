@@ -72,5 +72,11 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
         int GetRegisteredUsersCount();
+
+        /// <summary>
+        /// Returns the count of logged in users in the current day.
+        /// </summary>
+        /// <returns>The count of logged in users in the current day.</returns>
+        int GetLoggedInUsersCount();
     }
 }
