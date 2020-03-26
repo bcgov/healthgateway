@@ -10,7 +10,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
     this.immunization = new ImmunizationViewModel(model);
   }
 
-  public filterApplies(filterText: string): boolean {
+  public filterApplies(filterText: string, filterTypes: string[]): boolean {
+    if (!filterTypes.includes("Immunization")) {
+      return false;
+    }
+
     var text =
       (this.immunization.name! || "") +
       (this.immunization.agents.toString() || "");

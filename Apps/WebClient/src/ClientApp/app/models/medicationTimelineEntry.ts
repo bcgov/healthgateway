@@ -3,7 +3,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import Pharmacy from "./pharmacy";
 import MedicationSumary from "./medicationSumary";
 import MedicationResult from "./medicationResult";
-import MedicationStatementHistory from './medicationStatementHistory';
+import MedicationStatementHistory from "./medicationStatementHistory";
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -27,7 +27,11 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     this.directions = model.directions || "N/A";
   }
 
-  public filterApplies(filterText: string): boolean {
+  public filterApplies(filterText: string, filterTypes: string[]): boolean {
+    if (!filterTypes.includes("Medication")) {
+      return false;
+    }
+
     var text =
       (this.practitionerSurname! || "") +
       (this.medication.brandName! || "") +

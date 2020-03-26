@@ -18,5 +18,8 @@ export default abstract class TimelineEntry {
     this.date = date;
   }
 
-  public abstract filterApplies(filterText: string): boolean;
+  public abstract filterApplies(
+    filterText: string,
+    filterTypes: string[]
+  ): boolean;
 }
