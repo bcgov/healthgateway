@@ -114,13 +114,13 @@ namespace HealthGateway.Medication.Services
 
             // Retrieve the phn
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+            Patient patient = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
 
             MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
             {
-                StartDate = System.DateTime.Parse("1990/01/01"),
+                StartDate = patient.Birthdate,
                 EndDate = System.DateTime.Now,
-                PHN = phn,
+                PHN = patient.PersonalHealthNumber,
             };
             IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
             string ipv4Address = address.MapToIPv4().ToString();
