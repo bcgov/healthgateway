@@ -85,7 +85,7 @@ namespace HealthGateway.Medication.Services
                     .Where(rx => rx.PrescriptionStatus == PrescriptionStatus.Filled ||
                                  rx.PrescriptionStatus == PrescriptionStatus.Discontinued)
                     .ToList<MedicationStatement>();
-                this.PopulateBrandName(hnClientMedicationResult.Message);
+                this.PopulateBrandName(hnClientMedicationResult.Message.Select(r => r.MedicationSumary!).ToList());
             }
 
             RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
@@ -135,6 +135,7 @@ namespace HealthGateway.Medication.Services
                 result.PageSize = historyQuery.PageSize;
                 result.PageIndex = historyQuery.PageNumber;
                 result.TotalResultCount = response.Message.Records;
+                this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
             }
 
             this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(historyQuery)}");
@@ -203,21 +204,21 @@ namespace HealthGateway.Medication.Services
             return retMessage;
         }
 
-        private void PopulateBrandName(List<MedicationStatement> statements)
+        private void PopulateBrandName(List<MedicationSumary> medSummaries)
         {
-            List<string> medicationIdentifiers = statements.Select(s => s.MedicationSumary.DIN.PadLeft(8, '0')).ToList();
+            List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
             Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
 
-            this.logger.LogTrace($"Populating brand name... {statements.Count} records");
-            foreach (MedicationStatement medicationStatement in statements)
+            this.logger.LogTrace($"Populating brand name... {medSummaries.Count} records");
+            foreach (MedicationSumary mdSummary in medSummaries)
             {
-                string din = medicationStatement.MedicationSumary.DIN.PadLeft(8, '0');
-                medicationStatement.MedicationSumary.BrandName =
+                string din = mdSummary.DIN.PadLeft(8, '0');
+                mdSummary.BrandName =
                     brandNameMap.ContainsKey(din) ? brandNameMap[din] : "Unknown brand name";
             }
 
-            this.logger.LogDebug($"Finished populating brand name. {statements.Count} records");
+            this.logger.LogDebug($"Finished populating brand name. {medSummaries.Count} records");
         }
     }
 }

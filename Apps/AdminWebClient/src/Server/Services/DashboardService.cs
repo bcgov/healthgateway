@@ -43,6 +43,12 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
+        public int GetLoggedInUsersCount()
+        {
+            return this.userProfileDelegate.GetLoggedInUsersCount();
+        }
+
+        /// <inheritdoc />
         public int GetWaitlistUserCount()
         {
             return this.betaRequestDelegate.GetWaitlistCount();

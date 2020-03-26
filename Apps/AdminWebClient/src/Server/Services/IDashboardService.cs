@@ -27,6 +27,12 @@ namespace HealthGateway.Admin.Services
         int GetRegisteredUserCount();
 
         /// <summary>
+        /// Retrieves the count of logged in users in the current day.
+        /// </summary>
+        /// <returns>The count of logged in user.</returns>
+        int GetLoggedInUsersCount();
+
+        /// <summary>
         /// Retrieves the count of waitlisted users.
         /// </summary>
         /// <returns>The count of users waiting for an invite.</returns>
