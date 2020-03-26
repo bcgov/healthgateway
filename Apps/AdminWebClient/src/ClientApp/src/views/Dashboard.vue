@@ -33,7 +33,7 @@
       </v-col>
       <v-col class="col-lg-3 col-md-6 col-sm-12">
         <v-card class="text-center">
-          <h3>Logged In Users Today</h3>
+          <h3>Users Logged In Today</h3>
           <h1>
             {{ loggedInUsersCount }}
           </h1>
@@ -41,7 +41,7 @@
       </v-col>
       <v-col class="col-lg-3 col-md-6 col-sm-12">
         <v-card class="text-center">
-          <h3>Unregistered Invited Users</h3>
+          <h3>Invited Unregistered Users</h3>
           <h1>
               {{unregisteredInvitedUserCount}}</h1>
         </v-card>
