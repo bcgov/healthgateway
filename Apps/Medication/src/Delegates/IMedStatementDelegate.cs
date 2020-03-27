@@ -40,8 +40,8 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="phn">The PHN to query.</param>
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
-        /// <returns>The hashed protective word.</returns>
-        Task<string?> GetProtectiveWord(string phn, string hdid, string ipAddress);
+        /// <returns>The protective word response.</returns>
+        Task<HNMessage<ProtectiveWordQueryResponse>> GetProtectiveWord(string phn, string hdid, string ipAddress);
 
         /// <summary>
         /// Updates the Protective word to the new value.

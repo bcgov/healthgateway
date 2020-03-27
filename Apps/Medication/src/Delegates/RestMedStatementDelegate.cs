@@ -17,7 +17,6 @@ namespace HealthGateway.Medication.Delegates
 {
     using System;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
@@ -90,10 +89,10 @@ namespace HealthGateway.Medication.Delegates
                     IgnoreNullValues = true,
                     WriteIndented = true,
                 };
-                string json = JsonSerializer.Serialize(request, options);
-                using HttpContent content = new StringContent(json);
                 try
                 {
+                    string json = JsonSerializer.Serialize(request, options);
+                    using HttpContent content = new StringContent(json);
                     HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
@@ -104,8 +103,8 @@ namespace HealthGateway.Medication.Delegates
                     else
                     {
                         retVal.Result = Common.Constants.ResultType.Error;
-                        retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with readon ${response.ReasonPhrase}";
-                        this.logger.LogError($"Error getting medication statements. {query.PHN.Substring(0, 3)}, {payload}");
+                        retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}";
+                        this.logger.LogError(retVal.ResultMessage);
                     }
                 }
                 catch (Exception e)
@@ -123,13 +122,14 @@ namespace HealthGateway.Medication.Delegates
                 retVal.Result = Common.Constants.ResultType.Protected;
                 retVal.ResultMessage = ErrorMessages.ProtectiveWordErrorMessage;
             }
+
             return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<string?> GetProtectiveWord(string phn, string hdid, string ipAddress)
+        public async Task<HNMessage<ProtectiveWordQueryResponse>> GetProtectiveWord(string phn, string hdid, string ipAddress)
         {
-            string? retVal = null;
+            HNMessage<ProtectiveWordQueryResponse> retVal = new HNMessage<ProtectiveWordQueryResponse>();
             Stopwatch timer = new Stopwatch();
             timer.Start();
             this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
@@ -142,6 +142,9 @@ namespace HealthGateway.Medication.Delegates
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             ProtectiveWord request = new ProtectiveWord()
             {
+                Id = System.Guid.NewGuid(),
+                RequestorHDID = hdid,
+                RequestorIP = ipAddress,
                 QueryResponse = new ProtectiveWordQueryResponse()
                 {
                     PHN = phn,
@@ -154,27 +157,28 @@ namespace HealthGateway.Medication.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            string json = JsonSerializer.Serialize(request, options);
-            using HttpContent content = new StringContent(json);
             try
             {
+                string json = JsonSerializer.Serialize(request, options);
+                using HttpContent content = new StringContent(json);
                 HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
                     ProtectiveWord protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
-                    if (protectiveWord.QueryResponse != null && !string.IsNullOrEmpty(protectiveWord.QueryResponse.Value))
-                    {
-                        retVal = protectiveWord.QueryResponse.Value;
-                    }
+                    retVal.Message = protectiveWord.QueryResponse ?? new ProtectiveWordQueryResponse();
                 }
                 else
                 {
-                    this.logger.LogError($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason: ${response.ReasonPhrase}");
+                    retVal.Result = Common.Constants.ResultType.Error;
+                    retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}";
+                    this.logger.LogError(retVal.ResultMessage);
                 }
             }
             catch (Exception e)
             {
+                retVal.Result = Common.Constants.ResultType.Error;
+                retVal.ResultMessage = e.ToString();
                 this.logger.LogError($"Unable to post message {e.ToString()}");
             }
 
@@ -198,9 +202,9 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
         {
-            string? pnetProtectedWord = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
+            HNMessage<ProtectiveWordQueryResponse> response = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
                                                                        .ConfigureAwait(true)).Result;
-            return pnetProtectedWord == null || pnetProtectedWord == protectiveWord;
+            return response.Message.Value == protectiveWord;
         }
     }
 }

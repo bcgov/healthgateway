@@ -50,6 +50,7 @@ namespace HealthGateway.Medication.Test
                 EndDate = System.DateTime.Now,
                 PHN = "9735361219",
             };
+
             HNMessage<MedicationHistoryResponse> response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
             var options = new JsonSerializerOptions
             {
@@ -69,10 +70,24 @@ namespace HealthGateway.Medication.Test
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
             HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
-            string protectedWord = await medStatementDelegate.GetProtectiveWord("9735361219", string.Empty, string.Empty);
-
-            Assert.True(protectedWord == "test");
+            HNMessage<ProtectiveWordQueryResponse> response = await medStatementDelegate.GetProtectiveWord("9735352463", string.Empty, string.Empty).ConfigureAwait(true);
+            string protectedWord = response.Message.Value;
+            Assert.True(protectedWord == "KEYWORD");
         }
+
+        [Fact]
+        public async Task GetNoProtectiveWord()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
+            HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
+            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), httpClientService, this.configuration);
+            HNMessage<ProtectiveWordQueryResponse> response = await medStatementDelegate.GetProtectiveWord("9735361219", string.Empty, string.Empty).ConfigureAwait(true);
+            string protectedWord = response.Message.Value;
+            Assert.True(protectedWord == string.Empty);
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
         {
             return new ConfigurationBuilder()
