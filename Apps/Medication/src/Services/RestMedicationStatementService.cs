@@ -111,34 +111,50 @@ namespace HealthGateway.Medication.Services
         public async Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
         {
             this.logger.LogTrace($"Getting history of medication statements... {hdid}");
-
-            // Retrieve the phn
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            Patient patient = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
-
-            MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
-            {
-                StartDate = patient.Birthdate,
-                EndDate = System.DateTime.Now,
-                PHN = patient.PersonalHealthNumber,
-            };
-            IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-            string ipv4Address = address.MapToIPv4().ToString();
-
-            HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
-
             RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>();
-            result.ResultStatus = response.Result;
-            if (response.Result == ResultType.Success)
+            var validationResult = ValidateProtectiveWord(protectiveWord);
+            bool okProtectiveWord = validationResult.Item1;
+            if (okProtectiveWord)
             {
-                result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.Message.Results.ToList());
-                result.PageSize = historyQuery.PageSize;
-                result.PageIndex = historyQuery.PageNumber;
-                result.TotalResultCount = response.Message.Records;
-                this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
-            }
+                // Retrieve the phn
+                string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+                Patient patient = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
 
-            this.logger.LogInformation($"Finished getting history of medication statements... {JsonConvert.SerializeObject(historyQuery)}");
+                MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+                {
+                    StartDate = patient.Birthdate,
+                    EndDate = System.DateTime.Now,
+                    PHN = patient.PersonalHealthNumber,
+                    PageSize = 20000,
+                };
+                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+                string ipv4Address = address.MapToIPv4().ToString();
+                HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                result.ResultStatus = response.Result;
+                result.ResultMessage = response.ResultMessage;
+                if (response.Result == ResultType.Success)
+                {
+                    result.PageSize = historyQuery.PageSize;
+                    result.PageIndex = historyQuery.PageNumber;
+                    result.TotalResultCount = response.Message.Records;
+                    if (response.Message.Results != null)
+                    {
+                        result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.Message.Results.ToList());
+                        this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
+                    }
+                    else
+                    {
+                        result.ResourcePayload = new List<MedicationStatementHistory>();
+                    }
+                }
+            }
+            else
+            {
+                this.logger.LogInformation($"Invalid protective word. {hdid}");
+                result.ResultStatus = ResultType.Protected;
+                result.ResultMessage = validationResult.Item2!;
+            }
+            this.logger.LogInformation($"Finished getting history of medication statements...{hdid}");
             return result;
         }
 

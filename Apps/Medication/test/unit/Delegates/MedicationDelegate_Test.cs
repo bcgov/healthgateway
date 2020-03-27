@@ -40,9 +40,6 @@ namespace HealthGateway.Medication.Test
         public async Task ValidateGetMedicationStatement()
         {
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            /*var mockHttpClientFactory = new Mock<IHttpClientFactory>();
-            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
-            HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);*/
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);
@@ -68,10 +65,6 @@ namespace HealthGateway.Medication.Test
         public async Task GetProtectiveWord()
         {
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            //var mockHttpClientFactory = new Mock<IHttpClientFactory>();
-            //mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
-            //mockHttpClientFactory.Setup(s => s.CreateClient()).Returns(new HttpClient());
-            //HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);
@@ -84,9 +77,6 @@ namespace HealthGateway.Medication.Test
         public async Task GetNoProtectiveWord()
         {
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            /*var mockHttpClientFactory = new Mock<IHttpClientFactory>();
-            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
-            HttpClientService httpClientService = new HttpClientService(mockHttpClientFactory.Object, this.configuration);*/
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);

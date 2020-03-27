@@ -81,6 +81,9 @@ namespace HealthGateway.Medication.Delegates
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 MedicationHistory request = new MedicationHistory()
                 {
+                    Id = System.Guid.NewGuid(),
+                    RequestorHDID = hdid,
+                    RequestorIP = ipAddress,
                     Query = query,
                 };
                 var options = new JsonSerializerOptions
@@ -204,7 +207,7 @@ namespace HealthGateway.Medication.Delegates
         {
             HNMessage<ProtectiveWordQueryResponse> response = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
                                                                        .ConfigureAwait(true)).Result;
-            return response.Message.Value == protectiveWord;
+            return string.IsNullOrEmpty(response.Message.Value) || response.Message.Value == protectiveWord;
         }
     }
 }
