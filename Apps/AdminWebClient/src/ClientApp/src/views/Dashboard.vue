@@ -33,10 +33,17 @@
       </v-col>
       <v-col class="col-lg-3 col-md-6 col-sm-12">
         <v-card class="text-center">
-          <h3>Logged In Users Today</h3>
+          <h3>Users Logged In Today</h3>
           <h1>
             {{ loggedInUsersCount }}
           </h1>
+        </v-card>
+      </v-col>
+      <v-col class="col-lg-3 col-md-6 col-sm-12">
+        <v-card class="text-center">
+          <h3>Invited Unregistered Users</h3>
+          <h1>
+              {{unregisteredInvitedUserCount}}</h1>
         </v-card>
       </v-col>
     </v-row>
@@ -50,6 +57,7 @@ import container from "@/plugins/inversify.config";
 @Component
 export default class Dashboard extends Vue {
   private registeredUserCount: number = 0;
+  private unregisteredInvitedUserCount: number = 0;
   private loggedInUsersCount: number = 0;
   private waitlistedUserCount: number = 0;
   private dashboardService!: IDashboardService;
@@ -57,6 +65,7 @@ export default class Dashboard extends Vue {
   mounted() {
     this.dashboardService = container.get(SERVICE_IDENTIFIER.DashboardService);
     this.getRegisteredUserCount();
+    this.getUnregisteredInvitedUserCount();
     this.getWaitlistedUserCount();
   }
 
@@ -76,6 +85,14 @@ export default class Dashboard extends Vue {
     this.dashboardService.getWaitlistedUsersCount().then(count => {
       this.waitlistedUserCount = count;
     });
+  }
+
+  private getUnregisteredInvitedUserCount() {
+    this.dashboardService
+      .getUnregisteredInvitedUsersCount()
+      .then(count => {
+        this.unregisteredInvitedUserCount = count;
+      });
   }
 }
 </script>

@@ -74,6 +74,12 @@ namespace HealthGateway.Database.Delegates
         int GetRegisteredUsersCount();
 
         /// <summary>
+        /// Returns from the database the count of unregistered users that received an invite.
+        /// </summary>
+        /// <returns>The count of unregistered user that have not accepted the terms of service.</returns>
+        int GeUnregisteredInvitedUsersCount();
+
+        /// <summary>
         /// Returns the count of logged in users in the current day.
         /// </summary>
         /// <returns>The count of logged in users in the current day.</returns>

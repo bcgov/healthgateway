@@ -319,16 +319,16 @@
       "id": "60c12b75-0e44-421e-b4a0-d18b71cd0abd",
       "comment": "",
       "command": "assertText",
-      "target": "id=subject",
+      "target": "id=Subject",
       "targets": [
-        ["id=subject", "id"],
-        ["css=#subject", "css:finder"],
-        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["id=Subject", "id"],
+        ["css=#Subject", "css:finder"],
+        ["xpath=//h1[@id='Subject']", "xpath:attributes"],
         ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
         ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Health Care Timeline')]", "xpath:innerText"]
+        ["xpath=//h1[contains(.,'Terms of Service')]", "xpath:innerText"]
       ],
-      "value": "Health Care Timeline"
+      "value": "Terms of Service"
     }]
   }, {
     "id": "429ebd39-0f63-48f6-886b-e24d135a63d1",
@@ -703,7 +703,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 556 out of 556 records"
+      "value": "Displaying 21 out of 21 records"
     }, {
       "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
       "comment": "",
@@ -724,7 +724,7 @@
       "command": "assert",
       "target": "countCards",
       "targets": [],
-      "value": "556"
+      "value": "21"
     }]
   }, {
     "id": "7a8e3e70-67ba-49e8-94a7-241c2f407c4b",
@@ -781,7 +781,7 @@
       "targets": [
         ["css=.row:nth-child(1) .date", "css:finder"],
         ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
-        ["xpath=//div[3]/div/div/div", "xpath:position"]
+        ["xpath=//div[4]/div[2]/div/div/div", "xpath:position"]
       ],
       "value": "Jan 29, 2020"
     }, {
@@ -830,13 +830,13 @@
       "id": "91d14cea-7271-4b8d-8556-aefbf561ab56",
       "comment": "",
       "command": "assertText",
-      "target": "css=.detailSection:nth-child(1) > div:nth-child(2)",
+      "target": "css=.detailSection:nth-child(1) > div",
       "targets": [
-        ["css=.detailSection:nth-child(1) > div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div/div[2]", "xpath:idRelative"],
-        ["xpath=//div[2]/div[2]/div[2]/div/div/div/div/div[2]", "xpath:position"]
+        ["css=.detailSection:nth-child(1) > div", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1580284800000']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]/div[2]/div/div/div/div/div", "xpath:position"]
       ],
-      "value": "Prescription #: 5788"
+      "value": "Practitioner: PHARMACISTWITHLONGCHARACTERNAME#035"
     }, {
       "id": "ec1b15cc-5107-4ed0-b908-fb8e095e522b",
       "comment": "",
@@ -1000,9 +1000,16 @@
       "id": "6d4fe278-2ad2-4ae8-943b-3a43fcdade48",
       "comment": "",
       "command": "assertText",
-      "target": "id=subject",
-      "targets": [],
-      "value": "Health Care Timeline"
+      "target": "id=Subject",
+      "targets": [
+        ["id=Subject", "id"],
+        ["css=#Subject", "css:finder"],
+        ["xpath=//h1[@id='Subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Terms of Service')]", "xpath:innerText"]
+      ],
+      "value": "Terms of Service"
     }, {
       "id": "793d5b06-30a3-4d72-92b4-37cef1b2a3d9",
       "comment": "",
@@ -1646,12 +1653,12 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 556 out of 556 records"
+      "value": "Displaying 32 out of 32 records"
     }, {
       "id": "6de9c864-7c6a-439a-b066-c129a577446c",
       "comment": "",
       "command": "type",
-      "target": "id=__BVID__39",
+      "target": "xpath=//input[@id='__BVID__39']",
       "targets": [
         ["id=__BVID__39", "id"],
         ["css=#\\__BVID__39", "css:finder"],
@@ -2143,33 +2150,33 @@
       "id": "a745a52c-b73f-4b78-9b59-8d7ee3d86c2e",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(3) .date",
+      "target": "css=.row:nth-child(2) > .col-auto > .date",
       "targets": [
-        ["css=.row:nth-child(3) .date", "css:finder"],
-        ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
-        ["xpath=//div[4]/div[2]/div[3]/div/div", "xpath:position"]
+        ["css=.row:nth-child(2) > .col-auto > .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div[2]/div/div", "xpath:position"]
       ],
       "value": "Jan 22, 2020"
     }, {
       "id": "d1ac4e1a-2650-4708-a6a0-a0aaff0c54d2",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(3) > .row:nth-child(4) .entryTitle",
+      "target": "css=.row:nth-child(2) > .row .entryTitle",
       "targets": [
-        ["css=.row:nth-child(3) > .row:nth-child(4) .entryTitle", "css:finder"],
-        ["xpath=//div[@id='timeData']/div[3]/div[4]/div/div/div[2]", "xpath:idRelative"],
-        ["xpath=//div[3]/div[4]/div/div/div[2]", "xpath:position"]
+        ["css=.row:nth-child(2) > .row .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[2]/div[3]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]", "xpath:position"]
       ],
       "value": "Shingles"
     }, {
       "id": "451d1fe1-a700-4128-8afe-385595ee68cc",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col",
+      "target": "css=.row:nth-child(2) > .row > .timelineCard .col .col",
       "targets": [
-        ["css=.row:nth-child(3) > .row:nth-child(4) > .col .col .col", "css:finder"],
-        ["xpath=//div[@id='timeData']/div[3]/div[4]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
-        ["xpath=//div[4]/div/div[2]/div[2]/div/div", "xpath:position"]
+        ["css=.row:nth-child(2) > .row > .timelineCard .col .col", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[2]/div[3]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div[2]/div[2]/div/div", "xpath:position"]
       ],
       "value": "Zoster"
     }, {
