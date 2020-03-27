@@ -181,7 +181,8 @@ export default class MedicationTimelineComponent extends Vue {
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
   private faxPhoneType: PhoneType = PhoneType.Fax;
-  private isLoading: boolean = false;
+  private isLoadingMedication: boolean = false;
+  private isLoadingPharmacy: boolean = false;
   private hasErrors: boolean = false;
 
   private medicationLoaded: boolean = false;
@@ -190,6 +191,10 @@ export default class MedicationTimelineComponent extends Vue {
 
   private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
+  }
+
+  private get isLoading(): boolean {
+    return this.isLoadingMedication || this.isLoadingPharmacy;
   }
 
   private get entryIcon(): IconDefinition {
@@ -206,7 +211,7 @@ export default class MedicationTimelineComponent extends Vue {
 
     // Load medication details
     if (!this.medicationLoaded) {
-      this.isLoading = true;
+      this.isLoadingMedication = true;
       var medicationPromise = this.getMedication({
         din: medicationEntry.medication.din
       })
@@ -215,18 +220,18 @@ export default class MedicationTimelineComponent extends Vue {
             medicationEntry.medication.populateFromModel(result);
           }
           this.medicationLoaded = true;
-          this.isLoading = false;
+          this.isLoadingMedication = false;
         })
         .catch(err => {
           console.log("Error loading medication details");
           console.log(err);
           this.hasErrors = true;
-          this.isLoading = false;
+          this.isLoadingMedication = false;
         });
     }
 
     if (!medicationEntry.pharmacy.isLoaded) {
-      this.isLoading = true;
+      this.isLoadingPharmacy = true;
       var pharmacyPromise = this.getPharmacy({
         pharmacyId: medicationEntry.pharmacy.id
       })
@@ -234,13 +239,13 @@ export default class MedicationTimelineComponent extends Vue {
           if (result) {
             medicationEntry.pharmacy.populateFromModel(result);
           }
-          this.isLoading = false;
+          this.isLoadingPharmacy = false;
         })
         .catch(err => {
           console.log("Error loading pharmacy details");
           console.log(err);
           this.hasErrors = true;
-          this.isLoading = false;
+          this.isLoadingPharmacy = false;
         });
     }
   }
