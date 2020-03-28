@@ -1,6 +1,19 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
+body {
+  -webkit-print-color-adjust: exact !important;
+}
+@media print {
+    .no-print, .no-print * {
+        display: none !important;
+    }
+
+    header {
+        display: block !important;
+    }
+}
+
 .column-wrapper {
   border: 1px;
 }
@@ -53,7 +66,7 @@
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row class="my-3 fluid justify-content-md-center">
-      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper">
+      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper no-print">
         <b-row>
           <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
           <b-col class="col-12 col-xs-8 col-lg-8">
@@ -101,7 +114,7 @@
           <h1 id="subject">Health Care Timeline</h1>
           <hr />
         </div>
-        <b-row>
+        <b-row class="no-print">
           <b-col>
             <div class="form-group has-filter">
               <font-awesome-icon
@@ -119,7 +132,7 @@
             </div>
           </b-col>
         </b-row>
-        <b-row align-h="start">
+        <b-row align-h="start" class="no-print">
           <b-col v-if="isMedicationEnabled" cols="3">
             <b-form-checkbox
               id="medicationFilter"
@@ -153,7 +166,7 @@
         </b-row>
         <br />
         <div v-if="!isLoading">
-          <div id="listControlls">
+          <div id="listControlls" class="no-print">
             <b-row>
               <b-col>
                 Displaying {{ getVisibleCount() }} out of
@@ -217,7 +230,7 @@
           </div>
         </div>
       </b-col>
-      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper">
+      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
         <HealthlinkComponent />
       </b-col>
     </b-row>
@@ -227,7 +240,7 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
-    <FeedbackComponent />
+    <FeedbackComponent class="no-print" />
   </div>
 </template>
 
