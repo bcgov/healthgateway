@@ -161,7 +161,7 @@ namespace HealthGateway.Database.Delegates
         public int GetLoggedInUsersCount()
         {
             int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime >= DateTime.Today.ToUniversalTime());
+                .Count(u => u.LastLoginDateTime.HasValue && u.LastLoginDateTime.Value >= DateTime.UtcNow.Date);
             return result;
         }
     }
