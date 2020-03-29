@@ -1,4 +1,14 @@
 <style>
+@media print {
+  .navbar {
+    display: flex !important;
+  }
+
+  .footer {
+    display: none;
+  }
+}
+
 html {
   height: 100vh;
 }
