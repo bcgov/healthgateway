@@ -49,9 +49,9 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount()
+        public int GetTodayLoggedinUsersCount()
         {
-            return this.userProfileDelegate.GetLoggedInUsersCount();
+            return this.userProfileDelegate.GetTodayLoggedinUsersCount();
         }
 
         /// <inheritdoc />

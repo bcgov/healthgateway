@@ -83,6 +83,6 @@ namespace HealthGateway.Database.Delegates
         /// Returns the count of logged in users in the current day.
         /// </summary>
         /// <returns>The count of logged in users in the current day.</returns>
-        int GetLoggedInUsersCount();
+        int GetTodayLoggedinUsersCount();
     }
 }

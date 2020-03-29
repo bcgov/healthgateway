@@ -158,7 +158,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount()
+        public int GetTodayLoggedinUsersCount()
         {
             int result = this.dbContext.UserProfile
                 .Count(u => u.LastLoginDateTime.HasValue && u.LastLoginDateTime.Value >= DateTime.UtcNow.Date);
