@@ -1,4 +1,14 @@
 <style>
+@media print {
+  .navbar {
+    display: flex !important;
+  }
+
+  .footer {
+    display: none;
+  }
+}
+
 html {
   height: 100vh;
 }
@@ -89,7 +99,8 @@ import {
   faSpinner,
   faCheckCircle,
   faTimesCircle,
-  faEllipsisV
+  faEllipsisV,
+  faPrint
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -101,7 +112,8 @@ library.add(
   faSpinner,
   faCheckCircle,
   faTimesCircle,
-  faEllipsisV
+  faEllipsisV,
+  faPrint
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

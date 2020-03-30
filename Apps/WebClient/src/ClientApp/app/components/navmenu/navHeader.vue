@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="lg" type="dark">
+  <b-navbar toggleable="md" type="dark">
     <!-- Brand -->
     <b-navbar-brand class="mx-0">
       <router-link to="/timeline">
