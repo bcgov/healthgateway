@@ -107,7 +107,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <summary>
-        /// Generatea a secure random salt of the specified length in bytes.
+        /// Creates a secure random salt of the specified length in bytes.
         /// </summary>
         /// <param name="saltLength">The length of the salt in bytes, defaults to 16 bytes.</param>
         /// <returns>A byte array containing the salt.</returns>
