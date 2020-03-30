@@ -82,8 +82,8 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Returns the count of logged in users after the specified date.
         /// </summary>
-        /// <param name="startDate">The start date of the count query.</param>
+        /// <param name="timezone">The timezone to be used for the date.</param>
         /// <returns>The count of logged in users.</returns>
-        public int GetLoggedInUsersCount(DateTime startDate);
+        public int GetTodayLoggedInUsersCount(TimeZoneInfo timezone);
     }
 }
