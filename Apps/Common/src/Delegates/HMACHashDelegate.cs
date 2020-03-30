@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Delegates
     using System;
     using System.Security.Cryptography;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models.Cacheable;
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -67,7 +68,7 @@ namespace HealthGateway.Common.Delegates
         {
             HMACHash retHash = new HMACHash()
             {
-                PseudoRandomFunction = KeyDerivationPrf.HMACSHA512,
+                PseudoRandomFunction = Database.Constant.HashFunction.HMACSHA512,
                 Iterations = iterations,
             };
 
@@ -97,7 +98,7 @@ namespace HealthGateway.Common.Delegates
                 HMACHash keyHash = HMACHash(
                     key,
                     Convert.FromBase64String(compareHash.Salt),
-                    compareHash.PseudoRandomFunction,
+                    (KeyDerivationPrf)compareHash.PseudoRandomFunction,
                     compareHash.Iterations);
                 result = compareHash.Hash == keyHash.Hash;
             }

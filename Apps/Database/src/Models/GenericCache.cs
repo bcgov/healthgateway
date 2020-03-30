@@ -18,19 +18,19 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Text.Json;
+    using HealthGateway.Database.Models.Cacheable;
 
     /// <summary>
-    ///  A data store for cacheable objects.
+    /// An asbtract class representing a data store for JSON cacheable objects.
     /// </summary>
-    /// <typeparam name="T">The generic type to cache.</typeparam>
-    public class GenericCache<T> : AuditableEntity
-        where T : class
+    public class GenericCache : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
         [Column("GenericCacheId")]
-        public virtual Guid Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the Users HdId.
@@ -40,22 +40,16 @@ namespace HealthGateway.Database.Models
         public string? HdId { get; set; }
 
         /// <summary>
-        /// Gets or sets the Timeline datetime.
-        /// </summary>
-        [Required]
-        public DateTime? TimelineDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets serialized JSON object data.
-        /// </summary>
-        [Required]
-        [Column(TypeName = "jsonb")]
-        public T ObjectJSON { get; set; } = default!;
-
-        /// <summary>
         /// Gets or sets the cache expiry datetime.
         /// </summary>
         [Required]
         public DateTime? ExpiryDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the The <typeparamref name="T"/> value.
+        /// </summary>
+        [Required]
+        [Column("JSONValue")]
+        public JsonDocument? Value { get; set; }
     }
 }

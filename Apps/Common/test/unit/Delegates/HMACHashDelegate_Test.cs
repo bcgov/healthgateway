@@ -25,6 +25,8 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using System;
+    using System.Text.Json;
+    using HealthGateway.Database.Models.Cacheable;
 
     public class HMACHashDelegate_Test
     {

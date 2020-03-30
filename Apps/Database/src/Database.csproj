@@ -41,6 +41,7 @@
   <ItemGroup>
     <Folder Include="Wrapper\" />
     <Folder Include="Assets\Legal\" />
+    <Folder Include="Models\Cacheable\" />
   </ItemGroup>
 
 

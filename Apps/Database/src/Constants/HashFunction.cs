@@ -13,33 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Database.Constant
 {
-    using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-
     /// <summary>
-    /// A hash of something.
+    /// The enumeration of Hash functions.
     /// </summary>
-    public class HMACHash : IHash
+    public enum HashFunction
     {
         /// <summary>
-        /// Gets or sets the pseudo random function that was used to generate this hash.
+        /// The HMAC algorithm (RFC 2104) using the SHA-1 hash function (FIPS 180-4).
         /// </summary>
-        public KeyDerivationPrf PseudoRandomFunction { get; set; } = KeyDerivationPrf.HMACSHA512;
+        HMACSHA1 = 0,
 
         /// <summary>
-        /// Gets or sets the iterations used to generate this hash.
+        /// The HMAC algorithm (RFC 2104) using the SHA-256 hash function (FIPS 180-4).
         /// </summary>
-        public int Iterations { get; set; }
+        HMACSHA256 = 1,
 
         /// <summary>
-        /// Gets or sets the base64 salt that was used in generating the hash.
+        /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
         /// </summary>
-        public string? Salt { get; set; }
+        HMACSHA512 = 2,
 
-        /// <summary>
-        /// Gets or sets the base64 encoded hash.
-        /// </summary>
-        public string? Hash { get; set; }
     }
 }
