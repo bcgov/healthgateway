@@ -162,7 +162,8 @@ namespace HealthGateway.Database.Delegates
         {
             DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow.Date, timezone);
             int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime.HasValue && u.LastLoginDateTime.Value >= startDate);
+                .Count(u => u.LastLoginDateTime.HasValue &&
+                TimeZoneInfo.ConvertTimeFromUtc(u.LastLoginDateTime.Value, timezone) >= startDate);
             return result;
         }
     }
