@@ -46,7 +46,7 @@ namespace HealthGateway.Database.Models
         public DateTime? ExpiryDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the The <typeparamref name="T"/> value.
+        /// Gets or sets the JSONDocument to store.
         /// </summary>
         [Required]
         [Column("JSONValue")]
