@@ -80,11 +80,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <inheritdoc/>
         public JWTModel AuthenticateAsUser()
         {
-            this.logger.LogDebug($"Authenticating Direct Grant as User: {TokenRequest.Username!}");
+            this.logger.LogDebug($"Authenticating Direct Grant as User: {this.TokenRequest.Username!}");
             Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant();
 
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
-            this.logger.LogDebug($"Finished authenticating.");
+            this.logger.LogDebug($"Finished authenticating User: { this.TokenRequest.Username! }");
             return jwtModel;
         }
 

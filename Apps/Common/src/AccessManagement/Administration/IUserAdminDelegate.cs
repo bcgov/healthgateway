@@ -37,7 +37,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
-        /// <returns></returns>
-        int DeleteUser(Guid userId, JWTModel jwtModel);
+        /// <returns>returns true when user deleted</returns>
+        bool DeleteUser(Guid userId, JWTModel jwtModel);
     }
 }
