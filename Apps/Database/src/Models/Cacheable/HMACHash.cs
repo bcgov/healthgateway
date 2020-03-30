@@ -13,43 +13,33 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Database.Models.Cacheable
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Text.Json;
-    using HealthGateway.Database.Models.Cacheable;
+    using HealthGateway.Database.Constant;
 
     /// <summary>
-    /// An asbtract class representing a data store for JSON cacheable objects.
+    /// A hash of something.
     /// </summary>
-    public class GenericCache : AuditableEntity
+    public class HMACHash : IHash
     {
         /// <summary>
-        /// Gets or sets the id.
+        /// Gets or sets the pseudo random function that was used to generate this hash.
         /// </summary>
-        [Column("GenericCacheId")]
-        public Guid Id { get; set; }
+        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
 
         /// <summary>
-        /// Gets or sets the Users HdId.
+        /// Gets or sets the iterations used to generate this hash.
         /// </summary>
-        [Required]
-        [MaxLength(54)]
-        public string? HdId { get; set; }
+        public int Iterations { get; set; }
 
         /// <summary>
-        /// Gets or sets the cache expiry datetime.
+        /// Gets or sets the base64 salt that was used in generating the hash.
         /// </summary>
-        [Required]
-        public DateTime? ExpiryDateTime { get; set; }
+        public string? Salt { get; set; }
 
         /// <summary>
-        /// Gets or sets the JSONDocument to store.
+        /// Gets or sets the base64 encoded hash.
         /// </summary>
-        [Required]
-        [Column("JSONValue")]
-        public JsonDocument? Value { get; set; }
+        public string? Hash { get; set; }
     }
 }

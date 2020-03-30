@@ -13,43 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Database.Constant
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Text.Json;
-    using HealthGateway.Database.Models.Cacheable;
-
     /// <summary>
-    /// An asbtract class representing a data store for JSON cacheable objects.
+    /// The enumeration of Hash functions.
     /// </summary>
-    public class GenericCache : AuditableEntity
+    public enum HashFunction
     {
         /// <summary>
-        /// Gets or sets the id.
+        /// The HMAC algorithm (RFC 2104) using the SHA-1 hash function (FIPS 180-4).
         /// </summary>
-        [Column("GenericCacheId")]
-        public Guid Id { get; set; }
+        HMACSHA1 = 0,
 
         /// <summary>
-        /// Gets or sets the Users HdId.
+        /// The HMAC algorithm (RFC 2104) using the SHA-256 hash function (FIPS 180-4).
         /// </summary>
-        [Required]
-        [MaxLength(54)]
-        public string? HdId { get; set; }
+        HMACSHA256 = 1,
 
         /// <summary>
-        /// Gets or sets the cache expiry datetime.
+        /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
         /// </summary>
-        [Required]
-        public DateTime? ExpiryDateTime { get; set; }
+        HMACSHA512 = 2,
 
-        /// <summary>
-        /// Gets or sets the JSONDocument to store.
-        /// </summary>
-        [Required]
-        [Column("JSONValue")]
-        public JsonDocument? Value { get; set; }
     }
 }
