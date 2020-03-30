@@ -13,24 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Utils
+
+namespace HealthGateway.Common.Delegates
 {
-    using System;
-    using System.Globalization;
+    using HealthGateway.Database.Models.Cacheable;
 
     /// <summary>
-    /// Utilities for formatting Dates and Times for Health Gateway.
+    /// A delegate to generate a hash.
     /// </summary>
-    public static class DateTimeFormatter
+    public interface IHashDelegate
     {
         /// <summary>
-        /// Formats the supplied datetime as a date string.
+        /// Creates an implementation specific hash of a key.
         /// </summary>
-        /// <param name="datetime">The datetime to format.</param>
-        /// <returns>A formatted string or empty if input is null.</returns>
-        public static string FormatDate(DateTime? datetime)
-        {
-            return datetime != null ? datetime.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : string.Empty;
-        }
+        /// <param name="key">The string to hash.</param>
+        /// <returns>The newly created Hash.</returns>
+        IHash Hash(string key);
+
+        /// <summary>
+        /// Validates that the supplied key will hash to instance.
+        /// </summary>
+        /// <param name="key">The key to hash and compare.</param>
+        /// <param name="compareHash">The hash object to compare.</param>
+        /// <returns>true if the key generates the same hash.</returns>
+        bool Compare(string key, IHash compareHash);
     }
 }
