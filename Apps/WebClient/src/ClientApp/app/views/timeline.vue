@@ -61,7 +61,7 @@
     <b-row class="my-3 fluid justify-content-md-center">
       <b-col class="col-12 col-md-2 col-lg-3 column-wrapper no-print">
         <b-row>
-          <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-0 col-xs-4 col-lg-2"></b-col>
           <b-col class="col-12 col-xs-8 col-lg-8">
             <b-button
               v-if="config.modules['Note'] == true"
@@ -74,7 +74,21 @@
               Add Note
             </b-button>
           </b-col>
-          <b-col class="col-0 col-xs-0 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2"></b-col>
+        </b-row>
+        <b-row class="pt-1">
+          <b-col class="col-0 col-xs-4 col-lg-2"></b-col>
+          <b-col class="col-12 col-xs-8 col-lg-8">
+            <b-button
+              variant="light"
+              class="w-100 visible-lg-block"
+              @click="printRecords"
+            >
+              <font-awesome-icon icon="print" aria-hidden="true" />
+              Print
+            </b-button>
+          </b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2"></b-col>
         </b-row>
       </b-col>
       <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
@@ -598,6 +612,10 @@ export default class TimelineComponent extends Vue {
 
   private getTotalCount(): number {
     return this.timelineEntries.length;
+  }
+
+  private printRecords() {
+    window.print();
   }
 }
 </script>
