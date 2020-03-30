@@ -25,7 +25,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
     public interface IUserAdminDelegate
     {
         /// <summary>
-        /// Look up a user by username.
+        /// Look up a User account by username in the Identity and Access Management system.
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
@@ -33,11 +33,11 @@ namespace HealthGateway.Common.AccessManagement.Administration
         UserRepresentation GetUser(Guid userId, JWTModel jwtModel);
 
         /// <summary>
-        /// Delete a User from teh IAM system.
+        /// Delete a User account from the Identity and Access Management system.
         /// </summary>
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
-        /// <returns>returns true when user deleted</returns>
+        /// <returns>Returns true when user deleted.</returns>
         bool DeleteUser(Guid userId, JWTModel jwtModel);
     }
 }

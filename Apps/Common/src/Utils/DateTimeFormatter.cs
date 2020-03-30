@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System;
-using System.Globalization;
 
 namespace HealthGateway.Common.Utils
 {
+    using System;
+    using System.Globalization;
 
     /// <summary>
     /// Utilities for formatting Dates and Times for Health Gateway.

@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
+
     using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
     /// The authorization service interface.
-    /// This supports direct grant for OAuth2 Client Credentials Grant flows 
+    /// This supports direct grant for OAuth2 Client Credentials Grant flows
     /// and Resource Owner Password Grant flows.
     /// </summary>
     public interface IAuthenticationDelegate
@@ -44,7 +45,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
-        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>        
+        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
         JWTModel AuthenticateAsUser();
     }
 }

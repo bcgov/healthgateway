@@ -51,11 +51,11 @@ namespace HealthGateway.JobScheduler.Controllers
 #pragma warning disable CA1303 //Disable literals
             if (!this.HttpContext.User.Identity.IsAuthenticated)
             {
-                this.logger.LogDebug("Issuing Challenge result");
+                this.logger.LogDebug(@"Issuing Challenge result");
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
-            this.logger.LogDebug("Redirecting to dashboard");
+            this.logger.LogDebug(@"Redirecting to dashboard");
             string basePath = this.httpContextAccessor.HttpContext.Request.PathBase.Value;
             return new RedirectResult($"{basePath}/");
 #pragma warning restore CA1303 //Restore literal warning

@@ -57,6 +57,5 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
         /// </summary>
         [JsonPropertyName("password")]
         public string? Password { get; set; }
-
     }
 }

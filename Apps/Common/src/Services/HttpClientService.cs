@@ -57,7 +57,11 @@ namespace HealthGateway.Common.Services
             return this.SetTimeout(retVal);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Initalizes the request timeout for the <see cref="HttpClientService"/> class.
+        /// </summary>
+        /// <param name="client">The injected http client factory.</param>
+        /// <returns>The HttpClient.</returns>
         public HttpClient SetTimeout(HttpClient client)
         {
             string timeout = this.configService.GetSection("HttpClient").GetValue<string>("Timeout");
