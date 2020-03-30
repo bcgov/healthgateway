@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.AccessManagement.Administration.Models
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -48,10 +49,10 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         public string? LastName { get; set; }
 
         /// <summary>
-        /// Gets the user's roles in the AuthServer's application realm.
+        /// Gets or sets the user's roles (space separated) in the AuthServer's application realm.
         /// </summary>
         [JsonPropertyName("realmRoles")]
-        public string[] RealmRoles { get; set; } = Array.Empty<string>();
+        public string? RealmRoles { get; set; }
 
         /// <summary>
         /// Gets or sets the user's username.

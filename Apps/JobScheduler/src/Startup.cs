@@ -17,8 +17,14 @@
 namespace HealthGateway.JobScheduler
 {
     using System;
+    using System.Diagnostics.Contracts;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
     using Hangfire;
     using Hangfire.PostgreSql;
+
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
@@ -32,21 +38,18 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.JobScheduler.Authorization;
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
+
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The startup class.
@@ -103,6 +106,7 @@ namespace HealthGateway.JobScheduler
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+
             // Add app
             services.AddTransient<FedDrugJob>();
             services.AddTransient<ProvincialDrugJob>();
@@ -118,16 +122,17 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            this.logger.LogInformation($"Hosting Environment: {env.EnvironmentName}");
-            this.startupConfig.UseForwardHeaders(app);
-            this.startupConfig.UseAuth(app);
-            this.startupConfig.UseHttp(app);
+            Contract.Requires((app != null) && (env != null));
+            this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
+            this.startupConfig.UseForwardHeaders(app!);
+            this.startupConfig.UseAuth(app!);
+            this.startupConfig.UseHttp(app!);
             app.UseEndpoints(endpoints =>
             {
                 // Mapping of endpoints goes here:
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(@"default", "{controller=Home}/{action=Index}/{id?}");
             });
 
             // Empty string signifies the root URL
@@ -182,67 +187,75 @@ namespace HealthGateway.JobScheduler
         {
             string basePath = this.GetBasePath();
             services.AddAuthentication(auth =>
-            {
-                auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = AuthorizationConstants.CookieName;
-                options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = AuthorizationConstants.CookieName;
+                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+                })
+                .AddOpenIdConnect(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
                     ValidateIssuer = true,
-                };
-                this.configuration.GetSection("OpenIdConnect").Bind(options);
-                if (string.IsNullOrEmpty(options.Authority))
-                {
-                    this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
-                }
-
-                options.Events = new OpenIdConnectEvents()
-                {
-                    OnTokenValidated = ctx =>
+                    };
+                    this.configuration.GetSection(@"OpenIdConnect").Bind(options);
+                    if (string.IsNullOrEmpty(options.Authority))
                     {
-                        JwtSecurityToken accessToken = ctx.SecurityToken;
-                        if (accessToken != null)
+                        this.logger.LogCritical(@"OpenIdConnect Authority is missing, bad things are going to occur");
+                    }
+
+                    options.Events = new OpenIdConnectEvents()
+                    {
+                        OnTokenValidated = ctx =>
                         {
-                            ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
-                            if (identity != null)
+                            JwtSecurityToken accessToken = ctx.SecurityToken;
+                            if (accessToken != null)
                             {
-                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                                if (ctx.Principal.Identity is ClaimsIdentity claimsIdentity)
+                                {
+                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
+                                }
+                                else
+                                {
+                                    throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
+                                }
                             }
-                        }
 
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToIdentityProvider = ctx =>
-                    {
-                        if (!string.IsNullOrEmpty(this.configuration["Keycloak:IDPHint"]))
+                            return Task.CompletedTask;
+                        },
+                        OnRedirectToIdentityProvider = ctx =>
                         {
-                            this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                            ctx.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
-                        }
+                            if (!string.IsNullOrEmpty(this.configuration["Keycloak:IDPHint"]))
+                            {
+                                this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                ctx.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
+                            }
 
-                        return Task.FromResult(0);
-                    },
-                    OnAuthenticationFailed = c =>
-                    {
-                        c.HandleResponse();
-                        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        c.Response.ContentType = "text/plain";
-                        this.logger.LogError(c.Exception.ToString());
-                        return c.Response.WriteAsync(c.Exception.ToString());
-                    },
-                };
-            });
+                            return Task.FromResult(0);
+                        },
+                        OnAuthenticationFailed = c =>
+                        {
+                            c.HandleResponse();
+                            c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            c.Response.ContentType = "text/plain";
+                            this.logger.LogError(c.Exception.ToString());
+
+                            return c.Response.WriteAsync(c.Exception.ToString());
+                        },
+                    };
+                });
         }
 
+        /// <summary>
+        /// Fetches the base path from the configuration.
+        /// </summary>
+        /// <returns>Theh BasePath config for the ForwardProxies.</returns>
         private string GetBasePath()
         {
             string basePath = string.Empty;

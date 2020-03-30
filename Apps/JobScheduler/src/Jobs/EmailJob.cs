@@ -50,10 +50,11 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="emailDelegate">The email delegate to use.</param>
         public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
         {
-            this.configuration = configuration;
+            Contract.Requires((configuration != null) && (emailDelegate != null));
+            this.configuration = configuration!;
             this.logger = logger;
-            this.emailDelegate = emailDelegate;
-            IConfigurationSection section = configuration.GetSection("Smtp");
+            this.emailDelegate = emailDelegate!;
+            IConfigurationSection section = configuration!.GetSection("Smtp");
             this.host = section.GetValue<string>("Host");
             this.port = section.GetValue<int>("Port");
             section = configuration.GetSection("EmailJob");
