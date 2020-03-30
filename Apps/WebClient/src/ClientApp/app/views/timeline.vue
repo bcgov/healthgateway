@@ -137,7 +137,7 @@
               name="immunizationFilter"
               value="Immunization"
             >
-              Vaccinations
+              Immunizations
             </b-form-checkbox>
           </b-col>
           <b-col v-if="isNoteEnabled" cols="3">
