@@ -158,10 +158,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetTodayLoggedinUsersCount()
+        public int GetLoggedInUsersCount(DateTime startDate)
         {
             int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime.HasValue && u.LastLoginDateTime.Value >= DateTime.UtcNow.Date);
+                .Count(u => u.LastLoginDateTime.HasValue && u.LastLoginDateTime.Value >= startDate);
             return result;
         }
     }

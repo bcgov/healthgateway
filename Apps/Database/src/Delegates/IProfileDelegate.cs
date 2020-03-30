@@ -80,9 +80,10 @@ namespace HealthGateway.Database.Delegates
         int GeUnregisteredInvitedUsersCount();
 
         /// <summary>
-        /// Returns the count of logged in users in the current day.
+        /// Returns the count of logged in users after the specified date.
         /// </summary>
-        /// <returns>The count of logged in users in the current day.</returns>
-        int GetTodayLoggedinUsersCount();
+        /// <param name="startDate">The start date of the count query.</param>
+        /// <returns>The count of logged in users.</returns>
+        public int GetLoggedInUsersCount(DateTime startDate);
     }
 }

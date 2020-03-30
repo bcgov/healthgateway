@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("LoggedInCount")]
         public IActionResult GetTodayLoggedinUsersCount()
         {
-            return new JsonResult(this.dashboardService.GetTodayLoggedinUsersCount());
+            return new JsonResult(this.dashboardService.GetTodayLoggedInUsersCount());
         }
 
         /// <summary>
