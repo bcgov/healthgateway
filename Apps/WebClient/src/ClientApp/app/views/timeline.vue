@@ -1,8 +1,3 @@
-<style lang="scss">
-div {
-  border: 1px solid red;
-}
-</style>
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
@@ -11,10 +6,6 @@ div {
   .no-print * {
     display: none !important;
   }
-}
-
-div {
-  border: 1px solid green;
 }
 
 .column-wrapper {
