@@ -40,52 +40,52 @@ namespace HealthGateway.Medication.Test
         public async Task ValidateGetMedicationStatement()
         {
             return; //investigate how to make these run in Azure
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);
-            MedicationHistoryQuery query = new MedicationHistoryQuery()
-            {
-                StartDate = System.DateTime.Parse("1990/01/01"),
-                EndDate = System.DateTime.Now,
-                PHN = "9735361219",
-            };
+            //using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            //Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            //mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
+            //IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration, null, null);
+            //MedicationHistoryQuery query = new MedicationHistoryQuery()
+            //{
+            //    StartDate = System.DateTime.Parse("1990/01/01"),
+            //    EndDate = System.DateTime.Now,
+            //    PHN = "9735361219",
+            //};
 
-            HNMessage<MedicationHistoryResponse> response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-            string jsonString = JsonSerializer.Serialize(query, options);
-            Assert.True(true);
+            //HNMessage<MedicationHistoryResponse> response = await medStatementDelegate.GetMedicationStatementsAsync(query, string.Empty, string.Empty, string.Empty);
+            //var options = new JsonSerializerOptions
+            //{
+            //    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            //    IgnoreNullValues = true,
+            //    WriteIndented = true,
+            //};
+            //string jsonString = JsonSerializer.Serialize(query, options);
+            //Assert.True(true);
         }
 
         [Fact]
         public async Task GetProtectiveWord()
         {
             return; //investigate how to make these run in Azure
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);
-            HNMessage<ProtectiveWordQueryResponse> response = await medStatementDelegate.GetProtectiveWord("9735352463", string.Empty, string.Empty).ConfigureAwait(true);
-            string protectedWord = response.Message.Value;
-            Assert.True(protectedWord == "KEYWORD");
+            //using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            //Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            //mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
+            //IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration, null, null);
+            //HNMessage<ProtectiveWordQueryResponse> response = await medStatementDelegate.GetProtectiveWord("9735352463", string.Empty, string.Empty).ConfigureAwait(true);
+            //string protectedWord = response.Message.Value;
+            //Assert.True(protectedWord == "KEYWORD");
         }
 
         [Fact]
         public async Task GetNoProtectiveWord()
         {
             return; //investigate how to make these run in Azure
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);
-            HNMessage<ProtectiveWordQueryResponse> response = await medStatementDelegate.GetProtectiveWord("9735361219", string.Empty, string.Empty).ConfigureAwait(true);
-            string protectedWord = response.Message.Value;
-            Assert.True(protectedWord == string.Empty);
+            //using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            //Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            //mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
+            //IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(), mockHttpClientService.Object, this.configuration);
+            //HNMessage<ProtectiveWordQueryResponse> response = await medStatementDelegate.GetProtectiveWord("9735361219", string.Empty, string.Empty).ConfigureAwait(true);
+            //string protectedWord = response.Message.Value;
+            //Assert.True(protectedWord == string.Empty);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
