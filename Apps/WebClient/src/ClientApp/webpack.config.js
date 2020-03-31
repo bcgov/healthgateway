@@ -110,7 +110,7 @@ module.exports = (env, argv) => {
             ]
           : [
               // Plugins that apply in production builds only
-              new MiniCssExtractPlugin({ filename: "site.css" }),
+              new MiniCssExtractPlugin({ filename: "[hash].site.css" }),
               new CompressionPlugin({
                 algorithm: "gzip",
                 test: /\.js$|\.css$|\.html$/
