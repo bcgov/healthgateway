@@ -26,16 +26,16 @@ namespace HealthGateway.Common.Delegates
         /// <summary>
         /// Creates an implementation specific hash of a key.
         /// </summary>
-        /// <param name="key">The string to hash.</param>
+        /// <param name="key">The string to hash, if null the hash is null.</param>
         /// <returns>The newly created Hash.</returns>
-        IHash Hash(string key);
+        IHash Hash(string? key);
 
         /// <summary>
         /// Validates that the supplied key will hash to instance.
         /// </summary>
         /// <param name="key">The key to hash and compare.</param>
         /// <param name="compareHash">The hash object to compare.</param>
-        /// <returns>true if the key generates the same hash.</returns>
-        bool Compare(string key, IHash compareHash);
+        /// <returns>true if the key generates the same hash or the hash value is null and the key is null.</returns>
+        bool Compare(string? key, IHash compareHash);
     }
 }

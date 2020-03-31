@@ -65,6 +65,7 @@ namespace HealthGateway.Database.Context
         public DbSet<ApplicationSetting> ApplicationSetting { get; set; } = null!;
         public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
         public DbSet<Note> Note { get; set; } = null!;
+        public DbSet<GenericCache> GenericCache { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />

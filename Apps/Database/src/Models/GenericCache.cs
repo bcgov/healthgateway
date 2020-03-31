@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Text.Json;
-    using HealthGateway.Database.Models.Cacheable;
 
     /// <summary>
     /// An asbtract class representing a data store for JSON cacheable objects.
@@ -40,16 +39,29 @@ namespace HealthGateway.Database.Models
         public string? HdId { get; set; }
 
         /// <summary>
+        /// Gets or sets the cache domain.
+        /// </summary>
+        [Required]
+        [MaxLength(250)]
+        public string? Domain { get; set; }
+
+        /// <summary>
         /// Gets or sets the cache expiry datetime.
         /// </summary>
         [Required]
         public DateTime? ExpiryDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the JSON Document type.
+        /// This value is used by code to reconstruct the JSON POCO.
+        /// </summary>
+        [Required]
+        public string? JSONType { get; set; }
+
+        /// <summary>
         /// Gets or sets the JSONDocument to store.
         /// </summary>
         [Required]
-        [Column("JSONValue")]
-        public JsonDocument? Value { get; set; }
+        public JsonDocument? JSON { get; set; }
     }
 }

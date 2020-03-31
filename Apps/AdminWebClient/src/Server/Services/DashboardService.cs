@@ -15,25 +15,33 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Database.Delegates;
+    using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
         private readonly IProfileDelegate userProfileDelegate;
         private readonly IBetaRequestDelegate betaRequestDelegate;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
+        /// <param name="config">The configuration provider.</param>
         public DashboardService(
             IProfileDelegate userProfileDelegate,
-            IBetaRequestDelegate betaRequestDelegate)
+            IBetaRequestDelegate betaRequestDelegate,
+            IConfiguration config)
         {
             this.userProfileDelegate = userProfileDelegate;
             this.betaRequestDelegate = betaRequestDelegate;
+            this.configuration = config;
         }
 
         /// <inheritdoc />
@@ -49,9 +57,14 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount()
+        public int GetTodayLoggedInUsersCount()
         {
-            return this.userProfileDelegate.GetLoggedInUsersCount();
+            AdminConfiguration config = new AdminConfiguration();
+            this.configuration.GetSection("Admin").Bind(config);
+            string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                config.WindowsTimeZoneId : config.UnixTimeZoneId;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
+            return this.userProfileDelegate.GetTodayLoggedInUsersCount(tz);
         }
 
         /// <inheritdoc />

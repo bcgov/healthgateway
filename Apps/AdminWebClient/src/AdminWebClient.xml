@@ -117,7 +117,7 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetLoggedInUsersCount">
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetTodayLoggedinUsersCount">
             <summary>
             Retrieves the count of logged in user in the last day.
             </summary>
@@ -185,6 +185,16 @@
         <member name="P:HealthGateway.Admin.Models.AdminConfiguration.ExternalURLs">
             <summary>
             Gets or sets the ExternalURLs used by the Admin.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.UnixTimeZoneId">
+            <summary>
+            Gets or sets the unix timezone id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.WindowsTimeZoneId">
+            <summary>
+            Gets or sets the windows timezone id.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
@@ -494,12 +504,13 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
             <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
+            <param name="config">The configuration provider.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetRegisteredUserCount">
             <inheritdoc />
@@ -507,7 +518,7 @@
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetUnregisteredInvitedUserCount">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.GetLoggedInUsersCount">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetTodayLoggedInUsersCount">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetWaitlistUserCount">
@@ -584,7 +595,7 @@
             </summary>
             <returns>The count of user profiles that received an invite but have not accepted the terms of service.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetLoggedInUsersCount">
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetTodayLoggedInUsersCount">
             <summary>
             Retrieves the count of logged in users in the current day.
             </summary>

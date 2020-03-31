@@ -22,7 +22,12 @@ namespace HealthGateway.Medication.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Models.Cacheable;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
@@ -34,9 +39,15 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class RestMedStatementDelegate : IMedStatementDelegate
     {
+        private const string ProtectiveWordCacheDomain = "ProtectiveWord";
+        private const string ODRCacheTimeKey = "CacheTTL";
+
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configService;
+        private readonly IGenericCacheDelegate genericCacheDelegate;
+        private readonly IHashDelegate hashDelegate;
+        private readonly int cacheTTL;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedStatementDelegate"/> class.
@@ -44,14 +55,22 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="genericCacheDelegate">The delegate responsible for caching.</param>
+        /// <param name="hashDelegate">The delegate responsible for hashing.</param>
         public RestMedStatementDelegate(
             ILogger<RestMedStatementDelegate> logger,
             IHttpClientService httpClientService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IGenericCacheDelegate genericCacheDelegate,
+            IHashDelegate hashDelegate)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configService = configuration;
+            this.genericCacheDelegate = genericCacheDelegate;
+            this.hashDelegate = hashDelegate;
+
+            this.cacheTTL = this.configService.GetSection("ODR").GetValue<int>(ODRCacheTimeKey, 1440);
         }
 
         /// <inheritdoc/>
@@ -130,9 +149,65 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<ProtectiveWordQueryResponse>> GetProtectiveWord(string phn, string hdid, string ipAddress)
+        public Task<bool> SetProtectiveWord(string phn, string newProtectiveWord, string protectiveWord, string hdid, string ipAddress)
         {
-            HNMessage<ProtectiveWordQueryResponse> retVal = new HNMessage<ProtectiveWordQueryResponse>();
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> DeleteProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
+        {
+            bool retVal = false;
+            try
+            {
+                IHash? cacheHash = null;
+                if (this.cacheTTL > 0)
+                {
+                    cacheHash = this.genericCacheDelegate.GetCacheObject<IHash>(hdid, ProtectiveWordCacheDomain);
+                }
+                if (cacheHash == null)
+                {
+                    // The hash isn't in the cache, get Protective word hash from source
+                    IHash? hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
+                                                                               .ConfigureAwait(true)).Result;
+                    if (this.cacheTTL > 0)
+                    {
+                        this.genericCacheDelegate.CacheObject(hash, hdid, ProtectiveWordCacheDomain, this.cacheTTL);
+                    }
+
+                    retVal = this.hashDelegate.Compare(protectiveWord, hash);
+                }
+                else
+                {
+                    retVal = this.hashDelegate.Compare(protectiveWord, cacheHash);
+                }
+            }
+#pragma warning disable CA1031 // We want to fail on any exception
+            catch (Exception e)
+#pragma warning restore CA1031
+            {
+                this.logger.LogError($"Error getting protected word {e.ToString()}");
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns the hashed protective word.
+        /// </summary>
+        /// <param name="phn">The PHN to query.</param>
+        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <param name="ipAddress">The IP of the user querying.</param>
+        /// <returns>The hash of the protective word response or null if not set.</returns>
+        private async Task<IHash> GetProtectiveWord(string phn, string hdid, string ipAddress)
+        {
+            IHash retVal;
             Stopwatch timer = new Stopwatch();
             timer.Start();
             this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
@@ -160,54 +235,30 @@ namespace HealthGateway.Medication.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            try
+            string json = JsonSerializer.Serialize(request, options);
+            using HttpContent content = new StringContent(json);
+            HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
+            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            if (response.IsSuccessStatusCode)
             {
-                string json = JsonSerializer.Serialize(request, options);
-                using HttpContent content = new StringContent(json);
-                HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
+                ProtectiveWord protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
+                if (protectiveWord != null && protectiveWord.QueryResponse != null)
                 {
-                    ProtectiveWord protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
-                    retVal.Message = protectiveWord.QueryResponse ?? new ProtectiveWordQueryResponse();
+                    retVal = this.hashDelegate.Hash(protectiveWord.QueryResponse.Value);
                 }
                 else
                 {
-                    retVal.Result = Common.Constants.ResultType.Error;
-                    retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}";
-                    this.logger.LogError(retVal.ResultMessage);
+                    throw new HttpRequestException($"Response payload is not well-formed {payload}");
                 }
             }
-            catch (Exception e)
+            else
             {
-                retVal.Result = Common.Constants.ResultType.Error;
-                retVal.ResultMessage = e.ToString();
-                this.logger.LogError($"Unable to post message {e.ToString()}");
+                throw new HttpRequestException($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason {response.ReasonPhrase}");
             }
 
             timer.Stop();
             this.logger.LogDebug($"Finished getting Protective Word {phn.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
             return retVal;
-        }
-
-        /// <inheritdoc/>
-        public Task<bool> SetProtectiveWord(string phn, string newProtectiveWord, string protectiveWord, string hdid, string ipAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public Task<bool> DeleteProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
-        {
-            HNMessage<ProtectiveWordQueryResponse> response = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
-                                                                       .ConfigureAwait(true)).Result;
-            return string.IsNullOrEmpty(response.Message.Value) || response.Message.Value == protectiveWord;
         }
     }
 }
