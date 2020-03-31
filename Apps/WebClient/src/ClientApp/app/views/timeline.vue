@@ -2,8 +2,9 @@
 @import "@/assets/scss/_variables.scss";
 
 @media print {
-  .no-print, .no-print * {
-      display: none !important;
+  .no-print,
+  .no-print * {
+    display: none !important;
   }
 }
 
@@ -92,11 +93,21 @@
         </b-row>
       </b-col>
       <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
-        <b-alert :show="hasErrors" dismissible variant="danger" class="no-print">
+        <b-alert
+          :show="hasErrors"
+          dismissible
+          variant="danger"
+          class="no-print"
+        >
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
-        <b-alert :show="hasNewTermsOfService" dismissible variant="info" class="no-print">
+        <b-alert
+          :show="hasNewTermsOfService"
+          dismissible
+          variant="info"
+          class="no-print"
+        >
           <h4>Updated Terms of Service</h4>
           <span>
             The Terms of Service have been updated since your last login. You
@@ -110,7 +121,12 @@
             >.
           </span>
         </b-alert>
-        <b-alert :show="unverifiedEmail" dismissible variant="info" class="no-print">
+        <b-alert
+          :show="unverifiedEmail"
+          dismissible
+          variant="info"
+          class="no-print"
+        >
           <h4>Unverified email</h4>
           <span>
             Your email has not been verified. Please check your inbox or junk

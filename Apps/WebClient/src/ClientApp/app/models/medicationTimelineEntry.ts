@@ -17,18 +17,17 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);
     this.medication = new MedicationViewModel(model.medicationSumary);
 
-    if (model instanceof MedicationStatement) {
-      this.pharmacy = new PharmacyViewModel(model.pharmacyId);
-    } else if (model instanceof MedicationStatementHistory) {
+    if (model.hasOwnProperty("dispensingPharmacy")) {
+      var historyModel = model as MedicationStatementHistory;
       this.pharmacy = new PharmacyViewModel(
-        model.dispensingPharmacy?.pharmacyId
+        historyModel.dispensingPharmacy?.pharmacyId
       );
 
-      if (model.dispensingPharmacy) {
-        this.pharmacy.populateFromModel(model.dispensingPharmacy);
+      if (historyModel.dispensingPharmacy) {
+        this.pharmacy.populateFromModel(historyModel.dispensingPharmacy);
       }
     } else {
-      throw new Error("Bad medication statement type");
+      this.pharmacy = new PharmacyViewModel(model.pharmacyId);
     }
 
     this.practitionerSurname = model.practitionerSurname || "N/A";
