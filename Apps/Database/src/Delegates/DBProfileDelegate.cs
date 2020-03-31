@@ -158,10 +158,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount()
+        public int GetTodayLoggedInUsersCount(TimeZoneInfo timezone)
         {
+            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow.Date, timezone);
             int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime >= DateTime.Today.ToUniversalTime());
+                .Count(u => u.LastLoginDateTime.HasValue &&
+                TimeZoneInfo.ConvertTimeFromUtc(u.LastLoginDateTime.Value, timezone) >= startDate);
             return result;
         }
     }

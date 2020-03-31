@@ -37,5 +37,15 @@ namespace HealthGateway.Admin.Models
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
         public Dictionary<string, System.Uri> ExternalURLs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unix timezone id.
+        /// </summary>
+        public string UnixTimeZoneId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the windows timezone id.
+        /// </summary>
+        public string WindowsTimeZoneId { get; set; }
     }
 }

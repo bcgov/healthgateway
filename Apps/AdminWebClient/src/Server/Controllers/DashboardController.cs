@@ -81,9 +81,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("LoggedInCount")]
-        public IActionResult GetLoggedInUsersCount()
+        public IActionResult GetTodayLoggedinUsersCount()
         {
-            return new JsonResult(this.dashboardService.GetLoggedInUsersCount());
+            return new JsonResult(this.dashboardService.GetTodayLoggedInUsersCount());
         }
 
         /// <summary>
