@@ -64,7 +64,8 @@ namespace HealthGateway.Admin.Services
             string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                 config.WindowsTimeZoneId : config.UnixTimeZoneId;
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
-            return this.userProfileDelegate.GetTodayLoggedInUsersCount(tz);
+            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Today.ToUniversalTime(), tz);
+            return this.userProfileDelegate.GetLoggedInUsersCount(startDate);
         }
 
         /// <inheritdoc />
