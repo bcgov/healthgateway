@@ -176,7 +176,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<GenericCache> DeleteCacheObject(GenericCache cacheObject, bool commit = true)
         {
-            this.logger.LogTrace($"Deleting GenericCache object from DB...");
+            this.logger.LogTrace("Deleting GenericCache object from DB...");
             DBResult<GenericCache> result = new DBResult<GenericCache>()
             {
                 Payload = cacheObject,
