@@ -13,10 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-using System.Text.Json.Serialization;
-
 namespace HealthGateway.Database.Models.Cacheable
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Represents a generic hash object.
     /// </summary>

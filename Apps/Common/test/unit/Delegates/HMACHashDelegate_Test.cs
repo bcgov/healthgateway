@@ -135,5 +135,26 @@ namespace HealthGateway.CommonTests.Delegates
 
             Assert.True(hash.Hash == expectedValue);
         }
+
+        [Fact]
+        public void VerifyNullKey()
+        {
+            string valueToHash = null;
+            var myConfiguration = new Dictionary<string, string>
+            {
+                //default configuration
+            };
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+
+            HMACHashDelegate hashDelegate = new HMACHashDelegate(
+                new Mock<ILogger<HMACHashDelegate>>().Object,
+                configuration);
+            IHash hash = hashDelegate.Hash(valueToHash);
+
+            Assert.True(hashDelegate.Compare(valueToHash, hash));
+        }
     }
 }

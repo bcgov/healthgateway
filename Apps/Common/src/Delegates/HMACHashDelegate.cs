@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="iterations">The number of iterations to process over the hash.</param>
         /// <returns>The hash object.</returns>
         public static HMACHash HMACHash(
-            string key,
+            string? key,
             byte[] salt,
             KeyDerivationPrf prf = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
             int iterations = HMACHashDelegateConfig.DefaultIterations)
@@ -72,15 +72,20 @@ namespace HealthGateway.Common.Delegates
                 Iterations = iterations,
             };
 
-            // Calculate the length in bytes of the hash given the function size
-            int hashLength = prf == KeyDerivationPrf.HMACSHA1 ? 20 : prf == KeyDerivationPrf.HMACSHA256 ? 32 : 64;
-            retHash.Salt = Convert.ToBase64String(salt);
-            retHash.Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                                                    password: key,
-                                                    salt: salt,
-                                                    prf: prf,
-                                                    iterationCount: iterations,
-                                                    numBytesRequested: hashLength));
+            if (!string.IsNullOrEmpty(key))
+            {
+                // The key is not null, so we can generate a hash
+                // Calculate the length in bytes of the hash given the function size
+                int hashLength = prf == KeyDerivationPrf.HMACSHA1 ? 20 : prf == KeyDerivationPrf.HMACSHA256 ? 32 : 64;
+                retHash.Salt = Convert.ToBase64String(salt);
+                retHash.Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                                                        password: key,
+                                                        salt: salt,
+                                                        prf: prf,
+                                                        iterationCount: iterations,
+                                                        numBytesRequested: hashLength));
+            }
+
             return retHash;
         }
 
@@ -90,10 +95,10 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The key to hash and compare.</param>
         /// <param name="compareHash">The hash object to compare.</param>
         /// <returns>true if the key generates the same hash.</returns>
-        public static bool Compare(string key, HMACHash? compareHash)
+        public static bool Compare(string? key, HMACHash compareHash)
         {
             bool result = false;
-            if (compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
+            if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
             {
                 HMACHash keyHash = HMACHash(
                     key,
@@ -101,6 +106,11 @@ namespace HealthGateway.Common.Delegates
                     (KeyDerivationPrf)compareHash.PseudoRandomFunction,
                     compareHash.Iterations);
                 result = compareHash.Hash == keyHash.Hash;
+            }
+            else
+            {
+                // If the key is null and the hash is null then they are the same
+                result = compareHash != null && compareHash.Hash == null && key == null;
             }
 
             return result;
@@ -120,7 +130,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc />
-        public IHash Hash(string key)
+        public IHash Hash(string? key)
         {
             return this.HMACHash(key);
         }
@@ -136,7 +146,7 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="key">The string to hash.</param>
         /// <returns>The newly created HMAC Hash.</returns>
-        public HMACHash HMACHash(string key)
+        public HMACHash HMACHash(string? key)
         {
             return HMACHash(
                 key,

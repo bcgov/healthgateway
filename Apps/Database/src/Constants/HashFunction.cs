@@ -34,6 +34,5 @@ namespace HealthGateway.Database.Constant
         /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
         /// </summary>
         HMACSHA512 = 2,
-
     }
 }
