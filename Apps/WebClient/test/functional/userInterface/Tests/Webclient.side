@@ -305,30 +305,28 @@
       "id": "6c196b42-24d2-4370-bbaa-fc5908e69ac6",
       "comment": "",
       "command": "sendKeys",
-      "target": "id=password",
+      "target": "id=kc-login",
       "targets": [
-        ["id=password", "id"],
-        ["name=password", "name"],
-        ["css=#password", "css:finder"],
-        ["xpath=//input[@id='password']", "xpath:attributes"],
-        ["xpath=//form[@id='login-form']/section/div/div/div/div[2]/div[2]/input", "xpath:idRelative"],
-        ["xpath=//div[2]/input", "xpath:position"]
+        ["id=kc-login", "id"],
+        ["name=login", "name"],
+        ["css=#kc-login", "css:finder"],
+        ["xpath=//input[@id='kc-login']", "xpath:attributes"],
+        ["xpath=//div[@id='kc-form-buttons']/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
       ],
       "value": "${KEY_ENTER}"
     }, {
       "id": "60c12b75-0e44-421e-b4a0-d18b71cd0abd",
       "comment": "",
       "command": "assertText",
-      "target": "id=Subject",
+      "target": "css=label:nth-child(1)",
       "targets": [
-        ["id=Subject", "id"],
-        ["css=#Subject", "css:finder"],
-        ["xpath=//h1[@id='Subject']", "xpath:attributes"],
-        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Terms of Service')]", "xpath:innerText"]
+        ["css=label:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/label", "xpath:idRelative"],
+        ["xpath=//form/div/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Protective Word')]", "xpath:innerText"]
       ],
-      "value": "Terms of Service"
+      "value": "Protective Word"
     }]
   }, {
     "id": "429ebd39-0f63-48f6-886b-e24d135a63d1",
@@ -703,7 +701,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 21 out of 21 records"
+      "value": "Displaying 266 out of 266 records"
     }, {
       "id": "0be7e76e-dfda-437d-bb3a-fb9423d74f52",
       "comment": "",
@@ -724,7 +722,7 @@
       "command": "assert",
       "target": "countCards",
       "targets": [],
-      "value": "21"
+      "value": "266"
     }]
   }, {
     "id": "7a8e3e70-67ba-49e8-94a7-241c2f407c4b",
@@ -766,59 +764,47 @@
       "id": "fcacfb86-1967-490b-9e1e-a14ff42fd62f",
       "comment": "",
       "command": "waitForElementPresent",
-      "target": "css=.row:nth-child(1) .date",
+      "target": "css=.row:nth-child(3) .date",
       "targets": [
-        ["css=.row:nth-child(1) .date", "css:finder"],
-        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
-        ["xpath=//div[3]/div/div/div", "xpath:position"]
+        ["css=.row:nth-child(3) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div[3]/div/div", "xpath:position"]
       ],
-      "value": "30000"
+      "value": "Dec 30, 2019"
     }, {
       "id": "1d9a9e74-d6ba-433a-afcd-9e6565424627",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(1) .date",
+      "target": "css=.row:nth-child(3) .date",
       "targets": [
-        ["css=.row:nth-child(1) .date", "css:finder"],
-        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
-        ["xpath=//div[4]/div[2]/div/div/div", "xpath:position"]
+        ["css=.row:nth-child(3) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div[3]/div/div", "xpath:position"]
       ],
-      "value": "Jan 29, 2020"
+      "value": "Dec 30, 2019"
     }, {
       "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(1) > .row:nth-child(3) .entryTitle",
+      "target": "css=.row:nth-child(3) > .row .entryTitle",
       "targets": [
-        ["css=.row:nth-child(1) > .row:nth-child(3) .entryTitle", "css:finder"],
-        ["xpath=//div[@id='timeData']/div/div[3]/div/div/div[2]", "xpath:idRelative"],
-        ["xpath=//div[3]/div/div/div[2]", "xpath:position"]
+        ["css=.row:nth-child(3) > .row .entryTitle", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div[3]/div/div/div[2]", "xpath:idRelative"],
+        ["xpath=//div[3]/div[3]/div/div/div[2]", "xpath:position"]
       ],
-      "value": "Colchicine Tab 0.6mg"
-    }, {
-      "id": "b55dca54-e78b-48a7-ab44-8244c0544310",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=.row:nth-child(1) > .row:nth-child(3) .row .row:nth-child(1) > .col",
-      "targets": [
-        ["css=.row:nth-child(1) > .row:nth-child(3) .row .row:nth-child(1) > .col", "css:finder"],
-        ["xpath=//div[@id='timeData']/div/div[3]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
-        ["xpath=//div[3]/div/div[2]/div[2]/div/div", "xpath:position"]
-      ],
-      "value": "COLCHICINE ODAN LABS 0.6 MG TABLET"
+      "value": "Methadone (Maintenance) 1mg/Ml"
     }, {
       "id": "e9d35420-6d19-4bab-a6fc-5c57ad0f7886",
       "comment": "",
       "command": "click",
-      "target": "css=.row:nth-child(1) > .row:nth-child(3) .btn",
+      "target": "css=.row:nth-child(3) > .row span:nth-child(3)",
       "targets": [
-        ["css=.row:nth-child(1) > .row:nth-child(3) .btn", "css:finder"],
-        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
-        ["xpath=//div[@id='timeData']/div/div[3]/div/div[2]/div[2]/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div[2]/div[2]/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,' View Details')]", "xpath:innerText"]
+        ["css=.row:nth-child(3) > .row span:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[3]/div[3]/div/div[2]/div[2]/div[2]/div/button/span[3]", "xpath:idRelative"],
+        ["xpath=//span[3]", "xpath:position"],
+        ["xpath=//span[contains(.,'View Details')]", "xpath:innerText"]
       ],
-      "value": ""
+      "value": "View Details"
     }, {
       "id": "dce2f99f-e1bb-4eda-825d-e3540f640eed",
       "comment": "",
@@ -833,21 +819,22 @@
       "target": "css=.detailSection:nth-child(1) > div",
       "targets": [
         ["css=.detailSection:nth-child(1) > div", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1580284800000']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[@id='entryDetails-0-1577692800000']/div/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div/div/div/div", "xpath:position"]
       ],
-      "value": "Practitioner: PHARMACISTWITHLONGCHARACTERNAME#035"
+      "value": "Practitioner: LQBU"
     }, {
       "id": "ec1b15cc-5107-4ed0-b908-fb8e095e522b",
       "comment": "",
       "command": "assertText",
-      "target": "css=.detailSection:nth-child(2) > div:nth-child(4)",
+      "target": "css=div:nth-child(4) > strong",
       "targets": [
-        ["css=.detailSection:nth-child(2) > div:nth-child(4)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[2]/div[4]", "xpath:idRelative"],
-        ["xpath=//div[2]/div[4]", "xpath:position"]
+        ["css=div:nth-child(4) > strong", "css:finder"],
+        ["xpath=//div[@id='entryDetails-0-1577692800000']/div/div[2]/div[4]/strong", "xpath:idRelative"],
+        ["xpath=//div[4]/strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'Manufacturer:')]", "xpath:innerText"]
       ],
-      "value": "Manufacturer: ODAN LABORATORIES LTD"
+      "value": "Manufacturer:"
     }, {
       "id": "3f2e246b-304a-470f-8d8c-0349999eed9d",
       "comment": "",
@@ -855,10 +842,10 @@
       "target": "css=.pt-2",
       "targets": [
         ["css=.pt-2", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]/div[5]/div[2]", "xpath:idRelative"],
-        ["xpath=//div[5]/div[2]", "xpath:position"]
+        ["xpath=//div[@id='entryDetails-0-1577692800000']/div/div[4]/div[5]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[4]/div[5]/div[2]", "xpath:position"]
       ],
-      "value": "ADAPTED RX AND DISCONTINUED"
+      "value": ".. SHAKE WELL .. DRINK 50MLS CARRY 80MLS DAILY DAILY MAY BE POISONOUS TO OTHERS"
     }, {
       "id": "56b738b4-54ea-4811-ab29-fe2f86a4ec13",
       "comment": "",
@@ -866,10 +853,10 @@
       "target": "css=.detailSection:nth-child(4) > div:nth-child(2)",
       "targets": [
         ["css=.detailSection:nth-child(4) > div:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='entryDetails-0-1548748800000']/div/div[4]/div[2]", "xpath:idRelative"],
-        ["xpath=//div[4]/div[2]", "xpath:position"]
+        ["xpath=//div[@id='entryDetails-0-1577692800000']/div/div[4]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/div[4]/div[2]", "xpath:position"]
       ],
-      "value": "ERX QA PHARMACY"
+      "value": "DJOPXNCCHKDTAPPALZCDV"
     }, {
       "id": "94384e52-d53a-4681-9339-f726b05d0780",
       "comment": "",
@@ -1055,6 +1042,34 @@
         ["xpath=//label[contains(.,'Protective Word')]", "xpath:innerText"]
       ],
       "value": "Protective Word"
+    }, {
+      "id": "b0378d92-e171-42bf-bad7-e39a98ecb0ab",
+      "comment": "",
+      "command": "type",
+      "target": "id=protectiveWord-input",
+      "targets": [
+        ["id=protectiveWord-input", "id"],
+        ["css=#protectiveWord-input", "css:finder"],
+        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
+        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/div/input", "xpath:position"]
+      ],
+      "value": "KEYWORD"
+    }, {
+      "id": "41c8a07b-cfb1-48ed-8cf3-5a96ff306ecd",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "linkText=protective-word-for-a-pharmanet-record",
+      "targets": [
+        ["linkText=protective-word-for-a-pharmanet-record", "linkText"],
+        ["css=small > a", "css:finder"],
+        ["xpath=//a[contains(text(),'protective-word-for-a-pharmanet-record')]", "xpath:link"],
+        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div[3]/div/small/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record')]", "xpath:href"],
+        ["xpath=//small/a", "xpath:position"],
+        ["xpath=//a[contains(.,'protective-word-for-a-pharmanet-record')]", "xpath:innerText"]
+      ],
+      "value": ""
     }]
   }, {
     "id": "bcc6fc9a-fa06-48b8-8a47-5f18abee6a6c",
