@@ -162,7 +162,8 @@ namespace HealthGateway.Database.Delegates
         {
             int result = this.dbContext.UserProfile
                 .Count(u => u.LastLoginDateTime.HasValue &&
-               u.LastLoginDateTime.Value >= startDate.ToUniversalTime());
+               u.LastLoginDateTime.Value >= startDate.ToUniversalTime() &&
+               u.LastLoginDateTime.Value < startDate.AddDays(1).ToUniversalTime());
             return result;
         }
     }
