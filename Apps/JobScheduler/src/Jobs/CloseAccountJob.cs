@@ -111,7 +111,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
 
-                    int result = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
+                    bool deleted = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
                 }
 
                 this.logger.LogInformation($"Removed and sent emails for {profileResult.Payload.Count} closed profiles");

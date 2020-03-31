@@ -17,11 +17,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
 {
     using System.Text.Json.Serialization;
 
-
     /// <summary>
     /// The json web token model.
     /// </summary>
-    /// 
     public class JWTModel : IAuthModel
     {
         /// <inheritdoc/>

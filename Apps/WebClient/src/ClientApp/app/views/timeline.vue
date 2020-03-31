@@ -1,6 +1,12 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
+@media print {
+  .no-print, .no-print * {
+      display: none !important;
+  }
+}
+
 .column-wrapper {
   border: 1px;
 }
@@ -53,9 +59,9 @@
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row class="my-3 fluid justify-content-md-center">
-      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper">
+      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper no-print">
         <b-row>
-          <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-0 col-xs-4 col-lg-2"></b-col>
           <b-col class="col-12 col-xs-8 col-lg-8">
             <b-button
               v-if="config.modules['Note'] == true"
@@ -68,15 +74,29 @@
               Add Note
             </b-button>
           </b-col>
-          <b-col class="col-0 col-xs-0 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2"></b-col>
+        </b-row>
+        <b-row class="pt-1">
+          <b-col class="col-0 col-xs-4 col-lg-2"></b-col>
+          <b-col class="col-12 col-xs-8 col-lg-8">
+            <b-button
+              variant="light"
+              class="w-100 visible-lg-block"
+              @click="printRecords"
+            >
+              <font-awesome-icon icon="print" aria-hidden="true" />
+              Print
+            </b-button>
+          </b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2"></b-col>
         </b-row>
       </b-col>
       <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
-        <b-alert :show="hasErrors" dismissible variant="danger">
+        <b-alert :show="hasErrors" dismissible variant="danger" class="no-print">
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
-        <b-alert :show="hasNewTermsOfService" dismissible variant="info">
+        <b-alert :show="hasNewTermsOfService" dismissible variant="info" class="no-print">
           <h4>Updated Terms of Service</h4>
           <span>
             The Terms of Service have been updated since your last login. You
@@ -90,7 +110,7 @@
             >.
           </span>
         </b-alert>
-        <b-alert :show="unverifiedEmail" dismissible variant="info">
+        <b-alert :show="unverifiedEmail" dismissible variant="info" class="no-print">
           <h4>Unverified email</h4>
           <span>
             Your email has not been verified. Please check your inbox or junk
@@ -101,7 +121,7 @@
           <h1 id="subject">Health Care Timeline</h1>
           <hr />
         </div>
-        <b-row>
+        <b-row class="no-print">
           <b-col>
             <div class="form-group has-filter">
               <font-awesome-icon
@@ -119,7 +139,7 @@
             </div>
           </b-col>
         </b-row>
-        <b-row align-h="start">
+        <b-row align-h="start" class="no-print">
           <b-col v-if="isMedicationEnabled" cols="3">
             <b-form-checkbox
               id="medicationFilter"
@@ -153,7 +173,7 @@
         </b-row>
         <br />
         <div v-if="!isLoading">
-          <div id="listControlls">
+          <div id="listControlls" class="no-print">
             <b-row>
               <b-col>
                 Displaying {{ getVisibleCount() }} out of
@@ -217,7 +237,7 @@
           </div>
         </div>
       </b-col>
-      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper">
+      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
         <HealthlinkComponent />
       </b-col>
     </b-row>
@@ -227,7 +247,7 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
-    <FeedbackComponent />
+    <FeedbackComponent class="no-print" />
   </div>
 </template>
 
@@ -592,6 +612,10 @@ export default class TimelineComponent extends Vue {
 
   private getTotalCount(): number {
     return this.timelineEntries.length;
+  }
+
+  private printRecords() {
+    window.print();
   }
 }
 </script>

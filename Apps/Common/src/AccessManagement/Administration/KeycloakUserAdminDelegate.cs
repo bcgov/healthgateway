@@ -15,13 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Administration
 {
-    using System.Net.Http;
-    using System.Net;
-    using System.Threading.Tasks;
     using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
+
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -85,45 +86,42 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <inheritdoc/>
-        public int DeleteUser(Guid userId, JWTModel jwtModel)
+        public bool DeleteUser(Guid userId, JWTModel jwtModel)
         {
             this.logger.LogInformation($"Keycloak DeleteUser : {userId.ToString()}");
 
-            Task<int> task = Task.Run(async() => await this.DeleteUserAsync(userId.ToString(), jwtModel).ConfigureAwait(true));
+            Task<bool> task = Task.Run(async () => await this.DeleteUserAsync(userId, jwtModel).ConfigureAwait(true));
             task.Wait();
             if (task.Exception != null)
             {
-                throw new Exception("KeycloakUserAdminDelegate.DeleteUser() exception", task.Exception);
+                throw task.Exception;
             }
-            return task.Result;
 
+            return task.Result;
         }
 
         /// <summary>
-        /// Deletes the User account from Keycloak
+        /// Deletes the User account from Keycloak.
         /// </summary>
         /// <param name="userId">The user id to delete.</param>
-        /// <param name="jwtModel">To get at the base64 access token</param>
-        private async Task<int> DeleteUserAsync(string userId, JWTModel jwtModel)
+        /// <param name="jwtModel">To get at the base64 access token.</param>
+        /// <returns>returns true when user deleted.</returns>
+        private async Task<bool> DeleteUserAsync(Guid userId, JWTModel jwtModel)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
 
-            HttpResponseMessage response = await client.DeleteAsync(userId).ConfigureAwait(true);
-            if (!response.IsSuccessStatusCode) //Shouuld get a HTTP 204 no content success code from Keycloak API
+            HttpResponseMessage response = await client.DeleteAsync(new Uri(userId!.ToString(), UriKind.Relative)).ConfigureAwait(true);
+            if (!response.IsSuccessStatusCode)
             {
                 string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
                 this.logger.LogError(msg);
 
-                if (response.StatusCode != HttpStatusCode.NotFound) // suppress throwable if resource not found = already deleted
-                {
-                    throw new HttpRequestException(msg);
-                }
-                return -1;
+                throw new HttpRequestException(msg);
             }
 
-            return 0;
+            return true;
         }
 
         /// <summary>
