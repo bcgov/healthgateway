@@ -158,9 +158,8 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetTodayLoggedInUsersCount(TimeZoneInfo timezone)
+        public int GetLoggedInUsersCount(DateTime startDate)
         {
-            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Today.ToUniversalTime(), timezone);
             int result = this.dbContext.UserProfile
                 .Count(u => u.LastLoginDateTime.HasValue &&
                u.LastLoginDateTime.Value >= startDate.ToUniversalTime());
