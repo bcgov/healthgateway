@@ -4,6 +4,7 @@
   "displayName": "Health Gateway - DEV",
   "displayNameHtml": "<a>HEALTH GATEWAY (Development)</a>",
   "notBefore": 0,
+  "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 300,
@@ -23,10 +24,10 @@
   "enabled": true,
   "sslRequired": "all",
   "registrationAllowed": false,
-  "registrationEmailAsUsername": true,
+  "registrationEmailAsUsername": false,
   "rememberMe": false,
   "verifyEmail": false,
-  "loginWithEmailAllowed": true,
+  "loginWithEmailAllowed": false,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": false,
   "editUsernameAllowed": false,
@@ -41,9 +42,27 @@
   "roles": {
     "realm": [
       {
+        "id": "2a5533b6-3b17-4651-ae8c-a89a85626606",
+        "name": "HangfireUser",
+        "description": "The role a user must be in to access the HealthGateway JobScheduler Dashboard, an implementation of Hangfire.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "ff09qn3f",
+        "attributes": {}
+      },
+      {
         "id": "a2139db4-a726-49c0-bfd2-33b5614686cc",
         "name": "uma_authorization",
         "description": "${role_uma_authorization}",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "ff09qn3f",
+        "attributes": {}
+      },
+      {
+        "id": "b490dd0c-02be-440f-a301-56dbcd4f1eb5",
+        "name": "AdminUser",
+        "description": "Administrator of the Health Gateway Web Application.  Grants access to the admin dashboard and related functions.",
         "composite": false,
         "clientRole": false,
         "containerId": "ff09qn3f",
@@ -57,9 +76,45 @@
         "clientRole": false,
         "containerId": "ff09qn3f",
         "attributes": {}
+      },
+      {
+        "id": "8b3b40d7-1f31-4a7f-8732-eff51e442724",
+        "name": "access_hnclient",
+        "description": "Full access to HL7v2 message API through HNClient. This role should only be assigned to the medication-service",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "ff09qn3f",
+        "attributes": {}
       }
     ],
     "client": {
+      "uma-test-client": [
+        {
+          "id": "062ce1fa-59cf-42c6-9410-ff554ec72d91",
+          "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "992a6db0-fb50-4374-bf39-907bece19c36",
+          "attributes": {}
+        }
+      ],
+      "healthgateway-admin": [
+        {
+          "id": "197afdda-1051-4f9e-b7a7-69e972c18eef",
+          "name": "manage-users",
+          "composite": true,
+          "composites": {
+            "client": {
+              "realm-management": [
+                "manage-users"
+              ]
+            }
+          },
+          "clientRole": true,
+          "containerId": "c24f6ec1-f882-46e3-980b-5eb8bcc3394a",
+          "attributes": {}
+        }
+      ],
       "realm-management": [
         {
           "id": "c03a450e-26d9-4b98-8c3e-8aa93729ee91",
@@ -273,6 +328,23 @@
         }
       ],
       "healthgateway": [],
+      "healthgateway-admin-local": [
+        {
+          "id": "fc13f748-0853-422e-ba35-7958fab62c89",
+          "name": "manage-users",
+          "composite": true,
+          "composites": {
+            "client": {
+              "realm-management": [
+                "manage-users"
+              ]
+            }
+          },
+          "clientRole": true,
+          "containerId": "229cf28d-4f72-46dd-bf8e-511ff70741bd",
+          "attributes": {}
+        }
+      ],
       "security-admin-console": [],
       "admin-cli": [],
       "broker": [
@@ -286,6 +358,8 @@
           "attributes": {}
         }
       ],
+      "healthgateway-localhost": [],
+      "medication-service": [],
       "account": [
         {
           "id": "c3aefe89-c921-4a40-babb-0305e41e4410",
@@ -319,6 +393,16 @@
           "composite": false,
           "clientRole": true,
           "containerId": "2e3dfb80-444a-4574-9179-7fec9b4b1035",
+          "attributes": {}
+        }
+      ],
+      "healthgateway-local": [
+        {
+          "id": "27a3f4f4-fc53-41a4-b832-02c6a6cc34fb",
+          "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "77622d4e-280a-4278-8017-b98f5f313fe9",
           "attributes": {}
         }
       ]
@@ -375,15 +459,39 @@
       ]
     },
     {
+      "client": "healthgateway-admin",
+      "roles": [
+        "offline_access",
+        "HangfireUser",
+        "AdminUser"
+      ]
+    },
+    {
+      "client": "healthgateway-admin-local",
+      "roles": [
+        "offline_access",
+        "HangfireUser",
+        "AdminUser"
+      ]
+    },
+    {
       "client": "healthgateway",
       "roles": [
+        "offline_access",
         "uma_authorization"
       ]
     },
     {
-      "clientScope": "health-gateway-client-template",
+      "client": "medication-service",
       "roles": [
-        "uma_authorization"
+        "offline_access",
+        "access_hnclient"
+      ]
+    },
+    {
+      "clientScope": "access_hnclient",
+      "roles": [
+        "access_hnclient"
       ]
     },
     {
@@ -515,6 +623,194 @@
         "roles"
       ],
       "optionalClientScopes": [
+        "offline_access"
+      ]
+    },
+    {
+      "id": "c24f6ec1-f882-46e3-980b-5eb8bcc3394a",
+      "clientId": "healthgateway-admin",
+      "name": "Health Gateway Administration",
+      "description": "Health Gateway Administration web application",
+      "rootUrl": "https://dev.healthgateway.gov.bc.ca/admin/",
+      "adminUrl": "",
+      "baseUrl": "https://dev.healthgateway.gov.bc.ca/admin/",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "https://dev.healthgateway.gov.bc.ca/admin/*"
+      ],
+      "webOrigins": [
+        "https://dev.healthgateway.gov.bc.ca/admin/"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "login_theme": "bcgov-v2",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": false,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "9af04942-5d84-4abb-a3ef-c0aba8c47faa",
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "email",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "63a83cb6-8c79-4cca-b385-e456ca141720",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "49b35cc0-a1ee-42e7-b619-23a4e59cedbb",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "c616169a-e950-4049-af88-738bcab7871e",
+          "name": "family name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "lastName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "family_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "da82db53-ccd4-44c5-9faf-cb55c53a32b0",
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "multivalued": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "user_realm_roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "b57a8198-f6c3-4f18-a512-c0fa0095beb2",
+          "name": "username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "c1f4d020-e8ba-42a5-bfbf-a64c34bb9a6e",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "d785095a-3880-42a0-a70d-de22a495193d",
+          "name": "audience resolve",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-resolve-mapper",
+          "consentRequired": false,
+          "config": {}
+        },
+        {
+          "id": "f2287c20-7f8f-405a-b80e-0cce9e7aa6b2",
+          "name": "given name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "firstName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "given_name",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "role_list",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
         "offline_access"
       ]
     },
@@ -749,28 +1045,167 @@
       "optionalClientScopes": []
     },
     {
-      "id": "04ae45dd-8d97-4a39-90a6-4a84d7ede7db",
-      "clientId": "healthgateway",
-      "name": "Health Gateway",
-      "rootUrl": "https://dev-gateway.pathfinder.gov.bc.ca",
+      "id": "229cf28d-4f72-46dd-bf8e-511ff70741bd",
+      "clientId": "healthgateway-admin-local",
+      "name": "Health Gateway Administration",
+      "description": "Health Gateway Administration web application",
+      "rootUrl": "http://localhost:5010/",
       "adminUrl": "",
-      "baseUrl": "https://dev-gateway.pathfinder.gov.bc.ca",
+      "baseUrl": "http://localhost:5010/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "https://dev-gateway.pathfinder.gov.bc.ca/*"
+        "http://localhost:5005/*",
+        "http://localhost:5010/*"
       ],
       "webOrigins": [
-        "https://dev-gateway.pathfinder.gov.bc.ca"
+        "http://localhost:5010/*"
       ],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "login_theme": "bcgov-v2",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {
+        "direct_grant": "e58ae241-ea15-46ca-88ff-31cdf7c8fe2f",
+        "browser": "e075d8df-d5a2-4f52-a88c-beef80783d0f"
+      },
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "b7ddc690-ea17-4c3c-87a4-3b20733c468a",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "95686513-9ff3-42d4-98ad-215ba01fd202",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "b0abb611-36a7-40e6-8097-265dd6d95b7e",
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "user_realm_roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "bea6ba4f-35c1-486c-a5ce-62319b22f9ec",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "2f3cf4d4-f9b1-4233-a532-159cef8b9fca",
+          "name": "client roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "foo",
+            "access.token.claim": "true",
+            "claim.name": "resource_access.${client_id}.roles",
+            "jsonType.label": "String",
+            "multivalued": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "role_list",
+        "offline_access",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "audience",
+        "address",
+        "phone"
+      ]
+    },
+    {
+      "id": "77622d4e-280a-4278-8017-b98f5f313fe9",
+      "clientId": "healthgateway-local",
+      "name": "\"Health Gateway - Local Dev",
+      "rootUrl": "http://localhost:5000",
+      "adminUrl": "",
+      "baseUrl": "http://localhost:5000",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "http://localhost:5000/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -796,7 +1231,221 @@
       "nodeReRegistrationTimeout": -1,
       "protocolMappers": [
         {
-          "id": "4b887573-e69a-4809-a9e4-f6c282aa5a69",
+          "id": "f8f61959-b402-4f6b-a2e4-3193ae163dc2",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "1592940a-d174-436e-81d3-7be1f6d4d754",
+          "name": "middle name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "middleName",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "middle_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "e0cecbde-87c6-45c0-8b05-096d9b1edc88",
+          "name": "hdid",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "hdid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "hdid",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "33088dfe-5208-4bc5-afc6-498d4e75bfd3",
+          "name": "username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "1bc5be6f-c674-4b9e-be79-1ddb1f73b827",
+          "name": "allowed web origins",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-allowed-origins-mapper",
+          "consentRequired": false,
+          "config": {}
+        },
+        {
+          "id": "215ddda0-05b3-41a6-8412-ace5f40eb582",
+          "name": "updated at",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "updatedAt",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "updated_at",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "d85d37fa-06a8-45f8-a952-95007dd63538",
+          "name": "family name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "lastName",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "family_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "e9c249a7-c04a-495b-a083-acd5a67105d6",
+          "name": "gender",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "gender",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "gender",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "e6704dfc-22db-4d1b-8d2a-902700cd4212",
+          "name": "profile",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "profile",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "profile",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "267ddc96-aa3c-48ec-9a3d-09cd4374bfe2",
+          "name": "full name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-full-name-mapper",
+          "consentRequired": false,
+          "config": {
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "id": "cf5435f9-35da-4b06-8c7c-7782855f7084",
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "email",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "53db8f5c-d87f-452f-a4ca-fc0ede3385ee",
+          "name": "phone number verified",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "phoneNumberVerified",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "phone_number_verified",
+            "jsonType.label": "boolean"
+          }
+        },
+        {
+          "id": "d7322f94-cea6-4b36-826f-cf8b7a07dbc6",
+          "name": "picture",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "picture",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "picture",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "04e0b584-2b35-4b13-bc85-b9b735a11859",
+          "name": "nickname",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "nickname",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "nickname",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "1b604e70-f8c1-4684-b8c1-6bb7b244f8b9",
+          "name": "birthdate",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "birthdate",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "birthdate",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "5bcfc996-e153-4a99-9e3f-aede83858efc",
           "name": "Client ID",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usersessionmodel-note-mapper",
@@ -810,33 +1459,243 @@
           }
         },
         {
-          "id": "03053c2e-eb7c-44c2-91a1-032ab00aca7f",
-          "name": "email",
+          "id": "a18581de-4080-4965-b0af-6b0617fb378b",
+          "name": "health-gateway-audience",
           "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-property-mapper",
+          "protocolMapper": "oidc-audience-mapper",
           "consentRequired": false,
           "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "email",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "email",
-            "jsonType.label": "String"
+            "included.client.audience": "healthgateway-local",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
           }
         },
         {
-          "id": "8229fb70-b01b-45a2-be09-47b8010092d0",
-          "name": "TermsOfService",
+          "id": "be716169-cc72-48e1-aee1-e7d6bc68a5d3",
+          "name": "audience resolve",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-resolve-mapper",
+          "consentRequired": false,
+          "config": {}
+        },
+        {
+          "id": "9d8d72ce-449f-469a-aab2-73be7e3dcd9d",
+          "name": "website",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
           "consentRequired": false,
           "config": {
             "userinfo.token.claim": "true",
-            "user.attribute": "acceptedTermsOfService",
+            "user.attribute": "website",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "claim.name": "acceptedTermsOfService",
-            "jsonType.label": "boolean"
+            "claim.name": "website",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "b1efa039-d481-44bf-99f0-642474bde047",
+          "name": "phone number",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "phoneNumber",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "phone_number",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "2ab8e41e-c8fc-436c-833e-ea231abe8ee1",
+          "name": "given name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "firstName",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "given_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "8d981eb3-16ca-4218-8b85-d9f2f0390373",
+          "name": "address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-address-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute.formatted": "formatted",
+            "user.attribute.country": "country",
+            "user.attribute.postal_code": "postal_code",
+            "userinfo.token.claim": "true",
+            "user.attribute.street": "street",
+            "id.token.claim": "false",
+            "user.attribute.region": "region",
+            "access.token.claim": "false",
+            "user.attribute.locality": "locality"
+          }
+        },
+        {
+          "id": "1980294b-ff13-49e9-8e7f-7cf07283bfe1",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "audience",
+        "role_list",
+        "offline_access"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "id": "04ae45dd-8d97-4a39-90a6-4a84d7ede7db",
+      "clientId": "healthgateway",
+      "name": "Health Gateway",
+      "rootUrl": "https://dev.healthgateway.gov.bc.ca",
+      "adminUrl": "",
+      "baseUrl": "https://dev.healthgateway.gov.bc.ca",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "https://dev.healthgateway.gov.bc.ca/*"
+      ],
+      "webOrigins": [
+        "https://dev.healthgateway.gov.bc.ca"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "login_theme": "bcgov-with-login-form",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": false,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "b7806d43-65fe-4981-bf64-98f36e8ba31b",
+          "name": "hdid",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "hdid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "hdid",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "020cf210-ca20-4409-9feb-aef9c5afdc1c",
+          "name": "full name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-full-name-mapper",
+          "consentRequired": false,
+          "config": {
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "id": "e1052b9c-e9d0-4e01-94c7-4ca1edf82a99",
+          "name": "given name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "firstName",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "given_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "1bdfb62b-cfaa-4f41-b673-62f9b0dde986",
+          "name": "family name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "lastName",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "family_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "4589485d-4fe3-464c-bc54-77eb6ead21fc",
+          "name": "username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "20d6fc38-f4d0-4dbb-8a97-9f1ad9ba356b",
+          "name": "website",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "website",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "website",
+            "jsonType.label": "String"
           }
         },
         {
@@ -854,7 +1713,19 @@
           }
         },
         {
-          "id": "e539858a-ba1f-47c7-b306-5bf618a17fdd",
+          "id": "85f4fd2d-a593-4d26-81b6-be93ae358a39",
+          "name": "health-gateway-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "healthgateway",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "id": "1a0f10f2-db1f-459b-8fdd-c51de34ebc82",
           "name": "Client IP Address",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usersessionmodel-note-mapper",
@@ -866,16 +1737,302 @@
             "claim.name": "clientAddress",
             "jsonType.label": "String"
           }
+        },
+        {
+          "id": "5636376b-87fe-4f4a-a6d1-163c1542da9b",
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "email",
+            "jsonType.label": "String"
+          }
         }
       ],
       "defaultClientScopes": [
         "web-origins",
         "audience",
-        "offline_access",
-        "profile",
-        "email"
+        "offline_access"
       ],
       "optionalClientScopes": []
+    },
+    {
+      "id": "a9f5a717-6540-438f-a030-18739c06e5b0",
+      "clientId": "medication-service",
+      "name": "Health Gateway Medication Service API",
+      "rootUrl": "https://dev.healthgateway.gov.bc.ca/api/medicationservice",
+      "adminUrl": "https://dev.healthgateway.gov.bc.ca/api/medicationservice",
+      "baseUrl": "https://dev.healthgateway.gov.bc.ca/api/medicationservice",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "https://dev-medication-gateway.pathfinder.gov.bc.ca/*"
+      ],
+      "webOrigins": [
+        "https://dev.healthgateway.gov.bc.ca/api/medicationservice"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {
+        "direct_grant": "e58ae241-ea15-46ca-88ff-31cdf7c8fe2f"
+      },
+      "fullScopeAllowed": false,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "7dc9c65b-7a15-4122-b43d-f7368f4df47a",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "e1c19fba-dfde-4733-94d0-bd243e4b1893",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "87869676-6339-421b-8d16-1fe389686326",
+          "name": "medication-service-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "medication-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "id": "9f83afc7-8da8-443f-a913-8bb2a4880426",
+          "name": "website",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "website",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "website",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "79c366f5-6344-4eb6-849a-3193f3bcc559",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "role_list",
+        "access_hnclient"
+      ],
+      "optionalClientScopes": [
+        "offline_access"
+      ]
+    },
+    {
+      "id": "992a6db0-fb50-4374-bf39-907bece19c36",
+      "clientId": "uma-test-client",
+      "name": "Brad's UMA testing",
+      "description": "",
+      "rootUrl": "http://localhost:5800/",
+      "adminUrl": "http://localhost:5800/",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "http://localhost:5800/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5800"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "login_theme": "base",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "consent.screen.text": "Hi, you're going to need to grant consent for this service",
+        "saml_force_name_id_format": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.client.signature": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "true",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "b0592aef-0550-4b64-acf7-2b5db88194eb",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "9df9fb2b-6e25-43e7-92a8-ec43f32ff384",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "4a530235-906d-452d-bd4a-75344bf35238",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "role_list",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access"
+      ],
+      "authorizationSettings": {
+        "allowRemoteResourceManagement": true,
+        "policyEnforcementMode": "ENFORCING",
+        "resources": [
+          {
+            "name": "Default Resource",
+            "type": "urn:uma-test-client:resources:default",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "e5284db4-85d8-4cdf-92b4-97d294e8b51e",
+            "uris": [
+              "/*"
+            ]
+          }
+        ],
+        "policies": [
+          {
+            "id": "126b12bf-f542-402f-a977-1448985fa67c",
+            "name": "Default Policy",
+            "description": "A policy that grants access only for users within this realm",
+            "type": "js",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
+            }
+          },
+          {
+            "id": "281abf94-e3a1-4dd1-8053-f3b5e2fd5bfb",
+            "name": "Default Permission",
+            "description": "A permission that applies to the default resource type",
+            "type": "resource",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "defaultResourceType": "urn:uma-test-client:resources:default",
+              "applyPolicies": "[\"Default Policy\"]"
+            }
+          }
+        ],
+        "scopes": []
+      }
     },
     {
       "id": "14bac2ec-db43-49d1-9898-9890ecf78083",
@@ -893,13 +2050,29 @@
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
-      "serviceAccountsEnabled": false,
+      "serviceAccountsEnabled": true,
       "authorizationServicesEnabled": true,
       "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
-      "attributes": {},
-      "authenticationFlowBindingOverrides": {},
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {
+        "direct_grant": "e58ae241-ea15-46ca-88ff-31cdf7c8fe2f"
+      },
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
       "protocolMappers": [
@@ -949,6 +2122,20 @@
           }
         },
         {
+          "id": "a7b0255d-084a-4930-9155-8ce1520a32b4",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "eeefc106-1bda-4e8e-8730-716219baa814",
           "name": "full name",
           "protocol": "openid-connect",
@@ -972,6 +2159,20 @@
           }
         },
         {
+          "id": "9ed8c06e-e54c-4b73-b528-fe8f050e0def",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "ed977ec2-04e2-4ade-93b6-6bdac7e3645f",
           "name": "email",
           "protocol": "openid-connect",
@@ -983,6 +2184,20 @@
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "email",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "359ca99d-e1f0-4614-aba0-3b839de3668a",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
             "jsonType.label": "String"
           }
         }
@@ -1160,78 +2375,78 @@
         "roles"
       ],
       "optionalClientScopes": []
+    },
+    {
+      "id": "2173d9d5-0410-4b01-befe-ed0ba11a62cf",
+      "clientId": "healthgateway-localhost",
+      "name": "Health Gateway - Local Dev Load Balanced",
+      "rootUrl": "http://healthgateway.localhost",
+      "adminUrl": "http://healthgateway.localhost",
+      "baseUrl": "http://healthgateway.localhost",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "http://healthgateway.localhost/*"
+      ],
+      "webOrigins": [
+        "http://healthgateway.localhost"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "login_theme": "bcgov-with-local-login",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.client.signature": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "74fd90c5-fb54-4396-9123-55550e2d6a92",
+          "name": "health-gateway-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "healthgateway-localhost",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "audience",
+        "role_list",
+        "profile",
+        "offline_access"
+      ],
+      "optionalClientScopes": []
     }
   ],
   "clientScopes": [
-    {
-      "id": "2fd7cb00-b282-4801-809b-793b43ecb273",
-      "name": "health-gateway-client-template",
-      "description": "OIDC Client Connection Template for Health Gateway",
-      "protocol": "openid-connect",
-      "attributes": {},
-      "protocolMappers": [
-        {
-          "id": "2025de0a-f6ee-4a35-9263-77b3fc93f7c9",
-          "name": "family name",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-property-mapper",
-          "consentRequired": false,
-          "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "lastName",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "family_name",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "1e7d05d7-5d4a-4d3b-9620-ae70700f0e1f",
-          "name": "given name",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-property-mapper",
-          "consentRequired": false,
-          "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "firstName",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "given_name",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "af134496-dc2a-43af-9fc9-2fe82830d64a",
-          "name": "username",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-property-mapper",
-          "consentRequired": false,
-          "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "username",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "preferred_username",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "4d7f4ea1-0429-45ca-aeca-38ee9c9671c6",
-          "name": "email",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-property-mapper",
-          "consentRequired": false,
-          "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "email",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "email",
-            "jsonType.label": "String"
-          }
-        }
-      ]
-    },
     {
       "id": "ed1770bf-be1f-442a-87b1-f35a39ac25e6",
       "name": "audience",
@@ -1242,13 +2457,33 @@
       },
       "protocolMappers": [
         {
-          "id": "37b225aa-54a5-4ef1-95a6-c7ac0e6b4c2f",
-          "name": "audience",
+          "id": "c244bd4b-e9f0-43a1-8797-3dc17e5d6049",
+          "name": "audience-resolver",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-resolve-mapper",
+          "consentRequired": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "id": "0cc3daa4-abe9-4cf9-8cdf-b9754b9fa5a9",
+      "name": "access_hnclient",
+      "description": "Ability to connect to hnclient web API",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "id": "f0cf7f3f-f7a1-49f2-8dfc-dc18a6d67940",
+          "name": "medication-service-hnclient-access",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-audience-mapper",
           "consentRequired": false,
           "config": {
-            "included.client.audience": "healthgateway",
+            "included.client.audience": "medication-service",
             "id.token.claim": "false",
             "access.token.claim": "true"
           }
@@ -1299,8 +2534,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "picture",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "picture",
             "jsonType.label": "String"
           }
@@ -1317,6 +2552,21 @@
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "zoneinfo",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "160f6cfd-159f-4e5d-b22f-b40b33b19441",
+          "name": "phone number",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "phoneNumber",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "phone_number",
             "jsonType.label": "String"
           }
         },
@@ -1344,9 +2594,24 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "nickname",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "nickname",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "dc1a96a0-4bcf-492c-b932-984758eca7a5",
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "email",
             "jsonType.label": "String"
           }
         },
@@ -1366,6 +2631,21 @@
           }
         },
         {
+          "id": "23293c6a-3c4a-47f7-884b-ff266049abba",
+          "name": "hdid",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "hdid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "hdid",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "59d546a3-914c-4bba-8427-67b12075984f",
           "name": "middle name",
           "protocol": "openid-connect",
@@ -1374,24 +2654,9 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "middleName",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "middle_name",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "6c0396cf-4d3a-43b8-91b1-d3b5f9c4a90a",
-          "name": "profile",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-attribute-mapper",
-          "consentRequired": false,
-          "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "profile",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "profile",
             "jsonType.label": "String"
           }
         },
@@ -1404,10 +2669,25 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "firstName",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "given_name",
             "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "2c5a592c-2b6b-431e-b184-b84bbee2220e",
+          "name": "email verified",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "emailVerified",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "email_verified",
+            "jsonType.label": "boolean"
           }
         },
         {
@@ -1419,8 +2699,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "username",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "preferred_username",
             "jsonType.label": "String"
           }
@@ -1449,8 +2729,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "gender",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "gender",
             "jsonType.label": "String"
           }
@@ -1464,8 +2744,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "birthdate",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "birthdate",
             "jsonType.label": "String"
           }
@@ -1477,8 +2757,8 @@
           "protocolMapper": "oidc-full-name-mapper",
           "consentRequired": false,
           "config": {
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "userinfo.token.claim": "true"
           }
         },
@@ -1491,10 +2771,25 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "lastName",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "family_name",
             "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "8baf04f2-aaee-4230-b036-ac2c3730b41f",
+          "name": "phone number verified",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "phoneNumberVerified",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
+            "claim.name": "phone_number_verified",
+            "jsonType.label": "boolean"
           }
         }
       ]
@@ -1534,8 +2829,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "emailVerified",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "email_verified",
             "jsonType.label": "boolean"
           }
@@ -1565,9 +2860,9 @@
             "user.attribute.postal_code": "postal_code",
             "userinfo.token.claim": "true",
             "user.attribute.street": "street",
-            "id.token.claim": "true",
+            "id.token.claim": "false",
             "user.attribute.region": "region",
-            "access.token.claim": "true",
+            "access.token.claim": "false",
             "user.attribute.locality": "locality"
           }
         }
@@ -1593,8 +2888,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "phoneNumber",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "phone_number",
             "jsonType.label": "String"
           }
@@ -1608,8 +2903,8 @@
           "config": {
             "userinfo.token.claim": "true",
             "user.attribute": "phoneNumberVerified",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "phone_number_verified",
             "jsonType.label": "boolean"
           }
@@ -1632,11 +2927,23 @@
       "description": "OpenID Connect scope for add user roles to the access token",
       "protocol": "openid-connect",
       "attributes": {
-        "include.in.token.scope": "false",
+        "include.in.token.scope": "true",
         "display.on.consent.screen": "true",
         "consent.screen.text": "${rolesScopeConsentText}"
       },
       "protocolMappers": [
+        {
+          "id": "75f6d70c-9235-40cc-96ab-571522844e92",
+          "name": "medication-service",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "medication-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
         {
           "id": "710129d1-23c4-412d-b6db-60d20836afbc",
           "name": "client roles",
@@ -1658,11 +2965,13 @@
           "protocolMapper": "oidc-usermodel-realm-role-mapper",
           "consentRequired": false,
           "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
             "user.attribute": "foo",
+            "id.token.claim": "true",
             "access.token.claim": "true",
-            "claim.name": "realm_access.roles",
-            "jsonType.label": "String",
-            "multivalued": "true"
+            "claim.name": "roles",
+            "jsonType.label": "String"
           }
         },
         {
@@ -1795,6 +3104,39 @@
   "adminEventsDetailsEnabled": false,
   "identityProviders": [
     {
+      "alias": "bcsc",
+      "displayName": "BC Services Card",
+      "internalId": "00f03f80-82f0-4cfc-8ce2-6bba1a289403",
+      "providerId": "oidc",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": true,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "hideOnLoginPage": "true",
+        "userInfoUrl": "https://idtest.gov.bc.ca/oauth2/userinfo",
+        "validateSignature": "true",
+        "clientId": "urn.ca.bc.gov.health.healthgateway.dev",
+        "tokenUrl": "https://idtest.gov.bc.ca/oauth2/token",
+        "uiLocales": "",
+        "jwksUrl": "https://idtest.gov.bc.ca/oauth2/jwk.json",
+        "backchannelSupported": "true",
+        "issuer": "https://idtest.gov.bc.ca/oauth2/",
+        "useJwksUrl": "true",
+        "loginHint": "true",
+        "authorizationUrl": "https://idtest.gov.bc.ca/login/oidc/authorize/",
+        "disableUserInfo": "false",
+        "logoutUrl": "https://idtest.gov.bc.ca/oauth2/revoke",
+        "clientSecret": "**********",
+        "prompt": "login",
+        "defaultScope": "openid profile email"
+      }
+    },
+    {
       "alias": "idir",
       "displayName": "IDIR",
       "internalId": "0e31caa6-b220-4ebc-9b83-0a59c3c5ea41",
@@ -1824,60 +3166,7 @@
         "logoutUrl": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/idir/protocol/openid-connect/logout",
         "clientSecret": "**********",
         "prompt": "login",
-        "guiOrder": ""
-      }
-    },
-    {
-      "alias": "github",
-      "internalId": "15aee1fb-8ac0-4796-9b35-c3eb35a6b158",
-      "providerId": "github",
-      "enabled": true,
-      "updateProfileFirstLoginMode": "on",
-      "trustEmail": true,
-      "storeToken": false,
-      "addReadTokenRoleOnCreate": false,
-      "authenticateByDefault": false,
-      "linkOnly": false,
-      "firstBrokerLoginFlowAlias": "browser",
-      "config": {
-        "hideOnLoginPage": "false",
-        "clientId": "7a171e185e7f49046f19",
-        "disableUserInfo": "false",
-        "clientSecret": "**********",
-        "defaultScope": "read:user",
-        "useJwksUrl": "true"
-      }
-    },
-    {
-      "alias": "bcsc",
-      "displayName": "BC Services Card",
-      "internalId": "00f03f80-82f0-4cfc-8ce2-6bba1a289403",
-      "providerId": "oidc",
-      "enabled": true,
-      "updateProfileFirstLoginMode": "on",
-      "trustEmail": true,
-      "storeToken": false,
-      "addReadTokenRoleOnCreate": false,
-      "authenticateByDefault": false,
-      "linkOnly": false,
-      "firstBrokerLoginFlowAlias": "first broker login",
-      "config": {
-        "hideOnLoginPage": "",
-        "userInfoUrl": "https://idtest.gov.bc.ca/oauth2/userinfo",
-        "validateSignature": "true",
-        "clientId": "urn.ca.bc.gov.health.healthgateway.dev",
-        "tokenUrl": "https://idtest.gov.bc.ca/oauth2/token",
-        "uiLocales": "",
-        "jwksUrl": "https://idtest.gov.bc.ca/static/jwk.json",
-        "backchannelSupported": "true",
-        "issuer": "https://idtest.gov.bc.ca/oauth2/",
-        "useJwksUrl": "true",
-        "loginHint": "",
-        "authorizationUrl": "https://idtest.gov.bc.ca/login/oidc/authorize/",
-        "disableUserInfo": "",
-        "logoutUrl": "https://idtest.gov.bc.ca/oauth2/revoke",
-        "clientSecret": "**********",
-        "prompt": "login",
+        "guiOrder": "",
         "defaultScope": "openid profile email"
       }
     }
@@ -1894,6 +3183,17 @@
       }
     },
     {
+      "id": "99bbc9ee-838b-44f3-a877-f57d31b4db82",
+      "name": "given_name",
+      "identityProviderAlias": "bcsc",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "claim": "given_names",
+        "user.attribute": "firstName",
+        "claim.value": "firstName"
+      }
+    },
+    {
       "id": "e294a770-372f-460e-9c84-3155e6b44847",
       "name": "displayName",
       "identityProviderAlias": "idir",
@@ -1901,16 +3201,6 @@
       "config": {
         "claim": "displayName",
         "user.attribute": "displayName"
-      }
-    },
-    {
-      "id": "011b20dd-dae5-47c8-aede-0ed015596dc6",
-      "name": "HDID",
-      "identityProviderAlias": "bcsc",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "sub",
-        "user.attribute": "HDID"
       }
     },
     {
@@ -1934,13 +3224,13 @@
       }
     },
     {
-      "id": "605e1cee-7950-4efa-a558-5f92e8d1efba",
-      "name": "given_name",
+      "id": "0d8c067d-a030-40ba-922b-96e5c54e66ea",
+      "name": "family_name",
       "identityProviderAlias": "bcsc",
       "identityProviderMapper": "oidc-user-attribute-idp-mapper",
       "config": {
-        "claim": "given_name",
-        "user.attribute": "firstName"
+        "claim": "family_name",
+        "user.attribute": "lastName"
       }
     },
     {
@@ -1953,16 +3243,6 @@
       }
     },
     {
-      "id": "ebee3d14-8623-44db-980f-87c925ef6e12",
-      "name": "Surname",
-      "identityProviderAlias": "bcsc",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "family_name",
-        "user.attribute": "lastName"
-      }
-    },
-    {
       "id": "4e7e1c38-403c-4c07-8c26-73d286ccbd3b",
       "name": "firstName",
       "identityProviderAlias": "idir",
@@ -1970,6 +3250,26 @@
       "config": {
         "claim": "firstName",
         "user.attribute": "firstName"
+      }
+    },
+    {
+      "id": "8f710f19-ab59-4e8d-b320-147896316568",
+      "name": "hdid",
+      "identityProviderAlias": "bcsc",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "claim": "sub",
+        "user.attribute": "hdid"
+      }
+    },
+    {
+      "id": "5dd591ca-b5df-4f32-be2e-fb30ea53090a",
+      "name": "iasenv",
+      "identityProviderAlias": "bcsc",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "claim": "authoritative_party_identifier",
+        "user.attribute": "iasenv"
       }
     }
   ],
@@ -2477,7 +3777,7 @@
       "alias": "CONFIGURE_TOTP",
       "name": "Configure OTP",
       "providerId": "CONFIGURE_TOTP",
-      "enabled": true,
+      "enabled": false,
       "defaultAction": false,
       "priority": 10,
       "config": {}
@@ -2504,7 +3804,7 @@
       "alias": "UPDATE_PROFILE",
       "name": "Update Profile",
       "providerId": "UPDATE_PROFILE",
-      "enabled": false,
+      "enabled": true,
       "defaultAction": false,
       "priority": 40,
       "config": {}
@@ -2537,6 +3837,7 @@
     "minimumQuickLoginWaitSeconds": "60",
     "displayNameHtml": "<a>HEALTH GATEWAY (Development)</a>",
     "failureFactor": "30",
+    "defaultSignatureAlgorithm": "RS256",
     "actionTokenGeneratedByUserLifespan": "300",
     "maxDeltaTimeSeconds": "43200",
     "_browser_header.xContentTypeOptions": "nosniff",
@@ -2548,5 +3849,5 @@
     "offlineSessionMaxLifespanEnabled": "false"
   },
   "keycloakVersion": "7.3.0.GA",
-  "userManagedAccessAllowed": true
+  "userManagedAccessAllowed": false
 }
