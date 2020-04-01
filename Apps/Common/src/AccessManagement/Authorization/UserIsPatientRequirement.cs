@@ -13,31 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication.Models
+namespace HealthGateway.Common.AccessManagement.Authorization
 {
-    using Newtonsoft.Json;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// OAuth2 OIDC Client Credentials Grant Token request information.
+    /// UserIsPatientRequirement is a custom IAuthorizationRequirement used to assert an authorization
+    /// that the hdid User claim (in the JWT) is the same as the Patient hdid (Patient ID) used in the resource
+    /// request.
     /// </summary>
-    public class ClientCredentialsTokenRequest
+    public class UserIsPatientRequirement : IAuthorizationRequirement
     {
-        /// <summary>
-        /// Gets or sets a unique identifier of the target API you want to access.
-        /// </summary>
-        [JsonProperty("audience")]
-        public string? Audience { get; set; }
-
-        /// <summary>
-        /// Gets or sets the application's Client ID.
-        /// </summary>
-        [JsonProperty("client_id")]
-        public string? ClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets your application's Client Secret.
-        /// </summary>
-        [JsonProperty("client_secret")]
-        public string? ClientSecret { get; set; }
+        // blank on purpose
     }
 }

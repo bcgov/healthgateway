@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ namespace HealthGateway.WebClient
     using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Authentication;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Services;
@@ -77,7 +77,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IBetaRequestService, BetaRequestService>();
-            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
 
             // Add delegates

@@ -15,26 +15,63 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Database.Delegates;
+    using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
         private readonly IProfileDelegate userProfileDelegate;
+        private readonly IBetaRequestDelegate betaRequestDelegate;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        public DashboardService(IProfileDelegate userProfileDelegate)
+        /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
+        /// <param name="config">The configuration provider.</param>
+        public DashboardService(
+            IProfileDelegate userProfileDelegate,
+            IBetaRequestDelegate betaRequestDelegate,
+            IConfiguration config)
         {
             this.userProfileDelegate = userProfileDelegate;
+            this.betaRequestDelegate = betaRequestDelegate;
+            this.configuration = config;
         }
 
         /// <inheritdoc />
         public int GetRegisteredUserCount()
         {
             return this.userProfileDelegate.GetRegisteredUsersCount();
+        }
+
+        /// <inheritdoc />
+        public int GetUnregisteredInvitedUserCount()
+        {
+            return this.userProfileDelegate.GeUnregisteredInvitedUsersCount();
+        }
+
+        /// <inheritdoc />
+        public int GetTodayLoggedInUsersCount()
+        {
+            AdminConfiguration config = new AdminConfiguration();
+            this.configuration.GetSection("Admin").Bind(config);
+            string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                config.WindowsTimeZoneId : config.UnixTimeZoneId;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
+            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Today.ToUniversalTime(), tz);
+            return this.userProfileDelegate.GetLoggedInUsersCount(startDate);
+        }
+
+        /// <inheritdoc />
+        public int GetWaitlistUserCount()
+        {
+            return this.betaRequestDelegate.GetWaitlistCount();
         }
     }
 }

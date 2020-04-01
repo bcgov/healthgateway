@@ -1,6 +1,7 @@
 ## Ignore these 
 # General
 .DS_Store
+.DS_Store?
 .AppleDouble
 .LSOverride
 
@@ -20,3 +21,19 @@
 
 # Local settings files
 *.local.json
+
+# Additional Apple macOS and iCloud
+.AppleDesktop
+*.original_filename.iCloud
+.iCloud
+.Trashes
+.apdisk
+
+# Thumbnails
+._*
+Thumbs.db
+
+# Dropbox settings and caches
+.dropbox
+.dropox.attr
+.dropbox.cache

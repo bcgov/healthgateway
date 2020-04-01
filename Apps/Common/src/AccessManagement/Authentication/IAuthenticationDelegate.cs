@@ -13,16 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authentication
+namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Authentication.Models;
+
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
     /// The authorization service interface.
+    /// This supports direct grant for OAuth2 Client Credentials Grant flows
+    /// and Resource Owner Password Grant flows.
     /// </summary>
-    public interface IAuthService
+    public interface IAuthenticationDelegate
     {
         /// <summary>
         /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard).
@@ -32,12 +34,18 @@ namespace HealthGateway.Common.Authentication
         /// <summary>
         /// Gets the OAuth2 Auth Token URI.
         /// </summary>
-        Uri TokenUri { get; }
+        Uri? TokenUri { get; }
 
         /// <summary>
-        /// Authenticates this service, using Client Credentials Grant.
+        /// Authenticates as a 'system account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateService();
+        JWTModel AuthenticateAsSystem();
+
+        /// <summary>
+        /// Authenticates a resource owner user with direct grant, no user intervention.
+        /// </summary>
+        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
+        JWTModel AuthenticateAsUser();
     }
 }

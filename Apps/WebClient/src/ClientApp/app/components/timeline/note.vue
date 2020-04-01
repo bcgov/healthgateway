@@ -60,6 +60,10 @@ $radius: 15px;
   padding-left: 30px;
   padding-right: 20px;
 }
+
+.noteMenu {
+  color: $soft_text;
+}
 </style>
 
 <template>
@@ -86,10 +90,10 @@ $radius: 15px;
                       size="1x"
                     ></font-awesome-icon>
                   </template>
-                  <b-dropdown-item @click="editNote()">
+                  <b-dropdown-item class="menuItem" @click="editNote()">
                     Edit
                   </b-dropdown-item>
-                  <b-dropdown-item @click="deleteNote()">
+                  <b-dropdown-item class="menuItem" @click="deleteNote()">
                     Delete
                   </b-dropdown-item>
                 </b-nav-item-dropdown>
@@ -146,11 +150,11 @@ $radius: 15px;
           <b-row v-if="isEditing" class="py-2 pr-1">
             <b-col class="d-flex flex-row-reverse">
               <div>
-                <b-btn variant="light" type="reset">
-                  <span>CANCEL</span>
+                <b-btn variant="light" type="reset" :disabled="isSaving">
+                  <span>Cancel</span>
                 </b-btn>
-                <b-btn variant="primary" type="submit">
-                  <span>SAVE</span>
+                <b-btn variant="primary" type="submit" :disabled="isSaving">
+                  <span>Save</span>
                 </b-btn>
               </div>
             </b-col>
@@ -170,7 +174,7 @@ $radius: 15px;
 <script lang="ts">
 import Vue from "vue";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { Prop, Component, Emit } from "vue-property-decorator";
+import { Prop, Component, Emit, PropSync } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import {
   faEllipsisV,
@@ -188,15 +192,16 @@ import User from "@/models/user";
 export default class NoteTimelineComponent extends Vue {
   @Prop() isAddMode!: boolean;
   @Prop() entry!: NoteTimelineEntry;
-  @Getter("user", { namespace: "user" }) user: User;
+  @Getter("user", { namespace: "user" }) user!: User;
 
-  private noteService: IUserNoteService;
+  private noteService!: IUserNoteService;
   private text: string = "";
   private title: string = "";
   private date: string = new Date().toISOString().slice(0, 10);
   private detailsVisible = false;
   private hasErrors: boolean = false;
   private isEditMode: boolean = false;
+  private isSaving: boolean = false;
 
   mounted() {
     this.noteService = container.get<IUserNoteService>(
@@ -228,6 +233,7 @@ export default class NoteTimelineComponent extends Vue {
   }
 
   private updateNote() {
+    this.isSaving = true;
     this.noteService
       .updateNote({
         id: this.entry.id,
@@ -243,10 +249,14 @@ export default class NoteTimelineComponent extends Vue {
       })
       .catch(() => {
         this.hasErrors = true;
+      })
+      .finally(() => {
+        this.isSaving = false;
       });
   }
 
   private createNote() {
+    this.isSaving = true;
     this.noteService
       .createNote({
         text: this.text,
@@ -259,6 +269,9 @@ export default class NoteTimelineComponent extends Vue {
       })
       .catch(() => {
         this.hasErrors = true;
+      })
+      .finally(() => {
+        this.isSaving = false;
       });
   }
 
@@ -269,6 +282,7 @@ export default class NoteTimelineComponent extends Vue {
       .toISOString()
       .slice(0, 10);
     this.isEditMode = true;
+    this.onEditStarted(this.entry);
   }
 
   private deleteNote(): void {
@@ -280,13 +294,18 @@ export default class NoteTimelineComponent extends Vue {
   }
 
   private onReset(): void {
-    this.close();
+    this.onEditClose(this.entry);
     this.isEditMode = false;
   }
 
   @Emit()
-  public close() {
-    return;
+  public onEditClose(note: NoteTimelineEntry) {
+    return note;
+  }
+
+  @Emit()
+  public onEditStarted(note: NoteTimelineEntry) {
+    return note;
   }
 
   @Emit()
@@ -295,9 +314,7 @@ export default class NoteTimelineComponent extends Vue {
   }
 
   @Emit()
-  public onNoteAdded(note: UserNote) {
-    return note;
-  }
+  public onNoteAdded(note: UserNote) {}
 
   @Emit()
   public onNoteUpdated(note: UserNote) {

@@ -40,12 +40,12 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the OpenIDConnect Scopes.
         /// </summary>
-        public string Scope { get; set; }
+        public string? Scope { get; set; }
 
         /// <summary>
         /// Gets or sets the Callback URIs.
         /// </summary>
         #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> Callbacks { get; set; }
+        public Dictionary<string, System.Uri>? Callbacks { get; set; }
     }
 }

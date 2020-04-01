@@ -437,8 +437,12 @@ export default class ProfileComponent extends Vue {
   }
 
   private get timeForDeletionString(): string {
-    if (this.isActiveProfile || this.timeForDeletion < 0) {
+    if (this.isActiveProfile) {
       return "";
+    }
+
+    if (this.timeForDeletion < 0) {
+      return "Your account will be closed imminently";
     }
 
     let duration = moment.duration(this.timeForDeletion);
@@ -501,7 +505,7 @@ export default class ProfileComponent extends Vue {
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({
-      hdid: this.user.hdid,
+      hdid: this.user.hdid || "",
       emailAddress: this.email
     })
       .then(() => {

@@ -112,7 +112,7 @@ namespace HealthGateway.Medication.Parsers
         /// <param name="transactionId">The message transaction id.</param>
         /// <param name="traceId">The trace ID of the Pharmanet message.</param>
         /// <param name="protectiveWord">The protecitve word securing certain HL7 messages.</param>
-        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId, string protectiveWord)
+        protected void SetTransactionControlSegment(Message message, string transactionId, long traceId, string? protectiveWord)
         {
             if (message is null)
             {

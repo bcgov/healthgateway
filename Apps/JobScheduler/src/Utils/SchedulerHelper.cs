@@ -16,6 +16,7 @@
 namespace Healthgateway.JobScheduler.Utils
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Linq.Expressions;
     using System.Runtime.InteropServices;
     using Hangfire;
@@ -40,8 +41,9 @@ namespace Healthgateway.JobScheduler.Utils
         public static void ScheduleDrugLoadJob<T>(IConfiguration cfg, string key)
             where T : IDrugApp
         {
-            JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob<T>(jc, GetLocalTimeZone(cfg), j => j.Process(key));
+            Contract.Requires(cfg != null);
+            JobConfiguration jc = GetJobConfiguration(cfg!, key);
+            ScheduleJob<T>(jc, GetLocalTimeZone(cfg!), j => j.Process(key!));
         }
 
         /// <summary>
@@ -53,8 +55,9 @@ namespace Healthgateway.JobScheduler.Utils
         /// <param name="methodCall">The expression to run on the class.</param>
         public static void ScheduleJob<T>(IConfiguration cfg, string key, Expression<Action<T>> methodCall)
         {
-            JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob<T>(jc, GetLocalTimeZone(cfg), methodCall);
+            Contract.Requires(cfg != null);
+            JobConfiguration jc = GetJobConfiguration(cfg!, key);
+            ScheduleJob<T>(jc, GetLocalTimeZone(cfg!), methodCall);
         }
 
         /// <summary>
@@ -66,7 +69,8 @@ namespace Healthgateway.JobScheduler.Utils
         /// <param name="methodCall">The expression to run on the class.</param>
         public static void ScheduleJob<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Action<T>> methodCall)
         {
-            RecurringJob.AddOrUpdate<T>(cfg.Id, methodCall, cfg.Schedule, tz);
+            Contract.Requires(cfg != null);
+            RecurringJob.AddOrUpdate<T>(cfg!.Id, methodCall, cfg!.Schedule, tz);
             if (cfg.Immediate)
             {
                 BackgroundJob.Schedule<T>(methodCall, TimeSpan.FromSeconds(cfg.Delay));

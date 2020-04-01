@@ -28,6 +28,7 @@
     <Folder Include="Auditing\" />
     <Folder Include="Services\" />
     <Folder Include="Swagger\" />
+    <Folder Include="Delegates\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\Swagger_Test.cs" />

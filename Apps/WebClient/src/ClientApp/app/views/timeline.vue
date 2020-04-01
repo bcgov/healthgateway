@@ -1,6 +1,13 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+}
+
 .column-wrapper {
   border: 1px;
 }
@@ -53,9 +60,9 @@
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row class="my-3 fluid justify-content-md-center">
-      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper">
+      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper no-print">
         <b-row>
-          <b-col class="col-0 col-xs-4 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-0 col-xs-4 col-lg-2"></b-col>
           <b-col class="col-12 col-xs-8 col-lg-8">
             <b-button
               v-if="config.modules['Note'] == true"
@@ -68,15 +75,39 @@
               Add Note
             </b-button>
           </b-col>
-          <b-col class="col-0 col-xs-0 col-lg-2">&nbsp;</b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2"></b-col>
+        </b-row>
+        <b-row class="pt-1">
+          <b-col class="col-0 col-xs-4 col-lg-2"></b-col>
+          <b-col class="col-12 col-xs-8 col-lg-8">
+            <b-button
+              variant="light"
+              class="w-100 visible-lg-block"
+              @click="printRecords"
+            >
+              <font-awesome-icon icon="print" aria-hidden="true" />
+              Print
+            </b-button>
+          </b-col>
+          <b-col class="col-0 col-xs-0 col-lg-2"></b-col>
         </b-row>
       </b-col>
       <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
-        <b-alert :show="hasErrors" dismissible variant="danger">
+        <b-alert
+          :show="hasErrors"
+          dismissible
+          variant="danger"
+          class="no-print"
+        >
           <h4>Error</h4>
           <span>An unexpected error occured while processing the request.</span>
         </b-alert>
-        <b-alert :show="hasNewTermsOfService" dismissible variant="info">
+        <b-alert
+          :show="hasNewTermsOfService"
+          dismissible
+          variant="info"
+          class="no-print"
+        >
           <h4>Updated Terms of Service</h4>
           <span>
             The Terms of Service have been updated since your last login. You
@@ -90,7 +121,12 @@
             >.
           </span>
         </b-alert>
-        <b-alert :show="unverifiedEmail" dismissible variant="info">
+        <b-alert
+          :show="unverifiedEmail"
+          dismissible
+          variant="info"
+          class="no-print"
+        >
           <h4>Unverified email</h4>
           <span>
             Your email has not been verified. Please check your inbox or junk
@@ -101,7 +137,7 @@
           <h1 id="subject">Health Care Timeline</h1>
           <hr />
         </div>
-        <b-row>
+        <b-row class="no-print">
           <b-col>
             <div class="form-group has-filter">
               <font-awesome-icon
@@ -117,11 +153,43 @@
                 debounce="250"
               ></b-form-input>
             </div>
-            <br />
           </b-col>
         </b-row>
+        <b-row align-h="start" class="no-print">
+          <b-col v-if="isMedicationEnabled" cols="3">
+            <b-form-checkbox
+              id="medicationFilter"
+              v-model="filterTypes"
+              name="medicationFilter"
+              value="Medication"
+            >
+              Medications
+            </b-form-checkbox>
+          </b-col>
+          <b-col v-if="isImmunizationEnabled" cols="3">
+            <b-form-checkbox
+              id="immunizationFilter"
+              v-model="filterTypes"
+              name="immunizationFilter"
+              value="Immunization"
+            >
+              Immunizations
+            </b-form-checkbox>
+          </b-col>
+          <b-col v-if="isNoteEnabled" cols="3">
+            <b-form-checkbox
+              id="notesFilter"
+              v-model="filterTypes"
+              name="notesFilter"
+              value="Note"
+            >
+              Notes
+            </b-form-checkbox>
+          </b-col>
+        </b-row>
+        <br />
         <div v-if="!isLoading">
-          <div id="listControlls">
+          <div id="listControlls" class="no-print">
             <b-row>
               <b-col>
                 Displaying {{ getVisibleCount() }} out of
@@ -158,7 +226,7 @@
               <b-col>
                 <NoteTimelineComponent
                   :is-add-mode="true"
-                  @close="isAddingNote = false"
+                  @on-edit-close="isAddingNote = false"
                   @on-note-added="onNoteAdded"
                 />
               </b-col>
@@ -178,12 +246,14 @@
                 :index="index"
                 @on-change="onCardUpdated"
                 @on-remove="onCardRemoved"
+                @on-edit="onCardEdit"
+                @on-close="onCardClose"
               />
             </b-row>
           </div>
         </div>
       </b-col>
-      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper">
+      <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
         <HealthlinkComponent />
       </b-col>
     </b-row>
@@ -193,7 +263,7 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
-    <FeedbackComponent />
+    <FeedbackComponent class="no-print" />
   </div>
 </template>
 
@@ -225,6 +295,7 @@ import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
 import { WebClientConfiguration } from "@/models/configData";
+import RequestResult from "@/models/requestResult";
 
 const namespace: string = "user";
 
@@ -261,13 +332,18 @@ export default class TimelineComponent extends Vue {
   private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
+  private editIdList: string[] = [];
   private unsavedChangesText: string =
     "You have unsaved changes. Are you sure you want to leave?";
+
+  private filterTypes: string[] = [];
 
   @Ref("protectiveWordModal")
   readonly protectiveWordModal: ProtectiveWordComponent;
 
   mounted() {
+    this.initializeFilters();
+
     this.fetchMedicationStatements();
     this.fetchImmunizations();
     this.fetchNotes();
@@ -276,14 +352,17 @@ export default class TimelineComponent extends Vue {
   }
 
   beforeRouteLeave(to, from, next) {
-    if (this.isAddingNote && !confirm(this.unsavedChangesText)) {
+    if (
+      (this.isAddingNote || this.editIdList.length > 0) &&
+      !confirm(this.unsavedChangesText)
+    ) {
       return;
     }
     next();
   }
 
   private onBrowserClose(event: BeforeUnloadEvent) {
-    if (this.isAddingNote) {
+    if (this.isAddingNote || this.editIdList.length > 0) {
       event.returnValue = this.unsavedChangesText;
     }
   }
@@ -308,13 +387,55 @@ export default class TimelineComponent extends Vue {
     );
   }
 
+  private get isMedicationEnabled(): boolean {
+    return (
+      this.config.modules["MedicationHistory"] ||
+      this.config.modules["Medication"]
+    );
+  }
+
+  private get isImmunizationEnabled(): boolean {
+    return this.config.modules["Immunization"];
+  }
+
+  private get isNoteEnabled(): boolean {
+    return this.config.modules["Note"];
+  }
+
+  private initializeFilters(): void {
+    if (this.isMedicationEnabled) {
+      this.filterTypes.push("Medication");
+    }
+    if (this.isImmunizationEnabled) {
+      this.filterTypes.push("Immunization");
+    }
+    if (this.isNoteEnabled) {
+      this.filterTypes.push("Note");
+    }
+  }
+
   private fetchMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
     );
     this.isMedicationLoading = true;
-    medicationService
-      .getPatientMedicationStatements(this.user.hdid, protectiveWord)
+
+    const isOdrEnabled = this.config.modules["MedicationHistory"];
+    let promise: Promise<RequestResult<MedicationStatement[]>>;
+
+    if (isOdrEnabled) {
+      promise = medicationService.getPatientMedicationStatementHistory(
+        this.user.hdid,
+        protectiveWord
+      );
+    } else {
+      promise = medicationService.getPatientMedicationStatements(
+        this.user.hdid,
+        protectiveWord
+      );
+    }
+
+    promise
       .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
@@ -409,12 +530,22 @@ export default class TimelineComponent extends Vue {
     this.isAddingNote = false;
     if (note) {
       this.timelineEntries.push(new NoteTimelineEntry(note));
+      this.applyTimelineFilter();
     }
   }
 
   private onCardRemoved(entry: TimelineEntry) {
     const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
+  }
+
+  private onCardEdit(entry: TimelineEntry) {
+    this.editIdList.push(entry.id);
+  }
+
+  private onCardClose(entry: TimelineEntry) {
+    const index = this.editIdList.findIndex(e => e == entry.id);
+    this.editIdList.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {
@@ -441,14 +572,11 @@ export default class TimelineComponent extends Vue {
   }
 
   @Watch("filterText")
+  @Watch("filterTypes")
   private applyTimelineFilter() {
-    if (!this.filterText) {
-      this.visibleTimelineEntries = this.timelineEntries;
-    } else {
-      this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
-        entry.filterApplies(this.filterText)
-      );
-    }
+    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+      entry.filterApplies(this.filterText, this.filterTypes)
+    );
   }
 
   private get dateGroups(): DateGroup[] {
@@ -500,6 +628,10 @@ export default class TimelineComponent extends Vue {
 
   private getTotalCount(): number {
     return this.timelineEntries.length;
+  }
+
+  private printRecords() {
+    window.print();
   }
 }
 </script>

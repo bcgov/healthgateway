@@ -19,11 +19,11 @@ namespace HealthGateway.Immunization.Controllers
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Immunization.Models;
+     using HealthGateway.Common.Models;
+   using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;

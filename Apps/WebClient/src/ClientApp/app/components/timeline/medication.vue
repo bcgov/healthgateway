@@ -181,16 +181,20 @@ export default class MedicationTimelineComponent extends Vue {
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
   private faxPhoneType: PhoneType = PhoneType.Fax;
-  private isLoading: boolean = false;
+  private isLoadingMedication: boolean = false;
+  private isLoadingPharmacy: boolean = false;
   private hasErrors: boolean = false;
 
   private medicationLoaded: boolean = false;
-  private pharmacyLoaded: boolean = false;
 
   private detailsVisible = false;
 
   private get detailsLoaded(): boolean {
-    return this.medicationLoaded && this.pharmacyLoaded;
+    return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
+  }
+
+  private get isLoading(): boolean {
+    return this.isLoadingMedication || this.isLoadingPharmacy;
   }
 
   private get entryIcon(): IconDefinition {
@@ -205,44 +209,45 @@ export default class MedicationTimelineComponent extends Vue {
       return;
     }
 
-    // If the medication or pharmacy details are loaded dont fetch again.
-    if (this.medicationLoaded && this.pharmacyLoaded) {
-      return;
+    // Load medication details
+    if (!this.medicationLoaded) {
+      this.isLoadingMedication = true;
+      var medicationPromise = this.getMedication({
+        din: medicationEntry.medication.din
+      })
+        .then(result => {
+          if (result) {
+            medicationEntry.medication.populateFromModel(result);
+          }
+          this.medicationLoaded = true;
+          this.isLoadingMedication = false;
+        })
+        .catch(err => {
+          console.log("Error loading medication details");
+          console.log(err);
+          this.hasErrors = true;
+          this.isLoadingMedication = false;
+        });
     }
 
-    console.log("Loading details");
-
-    this.isLoading = true;
-    var medicationPromise = this.getMedication({
-      din: medicationEntry.medication.din
-    });
-
-    var pharmacyPromise = this.getPharmacy({
-      pharmacyId: medicationEntry.pharmacy.id
-    });
-
-    Promise.all([medicationPromise, pharmacyPromise])
-      .then(results => {
-        // Load medication details
-        if (results[0]) {
-          medicationEntry.medication.populateFromModel(results[0]);
-        }
-        this.medicationLoaded = true;
-
-        if (results[1]) {
-          // Load pharmacy details
-          medicationEntry.pharmacy.populateFromModel(results[1]);
-        }
-        this.pharmacyLoaded = true;
-
-        this.isLoading = false;
+    if (!medicationEntry.pharmacy.isLoaded) {
+      this.isLoadingPharmacy = true;
+      var pharmacyPromise = this.getPharmacy({
+        pharmacyId: medicationEntry.pharmacy.id
       })
-      .catch(err => {
-        console.log("Error loading details");
-        console.log(err);
-        this.hasErrors = true;
-        this.isLoading = false;
-      });
+        .then(result => {
+          if (result) {
+            medicationEntry.pharmacy.populateFromModel(result);
+          }
+          this.isLoadingPharmacy = false;
+        })
+        .catch(err => {
+          console.log("Error loading pharmacy details");
+          console.log(err);
+          this.hasErrors = true;
+          this.isLoadingPharmacy = false;
+        });
+    }
   }
 
   private formatPhoneNumber(phoneNumber: string): string {

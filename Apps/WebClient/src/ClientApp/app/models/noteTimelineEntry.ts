@@ -18,7 +18,11 @@ export default class NoteTimelineEntry extends TimelineEntry {
     this.version = model?.version;
   }
 
-  public filterApplies(filterText: string): boolean {
+  public filterApplies(filterText: string, filterTypes: string[]): boolean {
+    if (!filterTypes.includes("Note")) {
+      return false;
+    }
+
     var text = (this.title! || "") + (this.text! || "");
     text = text.toUpperCase();
     return text.includes(filterText.toUpperCase());

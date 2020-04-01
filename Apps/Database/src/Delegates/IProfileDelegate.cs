@@ -72,5 +72,18 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
         int GetRegisteredUsersCount();
+
+        /// <summary>
+        /// Returns from the database the count of unregistered users that received an invite.
+        /// </summary>
+        /// <returns>The count of unregistered user that have not accepted the terms of service.</returns>
+        int GeUnregisteredInvitedUsersCount();
+
+        /// <summary>
+        /// Returns the count of logged in users after the specified date.
+        /// </summary>
+        /// <param name="startDate">The start date.</param>
+        /// <returns>The count of logged in users.</returns>
+        public int GetLoggedInUsersCount(DateTime startDate);
     }
 }
