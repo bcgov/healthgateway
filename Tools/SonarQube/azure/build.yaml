@@ -1,12 +1,12 @@
 steps:
 - task: Npm@1
-  displayName: Install NPM Packages
+  displayName: 'WebClient - Install WebClient NPM Packages'
   inputs:
     command: 'install'
     workingDir: '$(Build.SourcesDirectory)/Apps/WebClient/src/ClientApp'
 
 - task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
+  displayName: 'WebClient- Run dotnet Tests'
   inputs:
     command: 'test'
     projects: '$(Build.SourcesDirectory)/Apps/WebClient/test/unit/WebClientTests.csproj'
@@ -36,6 +36,165 @@ steps:
     dotnet build    
     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
     echo "$@" >&2
-  displayName: 'Perform Static Code Analysis'
-  continueOnError: 'false'
+  displayName: 'WebClient - Perform Static Code Analysis'
+  continueOnError: 'true'
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+
+- task: DotNetCoreCLI@2
+  displayName: 'Medication - Run dotnet Tests'
+  inputs:
+    command: 'test'
+    projects: '$(Build.SourcesDirectory)/Apps/Medication/test/unit/MedicationTests.csproj'
+    testRunTitle: 'Medication Service Tests'
+  enabled: 'true'
+
+- script: |
+    set -e
+    dotnet test \
+      test/unit/MedicationTests.csproj \
+      /p:CollectCoverage=true \
+      /p:CoverletOutputFormat=opencover \
+      --logger:"xunit;LogFileName=results.xml" \
+      -r ./xUnitResults 
+    dotnet sonarscanner begin \
+      /d:sonar.verbose=false \
+      /k:"Medicationservice_dev" \
+      /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
+      /d:sonar.login="$(sonar.login)" /d:sonar.scm.disabled="true" \
+      /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
+      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+      /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Medication - Perform Static Code Analysis'
+  continueOnError: 'true'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/Medication
+  enabled: 'true'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Patient - Run dotnet Tests'
+  inputs:
+    command: 'test'
+    projects: '$(Build.SourcesDirectory)/Apps/Patient/test/unit/PatientTests.csproj'
+    testRunTitle: 'Patient Service Tests'
+
+- script: |
+    set -e
+    dotnet test \
+      test/unit/PatientTests.csproj \
+      /p:CollectCoverage=true \
+      /p:CoverletOutputFormat=opencover \
+      --logger:"xunit;LogFileName=results.xml" \
+      -r ./xUnitResults 
+    dotnet sonarscanner begin \
+      /d:sonar.verbose=false \
+      /k:"patientservice_dev" \
+      /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
+      /d:sonar.login="$(sonar.login)" \
+      /d:sonar.scm.disabled="true" \
+      /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
+      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+      /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Patient - Perform Static Code Analysis'
+  continueOnError: 'true'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/Patient
+  enabled: 'true'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Immunization - Run dotnet Tests'
+  inputs:
+    command: 'test'
+    projects: '$(Build.SourcesDirectory)/Apps/Immunization/test/unit/ImmunizationTests.csproj'
+    testRunTitle: 'Immunization Service Tests'
+
+- script: |
+    set -e
+    dotnet test \
+      test/unit/ImmunizationTests.csproj \
+      /p:CollectCoverage=true \
+      /p:CoverletOutputFormat=opencover \
+      --logger:"xunit;LogFileName=results.xml" \
+      -r ./xUnitResults 
+    dotnet sonarscanner begin \
+      /d:sonar.verbose=false \
+      /k:"immsservice_dev" \
+      /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
+      /d:sonar.login="$(sonar.login)" \
+      /d:sonar.scm.disabled="true" \
+      /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
+      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+      /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Immunization - Perform Static Code Analysis'
+  continueOnError: 'true'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/Immunization
+
+- task: DotNetCoreCLI@2
+  displayName: 'Common - Run dotnet Tests'
+  inputs:
+    command: 'test'
+    projects: '$(Build.SourcesDirectory)/Apps/Common/test/unit/CommonTests.csproj'
+    testRunTitle: 'Common Library Tests'
+
+- script: |
+    set -e
+    dotnet test \
+      test/unit/CommonTests.csproj \
+      /p:CollectCoverage=true \
+      /p:CoverletOutputFormat=opencover \
+      --logger:"xunit;LogFileName=results.xml" \
+      -r ./xUnitResults 
+    dotnet sonarscanner begin \
+      /d:sonar.verbose=false \
+      /k:"commonlibrary_dev" \
+      /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
+      /d:sonar.login="$(sonar.login)" \
+      /d:sonar.scm.disabled="true" \
+      /d:sonar.coverage.exclusions="**Tests*.cs, **/Database/**" \
+      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+      /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Common - Perform Static Code Analysis'
+  continueOnError: 'true'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/Common
+  enabled: 'true'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Database - Run dotnet Tests'
+  inputs:
+    command: 'test'
+    projects: '$(Build.SourcesDirectory)/Apps/Database/test/unit/DatabaseTests.csproj'
+    testRunTitle: 'Database Library Tests'
+
+- script: |
+    set -e
+    dotnet test \
+      test/unit/DatabaseTests.csproj \
+      /p:CollectCoverage=true \
+      /p:CoverletOutputFormat=opencover \
+      --logger:"xunit;LogFileName=results.xml" \
+      -r ./xUnitResults 
+    dotnet sonarscanner begin \
+      /d:sonar.verbose=false \
+      /k:"databaselibrary_dev" \
+      /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
+      /d:sonar.login="$(sonar.login)" \
+      /d:sonar.scm.disabled="true" \
+      /d:sonar.coverage.exclusions="**Tests*.cs" \
+      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+      /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+    dotnet build    
+    dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
+    echo "$@" >&2
+  displayName: 'Database - Perform Static Code Analysis'
+  continueOnError: 'true'
+  workingDirectory: $(Build.SourcesDirectory)/Apps/Database
+  enabled: 'true'
