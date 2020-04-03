@@ -43,6 +43,12 @@ steps:
   continueOnError: 'true'
   workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
 
+- script: |
+    curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"WebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+  displayName: 'WebClient - On Fail'
+  condition: failed()
+
+
 - task: DotNetCoreCLI@2
   displayName: 'Medication - Run dotnet Tests'
   inputs:
