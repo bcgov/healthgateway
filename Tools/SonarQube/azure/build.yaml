@@ -1,3 +1,6 @@
+pool:
+  name: 'HealthGateway'
+  
 steps:
 - task: Npm@1
   displayName: 'WebClient - Install WebClient NPM Packages'
