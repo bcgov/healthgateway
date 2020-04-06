@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Interface for sending email.
@@ -70,5 +71,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="templateName">The name of the template.</param>
         /// <returns>The populated Email template or null if not found.</returns>
         EmailTemplate GetEmailTemplate(string templateName);
+
+        /// <summary>
+        /// Gets a list of emails ordered by the create datetime descending.
+        /// </summary>
+        /// <param name="offset">The starting offset for the query.</param>
+        /// <param name="pagesize">The maximum amount of rows to return.</param>
+        /// <returns>A list of Notes wrapped in a DBResult.</returns>
+        public DBResult<List<Email>> GetEmails(int offset = 0, int pagesize = 1000);
     }
 }

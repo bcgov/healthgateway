@@ -65,6 +65,13 @@ namespace HealthGateway.Common.Services
         void QueueNewEmail(Email email, bool shouldCommit = true);
 
         /// <summary>
+        /// Clones an existing email and queues it for send.
+        /// </summary>
+        /// <param name="emailId">The Email ID to clone and send.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        void CloneAndQueue(Guid emailId, bool shouldCommit = true);
+
+        /// <summary>
         /// Queues a new email invite.
         /// Template will be looked up in the DB.
         /// A new invite email will be added to the database.

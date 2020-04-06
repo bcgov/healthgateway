@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Models
         public string? SignedOutRedirectUri { get; set; }
 
         /// <summary>
-        /// Gets or sets whether Https Meta Data is required
+        /// Gets or sets whether Https Meta Data is required.
         /// </summary>
         public bool? RequireHttpsMetadata { get; set; }
     }
