@@ -17,13 +17,13 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text.Json;
+    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using Microsoft.EntityFrameworkCore;
+    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -112,6 +112,20 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished getting email template from DB. {JsonSerializer.Serialize(retVal)}");
 
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public DBResult<List<Email>> GetEmails(int offset = 0, int pagesize = 1000)
+        {
+            this.logger.LogTrace("Getting Emails...");
+            DBResult<List<Email>> result = new DBResult<List<Email>>();
+            result.Payload = this.dbContext.Email
+                    .OrderByDescending(o => o.CreatedBy)
+                    .Skip(offset)
+                    .Take(pagesize)
+                    .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
         }
     }
 }

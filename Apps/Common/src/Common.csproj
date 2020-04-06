@@ -69,4 +69,7 @@
     <Folder Include="Services\" />
     <Folder Include="Swagger\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" />
+  </ItemGroup>
 </Project>

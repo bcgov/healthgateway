@@ -63,7 +63,7 @@ namespace HealthGateway.Admin.Models
                 CreatedDateTime = this.CreatedDateTime,
                 IsReviewed = this.IsReviewed,
                 IsSatisfied = this.IsSatisfied,
-                Version = this.Version
+                Version = this.Version,
             };
         }
 
@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Models
                 CreatedDateTime = model.CreatedDateTime,
                 IsReviewed = model.IsReviewed,
                 IsSatisfied = model.IsSatisfied,
-                Version = model.Version
+                Version = model.Version,
             };
         }
 
@@ -97,6 +97,7 @@ namespace HealthGateway.Admin.Models
             {
                 newList.Add(UserFeedbackView.CreateFromDbModel(model));
             }
+
             return newList;
         }
 

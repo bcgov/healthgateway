@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Services
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
-
     /// <inheritdoc />
     public class BetaRequestService : IBetaRequestService
     {
