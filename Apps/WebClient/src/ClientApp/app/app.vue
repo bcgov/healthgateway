@@ -18,12 +18,18 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 main {
   padding-bottom: 0px;
   padding-top: 0px;
 }
 
 #app-root {
+  min-height: 100vh;
+}
+
+.fill-height {
+  margin: 0px;
   min-height: 100vh;
 }
 </style>
@@ -36,13 +42,19 @@ main {
         <b>{{ host }}</b>
       </div>
     </div>
+
     <header>
       <NavHeader />
     </header>
-    <main class="col">
-      <router-view></router-view>
-      <IdleComponent ref="idleModal" />
-    </main>
+    <b-row>
+      <NavSidebar />
+
+      <main class="col fill-height">
+        <router-view></router-view>
+        <IdleComponent ref="idleModal" />
+      </main>
+    </b-row>
+
     <footer class="footer">
       <NavFooter />
     </footer>
@@ -91,6 +103,7 @@ Vue.use(InputGroupPlugin);
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faUser,
+  faUserCircle,
   faAddressCard,
   faUserSecret,
   faEdit,
@@ -100,10 +113,12 @@ import {
   faCheckCircle,
   faTimesCircle,
   faEllipsisV,
-  faPrint
+  faPrint,
+  faAngleDoubleLeft
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
+  faUserCircle,
   faAddressCard,
   faUserSecret,
   faEdit,
@@ -113,24 +128,27 @@ library.add(
   faCheckCircle,
   faTimesCircle,
   faEllipsisV,
-  faPrint
+  faPrint,
+  faAngleDoubleLeft
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
+import SidebarComponent from "@/components/navmenu/sidebar.vue";
 
 @Component({
   components: {
     NavHeader: HeaderComponent,
     NavFooter: FooterComponent,
+    NavSidebar: SidebarComponent,
     IdleComponent
   }
 })
 export default class AppComponent extends Vue {
-  @Ref("idleModal") readonly idleModal: IdleComponent;
+  @Ref("idleModal") readonly idleModal?: IdleComponent;
   @Getter("oidcIsAuthenticated", { namespace: "auth" })
-  oidcIsAuthenticated: boolean;
+  oidcIsAuthenticated?: boolean;
 
   private readonly host: string = window.location.hostname.toLocaleUpperCase();
   private readonly isProduction: boolean =
