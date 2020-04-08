@@ -70,7 +70,8 @@ import {
   FormTextareaPlugin,
   AlertPlugin,
   SpinnerPlugin,
-  InputGroupPlugin
+  InputGroupPlugin,
+  PaginationNavPlugin
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -86,6 +87,7 @@ Vue.use(FormTextareaPlugin);
 Vue.use(AlertPlugin);
 Vue.use(SpinnerPlugin);
 Vue.use(InputGroupPlugin);
+Vue.use(PaginationNavPlugin);
 
 // Load general icons
 import { library } from "@fortawesome/fontawesome-svg-core";
