@@ -4,6 +4,7 @@ import LoginView from "@/views/Login.vue";
 import LogoutView from "@/views/Logout.vue";
 import DashboardView from "@/views/Dashboard.vue";
 import BetaQueueView from "@/views/BetaQueue.vue";
+import ResendEmailView from "@/views/ResendEmail.vue";
 import VueRouter from "vue-router";
 import FeedbackView from "@/views/Feedback.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
@@ -41,6 +42,12 @@ const routes = [
     path: "/beta-invites",
     name: "Beta user list",
     component: BetaQueueView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/admin-email",
+    name: "Resend Emails",
+    component: ResendEmailView,
     meta: { requiresAuth: true }
   },
   {

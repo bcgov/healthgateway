@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
@@ -79,21 +80,28 @@ namespace HealthGateway.Admin.Controllers
         /// Creates a clone of the email id and requeues it for sending.
         /// </summary>
         /// <returns>An ok result unless the email id is not foun.</returns>
-        /// <param name="emailId">The email Id to resend.</param>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <param name="emailIds">The email Ids to resend.</param>
+        /// <response code="200">Successfully queued all emails.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPost]
-        [Route("{emailId}")]
-        public IActionResult ResendEmail(Guid emailId)
+        [HttpPatch]
+        public IActionResult ResendEmail(List<Guid> emailIds)
         {
+            if (emailIds == null)
+            {
+                throw new ArgumentNullException(nameof(emailIds));
+            }
+
             try
             {
-                this.emailQueueService.CloneAndQueue(emailId);
+                emailIds.ForEach(id =>
+                {
+                    this.emailQueueService.CloneAndQueue(id);
+                });
             }
             catch (ArgumentException e)
             {
-                this.logger.LogError($"Error cloning and sending emailId {emailId} with excpetion {e.ToString()}");
+                this.logger.LogError($"Error cloning and sending emails with exception {e.ToString()}");
                 return new BadRequestResult();
             }
 

@@ -159,13 +159,13 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.ResendEmail(System.Guid)">
+        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.ResendEmail(System.Collections.Generic.List{System.Guid})">
             <summary>
             Creates a clone of the email id and requeues it for sending.
             </summary>
             <returns>An ok result unless the email id is not foun.</returns>
-            <param name="emailId">The email Id to resend.</param>
-            <response code="200">Returns the list of beta requests.</response>
+            <param name="emailIds">The email Ids to resend.</param>
+            <response code="200">Successfully queued all emails.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
