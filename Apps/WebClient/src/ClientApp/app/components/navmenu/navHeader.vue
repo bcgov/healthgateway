@@ -1,10 +1,26 @@
 <style lang="scss" scoped>
 nav {
   z-index: 9999;
+
+  a h4 {
+    text-decoration: none;
+    color: white;
+  }
+  a:hover h4 {
+    text-decoration: underline;
+  }
 }
 </style>
 <template>
   <b-navbar toggleable="md" type="dark">
+    <!-- Hamburger toggle -->
+    <b-navbar-toggle
+      v-if="displayMenu"
+      class="mr-4"
+      target="NONE"
+      @click="toggleSidebar"
+    ></b-navbar-toggle>
+
     <!-- Brand -->
     <b-navbar-brand class="mx-0">
       <router-link to="/timeline">
@@ -25,55 +41,44 @@ nav {
         />
       </router-link>
     </b-navbar-brand>
-
     <b-navbar-brand class="px-0 pr-md-5 px-lg-5 mx-0">
-      <h4 class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0" to="/timeLine">
-        HealthGateway
-      </h4>
+      <router-link to="/timeline" class="nav-link">
+        <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">
+          HealthGateway
+        </h4>
+      </router-link>
     </b-navbar-brand>
 
-    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
     <!-- Navbar links -->
-    <b-collapse id="nav-collapse" is-nav>
-      <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto">
-        <router-link
-          v-if="oidcIsAuthenticated"
-          id="menuBtnLogin"
-          class="nav-link"
-          to="/logout"
-        >
-          <font-awesome-icon icon="sign-out-alt"></font-awesome-icon> Logout
-        </router-link>
-        <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
-          <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
-        </router-link>
-      </b-navbar-nav>
-    </b-collapse>
+    <b-navbar-nav class="ml-auto">
+      <router-link
+        v-if="oidcIsAuthenticated"
+        id="menuBtnLogin"
+        class="nav-link"
+        to="/logout"
+      >
+        <font-awesome-icon icon="sign-out-alt"></font-awesome-icon> Logout
+      </router-link>
+      <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
+        <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
+      </router-link>
+    </b-navbar-nav>
   </b-navbar>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Prop, Component, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Getter, Action } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
 import { IAuthenticationService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faStream,
-  faSignInAlt,
-  faSignOutAlt,
-  faInfoCircle
-} from "@fortawesome/free-solid-svg-icons";
-library.add(faStream);
+import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 library.add(faSignInAlt);
 library.add(faSignOutAlt);
-library.add(faInfoCircle);
 
 interface ILanguage {
   code: string;
@@ -82,18 +87,17 @@ interface ILanguage {
 
 const auth: string = "auth";
 const user: string = "user";
+const sidebar: string = "sidebar";
 
 @Component
 export default class HeaderComponent extends Vue {
+  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
+  @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+
   @Getter("oidcIsAuthenticated", {
     namespace: auth
   })
   oidcIsAuthenticated!: boolean;
-
-  @Getter("user", {
-    namespace: user
-  })
-  user!: User;
 
   @Getter("userIsRegistered", {
     namespace: user
@@ -105,8 +109,6 @@ export default class HeaderComponent extends Vue {
 
   private authenticationService!: IAuthenticationService;
 
-  private name: string = "";
-
   mounted() {
     this.authenticationService = container.get(
       SERVICE_IDENTIFIER.AuthenticationService
@@ -117,6 +119,10 @@ export default class HeaderComponent extends Vue {
     return (
       this.oidcIsAuthenticated && this.userIsRegistered && this.userIsActive
     );
+  }
+
+  private toggleMenu() {
+    this.toggleSidebar();
   }
 }
 </script>

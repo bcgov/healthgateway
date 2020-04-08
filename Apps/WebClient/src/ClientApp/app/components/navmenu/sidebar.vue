@@ -26,6 +26,13 @@
 #sidebar.collapsed .button-container {
   border-color: $primary !important;
   margin: 0px;
+  border-radius: 0px !important;
+}
+
+#sidebar .button-container:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: $lightBlue !important;
 }
 
 #sidebar .button-icon {
@@ -53,6 +60,12 @@
 
 #sidebar.collapsed .arrow-icon {
   transform: scaleX(-1);
+}
+
+#sidebar .arrow-icon:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: $lightBlue !important;
 }
 
 #sidebar a {
@@ -87,7 +100,7 @@
     display: absolute;
     position: fixed;
     top: 0px;
-    padding-top: 70px;
+    padding-top: 80px;
   }
 
   #sidebar.collapsed {
@@ -99,29 +112,33 @@
   #sidebar.collapsed .row-container {
     display: none;
   }
+
+  #sidebar .arrow-icon {
+    display: none;
+  }
 }
 </style>
 
 <template>
-  <div v-if="oidcIsAuthenticated" class="wrapper">
+  <div v-show="oidcIsAuthenticated" class="wrapper">
     <!-- Sidebar -->
-    <nav id="sidebar" :class="{ collapsed: isCollapsed }">
+    <nav id="sidebar" :class="{ collapsed: !isOpen }">
       <b-row class="row-container m-0 p-0">
         <b-col class="m-0 p-0">
           <!-- Profile Button -->
-          <router-link id="menuBtnProfile" to="/profile">
+          <router-link id="menuBtnProfile" to="/profile" class="my-4">
             <b-row
-              class="align-items-center name-wrapper my-4"
-              :class="{ 'm-4': !isCollapsed }"
+              class="align-items-center name-wrapper my-4 button-container"
+              :class="{ 'm-4': isOpen }"
             >
-              <b-col class="" :class="{ 'col-4': !isCollapsed }">
+              <b-col class="" :class="{ 'col-4': isOpen }">
                 <font-awesome-icon
                   icon="user-circle"
                   class="button-icon"
                   size="3x"
                 />
               </b-col>
-              <b-col v-if="!isCollapsed" cols="8" class="button-title d-none">
+              <b-col v-if="isOpen" cols="8" class="button-title d-none">
                 {{ name }}
               </b-col>
             </b-row>
@@ -129,50 +146,54 @@
 
           <hr class="mb-3 mt-0 p-2" />
 
-          <!-- Note button -->
-          <b-row
-            class="align-items-center border rounded-pill p-1 button-container  my-4"
-            :class="{ 'm-4': !isCollapsed }"
-          >
-            <b-col :class="{ 'col-4': !isCollapsed }">
-              <font-awesome-icon icon="edit" class="button-icon" size="2x" />
-            </b-col>
-            <b-col v-if="!isCollapsed" cols="8" class="button-title d-none">
-              <span>Add a Note</span>
-            </b-col>
-          </b-row>
+          <div v-show="isTimeline">
+            <!-- Note button -->
+            <b-row
+              class="align-items-center border rounded-pill p-1 button-container  my-4"
+              :class="{ 'mx-4': isOpen }"
+              @click="createNote"
+            >
+              <b-col :class="{ 'col-4': isOpen }">
+                <font-awesome-icon icon="edit" class="button-icon" size="2x" />
+              </b-col>
+              <b-col v-if="isOpen" cols="8" class="button-title d-none">
+                <span>Add a Note</span>
+              </b-col>
+            </b-row>
 
-          <!-- Print Button -->
-          <b-row
-            class="align-items-center border rounded-pill p-1 button-container  my-4"
-            :class="{ 'm-4': !isCollapsed }"
-          >
-            <b-col class="" :class="{ 'col-4': !isCollapsed }">
-              <font-awesome-icon
-                icon="print"
-                class="button-icon m-auto"
-                size="2x"
-              />
-            </b-col>
-            <b-col v-if="!isCollapsed" cols="8" class="button-title d-none">
-              <span>Print</span>
-            </b-col>
-          </b-row>
+            <!-- Print Button -->
+            <b-row
+              class="align-items-center border rounded-pill p-1 button-container my-4"
+              :class="{ 'mx-4': isOpen }"
+              @click="printView"
+            >
+              <b-col class="" :class="{ 'col-4': isOpen }">
+                <font-awesome-icon
+                  icon="print"
+                  class="button-icon m-auto"
+                  size="2x"
+                />
+              </b-col>
+              <b-col v-if="isOpen" cols="8" class="button-title d-none">
+                <span>Print</span>
+              </b-col>
+            </b-row>
+          </div>
 
           <br />
 
           <!-- Collapse Button -->
           <b-row
-            class="align-items-center button-container my-4"
-            :class="{ 'm-4': !isCollapsed }"
+            class="align-items-center my-4"
+            :class="[isOpen ? 'mx-4' : 'button-container']"
           >
-            <b-col :class="{ 'ml-auto col-auto': !isCollapsed }">
+            <b-col class="" :class="{ 'ml-auto col-4': isOpen }">
               <font-awesome-icon
-                class="arrow-icon"
+                class="arrow-icon p-2"
                 icon="angle-double-left"
                 aria-hidden="true"
-                size="2x"
-                @click="toggleSideBar"
+                size="3x"
+                @click="toggleOpen"
               />
             </b-col>
           </b-row>
@@ -181,32 +202,48 @@
     </nav>
 
     <!-- Dark Overlay element -->
-    <div v-if="!isCollapsed" class="overlay d-block d-md-none"></div>
+    <div v-show="isOverlayVisible" class="overlay" @click="toggleOpen"></div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Prop, Component, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Getter, Action } from "vuex-class";
 import { IAuthenticationService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import VueRouter, { Route } from "vue-router";
+import EventBus from "@/eventbus";
 
 const auth: string = "auth";
+const sidebar: string = "sidebar";
 
 @Component
 export default class SidebarComponent extends Vue {
+  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
+  @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
   @Getter("oidcIsAuthenticated", {
     namespace: auth
   })
   oidcIsAuthenticated!: boolean;
 
-  private authenticationService!: IAuthenticationService;
-  private isCollapsed: boolean = true;
-  private name: string = "";
+  @Watch("oidcIsAuthenticated")
+  onPropertyChanged() {
+    // If there is no name in the scope, retrieve it from the service.
+    if (this.oidcIsAuthenticated && !this.name) {
+      this.loadName();
+    }
+  }
 
-  private transition!: Element | null;
+  @Watch("$route")
+  onRouteChanged() {
+    this.clearOverlay();
+  }
+
+  private authenticationService!: IAuthenticationService;
+  private name: string = "";
+  private windowWidth: number = 0;
 
   mounted() {
     this.authenticationService = container.get(
@@ -237,10 +274,19 @@ export default class SidebarComponent extends Vue {
           }
         });
     });
+
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+    this.windowWidth = window.innerWidth;
   }
 
-  private toggleSideBar() {
-    this.isCollapsed = !this.isCollapsed;
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  }
+
+  private toggleOpen() {
+    this.toggleSidebar();
   }
 
   private loadName(): void {
@@ -253,6 +299,34 @@ export default class SidebarComponent extends Vue {
 
   private getFullname(firstName: string, lastName: string): string {
     return firstName + " " + lastName;
+  }
+
+  private clearOverlay() {
+    if (this.isOverlayVisible) {
+      this.toggleSidebar();
+    }
+  }
+
+  private createNote() {
+    EventBus.$emit("timelineCreateNote");
+    this.clearOverlay();
+  }
+
+  private printView() {
+    EventBus.$emit("timelinePrintView");
+    this.clearOverlay();
+  }
+
+  private onResize() {
+    this.windowWidth = window.innerWidth;
+  }
+
+  get isOverlayVisible() {
+    return this.isOpen && this.windowWidth < 768;
+  }
+
+  get isTimeline(): boolean {
+    return this.$route.path == "/timeline";
   }
 }
 </script>
