@@ -13,6 +13,9 @@
   color: #fff;
   transition: all 0.3s;
   text-align: center;
+  height: 100%;
+  z-index: 9990;
+  position: static;
 }
 
 #sidebar.collapsed {
@@ -22,6 +25,7 @@
 
 #sidebar.collapsed .button-container {
   border-color: $primary !important;
+  margin: 0px;
 }
 
 #sidebar .button-icon {
@@ -38,14 +42,9 @@
 }
 
 #sidebar .name-wrapper {
-  height: 100px;
+  height: 70px;
   display: flex;
   align-items: center;
-}
-
-.no-wrap {
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 #sidebar hr {
@@ -64,57 +63,98 @@
 #sidebar a:hover {
   text-decoration: underline;
 }
+
+.overlay {
+  display: block;
+  opacity: 1;
+
+  position: fixed;
+  /* full screen */
+  width: 100vw;
+  height: 100vh;
+  /* transparent black */
+  background: rgba(0, 0, 0, 0.7);
+  /* middle layer, i.e. appears below the sidebar */
+  z-index: 998;
+  /* animate the transition */
+  transition: all 0.5s ease-in-out;
+  top: 0px;
+}
+
+/* Small Devices*/
+@media (max-width: 767px) {
+  #sidebar {
+    display: absolute;
+    position: fixed;
+    top: 0px;
+    padding-top: 70px;
+  }
+
+  #sidebar.collapsed {
+    min-width: 0px;
+    max-width: 0px;
+    height: 100vh;
+  }
+
+  #sidebar.collapsed .row-container {
+    display: none;
+  }
+}
 </style>
 
 <template>
-  <div class="wrapper">
+  <div v-if="oidcIsAuthenticated" class="wrapper">
     <!-- Sidebar -->
     <nav id="sidebar" :class="{ collapsed: isCollapsed }">
-      <b-row class="row-container no-gutters">
-        <b-col class="no-gutters" :class="{ 'px-4': !isCollapsed }">
-
+      <b-row class="row-container m-0 p-0">
+        <b-col class="m-0 p-0">
           <!-- Profile Button -->
           <router-link id="menuBtnProfile" to="/profile">
-            <b-row class="align-items-center no-gutters name-wrapper my-2">
-              <b-col class="no-gutters" :class="{ 'col-4': !isCollapsed }">
+            <b-row
+              class="align-items-center name-wrapper my-4"
+              :class="{ 'm-4': !isCollapsed }"
+            >
+              <b-col class="" :class="{ 'col-4': !isCollapsed }">
                 <font-awesome-icon
                   icon="user-circle"
                   class="button-icon"
                   size="3x"
                 />
               </b-col>
-              <b-col v-if="!isCollapsed" cols="7" class="button-title no-wrap ">
+              <b-col v-if="!isCollapsed" cols="8" class="button-title d-none">
                 {{ name }}
               </b-col>
             </b-row>
           </router-link>
 
-          <hr class="mb-4 mt-0 p-0" />
+          <hr class="mb-3 mt-0 p-2" />
 
           <!-- Note button -->
           <b-row
-            class="align-items-center no-gutters border rounded-pill my-4 button-container"
+            class="align-items-center border rounded-pill p-1 button-container  my-4"
+            :class="{ 'm-4': !isCollapsed }"
           >
-            <b-col class="no-gutters" :class="{ 'col-4': !isCollapsed }">
+            <b-col :class="{ 'col-4': !isCollapsed }">
               <font-awesome-icon icon="edit" class="button-icon" size="2x" />
             </b-col>
-            <b-col v-if="!isCollapsed" cols="7" class="button-title no-wrap">
+            <b-col v-if="!isCollapsed" cols="8" class="button-title d-none">
               <span>Add a Note</span>
             </b-col>
           </b-row>
 
           <!-- Print Button -->
           <b-row
-            class="align-items-center no-gutters border rounded-pill my-4 p-2 button-container"
+            class="align-items-center border rounded-pill p-1 button-container  my-4"
+            :class="{ 'm-4': !isCollapsed }"
           >
-            <b-col class="no-gutters" :class="{ 'col-4': !isCollapsed }">
+            <b-col class="" :class="{ 'col-4': !isCollapsed }">
               <font-awesome-icon
                 icon="print"
                 class="button-icon m-auto"
                 size="2x"
               />
             </b-col>
-            <b-col v-if="!isCollapsed" cols="7" class="button-title">
+            <b-col v-if="!isCollapsed" cols="8" class="button-title d-none">
               <span>Print</span>
             </b-col>
           </b-row>
@@ -123,12 +163,10 @@
 
           <!-- Collapse Button -->
           <b-row
-            class="align-items-center no-gutters button-container px-3 mt-4"
+            class="align-items-center button-container my-4"
+            :class="{ 'm-4': !isCollapsed }"
           >
-            <b-col
-              class="no-gutters"
-              :class="{ 'ml-auto col-auto': !isCollapsed }"
-            >
+            <b-col :class="{ 'ml-auto col-auto': !isCollapsed }">
               <font-awesome-icon
                 class="arrow-icon"
                 icon="angle-double-left"
@@ -141,6 +179,9 @@
         </b-col>
       </b-row>
     </nav>
+
+    <!-- Dark Overlay element -->
+    <div v-if="!isCollapsed" class="overlay d-block d-md-none"></div>
   </div>
 </template>
 
@@ -162,7 +203,7 @@ export default class SidebarComponent extends Vue {
   oidcIsAuthenticated!: boolean;
 
   private authenticationService!: IAuthenticationService;
-  private isCollapsed: boolean = false;
+  private isCollapsed: boolean = true;
   private name: string = "";
 
   private transition!: Element | null;
@@ -186,12 +227,15 @@ export default class SidebarComponent extends Vue {
         return;
       }
 
-      var buttonText = document.querySelector(".button-title ");
-      if (transition?.classList.contains("collapsed")) {
-        buttonText?.classList.add("no-wrap");
-      } else {
-        buttonText?.classList.remove("no-wrap");
-      }
+      var buttonText = document
+        .querySelectorAll(".button-title")
+        .forEach(button => {
+          if (transition?.classList.contains("collapsed")) {
+            button?.classList.add("d-none");
+          } else {
+            button?.classList.remove("d-none");
+          }
+        });
     });
   }
 

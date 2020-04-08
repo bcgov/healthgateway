@@ -32,11 +32,15 @@ main {
   margin: 0px;
   min-height: 100vh;
 }
+
+.devBanner {
+  z-index: 9999;
+}
 </style>
 
 <template>
   <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-    <div v-if="!isProduction">
+    <div v-if="!isProduction" class="devBanner">
       <div class="text-center bg-warning small">
         Non-production environment:
         <b>{{ host }}</b>
@@ -46,7 +50,7 @@ main {
     <header>
       <NavHeader />
     </header>
-    <b-row>
+    <b-row class="p-0 m-0">
       <NavSidebar />
 
       <main class="col fill-height">

@@ -1,3 +1,8 @@
+<style lang="scss" scoped>
+nav {
+  z-index: 9999;
+}
+</style>
 <template>
   <b-navbar toggleable="md" type="dark">
     <!-- Brand -->
