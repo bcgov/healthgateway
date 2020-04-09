@@ -195,40 +195,6 @@
                 Displaying {{ getVisibleCount() }} out of
                 {{ getTotalCount() }} records
               </b-col>
-              <b-col cols="auto">
-                <b-row
-                  :class="{ descending: sortDesc, ascending: !sortDesc }"
-                  class="text-right sortContainer"
-                >
-                  <b-btn variant="link" @click="toggleSort()">
-                    Date
-                    <span v-show="sortDesc" name="descending">
-                      (Newest)
-                      <font-awesome-icon
-                        icon="chevron-down"
-                        aria-hidden="true"
-                      ></font-awesome-icon>
-                    </span>
-                    <span v-show="!sortDesc" name="ascending">
-                      (Oldest)
-                      <font-awesome-icon
-                        icon="chevron-up"
-                        aria-hidden="true"
-                      ></font-awesome-icon>
-                    </span>
-                  </b-btn>
-                </b-row>
-              </b-col>
-            </b-row>
-            <b-row class="no-print">
-              <b-col>
-                <b-pagination-nav
-                  :link-gen="linkGen"
-                  :number-of-pages="numberOfPages"
-                  v-model="currentPage"
-                  use-router
-                ></b-pagination-nav>
-              </b-col>
             </b-row>
           </div>
           <div id="timeData">
@@ -259,6 +225,20 @@
                 @on-edit="onCardEdit"
                 @on-close="onCardClose"
               />
+            </b-row>
+            <b-row class="no-print">
+              <b-col>
+                <b-pagination-nav
+                  :link-gen="linkGen"
+                  :number-of-pages="numberOfPages"
+                  v-model="currentPage"
+                  first-number
+                  last-number
+                  next-text="Next"
+                  prev-text="Prev"
+                  use-router
+                ></b-pagination-nav>
+              </b-col>
             </b-row>
           </div>
         </div>
@@ -342,8 +322,6 @@ export default class TimelineComponent extends Vue {
   private currentPage: number = 1;
   private filteredEntriesLength = 0;
   private hasErrors: boolean = false;
-  private sortyBy: string = "date";
-  private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
   private editIdList: string[] = [];
@@ -455,6 +433,7 @@ export default class TimelineComponent extends Vue {
   private getPages(entries: TimelineEntry[]): TimelineEntry[][] {
     let index = 0;
     let result: TimelineEntry[][] = []
+    this.sortGroup(entries);
     for (index = 0; index < entries.length; index += this.getNumberOfEntriesPerPage) {
       let chunk = entries.slice(index, index + this.getNumberOfEntriesPerPage) 
       result.push(chunk);
@@ -623,10 +602,6 @@ export default class TimelineComponent extends Vue {
     console.log("protective word cancelled");
   }
 
-  private toggleSort(): void {
-    this.sortDesc = !this.sortDesc;
-  }
-
   private getHeadingDate(date: Date): string {
     return moment(date).format("ll");
   }
@@ -643,7 +618,6 @@ export default class TimelineComponent extends Vue {
     this.filteredEntriesLength = filtered.length;
     let result = this.getPages(filtered);
     // Check if access to out-of-bounds page is attempted after resize
-    console.log("Current page: " + this.currentPage + " Number of rendered pages: " + result.length);
     if (this.currentPage > result.length && result.length > 0) {
       // Set it to new final page
       this.currentPage = result.length;
@@ -684,13 +658,8 @@ export default class TimelineComponent extends Vue {
 
   private sortGroup(groupArrays) {
     groupArrays.sort((a, b) =>
-      a.date > b.date ? 1 : a.date < b.date ? -1 : 0
+      a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
-
-    if (this.sortDesc) {
-      groupArrays.reverse();
-    }
-
     return groupArrays;
   }
 
