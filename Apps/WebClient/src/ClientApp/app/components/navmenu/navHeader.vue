@@ -1,6 +1,8 @@
 <style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
 nav {
-  z-index: 9999;
+  z-index: $z_top_layer;
 
   a h4 {
     text-decoration: none;

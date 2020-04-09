@@ -14,7 +14,7 @@
   transition: all 0.3s;
   text-align: center;
   height: 100%;
-  z-index: 9990;
+  z-index: $z_sidebar;
   position: static;
 }
 
@@ -88,7 +88,7 @@
   /* transparent black */
   background: rgba(0, 0, 0, 0.7);
   /* middle layer, i.e. appears below the sidebar */
-  z-index: 998;
+  z-index: $z_overlay;
   /* animate the transition */
   transition: all 0.5s ease-in-out;
   top: 0px;

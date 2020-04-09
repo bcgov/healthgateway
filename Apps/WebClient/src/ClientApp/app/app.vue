@@ -1,4 +1,6 @@
-<style>
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
 @media print {
   .navbar {
     display: flex !important;
@@ -34,7 +36,7 @@ main {
 }
 
 .devBanner {
-  z-index: 9999;
+  z-index: $z_top_layer;
 }
 </style>
 
