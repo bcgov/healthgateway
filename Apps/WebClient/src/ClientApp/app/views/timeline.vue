@@ -220,15 +220,15 @@
                 </b-row>
               </b-col>
             </b-row>
-            <b-row>
-              <div class="overflow-auto">
+            <b-row class="no-print">
+              <b-col>
                 <b-pagination-nav
                   :link-gen="linkGen"
                   :number-of-pages="numberOfPages"
                   v-model="currentPage"
                   use-router
                 ></b-pagination-nav>
-              </div>
+              </b-col>
             </b-row>
           </div>
           <div id="timeData">
@@ -634,8 +634,8 @@ export default class TimelineComponent extends Vue {
   @Watch("filterText")
   @Watch("filterTypes")
   @Watch("currentPage")
+  @Watch("getNumberOfEntriesPerPage")
   private applyTimelineFilter() {
-
     let filtered = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
