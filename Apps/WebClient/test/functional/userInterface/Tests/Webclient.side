@@ -984,20 +984,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "6d4fe278-2ad2-4ae8-943b-3a43fcdade48",
-      "comment": "",
-      "command": "assertText",
-      "target": "id=Subject",
-      "targets": [
-        ["id=Subject", "id"],
-        ["css=#Subject", "css:finder"],
-        ["xpath=//h1[@id='Subject']", "xpath:attributes"],
-        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Terms of Service')]", "xpath:innerText"]
-      ],
-      "value": "Terms of Service"
-    }, {
       "id": "793d5b06-30a3-4d72-92b4-37cef1b2a3d9",
       "comment": "",
       "command": "waitForElementNotVisible",
@@ -1022,26 +1008,27 @@
       "command": "waitForElementEditable",
       "target": "id=protectiveWord-input",
       "targets": [
-        ["id=__BVID__46___BV_modal_title_", "id"],
-        ["css=#\\__BVID__46___BV_modal_title_", "css:finder"],
-        ["xpath=//h5[@id='__BVID__46___BV_modal_title_']", "xpath:attributes"],
-        ["xpath=//header[@id='__BVID__46___BV_modal_header_']/h5", "xpath:idRelative"],
-        ["xpath=//h5", "xpath:position"],
-        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
+        ["id=protectiveWord-input", "id"],
+        ["css=#protectiveWord-input", "css:finder"],
+        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
+        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/div/input", "xpath:position"]
       ],
       "value": "30000"
     }, {
       "id": "4cfb1f59-0803-43e9-a600-10dc394113ff",
       "comment": "",
       "command": "assertText",
-      "target": "css=label",
+      "target": "xpath=//h5",
       "targets": [
-        ["css=label", "css:finder"],
-        ["xpath=//div[@id='__BVID__44___BV_modal_body_']/div/div/form/div/div/label", "xpath:idRelative"],
-        ["xpath=//label", "xpath:position"],
-        ["xpath=//label[contains(.,'Protective Word')]", "xpath:innerText"]
+        ["id=__BVID__55___BV_modal_title_", "id"],
+        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
       ],
-      "value": "Protective Word"
+      "value": "Restricted PharmaNet Records"
     }, {
       "id": "b0378d92-e171-42bf-bad7-e39a98ecb0ab",
       "comment": "",
@@ -1058,17 +1045,29 @@
     }, {
       "id": "41c8a07b-cfb1-48ed-8cf3-5a96ff306ecd",
       "comment": "",
-      "command": "sendKeys",
-      "target": "linkText=protective-word-for-a-pharmanet-record",
+      "command": "click",
+      "target": "xpath=//button[contains(.,'Continue')]",
       "targets": [
-        ["linkText=protective-word-for-a-pharmanet-record", "linkText"],
-        ["css=small > a", "css:finder"],
-        ["xpath=//a[contains(text(),'protective-word-for-a-pharmanet-record')]", "xpath:link"],
-        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div[3]/div/small/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, 'https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record')]", "xpath:href"],
-        ["xpath=//small/a", "xpath:position"],
-        ["xpath=//a[contains(.,'protective-word-for-a-pharmanet-record')]", "xpath:innerText"]
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[10]", "xpath:attributes"],
+        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//footer/div/div/div/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Continue')]", "xpath:innerText"]
       ],
+      "value": ""
+    }, {
+      "id": "fabf9159-bf9f-4322-a175-109ecf4ce605",
+      "comment": "",
+      "command": "pause",
+      "target": "3000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e9940a8a-5c13-4550-8a35-f4a7dd3d7974",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "id=protectiveWord-input",
+      "targets": [],
       "value": ""
     }]
   }, {
