@@ -86,7 +86,7 @@
               variant="primary"
               to="/termsOfService"
             >
-              here</router-link
+              here </router-link
             >.
           </span>
         </b-alert>
@@ -164,30 +164,6 @@
                 Displaying {{ getVisibleCount() }} out of
                 {{ getTotalCount() }} records
               </b-col>
-              <b-col cols="auto">
-                <b-row
-                  :class="{ descending: sortDesc, ascending: !sortDesc }"
-                  class="text-right sortContainer"
-                >
-                  <b-btn variant="link" @click="toggleSort()">
-                    Date
-                    <span v-show="sortDesc" name="descending">
-                      (Newest)
-                      <font-awesome-icon
-                        icon="chevron-down"
-                        aria-hidden="true"
-                      ></font-awesome-icon>
-                    </span>
-                    <span v-show="!sortDesc" name="ascending">
-                      (Oldest)
-                      <font-awesome-icon
-                        icon="chevron-up"
-                        aria-hidden="true"
-                      ></font-awesome-icon>
-                    </span>
-                  </b-btn>
-                </b-row>
-              </b-col>
             </b-row>
           </div>
           <div id="timeData">
@@ -219,6 +195,20 @@
                 @on-close="onCardClose"
               />
             </b-row>
+            <b-row class="no-print">
+              <b-col>
+                <b-pagination-nav
+                  :link-gen="linkGen"
+                  :number-of-pages="numberOfPages"
+                  v-model="currentPage"
+                  first-number
+                  last-number
+                  next-text="Next"
+                  prev-text="Prev"
+                  use-router
+                ></b-pagination-nav>
+              </b-col>
+            </b-row>
           </div>
         </div>
       </b-col>
@@ -243,7 +233,7 @@ import { State, Action, Getter } from "vuex-class";
 import {
   IMedicationService,
   IImmunizationService,
-  IUserNoteService
+  IUserNoteService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -284,8 +274,8 @@ Component.registerHooks(["beforeRouteLeave"]);
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
     FeedbackComponent,
-    NoteTimelineComponent
-  }
+    NoteTimelineComponent,
+  },
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user: User;
@@ -294,12 +284,14 @@ export default class TimelineComponent extends Vue {
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
+  private timelinePages: TimelineEntry[][] = [];
   private isMedicationLoading: boolean = false;
   private isImmunizationLoading: boolean = false;
   private isNoteLoading: boolean = false;
+  private windowWidth: number = 0;
+  private currentPage: number = 1;
+  private filteredEntriesLength = 0;
   private hasErrors: boolean = false;
-  private sortyBy: string = "date";
-  private sortDesc: boolean = true;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
   private editIdList: string[] = [];
@@ -311,13 +303,16 @@ export default class TimelineComponent extends Vue {
   @Ref("protectiveWordModal")
   readonly protectiveWordModal!: ProtectiveWordComponent;
 
+  created() {
+    window.addEventListener("resize", this.handleResize);
+    this.handleResize();
+  }
+
   mounted() {
     this.initializeFilters();
-
     this.fetchMedicationStatements();
     this.fetchImmunizations();
     this.fetchNotes();
-
     window.addEventListener("beforeunload", this.onBrowserClose);
 
     let self = this;
@@ -339,11 +334,22 @@ export default class TimelineComponent extends Vue {
     }
     next();
   }
+  destroyed() {
+    window.removeEventListener("handleResize", this.handleResize);
+  }
 
   private onBrowserClose(event: BeforeUnloadEvent) {
     if (this.isAddingNote || this.editIdList.length > 0) {
       event.returnValue = this.unsavedChangesText;
     }
+  }
+
+  private handleResize() {
+    this.windowWidth = window.innerWidth;
+  }
+
+  private linkGen(pageNum: number) {
+    return `?page=${pageNum}`;
   }
 
   private get unverifiedEmail(): boolean {
@@ -381,6 +387,39 @@ export default class TimelineComponent extends Vue {
     return this.config.modules["Note"];
   }
 
+  private get getNumberOfEntriesPerPage(): number {
+    if (this.windowWidth < 576) { // xs
+      return 7;
+    } else if (this.windowWidth < 768) { // s
+      return 9;
+    } else if (this.windowWidth < 992) { // m
+      return 11
+    } else if (this.windowWidth < 1200) { // l
+      return 13
+    } // else, xl
+    return 15;
+  }
+
+  private get numberOfPages(): number {
+    let result = Math.ceil(this.filteredEntriesLength / this.getNumberOfEntriesPerPage);
+    if (result < 1) {
+      return 1;
+    } else {
+      return result;
+    }
+  }
+
+  private getPages(entries: TimelineEntry[]): TimelineEntry[][] {
+    let index = 0;
+    let result: TimelineEntry[][] = []
+    this.sortGroup(entries);
+    for (index = 0; index < entries.length; index += this.getNumberOfEntriesPerPage) {
+      let chunk = entries.slice(index, index + this.getNumberOfEntriesPerPage) 
+      result.push(chunk);
+    }
+    return result;
+  }
+
   private initializeFilters(): void {
     if (this.isMedicationEnabled) {
       this.filterTypes.push("Medication");
@@ -415,7 +454,7 @@ export default class TimelineComponent extends Vue {
     }
 
     promise
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
 
@@ -435,7 +474,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -451,7 +490,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -466,7 +505,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -482,7 +521,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -496,7 +535,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -514,7 +553,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
 
@@ -523,12 +562,12 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex(e => e == entry.id);
+    const index = this.editIdList.findIndex((e) => e == entry.id);
     this.editIdList.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
   }
@@ -542,20 +581,27 @@ export default class TimelineComponent extends Vue {
     console.log("protective word cancelled");
   }
 
-  private toggleSort(): void {
-    this.sortDesc = !this.sortDesc;
-  }
-
   private getHeadingDate(date: Date): string {
     return moment(date).format("ll");
   }
 
   @Watch("filterText")
   @Watch("filterTypes")
+  @Watch("currentPage")
+  @Watch("getNumberOfEntriesPerPage")
   private applyTimelineFilter() {
-    this.visibleTimelineEntries = this.timelineEntries.filter(entry =>
+    let filtered = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
+    // Adjust number of pages depending on filters
+    this.filteredEntriesLength = filtered.length;
+    let result = this.getPages(filtered);
+    // Check if access to out-of-bounds page is attempted after resize
+    if (this.currentPage > result.length && result.length > 0) {
+      // Set it to new final page
+      this.currentPage = result.length;
+    }
+    this.visibleTimelineEntries = result[this.currentPage - 1]
   }
 
   private get dateGroups(): DateGroup[] {
@@ -577,13 +623,13 @@ export default class TimelineComponent extends Vue {
       return groups;
     }, {});
 
-    let groupArrays = Object.keys(groups).map(dateKey => {
+    let groupArrays = Object.keys(groups).map((dateKey) => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        )
+        ),
       };
     });
     return this.sortGroup(groupArrays);
@@ -591,13 +637,8 @@ export default class TimelineComponent extends Vue {
 
   private sortGroup(groupArrays) {
     groupArrays.sort((a, b) =>
-      a.date > b.date ? 1 : a.date < b.date ? -1 : 0
+      a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
-
-    if (this.sortDesc) {
-      groupArrays.reverse();
-    }
-
     return groupArrays;
   }
 
