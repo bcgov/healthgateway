@@ -193,8 +193,7 @@
             <b-row>
               <b-col>
                 Displaying {{ getVisibleCount() }} out of
-                {{ getTotalCount() }} records in window dimensions:
-                {{ window.width }} x {{ window.height }}
+                {{ getTotalCount() }} records
               </b-col>
               <b-col cols="auto">
                 <b-row
@@ -225,7 +224,8 @@
               <div class="overflow-auto">
                 <b-pagination-nav
                   :link-gen="linkGen"
-                  :number-of-pages="15"
+                  :number-of-pages="numberOfPages"
+                  v-model="currentPage"
                   use-router
                 ></b-pagination-nav>
               </div>
@@ -334,17 +334,13 @@ export default class TimelineComponent extends Vue {
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
+  private timelinePages: TimelineEntry[][] = [];
   private isMedicationLoading: boolean = false;
   private isImmunizationLoading: boolean = false;
   private isNoteLoading: boolean = false;
-  private window: { height: number; width: number } = {
-    width: 0,
-    height: 0,
-  };
-  private pagination: {} = {
-    currentPage: 1,
-    perPage: 15,
-  };
+  private windowWidth: number = 0;
+  private currentPage: number = 1;
+  private filteredEntriesLength = 0;
   private hasErrors: boolean = false;
   private sortyBy: string = "date";
   private sortDesc: boolean = true;
@@ -366,11 +362,9 @@ export default class TimelineComponent extends Vue {
 
   mounted() {
     this.initializeFilters();
-
     this.fetchMedicationStatements();
     this.fetchImmunizations();
     this.fetchNotes();
-
     window.addEventListener("beforeunload", this.onBrowserClose);
   }
 
@@ -394,8 +388,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private handleResize() {
-    this.window.height = window.innerHeight;
-    this.window.width = window.innerWidth;
+    this.windowWidth = window.innerWidth;
   }
 
   private linkGen(pageNum: number) {
@@ -435,6 +428,38 @@ export default class TimelineComponent extends Vue {
 
   private get isNoteEnabled(): boolean {
     return this.config.modules["Note"];
+  }
+
+  private get getNumberOfEntriesPerPage(): number {
+    if (this.windowWidth < 576) { // xs
+      return 7;
+    } else if (this.windowWidth < 768) { // s
+      return 9;
+    } else if (this.windowWidth < 992) { // m
+      return 11
+    } else if (this.windowWidth < 1200) { // l
+      return 13
+    } // else, xl
+    return 15;
+  }
+
+  private get numberOfPages(): number {
+    let result = Math.ceil(this.filteredEntriesLength / this.getNumberOfEntriesPerPage);
+    if (result < 1) {
+      return 1;
+    } else {
+      return result;
+    }
+  }
+
+  private getPages(entries: TimelineEntry[]): TimelineEntry[][] {
+    let index = 0;
+    let result: TimelineEntry[][] = []
+    for (index = 0; index < entries.length; index += this.getNumberOfEntriesPerPage) {
+      let chunk = entries.slice(index, index + this.getNumberOfEntriesPerPage) 
+      result.push(chunk);
+    }
+    return result;
   }
 
   private initializeFilters(): void {
@@ -608,10 +633,15 @@ export default class TimelineComponent extends Vue {
 
   @Watch("filterText")
   @Watch("filterTypes")
+  @Watch("currentPage")
   private applyTimelineFilter() {
-    this.visibleTimelineEntries = this.timelineEntries.filter((entry) =>
+
+    let filtered = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
+    this.filteredEntriesLength = filtered.length;
+    let result = this.getPages(filtered);
+    this.visibleTimelineEntries = result[this.currentPage - 1]
   }
 
   private get dateGroups(): DateGroup[] {
