@@ -38,8 +38,6 @@ namespace HealthGateway.Admin.Controllers
         private readonly ILogger<EmailAdminController> logger;
         private readonly IEmailAdminService emailAdminService;
         private readonly IEmailQueueService emailQueueService;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailAdminController"/> class.
@@ -47,27 +45,21 @@ namespace HealthGateway.Admin.Controllers
         /// <param name="logger">The injected ILogger.</param>
         /// <param name="emailAdminService">The injected user email admin service.</param>
         /// <param name="emailQueueService">The injected user email queue service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         public EmailAdminController(
             ILogger<EmailAdminController> logger,
             IEmailAdminService emailAdminService,
-            IEmailQueueService emailQueueService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IEmailQueueService emailQueueService)
         {
             this.logger = logger;
             this.emailAdminService = emailAdminService;
             this.emailQueueService = emailQueueService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
         /// Retrieves a list of emails from the system.
         /// </summary>
-        /// <returns>Alist of email.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A list of email.</returns>
+        /// <response code="200">Returns the list of emails.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
@@ -77,9 +69,9 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Creates a clone of the email id and requeues it for sending.
+        /// Creates a clone of the emails and requeues it for sending.
         /// </summary>
-        /// <returns>An ok result unless the email id is not foun.</returns>
+        /// <returns>An ok result unless the email id is not found.</returns>
         /// <param name="emailIds">The email Ids to resend.</param>
         /// <response code="200">Successfully queued all emails.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
