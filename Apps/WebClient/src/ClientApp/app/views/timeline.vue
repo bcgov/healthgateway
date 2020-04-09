@@ -60,7 +60,7 @@
   <div>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     <b-row class="my-3 fluid justify-content-md-center">
-      <b-col class="col-12 col-md-2 col-lg-3 column-wrapper no-print"> </b-col>
+      <b-col class="col-12 col-md-1 col-lg-1 column-wrapper no-print"> </b-col>
       <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
         <b-alert
           :show="hasErrors"
@@ -125,7 +125,7 @@
           </b-col>
         </b-row>
         <b-row align-h="start" class="no-print">
-          <b-col v-if="isMedicationEnabled" cols="3">
+          <b-col v-if="isMedicationEnabled">
             <b-form-checkbox
               id="medicationFilter"
               v-model="filterTypes"
@@ -135,7 +135,7 @@
               Medications
             </b-form-checkbox>
           </b-col>
-          <b-col v-if="isImmunizationEnabled" cols="3">
+          <b-col v-if="isImmunizationEnabled">
             <b-form-checkbox
               id="immunizationFilter"
               v-model="filterTypes"
@@ -145,7 +145,7 @@
               Immunizations
             </b-form-checkbox>
           </b-col>
-          <b-col v-if="isNoteEnabled" cols="3">
+          <b-col v-if="isNoteEnabled">
             <b-form-checkbox
               id="notesFilter"
               v-model="filterTypes"
@@ -288,8 +288,8 @@ Component.registerHooks(["beforeRouteLeave"]);
   }
 })
 export default class TimelineComponent extends Vue {
-  @Getter("user", { namespace }) user: User;
-  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
+  @Getter("user", { namespace }) user!: User;
+  @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
 
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
