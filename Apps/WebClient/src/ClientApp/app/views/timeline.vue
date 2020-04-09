@@ -639,8 +639,15 @@ export default class TimelineComponent extends Vue {
     let filtered = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
+    // Adjust number of pages depending on filters
     this.filteredEntriesLength = filtered.length;
     let result = this.getPages(filtered);
+    // Check if access to out-of-bounds page is attempted after resize
+    console.log("Current page: " + this.currentPage + " Number of rendered pages: " + result.length);
+    if (this.currentPage > result.length && result.length > 0) {
+      // Set it to new final page
+      this.currentPage = result.length;
+    }
     this.visibleTimelineEntries = result[this.currentPage - 1]
   }
 
