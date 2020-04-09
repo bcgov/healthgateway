@@ -24,9 +24,7 @@
           </v-col>
         </v-row>
         <v-row justify="end" no-gutters>
-          <v-btn
-            :disabled="selectedEmails.length === 0"
-            @click="resendEmails()"
+          <v-btn :disabled="selectedEmails.length === 0" @click="resendEmails()"
             >Resend Emails</v-btn
           >
         </v-row>
@@ -44,8 +42,8 @@ import LoadingComponent from "@/components/core/Loading.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import { ResultType } from "@/constants/resulttype";
-import Email from '@/models/email';
-import { IEmailAdminService } from '@/services/interfaces';
+import Email from "@/models/email";
+import { IEmailAdminService } from "@/services/interfaces";
 
 @Component({
   components: {
@@ -77,9 +75,7 @@ export default class ResendEmailiew extends Vue {
   private emailService!: IEmailAdminService;
 
   mounted() {
-    this.emailService = container.get(
-      SERVICE_IDENTIFIER.EmailAdminService
-    );
+    this.emailService = container.get(SERVICE_IDENTIFIER.EmailAdminService);
   }
 
   private loadEmails() {
@@ -113,7 +109,7 @@ export default class ResendEmailiew extends Vue {
     let selectedIds = this.selectedEmails.map(s => s.id);
     this.emailService
       .resendEmails(selectedIds)
-        .then(emails => {
+      .then(emails => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Success,

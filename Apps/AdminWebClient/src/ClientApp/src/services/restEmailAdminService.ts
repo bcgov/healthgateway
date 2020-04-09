@@ -3,7 +3,7 @@ import { IHttpDelegate, IEmailAdminService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
-import Email from '@/models/email';
+import Email from "@/models/email";
 
 @injectable()
 export class RestEmailAdminService implements IEmailAdminService {

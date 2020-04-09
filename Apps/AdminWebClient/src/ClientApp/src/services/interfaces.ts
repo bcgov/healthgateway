@@ -3,7 +3,7 @@ import AuthenticationData from "@/models/authenticationData";
 import UserBetaRequest from "@/models/userBetaRequest";
 import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
-import Email from '@/models/email';
+import Email from "@/models/email";
 
 export interface IConfigService {
   initialize(http: IHttpDelegate): void;
