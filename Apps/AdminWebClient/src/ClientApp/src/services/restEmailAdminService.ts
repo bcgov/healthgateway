@@ -7,7 +7,7 @@ import Email from '@/models/email';
 
 @injectable()
 export class RestEmailAdminService implements IEmailAdminService {
-  private readonly BETA_REQUEST_BASE_URI: string = "v1/api/EmailAdmin";
+  private readonly BASE_URI: string = "v1/api/EmailAdmin";
   private http!: IHttpDelegate;
 
   public initialize(http: IHttpDelegate): void {
@@ -17,7 +17,7 @@ export class RestEmailAdminService implements IEmailAdminService {
   public getEmails(): Promise<Email[]> {
     return new Promise((resolve, reject) => {
       this.http
-        .get<RequestResult<Email[]>>(`${this.BETA_REQUEST_BASE_URI}`)
+        .get<RequestResult<Email[]>>(`${this.BASE_URI}`)
         .then(requestResult => {
           this.handleResult(requestResult, resolve, reject);
         })
@@ -33,8 +33,8 @@ export class RestEmailAdminService implements IEmailAdminService {
       let headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";
       this.http
-        .patch<RequestResult<string[]>>(
-          `${this.BETA_REQUEST_BASE_URI}`,
+        .post<RequestResult<string[]>>(
+          `${this.BASE_URI}`,
           JSON.stringify(emailIds),
           headers
         )

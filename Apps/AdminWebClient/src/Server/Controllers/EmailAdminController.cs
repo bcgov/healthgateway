@@ -84,7 +84,7 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="200">Successfully queued all emails.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPatch]
+        [HttpPost]
         public IActionResult ResendEmail(List<Guid> emailIds)
         {
             if (emailIds == null)
