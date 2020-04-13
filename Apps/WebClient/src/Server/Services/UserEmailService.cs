@@ -85,27 +85,21 @@ namespace HealthGateway.WebClient.Services
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             EmailInvite emailInvite = this.RetrieveLastInvite(hdid);
 
-            if (string.IsNullOrEmpty(email))
-            {
-                throw new ArgumentNullException(nameof(email), "Email cannot be null or empty");
-            }
-
-            if (!string.IsNullOrEmpty(userProfile.Email))
-            {
-                this.logger.LogInformation($"Removing validated email from user ${hdid}");
-                userProfile.Email = null;
-                this.profileDelegate.UpdateUserProfile(userProfile);
-            }
-
-            if (emailInvite != null && emailInvite.ExpireDate >= DateTime.UtcNow)
+            this.logger.LogInformation($"Removing email from user ${hdid}");
+            userProfile.Email = null;
+            this.profileDelegate.UpdateUserProfile(userProfile);
+            if (emailInvite != null && !emailInvite.Validated && emailInvite.ExpireDate >= DateTime.UtcNow)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
                 emailInvite.ExpireDate = DateTime.UtcNow;
                 this.emailInviteDelegate.Update(emailInvite);
             }
 
-            this.logger.LogInformation($"Sending new email invite for user ${hdid}");
-            this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+            if (!string.IsNullOrEmpty(email))
+            {
+                this.logger.LogInformation($"Sending new email invite for user ${hdid}");
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+            }
 
             this.logger.LogDebug($"Finished updating user email");
             return true;
