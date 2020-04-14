@@ -7,6 +7,13 @@
       class="mt-5"
     ></BannerFeedbackComponent>
     <v-row justify="center">
+        <v-col md="9">
+            <v-text-field label="Filter" hide-details="auto" v-model="filterText">
+                <v-icon slot="append">fas fa-search</v-icon>
+            </v-text-field>
+        </v-col>
+    </v-row>
+    <v-row justify="center">
       <v-col md="9">
         <v-row>
           <v-col no-gutters>
@@ -16,9 +23,10 @@
               :items="emailList"
               :items-per-page="5"
               show-select
+              :search="filterText"
             >
               <template v-slot:item.sentDateTime="{ item }">
-                <span>{{ formatDate(item.sentDateTime) }}</span>
+                  <span>{{ item.sentDateTime ? formatDate(item.sentDateTime) : "" }}</span>
               </template>
             </v-data-table>
           </v-col>
@@ -51,7 +59,8 @@ import { IEmailAdminService } from "@/services/interfaces";
     BannerFeedbackComponent
   }
 })
-export default class ResendEmailiew extends Vue {
+export default class ResendEmailView extends Vue {
+  private filterText: string = "";
   private isLoading: boolean = true;
   private showFeedback: boolean = false;
   private bannerFeedback: BannerFeedback = {
@@ -64,10 +73,19 @@ export default class ResendEmailiew extends Vue {
 
   private tableHeaders: any[] = [
     {
-      text: "Registration Date",
-      value: "registrationDatetime"
+      text: "Subject",
+      value: "subject"
     },
-    { text: "Email", value: "emailAddress" }
+    {
+      text: "Status",
+      value: "emailStatusCode"
+    },
+    {
+      text: "Date",
+      value: "sentDateTime"
+    },
+    { text: "Email", value: "to" },
+    { text: "Is Invited?", value: "userInviteStatus" }
   ];
 
   private emailList: Email[] = [];
@@ -76,6 +94,7 @@ export default class ResendEmailiew extends Vue {
 
   mounted() {
     this.emailService = container.get(SERVICE_IDENTIFIER.EmailAdminService);
+    this.loadEmails();
   }
 
   private loadEmails() {
@@ -88,6 +107,7 @@ export default class ResendEmailiew extends Vue {
         this.emailList.push(...emails);
       })
       .catch(err => {
+          console.log(err);
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,

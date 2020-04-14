@@ -140,30 +140,28 @@
             Web API to handle user email interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Controllers.EmailAdminController},HealthGateway.Admin.Services.IEmailAdminService,HealthGateway.Common.Services.IEmailQueueService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Controllers.EmailAdminController},HealthGateway.Admin.Services.IEmailAdminService,HealthGateway.Common.Services.IEmailQueueService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.EmailAdminController"/> class.
             </summary>
             <param name="logger">The injected ILogger.</param>
             <param name="emailAdminService">The injected user email admin service.</param>
             <param name="emailQueueService">The injected user email queue service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.GetEmails">
             <summary>
             Retrieves a list of emails from the system.
             </summary>
-            <returns>Alist of email.</returns>
-            <response code="200">Returns the list of beta requests.</response>
+            <returns>A list of email.</returns>
+            <response code="200">Returns the list of emails.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.ResendEmail(System.Collections.Generic.List{System.Guid})">
             <summary>
-            Creates a clone of the email id and requeues it for sending.
+            Creates a clone of the emails and requeues it for sending.
             </summary>
-            <returns>An ok result unless the email id is not foun.</returns>
+            <returns>An ok result unless the email id is not found.</returns>
             <param name="emailIds">The email Ids to resend.</param>
             <response code="200">Successfully queued all emails.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -230,6 +228,49 @@
             <summary>
             Gets or sets the windows timezone id.
             </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.AdminEmail">
+            <summary>
+            Model that provides a user representation of the Email model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.Id">
+            <summary>
+            Gets or sets the beta request id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.To">
+            <summary>
+            Gets or sets the email address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.Subject">
+            <summary>
+            Gets or sets the email subject.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.EmailStatusCode">
+            <summary>
+            Gets or sets the email status code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.UserInviteStatus">
+            <summary>
+            Gets or sets the user invite status indicator.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.SentDateTime">
+            <summary>
+            Gets or sets the sent date.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.AdminEmail.CreateFromDbModel(HealthGateway.Database.Models.Email,System.String)">
+            <summary>
+            Constructs a AdminEmail from a Email model.
+            </summary>
+            <param name="model">A database email model.</param>
+            <param name="inviteStatus">The user invite status.</param>
+            <returns>A new UserBetaRequest.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
             <summary>
@@ -563,13 +604,14 @@
             Service that provides functionality to admin emails.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.EmailAdminService},HealthGateway.Database.Delegates.IEmailDelegate)">
+        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.EmailAdminService},HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IEmailInviteDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.EmailAdminService"/> class.
             </summary>
             <param name="configuration">Injected configuration provider.</param>
             <param name="logger">Injected Logger Provider.</param>
             <param name="emailDelegate">The email delegate to interact with the DB.</param>
+            <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.EmailAdminService.GetEmails">
             <inheritdoc />

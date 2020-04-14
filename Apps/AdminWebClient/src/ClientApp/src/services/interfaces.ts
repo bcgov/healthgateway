@@ -49,7 +49,7 @@ export interface IHttpDelegate {
   setAuthorizationHeader(accessToken: string): void;
   getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
-  post<T>(url: string, payload: Object): Promise<T>;
+  post<T>(url: string, payload: Object, headers?: Dictionary<string>): Promise<T>;
   put<T>(
     url: string,
     payload: Object,

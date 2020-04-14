@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Services
     using System.Collections.Generic;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Service that provides admin functinoality to emails.
@@ -29,6 +28,6 @@ namespace HealthGateway.Admin.Services
         /// Gets all the emails in the system up to the pageSize.
         /// </summary>
         /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<Email>> GetEmails();
+        public RequestResult<IEnumerable<AdminEmail>> GetEmails();
     }
 }

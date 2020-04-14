@@ -30,13 +30,16 @@ export class RestEmailAdminService implements IEmailAdminService {
 
   public resendEmails(emailIds: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
+      let headers: Dictionary<string> = {};
+      headers["Content-Type"] = "application/json; charset=utf-8";
       this.http
         .post<RequestResult<string[]>>(
           `${this.BASE_URI}`,
-          JSON.stringify(emailIds)
+          JSON.stringify(emailIds),
+          headers
         )
         .then(requestResult => {
-          this.handleResult(requestResult, resolve, reject);
+          resolve();
         })
         .catch(err => {
           console.log(err);
