@@ -92,6 +92,7 @@
   /* animate the transition */
   transition: all 0.5s ease-in-out;
   top: 0px;
+  overflow: hidden;
 }
 
 /* Small Devices*/
@@ -146,9 +147,25 @@
 
           <hr class="mb-3 mt-0 p-2" />
 
+          <!-- Timeline button -->
+          <b-row
+            v-show="!isTimeline"
+            class="align-items-center border rounded-pill p-1 button-container  my-4"
+            :class="{ 'mx-4': isOpen }"
+            @click="goToTimeline"
+          >
+            <b-col :class="{ 'col-4': isOpen }">
+              <font-awesome-icon icon="stream" class="button-icon" size="2x" />
+            </b-col>
+            <b-col v-if="isOpen" cols="8" class="button-title d-none">
+              <span>Timeline</span>
+            </b-col>
+          </b-row>
+
           <div v-show="isTimeline">
             <!-- Note button -->
             <b-row
+              v-show="isNoteEnabled"
               class="align-items-center border rounded-pill p-1 button-container  my-4"
               :class="{ 'mx-4': isOpen }"
               @click="createNote"
@@ -215,6 +232,10 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
 import EventBus from "@/eventbus";
+import { WebClientConfiguration } from "@/models/configData";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faStream } from "@fortawesome/free-solid-svg-icons";
+library.add(faStream);
 
 const auth: string = "auth";
 const sidebar: string = "sidebar";
@@ -227,6 +248,12 @@ export default class SidebarComponent extends Vue {
     namespace: auth
   })
   oidcIsAuthenticated!: boolean;
+  @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
+
+  private authenticationService!: IAuthenticationService;
+  private name: string = "";
+  private windowWidth: number = 0;
+  private $bodyElement!: HTMLBodyElement | null;
 
   @Watch("oidcIsAuthenticated")
   onPropertyChanged() {
@@ -241,9 +268,15 @@ export default class SidebarComponent extends Vue {
     this.clearOverlay();
   }
 
-  private authenticationService!: IAuthenticationService;
-  private name: string = "";
-  private windowWidth: number = 0;
+  @Watch("isOpen")
+  onIsOpen(newValue: boolean, oldValue: boolean) {
+    // Make sure that scroll is disabled when the overlay is active
+    if (this.$bodyElement !== null) {
+      if (this.isOverlayVisible) {
+        this.$bodyElement.style.position = "fixed";
+      } else this.$bodyElement.style.removeProperty("position");
+    }
+  }
 
   mounted() {
     this.authenticationService = container.get(
@@ -279,6 +312,7 @@ export default class SidebarComponent extends Vue {
       window.addEventListener("resize", this.onResize);
     });
     this.windowWidth = window.innerWidth;
+    this.$bodyElement = document.querySelector("body");
   }
 
   beforeDestroy() {
@@ -317,16 +351,24 @@ export default class SidebarComponent extends Vue {
     this.clearOverlay();
   }
 
+  private goToTimeline() {
+    this.$router.push({ path: "/timeline" });
+  }
+
   private onResize() {
     this.windowWidth = window.innerWidth;
   }
 
-  get isOverlayVisible() {
+  private get isOverlayVisible() {
     return this.isOpen && this.windowWidth < 768;
   }
 
-  get isTimeline(): boolean {
+  private get isTimeline(): boolean {
     return this.$route.path == "/timeline";
+  }
+
+  private get isNoteEnabled(): boolean {
+    return this.config.modules["Note"];
   }
 }
 </script>

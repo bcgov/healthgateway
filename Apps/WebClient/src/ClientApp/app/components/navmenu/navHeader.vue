@@ -18,7 +18,7 @@ nav {
     <!-- Hamburger toggle -->
     <b-navbar-toggle
       v-if="displayMenu"
-      class="mr-4"
+      class="mr-1 "
       target="NONE"
       @click="toggleSidebar"
     ></b-navbar-toggle>
@@ -27,7 +27,7 @@ nav {
     <b-navbar-brand class="mx-0">
       <router-link to="/timeline">
         <img
-          class="img-fluid d-none d-md-block mx-2"
+          class="img-fluid d-none d-md-block mx-1"
           src="@/assets/images/gov/bcid-logo-rev-en.svg"
           width="181"
           height="44"
@@ -37,14 +37,17 @@ nav {
         <img
           class="img-fluid d-md-none"
           src="@/assets/images/gov/bcid-symbol-rev.svg"
-          width="64"
+          width="30"
           height="44"
           alt="Go to healthgateway timeline"
         />
       </router-link>
     </b-navbar-brand>
     <b-navbar-brand class="px-0 pr-md-5 px-lg-5 mx-0">
-      <router-link to="/timeline" class="nav-link">
+      <router-link
+        to="/timeline"
+        class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0"
+      >
         <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">
           HealthGateway
         </h4>
