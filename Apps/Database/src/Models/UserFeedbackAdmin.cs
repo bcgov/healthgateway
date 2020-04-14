@@ -15,27 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
-    using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
 
-#pragma warning disable CS1591 // self explanatory simple model
-#pragma warning disable SA1600 // self explanatory simple model
-    public class UserFeedback : AuditableEntity
+    /// <summary>
+    /// An administrative view of UserFeedback with Email populated from UserProfile.
+    /// </summary>
+    public class UserFeedbackAdmin : UserFeedback
     {
-        [Column("UserFeedbackId")]
-        public Guid Id { get; set; }
-
-        public bool IsSatisfied { get; set; }
-
-        public bool IsReviewed { get; set; }
-
-        [MaxLength(500)]
-        public string? Comment { get; set; }
-
-        [MaxLength(52)]
-        public string? UserProfileId { get; set; }
-
-        public virtual UserProfile? UserProfile { get; set; }
+        /// <summary>
+        /// Gets or sets the user email.
+        /// </summary>
+        [MaxLength(254)]
+        public string Email { get; set; } = string.Empty;
     }
 }

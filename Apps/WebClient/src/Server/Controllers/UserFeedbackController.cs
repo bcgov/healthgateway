@@ -63,7 +63,8 @@ namespace HealthGateway.WebClient.Controllers
         /// <returns>The http status.</returns>
         /// <param name="userFeedback">The user feedback model.</param>
         /// <response code="200">The user feedback record was saved.</response>
-        /// <response code="400">The user feedback was already inserted.</response>
+        /// <response code="400">The user feedback object is invalid.</response>
+        /// <response code="409">The user feedback was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
@@ -82,15 +83,23 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            userFeedback.CreatedBy = userHdid;
-            userFeedback.UpdatedBy = userHdid;
-            DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
-            if (result.Status != Database.Constant.DBStatusCode.Created)
+            if (userFeedback == null)
             {
-                return new ConflictResult();
+                return new BadRequestResult();
             }
+            else
+            {
+                userFeedback.UserProfileId = userHdid;
+                userFeedback.CreatedBy = userHdid;
+                userFeedback.UpdatedBy = userHdid;
+                DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
+                if (result.Status != Database.Constant.DBStatusCode.Created)
+                {
+                    return new ConflictResult();
+                }
 
-            return new OkResult();
+                return new OkResult();
+            }
         }
     }
 }
