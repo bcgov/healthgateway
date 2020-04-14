@@ -38,7 +38,7 @@ export class AdminClientConfiguration {
 
 // Forward proxies configuration.
 export class ForwardProxiesConfiguration {
-    public basePath?: string;
+  public basePath?: string;
 }
 
 // Various timeout values used by the VUE Admin application.

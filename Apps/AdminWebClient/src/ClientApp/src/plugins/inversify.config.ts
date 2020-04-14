@@ -15,7 +15,7 @@ import { RestConfigService } from "@/services/restConfigService";
 import { RestBetaRequestService } from "@/services/restBetaRequestService";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
-import { DashboardService } from '@/services/dashboardService';
+import { DashboardService } from "@/services/dashboardService";
 
 let container = new Container();
 container

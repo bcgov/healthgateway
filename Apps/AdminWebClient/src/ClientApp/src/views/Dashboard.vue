@@ -8,8 +8,8 @@
   border: none;
 }
 .v-card {
-    height: 100px;
-    padding: 15px;
+  height: 100px;
+  padding: 15px;
 }
 </style>
 <template>
@@ -43,7 +43,8 @@
         <v-card class="text-center">
           <h3>Invited Unregistered Users</h3>
           <h1>
-              {{unregisteredInvitedUserCount}}</h1>
+            {{ unregisteredInvitedUserCount }}
+          </h1>
         </v-card>
       </v-col>
     </v-row>
@@ -51,7 +52,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { IDashboardService } from '@/services/interfaces';
+import { IDashboardService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 @Component
@@ -88,11 +89,9 @@ export default class Dashboard extends Vue {
   }
 
   private getUnregisteredInvitedUserCount() {
-    this.dashboardService
-      .getUnregisteredInvitedUsersCount()
-      .then(count => {
-        this.unregisteredInvitedUserCount = count;
-      });
+    this.dashboardService.getUnregisteredInvitedUsersCount().then(count => {
+      this.unregisteredInvitedUserCount = count;
+    });
   }
 }
 </script>
