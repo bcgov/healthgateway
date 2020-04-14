@@ -26,7 +26,7 @@
               :search="filterText"
             >
               <template v-slot:item.sentDateTime="{ item }">
-                  <span>{{ item.sentDateTime ? formatDate(item.sentDateTime) : "" }}</span>
+                  <span>{{ formatDate(item.sentDateTime) }}</span>
               </template>
             </v-data-table>
           </v-col>
@@ -121,6 +121,9 @@ export default class ResendEmailView extends Vue {
   }
 
   private formatDate(date: Date): string {
+    if (!date) {
+        return "";
+    }
     return new Date(Date.parse(date + "Z")).toLocaleString();
   }
 

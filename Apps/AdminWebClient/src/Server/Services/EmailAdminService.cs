@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using HealthGateway.Admin.Constants;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
@@ -31,9 +32,7 @@ namespace HealthGateway.Admin.Services
     /// </summary>
     public class EmailAdminService : IEmailAdminService
     {
-        private const string StatusNotInvited = "Not Invited";
-        private const string StatusInvitedNotValidated = "Invited/Not Validated";
-        private const string StatusInvitedValidated = "Invited/Validated";
+
         private const string EmailAdminSectionConfigKey = "EmailAdmin";
         private const string MaxEmailsConfigKey = "MaxEmails";
         private const int DefaultMaxEmails = 1000;
@@ -89,14 +88,14 @@ namespace HealthGateway.Admin.Services
             return result;
         }
 
-        private string GetEmailInviteStatus(EmailInvite ei)
+        private string GetEmailInviteStatus(EmailInvite emailInvite)
         {
-            if (ei == null)
+            if (emailInvite == null)
             {
-                return StatusNotInvited;
+                return UserInviteStatus.NotInvited;
             }
 
-            return ei.Validated ? StatusInvitedValidated : StatusInvitedNotValidated;
+            return emailInvite.Validated ? UserInviteStatus.InvitedValidated : UserInviteStatus.InvitedNotValidated;
         }
     }
 }
