@@ -984,20 +984,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "6d4fe278-2ad2-4ae8-943b-3a43fcdade48",
-      "comment": "",
-      "command": "assertText",
-      "target": "id=Subject",
-      "targets": [
-        ["id=Subject", "id"],
-        ["css=#Subject", "css:finder"],
-        ["xpath=//h1[@id='Subject']", "xpath:attributes"],
-        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
-        ["xpath=//h1", "xpath:position"],
-        ["xpath=//h1[contains(.,'Terms of Service')]", "xpath:innerText"]
-      ],
-      "value": "Terms of Service"
-    }, {
       "id": "793d5b06-30a3-4d72-92b4-37cef1b2a3d9",
       "comment": "",
       "command": "waitForElementNotVisible",
@@ -1022,26 +1008,27 @@
       "command": "waitForElementEditable",
       "target": "id=protectiveWord-input",
       "targets": [
-        ["id=__BVID__46___BV_modal_title_", "id"],
-        ["css=#\\__BVID__46___BV_modal_title_", "css:finder"],
-        ["xpath=//h5[@id='__BVID__46___BV_modal_title_']", "xpath:attributes"],
-        ["xpath=//header[@id='__BVID__46___BV_modal_header_']/h5", "xpath:idRelative"],
-        ["xpath=//h5", "xpath:position"],
-        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
+        ["id=protectiveWord-input", "id"],
+        ["css=#protectiveWord-input", "css:finder"],
+        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
+        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/div/input", "xpath:position"]
       ],
       "value": "30000"
     }, {
       "id": "4cfb1f59-0803-43e9-a600-10dc394113ff",
       "comment": "",
       "command": "assertText",
-      "target": "css=label",
+      "target": "xpath=//h5",
       "targets": [
-        ["css=label", "css:finder"],
-        ["xpath=//div[@id='__BVID__44___BV_modal_body_']/div/div/form/div/div/label", "xpath:idRelative"],
-        ["xpath=//label", "xpath:position"],
-        ["xpath=//label[contains(.,'Protective Word')]", "xpath:innerText"]
+        ["id=__BVID__55___BV_modal_title_", "id"],
+        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
       ],
-      "value": "Protective Word"
+      "value": "Restricted PharmaNet Records"
     }, {
       "id": "b0378d92-e171-42bf-bad7-e39a98ecb0ab",
       "comment": "",
@@ -1058,17 +1045,29 @@
     }, {
       "id": "41c8a07b-cfb1-48ed-8cf3-5a96ff306ecd",
       "comment": "",
-      "command": "sendKeys",
-      "target": "linkText=protective-word-for-a-pharmanet-record",
+      "command": "click",
+      "target": "xpath=//button[contains(.,'Continue')]",
       "targets": [
-        ["linkText=protective-word-for-a-pharmanet-record", "linkText"],
-        ["css=small > a", "css:finder"],
-        ["xpath=//a[contains(text(),'protective-word-for-a-pharmanet-record')]", "xpath:link"],
-        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div[3]/div/small/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, 'https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record')]", "xpath:href"],
-        ["xpath=//small/a", "xpath:position"],
-        ["xpath=//a[contains(.,'protective-word-for-a-pharmanet-record')]", "xpath:innerText"]
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[10]", "xpath:attributes"],
+        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//footer/div/div/div/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Continue')]", "xpath:innerText"]
       ],
+      "value": ""
+    }, {
+      "id": "fabf9159-bf9f-4322-a175-109ecf4ce605",
+      "comment": "",
+      "command": "pause",
+      "target": "3000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e9940a8a-5c13-4550-8a35-f4a7dd3d7974",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "id=protectiveWord-input",
+      "targets": [],
       "value": ""
     }]
   }, {
@@ -2604,6 +2603,175 @@
       ],
       "value": "Shingles"
     }]
+  }, {
+    "id": "4a61a452-b8f7-4d14-bae8-ca8f484920a2",
+    "name": "Timeline - Menu",
+    "commands": [{
+      "id": "eca90f9e-1453-4fca-ab86-979fbe7ea87a",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4947c246-87a4-41be-84de-365a1476d0d7",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "2bec0642-6ebe-4839-854f-b8d3fb5fe6ff",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "64395a39-1980-4e46-ae91-5b17bf09513b",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5804f56c-1369-4aae-9fdc-1c2004bb4336",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "73739a94-d8fe-4f5f-a5c2-71dd93fda5c3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [
+        ["css=.name-wrapper > .button-title", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div/div[2]", "xpath:idRelative"],
+        ["xpath=//a/div/div[2]", "xpath:position"]
+      ],
+      "value": "Dr Gateway"
+    }, {
+      "id": "0ba46c00-a8ed-4c36-b406-dcf35129dfed",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "c704843e-e9d9-4d8d-8ce7-76d1bc083a9a",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "ccce0e79-1269-4337-902d-d1564ddde6b6",
+    "name": "Timeline - Email Validation Banner",
+    "commands": [{
+      "id": "b2c60721-134b-4530-a4a1-b92a0c68c2ab",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "abf32e90-354c-4313-a220-3cb9aad1056c",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "2f729b40-895c-4e69-ac29-149aad9a6f4c",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "9dcceaf4-4e52-48b3-af11-0b32d3c5cf77",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.alert",
+      "targets": [
+        ["css=.alert", "css:finder"],
+        ["xpath=//div[@id='timeline']/div", "xpath:idRelative"],
+        ["xpath=//main/div/div[2]/div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c3fd5284-3e71-4a65-be45-c948af70e686",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h4:nth-child(2)",
+      "targets": [
+        ["css=h4:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/h4", "xpath:idRelative"],
+        ["xpath=//div/h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Unverified email')]", "xpath:innerText"]
+      ],
+      "value": "Unverified email"
+    }, {
+      "id": "946767a6-a77e-4706-86d2-19779ede29ce",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=profilePageLink",
+      "targets": [
+        ["id=profilePageLink", "id"],
+        ["linkText=profile page", "linkText"],
+        ["css=#profilePageLink", "css:finder"],
+        ["xpath=//a[contains(text(),'profile page')]", "xpath:link"],
+        ["xpath=//a[@id='profilePageLink']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div/span/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/profile')])[2]", "xpath:href"],
+        ["xpath=//span/a", "xpath:position"],
+        ["xpath=//a[contains(.,'profile page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c548d5f3-9f58-4ff4-91f0-5a4ef73adbdf",
+      "comment": "",
+      "command": "click",
+      "target": "id=profilePageLink",
+      "targets": [
+        ["id=profilePageLink", "id"],
+        ["linkText=profile page", "linkText"],
+        ["css=#profilePageLink", "css:finder"],
+        ["xpath=//a[contains(text(),'profile page')]", "xpath:link"],
+        ["xpath=//a[@id='profilePageLink']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div/span/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/profile')])[2]", "xpath:href"],
+        ["xpath=//span/a", "xpath:position"],
+        ["xpath=//a[contains(.,'profile page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "12d415b8-ae9e-4b4d-9093-ba97b348e3a6",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Profile')]", "xpath:innerText"]
+      ],
+      "value": "Profile"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2632,7 +2800,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

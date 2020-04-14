@@ -93,10 +93,10 @@ const namespace: string = "auth";
 })
 export default class LoginComponent extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc: any;
-  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
-  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
+  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
+  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
   @Getter("identityProviders", { namespace: "config" })
-  identityProviders: IdentityProviderConfiguration[];
+  identityProviders!: IdentityProviderConfiguration[];
   @Prop() isRetry?: boolean;
 
   private isLoading: boolean = true;

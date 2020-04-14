@@ -66,6 +66,7 @@ export default class Dashboard extends Vue {
   mounted() {
     this.dashboardService = container.get(SERVICE_IDENTIFIER.DashboardService);
     this.getRegisteredUserCount();
+    this.getLoggedInUsersCount();
     this.getUnregisteredInvitedUserCount();
     this.getWaitlistedUserCount();
   }

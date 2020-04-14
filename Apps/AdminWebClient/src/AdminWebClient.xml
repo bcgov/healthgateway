@@ -449,14 +449,25 @@
             Gets or sets the version of the resource.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedback)">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Email">
+            <summary>
+            Gets or sets the email if known for this feedback.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.ToDbModel">
+            <summary>
+            Convers this view model into a DB model object.
+            </summary>
+            <returns>The DB model object.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedbackAdmin)">
             <summary>
             Constructs a UserFeedbackView from a UserFeedback model.
             </summary>
             <param name="model">A user feedback request models.</param>
             <returns>A new UserFeedbackView.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedback})">
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedbackAdmin})">
             <summary>
             Constructs a List of UserFeedbackView from a list of UserFeedback models.
             </summary>
