@@ -161,12 +161,6 @@ namespace HealthGateway.Database.Context
                     .HasPrincipalKey(k => k.HdId)
                     .HasForeignKey(k => k.HdId);
 
-            //modelBuilder.Entity<UserFeedback>()
-            //        .HasOne<UserProfile>()
-            //        .WithMany()
-            //        .HasPrincipalKey(k => k.HdId)
-            //        .HasForeignKey(k => k.HdId);
-
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
