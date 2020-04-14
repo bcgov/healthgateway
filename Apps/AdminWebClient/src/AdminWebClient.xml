@@ -4,6 +4,26 @@
         <name>AdminWebClient</name>
     </assembly>
     <members>
+        <member name="T:HealthGateway.Admin.Constants.UserInviteStatus">
+            <summary>
+            Represents the status constants of a user invite.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserInviteStatus.NotInvited">
+            <summary>
+            Not invited status.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserInviteStatus.InvitedNotValidated">
+            <summary>
+            Invited but not validated status.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserInviteStatus.InvitedValidated">
+            <summary>
+            Invited and validated status.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.AuthenticationController">
             <summary>
             The Authentication and Authorization controller.

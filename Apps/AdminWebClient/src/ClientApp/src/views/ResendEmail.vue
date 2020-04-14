@@ -7,11 +7,11 @@
       class="mt-5"
     ></BannerFeedbackComponent>
     <v-row justify="center">
-        <v-col md="9">
-            <v-text-field label="Filter" hide-details="auto" v-model="filterText">
-                <v-icon slot="append">fas fa-search</v-icon>
-            </v-text-field>
-        </v-col>
+      <v-col md="9">
+        <v-text-field v-model="filterText" label="Filter" hide-details="auto">
+          <v-icon slot="append">fas fa-search</v-icon>
+        </v-text-field>
+      </v-col>
     </v-row>
     <v-row justify="center">
       <v-col md="9">
@@ -26,7 +26,7 @@
               :search="filterText"
             >
               <template v-slot:item.sentDateTime="{ item }">
-                  <span>{{ formatDate(item.sentDateTime) }}</span>
+                <span>{{ formatDate(item.sentDateTime) }}</span>
               </template>
             </v-data-table>
           </v-col>
@@ -107,7 +107,7 @@ export default class ResendEmailView extends Vue {
         this.emailList.push(...emails);
       })
       .catch(err => {
-          console.log(err);
+        console.log(err);
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
@@ -122,7 +122,7 @@ export default class ResendEmailView extends Vue {
 
   private formatDate(date: Date): string {
     if (!date) {
-        return "";
+      return "";
     }
     return new Date(Date.parse(date + "Z")).toLocaleString();
   }
