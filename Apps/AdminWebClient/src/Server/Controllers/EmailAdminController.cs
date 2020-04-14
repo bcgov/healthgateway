@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Controllers
         {
             if (emailIds == null)
             {
-                throw new ArgumentNullException(nameof(emailIds));
+                return new BadRequestResult();
             }
 
             try
