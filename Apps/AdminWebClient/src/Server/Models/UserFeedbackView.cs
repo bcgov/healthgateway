@@ -110,12 +110,5 @@ namespace HealthGateway.Admin.Models
 
             return newList;
         }
-
-        /// <summary>
-        /// Constructs a List of UserFeedbackView from a list of UserFeedback models.
-        /// </summary>
-        /// <param name="view">List of user feedback models.</param>
-        /// <returns>A list of UserFeedbackView.</returns>
-
     }
 }

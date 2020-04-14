@@ -71,6 +71,9 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Updating the user feedback in DB... {feedback}");
             this.dbContext.Update<UserFeedback>(feedback);
+
+            // Prevent updates to associated user profile id
+            this.dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished updating feedback in DB. {JsonSerializer.Serialize(feedback)}");
         }
