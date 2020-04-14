@@ -99,9 +99,9 @@
           <h4>Unverified email</h4>
           <span>
             Your email has not been verified. Please check your inbox or junk
-            folder for an email from Health Gateway. Alternatively,
+            folder for an email from Health Gateway. You can also edit your profile or resend the email from the
             <router-link id="profilePageLink" variant="primary" to="/profile">
-              edit your profile or resend the email </router-link
+              profile page</router-link
             >.
           </span>
         </b-alert>
