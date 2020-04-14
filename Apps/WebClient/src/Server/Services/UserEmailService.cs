@@ -52,17 +52,16 @@ namespace HealthGateway.WebClient.Services
             bool retVal = false;
             EmailInvite emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
 
-            if (emailInvite != null && emailInvite.HdId == hdid)
+            if (emailInvite != null &&
+                emailInvite.HdId == hdid &&
+                !emailInvite.Validated &&
+                emailInvite.ExpireDate >= DateTime.UtcNow)
             {
-                if (!emailInvite.Validated)
-                {
-                    emailInvite.Validated = true;
-                    this.emailInviteDelegate.Update(emailInvite);
-                    UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                    userProfile.Email = emailInvite.Email.To; // Gets the user email from the email sent.
-                    this.profileDelegate.UpdateUserProfile(userProfile);
-                }
-
+                emailInvite.Validated = true;
+                this.emailInviteDelegate.Update(emailInvite);
+                UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+                userProfile.Email = emailInvite.Email!.To; // Gets the user email from the email sent.
+                this.profileDelegate.UpdateUserProfile(userProfile);
                 retVal = true;
             }
 
@@ -83,56 +82,27 @@ namespace HealthGateway.WebClient.Services
         public bool UpdateUserEmail(string hdid, string email, Uri hostUri)
         {
             this.logger.LogTrace($"Updating user email...");
-            bool retVal = false;
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            EmailInvite emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
+            EmailInvite emailInvite = this.RetrieveLastInvite(hdid);
 
-            if (email != userProfile.Email)
+            this.logger.LogInformation($"Removing email from user ${hdid}");
+            userProfile.Email = null;
+            this.profileDelegate.UpdateUserProfile(userProfile);
+            if (emailInvite != null && !emailInvite.Validated && emailInvite.ExpireDate >= DateTime.UtcNow)
             {
-                if (string.IsNullOrEmpty(email))
-                {
-                    // Removing the email
-                    this.logger.LogDebug($"Removing email");
-
-                    // Remove the current email until it gets validated
-                    userProfile.Email = null;
-                    this.profileDelegate.UpdateUserProfile(userProfile);
-
-                    emailInvite.ExpireDate = DateTime.Now;
-                    this.emailInviteDelegate.Update(emailInvite);
-                }
-                else if (emailInvite?.Email?.To != email || emailInvite.ExpireDate < DateTime.Now)
-                {
-                    // Create a new invite email 
-                    this.logger.LogDebug($"Updating email");
-
-                    // Remove the current email until it gets validated
-                    userProfile.Email = null;
-                    this.profileDelegate.UpdateUserProfile(userProfile);
-
-                    // Expire the previous invite email
-                    if (emailInvite?.Email?.To != null)
-                    {
-                        emailInvite.ExpireDate = DateTime.Now;
-                        this.emailInviteDelegate.Update(emailInvite);
-                    }
-
-                    this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
-                }
-                else
-                {
-                    // Same email, validation needs to be resent
-                    this.logger.LogDebug($"Re-queueing email");
-
-                    // Add the existing email to the queue
-                    this.emailQueueService.QueueInviteEmail(emailInvite.Id);
-                }
-                
-                retVal = true;
-                this.logger.LogDebug($"Finished updating user email");
+                this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
+                emailInvite.ExpireDate = DateTime.UtcNow;
+                this.emailInviteDelegate.Update(emailInvite);
             }
 
-            return retVal;
+            if (!string.IsNullOrEmpty(email))
+            {
+                this.logger.LogInformation($"Sending new email invite for user ${hdid}");
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+            }
+
+            this.logger.LogDebug($"Finished updating user email");
+            return true;
         }
     }
 }
