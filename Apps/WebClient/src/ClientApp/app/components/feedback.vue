@@ -1,32 +1,5 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-/*.overlay {
-  position: relative;
-  bottom: 0;
-  right: 0.2%;
-  width: 300px;
-  height: 270px;
-
-  -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
-  transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
-
-  z-index: 1;
-}
-
-.overlay-tray {
-  bottom: -240px;
-}
-
-.overlay-closed {
-  bottom: -400px;
-}
-#collapse {
-  background-color: $soft_background;
-}
-#comment {
-  resize: none;
-}*/
-
 .contact-us {
   background-color: $aquaBlue;
   display: inline;
@@ -70,7 +43,7 @@
       @click="toggleExpanded"
     >
       <b-row v-show="!hasSubmitted">
-        <b-col :class="{ 'col-4 text-right pr-2': isOpen }">
+        <b-col :class="{ 'col-4 text-right pr-2': isSidebarOpen }">
           <font-awesome-icon
             icon="comments"
             aria-hidden="true"
@@ -79,7 +52,7 @@
           />
         </b-col>
         <b-col
-          v-show="isOpen"
+          v-show="isSidebarOpen"
           class="button-title d-none text-left p-0 pl-3"
           cols="7"
         >
@@ -238,7 +211,7 @@ const user: string = "user";
 export default class FeedbackComponent extends Vue {
   @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
 
-  @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+  @Getter("isOpen", { namespace: sidebar }) isSidebarOpen!: boolean;
   @Getter("user", { namespace: user }) user!: User;
 
   private comment: string = "";
@@ -249,8 +222,8 @@ export default class FeedbackComponent extends Vue {
   private isLoading: boolean = false;
   private userFeedbackService!: IUserFeedbackService;
 
-  @Watch("isOpen")
-  onIsOpen(newValue: boolean, oldValue: boolean) {
+  @Watch("isSidebarOpen")
+  onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
     // Make sure it closes if the sidebar is closing and reset state
     if (!newValue) {
       this.resetFeedback();
@@ -295,7 +268,7 @@ export default class FeedbackComponent extends Vue {
 
   private toggleExpanded() {
     this.visible = !this.visible;
-    if (!this.isOpen) {
+    if (!this.isSidebarOpen) {
       this.toggleSidebar();
     }
   }

@@ -240,7 +240,7 @@
             </b-col>
           </b-row>
           <!-- Feedback section -->
-          <FeedbackComponent class="no-print" />
+          <FeedbackComponent />
         </b-col>
       </b-row>
     </nav>
@@ -374,13 +374,13 @@ export default class SidebarComponent extends Vue {
   }
 
   private createNote() {
-    EventBus.$emit("timelineCreateNote");
     this.clearOverlay();
+    EventBus.$emit("timelineCreateNote");
   }
 
   private printView() {
-    EventBus.$emit("timelinePrintView");
     this.clearOverlay();
+    EventBus.$emit("timelinePrintView");
   }
 
   private goToTimeline() {

@@ -1,13 +1,5 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-@media print {
-  .no-print,
-  .no-print * {
-    display: none !important;
-  }
-}
-
 .column-wrapper {
   border: 1px;
 }
