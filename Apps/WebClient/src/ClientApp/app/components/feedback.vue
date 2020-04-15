@@ -1,7 +1,7 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.overlay {
-  position: fixed;
+/*.overlay {
+  position: relative;
   bottom: 0;
   right: 0.2%;
   width: 300px;
@@ -25,152 +25,308 @@
 }
 #comment {
   resize: none;
+}*/
+
+.contact-us {
+  background-color: $aquaBlue;
+  display: inline;
+  font-size: 1.3em;
+  border: 0px;
+  transition: all 0.3s;
+}
+
+.input-container {
+  background-color: $lightGrey;
+  border: 0px;
+  transition: all 0.3s;
+}
+
+.aqua-button {
+  background-color: $aquaBlue;
+  border: 0px;
+}
+
+.description-container {
+  height: 70px;
+}
+
+.submit-button-container {
+  height: 36px;
+  overflow: hidden;
 }
 </style>
 
 <template>
-  <b-container
-    class="d-flex flex-column overlay overlay-empty"
-    :class="!visible ? 'overlay-tray' : null"
-  >
+  <div id="feedback-container" class="d-flex flex-column text-dark">
     <b-button
-      class="justify-content-center pr-2"
+      class="justify-content-center contact-us py-2"
+      :class="{
+        'bg-danger': hasSubmitted && !isSuccess,
+        'bg-success': hasSubmitted && isSuccess
+      }"
       :aria-expanded="visible ? 'true' : 'false'"
       aria-controls="collapse"
       size="sm"
-      variant="primary"
-      @click="visible = !visible"
+      @click="toggleExpanded"
     >
-      <span>
-        <font-awesome-icon
-          icon="comments"
-          aria-hidden="true"
-        ></font-awesome-icon>
-        Feedback?
-      </span>
+      <b-row v-show="!hasSubmitted">
+        <b-col :class="{ 'col-4 text-right pr-2': isOpen }">
+          <font-awesome-icon
+            icon="comments"
+            aria-hidden="true"
+            size="1x"
+            class="m-0"
+          />
+        </b-col>
+        <b-col
+          v-show="isOpen"
+          class="button-title d-none text-left p-0 pl-3"
+          cols="7"
+        >
+          <span>
+            Contact Us
+          </span>
+        </b-col>
+      </b-row>
+      <b-row v-show="hasSubmitted">
+        <b-col>
+          <font-awesome-icon
+            :icon="resultIcon"
+            aria-hidden="true"
+            size="2x"
+            class="m-0"
+          />
+        </b-col>
+      </b-row>
     </b-button>
-    <b-collapse id="collapse" v-model="visible" class="border">
-      <div class="pb-5">
-        <b-row class="my-2 px-2">
-          <b-col
-            ><span class="small text-center d-flex justify-content-center"
-              >Are you satisfied with the information provided to you?</span
-            ></b-col
-          >
+    <b-collapse id="collapse" v-model="visible" class="input-container">
+      <div v-if="!hasSubmitted">
+        <b-row class="p-3 description-container">
+          <b-col class="text-left small"
+            ><span class="button-title d-none"
+              >Do you have a question or suggestion? Let us know in the field
+              below.</span
+            >
+          </b-col>
         </b-row>
         <b-form ref="feedbackForm" @submit.prevent="onSubmit">
-          <b-row class="my-1 px-3">
-            <b-col class="d-flex justify-content-center p-1 ">
-              <b-button
-                :variant="
-                  isSatisfied === true ? 'primary' : 'outline-secondary'
-                "
-                size="sm"
-                class="w-100"
-                :disabled="isSuccess || isLoading"
-                @click="isSatisfied = true"
-                >Yes</b-button
-              >
-            </b-col>
-            <b-col class="d-flex justify-content-center p-1">
-              <b-button
-                :variant="
-                  isSatisfied === false ? 'primary' : 'outline-secondary'
-                "
-                size="sm"
-                class="w-100"
-                :disabled="isSuccess || isLoading"
-                @click="isSatisfied = false"
-                >No</b-button
-              >
-            </b-col>
-          </b-row>
-          <b-row class="px-1">
+          <b-row class="px-0">
             <b-col>
               <b-form-textarea
                 id="comment"
                 v-model="comment"
                 size="sm"
-                placeholder="Comments..."
-                rows="3"
+                placeholder="Describe your suggestion or idea..."
+                rows="5"
                 max-rows="3"
                 maxlength="500"
+                class="border-0 p-2"
                 :disabled="isSuccess || isLoading"
               />
             </b-col>
           </b-row>
-          <b-row class="mt-3">
+          <b-row class="submit-button-container my-3">
             <b-col class="d-flex justify-content-center">
               <b-button
                 v-if="!isSuccess && !isLoading"
-                variant="primary"
-                size="sm"
-                class="px-5"
+                size="md"
+                class="aqua-button px-5"
                 type="submit"
-                :disabled="isSatisfied === null"
-                >Submit</b-button
+                :disabled="!isValid"
+                >Send Message</b-button
               >
               <b-spinner v-if="isLoading"></b-spinner>
-              <p v-if="isSuccess" class="text-success">Thank you!</p>
-            </b-col>
-          </b-row>
-          <b-row v-if="hasErrors">
-            <b-col>
-              <p class="small text-danger text-center">
-                Ops Something is wrong! Please try again.
-              </p>
             </b-col>
           </b-row>
         </b-form>
       </div>
+      <!-- Request result section -->
+      <div v-else>
+        <b-row>
+          <b-col class="my-3 text-center">
+            <p class="font-weight-bold">
+              {{ resultTitle }}
+            </p>
+            <p class="small">
+              {{ resultDescription }}
+            </p>
+          </b-col>
+        </b-row>
+        <b-row v-if="isSuccess && !hasEmail" class="mb-4">
+          <b-col class="col-3 text-right p-0 m-0">
+            <font-awesome-icon
+              icon="exclamation-circle"
+              aria-hidden="true"
+              size="2x"
+              class="m-0 text-warning"
+            />
+          </b-col>
+          <b-col class="text-left px-3 small" cols="9">
+            <span>
+              We won't be able to respond to your message unless you have a
+              verified email address in your profile.
+            </span>
+          </b-col>
+        </b-row>
+        <!-- Result buttons -->
+        <b-row v-if="isSuccess && !hasEmail" class="mb-4">
+          <b-col class="p-0 ml-auto mr-2" cols="auto">
+            <b-button variant="link" size="sm" @click="resetFeedback"
+              >No Need!</b-button
+            >
+          </b-col>
+          <b-col class="p-0 mr-auto ml-2" cols="auto">
+            <router-link id="menuBtnProfile" to="/profile">
+              <b-button size="sm" class="aqua-button"
+                >Update my email
+              </b-button>
+            </router-link>
+          </b-col>
+        </b-row>
+        <b-row v-else>
+          <b-col>
+            <b-button
+              v-if="isSuccess && hasEmail"
+              size="md"
+              class="aqua-button px-5 bg-success mb-4"
+              :disabled="isLoading"
+              @click="resetFeedback"
+              >Got it!</b-button
+            >
+            <b-button
+              v-if="!isSuccess"
+              size="md"
+              class="aqua-button px-5 bg-danger mb-4"
+              :disabled="isLoading"
+              @click="onSubmit"
+              >Try Again</b-button
+            >
+          </b-col>
+        </b-row>
+      </div>
     </b-collapse>
-  </b-container>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
+import { Getter, Action } from "vuex-class";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IUserFeedbackService } from "@/services/interfaces";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faComments } from "@fortawesome/free-solid-svg-icons";
-library.add(faComments);
+import User from "@/models/user";
+import {
+  icon,
+  library,
+  IconDefinition
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faComments,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimesCircle as farTimesCircle,
+  faCheckCircle
+} from "@fortawesome/free-regular-svg-icons";
+library.add(faComments, faExclamationCircle);
+
+const sidebar: string = "sidebar";
+const user: string = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
-  private visible: boolean = false;
+  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
+
+  @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+  @Getter("user", { namespace: user }) user!: User;
+
   private comment: string = "";
-  private isSatisfied: boolean | null = null;
+
+  private visible: boolean = false;
+  private hasSubmitted: boolean = false;
   private isSuccess: boolean = false;
-  private hasErrors: boolean = false;
   private isLoading: boolean = false;
   private userFeedbackService!: IUserFeedbackService;
+
+  @Watch("isOpen")
+  onIsOpen(newValue: boolean, oldValue: boolean) {
+    // Make sure it closes if the sidebar is closing and reset state
+    if (!newValue) {
+      this.resetFeedback();
+    }
+  }
 
   mounted() {
     this.userFeedbackService = container.get(
       SERVICE_IDENTIFIER.UserFeedbackService
     );
   }
+
+  private get isValid() {
+    return this.comment.length > 1;
+  }
+
+  private get resultTitle(): string {
+    if (this.hasSubmitted) {
+      return this.isSuccess ? "Awesome!" : "Oh no!";
+    }
+
+    return "";
+  }
+
+  private get resultIcon(): IconDefinition {
+    return this.isSuccess ? faCheckCircle : farTimesCircle;
+  }
+
+  private get resultDescription(): string {
+    if (this.hasSubmitted) {
+      return this.isSuccess
+        ? "Your message has been sent successfully!"
+        : "Your Message could not be sent out!";
+    }
+
+    return "";
+  }
+
+  private get hasEmail(): boolean {
+    return true; //this.user.verifiedEmail && this.user.hasEmail;
+  }
+
+  private toggleExpanded() {
+    this.visible = !this.visible;
+    if (!this.isOpen) {
+      this.toggleSidebar();
+    }
+  }
+
   private onSubmit(event: any) {
+    console.log("submitting!");
     this.isLoading = true;
+
     this.userFeedbackService
       .submitFeedback({
-        isSatisfied: this.isSatisfied!,
         comment: this.comment
       })
       .then(result => {
         this.isSuccess = result;
-        this.hasErrors = !this.isSuccess;
       })
       .catch(() => {
-        this.hasErrors = true;
+        this.isSuccess = false;
       })
       .finally(() => {
+        this.hasSubmitted = true;
         this.isLoading = false;
       });
 
     event.preventDefault();
+  }
+
+  private resetFeedback() {
+    this.visible = false;
+    this.hasSubmitted = false;
+    this.isSuccess = false;
+    this.comment = "";
   }
 }
 </script>
