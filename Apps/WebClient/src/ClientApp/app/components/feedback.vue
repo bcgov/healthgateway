@@ -290,7 +290,7 @@ export default class FeedbackComponent extends Vue {
   }
 
   private get hasEmail(): boolean {
-    return true; //this.user.verifiedEmail && this.user.hasEmail;
+    return this.user.verifiedEmail && this.user.hasEmail;
   }
 
   private toggleExpanded() {
@@ -301,7 +301,6 @@ export default class FeedbackComponent extends Vue {
   }
 
   private onSubmit(event: any) {
-    console.log("submitting!");
     this.isLoading = true;
 
     this.userFeedbackService

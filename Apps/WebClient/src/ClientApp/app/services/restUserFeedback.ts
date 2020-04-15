@@ -13,9 +13,8 @@ export class RestUserFeedbackService implements IUserFeedbackService {
 
   public submitFeedback(feedback: UserFeedback): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      resolve(true);
       this.http
-        .post<boolean>(this.USER_FEEDBACK_BASE_URI, feedback)
+        .post<void>(this.USER_FEEDBACK_BASE_URI, feedback)
         .then(() => {
           return resolve(true);
         })
