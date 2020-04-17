@@ -18,6 +18,7 @@ export class RestUserCommentService implements IUserCommentService {
   }
 
   public getComments(): Promise<RequestResult<UserComment[]>> {
+    console.log("Get comments hit");
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
         resolve({
