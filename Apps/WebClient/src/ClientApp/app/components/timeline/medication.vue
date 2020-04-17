@@ -168,11 +168,12 @@ $radius: 15px;
 import Vue from "vue";
 import { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import UserComment from "@/models/userComment";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-
+import container from "@/plugins/inversify.config";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 @Component
@@ -182,15 +183,22 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
+  private commentService!: IUserCommentService;
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
   private isLoadingPharmacy: boolean = false;
   private isLoadingComments: boolean = false;
   private hasErrors: boolean = false;
-
   private medicationLoaded: boolean = false;
-
   private detailsVisible = false;
+
+  private comments: UserComment[] = [];
+
+  mounted() {
+    this.commentService = container.get<IUserCommentService>(
+      SERVICE_IDENTIFIER.UserNoteService
+    );
+  }
 
   private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
@@ -201,7 +209,11 @@ export default class MedicationTimelineComponent extends Vue {
   }
 
   private get isLoading(): boolean {
-    return this.isLoadingMedication || this.isLoadingPharmacy || this.isLoadingComments;
+    return (
+      this.isLoadingMedication ||
+      this.isLoadingPharmacy ||
+      this.isLoadingComments
+    );
   }
 
   private get entryIcon(): IconDefinition {
@@ -220,16 +232,16 @@ export default class MedicationTimelineComponent extends Vue {
     if (!this.medicationLoaded) {
       this.isLoadingMedication = true;
       var medicationPromise = this.getMedication({
-        din: medicationEntry.medication.din
+        din: medicationEntry.medication.din,
       })
-        .then(result => {
+        .then((result) => {
           if (result) {
             medicationEntry.medication.populateFromModel(result);
           }
           this.medicationLoaded = true;
           this.isLoadingMedication = false;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Error loading medication details");
           console.log(err);
           this.hasErrors = true;
@@ -240,15 +252,15 @@ export default class MedicationTimelineComponent extends Vue {
     if (!medicationEntry.pharmacy.isLoaded) {
       this.isLoadingPharmacy = true;
       var pharmacyPromise = this.getPharmacy({
-        pharmacyId: medicationEntry.pharmacy.id
+        pharmacyId: medicationEntry.pharmacy.id,
       })
-        .then(result => {
+        .then((result) => {
           if (result) {
             medicationEntry.pharmacy.populateFromModel(result);
           }
           this.isLoadingPharmacy = false;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Error loading pharmacy details");
           console.log(err);
           this.hasErrors = true;
@@ -258,24 +270,28 @@ export default class MedicationTimelineComponent extends Vue {
   }
 
   private getComments() {
-    if(this.medicationLoaded) {
+    if (this.medicationLoaded) {
       const referenceId = this.entry.id;
       this.isLoadingComments = true;
-      var commentPromise = this.getComments({
-        referenceId: referenceId
-      })
-      .then(result => {
-        if (result) {
-          console.log("Fetched comments for entry " + this.entry.id + ": ", result)
+      let commentPromise = this.commentService
+        .getComments()
+        .then((result) => {
+          if (result) {
+            console.log(
+              "Fetched comments for entry " + this.entry.id + ": ",
+              result
+            );
+            this.isLoadingComments = false;
+          }
+        })
+        .catch((err) => {
+          console.log(
+            "Error loading comments for medication with ID " + this.entry.id
+          );
+          console.log(err);
+          this.hasErrors = true;
           this.isLoadingComments = false;
-        }
-      })
-      .catch(err => {
-        console.log("Error loading comments for medication with ID " + this.entry.id);
-        console.log(err);
-        this.hasErrors = true;
-        this.isLoadingComments = false;
-      })
+        });
     }
   }
 
