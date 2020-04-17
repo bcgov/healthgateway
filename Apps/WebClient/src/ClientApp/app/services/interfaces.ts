@@ -6,7 +6,7 @@ import {
 import ImmunizationData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import UserComment from "@/models/userComment"
+import UserComment from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
 import { Dictionary } from "vue-router/types/router";
 import Pharmacy from "@/models/pharmacy";
@@ -17,8 +17,8 @@ import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
 import { TermsOfService } from "@/models/termsOfService";
 import UserNote from "@/models/userNote";
-import TimelineEntry from '@/models/timelineEntry';
-import User from '@/models/user';
+import TimelineEntry from "@/models/timelineEntry";
+import User from "@/models/user";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;

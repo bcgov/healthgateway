@@ -198,9 +198,9 @@
             <b-row class="no-print">
               <b-col>
                 <b-pagination-nav
+                  v-model="currentPage"
                   :link-gen="linkGen"
                   :number-of-pages="numberOfPages"
-                  v-model="currentPage"
                   first-number
                   last-number
                   next-text="Next"
@@ -233,7 +233,7 @@ import { State, Action, Getter } from "vuex-class";
 import {
   IMedicationService,
   IImmunizationService,
-  IUserNoteService,
+  IUserNoteService
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -274,8 +274,8 @@ Component.registerHooks(["beforeRouteLeave"]);
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
     FeedbackComponent,
-    NoteTimelineComponent,
-  },
+    NoteTimelineComponent
+  }
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
@@ -388,20 +388,26 @@ export default class TimelineComponent extends Vue {
   }
 
   private get getNumberOfEntriesPerPage(): number {
-    if (this.windowWidth < 576) { // xs
+    if (this.windowWidth < 576) {
+      // xs
       return 7;
-    } else if (this.windowWidth < 768) { // s
+    } else if (this.windowWidth < 768) {
+      // s
       return 9;
-    } else if (this.windowWidth < 992) { // m
-      return 11
-    } else if (this.windowWidth < 1200) { // l
-      return 13
+    } else if (this.windowWidth < 992) {
+      // m
+      return 11;
+    } else if (this.windowWidth < 1200) {
+      // l
+      return 13;
     } // else, xl
     return 15;
   }
 
   private get numberOfPages(): number {
-    let result = Math.ceil(this.filteredEntriesLength / this.getNumberOfEntriesPerPage);
+    let result = Math.ceil(
+      this.filteredEntriesLength / this.getNumberOfEntriesPerPage
+    );
     if (result < 1) {
       return 1;
     } else {
@@ -411,10 +417,14 @@ export default class TimelineComponent extends Vue {
 
   private getPages(entries: TimelineEntry[]): TimelineEntry[][] {
     let index = 0;
-    let result: TimelineEntry[][] = []
+    let result: TimelineEntry[][] = [];
     this.sortGroup(entries);
-    for (index = 0; index < entries.length; index += this.getNumberOfEntriesPerPage) {
-      let chunk = entries.slice(index, index + this.getNumberOfEntriesPerPage) 
+    for (
+      index = 0;
+      index < entries.length;
+      index += this.getNumberOfEntriesPerPage
+    ) {
+      let chunk = entries.slice(index, index + this.getNumberOfEntriesPerPage);
       result.push(chunk);
     }
     return result;
@@ -454,7 +464,7 @@ export default class TimelineComponent extends Vue {
     }
 
     promise
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
 
@@ -474,7 +484,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -490,7 +500,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -505,7 +515,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -521,7 +531,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -535,7 +545,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -553,7 +563,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
 
@@ -562,12 +572,12 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex((e) => e == entry.id);
+    const index = this.editIdList.findIndex(e => e == entry.id);
     this.editIdList.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
   }
@@ -590,7 +600,7 @@ export default class TimelineComponent extends Vue {
   @Watch("currentPage")
   @Watch("getNumberOfEntriesPerPage")
   private applyTimelineFilter() {
-    let filtered = this.timelineEntries.filter((entry) =>
+    let filtered = this.timelineEntries.filter(entry =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
     // Adjust number of pages depending on filters
@@ -601,7 +611,7 @@ export default class TimelineComponent extends Vue {
       // Set it to new final page
       this.currentPage = result.length;
     }
-    this.visibleTimelineEntries = result[this.currentPage - 1]
+    this.visibleTimelineEntries = result[this.currentPage - 1];
   }
 
   private get dateGroups(): DateGroup[] {
@@ -623,13 +633,13 @@ export default class TimelineComponent extends Vue {
       return groups;
     }, {});
 
-    let groupArrays = Object.keys(groups).map((dateKey) => {
+    let groupArrays = Object.keys(groups).map(dateKey => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        ),
+        )
       };
     });
     return this.sortGroup(groupArrays);
