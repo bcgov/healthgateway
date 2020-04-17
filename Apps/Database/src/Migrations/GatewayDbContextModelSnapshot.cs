@@ -2388,6 +2388,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("UserProfileId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -2395,6 +2399,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("xid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("UserFeedback");
                 });
@@ -2736,6 +2742,13 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("HealthGateway.Database.Models.TherapeuticClass", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>

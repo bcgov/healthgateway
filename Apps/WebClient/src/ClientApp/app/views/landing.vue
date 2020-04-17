@@ -117,9 +117,8 @@
       }
     }
 
-    /* Large Devices, Wide Screens */
+    /* Small Devices*/
     @media (max-width: 767px) {
-      /* your desktop css */
       .text-wrapper {
         color: white;
         bottom: 0;

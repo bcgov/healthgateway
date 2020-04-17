@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,6 +85,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<IEmailAdminService, EmailAdminService>();
 
             // Add delegates
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
@@ -129,6 +130,7 @@ namespace HealthGateway.AdminWebClient
             else
             {
                 app.UseExceptionHandler("/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -152,11 +154,9 @@ namespace HealthGateway.AdminWebClient
                             new SpaOptions { SourcePath = "ClientApp" },
                             npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
                             regex: "Compiled successfully",
-                            forceKill: true
-                        );
+                            forceKill: true);
                     }
-                }
-            );
+                });
 
             app.UseSpa(spa =>
             {

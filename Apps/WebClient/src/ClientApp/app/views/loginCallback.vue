@@ -16,8 +16,8 @@ export default class LoginCallbackComponent extends Vue {
   @Action("oidcSignInCallback", { namespace: "auth" }) oidcSignInCallback;
   @Action("clearStorage", { namespace: "auth" }) clearStorage;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
-  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered: boolean;
-  @Getter("user", { namespace: "user" }) user: User;
+  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
+  @Getter("user", { namespace: "user" }) user!: User;
   created() {
     this.oidcSignInCallback()
       .then(redirectPath => {

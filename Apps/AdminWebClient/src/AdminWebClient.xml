@@ -4,6 +4,26 @@
         <name>AdminWebClient</name>
     </assembly>
     <members>
+        <member name="T:HealthGateway.Admin.Constants.UserInviteStatus">
+            <summary>
+            Represents the status constants of a user invite.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserInviteStatus.NotInvited">
+            <summary>
+            Not invited status.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserInviteStatus.InvitedNotValidated">
+            <summary>
+            Invited but not validated status.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserInviteStatus.InvitedValidated">
+            <summary>
+            Invited and validated status.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.AuthenticationController">
             <summary>
             The Authentication and Authorization controller.
@@ -135,6 +155,38 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.EmailAdminController">
+            <summary>
+            Web API to handle user email interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Controllers.EmailAdminController},HealthGateway.Admin.Services.IEmailAdminService,HealthGateway.Common.Services.IEmailQueueService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.EmailAdminController"/> class.
+            </summary>
+            <param name="logger">The injected ILogger.</param>
+            <param name="emailAdminService">The injected user email admin service.</param>
+            <param name="emailQueueService">The injected user email queue service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.GetEmails">
+            <summary>
+            Retrieves a list of emails from the system.
+            </summary>
+            <returns>A list of email.</returns>
+            <response code="200">Returns the list of emails.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.ResendEmail(System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Creates a clone of the emails and requeues it for sending.
+            </summary>
+            <returns>An ok result unless the email id is not found.</returns>
+            <param name="emailIds">The email Ids to resend.</param>
+            <response code="200">Successfully queued all emails.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.UserFeedbackController">
             <summary>
             Web API to handle user feedback review.
@@ -196,6 +248,49 @@
             <summary>
             Gets or sets the windows timezone id.
             </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.AdminEmail">
+            <summary>
+            Model that provides a user representation of the Email model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.Id">
+            <summary>
+            Gets or sets the beta request id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.To">
+            <summary>
+            Gets or sets the email address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.Subject">
+            <summary>
+            Gets or sets the email subject.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.EmailStatusCode">
+            <summary>
+            Gets or sets the email status code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.UserInviteStatus">
+            <summary>
+            Gets or sets the user invite status indicator.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminEmail.SentDateTime">
+            <summary>
+            Gets or sets the sent date.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.AdminEmail.CreateFromDbModel(HealthGateway.Database.Models.Email,System.String)">
+            <summary>
+            Constructs a AdminEmail from a Email model.
+            </summary>
+            <param name="model">A database email model.</param>
+            <param name="inviteStatus">The user invite status.</param>
+            <returns>A new UserBetaRequest.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
             <summary>
@@ -280,7 +375,7 @@
         </member>
         <member name="P:HealthGateway.Admin.Models.OpenIdConnectConfiguration.RequireHttpsMetadata">
             <summary>
-            Gets or sets whether Https Meta Data is required
+            Gets or sets whether Https Meta Data is required.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.TimeOutsConfiguration">
@@ -374,14 +469,25 @@
             Gets or sets the version of the resource.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedback)">
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Email">
+            <summary>
+            Gets or sets the email if known for this feedback.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.ToDbModel">
+            <summary>
+            Convers this view model into a DB model object.
+            </summary>
+            <returns>The DB model object.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedbackAdmin)">
             <summary>
             Constructs a UserFeedbackView from a UserFeedback model.
             </summary>
             <param name="model">A user feedback request models.</param>
             <returns>A new UserFeedbackView.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedback})">
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedbackAdmin})">
             <summary>
             Constructs a List of UserFeedbackView from a list of UserFeedback models.
             </summary>
@@ -524,6 +630,23 @@
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetWaitlistUserCount">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.Admin.Services.EmailAdminService">
+            <summary>
+            Service that provides functionality to admin emails.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.EmailAdminService},HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IEmailInviteDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.EmailAdminService"/> class.
+            </summary>
+            <param name="configuration">Injected configuration provider.</param>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="emailDelegate">The email delegate to interact with the DB.</param>
+            <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.EmailAdminService.GetEmails">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Admin.Services.IAuthenticationService">
             <summary>
             Authentication and Authorization Service.
@@ -606,6 +729,17 @@
             Retrieves the count of waitlisted users.
             </summary>
             <returns>The count of users waiting for an invite.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.IEmailAdminService">
+            <summary>
+            Service that provides admin functinoality to emails.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IEmailAdminService.GetEmails">
+            <summary>
+            Gets all the emails in the system up to the pageSize.
+            </summary>
+            <returns>A List of notes wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IUserFeedbackService">
             <summary>

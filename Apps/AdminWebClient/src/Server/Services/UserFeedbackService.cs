@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Services
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
-
     /// <inheritdoc />
     public class UserFeedbackService : IUserFeedbackService
     {
@@ -50,14 +49,14 @@ namespace HealthGateway.Admin.Services
         public RequestResult<List<UserFeedbackView>> GetUserFeedback()
         {
             this.logger.LogTrace($"Retrieving pending beta requests");
-            DBResult<List<UserFeedback>> userfeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            DBResult<List<UserFeedbackAdmin>> userfeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
             this.logger.LogDebug($"Finished retrieving user feedback: {JsonConvert.SerializeObject(userfeedbackResult)}");
-            List<UserFeedbackView> betaRequests = UserFeedbackView.CreateListFromDbModel(userfeedbackResult.Payload);
+            List<UserFeedbackView> userFeedback = UserFeedbackView.CreateListFromDbModel(userfeedbackResult.Payload);
             return new RequestResult<List<UserFeedbackView>>()
             {
-                ResourcePayload = betaRequests,
+                ResourcePayload = userFeedback,
                 ResultStatus = ResultType.Success,
-                TotalResultCount = betaRequests.Count,
+                TotalResultCount = userFeedback.Count,
             };
         }
 

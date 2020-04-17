@@ -32,5 +32,10 @@ namespace HealthGateway.Database.Models
 
         [MaxLength(500)]
         public string? Comment { get; set; }
+
+        [MaxLength(52)]
+        public string? UserProfileId { get; set; }
+
+        public virtual UserProfile? UserProfile { get; set; }
     }
 }

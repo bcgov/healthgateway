@@ -100,6 +100,29 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
+        public void CloneAndQueue(Guid emailId, bool shouldCommit = true)
+        {
+            Email oldEmail = this.emailDelegate.GetEmail(emailId);
+            if (oldEmail != null)
+            {
+                Email email = new Email()
+                {
+                    From = oldEmail.From,
+                    To = oldEmail.To,
+                    Subject = oldEmail.Subject,
+                    Body = oldEmail.Body,
+                    FormatCode = oldEmail.FormatCode,
+                    Priority = oldEmail.Priority,
+                };
+                this.QueueNewEmail(email, shouldCommit);
+            }
+            else
+            {
+                throw new ArgumentException($"emailID: {emailId} was not found in the DB", nameof(emailId));
+            }
+        }
+
+        /// <inheritdoc />
         public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();

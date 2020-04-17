@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Models
                 Id = model.HdId,
                 EmailAddress = model.EmailAddress,
                 Version = model.Version,
-                RegistrationDatetime = model.CreatedDateTime
+                RegistrationDatetime = model.CreatedDateTime,
             };
         }
 
@@ -72,6 +72,7 @@ namespace HealthGateway.Admin.Models
             {
                 newList.Add(UserBetaRequest.CreateFromDbModel(model));
             }
+
             return newList;
         }
     }

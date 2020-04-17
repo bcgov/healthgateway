@@ -50,3 +50,7 @@ export interface PharmacyState {
   error: boolean;
   stateType: StateType;
 }
+
+export interface SidebarState {
+  isOpen: boolean;
+}

@@ -50,5 +50,11 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="emailInvite">The populated email to save.</param>
         void Update(EmailInvite emailInvite);
+
+        /// <summary>
+        /// Gets all email invites from the database.
+        /// </summary>
+        /// <returns>A list of email invites.</returns>
+        IEnumerable<EmailInvite> GetAll();
     }
 }

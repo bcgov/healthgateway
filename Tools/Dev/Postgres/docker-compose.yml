@@ -11,6 +11,3 @@ services:
     volumes:
       - ./backups:/backups
       - ./data/pgdata:/var/lib/postgresql
-volumes:
-  backups:
-  pgdata:

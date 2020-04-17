@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Context;
@@ -63,6 +64,18 @@ namespace HealthGateway.Database.Delegates
                 .FirstOrDefault();
 
             this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");
+            return retVal;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<EmailInvite> GetAll()
+        {
+            this.logger.LogTrace($"Getting all email invites from DB...");
+            IEnumerable<EmailInvite> retVal = this.dbContext
+                .EmailInvite
+                .ToList();
+
+            this.logger.LogDebug($"Finished getting all email invites from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
