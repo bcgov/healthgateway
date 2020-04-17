@@ -323,11 +323,29 @@ namespace HealthGateway.Common.AspNetConfiguration
             }
 
             app.UseResponseCompression();
+
+            // Setup response secure headers
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("Content-Security-Policy", "default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-abc123'; connect-src 'self' https://spt.apps.gov.bc.ca/com.snowplowanalytics.snowplow/tp2 https://sso-dev.pathfinder.gov.bc.ca/ http://localhost:*; img-src 'self' data: 'nonce-abc123'; style-src 'self' 'nonce-abc123';base-uri 'self';form-action 'self'; font-src 'self'; frame-src https://sso-dev.pathfinder.gov.bc.ca/");
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                await next();
+            });
+        }
+
+        /// <summary>
+        /// Configures the app to to use content security policies
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UseContentSecurityPolicy(IApplicationBuilder app)
+        {
+            IConfigurationSection cspSection = this.configuration.GetSection("ContentSecurityPolicy");
+            string nonce = cspSection.GetValue<string>("nonce");
+            string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
+            string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-{nonce}'; connect-src 'self' {connectSrc}; img-src 'self' data: 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
                 await next();
             });
         }

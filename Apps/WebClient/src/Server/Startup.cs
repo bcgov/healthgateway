@@ -110,6 +110,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
 
             if (env.IsDevelopment())
