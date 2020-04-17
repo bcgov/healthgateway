@@ -8,6 +8,7 @@ import TimelineEntry from "@/models/timelineEntry";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
+  NOT_IMPLENTED: string = "Method not implemented.";
   private readonly USER_COMMENT_BASE_URI: string = "v1/api/Comment";
   private http!: IHttpDelegate;
   private isEnabled: boolean = false;
@@ -44,8 +45,6 @@ export class RestUserCommentService implements IUserCommentService {
         });
     });
   }
-
-  NOT_IMPLENTED: string = "Method not implemented.";
 
   public createComment(comment: UserComment): Promise<UserComment> {
     return new Promise((resolve, reject) => {
