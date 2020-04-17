@@ -32,6 +32,7 @@ nav {
           width="181"
           height="44"
           alt="Go to healthgateway timeline"
+          nonce="abc123"
         />
 
         <img
@@ -40,6 +41,7 @@ nav {
           width="30"
           height="44"
           alt="Go to healthgateway timeline"
+          nonce="abc123"
         />
       </router-link>
     </b-navbar-brand>

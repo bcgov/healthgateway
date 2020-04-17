@@ -109,7 +109,12 @@ Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
 
 // Load general icons
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { config, library } from "@fortawesome/fontawesome-svg-core";
+// Prevent auto adding CSS to the header since that breaks Content security policies.
+config.autoAddCss = false;
+// Add font awesome styles manually
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
 import {
   faUser,
   faUserCircle,
