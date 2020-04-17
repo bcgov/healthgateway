@@ -4,7 +4,7 @@ import RequestResult from "@/models/requestResult";
 import UserComment from "@/models/userComment";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
-import TimelineEntry from '@/models/timelineEntry';
+import TimelineEntry from "@/models/timelineEntry";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
@@ -33,7 +33,9 @@ export class RestUserCommentService implements IUserCommentService {
       }
 
       this.http
-        .getWithCors<RequestResult<UserComment[]>>(`${this.USER_COMMENT_BASE_URI}/`)
+        .getWithCors<RequestResult<UserComment[]>>(
+          `${this.USER_COMMENT_BASE_URI}/`
+        )
         .then(userComments => {
           return resolve(userComments);
         })
@@ -54,7 +56,10 @@ export class RestUserCommentService implements IUserCommentService {
       }
 
       this.http
-        .post<RequestResult<UserComment>>(`${this.USER_COMMENT_BASE_URI}/`, comment)
+        .post<RequestResult<UserComment>>(
+          `${this.USER_COMMENT_BASE_URI}/`,
+          comment
+        )
         .then(result => {
           return this.handleResult(result, resolve, reject);
         })
@@ -68,7 +73,10 @@ export class RestUserCommentService implements IUserCommentService {
   public updateComment(comment: UserComment): Promise<UserComment> {
     return new Promise((resolve, reject) => {
       this.http
-        .put<RequestResult<UserComment>>(`${this.USER_COMMENT_BASE_URI}/`, comment)
+        .put<RequestResult<UserComment>>(
+          `${this.USER_COMMENT_BASE_URI}/`,
+          comment
+        )
         .then(result => {
           return this.handleResult(result, resolve, reject);
         })
@@ -82,7 +90,10 @@ export class RestUserCommentService implements IUserCommentService {
   public deleteComment(comment: UserComment): Promise<void> {
     return new Promise((resolve, reject) => {
       this.http
-        .delete<RequestResult<UserComment>>(`${this.USER_COMMENT_BASE_URI}/`, comment)
+        .delete<RequestResult<UserComment>>(
+          `${this.USER_COMMENT_BASE_URI}/`,
+          comment
+        )
         .then(result => {
           return this.handleResult(result, resolve, reject);
         })
