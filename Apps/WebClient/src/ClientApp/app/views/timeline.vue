@@ -1,13 +1,5 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-@media print {
-  .no-print,
-  .no-print * {
-    display: none !important;
-  }
-}
-
 .column-wrapper {
   border: 1px;
 }
@@ -99,7 +91,11 @@
           <h4>Unverified email</h4>
           <span>
             Your email has not been verified. Please check your inbox or junk
-            folder for an email from Health Gateway.
+            folder for an email from Health Gateway. You can also edit your
+            profile or resend the email from the
+            <router-link id="profilePageLink" variant="primary" to="/profile">
+              profile page</router-link
+            >.
           </span>
         </b-alert>
         <div id="pageTitle">
@@ -222,7 +218,6 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
-    <FeedbackComponent class="no-print" />
   </div>
 </template>
 
@@ -250,7 +245,6 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
-import FeedbackComponent from "@/components/feedback.vue";
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
 import { WebClientConfiguration } from "@/models/configData";
@@ -273,7 +267,6 @@ Component.registerHooks(["beforeRouteLeave"]);
     ProtectiveWordComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    FeedbackComponent,
     NoteTimelineComponent
   }
 })

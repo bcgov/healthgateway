@@ -16,6 +16,9 @@
   height: 100%;
   z-index: $z_sidebar;
   position: static;
+
+  display: flex;
+  flex-direction: column;
 }
 
 #sidebar.collapsed {
@@ -102,6 +105,7 @@
     position: fixed;
     top: 0px;
     padding-top: 80px;
+    overflow-y: scroll;
   }
 
   #sidebar.collapsed {
@@ -114,9 +118,26 @@
     display: none;
   }
 
+  #sidebar.collapsed .sidebar-footer {
+    display: none;
+  }
+
   #sidebar .arrow-icon {
     display: none;
   }
+}
+
+#sidebar .row-container {
+  flex: 1 0 auto;
+}
+
+#sidebar .sidebar-footer {
+  width: 100%;
+  flex-shrink: 0;
+
+  position: sticky;
+  bottom: 0rem;
+  align-self: flex-end;
 }
 </style>
 
@@ -198,7 +219,11 @@
           </div>
 
           <br />
+        </b-col>
+      </b-row>
 
+      <b-row class="sidebar-footer m-0 p-0">
+        <b-col class="m-0 p-0">
           <!-- Collapse Button -->
           <b-row
             class="align-items-center my-4"
@@ -214,6 +239,8 @@
               />
             </b-col>
           </b-row>
+          <!-- Feedback section -->
+          <FeedbackComponent />
         </b-col>
       </b-row>
     </nav>
@@ -233,6 +260,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
 import EventBus from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
+import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
 library.add(faStream);
@@ -240,7 +268,11 @@ library.add(faStream);
 const auth: string = "auth";
 const sidebar: string = "sidebar";
 
-@Component
+@Component({
+  components: {
+    FeedbackComponent
+  }
+})
 export default class SidebarComponent extends Vue {
   @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
   @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
@@ -342,13 +374,13 @@ export default class SidebarComponent extends Vue {
   }
 
   private createNote() {
-    EventBus.$emit("timelineCreateNote");
     this.clearOverlay();
+    EventBus.$emit("timelineCreateNote");
   }
 
   private printView() {
-    EventBus.$emit("timelinePrintView");
     this.clearOverlay();
+    EventBus.$emit("timelinePrintView");
   }
 
   private goToTimeline() {

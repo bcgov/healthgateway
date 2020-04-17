@@ -1667,7 +1667,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 32 out of 32 records"
+      "value": "Displaying 15 out of 269 records\\n"
     }, {
       "id": "6de9c864-7c6a-439a-b066-c129a577446c",
       "comment": "",
@@ -2603,6 +2603,339 @@
       ],
       "value": "Shingles"
     }]
+  }, {
+    "id": "4a61a452-b8f7-4d14-bae8-ca8f484920a2",
+    "name": "Timeline - Menu",
+    "commands": [{
+      "id": "eca90f9e-1453-4fca-ab86-979fbe7ea87a",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4947c246-87a4-41be-84de-365a1476d0d7",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "2bec0642-6ebe-4839-854f-b8d3fb5fe6ff",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "64395a39-1980-4e46-ae91-5b17bf09513b",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5804f56c-1369-4aae-9fdc-1c2004bb4336",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "73739a94-d8fe-4f5f-a5c2-71dd93fda5c3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [
+        ["css=.name-wrapper > .button-title", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div/div[2]", "xpath:idRelative"],
+        ["xpath=//a/div/div[2]", "xpath:position"]
+      ],
+      "value": "Dr Gateway"
+    }, {
+      "id": "0ba46c00-a8ed-4c36-b406-dcf35129dfed",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "c704843e-e9d9-4d8d-8ce7-76d1bc083a9a",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "ccce0e79-1269-4337-902d-d1564ddde6b6",
+    "name": "Timeline - Email Validation Banner",
+    "commands": [{
+      "id": "b2c60721-134b-4530-a4a1-b92a0c68c2ab",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "abf32e90-354c-4313-a220-3cb9aad1056c",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "2f729b40-895c-4e69-ac29-149aad9a6f4c",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "9dcceaf4-4e52-48b3-af11-0b32d3c5cf77",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.alert",
+      "targets": [
+        ["css=.alert", "css:finder"],
+        ["xpath=//div[@id='timeline']/div", "xpath:idRelative"],
+        ["xpath=//main/div/div[2]/div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c3fd5284-3e71-4a65-be45-c948af70e686",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h4:nth-child(2)",
+      "targets": [
+        ["css=h4:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div/h4", "xpath:idRelative"],
+        ["xpath=//div/h4", "xpath:position"],
+        ["xpath=//h4[contains(.,'Unverified email')]", "xpath:innerText"]
+      ],
+      "value": "Unverified email"
+    }, {
+      "id": "946767a6-a77e-4706-86d2-19779ede29ce",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "id=profilePageLink",
+      "targets": [
+        ["id=profilePageLink", "id"],
+        ["linkText=profile page", "linkText"],
+        ["css=#profilePageLink", "css:finder"],
+        ["xpath=//a[contains(text(),'profile page')]", "xpath:link"],
+        ["xpath=//a[@id='profilePageLink']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div/span/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/profile')])[2]", "xpath:href"],
+        ["xpath=//span/a", "xpath:position"],
+        ["xpath=//a[contains(.,'profile page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c548d5f3-9f58-4ff4-91f0-5a4ef73adbdf",
+      "comment": "",
+      "command": "click",
+      "target": "id=profilePageLink",
+      "targets": [
+        ["id=profilePageLink", "id"],
+        ["linkText=profile page", "linkText"],
+        ["css=#profilePageLink", "css:finder"],
+        ["xpath=//a[contains(text(),'profile page')]", "xpath:link"],
+        ["xpath=//a[@id='profilePageLink']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div/span/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/profile')])[2]", "xpath:href"],
+        ["xpath=//span/a", "xpath:position"],
+        ["xpath=//a[contains(.,'profile page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "12d415b8-ae9e-4b4d-9093-ba97b348e3a6",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Profile')]", "xpath:innerText"]
+      ],
+      "value": "Profile"
+    }]
+  }, {
+    "id": "41c23b52-c0dc-4d87-9b9d-bdf7fac0fd12",
+    "name": "Timeline - Pagination",
+    "commands": [{
+      "id": "bf02870b-8201-4c60-914a-683c9cea2e9f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c36ca329-4aeb-480d-a559-2af23717806c",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "f176063b-6354-4ac2-b245-a3554a03bc39",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "ee714a00-57a8-490a-9fca-b06aeb4f557f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.page-item:nth-child(1)",
+      "targets": [
+        ["css=.page-item:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[10]/div/nav/ul/li", "xpath:idRelative"],
+        ["xpath=//nav/ul/li", "xpath:position"],
+        ["xpath=//li[contains(.,'Prev')]", "xpath:innerText"]
+      ],
+      "value": "Prev"
+    }, {
+      "id": "b846899f-3707-430c-9760-17fd39e3223b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 1, 2050"
+    }, {
+      "id": "73acaf25-23e0-4578-b602-37cef92dd168",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=2",
+      "targets": [
+        ["linkText=2", "linkText"],
+        ["css=.page-item:nth-child(3) > .page-link", "css:finder"],
+        ["xpath=//a[contains(text(),'2')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[10]/div/nav/ul/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeline?page=2')]", "xpath:href"],
+        ["xpath=//li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'2')]", "xpath:innerText"]
+      ],
+      "value": "2"
+    }, {
+      "id": "a18cd7b1-7379-4178-99d8-716f28bfbe0c",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Dec 18, 2019"
+    }, {
+      "id": "c67f1f84-1301-4600-b6ed-6cd733022051",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=18",
+      "targets": [
+        ["linkText=18", "linkText"],
+        ["css=.router-link-exact-active", "css:finder"],
+        ["xpath=//a[contains(text(),'18')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[9]/div/nav/ul/li[8]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeline?page=18')]", "xpath:href"],
+        ["xpath=//li[8]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'18')]", "xpath:innerText"]
+      ],
+      "value": "countCards"
+    }, {
+      "id": "b1817053-d519-4a0e-9d3b-4f4164a8ae87",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 20, 2014"
+    }, {
+      "id": "c02e9fcd-1d36-4137-8303-02e7227e224b",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=1",
+      "targets": [
+        ["linkText=1", "linkText"],
+        ["css=.page-item:nth-child(2) > .page-link", "css:finder"],
+        ["xpath=//a[contains(text(),'1')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[9]/div/nav/ul/li[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/timeline?page=1')])[2]", "xpath:href"],
+        ["xpath=//li[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'1')]", "xpath:innerText"]
+      ],
+      "value": "1"
+    }, {
+      "id": "d92a5d00-17ed-4318-9991-ef5e14b7cd36",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 1, 2050"
+    }, {
+      "id": "61ae40e3-484c-4a91-a47b-63febc39abe7",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=Next",
+      "targets": [
+        ["linkText=Next", "linkText"],
+        ["css=.page-item:nth-child(9) > .page-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Next')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[9]/div/nav/ul/li[9]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/timeline?page=2')])[3]", "xpath:href"],
+        ["xpath=//li[9]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Next')]", "xpath:innerText"]
+      ],
+      "value": "Next"
+    }, {
+      "id": "00ddfb27-7200-42e7-b3ca-4a399e40eaab",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Dec 18, 2019"
+    }, {
+      "id": "3e0d86c3-acff-4150-9a03-133fffa02aca",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2631,7 +2964,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

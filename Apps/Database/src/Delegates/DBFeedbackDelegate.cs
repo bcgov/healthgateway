@@ -71,6 +71,9 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Updating the user feedback in DB... {feedback}");
             this.dbContext.Update<UserFeedback>(feedback);
+
+            // Prevent updates to associated user profile id
+            this.dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished updating feedback in DB. {JsonSerializer.Serialize(feedback)}");
         }
@@ -88,11 +91,26 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<UserFeedback>> GetAllUserFeedbackEntries()
+        public DBResult<List<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
         {
             this.logger.LogTrace($"Getting all user feedback entries");
-            List<UserFeedback> feedback = this.dbContext.UserFeedback.OrderBy(f => f.CreatedDateTime).ToList();
-            DBResult<List<UserFeedback>> result = new DBResult<List<UserFeedback>>();
+            List<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
+                .Select(x => new UserFeedbackAdmin
+                {
+                    Id = x.Id,
+                    IsSatisfied = x.IsSatisfied,
+                    IsReviewed = x.IsReviewed,
+                    UpdatedBy = x.UpdatedBy,
+                    Comment = x.Comment,
+                    CreatedBy = x.CreatedBy,
+                    CreatedDateTime = x.CreatedDateTime,
+                    UserProfileId = x.UserProfileId,
+                    UpdatedDateTime = x.UpdatedDateTime,
+                    Version = x.Version,
+                    Email = x.UserProfile != null && x.UserProfile.Email != null ? x.UserProfile.Email : string.Empty,
+                })
+                .OrderBy(f => f.CreatedDateTime).ToList();
+            DBResult<List<UserFeedbackAdmin>> result = new DBResult<List<UserFeedbackAdmin>>();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");

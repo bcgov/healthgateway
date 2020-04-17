@@ -17,6 +17,9 @@
 namespace HealthGateway.Admin.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using HealthGateway.Admin.Constants;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -29,6 +32,7 @@ namespace HealthGateway.Admin.Services
     /// </summary>
     public class EmailAdminService : IEmailAdminService
     {
+
         private const string EmailAdminSectionConfigKey = "EmailAdmin";
         private const string MaxEmailsConfigKey = "MaxEmails";
         private const int DefaultMaxEmails = 1000;
@@ -36,6 +40,7 @@ namespace HealthGateway.Admin.Services
         private readonly IConfiguration configuration;
         private readonly ILogger<EmailAdminService> logger;
         private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailInviteDelegate emailInviteDelegate;
         private readonly int maxEmails;
 
         /// <summary>
@@ -44,23 +49,36 @@ namespace HealthGateway.Admin.Services
         /// <param name="configuration">Injected configuration provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
-        public EmailAdminService(IConfiguration configuration, ILogger<EmailAdminService> logger, IEmailDelegate emailDelegate)
+        /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
+        public EmailAdminService(
+            IConfiguration configuration,
+            ILogger<EmailAdminService> logger,
+            IEmailDelegate emailDelegate,
+            IEmailInviteDelegate emailInviteDelegate)
         {
             this.configuration = configuration;
             this.logger = logger;
             this.emailDelegate = emailDelegate;
+            this.emailInviteDelegate = emailInviteDelegate;
             IConfigurationSection section = configuration!.GetSection(EmailAdminSectionConfigKey);
             this.maxEmails = section.GetValue<int>(MaxEmailsConfigKey, DefaultMaxEmails);
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Email>> GetEmails()
+        public RequestResult<IEnumerable<AdminEmail>> GetEmails()
         {
             int pageIndex = 0;
             DBResult<List<Email>> dbEmail = this.emailDelegate.GetEmails(pageIndex, this.maxEmails);
-            RequestResult<IEnumerable<Email>> result = new RequestResult<IEnumerable<Email>>()
+            IEnumerable<EmailInvite> emailInvites = this.emailInviteDelegate.GetAll();
+            RequestResult<IEnumerable<AdminEmail>> result = new RequestResult<IEnumerable<AdminEmail>>()
             {
-                ResourcePayload = dbEmail.Payload,
+                ResourcePayload = dbEmail.Payload.Select(e =>
+                {
+                    EmailInvite emailInvite = emailInvites.FirstOrDefault(ei =>
+                        e.To!.Equals(ei.Email?.To, System.StringComparison.CurrentCultureIgnoreCase));
+                    string inviteStatus = this.GetEmailInviteStatus(emailInvite);
+                    return AdminEmail.CreateFromDbModel(e, inviteStatus);
+                }),
                 PageIndex = pageIndex,
                 PageSize = this.maxEmails,
                 TotalResultCount = dbEmail.Payload.Count,
@@ -68,6 +86,16 @@ namespace HealthGateway.Admin.Services
                 ResultMessage = dbEmail.Message,
             };
             return result;
+        }
+
+        private string GetEmailInviteStatus(EmailInvite emailInvite)
+        {
+            if (emailInvite == null)
+            {
+                return UserInviteStatus.NotInvited;
+            }
+
+            return emailInvite.Validated ? UserInviteStatus.InvitedValidated : UserInviteStatus.InvitedNotValidated;
         }
     }
 }

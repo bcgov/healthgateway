@@ -17,4 +17,7 @@ export default interface UserFeedback {
 
   // Gets or sets the row concurrency version.
   version: string;
+
+  // Gets or sets the email if known for this feedback.
+  email: string;
 }

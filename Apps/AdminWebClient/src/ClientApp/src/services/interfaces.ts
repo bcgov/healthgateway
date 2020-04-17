@@ -3,6 +3,7 @@ import AuthenticationData from "@/models/authenticationData";
 import UserBetaRequest from "@/models/userBetaRequest";
 import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
+import Email from "@/models/email";
 
 export interface IConfigService {
   initialize(http: IHttpDelegate): void;
@@ -21,6 +22,12 @@ export interface IBetaRequestService {
   initialize(http: IHttpDelegate): void;
   getPendingRequests(): Promise<UserBetaRequest[]>;
   sendBetaInvites(requestsIds: string[]): Promise<string[]>;
+}
+
+export interface IEmailAdminService {
+  initialize(http: IHttpDelegate): void;
+  getEmails(): Promise<Email[]>;
+  resendEmails(emailIds: string[]): Promise<string[]>;
 }
 
 export interface IUserFeedbackService {
@@ -42,7 +49,11 @@ export interface IHttpDelegate {
   setAuthorizationHeader(accessToken: string): void;
   getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
   get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
-  post<T>(url: string, payload: Object): Promise<T>;
+  post<T>(
+    url: string,
+    payload: Object,
+    headers?: Dictionary<string>
+  ): Promise<T>;
   put<T>(
     url: string,
     payload: Object,
