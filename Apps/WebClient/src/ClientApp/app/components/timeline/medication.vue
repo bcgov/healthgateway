@@ -168,6 +168,8 @@ $radius: 15px;
 import Vue from "vue";
 import { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import { IUserCommentService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 
@@ -183,6 +185,7 @@ export default class MedicationTimelineComponent extends Vue {
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
   private isLoadingPharmacy: boolean = false;
+  private isLoadingComments: boolean = false;
   private hasErrors: boolean = false;
 
   private medicationLoaded: boolean = false;
@@ -193,8 +196,12 @@ export default class MedicationTimelineComponent extends Vue {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
   }
 
+  private get commentsLoaded(): boolean {
+    return this.commentsLoaded;
+  }
+
   private get isLoading(): boolean {
-    return this.isLoadingMedication || this.isLoadingPharmacy;
+    return this.isLoadingMedication || this.isLoadingPharmacy || this.isLoadingComments;
   }
 
   private get entryIcon(): IconDefinition {
@@ -247,6 +254,28 @@ export default class MedicationTimelineComponent extends Vue {
           this.hasErrors = true;
           this.isLoadingPharmacy = false;
         });
+    }
+  }
+
+  private getComments() {
+    if(this.medicationLoaded) {
+      const referenceId = this.entry.id;
+      this.isLoadingComments = true;
+      var commentPromise = this.getComments({
+        referenceId: referenceId
+      })
+      .then(result => {
+        if (result) {
+          console.log("Fetched comments for entry " + this.entry.id + ": ", result)
+          this.isLoadingComments = false;
+        }
+      })
+      .catch(err => {
+        console.log("Error loading comments for medication with ID " + this.entry.id);
+        console.log(err);
+        this.hasErrors = true;
+        this.isLoadingComments = false;
+      })
     }
   }
 
