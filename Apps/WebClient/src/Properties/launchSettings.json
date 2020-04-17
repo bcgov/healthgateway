@@ -13,7 +13,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "DOTNET_USE_POLLING_FILE_WATCHER": "1",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "applicationUrl": "http://localhost:5000;"
     }

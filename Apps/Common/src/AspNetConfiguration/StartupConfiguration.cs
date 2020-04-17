@@ -323,6 +323,13 @@ namespace HealthGateway.Common.AspNetConfiguration
             }
 
             app.UseResponseCompression();
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Content-Security-Policy", "default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-abc123'; connect-src 'self' https://spt.apps.gov.bc.ca/com.snowplowanalytics.snowplow/tp2 https://sso-dev.pathfinder.gov.bc.ca/ http://localhost:*; img-src 'self' data: 'nonce-abc123'; style-src 'self' 'nonce-abc123';base-uri 'self';form-action 'self'; font-src 'self'; frame-src https://sso-dev.pathfinder.gov.bc.ca/");
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                await next();
+            });
         }
 
         /// <summary>

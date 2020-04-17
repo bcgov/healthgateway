@@ -16,13 +16,14 @@
     </environment>
 
     <!-- Snowplow starts plowing - Standalone vA.2.10.2 -->
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="abc123">
         ; (function (p, l, o, w, i, n, g) {
             if (!p[i]) {
             p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];
                 p.GlobalSnowplowNamespace.push(i); p[i] = function () {
                     (p[i].q = p[i].q || []).push(arguments)
-                }; p[i].q = p[i].q || []; n = l.createElement(o); g = l.getElementsByTagName(o)[0]; n.async = 1;
+                }; p[i].q = p[i].q || []; n = l.createElement(o,);  n.async = 1; g = l.createAttribute("nonce");
+                g.value = "abc123"; n.setAttributeNode(g); g = l.getElementsByTagName(o)[0];
                 n.src = w; g.parentNode.insertBefore(n, g)
             }
         }(window, document, "script", "https://sp-js.apps.gov.bc.ca/MDWay3UqFnIiGVLIo7aoMi4xMC4y.js", "snowplow"));
