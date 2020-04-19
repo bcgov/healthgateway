@@ -37,11 +37,13 @@ namespace HealthGateway.CommonTests.Delegates
             AESCryptoDelegateConfig expectedConfig = new AESCryptoDelegateConfig()
             {
                 KeySize = 256,
+                IV = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
             };
 
             var myConfiguration = new Dictionary<string, string>
             {
                 {"AESCrypto:KeySize", expectedConfig.KeySize.ToString()},
+                {"AESCrypto:IV", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"))},
             };
 
             var configuration = new ConfigurationBuilder()

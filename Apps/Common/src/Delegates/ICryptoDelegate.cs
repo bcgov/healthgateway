@@ -40,9 +40,9 @@ namespace HealthGateway.Common.Delegates
         public string Decrypt(string key, string encryptedText);
 
         /// <summary>
-        /// 
+        /// Generates a suitable key for use in the implementation Encrypt/Decrypt methods.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A Base64 encoded key.</returns>
         public string GenerateKey();
     }
 }

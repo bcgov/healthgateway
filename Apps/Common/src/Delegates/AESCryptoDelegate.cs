@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Delegate to encrypt/decrypt using AES.
     /// </summary>
-    public class AESCryptoDelegate
+    public class AESCryptoDelegate : ICryptoDelegate
     {
         private const string ConfigKey = "AESCrypto";
         private readonly ILogger<AESCryptoDelegate> logger;
@@ -51,15 +51,10 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         public AESCryptoDelegateConfig AesConfig { get; set; }
 
-        /// <summary>
-        /// Encrypts the plaintext using the key supplied.
-        /// </summary>
-        /// <param name="key">The base64 encoded encryption key.</param>
-        /// <param name="plainText">The text to encrypt.</param>
-        /// <returns>The encrypted text.</returns>
+        /// <inheritdoc />
         public string Encrypt(string key, string plainText)
         {
-            return this.Encrypt(key, null, plainText);
+            return this.Encrypt(key, this.AesConfig.IV, plainText);
         }
 
         /// <summary>
@@ -85,15 +80,10 @@ namespace HealthGateway.Common.Delegates
             return Convert.ToBase64String(encryptedBytes);
         }
 
-        /// <summary>
-        /// Decrypts the encrypted text using the key supplied.
-        /// </summary>
-        /// <param name="key">The base64 encoded encryption key.</param>
-        /// <param name="encryptedText">The text to decrypt.</param>
-        /// <returns>The decrypted text.</returns>
+        /// <inheritdoc />
         public string Decrypt(string key, string encryptedText)
         {
-            return this.Decrypt(key, null, encryptedText);
+            return this.Decrypt(key, this.AesConfig.IV, encryptedText);
         }
 
         /// <summary>
@@ -119,6 +109,7 @@ namespace HealthGateway.Common.Delegates
             return plaintext;
         }
 
+        /// <inheritdoc />
         public string GenerateKey()
         {
             using Aes aes = Aes.Create();

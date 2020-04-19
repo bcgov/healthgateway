@@ -29,5 +29,10 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the key size for AES crypto functions.
         /// </summary>
         public int KeySize { get; set; } = DefaultKeySize;
+
+        /// <summary>
+        /// Gets or sets the Initialization Vector.
+        /// </summary>
+        public string? IV { get; set; }
     }
 }
