@@ -1667,7 +1667,7 @@
         ["xpath=//div[@id='listControlls']/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div", "xpath:position"]
       ],
-      "value": "Displaying 32 out of 32 records"
+      "value": "Displaying 15 out of 269 records\\n"
     }, {
       "id": "6de9c864-7c6a-439a-b066-c129a577446c",
       "comment": "",
@@ -2771,6 +2771,170 @@
         ["xpath=//h1[contains(.,'Profile')]", "xpath:innerText"]
       ],
       "value": "Profile"
+    }]
+  }, {
+    "id": "41c23b52-c0dc-4d87-9b9d-bdf7fac0fd12",
+    "name": "Timeline - Pagination",
+    "commands": [{
+      "id": "bf02870b-8201-4c60-914a-683c9cea2e9f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c36ca329-4aeb-480d-a559-2af23717806c",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "f176063b-6354-4ac2-b245-a3554a03bc39",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "ee714a00-57a8-490a-9fca-b06aeb4f557f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.page-item:nth-child(1)",
+      "targets": [
+        ["css=.page-item:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='timeData']/div[10]/div/nav/ul/li", "xpath:idRelative"],
+        ["xpath=//nav/ul/li", "xpath:position"],
+        ["xpath=//li[contains(.,'Prev')]", "xpath:innerText"]
+      ],
+      "value": "Prev"
+    }, {
+      "id": "b846899f-3707-430c-9760-17fd39e3223b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 1, 2050"
+    }, {
+      "id": "73acaf25-23e0-4578-b602-37cef92dd168",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=2",
+      "targets": [
+        ["linkText=2", "linkText"],
+        ["css=.page-item:nth-child(3) > .page-link", "css:finder"],
+        ["xpath=//a[contains(text(),'2')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[10]/div/nav/ul/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeline?page=2')]", "xpath:href"],
+        ["xpath=//li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'2')]", "xpath:innerText"]
+      ],
+      "value": "2"
+    }, {
+      "id": "a18cd7b1-7379-4178-99d8-716f28bfbe0c",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Dec 18, 2019"
+    }, {
+      "id": "c67f1f84-1301-4600-b6ed-6cd733022051",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=18",
+      "targets": [
+        ["linkText=18", "linkText"],
+        ["css=.router-link-exact-active", "css:finder"],
+        ["xpath=//a[contains(text(),'18')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[9]/div/nav/ul/li[8]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/timeline?page=18')]", "xpath:href"],
+        ["xpath=//li[8]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'18')]", "xpath:innerText"]
+      ],
+      "value": "countCards"
+    }, {
+      "id": "b1817053-d519-4a0e-9d3b-4f4164a8ae87",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 20, 2014"
+    }, {
+      "id": "c02e9fcd-1d36-4137-8303-02e7227e224b",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=1",
+      "targets": [
+        ["linkText=1", "linkText"],
+        ["css=.page-item:nth-child(2) > .page-link", "css:finder"],
+        ["xpath=//a[contains(text(),'1')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[9]/div/nav/ul/li[2]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/timeline?page=1')])[2]", "xpath:href"],
+        ["xpath=//li[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'1')]", "xpath:innerText"]
+      ],
+      "value": "1"
+    }, {
+      "id": "d92a5d00-17ed-4318-9991-ef5e14b7cd36",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jan 1, 2050"
+    }, {
+      "id": "61ae40e3-484c-4a91-a47b-63febc39abe7",
+      "comment": "",
+      "command": "clickAt",
+      "target": "linkText=Next",
+      "targets": [
+        ["linkText=Next", "linkText"],
+        ["css=.page-item:nth-child(9) > .page-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Next')]", "xpath:link"],
+        ["xpath=//div[@id='timeData']/div[9]/div/nav/ul/li[9]/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, '/timeline?page=2')])[3]", "xpath:href"],
+        ["xpath=//li[9]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Next')]", "xpath:innerText"]
+      ],
+      "value": "Next"
+    }, {
+      "id": "00ddfb27-7200-42e7-b3ca-4a399e40eaab",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Dec 18, 2019"
+    }, {
+      "id": "3e0d86c3-acff-4150-9a03-133fffa02aca",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
     }]
   }],
   "suites": [{
