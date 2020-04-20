@@ -323,6 +323,32 @@ namespace HealthGateway.Common.AspNetConfiguration
             }
 
             app.UseResponseCompression();
+
+            // Setup response secure headers
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                await next();
+            });
+        }
+
+        /// <summary>
+        /// Configures the app to to use content security policies
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="nonceService">Service that provides nonce utilities.</param>
+        public void UseContentSecurityPolicy(IApplicationBuilder app, INonceService nonceService)
+        {
+            IConfigurationSection cspSection = this.configuration.GetSection("ContentSecurityPolicy");
+            string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
+            string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
+            string nonce = nonceService.GetCurrentNonce();
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-{nonce}'; connect-src 'self' {connectSrc}; img-src 'self' data: 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
+                await next();
+            });
         }
 
         /// <summary>

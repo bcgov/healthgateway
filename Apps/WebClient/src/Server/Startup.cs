@@ -80,6 +80,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
+            services.AddSingleton<INonceService, NonceService>();
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
@@ -105,13 +106,15 @@ namespace HealthGateway.WebClient
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        /// <param name="nonceService">Service that provides nonce utilities.</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, INonceService nonceService)
         {
             Contract.Requires(env != null);
 
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            this.startupConfig.UseContentSecurityPolicy(app, nonceService);
             this.startupConfig.UseAuth(app);
 
             if (env.IsDevelopment())

@@ -44,6 +44,9 @@ module.exports = env => {
         filename: "[name].js",
         library: "[name]_[hash]"
       },
+      node: {
+        global: false
+      },
       plugins: [
         new MiniCssExtractPlugin({ filename: "vendor.css" }),
         new webpack.ProvidePlugin({
