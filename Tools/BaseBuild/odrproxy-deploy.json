@@ -212,20 +212,20 @@
       "displayName": "Source Name",
       "name": "SOURCE_NAME",
       "required": true,
-      "value": "healthgateproxy"
+      "value": "odrproxy"
     },
     {
       "description": "The name assigned to all of the openshift objects defined in this template. It is also the name of runtime image you want.",
       "displayName": "Name",
       "name": "NAME",
       "required": true,
-      "value": "healthgateproxy"
+      "value": "odrproxy"
     },
     {
       "description": "The exposed hostname that will route to the service, e.g., myappname.pathfinder.gov.bc.ca, if left blank a value will be defaulted.",
       "displayName": "Application Hostname",
       "name": "APPLICATION_DOMAIN",
-      "value": "dev-odrproxy.pathfinder.gov.bc.ca"
+      "value": "test-odrproxy.pathfinder.gov.bc.ca"
     },
 
     {
@@ -233,13 +233,13 @@
       "displayName": "Image Namespace",
       "name": "IMAGE_NAMESPACE",
       "required": true,
-      "value": "xx-tools"
+      "value": "q6qfzk-tools"
     },
     {
       "description": "The TAG name for this environment, e.g., dev, test, prod",
       "displayName": "Env TAG name",
       "name": "TAG_NAME",
-      "value": "dev"
+      "value": "test"
     },
     {
       "description": "URL of Digital Experience MSP Service",
@@ -252,70 +252,70 @@
       "description": "User name : password for the Digital Experience MSP Service",
       "displayName": "TARGET_USERNAME_PASSWORD",
       "name": "TARGET_USERNAME_PASSWORD",
-      "required": true,
+      "required": false,
       "value": ""
     },
     {
       "description": "Private key of the MSP-Service for the Mutual TLS negotiation",
       "displayName": "MUTUAL_TLS_PEM_KEY_BASE64",
       "name": "MUTUAL_TLS_PEM_KEY_BASE64",
-      "required": true,
+      "required": false,
       "value": ""
     },
     {
       "description": "Passphrase for the private key of the MSP-Service",
       "displayName": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
       "name": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
-      "required": true,
+      "required": false,
       "value": ""
     },
     {
       "description": "Public Certificate of the Digital Experience MSP Service to be trusted",
       "displayName": "MUTUAL_TLS_PEM_CERT",
       "name": "MUTUAL_TLS_PEM_CERT",
-      "required": true,
+      "required": false,
       "value": ""
     },
     {
       "description": "Use SSL",
       "displayName": "SECURE_MODE",
       "name": "SECURE_MODE",
-      "required": true,
+      "required": false,
       "value": "true"
     },
     {
       "description": "Use Mutual SSL",
       "displayName": "USE_MUTUAL_TLS",
       "name": "USE_MUTUAL_TLS",
-      "required": true,
+      "required": false,
       "value": "true"
     },
     {
       "description": "Authentication Key used in all SSL",
       "displayName": "AUTH_TOKEN_KEY",
       "name": "AUTH_TOKEN_KEY",
-      "required": true,
+      "required": false,
       "value": ""
     },
     {
       "description": "Use Auth Token in all SSL",
       "displayName": "USE_AUTH_TOKEN",
       "name": "USE_AUTH_TOKEN",
-      "required": true,
+      "required": false,
       "value": "true"
     },
     {
       "description": "Host name for the Splunk Forwarder",
       "displayName": "LOGGER_HOST",
       "name": "LOGGER_HOST",
-      "required": true,
+      "required": false,
       "value": "splunk-forwarder"
     },
     {
       "description": "Port for the Splunk Forwarder",
       "displayName": "LOGGER_PORT",
       "name": "LOGGER_PORT",
-      "required": true,
+      "required": false,
       "value": "8080"
     },
     {
