@@ -234,6 +234,7 @@ import {
   IMedicationService,
   IImmunizationService,
   IUserNoteService,
+  IUserCommentService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -288,6 +289,7 @@ export default class TimelineComponent extends Vue {
   private isMedicationLoading: boolean = false;
   private isImmunizationLoading: boolean = false;
   private isNoteLoading: boolean = false;
+  private isCommentLoading: boolean = false;
   private windowWidth: number = 0;
   private currentPage: number = 1;
   private filteredEntriesLength = 0;
@@ -313,6 +315,7 @@ export default class TimelineComponent extends Vue {
     this.fetchMedicationStatements();
     this.fetchImmunizations();
     this.fetchNotes();
+    this.fetchComments();
     window.addEventListener("beforeunload", this.onBrowserClose);
 
     let self = this;
@@ -368,7 +371,8 @@ export default class TimelineComponent extends Vue {
     return (
       this.isMedicationLoading ||
       this.isImmunizationLoading ||
-      this.isNoteLoading
+      this.isNoteLoading ||
+      this.isCommentLoading
     );
   }
 
@@ -542,6 +546,23 @@ export default class TimelineComponent extends Vue {
       .finally(() => {
         this.isNoteLoading = false;
       });
+  }
+
+  private fetchComments() {
+    const commentService: IUserCommentService = container.get(
+      SERVICE_IDENTIFIER.UserCommentService
+    );
+    this.isCommentLoading = true;
+    commentService.getComments().then((result) => {
+      console.log("COMMENTS: ", result);
+    })
+    .catch((err) => {
+      this.hasErrors = true;
+      console.log(err);
+    })
+    .finally(() => {
+      this.isCommentLoading = false;
+    })
   }
 
   private onNoteAdded(note: UserNote) {
