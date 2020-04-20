@@ -1,4 +1,3 @@
-__webpack_nonce__ = "abc123";
-
-var abc = 3;
-export default abc;
+window.EnvVars = window.EnvVars || {};
+__webpack_nonce__ = window.EnvVars.NONCE_ID;
+export default null;

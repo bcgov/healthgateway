@@ -60,7 +60,6 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a beta request json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="hdid">The resource hdid.</param>
         /// <param name="betaRequest">The beta request model.</param>
         /// <response code="200">The beta request record was saved.</response>
         /// <response code="400">The beta request was already inserted.</response>
