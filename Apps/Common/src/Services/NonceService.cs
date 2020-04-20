@@ -20,7 +20,7 @@ namespace HealthGateway.Common.Services
     using System.Security.Cryptography;
 
     /// <summary>
-    /// A custom http client factory service.
+    /// Implementation of the <see cref="NonceService"/> with cryptograpgic generation.
     /// </summary>
     public class NonceService : INonceService
     {
