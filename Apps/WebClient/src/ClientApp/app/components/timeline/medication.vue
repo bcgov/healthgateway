@@ -183,7 +183,6 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
-  private commentService!: IUserCommentService;
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
   private isLoadingPharmacy: boolean = false;
@@ -193,12 +192,6 @@ export default class MedicationTimelineComponent extends Vue {
   private detailsVisible = false;
 
   private comments: UserComment[] = [];
-
-  mounted() {
-    this.commentService = container.get<IUserCommentService>(
-      SERVICE_IDENTIFIER.UserNoteService
-    );
-  }
 
   private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
