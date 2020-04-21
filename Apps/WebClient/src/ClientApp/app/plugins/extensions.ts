@@ -3,5 +3,7 @@ export interface SnowplowWindow extends Window {
 }
 
 declare global {
-  interface Window { EnvVars: any; }
+  interface Window {
+    EnvVars: any;
+  }
 }
