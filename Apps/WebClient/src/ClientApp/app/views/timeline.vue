@@ -622,7 +622,11 @@ export default class TimelineComponent extends Vue {
       // Set it to new final page
       this.currentPage = result.length;
     }
-    this.visibleTimelineEntries = result[this.currentPage - 1]
+    if (result.length === 0) {
+      this.visibleTimelineEntries = [];
+    } else {
+      this.visibleTimelineEntries = result[this.currentPage - 1]
+    }
   }
 
   private get dateGroups(): DateGroup[] {
