@@ -148,7 +148,12 @@
       <b-row class="row-container m-0 p-0">
         <b-col class="m-0 p-0">
           <!-- Profile Button -->
-          <router-link v-show="!isProfile" id="menuBtnProfile" to="/profile" class="my-4">
+          <router-link
+            v-show="!isProfile"
+            id="menuBtnProfile"
+            to="/profile"
+            class="my-4"
+          >
             <b-row
               class="align-items-center name-wrapper my-4 button-container"
               :class="{ 'm-4': isOpen }"
@@ -166,13 +171,22 @@
             </b-row>
           </router-link>
           <!-- Timeline button -->
-          <router-link v-show="!isTimeline" id="menuBtnTimeline" to="/timeline" class="my-4">
+          <router-link
+            v-show="!isTimeline"
+            id="menuBtnTimeline"
+            to="/timeline"
+            class="my-4"
+          >
             <b-row
               class="align-items-center name-wrapper my-4 button-container"
               :class="{ 'mx-4': isOpen }"
             >
               <b-col title="Timeline" :class="{ 'col-4': isOpen }">
-                <font-awesome-icon icon="stream" class="button-icon" size="3x" />
+                <font-awesome-icon
+                  icon="stream"
+                  class="button-icon"
+                  size="3x"
+                />
               </b-col>
               <b-col v-if="isOpen" cols="8" class="button-title d-none">
                 <span>Timeline</span>
@@ -215,7 +229,7 @@
               </b-col>
             </b-row>
           </div>
-         <div v-show="isProfile">
+          <div v-show="isProfile">
             <!-- Terms of Service button -->
             <router-link
               id="termsOfService"
@@ -228,7 +242,11 @@
                 :class="{ 'mx-4': isOpen }"
               >
                 <b-col title="Terms of Service" :class="{ 'col-4': isOpen }">
-                  <font-awesome-icon icon="file-alt" class="button-icon" size="2x" />
+                  <font-awesome-icon
+                    icon="file-alt"
+                    class="button-icon"
+                    size="2x"
+                  />
                 </b-col>
                 <b-col v-if="isOpen" cols="8" class="button-title d-none">
                   <span>Terms of Service</span>
