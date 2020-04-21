@@ -191,6 +191,7 @@ export default class MedicationTimelineComponent extends Vue {
   private medicationLoaded: boolean = false;
   private detailsVisible = false;
 
+  private commentService!: IUserCommentService;
   private comments: UserComment[] = [];
 
   private get detailsLoaded(): boolean {
@@ -267,7 +268,7 @@ export default class MedicationTimelineComponent extends Vue {
       const referenceId = this.entry.id;
       this.isLoadingComments = true;
       let commentPromise = this.commentService
-        .getComments()
+        .getCommentsForEntry(referenceId)
         .then((result) => {
           if (result) {
             console.log(

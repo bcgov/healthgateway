@@ -3,7 +3,7 @@ export default interface UserComment {
   id: string;
 
   // Gets or sets the user hdid.
-  hdId: string;
+  userProfileId: string;
 
   // The entry this comment belongs to.
   parentEntryId: number;
