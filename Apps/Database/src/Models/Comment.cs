@@ -35,7 +35,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        [Column("UserProfileId")]
         [MaxLength(52)]
         [Required]
         public string UserProfileId { get; set; } = null!;
