@@ -10,33 +10,17 @@ import TimelineEntry from '@/models/timelineEntry';
 export class RestUserCommentService implements IUserCommentService {
   private readonly USER_COMMENT_BASE_URI: string = "v1/api/Comment";
   private http!: IHttpDelegate;
-  private isEnabled: boolean = false;
 
   public initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
     this.http = http;
-    this.isEnabled = true;
-    // this.isEnabled = config.webClient.modules["Comment"];
   }
 
-  public getComments(): Promise<RequestResult<UserComment[]>> {
+  public getCommentsForEntry(): Promise<RequestResult<UserComment[]>> {
     console.log("Get comments hit");
     return new Promise((resolve, reject) => {
-      if (!this.isEnabled) {
-        resolve({
-          pageIndex: 0,
-          pageSize: 0,
-          resourcePayload: [],
-          resultMessage: "",
-          resultStatus: ResultType.Success,
-          totalResultCount: 0
-        });
-        return;
-      }
-
       this.http
         .getWithCors<RequestResult<UserComment[]>>(`${this.USER_COMMENT_BASE_URI}/`)
         .then(userComments => {
-          console.log("GET Request hit");
           let test = [
             {
               id: 1,
@@ -95,11 +79,6 @@ export class RestUserCommentService implements IUserCommentService {
 
   public createComment(comment: UserComment): Promise<UserComment> {
     return new Promise((resolve, reject) => {
-      if (!this.isEnabled) {
-        resolve();
-        return;
-      }
-
       this.http
         .post<RequestResult<UserComment>>(`${this.USER_COMMENT_BASE_URI}/`, comment)
         .then(result => {
