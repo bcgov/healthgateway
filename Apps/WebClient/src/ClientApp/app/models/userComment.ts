@@ -12,7 +12,7 @@ export default interface UserComment {
   text: string;
 
   // Gets or sets the comment datetime.
-  commentDateTime: Date;
+  createdDateTime: Date;
 
   // Gets or sets the comment db version.
   version: number;
