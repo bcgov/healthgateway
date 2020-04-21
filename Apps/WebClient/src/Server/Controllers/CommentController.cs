@@ -160,14 +160,14 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Gets all comments for the authorized user and event id.
         /// </summary>
-        /// <param name="eventId">The event id.</param>
+        /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>The list of comments wrapped in a request result.</returns>
         /// <response code="200">Returns the list of comments.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Route("{eventId}")]
-        public async Task<IActionResult> GetAllForEvent(string eventId)
+        [Route("{parentEntryId}")]
+        public async Task<IActionResult> GetAllForEntry(string parentEntryId)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
@@ -179,7 +179,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<IEnumerable<Comment>> result = this.commentService.GetList(userHdid, eventId);
+            RequestResult<IEnumerable<Comment>> result = this.commentService.GetList(userHdid, parentEntryId);
             return new JsonResult(result);
         }
     }

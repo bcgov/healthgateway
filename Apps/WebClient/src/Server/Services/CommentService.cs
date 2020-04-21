@@ -54,9 +54,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Comment>> GetList(string hdId, string eventId)
+        public RequestResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId)
         {
-            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetList(hdId, eventId);
+            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetList(hdId, parentEntryId);
             RequestResult<IEnumerable<Comment>> result = new RequestResult<IEnumerable<Comment>>()
             {
                 ResourcePayload = dbComments.Payload,

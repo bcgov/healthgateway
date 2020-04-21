@@ -35,9 +35,9 @@ namespace HealthGateway.WebClient.Services
         /// Gets a list of Comments for the given hdId and event id.
         /// </summary>
         /// <param name="hdId">The users HDID.</param>
-        /// <param name="eventId">The related event id.</param>
+        /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>A List of Comments wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<Comment>> GetList(string hdId, string eventId);
+        public RequestResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId);
 
         /// <summary>
         /// Updates the given Comment in the backend.

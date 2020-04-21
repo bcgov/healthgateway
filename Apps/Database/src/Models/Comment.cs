@@ -47,18 +47,18 @@ namespace HealthGateway.Database.Models
         public string? Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the event type code.
-        /// The value is one of <see cref="Constant.EventType"/>.
+        /// Gets or sets the entry type code.
+        /// The value is one of <see cref="Constant.CommentEntryType"/>.
         /// </summary>
         [MaxLength(3)]
         [Required]
-        public string EventTypeCode { get; set; } = string.Empty;
+        public string EntryTypeCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the related event id.
         /// </summary>
         [MaxLength(32)]
         [Required]
-        public string EventId { get; set; } = string.Empty;
+        public string ParentEntryId { get; set; } = string.Empty;
     }
 }

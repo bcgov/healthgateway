@@ -16,9 +16,9 @@
 namespace HealthGateway.Database.Constant
 {
     /// <summary>
-    /// The set of Event types.
+    /// The set of Comment entry types.
     /// </summary>
-    public static class EventType
+    public static class CommentEntryType
     {
         /// <summary>
         /// The code representing Medication.

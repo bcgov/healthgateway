@@ -22,38 +22,36 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Models;
     using System;
     using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Constant;
     using System.Collections.Generic;
 
     public class CommentServiceTest
     {
+        string hdid = "1234567890123456789012345678901234567890123456789012";
+        string parentEntryId = "123456789";
+
         [Fact]
         public void ShouldGetComments()
         {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-            string eventId = "123456789";
-
             List<Comment> commentList = new List<Comment>();
             commentList.Add(new Comment
             {
                 HdId = hdid,
-                EventId = eventId,
+                ParentEntryId = parentEntryId,
                 Text = "First Comment",
-                EventTypeCode = Database.Constant.EventType.Medication,
+                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             });
 
             commentList.Add(new Comment
             {
                 HdId = hdid,
-                EventId = eventId,
+                ParentEntryId = parentEntryId,
                 Text = "Second Comment",
-                EventTypeCode = Database.Constant.EventType.Medication,
+                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 2, 2)
             });
 
@@ -64,7 +62,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
-            commentDelegateMock.Setup(s => s.GetList(hdid, eventId)).Returns(commentsDBResult);
+            commentDelegateMock.Setup(s => s.GetList(hdid, parentEntryId)).Returns(commentsDBResult);
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
@@ -73,7 +71,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object
             );
-            RequestResult<IEnumerable<Comment>> actualResult = service.GetList(hdid, eventId);
+            RequestResult<IEnumerable<Comment>> actualResult = service.GetList(hdid, parentEntryId);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(commentList));
@@ -82,14 +80,12 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldInsertComment()
         {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-            string eventId = "123456789";
             Comment comment = new Comment()
             {
                 HdId = hdid,
-                EventId = eventId,
-                Text = "Comment",
-                EventTypeCode = Database.Constant.EventType.Medication,
+                ParentEntryId = parentEntryId,
+                Text = "Inserted Comment",
+                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
@@ -116,14 +112,12 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldUpdateComment()
         {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-            string eventId = "123456789";
             Comment comment = new Comment()
             {
                 HdId = hdid,
-                EventId = eventId,
+                ParentEntryId = parentEntryId,
                 Text = "Updated Comment",
-                EventTypeCode = Database.Constant.EventType.Medication,
+                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
@@ -150,14 +144,12 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldDeleteComment()
         {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-            string eventId = "123456789";
             Comment comment = new Comment()
             {
                 HdId = hdid,
-                EventId = eventId,
-                Text = "Updated Comment",
-                EventTypeCode = Database.Constant.EventType.Medication,
+                ParentEntryId = parentEntryId,
+                Text = "Deleted Comment",
+                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 

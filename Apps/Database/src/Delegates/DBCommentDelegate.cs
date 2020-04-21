@@ -47,12 +47,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IEnumerable<Comment>> GetList(string hdId, string eventId)
+        public DBResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId)
         {
-            this.logger.LogTrace($"Getting Comments for user {hdId} and event id {eventId}...");
+            this.logger.LogTrace($"Getting Comments for user {hdId} and entry id {parentEntryId}...");
             DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
             result.Payload = this.dbContext.Comment
-                    .Where(p => p.HdId == hdId && p.EventId == eventId)
+                    .Where(p => p.HdId == hdId && p.ParentEntryId == parentEntryId)
                     .OrderBy(o => o.CreatedDateTime)
                     .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
