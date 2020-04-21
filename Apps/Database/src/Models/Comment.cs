@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Models
         [Column("UserProfileId")]
         [MaxLength(52)]
         [Required]
-        public string HdId { get; set; } = null!;
+        public string UserProfileId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the text of the note.
@@ -60,5 +60,10 @@ namespace HealthGateway.Database.Models
         [MaxLength(32)]
         [Required]
         public string ParentEntryId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the linked user profile.
+        /// </summary>
+        public virtual UserProfile? UserProfile { get; set; }
     }
 }
