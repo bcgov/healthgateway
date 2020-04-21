@@ -101,11 +101,11 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.CommentController.GetAllForEvent(System.String)">
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.GetAllForEntry(System.String)">
             <summary>
             Gets all comments for the authorized user and event id.
             </summary>
-            <param name="eventId">The event id.</param>
+            <param name="parentEntryId">The parent entry id.</param>
             <returns>The list of comments wrapped in a request result.</returns>
             <response code="200">Returns the list of comments.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -768,7 +768,7 @@
             Gets a list of Comments for the given hdId and event id.
             </summary>
             <param name="hdId">The users HDID.</param>
-            <param name="eventId">The related event id.</param>
+            <param name="parentEntryId">The parent entry id.</param>
             <returns>A List of Comments wrapped in a RequestResult.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.ICommentService.Update(HealthGateway.Database.Models.Comment)">

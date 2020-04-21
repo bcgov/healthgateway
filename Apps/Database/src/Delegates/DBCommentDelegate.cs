@@ -52,7 +52,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting Comments for user {hdId} and entry id {parentEntryId}...");
             DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
             result.Payload = this.dbContext.Comment
-                    .Where(p => p.HdId == hdId && p.ParentEntryId == parentEntryId)
+                    .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
                     .OrderBy(o => o.CreatedDateTime)
                     .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
@@ -98,7 +98,7 @@ namespace HealthGateway.Database.Delegates
                 Status = DBStatusCode.Deferred,
             };
             this.dbContext.Comment.Update(comment);
-            this.dbContext.Entry(comment).Property(p => p.HdId).IsModified = false;
+            this.dbContext.Entry(comment).Property(p => p.UserProfileId).IsModified = false;
             if (commit)
             {
                 try

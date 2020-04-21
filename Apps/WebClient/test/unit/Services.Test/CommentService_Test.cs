@@ -39,7 +39,7 @@ namespace HealthGateway.WebClient.Test.Services
             List<Comment> commentList = new List<Comment>();
             commentList.Add(new Comment
             {
-                HdId = hdid,
+                UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "First Comment",
                 EntryTypeCode = Database.Constant.CommentEntryType.Medication,
@@ -48,7 +48,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             commentList.Add(new Comment
             {
-                HdId = hdid,
+                UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Second Comment",
                 EntryTypeCode = Database.Constant.CommentEntryType.Medication,
@@ -82,7 +82,7 @@ namespace HealthGateway.WebClient.Test.Services
         {
             Comment comment = new Comment()
             {
-                HdId = hdid,
+                UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Inserted Comment",
                 EntryTypeCode = Database.Constant.CommentEntryType.Medication,
@@ -114,7 +114,7 @@ namespace HealthGateway.WebClient.Test.Services
         {
             Comment comment = new Comment()
             {
-                HdId = hdid,
+                UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Updated Comment",
                 EntryTypeCode = Database.Constant.CommentEntryType.Medication,
@@ -146,7 +146,7 @@ namespace HealthGateway.WebClient.Test.Services
         {
             Comment comment = new Comment()
             {
-                HdId = hdid,
+                UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Deleted Comment",
                 EntryTypeCode = Database.Constant.CommentEntryType.Medication,
