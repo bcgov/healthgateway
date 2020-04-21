@@ -58,6 +58,59 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.CommentController">
+            <summary>
+            Web API to handle patient notes interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.#ctor(HealthGateway.WebClient.Services.ICommentService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.CommentController"/> class.
+            </summary>
+            <param name="commentService">The injected comment service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="authorizationService">The injected authorization service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.Create(HealthGateway.Database.Models.Comment)">
+            <summary>
+            Posts a Comment json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="comment">The Comment request model.</param>
+            <response code="200">The comment record was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.Update(HealthGateway.Database.Models.Comment)">
+            <summary>
+            Puts a Comment json to be updated in the database.
+            </summary>
+            <returns>The updated Comment wrapped in a RequestResult.</returns>
+            <param name="comment">The Comment to be updated.</param>
+            <response code="200">The comment was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.Delete(HealthGateway.Database.Models.Comment)">
+            <summary>
+            Deletes a Comment from the database.
+            </summary>
+            <returns>The deleted Comment wrapped in a RequestResult.</returns>
+            <param name="comment">The comment to be deleted.</param>
+            <response code="200">The note was deleted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.GetAllForEvent(System.String)">
+            <summary>
+            Gets all comments for the authorized user and event id.
+            </summary>
+            <param name="eventId">The event id.</param>
+            <returns>The list of comments wrapped in a request result.</returns>
+            <response code="200">Returns the list of comments.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.ConfigurationController">
             <summary>
             Web API to return Health Gateway configuration to approved clients.
@@ -638,6 +691,28 @@
         <member name="M:HealthGateway.WebClient.Services.BetaRequestService.PutBetaRequest(HealthGateway.Database.Models.BetaRequest,System.String)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.WebClient.Services.CommentService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.CommentService},HealthGateway.Database.Delegates.ICommentDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.CommentService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="commentDelegate">Injected Comment delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.Add(HealthGateway.Database.Models.Comment)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.GetList(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.Update(HealthGateway.Database.Models.Comment)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.Delete(HealthGateway.Database.Models.Comment)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -675,6 +750,41 @@
             <param name="betaRequest">The request to create a beta request.</param>
             <param name="hostUrl">The host url for referal purposes.</param>
             <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ICommentService">
+            <summary>
+            Service to interact with the Comment Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.Add(HealthGateway.Database.Models.Comment)">
+            <summary>
+            Adds a Comment in the backend.
+            </summary>
+            <param name="comment">The Comment to be created.</param>
+            <returns>A Comment wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.GetList(System.String,System.String)">
+            <summary>
+            Gets a list of Comments for the given hdId and event id.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <param name="eventId">The related event id.</param>
+            <returns>A List of Comments wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.Update(HealthGateway.Database.Models.Comment)">
+            <summary>
+            Updates the given Comment in the backend.
+            Any changes to HDID will be ignored.
+            </summary>
+            <param name="comment">The Comment to update.</param>
+            <returns>The updated Comment.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.Delete(HealthGateway.Database.Models.Comment)">
+            <summary>
+            Deletes the given note from the backend.
+            </summary>
+            <param name="comment">The Comment to be deleted.</param>
+            <returns>The deleted Comment wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
             <summary>
