@@ -183,6 +183,7 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
+  private commentService!: IUserCommentService;
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
   private isLoadingPharmacy: boolean = false;
@@ -191,8 +192,15 @@ export default class MedicationTimelineComponent extends Vue {
   private medicationLoaded: boolean = false;
   private detailsVisible = false;
 
-  private commentService!: IUserCommentService;
   private comments: UserComment[] = [];
+  private numComments = 0;
+
+  private mounted() {
+    this.commentService = container.get<IUserCommentService>(
+      SERVICE_IDENTIFIER.UserCommentService
+    );
+    this.getComments();
+  }
 
   private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
@@ -264,29 +272,28 @@ export default class MedicationTimelineComponent extends Vue {
   }
 
   private getComments() {
-    if (this.medicationLoaded) {
-      const referenceId = this.entry.id;
-      this.isLoadingComments = true;
-      let commentPromise = this.commentService
-        .getCommentsForEntry(referenceId)
-        .then((result) => {
-          if (result) {
-            console.log(
-              "Fetched comments for entry " + this.entry.id + ": ",
-              result
-            );
-            this.isLoadingComments = false;
-          }
-        })
-        .catch((err) => {
+    const referenceId = this.entry.id;
+    this.isLoadingComments = true;
+    console.log("Fetching comments for " + this.entry.id)
+    let commentPromise = this.commentService
+      .getCommentsForEntry(referenceId)
+      .then((result) => {
+        if (result) {
           console.log(
-            "Error loading comments for medication with ID " + this.entry.id
+            "Fetched comments for entry " + this.entry.id + ": ",
+            result
           );
-          console.log(err);
-          this.hasErrors = true;
           this.isLoadingComments = false;
-        });
-    }
+        }
+      })
+      .catch((err) => {
+        console.log(
+          "Error loading comments for medication with ID " + this.entry.id
+        );
+        console.log(err);
+        this.hasErrors = true;
+        this.isLoadingComments = false;
+      });
   }
 
   private formatPhoneNumber(phoneNumber: string): string {

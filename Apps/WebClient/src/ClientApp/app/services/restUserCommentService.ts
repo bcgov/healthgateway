@@ -16,8 +16,7 @@ export class RestUserCommentService implements IUserCommentService {
     this.http = http;
   }
 
-  public getCommentsForEntry(): Promise<RequestResult<UserComment[]>> {
-    console.log("Get comments hit");
+  public getCommentsForEntry(parentEntryId: string): Promise<RequestResult<UserComment[]>> {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<RequestResult<UserComment[]>>(
