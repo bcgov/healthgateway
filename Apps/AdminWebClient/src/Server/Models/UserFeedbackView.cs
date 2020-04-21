@@ -54,6 +54,15 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         public uint Version { get; set; } = 0;
 
+        /// <summary>
+        /// Gets or sets the email if known for this feedback.
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Convers this view model into a DB model object.
+        /// </summary>
+        /// <returns>The DB model object.</returns>
         public UserFeedback ToDbModel()
         {
             return new UserFeedback()
@@ -72,7 +81,7 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="model">A user feedback request models.</param>
         /// <returns>A new UserFeedbackView.</returns>
-        public static UserFeedbackView CreateFromDbModel(UserFeedback model)
+        public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
         {
             return new UserFeedbackView()
             {
@@ -82,6 +91,7 @@ namespace HealthGateway.Admin.Models
                 IsReviewed = model.IsReviewed,
                 IsSatisfied = model.IsSatisfied,
                 Version = model.Version,
+                Email = model.Email,
             };
         }
 
@@ -90,22 +100,15 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="models">List of user feedback models.</param>
         /// <returns>A list of UserFeedbackView.</returns>
-        public static List<UserFeedbackView> CreateListFromDbModel(List<UserFeedback> models)
+        public static List<UserFeedbackView> CreateListFromDbModel(List<UserFeedbackAdmin> models)
         {
             List<UserFeedbackView> newList = new List<UserFeedbackView>();
-            foreach (UserFeedback model in models)
+            foreach (UserFeedbackAdmin model in models)
             {
                 newList.Add(UserFeedbackView.CreateFromDbModel(model));
             }
 
             return newList;
         }
-
-        /// <summary>
-        /// Constructs a List of UserFeedbackView from a list of UserFeedback models.
-        /// </summary>
-        /// <param name="view">List of user feedback models.</param>
-        /// <returns>A list of UserFeedbackView.</returns>
-
     }
 }

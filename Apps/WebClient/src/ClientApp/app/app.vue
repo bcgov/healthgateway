@@ -6,8 +6,9 @@
     display: flex !important;
   }
 
-  .footer {
-    display: none;
+  .no-print,
+  .no-print * {
+    display: none !important;
   }
 }
 
@@ -53,7 +54,7 @@ main {
       <NavHeader />
     </header>
     <b-row class="p-0 m-0">
-      <NavSidebar />
+      <NavSidebar class="no-print" />
 
       <main class="col fill-height">
         <router-view></router-view>
@@ -61,7 +62,7 @@ main {
       </main>
     </b-row>
 
-    <footer class="footer">
+    <footer class="footer no-print">
       <NavFooter />
     </footer>
   </div>
@@ -108,7 +109,12 @@ Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
 
 // Load general icons
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { config, library } from "@fortawesome/fontawesome-svg-core";
+// Prevent auto adding CSS to the header since that breaks Content security policies.
+config.autoAddCss = false;
+// Add font awesome styles manually
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
 import {
   faUser,
   faUserCircle,

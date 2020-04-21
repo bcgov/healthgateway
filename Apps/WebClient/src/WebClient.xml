@@ -42,7 +42,6 @@
             Posts a beta request json to be inserted into the database.
             </summary>
             <returns>The http status.</returns>
-            <param name="hdid">The resource hdid.</param>
             <param name="betaRequest">The beta request model.</param>
             <response code="200">The beta request record was saved.</response>
             <response code="400">The beta request was already inserted.</response>
@@ -90,6 +89,11 @@
         <member name="T:HealthGateway.WebClient.Controllers.HomeController">
             <summary>
             HomeController for Vue WebClient app.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.HomeController.#ctor(HealthGateway.Common.Services.INonceService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.HomeController"/> class.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.HomeController.Index">
@@ -243,7 +247,8 @@
             <returns>The http status.</returns>
             <param name="userFeedback">The user feedback model.</param>
             <response code="200">The user feedback record was saved.</response>
-            <response code="400">The user feedback was already inserted.</response>
+            <response code="400">The user feedback object is invalid.</response>
+            <response code="409">The user feedback was already inserted.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
@@ -907,12 +912,13 @@
             </summary>
             <param name="services">The injected services provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,HealthGateway.Common.Services.INonceService)">
             <summary>
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
             </summary>
             <param name="app">The application builder.</param>
             <param name="env">The hosting environment.</param>
+            <param name="nonceService">Service that provides nonce utilities.</param>
         </member>
     </members>
 </doc>

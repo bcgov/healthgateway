@@ -8,30 +8,33 @@
     ></BannerFeedbackComponent>
     <v-row justify="center">
       <v-col md="9">
+        <v-text-field v-model="filterText" label="Filter" hide-details="auto">
+          <v-icon slot="append">fas fa-search</v-icon>
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col md="9">
         <v-row>
           <v-col no-gutters>
             <v-data-table
+              v-model="selectedEmails"
               :headers="tableHeaders"
-              :items="feedbackList"
+              :items="emailList"
               :items-per-page="5"
+              show-select
+              :search="filterText"
             >
-              <template v-slot:item.createdDateTime="{ item }">
-                <span>{{ formatDate(item.createdDateTime) }}</span>
-              </template>
-              <template v-slot:item.isReviewed="{ item }">
-                <td>
-                  <v-btn class="mx-2" dark small @click="toggleReviewed(item)">
-                    <v-icon v-if="item.isReviewed" color="green" dark
-                      >fa-check</v-icon
-                    >
-                    <v-icon v-if="!item.isReviewed" color="red" dark
-                      >fa-times</v-icon
-                    >
-                  </v-btn>
-                </td>
+              <template v-slot:item.sentDateTime="{ item }">
+                <span>{{ formatDate(item.sentDateTime) }}</span>
               </template>
             </v-data-table>
           </v-col>
+        </v-row>
+        <v-row justify="end" no-gutters>
+          <v-btn :disabled="selectedEmails.length === 0" @click="resendEmails()"
+            >Resend Emails</v-btn
+          >
         </v-row>
       </v-col>
     </v-row>
@@ -41,14 +44,14 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Vuetify, { VLayout } from "vuetify/lib";
-import { IUserFeedbackService } from "@/services/interfaces";
-import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import LoadingComponent from "@/components/core/Loading.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import { ResultType } from "@/constants/resulttype";
+import Email from "@/models/email";
+import { IEmailAdminService } from "@/services/interfaces";
 
 @Component({
   components: {
@@ -56,7 +59,8 @@ import { ResultType } from "@/constants/resulttype";
     BannerFeedbackComponent
   }
 })
-export default class FeedbackView extends Vue {
+export default class ResendEmailView extends Vue {
+  private filterText: string = "";
   private isLoading: boolean = true;
   private showFeedback: boolean = false;
   private bannerFeedback: BannerFeedback = {
@@ -65,54 +69,50 @@ export default class FeedbackView extends Vue {
     message: ""
   };
 
+  private selectedEmails: Email[] = [];
+
   private tableHeaders: any[] = [
     {
+      text: "Subject",
+      value: "subject"
+    },
+    {
+      text: "Status",
+      value: "emailStatusCode"
+    },
+    {
       text: "Date",
-      value: "createdDateTime",
-      width: "20%"
+      value: "sentDateTime"
     },
-    {
-      text: "Email",
-      value: "email",
-      width: "20%"
-    },
-    {
-      text: "Comments",
-      value: "comment",
-      width: "55%"
-    },
-    {
-      text: "Reviewed?",
-      value: "isReviewed",
-      width: "5%"
-    }
+    { text: "Email", value: "to" },
+    { text: "Is Invited?", value: "userInviteStatus" }
   ];
 
-  private feedbackList: UserFeedback[] = [];
+  private emailList: Email[] = [];
 
-  private userFeedbackService!: IUserFeedbackService;
+  private emailService!: IEmailAdminService;
 
   mounted() {
-    this.userFeedbackService = container.get(
-      SERVICE_IDENTIFIER.UserFeedbackService
-    );
-
-    this.loadFeedbackList();
+    this.emailService = container.get(SERVICE_IDENTIFIER.EmailAdminService);
+    this.loadEmails();
   }
 
-  private loadFeedbackList() {
-    this.userFeedbackService
-      .getFeedbackList()
-      .then(userFeedbacks => {
-        this.feedbackList = [];
-        this.feedbackList.push(...userFeedbacks);
+  private loadEmails() {
+    this.isLoading = true;
+    this.emailList = [];
+    this.selectedEmails = [];
+    this.emailService
+      .getEmails()
+      .then(emails => {
+        this.emailList.push(...emails);
       })
       .catch(err => {
+        console.log(err);
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Error loading user feedbacks"
+          message: "Failed to load emails"
         };
       })
       .finally(() => {
@@ -121,33 +121,36 @@ export default class FeedbackView extends Vue {
   }
 
   private formatDate(date: Date): string {
+    if (!date) {
+      return "";
+    }
     return new Date(Date.parse(date + "Z")).toLocaleString();
   }
 
-  private toggleReviewed(feedback: UserFeedback): void {
+  private resendEmails(): void {
     this.isLoading = true;
-    feedback.isReviewed = !feedback.isReviewed;
-    this.userFeedbackService
-      .toggleReviewed(feedback)
-      .then(sucessfulInvites => {
+    let selectedIds = this.selectedEmails.map(s => s.id);
+    this.emailService
+      .resendEmails(selectedIds)
+      .then(emails => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Success,
-          title: "Feedback Reviewed",
-          message: "Successfully Reviewed User Feedback."
+          title: "Success.",
+          message: "Emails queued to be sent"
         };
-        this.loadFeedbackList();
       })
       .catch(err => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Reviewing feedback failed, please try again."
+          message: "Sending emails failed, please try again"
         };
       })
       .finally(() => {
         this.isLoading = false;
+        this.loadEmails();
       });
   }
 }

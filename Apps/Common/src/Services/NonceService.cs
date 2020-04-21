@@ -13,21 +13,35 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+
+namespace HealthGateway.Common.Services
 {
-    using System.Collections.Generic;
-    using HealthGateway.Admin.Models;
-    using HealthGateway.Common.Models;
+    using System;
+    using System.Security.Cryptography;
 
     /// <summary>
-    /// Service that provides admin functinoality to emails.
+    /// Implementation of the <see cref="NonceService"/> with cryptograpgic generation.
     /// </summary>
-    public interface IEmailAdminService
+    public class NonceService : INonceService
     {
+        private string currentNonce;
+
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Initializes a new instance of the <see cref="NonceService"/> class.
         /// </summary>
-        /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<AdminEmail>> GetEmails();
+        public NonceService()
+        {
+            // Generate the nonce
+            RNGCryptoServiceProvider rngProvider = new RNGCryptoServiceProvider();
+            byte[] nonceBytes = new byte[32];
+            rngProvider.GetBytes(nonceBytes);
+            this.currentNonce = Convert.ToBase64String(nonceBytes);
+        }
+
+        /// <inheritdoc />
+        public string GetCurrentNonce()
+        {
+            return currentNonce;
+        }
     }
 }

@@ -13,21 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Common.Models
 {
-    using System.Collections.Generic;
-    using HealthGateway.Admin.Models;
-    using HealthGateway.Common.Models;
-
     /// <summary>
-    /// Service that provides admin functinoality to emails.
+    /// The configuration for the AESCrypto delegate
     /// </summary>
-    public interface IEmailAdminService
+    public class AESCryptoDelegateConfig
     {
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// The default key size used for key AES crypto functions.
         /// </summary>
-        /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<AdminEmail>> GetEmails();
+        public const int DefaultKeySize = 256;
+
+        /// <summary>
+        /// Gets or sets the key size for AES crypto functions.
+        /// </summary>
+        public int KeySize { get; set; } = DefaultKeySize;
+
+        /// <summary>
+        /// Gets or sets the Initialization Vector.
+        /// </summary>
+        public string? IV { get; set; }
     }
 }

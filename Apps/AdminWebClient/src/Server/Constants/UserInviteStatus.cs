@@ -13,21 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Admin.Constants
 {
-    using System.Collections.Generic;
-    using HealthGateway.Admin.Models;
-    using HealthGateway.Common.Models;
-
     /// <summary>
-    /// Service that provides admin functinoality to emails.
+    /// Represents the status constants of a user invite.
     /// </summary>
-    public interface IEmailAdminService
+    public static class UserInviteStatus
     {
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Not invited status.
         /// </summary>
-        /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<AdminEmail>> GetEmails();
+        public const string NotInvited = "Not Invited";
+
+        /// <summary>
+        /// Invited but not validated status.
+        /// </summary>
+        public const string InvitedNotValidated = "Invited/Not Validated";
+
+        /// <summary>
+        /// Invited and validated status.
+        /// </summary>
+        public const string InvitedValidated = "Invited/Validated";
     }
 }

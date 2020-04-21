@@ -13,21 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
-{
-    using System.Collections.Generic;
-    using HealthGateway.Admin.Models;
-    using HealthGateway.Common.Models;
 
+namespace HealthGateway.Common.Services
+{
     /// <summary>
-    /// Service that provides admin functinoality to emails.
+    /// Service that provides nonce context.
     /// </summary>
-    public interface IEmailAdminService
+    public interface INonceService
     {
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Retrieves the current nonce value.
         /// </summary>
-        /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<AdminEmail>> GetEmails();
+        /// <returns>The current nonce</returns>
+        string GetCurrentNonce();
     }
 }
