@@ -215,6 +215,7 @@
     <ProtectiveWordComponent
       ref="protectiveWordModal"
       :error="protectiveWordAttempts > 1"
+      :is-loading="isLoading"
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
