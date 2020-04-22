@@ -67,6 +67,7 @@ namespace HealthGateway.Database.Context
         public DbSet<Note> Note { get; set; } = null!;
         public DbSet<GenericCache> GenericCache { get; set; } = null!;
         public DbSet<Comment> Comment { get; set; } = null!;
+        public DbSet<Communication> Communication { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />

@@ -64,9 +64,6 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
             commentDelegateMock.Setup(s => s.GetList(hdid, parentEntryId)).Returns(commentsDBResult);
 
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
-
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object
