@@ -148,12 +148,17 @@
       <b-row class="row-container m-0 p-0">
         <b-col class="m-0 p-0">
           <!-- Profile Button -->
-          <router-link id="menuBtnProfile" to="/profile" class="my-4">
+          <router-link
+            v-show="!isProfile"
+            id="menuBtnProfile"
+            to="/profile"
+            class="my-4"
+          >
             <b-row
               class="align-items-center name-wrapper my-4 button-container"
               :class="{ 'm-4': isOpen }"
             >
-              <b-col class="" :class="{ 'col-4': isOpen }">
+              <b-col title="Profile" :class="{ 'col-4': isOpen }">
                 <font-awesome-icon
                   icon="user-circle"
                   class="button-icon"
@@ -165,23 +170,30 @@
               </b-col>
             </b-row>
           </router-link>
-
-          <hr class="mb-3 mt-0 p-2" />
-
           <!-- Timeline button -->
-          <b-row
+          <router-link
             v-show="!isTimeline"
-            class="align-items-center border rounded-pill p-1 button-container  my-4"
-            :class="{ 'mx-4': isOpen }"
-            @click="goToTimeline"
+            id="menuBtnTimeline"
+            to="/timeline"
+            class="my-4"
           >
-            <b-col :class="{ 'col-4': isOpen }">
-              <font-awesome-icon icon="stream" class="button-icon" size="2x" />
-            </b-col>
-            <b-col v-if="isOpen" cols="8" class="button-title d-none">
-              <span>Timeline</span>
-            </b-col>
-          </b-row>
+            <b-row
+              class="align-items-center name-wrapper my-4 button-container"
+              :class="{ 'mx-4': isOpen }"
+            >
+              <b-col title="Timeline" :class="{ 'col-4': isOpen }">
+                <font-awesome-icon
+                  icon="stream"
+                  class="button-icon"
+                  size="3x"
+                />
+              </b-col>
+              <b-col v-if="isOpen" cols="8" class="button-title d-none">
+                <span>Timeline</span>
+              </b-col>
+            </b-row>
+          </router-link>
+          <hr class="mb-3 mt-0 p-2" />
 
           <div v-show="isTimeline">
             <!-- Note button -->
@@ -191,7 +203,7 @@
               :class="{ 'mx-4': isOpen }"
               @click="createNote"
             >
-              <b-col :class="{ 'col-4': isOpen }">
+              <b-col title="Add a Note" :class="{ 'col-4': isOpen }">
                 <font-awesome-icon icon="edit" class="button-icon" size="2x" />
               </b-col>
               <b-col v-if="isOpen" cols="8" class="button-title d-none">
@@ -205,7 +217,7 @@
               :class="{ 'mx-4': isOpen }"
               @click="printView"
             >
-              <b-col class="" :class="{ 'col-4': isOpen }">
+              <b-col title="Print" :class="{ 'col-4': isOpen }">
                 <font-awesome-icon
                   icon="print"
                   class="button-icon m-auto"
@@ -217,7 +229,55 @@
               </b-col>
             </b-row>
           </div>
+          <div v-show="isProfile">
+            <!-- Terms of Service button -->
+            <router-link
+              id="termsOfService"
+              variant="primary"
+              to="/termsOfService"
+              class="p-0"
+            >
+              <b-row
+                class="align-items-center border rounded-pill p-1 button-container my-4"
+                :class="{ 'mx-4': isOpen }"
+              >
+                <b-col title="Terms of Service" :class="{ 'col-4': isOpen }">
+                  <font-awesome-icon
+                    icon="file-alt"
+                    class="button-icon"
+                    size="2x"
+                  />
+                </b-col>
+                <b-col v-if="isOpen" cols="8" class="button-title d-none">
+                  <span>Terms of Service</span>
+                </b-col>
+              </b-row>
+            </router-link>
 
+            <!-- Release Notes Button -->
+            <b-link
+              id="releaseNotes"
+              variant="primary"
+              href="https://github.com/bcgov/healthgateway/wiki"
+              target="_blank"
+            >
+              <b-row
+                class="align-items-center border rounded-pill p-1 button-container my-4"
+                :class="{ 'mx-4': isOpen }"
+              >
+                <b-col title="Release Notes" :class="{ 'col-4': isOpen }">
+                  <font-awesome-icon
+                    icon="chart-bar"
+                    class="button-icon m-auto"
+                    size="2x"
+                  />
+                </b-col>
+                <b-col v-if="isOpen" cols="8" class="button-title d-none">
+                  <span>Release Notes</span>
+                </b-col>
+              </b-row>
+            </b-link>
+          </div>
           <br />
         </b-col>
       </b-row>
@@ -383,10 +443,6 @@ export default class SidebarComponent extends Vue {
     EventBus.$emit("timelinePrintView");
   }
 
-  private goToTimeline() {
-    this.$router.push({ path: "/timeline" });
-  }
-
   private onResize() {
     this.windowWidth = window.innerWidth;
   }
@@ -397,6 +453,10 @@ export default class SidebarComponent extends Vue {
 
   private get isTimeline(): boolean {
     return this.$route.path == "/timeline";
+  }
+
+  private get isProfile(): boolean {
+    return this.$route.path == "/profile";
   }
 
   private get isNoteEnabled(): boolean {

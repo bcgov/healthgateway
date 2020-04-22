@@ -128,7 +128,9 @@ import {
   faTimesCircle,
   faEllipsisV,
   faPrint,
-  faAngleDoubleLeft
+  faAngleDoubleLeft,
+  faFileAlt,
+  faChartBar
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -143,7 +145,9 @@ library.add(
   faTimesCircle,
   faEllipsisV,
   faPrint,
-  faAngleDoubleLeft
+  faAngleDoubleLeft,
+  faFileAlt,
+  faChartBar
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
