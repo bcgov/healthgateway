@@ -3,26 +3,33 @@
 .column-wrapper {
   border: 1px;
 }
+
 #pageTitle {
   color: $primary;
 }
+
 #pageTitle hr {
   border-top: 2px solid $primary;
 }
+
 .sortContainer {
   text-align: right;
 }
+
 .dateBreakLine {
   border-top: dashed 2px $primary;
 }
+
 .date {
   padding-top: 0px;
   color: $primary;
   font-size: 1.3em;
 }
+
 .has-filter .form-control {
   padding-left: 2.375rem;
 }
+
 .has-filter .form-control-feedback {
   position: absolute;
   z-index: 2;
@@ -35,6 +42,7 @@
   color: #aaa;
   padding: 12px;
 }
+
 .btn-light {
   border-color: $primary;
   color: $primary;
@@ -243,25 +251,30 @@ import UserNote from "@/models/userNote";
 import { WebClientConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
 import EventBus from "@/eventbus";
+
 const namespace: string = "user";
+
 interface DateGroup {
   date: string;
   entries: any;
 }
+
 // Register the router hooks with their names
 Component.registerHooks(["beforeRouteLeave"]);
+
 @Component({
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    NoteTimelineComponent
-  }
+    NoteTimelineComponent,
+  },
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
+
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
   private filteredTimelineEntries: TimelineEntry[] = [];
@@ -277,13 +290,17 @@ export default class TimelineComponent extends Vue {
   private editIdList: string[] = [];
   private unsavedChangesText: string =
     "You have unsaved changes. Are you sure you want to leave?";
+
   private filterTypes: string[] = [];
+
   @Ref("protectiveWordModal")
   readonly protectiveWordModal!: ProtectiveWordComponent;
+
   private created() {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   }
+
   private mounted() {
     this.initializeFilters();
     this.fetchMedicationStatements();
@@ -298,6 +315,7 @@ export default class TimelineComponent extends Vue {
       self.printRecords();
     });
   }
+
   private beforeRouteLeave(to, from, next) {
     if (
       (this.isAddingNote || this.editIdList.length > 0) &&
@@ -307,29 +325,37 @@ export default class TimelineComponent extends Vue {
     }
     next();
   }
+
   private destroyed() {
     window.removeEventListener("handleResize", this.handleResize);
   }
+
   private onBrowserClose(event: BeforeUnloadEvent) {
     if (this.isAddingNote || this.editIdList.length > 0) {
       event.returnValue = this.unsavedChangesText;
     }
   }
+
   private handleResize() {
     this.windowWidth = window.innerWidth;
   }
+
   private linkGen(pageNum: number) {
     return `?page=${pageNum}`;
   }
+
   private get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
   }
+
   private get hasNewTermsOfService(): boolean {
     return this.user.hasTermsOfServiceUpdated;
   }
+
   private get searchIcon(): IconDefinition {
     return faSearch;
   }
+
   private get isLoading(): boolean {
     return (
       this.isMedicationLoading ||
@@ -337,18 +363,22 @@ export default class TimelineComponent extends Vue {
       this.isNoteLoading
     );
   }
+
   private get isMedicationEnabled(): boolean {
     return (
       this.config.modules["MedicationHistory"] ||
       this.config.modules["Medication"]
     );
   }
+
   private get isImmunizationEnabled(): boolean {
     return this.config.modules["Immunization"];
   }
+
   private get isNoteEnabled(): boolean {
     return this.config.modules["Note"];
   }
+
   private get numberOfEntriesPerPage(): number {
     if (this.windowWidth < 576) {
       // xs
@@ -365,6 +395,7 @@ export default class TimelineComponent extends Vue {
     } // else, xl
     return 15;
   }
+
   private get numberOfPages(): number {
     let result = 1;
     if (this.filteredTimelineEntries.length > this.numberOfEntriesPerPage) {
@@ -386,6 +417,7 @@ export default class TimelineComponent extends Vue {
       this.filterTypes.push("Note");
     }
   }
+
   private fetchMedicationStatements(protectiveWord?: string) {
     const medicationService: IMedicationService = container.get(
       SERVICE_IDENTIFIER.MedicationService
@@ -404,8 +436,9 @@ export default class TimelineComponent extends Vue {
         protectiveWord
       );
     }
+
     promise
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
           // Add the medication entries to the timeline list
@@ -425,7 +458,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -433,6 +466,7 @@ export default class TimelineComponent extends Vue {
         this.isMedicationLoading = false;
       });
   }
+
   private fetchImmunizations() {
     const immunizationService: IImmunizationService = container.get(
       SERVICE_IDENTIFIER.ImmunizationService
@@ -440,7 +474,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -456,7 +490,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -464,6 +498,7 @@ export default class TimelineComponent extends Vue {
         this.isImmunizationLoading = false;
       });
   }
+
   private fetchNotes() {
     const noteService: IUserNoteService = container.get(
       SERVICE_IDENTIFIER.UserNoteService
@@ -471,7 +506,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -486,7 +521,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -494,6 +529,7 @@ export default class TimelineComponent extends Vue {
         this.isNoteLoading = false;
       });
   }
+
   private onNoteAdded(note: UserNote) {
     this.isAddingNote = false;
     if (note) {
@@ -502,39 +538,48 @@ export default class TimelineComponent extends Vue {
       this.applyTimelineFilter();
     }
   }
+
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
+
   private onCardEdit(entry: TimelineEntry) {
     this.editIdList.push(entry.id);
   }
+
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex(e => e == entry.id);
+    const index = this.editIdList.findIndex((e) => e == entry.id);
     this.editIdList.splice(index, 1);
   }
+
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
   }
+
   private onProtectiveWordSubmit(value: string) {
     this.fetchMedicationStatements(value);
   }
+
   private onProtectiveWordCancel() {
     // Does nothing as it won't be able to fetch pharmanet data.
     console.log("protective word cancelled");
   }
+
   private getHeadingDate(date: Date): string {
     return moment(date).format("ll");
   }
+
   @Watch("filterText")
   @Watch("filterTypes")
   private applyTimelineFilter() {
-    this.filteredTimelineEntries = this.timelineEntries.filter(entry =>
+    this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
   }
+
   @Watch("currentPage")
   @Watch("numberOfEntriesPerPage")
   @Watch("filteredTimelineEntries")
@@ -554,6 +599,7 @@ export default class TimelineComponent extends Vue {
       upperIndex
     );
   }
+
   private get dateGroups(): DateGroup[] {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
@@ -569,34 +615,39 @@ export default class TimelineComponent extends Vue {
       groups[date].push(entry);
       return groups;
     }, {});
-    let groupArrays = Object.keys(groups).map(dateKey => {
+    let groupArrays = Object.keys(groups).map((dateKey) => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        )
+        ),
       };
     });
     return this.sortGroup(groupArrays);
   }
+
   private sortGroup(groupArrays) {
     groupArrays.sort((a, b) =>
       a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
     return groupArrays;
   }
+
   private getVisibleCount(): number {
     return this.visibleTimelineEntries.length;
   }
+
   private getTotalCount(): number {
     return this.timelineEntries.length;
   }
+
   private sortEntries() {
     this.timelineEntries.sort((a, b) =>
       a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
   }
+  
   private printRecords() {
     window.print();
   }
