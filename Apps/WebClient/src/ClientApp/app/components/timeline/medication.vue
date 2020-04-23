@@ -159,6 +159,9 @@ $radius: 15px;
             </b-collapse>
           </b-col>
         </b-row>
+        <b-row>
+          <span>{{this.comments.length}} {{this.comments.length === 1? "comment" : "comments"}}</span>
+        </b-row>
       </b-col>
     </b-row>
   </b-col>
@@ -272,23 +275,20 @@ export default class MedicationTimelineComponent extends Vue {
   }
 
   private getComments() {
-    const referenceId = this.entry.id;
+    const referenceId = this.entry.medication.din;
     this.isLoadingComments = true;
-    console.log("Fetching comments for " + this.entry.id)
+    console.log("Fetching comments for " + this.entry.medication.din);
     let commentPromise = this.commentService
       .getCommentsForEntry(referenceId)
       .then((result) => {
         if (result) {
-          console.log(
-            "Fetched comments for entry " + this.entry.id + ": ",
-            result
-          );
+          this.comments = result.resourcePayload;
           this.isLoadingComments = false;
         }
       })
       .catch((err) => {
         console.log(
-          "Error loading comments for medication with ID " + this.entry.id
+          "Error loading comments for medication with ID " + this.entry.medication.din
         );
         console.log(err);
         this.hasErrors = true;

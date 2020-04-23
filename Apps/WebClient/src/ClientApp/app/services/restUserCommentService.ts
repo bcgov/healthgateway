@@ -19,56 +19,23 @@ export class RestUserCommentService implements IUserCommentService {
 
   public getCommentsForEntry(parentEntryId: string): Promise<RequestResult<UserComment[]>> {
     return new Promise((resolve, reject) => {
+      // if (!this.isEnabled) {
+      //   resolve({
+      //     pageIndex: 0,
+      //     pageSize: 0,
+      //     resourcePayload: [],
+      //     resultMessage: "",
+      //     resultStatus: ResultType.Success,
+      //     totalResultCount: 0
+      //   });
+      //   return;
+      // }
+      console.log("Fetching for id " + parentEntryId);
       this.http
-        .getWithCors<RequestResult<UserComment[]>>(
-          `${this.USER_COMMENT_BASE_URI}/`
-        )
+        .getWithCors<RequestResult<UserComment[]>>(`${this.USER_COMMENT_BASE_URI}?parentEntryId="${parentEntryId}"`, )
         .then(userComments => {
-          // let test = [
-          //   {
-          //     id: 1,
-          //     hdId: "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-          //     parentEntry: "id-0.9130414104642899",
-          //     text: "Sample comment 1 for Methadone",
-          //     commentDateTime: new Date(2020, 4, 18),
-          //     version: "11503"
-          //   },
-          //   {
-          //     id: 1,
-          //     hdId: "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-          //     parentEntry: "id-0.9130414104642899",
-          //     text: "Sample comment 2 for Methadone",
-          //     commentDateTime: new Date(2020, 4, 15),
-          //     version: "11503"
-          //   },
-          //   {
-          //     id: 1,
-          //     hdId: "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-          //     parentEntry: "id-0.41768123314459693",
-          //     text: "Sample comment for Mint-Zopiclone",
-          //     commentDateTime: new Date(2020, 4, 10),
-          //     version: "11503"
-          //   },
-          //   {
-          //     id: 1,
-          //     hdId: "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-          //     parentEntry: "id-0.7073512160505682",
-          //     text: "Sample comment 1 for Pms-Cyclobenzaprine - Tab 10mg",
-          //     commentDateTime: new Date(2020, 4, 18),
-          //     version: "11503"
-          //   },
-          //   {
-          //     id: 1,
-          //     hdId: "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-          //     parentEntry: "id-0.7073512160505682",
-          //     text: "Sample comment 2 for Pms-Cyclobenzaprine - Tab 10mg",
-          //     commentDateTime: new Date(2020, 4, 17),
-          //     version: "11503"
-          //   },
-          // ]
-          // console.log("TEST DATA: ", test);
           resolve(userComments);
-          console.log("Comments retreived: ", userComments);
+          console.log("Comments retreived for " + parentEntryId +": ", userComments);
           return(userComments);
         })
         .catch(err => {
