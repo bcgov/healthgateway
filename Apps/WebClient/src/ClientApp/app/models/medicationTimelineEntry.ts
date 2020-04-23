@@ -14,7 +14,15 @@ export default class MedicationTimelineEntry extends TimelineEntry {
   public prescriptionIdentifier: string;
 
   public constructor(model: MedicationStatement | MedicationStatementHistory) {
-    super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);
+    
+    if (model.prescriptionIdentifier) {
+      // ODR result
+      super("id-" + model.prescriptionIdentifier, EntryType.Medication, model.dispensedDate);
+    } else {
+      // PharmaNet result - generate a random unique id for entry
+      super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);
+    }
+
     this.medication = new MedicationViewModel(model.medicationSumary);
 
     if (model.hasOwnProperty("dispensingPharmacy")) {

@@ -36,6 +36,11 @@ $radius: 15px;
   padding: 0px;
 }
 
+.commentButton {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 .detailSection {
   margin-top: 15px;
 }
@@ -66,27 +71,29 @@ $radius: 15px;
         </b-row>
         <b-row>
           <b-col>
-            <b-btn
-              v-b-toggle="'entryDetails-' + index + '-' + datekey"
-              variant="link"
-              class="detailsButton"
-              @click="toggleDetails(entry)"
-            >
-              <span class="when-opened">
-                <font-awesome-icon
-                  icon="chevron-down"
-                  aria-hidden="true"
-                ></font-awesome-icon
-              ></span>
-              <span class="when-closed">
-                <font-awesome-icon
-                  icon="chevron-up"
-                  aria-hidden="true"
-                ></font-awesome-icon
-              ></span>
-              <span v-if="detailsVisible">Hide Details</span>
-              <span v-else>View Details</span>
-            </b-btn>
+            <div class="d-flex flex-row-reverse">
+              <b-btn
+                v-b-toggle="'entryDetails-' + index + '-' + datekey"
+                variant="link"
+                class="detailsButton"
+                @click="toggleDetails(entry)"
+              >
+                <span class="when-opened">
+                  <font-awesome-icon
+                    icon="chevron-down"
+                    aria-hidden="true"
+                  ></font-awesome-icon
+                ></span>
+                <span class="when-closed">
+                  <font-awesome-icon
+                    icon="chevron-up"
+                    aria-hidden="true"
+                  ></font-awesome-icon
+                ></span>
+                <span v-if="detailsVisible">Hide Details</span>
+                <span v-else>View Details</span>
+              </b-btn>
+            </div>
             <b-collapse :id="'entryDetails-' + index + '-' + datekey">
               <div v-if="detailsLoaded">
                 <div class="detailSection">
@@ -160,7 +167,15 @@ $radius: 15px;
           </b-col>
         </b-row>
         <b-row>
-          <span>{{this.comments.length}} {{this.comments.length === 1? "comment" : "comments"}}</span>
+          <b-col>
+            <div class="d-flex flex-row-reverse">
+              <span class="commentButton" v-if="this.comments.length > 0">{{
+                this.comments.length > 1
+                  ? this.comments.length + " comments"
+                  : "1 comment"
+              }}</span>
+            </div>
+          </b-col>
         </b-row>
       </b-col>
     </b-row>
@@ -275,9 +290,9 @@ export default class MedicationTimelineComponent extends Vue {
   }
 
   private getComments() {
-    const referenceId = this.entry.medication.din;
+    const referenceId = this.entry.id;
     this.isLoadingComments = true;
-    console.log("Fetching comments for " + this.entry.medication.din);
+    console.log("Fetching comments for " + this.entry.id);
     let commentPromise = this.commentService
       .getCommentsForEntry(referenceId)
       .then((result) => {
@@ -288,7 +303,8 @@ export default class MedicationTimelineComponent extends Vue {
       })
       .catch((err) => {
         console.log(
-          "Error loading comments for medication with ID " + this.entry.medication.din
+          "Error loading comments for medication with ID " +
+            this.entry.medication.din
         );
         console.log(err);
         this.hasErrors = true;
