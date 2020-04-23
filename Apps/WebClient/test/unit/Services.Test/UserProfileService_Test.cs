@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Constant;
+    using HealthGateway.Common.Delegates;
 
     public class UserProfileServiceTest
     {
@@ -49,7 +50,8 @@ namespace HealthGateway.WebClient.Test.Services
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
 
-            LegalAgreement termsOfService = new LegalAgreement() {
+            LegalAgreement termsOfService = new LegalAgreement()
+            {
                 Id = Guid.NewGuid(),
                 LegalText = "",
                 EffectiveDate = DateTime.Now
@@ -58,7 +60,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
-            profileDelegateMock.Setup(s => s.UpdateUserProfile(userProfile)).Returns(userProfileDBResult);
+            profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
@@ -72,6 +74,8 @@ namespace HealthGateway.WebClient.Test.Services
                 .Setup(s => s.GetActiveByAgreementType(Database.Constant.AgreementType.TermsofService))
                 .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
 
+            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
@@ -79,7 +83,8 @@ namespace HealthGateway.WebClient.Test.Services
                 emailInviteDelegateMock.Object,
                 configServiceMock.Object,
                 emailer.Object,
-                legalAgreementDelegateMock.Object
+                legalAgreementDelegateMock.Object,
+                cryptoDelegateMock.Object
             );
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
@@ -100,7 +105,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<UserProfile> insertResult = new DBResult<UserProfile>
             {
                 Payload = userProfile,
-                Status = Database.Constant.DBStatusCode.Created               
+                Status = Database.Constant.DBStatusCode.Created
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
@@ -115,6 +120,10 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = RegistrationStatus.Open } });
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns("abc");
+
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
@@ -122,7 +131,8 @@ namespace HealthGateway.WebClient.Test.Services
                 emailInviteDelegateMock.Object,
                 configServiceMock.Object,
                 emailer.Object,
-                new Mock<ILegalAgreementDelegate>().Object);
+                new Mock<ILegalAgreementDelegate>().Object,
+                cryptoDelegateMock.Object);
 
 
             RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"));

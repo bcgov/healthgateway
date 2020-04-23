@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Services
     using System.Diagnostics.Contracts;
     using System.Text.Json;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constant;
@@ -40,6 +41,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
+        private readonly ICryptoDelegate cryptoDelegate;
 
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string HOST_TEMPLATE_VARIABLE = "host";
@@ -55,6 +57,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="configuration">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
+        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IProfileDelegate profileDelegate,
@@ -62,7 +65,8 @@ namespace HealthGateway.WebClient.Services
             IEmailInviteDelegate emailInviteDelegate,
             IConfigurationService configuration,
             IEmailQueueService emailQueueService,
-            ILegalAgreementDelegate legalAgreementDelegate)
+            ILegalAgreementDelegate legalAgreementDelegate,
+            ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
@@ -71,6 +75,7 @@ namespace HealthGateway.WebClient.Services
             this.configurationService = configuration;
             this.emailQueueService = emailQueueService;
             this.legalAgreementDelegate = legalAgreementDelegate;
+            this.cryptoDelegate = cryptoDelegate;
         }
 
         /// <inheritdoc />
@@ -95,7 +100,7 @@ namespace HealthGateway.WebClient.Services
             {
                 this.logger.LogTrace($"Updating user last login... {hdid}");
                 retVal.Payload.LastLoginDateTime = lastLogin;
-                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
+                DBResult<UserProfile> updateResult = this.profileDelegate.Update(retVal.Payload);
                 this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
             }
 
@@ -164,13 +169,14 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            string? email = createProfileRequest.Profile.Email;
-            createProfileRequest.Profile.Email = string.Empty;
+            string? requestedEmail = createProfileRequest.Profile.Email;
+            UserProfile newProfile = createProfileRequest.Profile;
+            newProfile.Email = string.Empty;
+            newProfile.CreatedBy = hdid;
+            newProfile.UpdatedBy = hdid;
+            newProfile.EncryptionKey = this.cryptoDelegate.GenerateKey();
 
-            createProfileRequest.Profile.CreatedBy = hdid;
-            createProfileRequest.Profile.UpdatedBy = hdid;
-
-            DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(createProfileRequest.Profile);
+            DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(newProfile);
 
             if (insertResult.Status == DBStatusCode.Created)
             {
@@ -182,9 +188,9 @@ namespace HealthGateway.WebClient.Services
                     this.emailInviteDelegate.Update(emailInvite);
                 }
 
-                if (!string.IsNullOrWhiteSpace(email))
+                if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+                    this.emailQueueService.QueueNewInviteEmail(hdid, requestedEmail, hostUri);
                 }
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
@@ -219,7 +225,7 @@ namespace HealthGateway.WebClient.Services
 
                 profile.ClosedDateTime = DateTime.Now;
                 profile.IdentityManagementId = userId;
-                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(profile);
+                DBResult<UserProfile> updateResult = this.profileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
@@ -260,7 +266,7 @@ namespace HealthGateway.WebClient.Services
                 // Remove values set for deletion
                 profile.ClosedDateTime = null;
                 profile.IdentityManagementId = null;
-                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(profile);
+                DBResult<UserProfile> updateResult = this.profileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
