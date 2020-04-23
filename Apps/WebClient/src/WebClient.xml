@@ -111,6 +111,26 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.CommunicationController">
+            <summary>
+            Web API to handle system communications.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommunicationController.#ctor(HealthGateway.WebClient.Services.ICommunicationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.CommunicationController"/> class.
+            </summary>
+            <param name="communicationService">The injected communication service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommunicationController.Get">
+            <summary>
+            Gets the latest active communication.
+            </summary>
+            <returns>The active communication or null if not found.</returns>
+            <response code="200">Returns the communication json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.ConfigurationController">
             <summary>
             Web API to return Health Gateway configuration to approved clients.
@@ -713,6 +733,19 @@
         <member name="M:HealthGateway.WebClient.Services.CommentService.Delete(HealthGateway.Database.Models.Comment)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.WebClient.Services.CommunicationService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.CommunicationService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.CommunicationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="communicationDelegate">Injected Note delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActive">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -785,6 +818,17 @@
             </summary>
             <param name="comment">The Comment to be deleted.</param>
             <returns>The deleted Comment wrapped in a RequestResult.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ICommunicationService">
+            <summary>
+            Service to interact with the Communication Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetActive">
+            <summary>
+            Gets the active communication from the backend.
+            </summary>
+            <returns>The active communication wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
             <summary>
@@ -921,7 +965,7 @@
         <member name="T:HealthGateway.WebClient.Services.NoteService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.INoteDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.NoteService},HealthGateway.Database.Delegates.INoteDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.NoteService"/> class.
             </summary>

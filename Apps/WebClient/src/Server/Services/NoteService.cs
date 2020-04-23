@@ -35,7 +35,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="noteDelegate">Injected Note delegate.</param>
-        public NoteService(ILogger<UserFeedbackService> logger, INoteDelegate noteDelegate)
+        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
