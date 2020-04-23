@@ -16,8 +16,6 @@
 
 namespace HealthGateway.Common.Delegates
 {
-    using HealthGateway.Database.Models.Cacheable;
-
     /// <summary>
     /// A delegate to encrypted and decrypt text.
     /// </summary>
@@ -29,7 +27,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The base64 encoded encryption key.</param>
         /// <param name="plainText">The text to encrypt.</param>
         /// <returns>The encrypted text.</returns>
-        public string Encrypt(string key, string plainText);
+        string Encrypt(string key, string plainText);
 
         /// <summary>
         /// Decrypts the encrypted text using the key supplied.
@@ -37,12 +35,12 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The base64 encoded encryption key.</param>
         /// <param name="encryptedText">The text to decrypt.</param>
         /// <returns>The decrypted text.</returns>
-        public string Decrypt(string key, string encryptedText);
+        string Decrypt(string key, string encryptedText);
 
         /// <summary>
         /// Generates a suitable key for use in the implementation Encrypt/Decrypt methods.
         /// </summary>
         /// <returns>A Base64 encoded key.</returns>
-        public string GenerateKey();
+        string GenerateKey();
     }
 }

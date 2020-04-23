@@ -16,7 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -29,21 +29,36 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
+        private readonly IProfileDelegate profileDelegate;        
+        private readonly ICryptoDelegate cryptoDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="noteDelegate">Injected Note delegate.</param>
-        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate)
+        /// <param name="profileDelegate">Injected Profile delegate.</param>
+        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        public NoteService(ILogger<UserFeedbackService> logger, INoteDelegate noteDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
+            this.profileDelegate = profileDelegate;
+            this.cryptoDelegate = cryptoDelegate;
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> CreateNote(Note note)
+        public RequestResult<Note> CreateNote(UserNote userNote)
         {
+            //string key = this.profileDelegate.GetUserProfile(note.HdId).Payload.code;
+            string key = "somekey";
+            string encryptedTitle = this.cryptoDelegate.Encrypt(key, userNote.Title);
+            string encryptedText = this.cryptoDelegate.Encrypt(key, userNote.Text);            
+
+            Note note = userNote.ToDbModel();
+            note.Title = encryptedTitle;
+            note.Text = encryptedText;
+
             DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
             RequestResult<Note> result = new RequestResult<Note>()
             {
