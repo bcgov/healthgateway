@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;

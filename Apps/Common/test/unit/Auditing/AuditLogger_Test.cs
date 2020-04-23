@@ -19,7 +19,7 @@ namespace HealthGateway.CommonTests.Auditing
     using System.Security.Principal;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Auditing;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;

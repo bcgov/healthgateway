@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Constant;
+    using HealthGateway.Database.Constants;
 
     public class UserProfileServiceTest
     {
@@ -44,7 +45,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<UserProfile> userProfileDBResult = new DBResult<UserProfile>
             {
                 Payload = userProfile,
-                Status = Database.Constant.DBStatusCode.Read
+                Status = DBStatusCode.Read
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
@@ -69,7 +70,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new Mock<ILegalAgreementDelegate>();
             legalAgreementDelegateMock
-                .Setup(s => s.GetActiveByAgreementType(Database.Constant.AgreementType.TermsofService))
+                .Setup(s => s.GetActiveByAgreementType(AgreementType.TermsofService))
                 .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
 
             IUserProfileService service = new UserProfileService(
@@ -100,7 +101,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<UserProfile> insertResult = new DBResult<UserProfile>
             {
                 Payload = userProfile,
-                Status = Database.Constant.DBStatusCode.Created               
+                Status = DBStatusCode.Created               
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
