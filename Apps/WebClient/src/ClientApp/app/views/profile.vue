@@ -195,16 +195,6 @@ input {
           <b-col>
             <label>Other</label>
             <div>
-              <router-link
-                id="termsOfService"
-                variant="primary"
-                to="/termsOfService"
-                class="p-0"
-              >
-                Terms of Service
-              </router-link>
-            </div>
-            <div>
               <b-button
                 v-if="isActiveProfile && !showCloseWarning"
                 id="showCloseWarningBtn"
