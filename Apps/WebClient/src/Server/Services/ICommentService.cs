@@ -17,7 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Models;
 
     /// <summary>
     /// Service to interact with the Comment Delegate.
@@ -25,33 +25,33 @@ namespace HealthGateway.WebClient.Services
     public interface ICommentService
     {
         /// <summary>
-        /// Adds a Comment in the backend.
+        /// Adds a UserComment in the backend.
         /// </summary>
-        /// <param name="comment">The Comment to be created.</param>
-        /// <returns>A Comment wrapped in a RequestResult.</returns>
-        public RequestResult<Comment> Add(Comment comment);
+        /// <param name="userComment">The UserComment to be created.</param>
+        /// <returns>A UserComment wrapped in a RequestResult.</returns>
+        RequestResult<UserComment> Add(UserComment userComment);
 
         /// <summary>
-        /// Gets a list of Comments for the given hdId and event id.
+        /// Gets a list of UserComment for the given hdId and event id.
         /// </summary>
         /// <param name="hdId">The users HDID.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
-        /// <returns>A List of Comments wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId);
+        /// <returns>A List of UserComment wrapped in a RequestResult.</returns>
+        RequestResult<IEnumerable<UserComment>> GetList(string hdId, string parentEntryId);
 
         /// <summary>
-        /// Updates the given Comment in the backend.
+        /// Updates the given UserComment in the backend.
         /// Any changes to HDID will be ignored.
         /// </summary>
-        /// <param name="comment">The Comment to update.</param>
-        /// <returns>The updated Comment.</returns>
-        public RequestResult<Comment> Update(Comment comment);
+        /// <param name="userComment">The UserComment to update.</param>
+        /// <returns>The updated UserComment.</returns>
+        RequestResult<UserComment> Update(UserComment userComment);
 
         /// <summary>
-        /// Deletes the given note from the backend.
+        /// Deletes the given UserComment from the backend.
         /// </summary>
-        /// <param name="comment">The Comment to be deleted.</param>
+        /// <param name="userComment">The Comment to be deleted.</param>
         /// <returns>The deleted Comment wrapped in a RequestResult.</returns>
-        public RequestResult<Comment> Delete(Comment comment);
+        RequestResult<UserComment> Delete(UserComment userComment);
     }
 }
