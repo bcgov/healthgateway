@@ -22,18 +22,15 @@
 
 <template>
   <b-modal
-    ref="protectiveWord-modal"
+    id="protective-word-modal"
     title="Restricted PharmaNet Records"
     header-class="modal-header"
     footer-class="modal-footer"
     centered
-    @ok="handleOk"
-    @close="cancel"
-    @hide="reset"
   >
     <b-row>
       <b-col>
-        <form ref="form" @submit.stop.prevent="handleSubmit">
+        <form @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col cols="8">
               <label for="protectiveWord-input">Protective Word </label>
@@ -55,7 +52,7 @@
         </form>
       </b-col>
     </b-row>
-    <template v-slot:modal-footer="{ ok, cancel, hide }">
+    <template v-slot:modal-footer>
       <b-row>
         <b-col>
           <b-row>
@@ -64,7 +61,7 @@
                 size="lg"
                 variant="primary"
                 :disabled="!protectiveWord"
-                @click="ok()"
+                @click="handleOk($event)"
               >
                 Continue
               </b-button>
@@ -98,35 +95,46 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Ref, Emit, Prop, Component } from "vue-property-decorator";
+import { Emit, Prop, Component, Watch } from "vue-property-decorator";
 
 @Component
 export default class ProtectiveWordComponent extends Vue {
-  @Ref("protectiveWord-modal") readonly modal!: HTMLElement;
-  @Ref("form") readonly form!: HTMLElement;
   @Prop() error!: boolean;
-  private protectiveWord!: string = "";
+  @Prop({ default: false }) isLoading!: boolean;
 
-  @Emit()
+  private isShowing: boolean = false;
+  private protectiveWord: string = "";
+  private readonly modalId: string = "protective-word-modal";
+
   public showModal() {
-    this.modal.show();
+    this.isShowing = true;
+  }
+
+  public hideModal() {
+    this.isShowing = false;
+    this.$bvModal.hide(this.modalId);
+  }
+
+  @Watch("isLoading")
+  private onIsLoading() {
+    if (!this.isLoading && this.isShowing) {
+      this.$bvModal.show(this.modalId);
+    }
   }
 
   @Emit()
-  public submit() {
+  private submit() {
+    this.isShowing = false;
     return this.protectiveWord;
   }
 
   @Emit()
-  public cancel() {
+  private cancel() {
+    this.isShowing = false;
     return;
   }
 
-  private reset() {
-    this.protectiveWord = "";
-  }
-
-  private handleOk(bvModalEvt) {
+  private handleOk(bvModalEvt: Event) {
     // Prevent modal from closing
     bvModalEvt.preventDefault();
 
@@ -139,7 +147,7 @@ export default class ProtectiveWordComponent extends Vue {
 
     // Hide the modal manually
     this.$nextTick(() => {
-      this.modal.hide();
+      this.hideModal();
     });
   }
 }

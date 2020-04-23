@@ -215,6 +215,7 @@
     <ProtectiveWordComponent
       ref="protectiveWordModal"
       :error="protectiveWordAttempts > 1"
+      :is-loading="isLoading"
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
@@ -276,14 +277,13 @@ export default class TimelineComponent extends Vue {
 
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];
+  private filteredTimelineEntries: TimelineEntry[] = [];
   private visibleTimelineEntries: TimelineEntry[] = [];
-  private timelinePages: TimelineEntry[][] = [];
   private isMedicationLoading: boolean = false;
   private isImmunizationLoading: boolean = false;
   private isNoteLoading: boolean = false;
   private windowWidth: number = 0;
   private currentPage: number = 1;
-  private filteredEntriesLength = 0;
   private hasErrors: boolean = false;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
@@ -296,12 +296,12 @@ export default class TimelineComponent extends Vue {
   @Ref("protectiveWordModal")
   readonly protectiveWordModal!: ProtectiveWordComponent;
 
-  created() {
+  private created() {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   }
 
-  mounted() {
+  private mounted() {
     this.initializeFilters();
     this.fetchMedicationStatements();
     this.fetchImmunizations();
@@ -318,7 +318,7 @@ export default class TimelineComponent extends Vue {
     });
   }
 
-  beforeRouteLeave(to, from, next) {
+  private beforeRouteLeave(to, from, next) {
     if (
       (this.isAddingNote || this.editIdList.length > 0) &&
       !confirm(this.unsavedChangesText)
@@ -327,7 +327,8 @@ export default class TimelineComponent extends Vue {
     }
     next();
   }
-  destroyed() {
+
+  private destroyed() {
     window.removeEventListener("handleResize", this.handleResize);
   }
 
@@ -380,7 +381,7 @@ export default class TimelineComponent extends Vue {
     return this.config.modules["Note"];
   }
 
-  private get getNumberOfEntriesPerPage(): number {
+  private get numberOfEntriesPerPage(): number {
     if (this.windowWidth < 576) {
       // xs
       return 7;
@@ -398,27 +399,11 @@ export default class TimelineComponent extends Vue {
   }
 
   private get numberOfPages(): number {
-    let result = Math.ceil(
-      this.filteredEntriesLength / this.getNumberOfEntriesPerPage
-    );
-    if (result < 1) {
-      return 1;
-    } else {
-      return result;
-    }
-  }
-
-  private getPages(entries: TimelineEntry[]): TimelineEntry[][] {
-    let index = 0;
-    let result: TimelineEntry[][] = [];
-    this.sortGroup(entries);
-    for (
-      index = 0;
-      index < entries.length;
-      index += this.getNumberOfEntriesPerPage
-    ) {
-      let chunk = entries.slice(index, index + this.getNumberOfEntriesPerPage);
-      result.push(chunk);
+    let result = 1;
+    if (this.filteredTimelineEntries.length > this.numberOfEntriesPerPage) {
+      result = Math.ceil(
+        this.filteredTimelineEntries.length / this.numberOfEntriesPerPage
+      );
     }
     return result;
   }
@@ -465,6 +450,7 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
           }
+          this.sortEntries();
           this.applyTimelineFilter();
         } else if (results.resultStatus == ResultType.Protected) {
           this.protectiveWordModal.showModal();
@@ -499,6 +485,7 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new ImmunizationTimelineEntry(result));
           }
+          this.sortEntries();
           this.applyTimelineFilter();
         } else {
           console.log(
@@ -530,6 +517,7 @@ export default class TimelineComponent extends Vue {
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new NoteTimelineEntry(result));
           }
+          this.sortEntries();
           this.applyTimelineFilter();
         } else {
           console.log(
@@ -551,6 +539,7 @@ export default class TimelineComponent extends Vue {
     this.isAddingNote = false;
     if (note) {
       this.timelineEntries.push(new NoteTimelineEntry(note));
+      this.sortEntries();
       this.applyTimelineFilter();
     }
   }
@@ -590,21 +579,31 @@ export default class TimelineComponent extends Vue {
 
   @Watch("filterText")
   @Watch("filterTypes")
-  @Watch("currentPage")
-  @Watch("getNumberOfEntriesPerPage")
   private applyTimelineFilter() {
-    let filtered = this.timelineEntries.filter(entry =>
+    this.filteredTimelineEntries = this.timelineEntries.filter(entry =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
-    // Adjust number of pages depending on filters
-    this.filteredEntriesLength = filtered.length;
-    let result = this.getPages(filtered);
-    // Check if access to out-of-bounds page is attempted after resize
-    if (this.currentPage > result.length && result.length > 0) {
-      // Set it to new final page
-      this.currentPage = result.length;
+  }
+
+  @Watch("currentPage")
+  @Watch("numberOfEntriesPerPage")
+  @Watch("filteredTimelineEntries")
+  private calculateVisibleEntries() {
+    // Handle the current page being beyond the max number of pages
+    if (this.currentPage > this.numberOfPages) {
+      this.currentPage = this.numberOfPages;
     }
-    this.visibleTimelineEntries = result[this.currentPage - 1];
+
+    // Get the section of the array that contains the paginated section
+    let lowerIndex = (this.currentPage - 1) * this.numberOfEntriesPerPage;
+    let upperIndex = Math.min(
+      this.currentPage * this.numberOfEntriesPerPage,
+      this.filteredTimelineEntries.length
+    );
+    this.visibleTimelineEntries = this.filteredTimelineEntries.slice(
+      lowerIndex,
+      upperIndex
+    );
   }
 
   private get dateGroups(): DateGroup[] {
@@ -651,6 +650,12 @@ export default class TimelineComponent extends Vue {
 
   private getTotalCount(): number {
     return this.timelineEntries.length;
+  }
+
+  private sortEntries() {
+    this.timelineEntries.sort((a, b) =>
+      a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+    );
   }
 
   private printRecords() {
