@@ -84,6 +84,7 @@ namespace HealthGateway.WebClient.Controllers
 
             note.HdId = userHdid;
             note.CreatedBy = userHdid;
+            note.UpdatedBy = userHdid;
             RequestResult<UserNote> result = this.noteService.CreateNote(note);
             return new JsonResult(result);
         }

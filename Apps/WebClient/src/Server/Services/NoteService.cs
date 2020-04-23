@@ -58,7 +58,7 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogInformation($"User does not have a key: ${userNote.HdId}");
-                throw new ArgumentNullException("Profile key not set");
+                throw new ApplicationException("Profile key not set");
             }
 
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);
@@ -81,6 +81,7 @@ namespace HealthGateway.WebClient.Services
 
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
+            
             // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
             if (key == null)
             {
@@ -93,7 +94,7 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogInformation($"User does not have a key: ${hdId}");
-                throw new ArgumentNullException("Profile key not set");
+                throw new ApplicationException("Profile key not set");
             }
 
             RequestResult<IEnumerable<UserNote>> result = new RequestResult<IEnumerable<UserNote>>()
@@ -116,7 +117,7 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogInformation($"User does not have a key: ${userNote.HdId}");
-                throw new ArgumentNullException("Profile key not set");
+                throw new ApplicationException("Profile key not set");
             }
 
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);
@@ -139,7 +140,7 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogInformation($"User does not have a key: ${userNote.HdId}");
-                throw new ArgumentNullException("Profile key not set");
+                throw new ApplicationException("Profile key not set");
             }
             
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);
