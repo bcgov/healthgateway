@@ -15,14 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -71,7 +69,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateNote([FromBody] Note note)
+        public async Task<IActionResult> CreateNote([FromBody] UserNote note)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -86,7 +84,7 @@ namespace HealthGateway.WebClient.Controllers
 
             note.HdId = userHdid;
             note.CreatedBy = userHdid;
-            RequestResult<Database.Models.Note> result = this.noteService.CreateNote(note);
+            RequestResult<UserNote> result = this.noteService.CreateNote(note);
             return new JsonResult(result);
         }
 
@@ -100,7 +98,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> UpdateNote([FromBody] Note note)
+        public async Task<IActionResult> UpdateNote([FromBody] UserNote note)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -114,7 +112,7 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             note.UpdatedBy = userHdid;
-            RequestResult<Note> result = this.noteService.UpdateNote(note);
+            RequestResult<UserNote> result = this.noteService.UpdateNote(note);
             return new JsonResult(result);
         }
 
@@ -128,7 +126,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> DeleteNote([FromBody] Note note)
+        public async Task<IActionResult> DeleteNote([FromBody] UserNote note)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -141,7 +139,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<Note> result = this.noteService.DeleteNote(note);
+            RequestResult<UserNote> result = this.noteService.DeleteNote(note);
             return new JsonResult(result);
         }
 
@@ -165,7 +163,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<IEnumerable<Database.Models.Note>> result = this.noteService.GetNotes(userHdid);
+            RequestResult<IEnumerable<UserNote>> result = this.noteService.GetNotes(userHdid);
             return new JsonResult(result);
         }
     }

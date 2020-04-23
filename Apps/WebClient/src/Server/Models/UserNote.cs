@@ -16,6 +16,8 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
+    using System.Collections.Generic;
+    using HealthGateway.Common.Delegates;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -53,28 +55,46 @@ namespace HealthGateway.WebClient.Models
         public uint Version { get; set; }
 
         /// <summary>
-        /// Constructs a database Note model from a user Node model.
-        /// Note: This does not add the title or text parameters.
+        /// Gets or sets the user/system that created the entity.
+        /// This is generally set by the baseDbContext.
         /// </summary>
+        public string CreatedBy { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the user/system that created the entity.
+        /// This is generally set by the baseDbContext.
+        /// </summary>
+        public string UpdatedBy { get; set; } = null!;
+
+        /// <summary>
+        /// Constructs a database Note model from a user Node model.
+        /// </summary>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="key">The security key.</param>
         /// <returns>The database user note model.</returns>
-        public Database.Models.Note ToDbModel()
+        public Database.Models.Note ToDbModel(ICryptoDelegate cryptoDelegate, string key)
         {
             return new Database.Models.Note()
             {
                 Id = this.Id,
                 HdId = this.HdId,
                 JournalDateTime = this.JournalDateTime,
-                Version = this.Version
+                Version = this.Version,
+                CreatedBy = this.CreatedBy,
+                UpdatedBy = this.UpdatedBy,
+                Title = cryptoDelegate.Encrypt(key, this?.Title),
+                Text = cryptoDelegate.Encrypt(key, this?.Text),
             };
         }
 
         /// <summary>
         /// Constructs a UserNote model from a Node database model.
-        /// Note: This does not add the title or text parameters.
         /// </summary>
         /// <param name="model">The note database model.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="key">The security key.</param>
         /// <returns>The user note model.</returns>
-        public static UserNote CreateFromDbModel(Database.Models.Note model)
+        public static UserNote CreateFromDbModel(Database.Models.Note model, ICryptoDelegate cryptoDelegate, string key)
         {
             if (model == null)
             {
@@ -86,8 +106,30 @@ namespace HealthGateway.WebClient.Models
                 Id = model.Id,
                 HdId = model.HdId,
                 JournalDateTime = model.JournalDateTime,
-                Version = model.Version
+                Version = model.Version,
+                CreatedBy = model.CreatedBy,
+                UpdatedBy = model.UpdatedBy,
+                Title = cryptoDelegate.Decrypt(key, model?.Title),
+                Text = cryptoDelegate.Decrypt(key, model?.Text),
             };
+        }
+
+        /// <summary>
+        /// Constructs a List of UserNote models from a List of Node database models.
+        /// </summary>
+        /// <param name="models">The list of note database model.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="key">The security key.</param>
+        /// <returns>A list of use notes.</returns>
+        public static IEnumerable<UserNote> CreateListFromDbModel(IEnumerable<Database.Models.Note> models, ICryptoDelegate cryptoDelegate, string key)
+        {
+            List<UserNote> newList = new List<UserNote>();
+            foreach (Database.Models.Note model in models)
+            {
+                newList.Add(UserNote.CreateFromDbModel(model, cryptoDelegate, key));
+            }
+
+            return newList;
         }
     }
 }
