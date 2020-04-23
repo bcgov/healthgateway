@@ -292,7 +292,6 @@ export default class MedicationTimelineComponent extends Vue {
   private getComments() {
     const referenceId = this.entry.id;
     this.isLoadingComments = true;
-    console.log("Fetching comments for " + this.entry.id);
     let commentPromise = this.commentService
       .getCommentsForEntry(referenceId)
       .then((result) => {
@@ -302,10 +301,7 @@ export default class MedicationTimelineComponent extends Vue {
         }
       })
       .catch((err) => {
-        console.log(
-          "Error loading comments for medication with ID " +
-            this.entry.medication.din
-        );
+        console.log("Error loading comments for entry " + this.entry.id);
         console.log(err);
         this.hasErrors = true;
         this.isLoadingComments = false;

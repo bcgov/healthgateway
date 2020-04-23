@@ -104,7 +104,6 @@ class MedicationViewModel {
   }
 
   public populateFromModel(model: MedicationResult): void {
-    //console.log(model);
     if (model.federalData) {
       let federalModel = model.federalData;
 
