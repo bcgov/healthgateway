@@ -136,7 +136,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc />
-        public bool Compare(string key, IHash compareHash)
+        public bool Compare(string? key, IHash compareHash)
         {
             return Compare(key, compareHash as HMACHash);
         }
