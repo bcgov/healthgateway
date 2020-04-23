@@ -21,6 +21,7 @@ namespace HealthGateway.Common.Services
     using Hangfire;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
@@ -183,23 +184,6 @@ namespace HealthGateway.Common.Services
             return email;
         }
 
-        /// <summary>
-        /// A string to scan for keys marked up as ${KEYNAME} to replace.
-        /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
-        /// </summary>
-        /// <param name="template">The string to scan and replace.</param>
-        /// <param name="data">The dictionary of key/value pairs.</param>
-        /// <returns>The string with the key replaced by the supplied values.</returns>
-        private static string ProcessTemplateString(string template, Dictionary<string, string> data)
-        {
-            // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
-            // the mustaches match one of those in the dictionary.  If so it then replaces the match
-            // with the value in the dictionary.
-            return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
-               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
-               data[m.Groups[1].Value] : m.Value);
-        }
-
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
@@ -210,8 +194,8 @@ namespace HealthGateway.Common.Services
             Email email = new Email();
             email.From = emailTemplate.From;
             email.Priority = emailTemplate.Priority;
-            email.Subject = ProcessTemplateString(emailTemplate.Subject, keyValues);
-            email.Body = ProcessTemplateString(emailTemplate.Body, keyValues);
+            email.Subject = Manipulator.Replace(emailTemplate.Subject, keyValues);
+            email.Body = Manipulator.Replace(emailTemplate.Body, keyValues);
             email.FormatCode = emailTemplate.FormatCode;
             return email;
         }

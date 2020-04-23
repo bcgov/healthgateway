@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -24,6 +25,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Models.Cacheable;
@@ -39,15 +41,17 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class RestMedStatementDelegate : IMedStatementDelegate
     {
+        private const string ODRConfigSectionKey = "ODR";
         private const string ProtectiveWordCacheDomain = "ProtectiveWord";
         private const string ODRCacheTimeKey = "CacheTTL";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configService;
+        private readonly IConfiguration configuration;
         private readonly IGenericCacheDelegate genericCacheDelegate;
         private readonly IHashDelegate hashDelegate;
-        private readonly int cacheTTL;
+        private readonly ODRConfig odrConfig;
+        private readonly string baseURL;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedStatementDelegate"/> class.
@@ -66,11 +70,26 @@ namespace HealthGateway.Medication.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configService = configuration;
+            this.configuration = configuration;
             this.genericCacheDelegate = genericCacheDelegate;
             this.hashDelegate = hashDelegate;
-
-            this.cacheTTL = this.configService.GetSection("ODR").GetValue<int>(ODRCacheTimeKey, 1440);
+            this.odrConfig = new ODRConfig();
+            this.configuration.Bind(ODRConfigSectionKey, this.odrConfig);
+            if (this.odrConfig.DynamicServiceLookup)
+            {
+                string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
+                string? servicePort = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServicePortSuffix}");
+                Dictionary<string, string> replacementData = new Dictionary<string, string>()
+                {
+                    { "serviceHost", serviceHost! },
+                    { "servicePort", servicePort! },
+                };
+                this.baseURL = Manipulator.Replace(this.odrConfig.Url, replacementData)!;
+            }
+            else
+            {
+                this.baseURL = this.odrConfig.Url;
+            }
         }
 
         /// <inheritdoc/>
@@ -93,8 +112,8 @@ namespace HealthGateway.Medication.Delegates
                 this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                client.BaseAddress = new Uri(this.configService.GetSection("ODR").GetValue<string>("Url"));
-                string patientProfileEndpoint = this.configService.GetSection("ODR").GetValue<string>("PatientProfileEndpoint");
+                client.BaseAddress = new Uri(this.baseURL);
+                string patientProfileEndpoint = this.odrConfig.PatientProfileEndpoint;
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -167,24 +186,28 @@ namespace HealthGateway.Medication.Delegates
             try
             {
                 IHash? cacheHash = null;
-                if (this.cacheTTL > 0)
+                if (this.odrConfig.CacheTTL > 0)
                 {
+                    this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     cacheHash = this.genericCacheDelegate.GetCacheObject<IHash>(hdid, ProtectiveWordCacheDomain);
                 }
                 if (cacheHash == null)
                 {
+                    this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");
                     // The hash isn't in the cache, get Protective word hash from source
                     IHash? hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
                                                                                .ConfigureAwait(true)).Result;
-                    if (this.cacheTTL > 0)
+                    if (this.odrConfig.CacheTTL > 0)
                     {
-                        this.genericCacheDelegate.CacheObject(hash, hdid, ProtectiveWordCacheDomain, this.cacheTTL);
+                        this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
+                        this.genericCacheDelegate.CacheObject(hash, hdid, ProtectiveWordCacheDomain, this.odrConfig.CacheTTL);
                     }
 
                     retVal = this.hashDelegate.Compare(protectiveWord, hash);
                 }
                 else
                 {
+                    this.logger.LogDebug("Validating Cached Protective Word");
                     retVal = this.hashDelegate.Compare(protectiveWord, cacheHash);
                 }
             }
@@ -213,8 +236,8 @@ namespace HealthGateway.Medication.Delegates
             this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.BaseAddress = new Uri(this.configService.GetSection("ODR").GetValue<string>("Url"));
-            string patientProfileEndpoint = this.configService.GetSection("ODR").GetValue<string>("ProtectiveWordEndpoint");
+            client.BaseAddress = new Uri(this.baseURL);
+            string patientProfileEndpoint = this.odrConfig.ProtectiveWordEndpoint;
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -248,11 +271,13 @@ namespace HealthGateway.Medication.Delegates
                 }
                 else
                 {
+                    this.logger.LogError($"Response payload is not well-formed {payload}");
                     throw new HttpRequestException($"Response payload is not well-formed {payload}");
                 }
             }
             else
             {
+                this.logger.LogError($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason {response.ReasonPhrase}");
                 throw new HttpRequestException($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason {response.ReasonPhrase}");
             }
 
