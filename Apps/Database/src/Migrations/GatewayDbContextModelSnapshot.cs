@@ -408,8 +408,8 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(32);
 
                     b.Property<string>("Text")
-                        .HasColumnType("character varying(1000)")
-                        .HasMaxLength(1000);
+                        .HasColumnType("character varying(1344)")
+                        .HasMaxLength(1344);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -1761,12 +1761,12 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Text")
-                        .HasColumnType("character varying(1000)")
-                        .HasMaxLength(1000);
+                        .HasColumnType("character varying(1344)")
+                        .HasMaxLength(1344);
 
                     b.Property<string>("Title")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasColumnType("character varying(152)")
+                        .HasMaxLength(152);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2485,6 +2485,10 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
+                    b.Property<string>("EncryptionKey")
+                        .HasColumnType("character varying(44)")
+                        .HasMaxLength(44);
+
                     b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
 
@@ -2534,6 +2538,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
+
+                    b.Property<string>("EncryptionKey")
+                        .HasColumnType("character varying(44)")
+                        .HasMaxLength(44);
 
                     b.Property<string>("HdId")
                         .IsRequired()
