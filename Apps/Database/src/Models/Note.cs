@@ -42,14 +42,16 @@ namespace HealthGateway.Database.Models
 
         /// <summary>
         /// Gets or sets the title.
+        /// Title supports 100 characters plus 52 for Encryption and Encoding overhead.
         /// </summary>
-        [MaxLength(100)]
+        [MaxLength(152)]
         public string? Title { get; set; }
 
         /// <summary>
         /// Gets or sets the text of the note.
+        /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
         /// </summary>
-        [MaxLength(1000)]
+        [MaxLength(1344)]
         public string? Text { get; set; }
 
         /// <summary>

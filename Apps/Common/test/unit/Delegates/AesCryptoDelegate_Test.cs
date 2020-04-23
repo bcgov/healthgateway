@@ -23,10 +23,7 @@ namespace HealthGateway.CommonTests.Delegates
     using Xunit;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
-    using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using System;
-    using System.Text.Json;
-    using HealthGateway.Database.Models.Cacheable;
     using System.Text;
 
     public class AesCryptoDelegate_Test
@@ -128,6 +125,72 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         [Fact]
+        public void VerifyEncrypedStringLength100()
+        {
+            var myConfiguration = new Dictionary<string, string>
+            {
+            };
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+
+            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
+                new Mock<ILogger<AESCryptoDelegate>>().Object,
+                configuration);
+
+            string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
+
+            string plainText = "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R";
+            string encryptedStr = aesDelegate.Encrypt(key, plainText);
+
+            int blockSize = 16;
+            int expectedSize = plainText.Length + (blockSize - (plainText.Length % blockSize));
+            double expectedEncodedSize = Math.Ceiling(expectedSize / (double)3) * 4;
+            byte[] encryptedBytes = Convert.FromBase64String(encryptedStr);
+
+            Assert.True(expectedSize == encryptedBytes.Length && expectedEncodedSize >= encryptedStr.Length);
+        }
+
+        [Fact]
+        public void VerifyEncrypedStringLength1000()
+        {
+            var myConfiguration = new Dictionary<string, string>
+            {
+            };
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+
+            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
+                new Mock<ILogger<AESCryptoDelegate>>().Object,
+                configuration);
+
+            string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
+
+            string plainText = "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R" +
+                               "TSm73LxxXt21TOtu6HBHGPOBqHTFKf4VIMxGWoJrCtyHVdcNwSBdh8F86C9Jwjn2aWRdElQyC3PsuRMA2IXxvQ7m9oHHfm5woo5R";
+
+            string encryptedStr = aesDelegate.Encrypt(key, plainText);
+
+            int blockSize = 16;
+            int expectedSize = plainText.Length + (blockSize - (plainText.Length % blockSize));
+            double expectedEncodedSize = Math.Ceiling(expectedSize / (double)3) * 4;
+            byte[] encryptedBytes = Convert.FromBase64String(encryptedStr);
+
+            Assert.True(expectedSize == encryptedBytes.Length && expectedEncodedSize >= encryptedStr.Length);
+        }
+
+        [Fact]
         public void VerifyDecryption()
         {
             var myConfiguration = new Dictionary<string, string>
@@ -174,6 +237,13 @@ namespace HealthGateway.CommonTests.Delegates
             string encryptedStr = aesDelegate.Encrypt(key, iv, plainText);
 
             Assert.True(expectedStr == encryptedStr);
+
+            int blockSize = 16;
+            int expectedSize = plainText.Length + (blockSize - (plainText.Length % blockSize));
+            double expectedEncodedSize = Math.Ceiling(expectedSize / (double)3) * 4;
+            byte[] encryptedBytes = Convert.FromBase64String(encryptedStr);
+
+            Assert.True(expectedSize == encryptedBytes.Length && expectedEncodedSize >= encryptedStr.Length);
         }
 
         [Fact]
