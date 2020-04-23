@@ -40,9 +40,15 @@ namespace HealthGateway.Database.Models
         public string UserProfileId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the text of the note.
+        /// Gets or sets the UerProfile associated to this comment.
         /// </summary>
-        [MaxLength(1000)]
+        public virtual UserProfile? UserProfile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the text of the comment.
+        /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
+        /// </summary>
+        [MaxLength(1344)]
         public string? Text { get; set; }
 
         /// <summary>
@@ -59,10 +65,5 @@ namespace HealthGateway.Database.Models
         [MaxLength(32)]
         [Required]
         public string ParentEntryId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the linked user profile.
-        /// </summary>
-        public virtual UserProfile? UserProfile { get; set; }
     }
 }
