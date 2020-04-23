@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Models
 
         /// <summary>
         /// Gets or sets the entry type code.
-        /// The value is one of <see cref="Constant.CommentEntryType"/>.
+        /// The value is one of <see cref="Constants.CommentEntryType"/>.
         /// </summary>
         [MaxLength(3)]
         [Required]

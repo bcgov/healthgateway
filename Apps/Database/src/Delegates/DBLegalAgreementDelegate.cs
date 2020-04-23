@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Delegates
             return new DBResult<LegalAgreement>()
             {
                 Payload = legalAgreement,
-                Status = Constant.DBStatusCode.Read,
+                Status = DBStatusCode.Read,
             };
         }
     }

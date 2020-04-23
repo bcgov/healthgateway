@@ -16,7 +16,9 @@
 namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -46,7 +48,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<Comment> result = new RequestResult<Comment>()
             {
                 ResourcePayload = dbComment.Payload,
-                ResultStatus = dbComment.Status == Database.Constant.DBStatusCode.Created ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbComment.Message,
             };
             return result;
@@ -60,7 +62,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<IEnumerable<Comment>> result = new RequestResult<IEnumerable<Comment>>()
             {
                 ResourcePayload = dbComments.Payload,
-                ResultStatus = dbComments.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbComments.Message,
             };
             return result;
@@ -74,7 +76,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<Comment> result = new RequestResult<Comment>()
             {
                 ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
@@ -87,7 +89,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<Comment> result = new RequestResult<Comment>()
             {
                 ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
