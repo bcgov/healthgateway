@@ -31,7 +31,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetActiveCommunication()
         {
-            Communication comm = new Communication
+            Communication communication = new Communication
             {
                 Id = Guid.NewGuid(),
                 EffectiveDateTime = DateTime.UtcNow.AddDays(-1),
@@ -40,7 +40,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             DBResult<Communication> dbResult = new DBResult<Communication>
             {
-                Payload = comm,
+                Payload = communication,
                 Status = Database.Constant.DBStatusCode.Read
             };
 
@@ -54,7 +54,7 @@ namespace HealthGateway.WebClient.Test.Services
             RequestResult<Communication> actualResult = service.GetActive();
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(communication));
         }
     }
 }

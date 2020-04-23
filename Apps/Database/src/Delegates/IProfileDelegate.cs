@@ -84,6 +84,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="startDate">The start date.</param>
         /// <returns>The count of logged in users.</returns>
-        public int GetLoggedInUsersCount(DateTime startDate);
+        int GetLoggedInUsersCount(DateTime startDate);
     }
 }
