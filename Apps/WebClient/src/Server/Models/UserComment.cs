@@ -22,7 +22,7 @@ namespace HealthGateway.WebClient.Models
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
     /// </summary>
-    public class UserNote
+    public class UserComment
     {
         /// <summary>
         /// Gets or sets the id.
@@ -32,25 +32,27 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        public string HdId { get; set; } = null!;
+        public string UserProfileId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        public string? Title { get; set; }
-
-        /// <summary>
-        /// Gets or sets the text of the note.
+        /// Gets or sets the text of the comment.
+        /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
         /// </summary>
         public string? Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the Note timeline datetime.
+        /// Gets or sets the entry type code.
+        /// The value is one of <see cref="HealthGateway.Database.Constant.CommentEntryType"/>.
         /// </summary>
-        public DateTime JournalDateTime { get; set; }
+        public string EntryTypeCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the note db version.
+        /// Gets or sets the related event id.
+        /// </summary>
+        public string ParentEntryId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the comment db version.
         /// </summary>
         public uint Version { get; set; }
 
@@ -79,70 +81,70 @@ namespace HealthGateway.WebClient.Models
         public string UpdatedBy { get; set; } = null!;
 
         /// <summary>
-        /// Constructs a database Note model from a user Node model.
+        /// Constructs a database comment model from a user Node model.
         /// </summary>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
         /// <param name="key">The security key.</param>
-        /// <returns>The database user note model.</returns>
-        public Database.Models.Note ToDbModel(ICryptoDelegate cryptoDelegate, string key)
+        /// <returns>The database user comment model.</returns>
+        public Database.Models.Comment ToDbModel(ICryptoDelegate cryptoDelegate, string key)
         {
-            return new Database.Models.Note()
+            return new Database.Models.Comment()
             {
                 Id = this.Id,
-                HdId = this.HdId,
-                JournalDateTime = this.JournalDateTime,
+                UserProfileId = this.UserProfileId,
+                EntryTypeCode = this.EntryTypeCode,
+                ParentEntryId = this.ParentEntryId,
                 Version = this.Version,
                 CreatedDateTime = this.CreatedDateTime,
                 CreatedBy = this.CreatedBy,
                 UpdatedDateTime = this.UpdatedDateTime,
                 UpdatedBy = this.UpdatedBy,
-                Title = cryptoDelegate.Encrypt(key, this?.Title),
-                Text = cryptoDelegate.Encrypt(key, this?.Text),
+                Text = cryptoDelegate.Encrypt(key, this.Text),
             };
         }
 
         /// <summary>
-        /// Constructs a UserNote model from a Node database model.
+        /// Constructs a UserComment model from a Node database model.
         /// </summary>
-        /// <param name="model">The note database model.</param>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="model">The comment database model.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
         /// <param name="key">The security key.</param>
-        /// <returns>The user note model.</returns>
-        public static UserNote CreateFromDbModel(Database.Models.Note model, ICryptoDelegate cryptoDelegate, string key)
+        /// <returns>The user comment model.</returns>
+        public static UserComment CreateFromDbModel(Database.Models.Comment model, ICryptoDelegate cryptoDelegate, string key)
         {
             if (model == null)
             {
                 return null!;
             }
 
-            return new UserNote()
+            return new UserComment()
             {
                 Id = model.Id,
-                HdId = model.HdId,
-                JournalDateTime = model.JournalDateTime,
+                UserProfileId = model.UserProfileId,
+                EntryTypeCode = model.EntryTypeCode,
+                ParentEntryId = model.ParentEntryId,
                 Version = model.Version,
                 CreatedDateTime = model.CreatedDateTime,
                 CreatedBy = model.CreatedBy,
                 UpdatedDateTime = model.UpdatedDateTime,
                 UpdatedBy = model.UpdatedBy,
-                Title = cryptoDelegate.Decrypt(key, model?.Title),
                 Text = cryptoDelegate.Decrypt(key, model?.Text),
             };
         }
 
         /// <summary>
-        /// Constructs a List of UserNote models from a List of Node database models.
+        /// Constructs a List of UserComment models from a List of Node database models.
         /// </summary>
-        /// <param name="models">The list of note database model.</param>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="models">The list of comment database model.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
         /// <param name="key">The security key.</param>
-        /// <returns>A list of use notes.</returns>
-        public static IEnumerable<UserNote> CreateListFromDbModel(IEnumerable<Database.Models.Note> models, ICryptoDelegate cryptoDelegate, string key)
+        /// <returns>A list of use comments.</returns>
+        public static IEnumerable<UserComment> CreateListFromDbModel(IEnumerable<Database.Models.Comment> models, ICryptoDelegate cryptoDelegate, string key)
         {
-            List<UserNote> newList = new List<UserNote>();
-            foreach (Database.Models.Note model in models)
+            List<UserComment> newList = new List<UserComment>();
+            foreach (Database.Models.Comment model in models)
             {
-                newList.Add(UserNote.CreateFromDbModel(model, cryptoDelegate, key));
+                newList.Add(UserComment.CreateFromDbModel(model, cryptoDelegate, key));
             }
 
             return newList;

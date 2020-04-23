@@ -41,7 +41,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="noteDelegate">Injected Note delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        public NoteService(ILogger<UserFeedbackService> logger, INoteDelegate noteDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
+        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
@@ -124,7 +124,7 @@ namespace HealthGateway.WebClient.Services
             DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
             RequestResult<UserNote> result = new RequestResult<UserNote>()
             {
-                ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, cryptoDelegate, key),
+                ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
                 ResultMessage = dbResult.Message,
             };

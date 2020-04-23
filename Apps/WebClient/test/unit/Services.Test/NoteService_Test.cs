@@ -30,13 +30,12 @@ namespace HealthGateway.WebClient.Test.Services
     using System.Collections.Generic;
     using HealthGateway.Common.Delegates;
 
-    public class CommentServiceTest
+    public class NoteServiceTest
     {
         string hdid = "1234567890123456789012345678901234567890123456789012";
-        string parentEntryId = "123456789";
 
         [Fact]
-        public void ShouldGetComments()
+        public void ShouldGetNotes()
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -51,53 +50,48 @@ namespace HealthGateway.WebClient.Test.Services
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            List<Comment> commentList = new List<Comment>();
-            commentList.Add(new Comment
+            List<Note> noteList = new List<Note>();
+            noteList.Add(new Note
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "First Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "First Note",
+                Text = "First Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             });
 
-            commentList.Add(new Comment
+            noteList.Add(new Note
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Second Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Second Note",
+                Text = "Second Note text",
                 CreatedDateTime = new DateTime(2020, 2, 2)
             });
-            List<UserComment> userCommentList = UserComment.CreateListFromDbModel(commentList, cryptoDelegateMock.Object, encryptionKey).ToList();
+            List<UserNote> userNoteList = UserNote.CreateListFromDbModel(noteList, cryptoDelegateMock.Object, encryptionKey).ToList();
 
-            DBResult<IEnumerable<Comment>> commentsDBResult = new DBResult<IEnumerable<Comment>>
+            DBResult<IEnumerable<Note>> notesDBResult = new DBResult<IEnumerable<Note>>
             {
-                Payload = commentList,
+                Payload = noteList,
                 Status = Database.Constant.DBStatusCode.Read
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
-            commentDelegateMock.Setup(s => s.GetList(hdid, parentEntryId)).Returns(commentsDBResult);
+            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            noteDelegateMock.Setup(s => s.GetNotes(hdid, 0, 500)).Returns(notesDBResult);
 
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object
             );
 
-            RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
+            RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(hdid, 0, 500);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userCommentList));
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userNoteList));
         }
 
         [Fact]
-        public void ShouldInsertComment()
+        public void ShouldInsertNote()
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -112,40 +106,39 @@ namespace HealthGateway.WebClient.Test.Services
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            UserComment userComment = new UserComment()
+            UserNote userNote = new UserNote()
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Inserted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Inserted Note",
+                Text = "Inserted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
-            Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Comment> insertResult = new DBResult<Comment>
+            DBResult<Note> insertResult = new DBResult<Note>
             {
-                Payload = comment,
+                Payload = note,
                 Status = Database.Constant.DBStatusCode.Created
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
-            commentDelegateMock.Setup(s => s.Add(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(insertResult);
+            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            noteDelegateMock.Setup(s => s.AddNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(insertResult);
 
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object
-                );
+            );
 
-            RequestResult<UserComment> actualResult = service.Add(userComment);
+            RequestResult<UserNote> actualResult = service.CreateNote(userNote);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userComment));
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userNote));
         }
 
         [Fact]
-        public void ShouldUpdateComment()
+        public void ShouldUpdateNote()
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -160,41 +153,40 @@ namespace HealthGateway.WebClient.Test.Services
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            UserComment userComment = new UserComment()
+            UserNote userNote = new UserNote()
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Updated Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Updated Note",
+                Text = "Updated Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
-            Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Comment> updateResult = new DBResult<Comment>
+            DBResult<Note> updateResult = new DBResult<Note>
             {
-                Payload = comment,
+                Payload = note,
                 Status = Database.Constant.DBStatusCode.Updated
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
-            commentDelegateMock.Setup(s => s.Update(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(updateResult);
+            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            noteDelegateMock.Setup(s => s.UpdateNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(updateResult);
 
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object
             );
 
-            RequestResult<UserComment> actualResult = service.Update(userComment);
+            RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userComment));
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userNote));
         }
 
         [Fact]
-        public void ShouldDeleteComment()
+        public void ShouldDeleteNote()
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -209,72 +201,35 @@ namespace HealthGateway.WebClient.Test.Services
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            UserComment userComment = new UserComment()
+            UserNote userNote = new UserNote()
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Deleted Note",
+                Text = "Deleted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
-            Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Comment> deleteResult = new DBResult<Comment>
+            DBResult<Note> deleteResult = new DBResult<Note>
             {
-                Payload = comment,
+                Payload = note,
                 Status = Database.Constant.DBStatusCode.Deleted
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
-            commentDelegateMock.Setup(s => s.Delete(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(deleteResult);
+            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            noteDelegateMock.Setup(s => s.DeleteNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(deleteResult);
 
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object
             );
 
-            RequestResult<UserComment> actualResult = service.Delete(userComment);
+            RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userComment));
-        }
-
-        [Fact]
-        public void ShouldThrowIfNoKeyGet()
-        {
-            string encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
-            {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey }
-            };
-
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
-
-            UserComment userComment = new UserComment()
-            {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1)
-            };
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object
-            );
-
-            try
-            {
-                RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
-                Assert.True(false); // If it gets to this line, no exception was thrown
-            }
-            catch (ApplicationException) { }
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userNote));
         }
 
         [Fact]
@@ -287,27 +242,26 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
+            UserNote userNote = new UserNote()
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Deleted Note",
+                Text = "Deleted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object
             );
 
             try
             {
-                RequestResult<UserComment> actualResult = service.Add(userComment);
+                RequestResult<UserNote> actualResult = service.CreateNote(userNote);
                 Assert.True(false); // If it gets to this line, no exception was thrown
             }
             catch (ApplicationException) { }
@@ -323,27 +277,26 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
+            UserNote userNote = new UserNote()
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Deleted Note",
+                Text = "Deleted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object
             );
 
             try
             {
-                RequestResult<UserComment> actualResult = service.Update(userComment);
+                RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
                 Assert.True(false); // If it gets to this line, no exception was thrown
             }
             catch (ApplicationException) { }
@@ -359,27 +312,26 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
+            UserNote userNote = new UserNote()
             {
-                UserProfileId = hdid,
-                ParentEntryId = parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                HdId = hdid,
+                Title = "Deleted Note",
+                Text = "Deleted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
+            INoteService service = new NoteService(
+                new Mock<ILogger<NoteService>>().Object,
+                new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object
             );
 
             try
             {
-                RequestResult<UserComment> actualResult = service.Delete(userComment);
+                RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
                 Assert.True(false); // If it gets to this line, no exception was thrown
             }
             catch (ApplicationException) { }
