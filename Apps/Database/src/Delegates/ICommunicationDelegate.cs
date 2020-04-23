@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Delegates
         /// Gets the active communication from the DB.
         /// </summary>
         /// <returns>The Communication wrapped in a DBResult.</returns>
-        public DBResult<Communication> GetActive();
+        DBResult<Communication> GetActive();
 
         /// <summary>
         /// Add the given communication.
@@ -35,6 +35,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="communication">The communication to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The added communication wrapped in a DBResult.</returns>
-        public DBResult<Communication> Add(Communication communication, bool commit = true);
+        DBResult<Communication> Add(Communication communication, bool commit = true);
     }
 }
