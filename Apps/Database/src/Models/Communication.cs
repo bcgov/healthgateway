@@ -18,42 +18,42 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
 
-    /// <inheritdoc />
-    public class FileDownload : AuditableEntity
+    /// <summary>
+    /// A system Communication.
+    /// </summary>
+    public class Communication : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the unique id.
+        /// Gets or sets the id.
         /// </summary>
-        [Column("FileDownloadId")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("CommunicationId")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the downloaded zip file.
+        /// Gets or sets the message text.
         /// </summary>
-        [Required]
-        [MaxLength(35)]
-        public string? Name { get; set; }
+        [MaxLength(1000)]
+        public string? Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the SHA256 hash of the downloaded file.
+        /// Gets or sets the message subject.
         /// </summary>
-        [Required]
-        [MaxLength(44)]
-        public string Hash { get; set; } = null!;
+        [MaxLength(1000)]
+        public string? Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the id representing the program processing the file.
+        /// Gets or sets the effective datetime.
         /// </summary>
         [Required]
-        [MaxLength(10)]
-        public string? ProgramCode { get; set; }
+        public DateTime EffectiveDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the local file path to store the downloaded file.
+        /// Gets or sets the effective datetime.
         /// </summary>
-        [NotMapped]
-        public string? LocalFilePath { get; set; }
+        [Required]
+        public DateTime ExpiryDateTime { get; set; }
     }
 }

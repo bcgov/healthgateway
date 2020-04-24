@@ -91,6 +91,27 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.CommunicationController">
+            <summary>
+            Web API to handle user feedback review.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.#ctor(HealthGateway.Admin.Services.ICommunicationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.CommunicationController"/> class.
+            </summary>
+            <param name="communicationService">The injected communication service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Add(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Adds a given communication to the backend.
+            </summary>
+            <returns>The added communication wrapped in a RequestResult.</returns>
+            <param name="communication">The communication to be added.</param>
+            <response code="200">Returns the communication json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.ConfigurationController">
             <summary>
             Web API to return Health Gateway configuration to approved clients.
@@ -589,6 +610,19 @@
         <member name="M:HealthGateway.Admin.Services.BetaRequestService.SendInvites(System.Collections.Generic.List{System.String},System.String)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.Admin.Services.CommunicationService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserFeedbackService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CommunicationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Add(HealthGateway.Database.Models.Communication)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Admin.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -689,6 +723,17 @@
             <param name="betaRequestIds">The beta request ids to send invites to.</param>
             <param name="hostUrl">The host url for referal purposes.</param>
             <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.ICommunicationService">
+            <summary>
+            Service that interacts with the Communications database.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Add(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Adds a Communication to the database.
+            </summary>
+            <returns>Returns the added communication wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IConfigurationService">
             <summary>

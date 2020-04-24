@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Auditing
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;

@@ -17,7 +17,9 @@ namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -35,7 +37,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="noteDelegate">Injected Note delegate.</param>
-        public NoteService(ILogger<UserFeedbackService> logger, INoteDelegate noteDelegate)
+        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
@@ -48,7 +50,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<Note> result = new RequestResult<Note>()
             {
                 ResourcePayload = dbNote.Payload,
-                ResultStatus = dbNote.Status == Database.Constant.DBStatusCode.Created ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbNote.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbNote.Message,
             };
             return result;
@@ -65,7 +67,7 @@ namespace HealthGateway.WebClient.Services
                 PageIndex = page,
                 PageSize = pageSize,
                 TotalResultCount = dbNotes.Payload.Count,
-                ResultStatus = dbNotes.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbNotes.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbNotes.Message,
             };
             return result;
@@ -78,7 +80,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<Note> result = new RequestResult<Note>()
             {
                 ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
@@ -91,7 +93,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<Note> result = new RequestResult<Note>()
             {
                 ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;

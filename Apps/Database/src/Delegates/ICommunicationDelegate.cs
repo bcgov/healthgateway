@@ -13,21 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Database.Delegates
 {
-    #pragma warning disable CA1707 // The name of an identifier contains the underscore (_) character.
-    #pragma warning disable SA1310 // A field name in C# contains an underscore.
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
 
     /// <summary>
-    /// That static constant used for the Pharmanet Trace DB sequence.
+    /// Operations to be performed for Communications.
     /// </summary>
-    public static class Sequence
+    public interface ICommunicationDelegate
     {
         /// <summary>
-        /// The DB name for the Pharmanet Trace ID Sequence.
+        /// Gets the active communication from the DB.
         /// </summary>
-        public const string PHARMANET_TRACE = @"gateway.trace_seq";
+        /// <returns>The Communication wrapped in a DBResult.</returns>
+        DBResult<Communication> GetActive();
+
+        /// <summary>
+        /// Add the given communication.
+        /// </summary>
+        /// <param name="communication">The communication to be added to the database.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <returns>The added communication wrapped in a DBResult.</returns>
+        DBResult<Communication> Add(Communication communication, bool commit = true);
     }
-    #pragma warning restore SA1310
-    #pragma warning restore CA1707
 }

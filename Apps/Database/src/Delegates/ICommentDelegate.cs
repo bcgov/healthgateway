@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        public DBResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId);
+        DBResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId);
 
         /// <summary>
         /// Add the given note.
@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="comment">The comment to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
-        public DBResult<Comment> Add(Comment comment, bool commit = true);
+        DBResult<Comment> Add(Comment comment, bool commit = true);
 
         /// <summary>
         /// Update the supplied note.
@@ -46,7 +46,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="comment">The comment to be updated in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
-        public DBResult<Comment> Update(Comment comment, bool commit = true);
+        DBResult<Comment> Update(Comment comment, bool commit = true);
 
         /// <summary>
         /// Deletes the supplied note.
@@ -54,6 +54,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="comment">The comment to be deleted in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
-        public DBResult<Comment> Delete(Comment comment, bool commit = true);
+        DBResult<Comment> Delete(Comment comment, bool commit = true);
     }
 }
