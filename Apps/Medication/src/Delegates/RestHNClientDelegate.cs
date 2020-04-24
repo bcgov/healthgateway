@@ -26,7 +26,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Parsers;

@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System;
     using HealthGateway.WebClient.Models;
     using System.Collections.Generic;
+    using HealthGateway.Database.Constants;
 
     public class CommentServiceTest
     {
@@ -42,7 +43,7 @@ namespace HealthGateway.WebClient.Test.Services
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "First Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             });
 
@@ -51,14 +52,14 @@ namespace HealthGateway.WebClient.Test.Services
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Second Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 2, 2)
             });
 
             DBResult<IEnumerable<Comment>> commentsDBResult = new DBResult<IEnumerable<Comment>>
             {
                 Payload = commentList,
-                Status = Database.Constant.DBStatusCode.Read
+                Status = DBStatusCode.Read
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -82,14 +83,14 @@ namespace HealthGateway.WebClient.Test.Services
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Inserted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
             DBResult<Comment> insertResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = Database.Constant.DBStatusCode.Created               
+                Status = DBStatusCode.Created               
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -114,14 +115,14 @@ namespace HealthGateway.WebClient.Test.Services
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Updated Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
             DBResult<Comment> updateResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = Database.Constant.DBStatusCode.Updated
+                Status = DBStatusCode.Updated
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -146,14 +147,14 @@ namespace HealthGateway.WebClient.Test.Services
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
             DBResult<Comment> deleteResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = Database.Constant.DBStatusCode.Deleted
+                Status = DBStatusCode.Deleted
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
