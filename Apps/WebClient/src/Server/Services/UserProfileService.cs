@@ -23,7 +23,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;

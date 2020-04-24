@@ -13,16 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.Admin.Services
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Linq;
+    using HealthGateway.Admin.Models;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class CommunicationService : ICommunicationService
@@ -34,24 +39,26 @@ namespace HealthGateway.WebClient.Services
         /// Initializes a new instance of the <see cref="CommunicationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="communicationDelegate">Injected Note delegate.</param>
-        public CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate)
+        /// <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
+        public CommunicationService(ILogger<UserFeedbackService> logger, ICommunicationDelegate communicationDelegate)
         {
             this.logger = logger;
             this.communicationDelegate = communicationDelegate;
         }
 
         /// <inheritdoc />
-        public RequestResult<Communication> GetActive()
+        public RequestResult<Communication> Add(Communication communication)
         {
-            DBResult<Communication> dbComm = this.communicationDelegate.GetActive();
-            RequestResult<Communication> result = new RequestResult<Communication>()
+            this.logger.LogTrace($"Adding communication... {JsonConvert.SerializeObject(communication)}");
+
+            DBResult<Communication> dbResult = this.communicationDelegate.Add(communication);
+            RequestResult<Communication> requestResult = new RequestResult<Communication>()
             {
-                ResourcePayload = dbComm.Payload,
-                ResultStatus = dbComm.Status == Database.Constants.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
-                ResultMessage = dbComm.Message,
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultMessage = dbResult.Message,
             };
-            return result;
+            return requestResult;
         }
     }
 }

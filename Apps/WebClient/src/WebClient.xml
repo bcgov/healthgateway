@@ -584,7 +584,7 @@
         <member name="P:HealthGateway.WebClient.Models.UserComment.EntryTypeCode">
             <summary>
             Gets or sets the entry type code.
-            The value is one of <see cref="T:HealthGateway.Database.Constant.CommentEntryType"/>.
+            The value is one of <see cref="T:HealthGateway.Database.Constants.CommentEntryType"/>.
             </summary>
         </member>
         <member name="P:HealthGateway.WebClient.Models.UserComment.ParentEntryId">

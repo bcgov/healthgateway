@@ -19,7 +19,9 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -66,7 +68,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<UserNote> result = new RequestResult<UserNote>()
             {
                 ResourcePayload = UserNote.CreateFromDbModel(dbNote.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbNote.Status == Database.Constant.DBStatusCode.Created ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbNote.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbNote.Message,
             };
             return result;
@@ -80,7 +82,7 @@ namespace HealthGateway.WebClient.Services
 
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
-            
+
             // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
             if (key == null)
             {
@@ -102,7 +104,7 @@ namespace HealthGateway.WebClient.Services
                 PageIndex = page,
                 PageSize = pageSize,
                 TotalResultCount = dbNotes.Payload.ToList().Count,
-                ResultStatus = dbNotes.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbNotes.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbNotes.Message,
             };
             return result;
@@ -125,7 +127,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<UserNote> result = new RequestResult<UserNote>()
             {
                 ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
@@ -141,13 +143,13 @@ namespace HealthGateway.WebClient.Services
                 this.logger.LogError($"User does not have a key: ${userNote.HdId}");
                 throw new ApplicationException("Profile key not set");
             }
-            
+
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);
             DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
             RequestResult<UserNote> result = new RequestResult<UserNote>()
             {
                 ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;

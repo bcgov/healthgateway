@@ -24,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -404,7 +405,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);
 
-            auditEvent.TransactionResultCode = Database.Constant.AuditTransactionResult.Unauthorized;
+            auditEvent.TransactionResultCode = AuditTransactionResult.Unauthorized;
             auditEvent.CreatedBy = nameof(StartupConfiguration);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
 

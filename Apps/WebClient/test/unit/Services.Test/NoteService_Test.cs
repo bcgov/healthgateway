@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<IEnumerable<Note>> notesDBResult = new DBResult<IEnumerable<Note>>
             {
                 Payload = noteList,
-                Status = Database.Constant.DBStatusCode.Read
+                Status = Database.Constants.DBStatusCode.Read
             };
 
             Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
@@ -118,7 +118,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Note> insertResult = new DBResult<Note>
             {
                 Payload = note,
-                Status = Database.Constant.DBStatusCode.Created
+                Status = Database.Constants.DBStatusCode.Created
             };
 
             Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
@@ -166,7 +166,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Note> updateResult = new DBResult<Note>
             {
                 Payload = note,
-                Status = Database.Constant.DBStatusCode.Updated
+                Status = Database.Constants.DBStatusCode.Updated
             };
 
             Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
@@ -213,7 +213,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Note> deleteResult = new DBResult<Note>
             {
                 Payload = note,
-                Status = Database.Constant.DBStatusCode.Deleted
+                Status = Database.Constants.DBStatusCode.Deleted
             };
 
             Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
