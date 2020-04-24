@@ -19,6 +19,7 @@ import { TermsOfService } from "@/models/termsOfService";
 import UserNote from "@/models/userNote";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
+import Communication from "@/models/communication";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -108,6 +109,11 @@ export interface IUserCommentService {
   createComment(comment: UserComment): Promise<UserComment>;
   updateComment(comment: UserComment): Promise<UserComment>;
   deleteComment(comment: UserComment): Promise<void>;
+}
+
+export interface ICommunicationService {
+  initialize(http: IHttpDelegate): void;
+  getActive(): Promise<RequestResult<Communication>>;
 }
 
 export interface IHttpDelegate {

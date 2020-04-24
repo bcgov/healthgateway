@@ -81,6 +81,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
             services.AddSingleton<INonceService, NonceService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
@@ -91,6 +92,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
             services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
+            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
