@@ -87,6 +87,8 @@ namespace HealthGateway.Medication.Delegates
             {
                 this.baseURL = this.odrConfig.Url;
             }
+
+            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL}");
         }
 
         /// <inheritdoc/>
@@ -192,6 +194,7 @@ namespace HealthGateway.Medication.Delegates
                 if (cacheHash == null)
                 {
                     this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");
+
                     // The hash isn't in the cache, get Protective word hash from source
                     IHash? hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
                                                                                .ConfigureAwait(true)).Result;
