@@ -188,6 +188,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     cacheHash = this.genericCacheDelegate.GetCacheObject<IHash>(hdid, ProtectiveWordCacheDomain);
                 }
+
                 if (cacheHash == null)
                 {
                     this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");

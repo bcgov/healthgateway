@@ -16,7 +16,7 @@
 namespace HealthGateway.Medication.Models
 {
     /// <summary>
-    /// The configuration for the ODR portion of the ResetMedStatement delegate
+    /// The configuration for the ODR portion of the ResetMedStatement delegate.
     /// </summary>
     public class ODRConfig
     {
