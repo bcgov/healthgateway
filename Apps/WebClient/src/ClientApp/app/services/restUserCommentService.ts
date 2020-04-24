@@ -4,7 +4,6 @@ import RequestResult from "@/models/requestResult";
 import UserComment from "@/models/userComment";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
-import TimelineEntry from "@/models/timelineEntry";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
@@ -18,7 +17,7 @@ export class RestUserCommentService implements IUserCommentService {
     this.isEnabled = config.webClient.modules["Comment"];
   }
 
-  public getComments(): Promise<RequestResult<UserComment[]>> {
+  public getCommentsForEntry(parentEntryId: string): Promise<RequestResult<UserComment[]>> {
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
         resolve({
@@ -31,11 +30,8 @@ export class RestUserCommentService implements IUserCommentService {
         });
         return;
       }
-
       this.http
-        .getWithCors<RequestResult<UserComment[]>>(
-          `${this.USER_COMMENT_BASE_URI}/`
-        )
+        .getWithCors<RequestResult<UserComment[]>>(`${this.USER_COMMENT_BASE_URI}?parentEntryId="${parentEntryId}"`, )
         .then(userComments => {
           return resolve(userComments);
         })
@@ -48,11 +44,6 @@ export class RestUserCommentService implements IUserCommentService {
 
   public createComment(comment: UserComment): Promise<UserComment> {
     return new Promise((resolve, reject) => {
-      if (!this.isEnabled) {
-        resolve();
-        return;
-      }
-
       this.http
         .post<RequestResult<UserComment>>(
           `${this.USER_COMMENT_BASE_URI}/`,
