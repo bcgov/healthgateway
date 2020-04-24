@@ -17,7 +17,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     
     if (model.prescriptionIdentifier) {
       // ODR result
-      super("id-" + model.prescriptionIdentifier, EntryType.Medication, model.dispensedDate);
+      super(model.prescriptionIdentifier, EntryType.Medication, model.dispensedDate);
     } else {
       // PharmaNet result - generate a random unique id for entry
       super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);

@@ -19,6 +19,17 @@ export class RestUserCommentService implements IUserCommentService {
 
   public getCommentsForEntry(parentEntryId: string): Promise<RequestResult<UserComment[]>> {
     return new Promise((resolve, reject) => {
+      if (!this.isEnabled) {
+        resolve({
+          pageIndex: 0,
+          pageSize: 0,
+          resourcePayload: [],
+          resultMessage: "",
+          resultStatus: ResultType.Success,
+          totalResultCount: 0
+        });
+        return;
+      }
       this.http
         .getWithCors<RequestResult<UserComment[]>>(`${this.USER_COMMENT_BASE_URI}?parentEntryId="${parentEntryId}"`, )
         .then(userComments => {

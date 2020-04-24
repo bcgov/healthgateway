@@ -36,11 +36,6 @@ $radius: 15px;
   padding: 0px;
 }
 
-.commentButton {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
 .detailSection {
   margin-top: 15px;
 }
@@ -169,7 +164,7 @@ $radius: 15px;
         <b-row>
           <b-col>
             <div class="d-flex flex-row-reverse">
-              <span class="commentButton" v-if="this.comments.length > 0">{{
+              <span class="py-2 px-0" v-if="this.comments.length > 0">{{
                 this.comments.length > 1
                   ? this.comments.length + " comments"
                   : "1 comment"
