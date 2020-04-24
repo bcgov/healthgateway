@@ -205,6 +205,16 @@
 </style>
 <template>
   <div class="landing">
+    <b-row v-if="communication">
+      <b-col class="p-0">
+        <b-alert :show="true" variant="warning" class="m-0 text-center">
+          <h4 v-if="communication.subject">{{ communication.subject }}</h4>
+          <span>
+            {{ communication.text }}
+          </span>
+        </b-alert>
+      </b-col>
+    </b-row>
     <b-row
       class="intro align-items-center"
       :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
@@ -365,7 +375,10 @@ import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
-
+import { ICommunicationService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import Communication from "@/models/communication";
 import {
   faPills,
   faUserMd,
@@ -387,6 +400,7 @@ interface Tile {
 
 @Component
 export default class LandingComponent extends Vue {
+  private communication: Communication = null;
   private icons: Icon[] = [
     {
       definition: faPills,
@@ -439,6 +453,24 @@ export default class LandingComponent extends Vue {
 
   private getTileClass(index: number): string {
     return index % 2 == 0 ? "order-md-1" : "order-md-2";
+  }
+
+  private mounted() {
+    this.fetchCommunication();
+  }
+
+  private fetchCommunication() {
+    const communicationService: ICommunicationService = container.get(
+      SERVICE_IDENTIFIER.CommunicationService
+    );
+    communicationService
+      .getActive()
+      .then(requestResult => {
+        this.communication = requestResult.resourcePayload;
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 }
 </script>

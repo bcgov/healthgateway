@@ -9,7 +9,7 @@ export const SERVICE_IDENTIFIER = {
   UserEmailService: Symbol.for("UserEmailService"),
   BetaRequestService: Symbol.for("BetaRequestService"),
   UserNoteService: Symbol.for("UserNoteService"),
-  UserCommentService: Symbol.for("UserCommentService"),
+  CommunicationService: Symbol.for("CommunicationService")
 };
 
 export const DELEGATE_IDENTIFIER = {
