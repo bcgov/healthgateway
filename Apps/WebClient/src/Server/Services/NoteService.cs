@@ -57,7 +57,7 @@ namespace HealthGateway.WebClient.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogInformation($"User does not have a key: ${userNote.HdId}");
+                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
                 throw new ApplicationException("Profile key not set");
             }
 
@@ -93,7 +93,7 @@ namespace HealthGateway.WebClient.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogInformation($"User does not have a key: ${hdId}");
+                this.logger.LogError($"User does not have a key: ${hdId}");
                 throw new ApplicationException("Profile key not set");
             }
 
@@ -116,7 +116,7 @@ namespace HealthGateway.WebClient.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogInformation($"User does not have a key: ${userNote.HdId}");
+                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
                 throw new ApplicationException("Profile key not set");
             }
 
@@ -139,7 +139,7 @@ namespace HealthGateway.WebClient.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogInformation($"User does not have a key: ${userNote.HdId}");
+                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
                 throw new ApplicationException("Profile key not set");
             }
             
