@@ -20,20 +20,46 @@ namespace HealthGateway.Medication.Models
     /// </summary>
     public class ODRConfig
     {
-        public string ServiceName { get; set; }
+        /// <summary>
+        /// Gets or sets the OpenShift service name.
+        /// </summary>
+        public string ServiceName { get; set; } = "ODRPROXY_SERVICE";
 
+        /// <summary>
+        /// Gets or sets the host suffix used to lookup the service host.
+        /// </summary>
         public string ServiceHostSuffix { get; set; } = "_HOST";
 
+        /// <summary>
+        /// Gets or sets the port suffix used to lookup the service port.
+        /// </summary>
         public string ServicePortSuffix { get; set; } = "_PORT";
 
-        public string Url { get; set; }
+        /// <summary>
+        /// Gets or sets the Url used to connect to the ODR Proxy.
+        /// </summary>
+        public string Url { get; set; } = string.Empty;
 
-        public string PatientProfileEndpoint { get; set; }
+        /// <summary>
+        /// Gets or sets the endpoint path for the patient profile service.
+        /// </summary>
+        public string PatientProfileEndpoint { get; set; } = string.Empty;
 
-        public string ProtectiveWordEndpoint { get; set; }
+        /// <summary>
+        /// Gets or sets the endpoint path for the protective word service.
+        /// </summary>
+        public string ProtectiveWordEndpoint { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the time to live for cache objects.
+        /// </summary>
         public int CacheTTL { get; set; } = 1440;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether dynamic service lookup should occur.
+        /// if enabled, the Url will be created using environment variables.
+        /// If not enabled, the configured Url will be used.
+        /// </summary>
         public bool DynamicServiceLookup { get; set; }
     }
 }
