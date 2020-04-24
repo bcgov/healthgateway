@@ -35,7 +35,6 @@
     <Folder Include="Services\" />
     <Folder Include="Swagger\" />
     <Folder Include="Delegates\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\Swagger_Test.cs" />

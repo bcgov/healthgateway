@@ -19,7 +19,7 @@ namespace HealthGateway.CommonTests.Utils
     using HealthGateway.Common.Utils;
     using Xunit;
 
-    public class Manipulator_Test
+    public class StringManipulator_Test
     {
         [Fact]
         public void ShouldReplace()
@@ -28,9 +28,9 @@ namespace HealthGateway.CommonTests.Utils
             string expected1 = "PARM1=PARM1, PARM2=${PARM2}, PARM3=${PARM3}";
             string expected2 = "PARM1=PARM1, PARM2=PARM2, PARM3=${PARM3}";
             string expected3 = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3";
-            Assert.True(Manipulator.Replace(inStr, "PARM1", "PARM1") == expected1);
-            Assert.True(Manipulator.Replace(expected1, "PARM2", "PARM2") == expected2);
-            Assert.True(Manipulator.Replace(expected2, "PARM3", "PARM3") == expected3);
+            Assert.True(StringManipulator.Replace(inStr, "PARM1", "PARM1") == expected1);
+            Assert.True(StringManipulator.Replace(expected1, "PARM2", "PARM2") == expected2);
+            Assert.True(StringManipulator.Replace(expected2, "PARM3", "PARM3") == expected3);
         }
 
         [Fact]
@@ -44,14 +44,14 @@ namespace HealthGateway.CommonTests.Utils
             };
             string inStr = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}";
             string expected = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3";
-            string result = Manipulator.Replace(inStr, data);
+            string result = StringManipulator.Replace(inStr, data);
             Assert.True(result == expected);
         }
 
         [Fact]
         public void ShouldNullReturnNull()
         {
-            string result = Manipulator.Replace(null, "KEY", "VALUE");
+            string result = StringManipulator.Replace(null, "KEY", "VALUE");
             Assert.True(result is null);
         }
     }

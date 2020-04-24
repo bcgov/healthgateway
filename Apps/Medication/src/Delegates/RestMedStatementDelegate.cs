@@ -81,7 +81,7 @@ namespace HealthGateway.Medication.Delegates
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
-                this.baseURL = Manipulator.Replace(this.odrConfig.Url, replacementData)!;
+                this.baseURL = StringManipulator.Replace(this.odrConfig.Url, replacementData)!;
             }
             else
             {

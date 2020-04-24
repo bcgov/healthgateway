@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Utils
     /// <summary>
     /// Utilities for performing manipulations on strings.
     /// </summary>
-    public static class Manipulator
+    public static class StringManipulator
     {
         /// <summary>
         /// Replaces any occurences of {$key} in the string with the value.
@@ -31,7 +31,7 @@ namespace HealthGateway.Common.Utils
         /// <param name="inStr">The string to scan.</param>
         /// <param name="key">The key to replace, should be key and not ${key}.</param>
         /// <param name="value">The replacement value.</param>
-        /// <returns>The manipulated string</returns>
+        /// <returns>The manipulated string.</returns>
         public static string? Replace(string? inStr, string key, string value)
         {
             Dictionary<string, string> data = new Dictionary<string, string>()

@@ -194,8 +194,8 @@ namespace HealthGateway.Common.Services
             Email email = new Email();
             email.From = emailTemplate.From;
             email.Priority = emailTemplate.Priority;
-            email.Subject = Manipulator.Replace(emailTemplate.Subject, keyValues);
-            email.Body = Manipulator.Replace(emailTemplate.Body, keyValues);
+            email.Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues);
+            email.Body = StringManipulator.Replace(emailTemplate.Body, keyValues);
             email.FormatCode = emailTemplate.FormatCode;
             return email;
         }
