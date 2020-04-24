@@ -27,9 +27,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Models.Cacheable;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
@@ -43,7 +41,6 @@ namespace HealthGateway.Medication.Delegates
     {
         private const string ODRConfigSectionKey = "ODR";
         private const string ProtectiveWordCacheDomain = "ProtectiveWord";
-        private const string ODRCacheTimeKey = "CacheTTL";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
