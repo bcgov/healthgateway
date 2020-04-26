@@ -17,7 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Models;
 
     /// <summary>
     /// Service to interact with the Note Delegate.
@@ -29,7 +29,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="note">The note to create.</param>
         /// <returns>A note wrapped in a RequestResult.</returns>
-        public RequestResult<Note> CreateNote(Note note);
+        RequestResult<UserNote> CreateNote(UserNote note);
 
         /// <summary>
         /// Gets all the notes for the given hdId.
@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="page">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<Note>> GetNotes(string hdId, int page = 0, int pageSize = 500);
+        RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500);
 
         /// <summary>
         /// Updates the given note in the backend.
@@ -46,13 +46,13 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="note">The note to update.</param>
         /// <returns>The updated Note.</returns>
-        public RequestResult<Note> UpdateNote(Note note);
+        RequestResult<UserNote> UpdateNote(UserNote note);
 
         /// <summary>
         /// Deletes the given note from the backend.
         /// </summary>
         /// <param name="note">The note to delete.</param>
         /// <returns>The deleted note wrapped in a RequestResult.</returns>
-        public RequestResult<Note> DeleteNote(Note note);
+        RequestResult<UserNote> DeleteNote(UserNote note);
     }
 }
