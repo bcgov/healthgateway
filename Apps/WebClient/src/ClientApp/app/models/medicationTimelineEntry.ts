@@ -14,10 +14,13 @@ export default class MedicationTimelineEntry extends TimelineEntry {
   public prescriptionIdentifier: string;
 
   public constructor(model: MedicationStatement | MedicationStatementHistory) {
-    
     if (model.prescriptionIdentifier) {
       // ODR result
-      super(model.prescriptionIdentifier, EntryType.Medication, model.dispensedDate);
+      super(
+        model.prescriptionIdentifier,
+        EntryType.Medication,
+        model.dispensedDate
+      );
     } else {
       // PharmaNet result - generate a random unique id for entry
       super("id-" + Math.random(), EntryType.Medication, model.dispensedDate);
