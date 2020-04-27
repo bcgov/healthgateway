@@ -170,7 +170,7 @@ $radius: 15px;
                 class="px-0 py-2"
                 @click="toggleComments()"
               >
-                <span v-if="this.comments.length > 0">{{
+                <span v-if="this.hasComments">{{
                   this.comments.length > 1
                     ? this.comments.length + " comments"
                     : "1 comment"
@@ -243,6 +243,10 @@ export default class MedicationTimelineComponent extends Vue {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
   }
 
+  private get hasComments(): boolean {
+    return this.comments.length > 0;
+  }
+
   private get commentsLoaded(): boolean {
     return this.commentsLoaded;
   }
@@ -261,20 +265,19 @@ export default class MedicationTimelineComponent extends Vue {
 
   private toggleComments(): void {
     this.commentsVisible = !this.commentsVisible;
-    this.hasErrors = false;
-    if (!this.commentsVisible) {
-      return;
-    }
   }
 
   private sortComments() {
-    this.comments.sort((a, b) =>
-      a.createdDateTime > b.createdDateTime
-        ? -1
-        : a.createdDateTime < b.createdDateTime
-        ? 1
-        : 0
-    );
+    this.comments.sort((a, b) => {
+      if (a.createdDateTime > b.createdDateTime) {
+        return -1
+      }
+      else if (a.createdDateTime < b.createdDateTime) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
