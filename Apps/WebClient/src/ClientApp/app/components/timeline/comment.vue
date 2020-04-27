@@ -31,8 +31,7 @@ export default class CommentComponent extends Vue {
 
   private formatDate(date: Date) {
     let split = date.toString().split("T");
-    const formatted = split[0] + " " + split[1].split(".")[0];
-    return formatted;
+    return split[0] + " " + split[1].split(".")[0];
   }
 }
 </script>
