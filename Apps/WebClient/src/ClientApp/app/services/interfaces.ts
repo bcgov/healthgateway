@@ -105,7 +105,7 @@ export interface IUserNoteService {
 
 export interface IUserCommentService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getComments(): Promise<RequestResult<UserComment[]>>;
+  getCommentsForEntry(parentEntryId: string): Promise<RequestResult<UserComment[]>>;
   createComment(comment: UserComment): Promise<UserComment>;
   updateComment(comment: UserComment): Promise<UserComment>;
   deleteComment(comment: UserComment): Promise<void>;

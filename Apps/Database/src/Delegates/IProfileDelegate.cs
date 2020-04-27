@@ -38,8 +38,9 @@ namespace HealthGateway.Database.Delegates
         /// UpdatedDateTime will overridden by our framework.
         /// </summary>
         /// <param name="profile">The profile to update.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserProfile> UpdateUserProfile(UserProfile profile);
+        DBResult<UserProfile> Update(UserProfile profile, bool commit = true);
 
         /// <summary>
         /// Fetches the UserProfile from the database.

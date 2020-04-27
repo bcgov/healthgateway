@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Constants
 {
     #pragma warning disable CA1707 // The name of an identifier contains the underscore (_) character.
     #pragma warning disable SA1310 // A field name in C# contains an underscore.

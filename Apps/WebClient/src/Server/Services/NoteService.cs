@@ -15,9 +15,13 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Linq;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -29,72 +33,145 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
+        private readonly IProfileDelegate profileDelegate;
+        private readonly ICryptoDelegate cryptoDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="noteDelegate">Injected Note delegate.</param>
-        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate)
+        /// <param name="profileDelegate">Injected Profile delegate.</param>
+        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
+            this.profileDelegate = profileDelegate;
+            this.cryptoDelegate = cryptoDelegate;
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> CreateNote(Note note)
+        public RequestResult<UserNote> CreateNote(UserNote userNote)
         {
-            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
-            RequestResult<Note> result = new RequestResult<Note>()
+            UserProfile profile = this.profileDelegate.GetUserProfile(userNote.HdId).Payload;
+            string? key = profile.EncryptionKey;
+            if (key == null)
             {
-                ResourcePayload = dbNote.Payload,
-                ResultStatus = dbNote.Status == Database.Constant.DBStatusCode.Created ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
+                throw new ApplicationException("Profile key not set");
+            }
+
+            Note note = userNote.ToDbModel(this.cryptoDelegate, key);
+
+            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
+            RequestResult<UserNote> result = new RequestResult<UserNote>()
+            {
+                ResourcePayload = UserNote.CreateFromDbModel(dbNote.Payload, this.cryptoDelegate, key),
+                ResultStatus = dbNote.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbNote.Message,
             };
             return result;
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Note>> GetNotes(string hdId, int page = 0, int pageSize = 500)
+        public RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500)
         {
             int offset = page * pageSize;
-            DBResult<List<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
-            RequestResult<IEnumerable<Note>> result = new RequestResult<IEnumerable<Note>>()
+            DBResult<IEnumerable<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+
+            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
+            string? key = profile.EncryptionKey;
+
+            // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
+            if (key == null)
             {
-                ResourcePayload = dbNotes.Payload,
+                this.logger.LogInformation($"First time note retrieval with key for user ${hdId}");
+                key = this.EncryptFirstTime(profile, dbNotes.Payload);
+                dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+            }
+
+            // Check that the key has been set
+            if (key == null)
+            {
+                this.logger.LogError($"User does not have a key: ${hdId}");
+                throw new ApplicationException("Profile key not set");
+            }
+
+            RequestResult<IEnumerable<UserNote>> result = new RequestResult<IEnumerable<UserNote>>()
+            {
+                ResourcePayload = UserNote.CreateListFromDbModel(dbNotes.Payload, this.cryptoDelegate, key),
                 PageIndex = page,
                 PageSize = pageSize,
-                TotalResultCount = dbNotes.Payload.Count,
-                ResultStatus = dbNotes.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                TotalResultCount = dbNotes.Payload.ToList().Count,
+                ResultStatus = dbNotes.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbNotes.Message,
             };
             return result;
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> UpdateNote(Note note)
+        public RequestResult<UserNote> UpdateNote(UserNote userNote)
         {
-            DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
-            RequestResult<Note> result = new RequestResult<Note>()
+            UserProfile profile = this.profileDelegate.GetUserProfile(userNote.HdId).Payload;
+            string? key = profile.EncryptionKey;
+            if (key == null)
             {
-                ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
+                throw new ApplicationException("Profile key not set");
+            }
+
+            Note note = userNote.ToDbModel(this.cryptoDelegate, key);
+
+            DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
+            RequestResult<UserNote> result = new RequestResult<UserNote>()
+            {
+                ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
         }
 
         /// <inheritdoc />
-        public RequestResult<Note> DeleteNote(Note note)
+        public RequestResult<UserNote> DeleteNote(UserNote userNote)
         {
-            DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
-            RequestResult<Note> result = new RequestResult<Note>()
+            UserProfile profile = this.profileDelegate.GetUserProfile(userNote.HdId).Payload;
+            string? key = profile.EncryptionKey;
+            if (key == null)
             {
-                ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
+                throw new ApplicationException("Profile key not set");
+            }
+
+            Note note = userNote.ToDbModel(this.cryptoDelegate, key);
+            DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
+            RequestResult<UserNote> result = new RequestResult<UserNote>()
+            {
+                ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
+        }
+
+        private string EncryptFirstTime(UserProfile profile, IEnumerable<Note> dbNotes)
+        {
+            string key = this.cryptoDelegate.GenerateKey();
+            profile.EncryptionKey = key;
+            this.profileDelegate.Update(profile, false);
+
+            foreach (Note note in dbNotes)
+            {
+                string encryptedTitle = this.cryptoDelegate.Encrypt(key, note.Title);
+                string encryptedText = this.cryptoDelegate.Encrypt(key, note.Text);
+                note.Title = encryptedTitle;
+                note.Text = encryptedText;
+            }
+
+            this.noteDelegate.BatchUpdate(dbNotes, true);
+
+            return key;
         }
     }
 }

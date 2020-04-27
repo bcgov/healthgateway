@@ -25,6 +25,7 @@ namespace HealthGateway.WebClient.Test.Services
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Models;
     using System;
+    using HealthGateway.Database.Constants;
 
     public class CommunicationServiceTest
     {
@@ -41,7 +42,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Communication> dbResult = new DBResult<Communication>
             {
                 Payload = communication,
-                Status = Database.Constant.DBStatusCode.Read
+                Status = DBStatusCode.Read
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();

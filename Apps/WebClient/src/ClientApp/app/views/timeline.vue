@@ -267,8 +267,8 @@ Component.registerHooks(["beforeRouteLeave"]);
     ProtectiveWordComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    NoteTimelineComponent
-  }
+    NoteTimelineComponent,
+  },
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
@@ -306,12 +306,10 @@ export default class TimelineComponent extends Vue {
     this.fetchImmunizations();
     this.fetchNotes();
     window.addEventListener("beforeunload", this.onBrowserClose);
-
     let self = this;
     EventBus.$on("timelineCreateNote", function() {
       self.isAddingNote = true;
     });
-
     EventBus.$on("timelinePrintView", function() {
       self.printRecords();
     });
@@ -425,10 +423,8 @@ export default class TimelineComponent extends Vue {
       SERVICE_IDENTIFIER.MedicationService
     );
     this.isMedicationLoading = true;
-
     const isOdrEnabled = this.config.modules["MedicationHistory"];
     let promise: Promise<RequestResult<MedicationStatement[]>>;
-
     if (isOdrEnabled) {
       promise = medicationService.getPatientMedicationStatementHistory(
         this.user.hdid,
@@ -442,10 +438,9 @@ export default class TimelineComponent extends Vue {
     }
 
     promise
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
-
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
@@ -463,7 +458,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -479,7 +474,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -495,7 +490,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -511,7 +506,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -526,7 +521,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -545,7 +540,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
 
@@ -554,12 +549,12 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex(e => e == entry.id);
+    const index = this.editIdList.findIndex((e) => e == entry.id);
     this.editIdList.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
   }
@@ -580,7 +575,7 @@ export default class TimelineComponent extends Vue {
   @Watch("filterText")
   @Watch("filterTypes")
   private applyTimelineFilter() {
-    this.filteredTimelineEntries = this.timelineEntries.filter(entry =>
+    this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
   }
@@ -593,7 +588,6 @@ export default class TimelineComponent extends Vue {
     if (this.currentPage > this.numberOfPages) {
       this.currentPage = this.numberOfPages;
     }
-
     // Get the section of the array that contains the paginated section
     let lowerIndex = (this.currentPage - 1) * this.numberOfEntriesPerPage;
     let upperIndex = Math.min(
@@ -610,28 +604,24 @@ export default class TimelineComponent extends Vue {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
     }
-
     let groups = this.visibleTimelineEntries.reduce((groups, entry) => {
       // Get the string version of the date and get the date
       //const date = (entry.date).split("T")[0];
       const date = new Date(entry.date).setHours(0, 0, 0, 0);
-
       // Create a new group if it the date doesnt exist in the map
       if (!groups[date]) {
         groups[date] = [];
       }
-
       groups[date].push(entry);
       return groups;
     }, {});
-
-    let groupArrays = Object.keys(groups).map(dateKey => {
+    let groupArrays = Object.keys(groups).map((dateKey) => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        )
+        ),
       };
     });
     return this.sortGroup(groupArrays);
@@ -657,7 +647,7 @@ export default class TimelineComponent extends Vue {
       a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
   }
-
+  
   private printRecords() {
     window.print();
   }

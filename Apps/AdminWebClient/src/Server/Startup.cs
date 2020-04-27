@@ -86,6 +86,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<IEmailAdminService, EmailAdminService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
 
             // Add delegates
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
@@ -93,6 +94,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();

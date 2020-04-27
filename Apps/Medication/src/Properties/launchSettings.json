@@ -13,6 +13,8 @@
       "commandName": "Project",
       "launchUrl": "swagger",
       "environmentVariables": {
+        "ODRPROXY_SERVICE_PORT": "443",
+        "ODRPROXY_SERVICE_HOST": "dev-odrproxy.pathfinder.gov.bc.ca",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:3003;"

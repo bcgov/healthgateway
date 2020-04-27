@@ -13,33 +13,20 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models.Cacheable
+namespace HealthGateway.Admin.Services
 {
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// A hash of something.
+    /// Service that interacts with the Communications database.
     /// </summary>
-    public class HMACHash : IHash
+    public interface ICommunicationService
     {
         /// <summary>
-        /// Gets or sets the pseudo random function that was used to generate this hash.
+        /// Adds a Communication to the database.
         /// </summary>
-        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
-
-        /// <summary>
-        /// Gets or sets the iterations used to generate this hash.
-        /// </summary>
-        public int Iterations { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base64 salt that was used in generating the hash.
-        /// </summary>
-        public string? Salt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base64 encoded hash.
-        /// </summary>
-        public string? Hash { get; set; }
+        /// <returns>Returns the added communication wrapped in a RequestResult.</returns>
+        RequestResult<Communication> Add(Communication communication);
     }
 }

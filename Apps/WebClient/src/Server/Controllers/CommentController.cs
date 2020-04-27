@@ -22,7 +22,6 @@ namespace HealthGateway.WebClient.Controllers
     using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -59,7 +58,7 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Posts a Comment json to be inserted into the database.
+        /// Posts a UserComment json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
         /// <param name="comment">The Comment request model.</param>
@@ -68,7 +67,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Create([FromBody] Comment comment)
+        public async Task<IActionResult> Create([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -88,12 +87,13 @@ namespace HealthGateway.WebClient.Controllers
 
             comment.UserProfileId = userHdid;
             comment.CreatedBy = userHdid;
-            RequestResult<Comment> result = this.commentService.Add(comment);
+            comment.UpdatedBy = userHdid;
+            RequestResult<UserComment> result = this.commentService.Add(comment);
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Puts a Comment json to be updated in the database.
+        /// Puts a UserComment json to be updated in the database.
         /// </summary>
         /// <returns>The updated Comment wrapped in a RequestResult.</returns>
         /// <param name="comment">The Comment to be updated.</param>
@@ -102,7 +102,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Update([FromBody] Comment comment)
+        public async Task<IActionResult> Update([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -126,21 +126,21 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             comment.UpdatedBy = userHdid;
-            RequestResult<Comment> result = this.commentService.Update(comment);
+            RequestResult<UserComment> result = this.commentService.Update(comment);
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Deletes a Comment from the database.
+        /// Deletes a UserComment from the database.
         /// </summary>
-        /// <returns>The deleted Comment wrapped in a RequestResult.</returns>
+        /// <returns>The deleted UserComment wrapped in a RequestResult.</returns>
         /// <param name="comment">The comment to be deleted.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Delete([FromBody] Comment comment)
+        public async Task<IActionResult> Delete([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -153,7 +153,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<Comment> result = this.commentService.Delete(comment);
+            RequestResult<UserComment> result = this.commentService.Delete(comment);
             return new JsonResult(result);
         }
 
@@ -178,7 +178,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<IEnumerable<Comment>> result = this.commentService.GetList(userHdid, parentEntryId);
+            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(userHdid, parentEntryId);
             return new JsonResult(result);
         }
     }
