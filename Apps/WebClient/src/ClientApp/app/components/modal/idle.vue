@@ -41,23 +41,30 @@
 import Vue from "vue";
 import { Ref, Emit, Component } from "vue-property-decorator";
 import { Action } from "vuex-class";
+import EventBus from "@/eventbus";
+import User from "@/models/user";
 
 @Component
 export default class IdleComponent extends Vue {
-  @Ref("idle-modal") readonly modal: HTMLElement;
+  @Ref("idle-modal") readonly modal!: HTMLElement;
   @Action("authenticateOidcSilent", { namespace: "auth" })
-  authenticateOidcSilent;
+  authenticateOidcSilent!: () => Promise<User | null>;
 
   private totalTime: number = 60;
   private visible: boolean = false;
+  private timerHandle?: number;
+  private timeoutHandle?: number;
 
   @Emit()
   public show() {
     if (!this.visible) {
       this.modal.show();
       var self = this;
-      this.timer = setInterval(() => self.countdown(), 1000);
-      this.timeout = setTimeout(() => self.logout(), 1000 * 60);
+      this.timerHandle = setInterval(() => self.countdown(), 1000);
+      this.timeoutHandle = setTimeout(() => {
+        EventBus.$emit("idleLogoutWarning", true);
+        self.logout();
+      }, 1000 * 10);
     }
   }
   @Emit()
@@ -65,15 +72,16 @@ export default class IdleComponent extends Vue {
     this.$router.push("/logout");
   }
 
-  private refresh(bvModalEvt) {
+  private refresh(bvModalEvt: Event) {
     this.authenticateOidcSilent();
     this.reset();
   }
 
   private reset() {
     this.totalTime = 60;
-    clearTimeout(this.timeout);
-    clearInterval(this.timer);
+    clearTimeout(this.timeoutHandle);
+    clearInterval(this.timerHandle);
+    EventBus.$emit("idleLogoutWarning", false);
   }
 
   private countdown() {

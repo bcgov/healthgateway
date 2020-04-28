@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
