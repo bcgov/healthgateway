@@ -61,7 +61,6 @@
     <Folder Include="Constants\" />
     <Folder Include="Delegates\" />
     <Folder Include="Authorization\Admin\" />
-    <Folder Include="Utils\" />
     <Folder Include="FileDownload\" />
     <Folder Include="Filters\" />
     <Folder Include="Jobs\" />

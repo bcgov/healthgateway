@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Services
                 this.emailInviteDelegate.Update(emailInvite);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
                 userProfile.Email = emailInvite.Email!.To; // Gets the user email from the email sent.
-                this.profileDelegate.UpdateUserProfile(userProfile);
+                this.profileDelegate.Update(userProfile);
                 retVal = true;
             }
 
@@ -87,7 +87,7 @@ namespace HealthGateway.WebClient.Services
 
             this.logger.LogInformation($"Removing email from user ${hdid}");
             userProfile.Email = null;
-            this.profileDelegate.UpdateUserProfile(userProfile);
+            this.profileDelegate.Update(userProfile);
             if (emailInvite != null && !emailInvite.Validated && emailInvite.ExpireDate >= DateTime.UtcNow)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");

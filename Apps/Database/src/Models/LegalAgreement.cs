@@ -33,7 +33,7 @@ namespace HealthGateway.Database.Models
 
         /// <summary>
         /// Gets or sets a value representing the type of legal agreement.
-        /// The value is one of <see cref="HealthGateway.Database.Constant.AgreementType"/>.
+        /// The value is one of <see cref="Constants.AgreementType"/>.
         /// </summary>
         [Required]
         [MaxLength(10)]

@@ -3103,13 +3103,6 @@
         ["xpath=//button[contains(.,'No Need!')]", "xpath:innerText"]
       ],
       "value": "No Need!"
-    }, {
-      "id": "a4a3d2c9-50a7-4b6a-833b-198c888f9ec1",
-      "comment": "",
-      "command": "close",
-      "target": "",
-      "targets": [],
-      "value": ""
     }]
   }, {
     "id": "152f8b6e-5c6f-48f8-969e-f13f449bc2f7",
@@ -3202,193 +3195,6 @@
       ],
       "value": "Release Notes"
     }]
-  }, {
-    "id": "d60d5344-1f4e-49a3-938c-7b667a477041",
-    "name": "Timeline - User Support Protected & Verified",
-    "commands": [{
-      "id": "8e5ec6e8-1805-495e-8b06-9e17986d9beb",
-      "comment": "",
-      "command": "run",
-      "target": "Keycloak Login Protected",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "ab472848-467b-474f-a661-6ed1ce3fd60c",
-      "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [],
-      "value": "30000"
-    }, {
-      "id": "7df684c6-2b42-40c5-b779-cea833d16112",
-      "comment": "",
-      "command": "assertText",
-      "target": "id=__BVID__55___BV_modal_title_",
-      "targets": [
-        ["id=__BVID__55___BV_modal_title_", "id"],
-        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
-        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
-        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
-        ["xpath=//h5", "xpath:position"],
-        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
-      ],
-      "value": "Restricted PharmaNet Records"
-    }, {
-      "id": "488808d9-b2c3-49e8-b536-3e8836ce0b4a",
-      "comment": "",
-      "command": "waitForElementEditable",
-      "target": "id=protectiveWord-input",
-      "targets": [
-        ["id=protectiveWord-input", "id"],
-        ["css=#protectiveWord-input", "css:finder"],
-        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
-        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
-        ["xpath=//form/div/div/input", "xpath:position"]
-      ],
-      "value": "30000"
-    }, {
-      "id": "6ba34883-77fb-43e7-be7a-438602008d2c",
-      "comment": "",
-      "command": "assertText",
-      "target": "xpath=//h5",
-      "targets": [
-        ["id=__BVID__55___BV_modal_title_", "id"],
-        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
-        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
-        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
-        ["xpath=//h5", "xpath:position"],
-        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
-      ],
-      "value": "Restricted PharmaNet Records"
-    }, {
-      "id": "f3cd9d3b-9aa0-4158-a1bf-0eb2053dee8a",
-      "comment": "",
-      "command": "type",
-      "target": "id=protectiveWord-input",
-      "targets": [
-        ["id=protectiveWord-input", "id"],
-        ["css=#protectiveWord-input", "css:finder"],
-        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
-        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
-        ["xpath=//form/div/div/input", "xpath:position"]
-      ],
-      "value": "KEYWORD"
-    }, {
-      "id": "d6d86753-dc3d-4314-a80c-5551f0c189ba",
-      "comment": "",
-      "command": "click",
-      "target": "xpath=//button[contains(.,'Continue')]",
-      "targets": [
-        ["css=.btn-lg", "css:finder"],
-        ["xpath=(//button[@type='button'])[10]", "xpath:attributes"],
-        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div/div/button", "xpath:idRelative"],
-        ["xpath=//footer/div/div/div/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,'Continue')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "4b6f4c97-1888-4f06-8360-5827247c47f6",
-      "comment": "",
-      "command": "pause",
-      "target": "3000",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "f15c7460-8c1a-447d-8133-b5d42b24dcb6",
-      "comment": "",
-      "command": "assertElementNotPresent",
-      "target": "id=protectiveWord-input",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "51656d9a-6b8f-4a64-877c-f86797d74047",
-      "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [],
-      "value": "30000"
-    }, {
-      "id": "3af0a11d-8bb5-45f6-bb82-edd490bcca81",
-      "comment": "",
-      "command": "click",
-      "target": "css=.btn > .row:nth-child(1) > .col",
-      "targets": [
-        ["css=.btn > .row:nth-child(1) > .col", "css:finder"],
-        ["xpath=//div[@id='feedback-container']/button/div/div", "xpath:idRelative"],
-        ["xpath=//button/div/div", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "7078cf2f-f22d-460c-9610-fe5265402eee",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=.button-title:nth-child(1)",
-      "targets": [
-        ["css=.button-title:nth-child(1)", "css:finder"],
-        ["xpath=//div[@id='collapse']/div/div/div/span", "xpath:idRelative"],
-        ["xpath=//div[2]/div/div/div/div/span", "xpath:position"]
-      ],
-      "value": "Do you have a question or suggestion? Let us know in the field below."
-    }, {
-      "id": "9c9a5378-0f22-4a84-b936-09b1adb22e1d",
-      "comment": "",
-      "command": "type",
-      "target": "id=comment",
-      "targets": [
-        ["id=comment", "id"],
-        ["css=#comment", "css:finder"],
-        ["xpath=//textarea[@id='comment']", "xpath:attributes"],
-        ["xpath=//div[@id='collapse']/div/form/div/div/textarea", "xpath:idRelative"],
-        ["xpath=//textarea", "xpath:position"]
-      ],
-      "value": "Great job team!"
-    }, {
-      "id": "24dbe725-cb2b-4bb2-b498-ba026ed7e82b",
-      "comment": "",
-      "command": "click",
-      "target": "css=.aqua-button",
-      "targets": [
-        ["css=.aqua-button", "css:finder"],
-        ["xpath=//button[@type='submit']", "xpath:attributes"],
-        ["xpath=//div[@id='collapse']/div/form/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div[2]/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,'Send Message')]", "xpath:innerText"]
-      ],
-      "value": "Send Message"
-    }, {
-      "id": "44bb1aad-a31e-46d2-a5b4-5b39ca9b6ce1",
-      "comment": "",
-      "command": "assertText",
-      "target": "css=.aqua-button",
-      "targets": [
-        ["css=.aqua-button", "css:finder"],
-        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
-        ["xpath=//div[@id='collapse']/div/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div[2]/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,'Got it!')]", "xpath:innerText"]
-      ],
-      "value": "Got it!"
-    }, {
-      "id": "244acb26-33a8-4718-9bb6-560521fbce5a",
-      "comment": "",
-      "command": "click",
-      "target": "css=.aqua-button",
-      "targets": [
-        ["css=.aqua-button", "css:finder"],
-        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
-        ["xpath=//div[@id='collapse']/div/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div[2]/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,'Got it!')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "afc463ad-e0ff-4395-b937-bed91dc44e46",
-      "comment": "",
-      "command": "close",
-      "target": "",
-      "targets": [],
-      "value": ""
-    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -3417,7 +3223,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

@@ -24,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -323,6 +324,33 @@ namespace HealthGateway.Common.AspNetConfiguration
             }
 
             app.UseResponseCompression();
+
+            // Setup response secure headers
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                await next().ConfigureAwait(true);
+            });
+        }
+
+        /// <summary>
+        /// Configures the app to to use content security policies.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="nonceService">Service that provides nonce utilities.</param>
+        public void UseContentSecurityPolicy(IApplicationBuilder app, INonceService nonceService)
+        {
+            IConfigurationSection cspSection = this.configuration.GetSection("ContentSecurityPolicy");
+            string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
+            string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
+            string scriptSrc = cspSection.GetValue<string>("script-src", string.Empty);
+            string nonce = nonceService.GetCurrentNonce();
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-{nonce}' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data: 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
+                await next();
+            });
         }
 
         /// <summary>
@@ -377,7 +405,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);
 
-            auditEvent.TransactionResultCode = Database.Constant.AuditTransactionResult.Unauthorized;
+            auditEvent.TransactionResultCode = AuditTransactionResult.Unauthorized;
             auditEvent.CreatedBy = nameof(StartupConfiguration);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
 

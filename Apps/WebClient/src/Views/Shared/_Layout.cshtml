@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var nonceString = ViewData["nonce"];
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -6,6 +9,7 @@
     <meta name="Description" content="Author: BCGov, Health Gateway of British Columbia">
     <title>@ViewData["Title"] - Health Gateway</title>
     <base href="~/" />
+    <script nonce="@nonceString">window.EnvVars = {}; EnvVars.NONCE_ID = '@nonceString';</script>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
@@ -16,7 +20,7 @@
     </environment>
 
     <!-- Snowplow starts plowing - Standalone vA.2.10.2 -->
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="@nonceString">
         ; (function (p, l, o, w, i, n, g) {
             if (!p[i]) {
             p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];

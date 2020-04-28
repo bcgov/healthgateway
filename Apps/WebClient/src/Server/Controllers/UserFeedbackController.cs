@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Services;
@@ -93,7 +94,7 @@ namespace HealthGateway.WebClient.Controllers
                 userFeedback.CreatedBy = userHdid;
                 userFeedback.UpdatedBy = userHdid;
                 DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
-                if (result.Status != Database.Constant.DBStatusCode.Created)
+                if (result.Status != DBStatusCode.Created)
                 {
                     return new ConflictResult();
                 }

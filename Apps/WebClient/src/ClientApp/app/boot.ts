@@ -1,3 +1,6 @@
+// Setup the nonce attribute for Content Security Policy
+import "@/create-nonce";
+
 import Vue from "vue";
 import VueRouter from "vue-router";
 
@@ -22,7 +25,8 @@ import {
   IUserFeedbackService,
   IUserEmailService,
   IBetaRequestService,
-  IUserNoteService
+  IUserNoteService,
+  IUserCommentService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -72,6 +76,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userNoteService: IUserNoteService = container.get(
     SERVICE_IDENTIFIER.UserNoteService
   );
+  const userCommentService: IUserCommentService = container.get(
+    SERVICE_IDENTIFIER.UserCommentService
+  );
 
   // Initialize services
   authService.initialize(config.openIdConnect, httpDelegate);
@@ -83,6 +90,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
   userNoteService.initialize(config, httpDelegate);
+  userCommentService.initialize(config, httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,
