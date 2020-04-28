@@ -11,16 +11,6 @@
   "objects": [
     {
       "apiVersion": "v1",
-      "kind": "ImageStream",
-      "metadata": {
-        "annotations": {
-          "description": "runtime images stream"
-        },
-        "name": "${SOURCE_NAME}"
-      }
-    },
-    {
-      "apiVersion": "v1",
       "kind": "DeploymentConfig",
       "metadata": {
         "creationTimestamp": null,
@@ -56,7 +46,7 @@
           "spec": {
             "containers": [
               {
-                "image": "${SOURCE_NAME}",
+                "image": "${NAME}",
                 "imagePullPolicy": "Always",
                 "name": "${NAME}",
                 "ports": [
@@ -179,31 +169,6 @@
         "sessionAffinity": "None",
         "type": "ClusterIP"
       }
-    },
-    {
-      "apiVersion": "v1",
-      "kind": "Route",
-      "metadata": {
-        "labels": {
-          "app": "${NAME}"
-        },
-        "name": "${NAME}"
-      },
-      "spec": {
-        "host": "${APPLICATION_DOMAIN}",
-        "port": {
-          "targetPort": "8080-tcp"
-        },
-        "tls": {
-          "insecureEdgeTerminationPolicy": "Redirect",
-          "termination": "edge"
-        },
-        "to": {
-          "kind": "Service",
-          "name": "${NAME}",
-          "weight": 100
-        }
-      }
     }
   ],
   "parameters": [
@@ -215,19 +180,11 @@
       "value": "odrproxy"
     },
     {
-      "description": "The name assigned to all of the openshift objects defined in this template. It is also the name of runtime image you want.",
+      "description": "The name assigned to all of the openshift objects defined in this template. Generally odrproxy but for some environments would be odrproxy-demo",
       "displayName": "Name",
       "name": "NAME",
       "required": true,
-      "value": "odrproxy"
     },
-    {
-      "description": "The exposed hostname that will route to the service, e.g., myappname.pathfinder.gov.bc.ca, if left blank a value will be defaulted.",
-      "displayName": "Application Hostname",
-      "name": "APPLICATION_DOMAIN",
-      "value": "test-odrproxy.pathfinder.gov.bc.ca"
-    },
-
     {
       "description": "The namespace where to get the above image name",
       "displayName": "Image Namespace",
@@ -239,14 +196,14 @@
       "description": "The TAG name for this environment, e.g., dev, test, prod",
       "displayName": "Env TAG name",
       "name": "TAG_NAME",
-      "value": "test"
+      "required": true,
     },
     {
       "description": "URL of Digital Experience MSP Service",
       "displayName": "TARGET_URL",
       "name": "TARGET_URL",
-      "required": true,
-      "value": "https://d2healthgw.maximusbc.ca"
+      "required": false,
+      "value": ""
     },
     {
       "description": "User name : password for the Digital Experience MSP Service",
