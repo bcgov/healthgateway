@@ -32,16 +32,20 @@
             </v-col>
           </v-row>
           <v-row>
-              <v-col>
-                  <v-datetime-picker v-model="effectiveDateTime"
-                                     requried
-                                     label="Effective On"></v-datetime-picker>
-              </v-col>
-              <v-col>
-                  <v-datetime-picker v-model="expiryDateTime"
-                                     required
-                                     label="Expires On"></v-datetime-picker>
-              </v-col>
+            <v-col>
+              <v-datetime-picker
+                v-model="effectiveDateTime"
+                requried
+                label="Effective On"
+              ></v-datetime-picker>
+            </v-col>
+            <v-col>
+              <v-datetime-picker
+                v-model="expiryDateTime"
+                required
+                label="Expires On"
+              ></v-datetime-picker>
+            </v-col>
           </v-row>
           <v-row justify="end" no-gutters>
             <v-btn :disabled="!valid" @click="add()">Add</v-btn>
