@@ -164,7 +164,7 @@ $radius: 15px;
         <b-row>
           <b-col>
             <div class="d-flex flex-row-reverse">
-              <span class="py-2 px-0" v-if="this.comments.length > 0">{{
+              <span v-if="this.comments.length > 0" class="py-2 px-0">{{
                 this.comments.length > 1
                   ? this.comments.length + " comments"
                   : "1 comment"
@@ -247,16 +247,16 @@ export default class MedicationTimelineComponent extends Vue {
     if (!this.medicationLoaded) {
       this.isLoadingMedication = true;
       var medicationPromise = this.getMedication({
-        din: medicationEntry.medication.din,
+        din: medicationEntry.medication.din
       })
-        .then((result) => {
+        .then(result => {
           if (result) {
             medicationEntry.medication.populateFromModel(result);
           }
           this.medicationLoaded = true;
           this.isLoadingMedication = false;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Error loading medication details");
           console.log(err);
           this.hasErrors = true;
@@ -267,15 +267,15 @@ export default class MedicationTimelineComponent extends Vue {
     if (!medicationEntry.pharmacy.isLoaded) {
       this.isLoadingPharmacy = true;
       var pharmacyPromise = this.getPharmacy({
-        pharmacyId: medicationEntry.pharmacy.id,
+        pharmacyId: medicationEntry.pharmacy.id
       })
-        .then((result) => {
+        .then(result => {
           if (result) {
             medicationEntry.pharmacy.populateFromModel(result);
           }
           this.isLoadingPharmacy = false;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Error loading pharmacy details");
           console.log(err);
           this.hasErrors = true;
@@ -289,13 +289,13 @@ export default class MedicationTimelineComponent extends Vue {
     this.isLoadingComments = true;
     let commentPromise = this.commentService
       .getCommentsForEntry(referenceId)
-      .then((result) => {
+      .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
           this.isLoadingComments = false;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading comments for entry " + this.entry.id);
         console.log(err);
         this.hasErrors = true;

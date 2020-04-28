@@ -17,7 +17,9 @@ export class RestUserCommentService implements IUserCommentService {
     this.isEnabled = config.webClient.modules["Comment"];
   }
 
-  public getCommentsForEntry(parentEntryId: string): Promise<RequestResult<UserComment[]>> {
+  public getCommentsForEntry(
+    parentEntryId: string
+  ): Promise<RequestResult<UserComment[]>> {
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
         resolve({
@@ -31,7 +33,9 @@ export class RestUserCommentService implements IUserCommentService {
         return;
       }
       this.http
-        .getWithCors<RequestResult<UserComment[]>>(`${this.USER_COMMENT_BASE_URI}?parentEntryId="${parentEntryId}"`, )
+        .getWithCors<RequestResult<UserComment[]>>(
+          `${this.USER_COMMENT_BASE_URI}?parentEntryId="${parentEntryId}"`
+        )
         .then(userComments => {
           return resolve(userComments);
         })
