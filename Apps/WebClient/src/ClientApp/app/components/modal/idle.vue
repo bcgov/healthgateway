@@ -64,7 +64,7 @@ export default class IdleComponent extends Vue {
       this.timeoutHandle = setTimeout(() => {
         EventBus.$emit("idleLogoutWarning", true);
         self.logout();
-      }, 1000 * 10);
+      }, 1000 * 60);
     }
   }
   @Emit()
