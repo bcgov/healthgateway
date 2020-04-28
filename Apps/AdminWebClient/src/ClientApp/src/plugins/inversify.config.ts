@@ -9,7 +9,8 @@ import {
   IAuthenticationService,
   IUserFeedbackService,
   IDashboardService,
-  IEmailAdminService
+  IEmailAdminService,
+  ICommunicationService
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestConfigService } from "@/services/restConfigService";
@@ -18,6 +19,7 @@ import { RestAuthenticationService } from "@/services/restAuthenticationService"
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 import { DashboardService } from "@/services/dashboardService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
+import { RestCommunicationService } from "@/services/restCommunicationService";
 
 let container = new Container();
 container
@@ -43,6 +45,10 @@ container
 container
   .bind<IEmailAdminService>(SERVICE_IDENTIFIER.EmailAdminService)
   .to(RestEmailAdminService)
+  .inSingletonScope();
+container
+  .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)
+  .to(RestCommunicationService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

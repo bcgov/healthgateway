@@ -97,6 +97,11 @@ export default class MainNavbar extends Vue {
       icon: "email",
       to: "/admin-email"
     },
+    {
+      title: "Communications",
+      icon: "email",
+      to: "/communication"
+    },
     { title: "Feedback Review", icon: "comment", to: "/user-feedback" }
   ];
 

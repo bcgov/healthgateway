@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to handle user feedback review.
+    /// Web API to handle system communications.
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
