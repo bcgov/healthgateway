@@ -58,7 +58,7 @@ $radius: 15px;
     </b-row>
     <b-row>
       <b-col class="leftPane"></b-col>
-      <b-col>
+      <b-col class="p-2">
         <b-row>
           <b-col>
             {{ entry.medication.genericName }}
@@ -170,9 +170,9 @@ $radius: 15px;
                 class="px-0 py-2"
                 @click="toggleComments()"
               >
-                <span v-if="this.hasComments">{{
-                  this.comments.length > 1
-                    ? this.comments.length + " comments"
+                <span v-if="hasComments">{{
+                  comments.length > 1
+                    ? comments.length + " comments"
                     : "1 comment"
                 }}</span>
               </b-btn>
@@ -182,8 +182,8 @@ $radius: 15px;
         <b-row>
           <b-col>
             <b-collapse :id="'comments-' + index + '-' + datekey">
-              <div v-if="!this.isLoadingComments">
-                <div v-for="comment in this.comments" :key="comment.id">
+              <div v-if="!isLoadingComments">
+                <div v-for="comment in comments" :key="comment.id">
                   <Comment :comment="comment"></Comment>
                 </div>
               </div>
@@ -197,7 +197,7 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
-import { PhoneType } from "@/models/pharmacy";
+import Pharmacy, { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import CommentComponent from "@/components/timeline/comment.vue";
 import UserComment from "@/models/userComment";
@@ -207,18 +207,23 @@ import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import container from "@/plugins/inversify.config";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import MedicationResult from "@/models/medicationResult";
 
 @Component({
   components: {
-    Comment: CommentComponent,
-  },
+    Comment: CommentComponent
+  }
 })
 export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
-  @Action("getMedication", { namespace: "medication" }) getMedication;
-  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
+  @Action("getMedication", { namespace: "medication" }) getMedication!: ({
+    din: string
+  }: any) => Promise<MedicationResult>;
+  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy!: ({
+    pharmacyId: string
+  }: any) => Promise<Pharmacy>;
   private commentService!: IUserCommentService;
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
@@ -270,9 +275,8 @@ export default class MedicationTimelineComponent extends Vue {
   private sortComments() {
     this.comments.sort((a, b) => {
       if (a.createdDateTime > b.createdDateTime) {
-        return -1
-      }
-      else if (a.createdDateTime < b.createdDateTime) {
+        return -1;
+      } else if (a.createdDateTime < b.createdDateTime) {
         return 1;
       } else {
         return 0;

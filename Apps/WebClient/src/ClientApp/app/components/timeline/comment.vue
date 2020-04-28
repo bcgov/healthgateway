@@ -9,10 +9,10 @@
 <template>
   <b-col>
     <b-row class="comment-body p-3 my-2">
-      {{ this.comment.text }}
+      {{ comment.text }}
     </b-row>
     <b-row class="px-3">
-      <span> {{ formatDate(this.comment.createdDateTime) }} </span>
+      <span> {{ formatDate(comment.createdDateTime) }} </span>
     </b-row>
   </b-col>
 </template>

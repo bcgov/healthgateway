@@ -7,7 +7,7 @@ export default class MedicationStatement {
   // Medication statement prescription status.
   public prescriptionStatus?: string;
   // Date the medication statement was dispensed.
-  public dispensedDate?: Date;
+  public dispensedDate!: Date;
   // Surname of the Practitioner who issued the medication statement.
   public practitionerSurname?: string;
   // Drug medication discontinued date, if applicable.
