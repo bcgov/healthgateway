@@ -249,6 +249,7 @@ import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
 import { WebClientConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
+import { Route } from "vue-router";
 import EventBus from "@/eventbus";
 
 const namespace: string = "user";
@@ -267,8 +268,8 @@ Component.registerHooks(["beforeRouteLeave"]);
     ProtectiveWordComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    NoteTimelineComponent,
-  },
+    NoteTimelineComponent
+  }
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
@@ -284,9 +285,10 @@ export default class TimelineComponent extends Vue {
   private windowWidth: number = 0;
   private currentPage: number = 1;
   private hasErrors: boolean = false;
+  private idleLogoutWarning: boolean = false;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
-  private editIdList: string[] = [];
+  private cardEditedId: string | undefined;
   private unsavedChangesText: string =
     "You have unsaved changes. Are you sure you want to leave?";
 
@@ -313,11 +315,15 @@ export default class TimelineComponent extends Vue {
     EventBus.$on("timelinePrintView", function() {
       self.printRecords();
     });
+    EventBus.$on("idleLogoutWarning", function(isVisible: boolean) {
+      self.idleLogoutWarning = isVisible;
+    });
   }
 
-  private beforeRouteLeave(to, from, next) {
+  private beforeRouteLeave(to: Route, from: Route, next: any) {
     if (
-      (this.isAddingNote || this.editIdList.length > 0) &&
+      !this.idleLogoutWarning &&
+      (this.isAddingNote || this.cardEditedId) &&
       !confirm(this.unsavedChangesText)
     ) {
       return;
@@ -330,7 +336,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onBrowserClose(event: BeforeUnloadEvent) {
-    if (this.isAddingNote || this.editIdList.length > 0) {
+    if (!this.idleLogoutWarning && (this.isAddingNote || this.cardEditedId)) {
       event.returnValue = this.unsavedChangesText;
     }
   }
@@ -438,7 +444,7 @@ export default class TimelineComponent extends Vue {
     }
 
     promise
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
           // Add the medication entries to the timeline list
@@ -458,7 +464,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -474,7 +480,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -490,7 +496,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -506,7 +512,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -521,7 +527,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -540,23 +546,25 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
 
   private onCardEdit(entry: TimelineEntry) {
-    this.editIdList.push(entry.id);
+    this.cardEditedId = entry.id;
   }
 
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex((e) => e == entry.id);
-    this.editIdList.splice(index, 1);
+    this.cardEditedId = undefined;
   }
 
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
+    this.cardEditedId = undefined;
+    this.sortEntries();
+    this.applyTimelineFilter();
   }
 
   private onProtectiveWordSubmit(value: string) {
@@ -575,7 +583,7 @@ export default class TimelineComponent extends Vue {
   @Watch("filterText")
   @Watch("filterTypes")
   private applyTimelineFilter() {
-    this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
+    this.filteredTimelineEntries = this.timelineEntries.filter(entry =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
   }
@@ -615,13 +623,13 @@ export default class TimelineComponent extends Vue {
       groups[date].push(entry);
       return groups;
     }, {});
-    let groupArrays = Object.keys(groups).map((dateKey) => {
+    let groupArrays = Object.keys(groups).map(dateKey => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        ),
+        )
       };
     });
     return this.sortGroup(groupArrays);
@@ -647,7 +655,7 @@ export default class TimelineComponent extends Vue {
       a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
   }
-  
+
   private printRecords() {
     window.print();
   }

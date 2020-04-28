@@ -48,8 +48,10 @@ library.add(faTimesCircle);
 @Component
 export default class ValidateEmailComponent extends Vue {
   @Prop() inviteKey!: string;
-  @Getter("user", { namespace: "user" }) user: User;
-  @Action("checkRegistration", { namespace: "user" }) checkRegistration;
+  @Getter("user", { namespace: "user" }) user!: User;
+  @Action("checkRegistration", { namespace: "user" }) checkRegistration!: ({
+    hdid: String
+  }: any) => Promise<boolean>;
   private isLoading: boolean = false;
   private isSuccess: boolean | null = null;
 

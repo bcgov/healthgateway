@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Security.Cryptography;
+    using System.Web;
 
     /// <summary>
     /// Implementation of the <see cref="NonceService"/> with cryptograpgic generation.
@@ -35,13 +36,13 @@ namespace HealthGateway.Common.Services
             RNGCryptoServiceProvider rngProvider = new RNGCryptoServiceProvider();
             byte[] nonceBytes = new byte[32];
             rngProvider.GetBytes(nonceBytes);
-            this.currentNonce = Convert.ToBase64String(nonceBytes);
+            this.currentNonce = HttpUtility.HtmlEncode(Convert.ToBase64String(nonceBytes));
         }
 
         /// <inheritdoc />
         public string GetCurrentNonce()
         {
-            return currentNonce;
+            return this.currentNonce;
         }
     }
 }

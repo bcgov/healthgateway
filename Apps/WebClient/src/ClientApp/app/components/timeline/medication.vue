@@ -58,7 +58,7 @@ $radius: 15px;
     </b-row>
     <b-row>
       <b-col class="leftPane"></b-col>
-      <b-col>
+      <b-col class="p-2">
         <b-row>
           <b-col>
             {{ entry.medication.genericName }}
@@ -164,9 +164,9 @@ $radius: 15px;
         <b-row>
           <b-col>
             <div class="d-flex flex-row-reverse">
-              <span class="py-2 px-0" v-if="this.comments.length > 0">{{
-                this.comments.length > 1
-                  ? this.comments.length + " comments"
+              <span v-if="comments.length > 0" class="py-2 px-0">{{
+                comments.length > 1
+                  ? comments.length + " comments"
                   : "1 comment"
               }}</span>
             </div>
@@ -179,7 +179,7 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
-import { PhoneType } from "@/models/pharmacy";
+import Pharmacy, { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import UserComment from "@/models/userComment";
 import { IUserCommentService } from "@/services/interfaces";
@@ -188,14 +188,19 @@ import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import container from "@/plugins/inversify.config";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import MedicationResult from "@/models/medicationResult";
 
 @Component
 export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
-  @Action("getMedication", { namespace: "medication" }) getMedication;
-  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
+  @Action("getMedication", { namespace: "medication" }) getMedication!: ({
+    din: string
+  }: any) => Promise<MedicationResult>;
+  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy!: ({
+    pharmacyId: string
+  }: any) => Promise<Pharmacy>;
   private commentService!: IUserCommentService;
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
@@ -247,16 +252,16 @@ export default class MedicationTimelineComponent extends Vue {
     if (!this.medicationLoaded) {
       this.isLoadingMedication = true;
       var medicationPromise = this.getMedication({
-        din: medicationEntry.medication.din,
+        din: medicationEntry.medication.din
       })
-        .then((result) => {
+        .then(result => {
           if (result) {
             medicationEntry.medication.populateFromModel(result);
           }
           this.medicationLoaded = true;
           this.isLoadingMedication = false;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Error loading medication details");
           console.log(err);
           this.hasErrors = true;
@@ -267,15 +272,15 @@ export default class MedicationTimelineComponent extends Vue {
     if (!medicationEntry.pharmacy.isLoaded) {
       this.isLoadingPharmacy = true;
       var pharmacyPromise = this.getPharmacy({
-        pharmacyId: medicationEntry.pharmacy.id,
+        pharmacyId: medicationEntry.pharmacy.id
       })
-        .then((result) => {
+        .then(result => {
           if (result) {
             medicationEntry.pharmacy.populateFromModel(result);
           }
           this.isLoadingPharmacy = false;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Error loading pharmacy details");
           console.log(err);
           this.hasErrors = true;
@@ -289,13 +294,13 @@ export default class MedicationTimelineComponent extends Vue {
     this.isLoadingComments = true;
     let commentPromise = this.commentService
       .getCommentsForEntry(referenceId)
-      .then((result) => {
+      .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
           this.isLoadingComments = false;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading comments for entry " + this.entry.id);
         console.log(err);
         this.hasErrors = true;
