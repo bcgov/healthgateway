@@ -267,8 +267,8 @@ Component.registerHooks(["beforeRouteLeave"]);
     ProtectiveWordComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    NoteTimelineComponent,
-  },
+    NoteTimelineComponent
+  }
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
@@ -438,7 +438,7 @@ export default class TimelineComponent extends Vue {
     }
 
     promise
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
           // Add the medication entries to the timeline list
@@ -458,7 +458,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -474,7 +474,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -490,7 +490,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -506,7 +506,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then((results) => {
+      .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -521,7 +521,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -540,7 +540,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
 
@@ -549,12 +549,12 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex((e) => e == entry.id);
+    const index = this.editIdList.findIndex(e => e == entry.id);
     this.editIdList.splice(index, 1);
   }
 
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
+    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
   }
@@ -575,7 +575,7 @@ export default class TimelineComponent extends Vue {
   @Watch("filterText")
   @Watch("filterTypes")
   private applyTimelineFilter() {
-    this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
+    this.filteredTimelineEntries = this.timelineEntries.filter(entry =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
   }
@@ -615,13 +615,13 @@ export default class TimelineComponent extends Vue {
       groups[date].push(entry);
       return groups;
     }, {});
-    let groupArrays = Object.keys(groups).map((dateKey) => {
+    let groupArrays = Object.keys(groups).map(dateKey => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        ),
+        )
       };
     });
     return this.sortGroup(groupArrays);
@@ -647,7 +647,7 @@ export default class TimelineComponent extends Vue {
       a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );
   }
-  
+
   private printRecords() {
     window.print();
   }
