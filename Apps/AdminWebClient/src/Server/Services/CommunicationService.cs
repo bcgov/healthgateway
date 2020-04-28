@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Services
             RequestResult<Communication> requestResult = new RequestResult<Communication>()
             {
                 ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return requestResult;

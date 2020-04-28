@@ -4,6 +4,7 @@ import UserBetaRequest from "@/models/userBetaRequest";
 import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import Email from "@/models/email";
+import Communication from "@/models/communication";
 
 export interface IConfigService {
   initialize(http: IHttpDelegate): void;
@@ -42,6 +43,11 @@ export interface IDashboardService {
   getUnregisteredInvitedUsersCount(): Promise<number>;
   getLoggedInUsersCount(): Promise<number>;
   getWaitlistedUsersCount(): Promise<number>;
+}
+
+export interface ICommunicationService {
+  initialize(http: IHttpDelegate): void;
+  add(communication: Communication): Promise<void>;
 }
 
 export interface IHttpDelegate {

@@ -7,6 +7,7 @@ import router from "./router";
 import store from "@/store/store";
 import "./registerServiceWorker";
 import dateFilter from "@/filters/date.filter";
+import DatetimePicker from "vuetify-datetime-picker";
 
 import {
   IHttpDelegate,
@@ -15,7 +16,8 @@ import {
   IAuthenticationService,
   IUserFeedbackService,
   IDashboardService,
-  IEmailAdminService
+  IEmailAdminService,
+  ICommunicationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -23,6 +25,7 @@ import ExternalConfiguration from "@/models/externalConfiguration";
 
 Vue.config.productionTip = false;
 
+Vue.use(DatetimePicker);
 Vue.filter("date", dateFilter);
 
 const httpDelegate: IHttpDelegate = container.get(
@@ -51,6 +54,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const dashboardService: IDashboardService = container.get(
     SERVICE_IDENTIFIER.DashboardService
   );
+  const communicationService: ICommunicationService = container.get(
+    SERVICE_IDENTIFIER.CommunicationService
+  );
 
   // Initialize services
   authenticationService.initialize(httpDelegate, config);
@@ -58,6 +64,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   userFeedbackService.initialize(httpDelegate);
   dashboardService.initialize(httpDelegate);
   emailAdminService.initialize(httpDelegate);
+  communicationService.initialize(httpDelegate);
   initializeVue();
 });
 
