@@ -114,14 +114,21 @@ namespace HealthGateway.WebClient.Controllers
             EmailInvite emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
 
             // Check expiration and remove fields that contains sensitive information
-            if (emailInvite.ExpireDate < DateTime.UtcNow)
+            if (emailInvite != null)
             {
-                return new JsonResult(null);
+                if (emailInvite.ExpireDate < DateTime.UtcNow)
+                {
+                    return new JsonResult(null);
+                }
+                else
+                {
+                    UserEmailInvite result = UserEmailInvite.CreateFromDbModel(emailInvite);
+                    return new JsonResult(result);
+                }
             }
             else
             {
-                UserEmailInvite result = UserEmailInvite.CreateFromDbModel(emailInvite);
-                return new JsonResult(result);
+                return new JsonResult(null);
             }
         }
 
