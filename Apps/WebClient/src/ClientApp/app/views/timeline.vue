@@ -215,10 +215,7 @@
     <ProtectiveWordComponent
       ref="protectiveWordModal"
       :error="protectiveWordAttempts > 1"
-<<<<<<< HEAD
       :is-loading="isLoading"
-=======
->>>>>>> dev
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
@@ -406,7 +403,6 @@ export default class TimelineComponent extends Vue {
   }
 
   private get numberOfPages(): number {
-<<<<<<< HEAD
     let result = 1;
     if (this.filteredTimelineEntries.length > this.numberOfEntriesPerPage) {
       result = Math.ceil(
@@ -414,16 +410,6 @@ export default class TimelineComponent extends Vue {
       );
     }
     return result;
-=======
-    let result = Math.ceil(
-      this.filteredTimelineEntries.length / this.numberOfEntriesPerPage
-    );
-    if (result < 1) {
-      return 1;
-    } else {
-      return result;
-    }
->>>>>>> dev
   }
 
   private initializeFilters(): void {
