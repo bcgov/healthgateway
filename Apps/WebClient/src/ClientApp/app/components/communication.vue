@@ -2,10 +2,7 @@
   <b-row v-if="communication">
     <b-col class="p-0">
       <b-alert :show="true" variant="warning" class="m-0 text-center">
-        <h4 v-if="communication.subject">{{ communication.subject }}</h4>
-        <span>
-          {{ communication.text }}
-        </span>
+        <h5>{{ communication.text }}</h5>
       </b-alert>
     </b-col>
   </b-row>
