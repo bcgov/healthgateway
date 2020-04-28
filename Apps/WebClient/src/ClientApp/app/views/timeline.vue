@@ -215,6 +215,7 @@
     <ProtectiveWordComponent
       ref="protectiveWordModal"
       :error="protectiveWordAttempts > 1"
+      :is-loading="isLoading"
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
@@ -308,10 +309,12 @@ export default class TimelineComponent extends Vue {
     this.fetchImmunizations();
     this.fetchNotes();
     window.addEventListener("beforeunload", this.onBrowserClose);
+
     let self = this;
     EventBus.$on("timelineCreateNote", function() {
       self.isAddingNote = true;
     });
+
     EventBus.$on("timelinePrintView", function() {
       self.printRecords();
     });
@@ -402,14 +405,13 @@ export default class TimelineComponent extends Vue {
   }
 
   private get numberOfPages(): number {
-    let result = Math.ceil(
-      this.filteredTimelineEntries.length / this.numberOfEntriesPerPage
-    );
-    if (result < 1) {
-      return 1;
-    } else {
-      return result;
+    let result = 1;
+    if (this.filteredTimelineEntries.length > this.numberOfEntriesPerPage) {
+      result = Math.ceil(
+        this.filteredTimelineEntries.length / this.numberOfEntriesPerPage
+      );
     }
+    return result;
   }
 
   private initializeFilters(): void {
@@ -429,8 +431,10 @@ export default class TimelineComponent extends Vue {
       SERVICE_IDENTIFIER.MedicationService
     );
     this.isMedicationLoading = true;
+
     const isOdrEnabled = this.config.modules["MedicationHistory"];
     let promise: Promise<RequestResult<MedicationStatement[]>>;
+
     if (isOdrEnabled) {
       promise = medicationService.getPatientMedicationStatementHistory(
         this.user.hdid,
@@ -447,6 +451,7 @@ export default class TimelineComponent extends Vue {
       .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
+
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
@@ -596,6 +601,7 @@ export default class TimelineComponent extends Vue {
     if (this.currentPage > this.numberOfPages) {
       this.currentPage = this.numberOfPages;
     }
+
     // Get the section of the array that contains the paginated section
     let lowerIndex = (this.currentPage - 1) * this.numberOfEntriesPerPage;
     let upperIndex = Math.min(
@@ -612,17 +618,21 @@ export default class TimelineComponent extends Vue {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
     }
+
     let groups = this.visibleTimelineEntries.reduce((groups, entry) => {
       // Get the string version of the date and get the date
       //const date = (entry.date).split("T")[0];
       const date = new Date(entry.date).setHours(0, 0, 0, 0);
+
       // Create a new group if it the date doesnt exist in the map
       if (!groups[date]) {
         groups[date] = [];
       }
+
       groups[date].push(entry);
       return groups;
     }, {});
+
     let groupArrays = Object.keys(groups).map(dateKey => {
       return {
         key: dateKey,
