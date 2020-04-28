@@ -26,6 +26,7 @@ import {
   IUserEmailService,
   IBetaRequestService,
   IUserNoteService,
+  ICommunicationService,
   IUserCommentService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
@@ -76,6 +77,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userNoteService: IUserNoteService = container.get(
     SERVICE_IDENTIFIER.UserNoteService
   );
+  const communicationService: ICommunicationService = container.get(
+    SERVICE_IDENTIFIER.CommunicationService
+  );
   const userCommentService: IUserCommentService = container.get(
     SERVICE_IDENTIFIER.UserCommentService
   );
@@ -90,6 +94,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   betaRequestService.initialize(httpDelegate);
   userEmailService.initialize(httpDelegate);
   userNoteService.initialize(config, httpDelegate);
+  communicationService.initialize(httpDelegate);
   userCommentService.initialize(config, httpDelegate);
   Vue.use(IdleVue, {
     eventEmitter: new Vue(),

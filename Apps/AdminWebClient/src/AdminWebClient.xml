@@ -93,7 +93,7 @@
         </member>
         <member name="T:HealthGateway.Admin.Controllers.CommunicationController">
             <summary>
-            Web API to handle user feedback review.
+            Web API to handle system communications.
             </summary>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.CommunicationController.#ctor(HealthGateway.Admin.Services.ICommunicationService)">

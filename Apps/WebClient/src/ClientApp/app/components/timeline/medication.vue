@@ -164,12 +164,30 @@ $radius: 15px;
         <b-row>
           <b-col>
             <div class="d-flex flex-row-reverse">
-              <span v-if="comments.length > 0" class="py-2 px-0">{{
-                comments.length > 1
-                  ? comments.length + " comments"
-                  : "1 comment"
-              }}</span>
+              <b-btn
+                v-b-toggle="'comments-' + index + '-' + datekey"
+                variant="link"
+                class="px-0 py-2"
+                @click="toggleComments()"
+              >
+                <span v-if="hasComments">{{
+                  comments.length > 1
+                    ? comments.length + " comments"
+                    : "1 comment"
+                }}</span>
+              </b-btn>
             </div>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-collapse :id="'comments-' + index + '-' + datekey">
+              <div v-if="!isLoadingComments">
+                <div v-for="comment in comments" :key="comment.id">
+                  <Comment :comment="comment"></Comment>
+                </div>
+              </div>
+            </b-collapse>
           </b-col>
         </b-row>
       </b-col>
@@ -181,6 +199,7 @@ $radius: 15px;
 import Vue from "vue";
 import Pharmacy, { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import CommentComponent from "@/components/timeline/comment.vue";
 import UserComment from "@/models/userComment";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -190,7 +209,11 @@ import container from "@/plugins/inversify.config";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import MedicationResult from "@/models/medicationResult";
 
-@Component
+@Component({
+  components: {
+    Comment: CommentComponent
+  }
+})
 export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
   @Prop() index!: number;
@@ -209,6 +232,7 @@ export default class MedicationTimelineComponent extends Vue {
   private hasErrors: boolean = false;
   private medicationLoaded: boolean = false;
   private detailsVisible = false;
+  private commentsVisible = false;
 
   private comments: UserComment[] = [];
   private numComments = 0;
@@ -222,6 +246,10 @@ export default class MedicationTimelineComponent extends Vue {
 
   private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
+  }
+
+  private get hasComments(): boolean {
+    return this.comments.length > 0;
   }
 
   private get commentsLoaded(): boolean {
@@ -238,6 +266,22 @@ export default class MedicationTimelineComponent extends Vue {
 
   private get entryIcon(): IconDefinition {
     return faPills;
+  }
+
+  private toggleComments(): void {
+    this.commentsVisible = !this.commentsVisible;
+  }
+
+  private sortComments() {
+    this.comments.sort((a, b) => {
+      if (a.createdDateTime > b.createdDateTime) {
+        return -1;
+      } else if (a.createdDateTime < b.createdDateTime) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
@@ -297,6 +341,7 @@ export default class MedicationTimelineComponent extends Vue {
       .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
+          this.sortComments();
           this.isLoadingComments = false;
         }
       })
