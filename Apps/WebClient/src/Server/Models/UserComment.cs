@@ -42,7 +42,7 @@ namespace HealthGateway.WebClient.Models
 
         /// <summary>
         /// Gets or sets the entry type code.
-        /// The value is one of <see cref="HealthGateway.Database.Constant.CommentEntryType"/>.
+        /// The value is one of <see cref="HealthGateway.Database.Constants.CommentEntryType"/>.
         /// </summary>
         public string EntryTypeCode { get; set; } = string.Empty;
 

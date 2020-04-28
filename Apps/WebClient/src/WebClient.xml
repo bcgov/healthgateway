@@ -584,7 +584,7 @@
         <member name="P:HealthGateway.WebClient.Models.UserComment.EntryTypeCode">
             <summary>
             Gets or sets the entry type code.
-            The value is one of <see cref="T:HealthGateway.Database.Constant.CommentEntryType"/>.
+            The value is one of <see cref="T:HealthGateway.Database.Constants.CommentEntryType"/>.
             </summary>
         </member>
         <member name="P:HealthGateway.WebClient.Models.UserComment.ParentEntryId">
@@ -1139,15 +1139,7 @@
         <member name="T:HealthGateway.WebClient.Services.NoteService">
             <inheritdoc />
         </member>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.NoteService},HealthGateway.Database.Delegates.INoteDelegate)">
-=======
-        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Delegates.ICryptoDelegate)">
->>>>>>> Added wiring to create profile key and convert old notes
-=======
         <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.NoteService},HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Delegates.ICryptoDelegate)">
->>>>>>> Added note testing and fixed comment service testing with new comment object
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.NoteService"/> class.
             </summary>

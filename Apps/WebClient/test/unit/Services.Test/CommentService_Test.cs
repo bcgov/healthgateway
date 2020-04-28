@@ -29,6 +29,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.WebClient.Models;
     using System.Collections.Generic;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Database.Constants;
 
     public class CommentServiceTest
     {
@@ -122,7 +123,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Comment> insertResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = Database.Constant.DBStatusCode.Created
+                Status = DBStatusCode.Created
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -248,14 +249,14 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
             {
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = Database.Constants.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
@@ -284,14 +285,14 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
             {
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = Database.Constants.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
@@ -320,14 +321,14 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
             {
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = Database.Constants.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 
@@ -356,14 +357,14 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
-            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);            
+            profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
             {
                 UserProfileId = hdid,
                 ParentEntryId = parentEntryId,
                 Text = "Deleted Comment",
-                EntryTypeCode = Database.Constant.CommentEntryType.Medication,
+                EntryTypeCode = Database.Constants.CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1)
             };
 

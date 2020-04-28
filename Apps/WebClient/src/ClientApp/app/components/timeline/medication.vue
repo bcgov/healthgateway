@@ -170,9 +170,9 @@ $radius: 15px;
                 class="px-0 py-2"
                 @click="toggleComments()"
               >
-                <span v-if="this.hasComments">{{
-                  this.comments.length > 1
-                    ? this.comments.length + " comments"
+                <span v-if="hasComments">{{
+                  comments.length > 1
+                    ? comments.length + " comments"
                     : "1 comment"
                 }}</span>
               </b-btn>
@@ -182,8 +182,8 @@ $radius: 15px;
         <b-row>
           <b-col>
             <b-collapse :id="'comments-' + index + '-' + datekey">
-              <div v-if="!this.isLoadingComments">
-                <div v-for="comment in this.comments" :key="comment.id">
+              <div v-if="!isLoadingComments">
+                <div v-for="comment in comments" :key="comment.id">
                   <Comment :comment="comment"></Comment>
                 </div>
               </div>
@@ -211,8 +211,8 @@ import MedicationResult from "@/models/medicationResult";
 
 @Component({
   components: {
-    Comment: CommentComponent,
-  },
+    Comment: CommentComponent
+  }
 })
 export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
@@ -275,9 +275,8 @@ export default class MedicationTimelineComponent extends Vue {
   private sortComments() {
     this.comments.sort((a, b) => {
       if (a.createdDateTime > b.createdDateTime) {
-        return -1
-      }
-      else if (a.createdDateTime < b.createdDateTime) {
+        return -1;
+      } else if (a.createdDateTime < b.createdDateTime) {
         return 1;
       } else {
         return 0;

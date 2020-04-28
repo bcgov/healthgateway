@@ -67,7 +67,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
                 ResourcePayload = UserComment.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbComment.Status == Database.Constant.DBStatusCode.Created ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbComment.Message,
             };
             return result;
@@ -89,7 +89,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<IEnumerable<UserComment>> result = new RequestResult<IEnumerable<UserComment>>()
             {
                 ResourcePayload = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbComments.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbComments.Message,
             };
             return result;
@@ -112,7 +112,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
                 ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;
@@ -135,7 +135,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
                 ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
             };
             return result;

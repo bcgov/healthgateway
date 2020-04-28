@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Constant;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
 
     public class UserProfileServiceTest
@@ -105,7 +106,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<UserProfile> insertResult = new DBResult<UserProfile>
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Created               
+                Status = DBStatusCode.Created
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
