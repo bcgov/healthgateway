@@ -9,7 +9,7 @@
     <meta name="Description" content="Author: BCGov, Health Gateway of British Columbia">
     <title>@ViewData["Title"] - Health Gateway</title>
     <base href="~/" />
-    <script nonce="@nonceString">window.EnvVars = {}; EnvVars.NONCE_ID = '@nonceString';</script>
+    <script nonce="@nonceString">window.EnvVars = {}; EnvVars.NONCE_ID = '@Html.Raw(nonceString)';</script>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
