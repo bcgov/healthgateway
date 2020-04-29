@@ -64,7 +64,7 @@ $radius: 15px;
         {{ entry.immunization.name }}
       </b-col>
     </b-row>
-    <b-row>
+    <b-row class="my-2">
       <b-col class="leftPane"></b-col>
       <b-col>
         <b-row>
@@ -72,60 +72,60 @@ $radius: 15px;
             {{ entry.immunization.agents }}
           </b-col>
         </b-row>
-      </b-col>
-    </b-row>
-    <b-row class="pt-2">
-      <b-col>
-        <b-btn
-          class="commentButton"
-          variant="outline-primary"
-          @click="toggleCommentInput()"
-        >
-          <font-awesome-icon
-            :icon="commentIcon"
-            size="1x"
-            class="pr-1"
-          ></font-awesome-icon>
-          <span>Comment</span>
-        </b-btn>
-      </b-col>
-      <b-col>
-        <div class="d-flex flex-row-reverse">
-          <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
-            <span v-if="this.hasComments">{{
-              this.comments.length > 1
-                ? this.comments.length + " comments"
-                : "1 comment"
-            }}</span>
-          </b-btn>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row class="py-2" v-if="commentInputVisible">
-      <b-col>
-        <b-collapse :visible="commentInputVisible">
-          <b-form @submit.prevent="addComment">
-            <b-form-input
-              type="text"
-              autofocus
-              class="newComment"
-              v-model="newComment"
-              placeholder="Enter a comment"
-              maxlength="1000"
-            ></b-form-input>
-          </b-form>
-        </b-collapse>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-collapse :visible="commentsVisible">
-          <div v-if="!this.isLoadingComments">
-            <div v-for="comment in this.comments" :key="comment.id">
-              <Comment :comment="comment"></Comment>
+        <b-row class="pt-2">
+          <b-col>
+            <b-btn
+              class="commentButton"
+              variant="outline-primary"
+              @click="toggleCommentInput()"
+            >
+              <font-awesome-icon
+                :icon="commentIcon"
+                size="1x"
+                class="pr-1"
+              ></font-awesome-icon>
+              <span>Comment</span>
+            </b-btn>
+          </b-col>
+          <b-col>
+            <div class="d-flex flex-row-reverse">
+              <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
+                <span v-if="this.hasComments">{{
+                  this.comments.length > 1
+                    ? this.comments.length + " comments"
+                    : "1 comment"
+                }}</span>
+              </b-btn>
             </div>
-          </div>
-        </b-collapse>
+          </b-col>
+        </b-row>
+        <b-row class="py-2" v-if="commentInputVisible">
+          <b-col>
+            <b-collapse :visible="commentInputVisible">
+              <b-form @submit.prevent="addComment">
+                <b-form-input
+                  type="text"
+                  autofocus
+                  class="newComment"
+                  v-model="newComment"
+                  placeholder="Enter a comment"
+                  maxlength="1000"
+                ></b-form-input>
+              </b-form>
+            </b-collapse>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-collapse :visible="commentsVisible">
+              <div v-if="!this.isLoadingComments">
+                <div v-for="comment in this.comments" :key="comment.id">
+                  <Comment :comment="comment"></Comment>
+                </div>
+              </div>
+            </b-collapse>
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
   </b-col>
@@ -142,7 +142,11 @@ import UserComment from "@/models/userComment";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 
-import { faSyringe, IconDefinition, faCommentAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSyringe,
+  IconDefinition,
+  faCommentAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   components: {
@@ -157,7 +161,7 @@ export default class ImmunizationTimelineComponent extends Vue {
 
   private isLoadingComments: boolean = false;
   private hasErrors: boolean = false;
-  
+
   private commentService!: IUserCommentService;
   private isCommentsVisible: boolean = false;
   private isCommentInputVisible: boolean = false;
@@ -182,7 +186,7 @@ export default class ImmunizationTimelineComponent extends Vue {
   }
 
   private get commentInputVisible(): boolean {
-    return this.isCommentInputVisible
+    return this.isCommentInputVisible;
   }
 
   private get hasComments(): boolean {
