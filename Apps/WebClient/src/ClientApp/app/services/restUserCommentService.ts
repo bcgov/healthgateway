@@ -34,7 +34,7 @@ export class RestUserCommentService implements IUserCommentService {
       }
       this.http
         .getWithCors<RequestResult<UserComment[]>>(
-          `${this.USER_COMMENT_BASE_URI}?parentEntryId="${parentEntryId}"`
+          `${this.USER_COMMENT_BASE_URI}?parentEntryId=${parentEntryId}`
         )
         .then(userComments => {
           return resolve(userComments);
@@ -48,12 +48,17 @@ export class RestUserCommentService implements IUserCommentService {
 
   public createComment(comment: UserComment): Promise<UserComment> {
     return new Promise((resolve, reject) => {
+      if (!this.isEnabled) {
+        resolve();
+        return;
+      }
       this.http
         .post<RequestResult<UserComment>>(
           `${this.USER_COMMENT_BASE_URI}/`,
           comment
         )
         .then(result => {
+          console.log(result);
           return this.handleResult(result, resolve, reject);
         })
         .catch(err => {

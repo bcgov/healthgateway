@@ -25,13 +25,8 @@ import { Prop, Component } from "vue-property-decorator";
 export default class CommentComponent extends Vue {
   @Prop({ default: "Default" }) comment!: UserComment;
 
-  private created() {
-    console.log("COMMENT: ", this.comment);
-  }
-
-  private formatDate(date: Date) {
-    let split = date.toString().split("T");
-    return split[0] + " " + split[1].split(".")[0];
+   private formatDate(date: Date): string {
+    return new Date(Date.parse(date + "Z")).toLocaleString();
   }
 }
 </script>
