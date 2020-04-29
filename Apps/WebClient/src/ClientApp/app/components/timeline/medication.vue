@@ -196,9 +196,6 @@ $radius: 15px;
             </div>
           </b-col>
         </b-row>
-        <!-- <b-row class="pb-2">
-          
-        </b-row> -->
         <b-row class="py-2" v-if="commentInputVisible">
           <b-col>
             <b-collapse :visible="commentInputVisible">
@@ -294,7 +291,7 @@ export default class MedicationTimelineComponent extends Vue {
   }
 
   private get commentInputVisible(): boolean {
-    return this.isCommentInputVisible
+    return this.isCommentInputVisible;
   }
 
   private get hasComments(): boolean {
@@ -321,7 +318,7 @@ export default class MedicationTimelineComponent extends Vue {
     return faCommentAlt;
   }
 
-   private sortComments() {
+  private sortComments() {
     this.comments.sort((a, b) => {
       if (a.createdDateTime > b.createdDateTime) {
         return -1;
