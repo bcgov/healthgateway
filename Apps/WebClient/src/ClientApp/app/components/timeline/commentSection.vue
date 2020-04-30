@@ -94,6 +94,7 @@ export default class CommentSectionComponent extends Vue {
   private isEditMode: boolean = false;
   private commentInput: string = "";
   private comments: UserComment[] = [];
+  // TODO: improve this
   private editing: UserComment = undefined;
   private numComments = 0;
   private hasErrors: boolean = false;
@@ -239,15 +240,10 @@ export default class CommentSectionComponent extends Vue {
     this.editing = comment;
     this.commentInputVisible = true;
     this.isEditMode = true;
-    let index = this.comments.indexOf(comment);
-    let commentStorage;
-    if (index > -1) {
-      commentStorage = this.comments.splice(index, 1);
-    }
-    console.log(commentStorage);
     this.commentInput = comment.text;
   }
 
+  // TODO: Change this
   onClose() {
     delete this.editing;
   }

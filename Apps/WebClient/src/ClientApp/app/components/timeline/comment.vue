@@ -6,13 +6,17 @@
   border-radius: 10px;
 }
 
+.editing {
+  background-color: $light-background;
+}
+
 .commnet-menu {
   color: $soft_text;
 }
 </style>
 <template>
   <b-col>
-    <b-row class="comment-body p-2 my-1" align-v="center">
+    <b-row class="comment-body p-2 my-1" :class="{ editing: isEditing, }" align-v="center">
       <b-col>
         {{ this.comment.text }}
       </b-col>
