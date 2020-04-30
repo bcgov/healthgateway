@@ -126,16 +126,10 @@ export default class CommentSectionComponent extends Vue {
 
   private toggleComments(): void {
     this.showComments = !this.showComments;
-    if (this.showInput && !this.showComments) {
-      this.showInput = false;
-    }
   }
 
   private toggleCommentInput(): void {
     this.showInput = !this.showInput;
-    if (this.showInput && !this.showComments) {
-      this.showComments = true;
-    }
   }
 
   private addComment(): void {
