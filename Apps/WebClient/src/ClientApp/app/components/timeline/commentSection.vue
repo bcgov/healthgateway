@@ -32,7 +32,7 @@
     </b-row>
     <b-row class="py-2" v-if="showInput">
       <b-col>
-        <b-collapse :visible="inputVisible">
+        <b-collapse :visible="showInput">
           <b-form @submit.prevent="addComment">
             <b-form-input
               type="text"
@@ -140,7 +140,6 @@ export default class CommentSectionComponent extends Vue {
       .then(() => {
         this.newComment = "";
         this.getComments();
-        this.showComments = true;
       })
       .catch((err) => {
         console.log("Error adding comment on entry " + this.parentEntry.id);
