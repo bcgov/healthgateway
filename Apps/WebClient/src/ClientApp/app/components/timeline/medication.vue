@@ -169,60 +169,7 @@ $radius: 15px;
             </b-collapse>
           </b-col>
         </b-row>
-        <b-row class="pt-2">
-          <b-col>
-            <b-btn
-              class="commentButton"
-              variant="outline-primary"
-              @click="toggleCommentInput()"
-            >
-              <font-awesome-icon
-                :icon="commentIcon"
-                size="1x"
-                class="pr-1"
-              ></font-awesome-icon>
-              <span>Comment</span>
-            </b-btn>
-          </b-col>
-          <b-col>
-            <div class="d-flex flex-row-reverse">
-              <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
-                <span v-if="this.hasComments">{{
-                  this.comments.length > 1
-                    ? this.comments.length + " comments"
-                    : "1 comment"
-                }}</span>
-              </b-btn>
-            </div>
-          </b-col>
-        </b-row>
-        <b-row class="py-2" v-if="commentInputVisible">
-          <b-col>
-            <b-collapse :visible="commentInputVisible">
-              <b-form @submit.prevent="addComment">
-                <b-form-input
-                  type="text"
-                  autofocus
-                  class="newComment"
-                  v-model="newComment"
-                  placeholder="Enter a comment"
-                  maxlength="1000"
-                ></b-form-input>
-              </b-form>
-            </b-collapse>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-collapse :visible="commentsVisible">
-              <div v-if="!this.isLoadingComments">
-                <div v-for="comment in this.comments" :key="comment.id">
-                  <Comment :comment="comment"></Comment>
-                </div>
-              </div>
-            </b-collapse>
-          </b-col>
-        </b-row>
+        <CommentSection :parentEntry="entry"></CommentSection>
       </b-col>
     </b-row>
   </b-col>
@@ -232,23 +179,14 @@ $radius: 15px;
 import Vue from "vue";
 import { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import CommentComponent from "@/components/timeline/comment.vue";
-import UserComment from "@/models/userComment";
-import User from "@/models/user";
-import { IUserCommentService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
-import container from "@/plugins/inversify.config";
-import {
-  faPills,
-  IconDefinition,
-  faCommentAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   components: {
-    Comment: CommentComponent,
+    CommentSection: CommentSectionComponent,
   },
 })
 export default class MedicationTimelineComponent extends Vue {
@@ -257,91 +195,24 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
-  @Getter("user", { namespace: "user" }) user!: User;
 
-  private commentService!: IUserCommentService;
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;
   private isLoadingPharmacy: boolean = false;
-  private isLoadingComments: boolean = false;
   private hasErrors: boolean = false;
   private medicationLoaded: boolean = false;
   private detailsVisible: boolean = false;
-  private isCommentsVisible: boolean = false;
-  private isCommentInputVisible: boolean = false;
-  private isCommentSaving: boolean = false;
-  private newComment: string = "";
-
-  private comments: UserComment[] = [];
-  private numComments = 0;
-
-  private mounted() {
-    this.commentService = container.get<IUserCommentService>(
-      SERVICE_IDENTIFIER.UserCommentService
-    );
-    this.getComments();
-  }
 
   private get detailsLoaded(): boolean {
     return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
   }
 
-  private get commentsVisible(): boolean {
-    return this.isCommentsVisible;
-  }
-
-  private get commentInputVisible(): boolean {
-    return this.isCommentInputVisible;
-  }
-
-  private get hasComments(): boolean {
-    return this.comments.length > 0;
-  }
-
-  private get commentsLoaded(): boolean {
-    return this.commentsLoaded;
-  }
-
   private get isLoading(): boolean {
-    return (
-      this.isLoadingMedication ||
-      this.isLoadingPharmacy ||
-      this.isLoadingComments
-    );
+    return this.isLoadingMedication || this.isLoadingPharmacy;
   }
 
   private get entryIcon(): IconDefinition {
     return faPills;
-  }
-
-  private get commentIcon(): IconDefinition {
-    return faCommentAlt;
-  }
-
-  private sortComments() {
-    this.comments.sort((a, b) => {
-      if (a.createdDateTime > b.createdDateTime) {
-        return -1;
-      } else if (a.createdDateTime < b.createdDateTime) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  private toggleComments(): void {
-    this.isCommentsVisible = !this.commentsVisible;
-    if (this.isCommentInputVisible && !this.isCommentsVisible) {
-      this.toggleCommentInput();
-    }
-  }
-
-  private toggleCommentInput(): void {
-    this.isCommentInputVisible = !this.isCommentInputVisible;
-    if (this.isCommentInputVisible && !this.isCommentsVisible) {
-      this.toggleComments();
-    }
   }
 
   private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
@@ -391,49 +262,6 @@ export default class MedicationTimelineComponent extends Vue {
           this.isLoadingPharmacy = false;
         });
     }
-  }
-
-  private addComment(): void {
-    this.isCommentSaving = true;
-    let commentPromise = this.commentService
-      .createComment({
-        text: this.newComment,
-        parentEntryId: this.entry.id,
-        userProfileId: this.user.hdid,
-      })
-      .then(() => {
-        this.newComment = "";
-        this.getComments();
-        this.isCommentsVisible = true;
-      })
-      .catch((err) => {
-        console.log("Error adding comment on entry " + this.entry.id);
-        console.log(err);
-        this.hasErrors = true;
-      })
-      .finally(() => {
-        this.isCommentSaving = false;
-      });
-  }
-
-  private getComments() {
-    const referenceId = this.entry.id;
-    this.isLoadingComments = true;
-    let commentPromise = this.commentService
-      .getCommentsForEntry(referenceId)
-      .then((result) => {
-        if (result) {
-          this.comments = result.resourcePayload;
-          this.sortComments();
-          this.isLoadingComments = false;
-        }
-      })
-      .catch((err) => {
-        console.log("Error loading comments for entry " + this.entry.id);
-        console.log(err);
-        this.hasErrors = true;
-        this.isLoadingComments = false;
-      });
   }
 
   private formatPhoneNumber(phoneNumber: string): string {
