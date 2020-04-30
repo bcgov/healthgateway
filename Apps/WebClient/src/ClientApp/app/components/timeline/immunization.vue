@@ -40,6 +40,14 @@ $radius: 15px;
   margin-top: 15px;
 }
 
+.commentButton {
+  border-radius: $radius;
+}
+
+.newComment {
+  border-radius: $radius;
+}
+
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
   display: none;
@@ -56,7 +64,7 @@ $radius: 15px;
         {{ entry.immunization.name }}
       </b-col>
     </b-row>
-    <b-row>
+    <b-row class="my-2">
       <b-col class="leftPane"></b-col>
       <b-col>
         <b-row>
@@ -64,6 +72,7 @@ $radius: 15px;
             {{ entry.immunization.agents }}
           </b-col>
         </b-row>
+        <CommentSection :parent-entry="entry"></CommentSection>
       </b-col>
     </b-row>
   </b-col>
@@ -73,16 +82,20 @@ $radius: 15px;
 import Vue from "vue";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { Prop, Component } from "vue-property-decorator";
+import { IUserCommentService } from "@/services/interfaces";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 
 import { faSyringe, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
-@Component
+@Component({
+  components: {
+    CommentSection: CommentSectionComponent
+  }
+})
 export default class ImmunizationTimelineComponent extends Vue {
   @Prop() entry!: ImmunizationTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
-  private isLoading: boolean = false;
-  private hasErrors: boolean = false;
 
   private get entryIcon(): IconDefinition {
     return faSyringe;
