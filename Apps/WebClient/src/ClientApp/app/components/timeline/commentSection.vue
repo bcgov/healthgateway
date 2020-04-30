@@ -32,7 +32,7 @@
     </b-row>
     <b-row class="py-2" v-if="showInput">
       <b-col>
-        <b-collapse :visible="commentsVisible">
+        <b-collapse :visible="inputVisible">
           <b-form @submit.prevent="addComment">
             <b-form-input
               type="text"
@@ -48,7 +48,7 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-collapse :visible="commentsVisible">
+        <b-collapse :visible="showComments">
           <div v-if="!this.isLoadingComments">
             <div v-for="comment in this.comments" :key="comment.id">
               <Comment :comment="comment"></Comment>
@@ -100,10 +100,6 @@ export default class CommentSectionComponent extends Vue {
     this.getComments();
   }
 
-  private get commentsVisible(): boolean {
-    return this.showComments || this.showInput
-  }
-
   private get hasComments(): boolean {
     return this.comments.length > 0;
   }
@@ -130,6 +126,7 @@ export default class CommentSectionComponent extends Vue {
 
   private toggleCommentInput(): void {
     this.showInput = !this.showInput;
+    this.newComment = "";
   }
 
   private addComment(): void {
