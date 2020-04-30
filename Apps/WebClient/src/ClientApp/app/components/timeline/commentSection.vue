@@ -87,7 +87,6 @@ export default class CommentSectionComponent extends Vue {
   private showComments: boolean = false;
   private showInput: boolean = false;
   private isCommentSaving: boolean = false;
-  private isLoadingComments: boolean = false;
   private newComment: string = "";
   private comments: UserComment[] = [];
   private numComments = 0;
@@ -153,21 +152,18 @@ export default class CommentSectionComponent extends Vue {
 
   private getComments() {
     const referenceId = this.parentEntry.id;
-    this.isLoadingComments = true;
     let commentPromise = this.commentService
       .getCommentsForEntry(referenceId)
       .then((result) => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
-          this.isLoadingComments = false;
         }
       })
       .catch((err) => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
-        this.isLoadingComments = false;
       });
   }
 }
