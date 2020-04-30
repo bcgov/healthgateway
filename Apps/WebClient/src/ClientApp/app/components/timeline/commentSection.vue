@@ -22,9 +22,7 @@
         <div class="d-flex flex-row-reverse">
           <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
             <span v-if="hasComments">{{
-              comments.length > 1
-                ? comments.length + " comments"
-                : "1 comment"
+              comments.length > 1 ? comments.length + " comments" : "1 comment"
             }}</span>
           </b-btn>
         </div>
@@ -33,12 +31,13 @@
     <b-row class="py-2" v-if="commentInputVisible">
       <b-col>
         <b-collapse :visible="commentInputVisible">
-          <b-form @submit.prevent="addComment">
+          <b-form @submit.prevent="onSubmit" @reset="onClose">
             <b-form-input
               type="text"
+              ref="commentInput"
               autofocus
-              class="newComment"
-              v-model="newComment"
+              class="commentInput"
+              v-model="commentInput"
               placeholder="Enter a comment"
               maxlength="1000"
             ></b-form-input>
@@ -49,10 +48,14 @@
     <b-row>
       <b-col>
         <b-collapse :visible="commentsVisible">
-          <div v-if="!this.isLoadingComments">
-            <div v-for="comment in this.comments" :key="comment.id">
-              <Comment :comment="comment"></Comment>
-            </div>
+          <div v-for="comment in this.comments" :key="comment.id">
+            <Comment
+              :comment="comment"
+              :service="commentService"
+              @on-comment-updated="onChange"
+              @on-comment-deleted="onDelete"
+              @on-edit-started="onEdit"
+            ></Comment>
           </div>
         </b-collapse>
       </b-col>
@@ -88,8 +91,10 @@ export default class CommentSectionComponent extends Vue {
   private commentInputVisible: boolean = false;
   private isCommentSaving: boolean = false;
   private isLoadingComments: boolean = false;
-  private newComment: string = "";
+  private isEditMode: boolean = false;
+  private commentInput: string = "";
   private comments: UserComment[] = [];
+  private editing: UserComment = undefined;
   private numComments = 0;
   private hasErrors: boolean = false;
 
@@ -134,16 +139,24 @@ export default class CommentSectionComponent extends Vue {
     }
   }
 
+  private onSubmit(): void {
+    if (this.isEditMode) {
+      this.updateComment(this.editing);
+    } else {
+      this.addComment();
+    }
+  }
+
   private addComment(): void {
     this.isCommentSaving = true;
     let commentPromise = this.commentService
       .createComment({
-        text: this.newComment,
+        text: this.commentInput,
         parentEntryId: this.parentEntry.id,
         userProfileId: this.user.hdid,
       })
       .then(() => {
-        this.newComment = "";
+        this.commentInput = "";
         this.getComments();
         this.commentsVisible = true;
       })
@@ -175,6 +188,68 @@ export default class CommentSectionComponent extends Vue {
         this.hasErrors = true;
         this.isLoadingComments = false;
       });
+  }
+
+  private updateComment(comment: UserComment): void {
+    this.isCommentSaving = true;
+    let commentPromise = this.commentService
+      .updateComment({
+        id: comment.id,
+        text: this.commentInput,
+        userProfileId: comment.userProfileId,
+        parentEntryId: comment.parentEntryId,
+        createdDateTime: comment.createdDateTime,
+        version: comment.version,
+      })
+      .then((result) => {
+        this.getComments();
+        this.commentInput = "";
+      })
+      .catch((err) => {
+        console.log(err);
+        this.hasErrors = true;
+      })
+      .finally(() => {
+        this.isCommentSaving = false;
+        this.isEditMode = false;
+      });
+  }
+
+  private deleteComment(comment: UserComment): void {
+    let commentPromise = this.commentService
+      .deleteComment(comment)
+      .then((result) => {
+        console.log(result);
+        this.getComments();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  private onChange(comment: UserComment) {
+    console.log("test1 ", comment);
+  }
+
+  private onDelete(comment: UserComment) {
+    this.deleteComment(comment);
+  }
+
+  private onEdit(comment: UserComment) {
+    this.editing = comment;
+    this.commentInputVisible = true;
+    this.isEditMode = true;
+    let index = this.comments.indexOf(comment);
+    let commentStorage;
+    if (index > -1) {
+      commentStorage = this.comments.splice(index, 1);
+    }
+    console.log(commentStorage);
+    this.commentInput = comment.text;
+  }
+
+  onClose() {
+    delete this.editing;
   }
 }
 </script>
