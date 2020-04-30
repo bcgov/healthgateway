@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Wrapper
 {
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Class that represents the result of a request. Contains members for handling pagination and error resolution.

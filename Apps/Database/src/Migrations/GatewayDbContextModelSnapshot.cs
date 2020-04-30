@@ -382,6 +382,109 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("BetaRequest");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CommentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EntryTypeCode")
+                        .IsRequired()
+                        .HasColumnType("character varying(3)")
+                        .HasMaxLength(3);
+
+                    b.Property<string>("ParentEntryId")
+                        .IsRequired()
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<string>("Text")
+                        .HasColumnType("character varying(1344)")
+                        .HasMaxLength(1344);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserProfileId")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("Comment");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.Communication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CommunicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("EffectiveDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ExpiryDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("character varying(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("Text")
+                        .HasColumnType("character varying(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Communication");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1706,12 +1809,12 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Text")
-                        .HasColumnType("character varying(1000)")
-                        .HasMaxLength(1000);
+                        .HasColumnType("character varying(1344)")
+                        .HasMaxLength(1344);
 
                     b.Property<string>("Title")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasColumnType("character varying(152)")
+                        .HasMaxLength(152);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2430,6 +2533,10 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
 
+                    b.Property<string>("EncryptionKey")
+                        .HasColumnType("character varying(44)")
+                        .HasMaxLength(44);
+
                     b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
 
@@ -2479,6 +2586,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("character varying(254)")
                         .HasMaxLength(254);
+
+                    b.Property<string>("EncryptionKey")
+                        .HasColumnType("character varying(44)")
+                        .HasMaxLength(44);
 
                     b.Property<string>("HdId")
                         .IsRequired()
@@ -2600,6 +2711,15 @@ namespace HealthGateway.Database.Migrations
                         .WithMany()
                         .HasForeignKey("TransactionResultCode")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

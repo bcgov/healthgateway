@@ -21,7 +21,6 @@ namespace HealthGateway.Database.Context
     using System.IO;
     using System.Reflection;
     using System.Text;
-    using HealthGateway.Database.Constant;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -66,6 +65,8 @@ namespace HealthGateway.Database.Context
         public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
         public DbSet<Note> Note { get; set; } = null!;
         public DbSet<GenericCache> GenericCache { get; set; } = null!;
+        public DbSet<Comment> Comment { get; set; } = null!;
+        public DbSet<Communication> Communication { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />

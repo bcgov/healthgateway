@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Diagnostics;
     using System.IO;
     using HealthGateway.Common.Filters;
+    using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -26,11 +27,26 @@ namespace HealthGateway.WebClient.Controllers
     [IgnoreAudit]
     public class HomeController : Controller
     {
+        private readonly INonceService nonceService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        public HomeController(INonceService nonceService)
+        {
+            this.nonceService = nonceService;
+        }
+
         /// <summary>
         /// The default page for the home controller.
         /// </summary>
         /// <returns>The default view.</returns>
-        public IActionResult Index() => this.View();
+        public IActionResult Index()
+        {
+            string nonce = this.nonceService.GetCurrentNonce();
+            this.ViewData.Add("nonce", nonce);
+            return this.View();
+        }
 
         /// <summary>
         /// The bc gov logo image.

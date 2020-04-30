@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -63,10 +63,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
+        public DBResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
         {
             this.logger.LogTrace($"Getting Notes for {hdId}...");
-            DBResult<List<Note>> result = new DBResult<List<Note>>();
+            DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>();
             result.Payload = this.dbContext.Note
                     .Where(p => p.HdId == hdId)
                     .OrderBy(o => o.JournalDateTime)
@@ -117,6 +117,34 @@ namespace HealthGateway.Database.Delegates
             };
             this.dbContext.Note.Update(note);
             this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished updating Note in DB");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true)
+        {
+            this.logger.LogTrace($"Updating Note request in DB...");
+            DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>()
+            {
+                Payload = notes,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.Note.UpdateRange(notes);
             if (commit)
             {
                 try

@@ -1,18 +1,20 @@
 {
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:3003"
+      "applicationUrl": "http://localhost:3003",
+      "sslPort": 0
     }
   },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "HealthGateway.Medication": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
+        "ODRPROXY_SERVICE_PORT": "443",
+        "ODRPROXY_SERVICE_HOST": "dev-odrproxy.pathfinder.gov.bc.ca",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:3003;"

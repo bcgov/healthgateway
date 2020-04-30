@@ -59,5 +59,12 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the users last login datetime.
         /// </summary>
         public DateTime? LastLoginDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users encryption key.
+        /// Key is 16 byte string and is encoded to Base64.
+        /// </summary>
+        [MaxLength(44)]
+        public string? EncryptionKey { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Linq;
     using System.Text.Json;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Delegates
         {
             T? retVal = null;
             DBResult<GenericCache> cacheObject = this.GetCacheObject(hdid, domain);
-            if (cacheObject.Status == Database.Constant.DBStatusCode.Read)
+            if (cacheObject.Status == DBStatusCode.Read)
             {
                 if (cacheObject.Payload != null &&
                     cacheObject.Payload.JSON != null &&

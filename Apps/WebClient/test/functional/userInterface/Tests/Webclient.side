@@ -994,14 +994,16 @@
       "id": "4f276699-9c9a-4e8d-b9f4-4b176e3582e1",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row > .btn",
+      "target": "id=__BVID__55___BV_modal_title_",
       "targets": [
-        ["css=.row > .btn", "css:finder"],
-        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
-        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div/button", "xpath:position"]
+        ["id=__BVID__55___BV_modal_title_", "id"],
+        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
       ],
-      "value": "Date (Newest)"
+      "value": "Restricted PharmaNet Records"
     }, {
       "id": "f0c3bc8e-0b53-4984-a350-bf59443e20ba",
       "comment": "",
@@ -1069,6 +1071,13 @@
       "target": "id=protectiveWord-input",
       "targets": [],
       "value": ""
+    }, {
+      "id": "257ad2da-cc67-479e-a1cb-d282a5454485",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
     }]
   }, {
     "id": "bcc6fc9a-fa06-48b8-8a47-5f18abee6a6c",
@@ -2936,6 +2945,450 @@
       "targets": [],
       "value": ""
     }]
+  }, {
+    "id": "821738af-743a-4451-954f-cb9b52ed89a7",
+    "name": "Timeline - User Support",
+    "commands": [{
+      "id": "7b5fa0e0-08d6-421a-b9bb-41638092a57f",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a79b8322-f90e-4aec-bca5-adb4663be5c9",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "890927f0-b343-4e6a-a72b-2a0813f05c88",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "419dc99a-bee4-4a37-a99b-f0fef21c2804",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "eac1869b-3c38-48c3-8b52-ff1167f56186",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn > .row:nth-child(1) > .col",
+      "targets": [
+        ["css=.btn > .row:nth-child(1) > .col", "css:finder"],
+        ["xpath=//div[@id='feedback-container']/button/div/div", "xpath:idRelative"],
+        ["xpath=//button/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4ec94b9f-754b-408b-9da9-6ee9e5985501",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.button-title:nth-child(1)",
+      "targets": [
+        ["css=.button-title:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='collapse']/div/div/div/span", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/div/span", "xpath:position"]
+      ],
+      "value": "Do you have a question or suggestion? Let us know in the field below."
+    }, {
+      "id": "7ce62d5e-7288-46ba-959c-5840a6708954",
+      "comment": "",
+      "command": "type",
+      "target": "id=comment",
+      "targets": [
+        ["id=comment", "id"],
+        ["css=#comment", "css:finder"],
+        ["xpath=//textarea[@id='comment']", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/form/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "Great job team!"
+    }, {
+      "id": "4f99fc19-909d-4779-93eb-72e3540e1df7",
+      "comment": "",
+      "command": "click",
+      "target": "css=.aqua-button",
+      "targets": [
+        ["css=.aqua-button", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/form/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Send Message')]", "xpath:innerText"]
+      ],
+      "value": "Send Message"
+    }, {
+      "id": "d67d2f36-1e7e-40ff-bfbb-bb7b4d4b8c7e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.font-weight-bold",
+      "targets": [
+        ["css=.font-weight-bold", "css:finder"],
+        ["xpath=//div[@id='collapse']/div/div/div/p", "xpath:idRelative"],
+        ["xpath=//p", "xpath:position"],
+        ["xpath=//p[contains(.,'Awesome!')]", "xpath:innerText"]
+      ],
+      "value": "Awesome!"
+    }, {
+      "id": "8b1d0eaa-a7d7-437c-936f-1853fe556d4f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.text-warning > path",
+      "targets": [
+        ["css=.text-warning > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "21be2fe4-7bd9-492f-8e3f-27d324790d80",
+      "comment": "",
+      "command": "click",
+      "target": "css=.aqua-button",
+      "targets": [
+        ["css=.aqua-button", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//a[@id='menuBtnProfile']/button", "xpath:idRelative"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Update my email')]", "xpath:innerText"]
+      ],
+      "value": "Update my email"
+    }, {
+      "id": "8bef7cd2-0b5f-46f5-a06c-9aa5a78e35c4",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Profile')]", "xpath:innerText"]
+      ],
+      "value": "Profile"
+    }, {
+      "id": "5112a6de-b637-4695-85c3-5e7b272c5904",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.p-0 > .btn",
+      "targets": [
+        ["css=.p-0 > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'No Need!')]", "xpath:innerText"]
+      ],
+      "value": "No Need!"
+    }, {
+      "id": "d182158a-c4d7-4ef4-b1b6-48e1f47c6214",
+      "comment": "",
+      "command": "click",
+      "target": "css=.p-0 > .btn",
+      "targets": [
+        ["css=.p-0 > .btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'No Need!')]", "xpath:innerText"]
+      ],
+      "value": "No Need!"
+    }, {
+      "id": "a4a3d2c9-50a7-4b6a-833b-198c888f9ec1",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "152f8b6e-5c6f-48f8-969e-f13f449bc2f7",
+    "name": "Timeline - Profile Menu",
+    "commands": [{
+      "id": "4516af11-5cca-4c0e-a759-3752c22a18a5",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "984dd5a4-7cd6-4c83-8445-ef0ef12824e3",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "671d15a2-30fa-4ae0-94df-53c44abd6dc4",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "f8b1d6f8-0a15-424b-9b6c-8d52a5cca598",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "33a6a4d0-f381-4ef1-8af7-c0beca0a3f04",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "5a8d2d2c-c898-4452-b386-4c32f5177a97",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [
+        ["css=.name-wrapper > .button-title", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div/div[2]", "xpath:idRelative"],
+        ["xpath=//a/div/div[2]", "xpath:position"]
+      ],
+      "value": "Dr Gateway"
+    }, {
+      "id": "336a8f12-6eb6-4d0c-89c3-b716fa7d1787",
+      "comment": "",
+      "command": "click",
+      "target": "css=.m-4",
+      "targets": [
+        ["css=.m-4", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div", "xpath:idRelative"],
+        ["xpath=//a/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7daf0cbc-069d-416c-bae4-bc2d4bbb5949",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#termsOfService span",
+      "targets": [
+        ["css=#termsOfService span", "css:finder"],
+        ["xpath=//a[@id='termsOfService']/div/div[2]/span", "xpath:idRelative"],
+        ["xpath=//div[2]/a/div/div[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Terms of Service')]", "xpath:innerText"]
+      ],
+      "value": "Terms of Service"
+    }, {
+      "id": "90ddd355-472a-4eda-b188-458c6db91587",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#releaseNotes > .row",
+      "targets": [
+        ["css=#releaseNotes > .row", "css:finder"],
+        ["xpath=//a[@id='releaseNotes']/div", "xpath:idRelative"],
+        ["xpath=//div[2]/a[2]/div", "xpath:position"]
+      ],
+      "value": "Release Notes"
+    }]
+  }, {
+    "id": "d60d5344-1f4e-49a3-938c-7b667a477041",
+    "name": "Timeline - User Support Protected & Verified",
+    "commands": [{
+      "id": "8e5ec6e8-1805-495e-8b06-9e17986d9beb",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login Protected",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ab472848-467b-474f-a661-6ed1ce3fd60c",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "7df684c6-2b42-40c5-b779-cea833d16112",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=__BVID__55___BV_modal_title_",
+      "targets": [
+        ["id=__BVID__55___BV_modal_title_", "id"],
+        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
+      ],
+      "value": "Restricted PharmaNet Records"
+    }, {
+      "id": "488808d9-b2c3-49e8-b536-3e8836ce0b4a",
+      "comment": "",
+      "command": "waitForElementEditable",
+      "target": "id=protectiveWord-input",
+      "targets": [
+        ["id=protectiveWord-input", "id"],
+        ["css=#protectiveWord-input", "css:finder"],
+        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
+        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/div/input", "xpath:position"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "6ba34883-77fb-43e7-be7a-438602008d2c",
+      "comment": "",
+      "command": "assertText",
+      "target": "xpath=//h5",
+      "targets": [
+        ["id=__BVID__55___BV_modal_title_", "id"],
+        ["css=#\\__BVID__55___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='__BVID__55___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='__BVID__55___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Restricted PharmaNet Records')]", "xpath:innerText"]
+      ],
+      "value": "Restricted PharmaNet Records"
+    }, {
+      "id": "f3cd9d3b-9aa0-4158-a1bf-0eb2053dee8a",
+      "comment": "",
+      "command": "type",
+      "target": "id=protectiveWord-input",
+      "targets": [
+        ["id=protectiveWord-input", "id"],
+        ["css=#protectiveWord-input", "css:finder"],
+        ["xpath=//input[@id='protectiveWord-input']", "xpath:attributes"],
+        ["xpath=//div[@id='__BVID__55___BV_modal_body_']/div/div/form/div/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/div/input", "xpath:position"]
+      ],
+      "value": "KEYWORD"
+    }, {
+      "id": "d6d86753-dc3d-4314-a80c-5551f0c189ba",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//button[contains(.,'Continue')]",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[10]", "xpath:attributes"],
+        ["xpath=//footer[@id='__BVID__55___BV_modal_footer_']/div/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//footer/div/div/div/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Continue')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4b6f4c97-1888-4f06-8360-5827247c47f6",
+      "comment": "",
+      "command": "pause",
+      "target": "3000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f15c7460-8c1a-447d-8133-b5d42b24dcb6",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "id=protectiveWord-input",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "51656d9a-6b8f-4a64-877c-f86797d74047",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "3af0a11d-8bb5-45f6-bb82-edd490bcca81",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn > .row:nth-child(1) > .col",
+      "targets": [
+        ["css=.btn > .row:nth-child(1) > .col", "css:finder"],
+        ["xpath=//div[@id='feedback-container']/button/div/div", "xpath:idRelative"],
+        ["xpath=//button/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7078cf2f-f22d-460c-9610-fe5265402eee",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.button-title:nth-child(1)",
+      "targets": [
+        ["css=.button-title:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='collapse']/div/div/div/span", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/div/span", "xpath:position"]
+      ],
+      "value": "Do you have a question or suggestion? Let us know in the field below."
+    }, {
+      "id": "9c9a5378-0f22-4a84-b936-09b1adb22e1d",
+      "comment": "",
+      "command": "type",
+      "target": "id=comment",
+      "targets": [
+        ["id=comment", "id"],
+        ["css=#comment", "css:finder"],
+        ["xpath=//textarea[@id='comment']", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/form/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "Great job team!"
+    }, {
+      "id": "24dbe725-cb2b-4bb2-b498-ba026ed7e82b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.aqua-button",
+      "targets": [
+        ["css=.aqua-button", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/form/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Send Message')]", "xpath:innerText"]
+      ],
+      "value": "Send Message"
+    }, {
+      "id": "44bb1aad-a31e-46d2-a5b4-5b39ca9b6ce1",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.aqua-button",
+      "targets": [
+        ["css=.aqua-button", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Got it!')]", "xpath:innerText"]
+      ],
+      "value": "Got it!"
+    }, {
+      "id": "244acb26-33a8-4718-9bb6-560521fbce5a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.aqua-button",
+      "targets": [
+        ["css=.aqua-button", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='collapse']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Got it!')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "afc463ad-e0ff-4395-b937-bed91dc44e46",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -2964,7 +3417,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6"]
+    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

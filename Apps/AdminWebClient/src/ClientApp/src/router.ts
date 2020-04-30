@@ -8,6 +8,7 @@ import ResendEmailView from "@/views/ResendEmail.vue";
 import VueRouter from "vue-router";
 import FeedbackView from "@/views/Feedback.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
+import CommunicationView from "./views/Communication.vue";
 
 Vue.use(VueRouter);
 
@@ -54,6 +55,12 @@ const routes = [
     path: "/user-feedback",
     name: "User Feedback list",
     component: FeedbackView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/communication",
+    name: "System Communications",
+    component: CommunicationView,
     meta: { requiresAuth: true }
   },
   {

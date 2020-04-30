@@ -69,8 +69,7 @@ module.exports = (env, argv) => {
           { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "url-loader?limit=25000" },
           {
             test: /\.(png|jpg|jpeg|gif|svg)$/,
-            use: "image-webpack-loader",
-            enforce: "pre"
+            use: "image-webpack-loader"
           },
           {
             test: /\.(woff|woff2|eot|ttf|otf)$/,
@@ -83,6 +82,9 @@ module.exports = (env, argv) => {
         filename: "[name].bundle.js",
         chunkFilename: "[name].chunk.[contenthash].js",
         publicPath: "/dist/"
+      },
+      node: {
+        global: false
       },
       plugins: [
         new VueLoaderPlugin(),

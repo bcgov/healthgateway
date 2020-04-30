@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Constants
 {
     /// <summary>
     /// The application type being recorded in the DB.

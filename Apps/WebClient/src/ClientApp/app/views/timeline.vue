@@ -250,6 +250,7 @@ import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import UserNote from "@/models/userNote";
 import { WebClientConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
+import { Route } from "vue-router";
 import EventBus from "@/eventbus";
 
 const namespace: string = "user";
@@ -285,9 +286,10 @@ export default class TimelineComponent extends Vue {
   private windowWidth: number = 0;
   private currentPage: number = 1;
   private hasErrors: boolean = false;
+  private idleLogoutWarning: boolean = false;
   private protectiveWordAttempts: number = 0;
   private isAddingNote: boolean = false;
-  private editIdList: string[] = [];
+  private cardEditedId: string | undefined;
   private unsavedChangesText: string =
     "You have unsaved changes. Are you sure you want to leave?";
 
@@ -307,20 +309,22 @@ export default class TimelineComponent extends Vue {
     this.fetchImmunizations();
     this.fetchNotes();
     window.addEventListener("beforeunload", this.onBrowserClose);
-
     let self = this;
     EventBus.$on("timelineCreateNote", function() {
       self.isAddingNote = true;
     });
-
     EventBus.$on("timelinePrintView", function() {
       self.printRecords();
     });
+    EventBus.$on("idleLogoutWarning", function(isVisible: boolean) {
+      self.idleLogoutWarning = isVisible;
+    });
   }
 
-  private beforeRouteLeave(to, from, next) {
+  private beforeRouteLeave(to: Route, from: Route, next: any) {
     if (
-      (this.isAddingNote || this.editIdList.length > 0) &&
+      !this.idleLogoutWarning &&
+      (this.isAddingNote || this.cardEditedId) &&
       !confirm(this.unsavedChangesText)
     ) {
       return;
@@ -333,7 +337,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onBrowserClose(event: BeforeUnloadEvent) {
-    if (this.isAddingNote || this.editIdList.length > 0) {
+    if (!this.idleLogoutWarning && (this.isAddingNote || this.cardEditedId)) {
       event.returnValue = this.unsavedChangesText;
     }
   }
@@ -425,10 +429,8 @@ export default class TimelineComponent extends Vue {
       SERVICE_IDENTIFIER.MedicationService
     );
     this.isMedicationLoading = true;
-
     const isOdrEnabled = this.config.modules["MedicationHistory"];
     let promise: Promise<RequestResult<MedicationStatement[]>>;
-
     if (isOdrEnabled) {
       promise = medicationService.getPatientMedicationStatementHistory(
         this.user.hdid,
@@ -445,7 +447,6 @@ export default class TimelineComponent extends Vue {
       .then(results => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
-
           // Add the medication entries to the timeline list
           for (let result of results.resourcePayload) {
             this.timelineEntries.push(new MedicationTimelineEntry(result));
@@ -550,18 +551,20 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardEdit(entry: TimelineEntry) {
-    this.editIdList.push(entry.id);
+    this.cardEditedId = entry.id;
   }
 
   private onCardClose(entry: TimelineEntry) {
-    const index = this.editIdList.findIndex(e => e == entry.id);
-    this.editIdList.splice(index, 1);
+    this.cardEditedId = undefined;
   }
 
   private onCardUpdated(entry: TimelineEntry) {
     const index = this.timelineEntries.findIndex(e => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
+    this.cardEditedId = undefined;
+    this.sortEntries();
+    this.applyTimelineFilter();
   }
 
   private onProtectiveWordSubmit(value: string) {
@@ -593,7 +596,6 @@ export default class TimelineComponent extends Vue {
     if (this.currentPage > this.numberOfPages) {
       this.currentPage = this.numberOfPages;
     }
-
     // Get the section of the array that contains the paginated section
     let lowerIndex = (this.currentPage - 1) * this.numberOfEntriesPerPage;
     let upperIndex = Math.min(
@@ -610,21 +612,17 @@ export default class TimelineComponent extends Vue {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
     }
-
     let groups = this.visibleTimelineEntries.reduce((groups, entry) => {
       // Get the string version of the date and get the date
       //const date = (entry.date).split("T")[0];
       const date = new Date(entry.date).setHours(0, 0, 0, 0);
-
       // Create a new group if it the date doesnt exist in the map
       if (!groups[date]) {
         groups[date] = [];
       }
-
       groups[date].push(entry);
       return groups;
     }, {});
-
     let groupArrays = Object.keys(groups).map(dateKey => {
       return {
         key: dateKey,
