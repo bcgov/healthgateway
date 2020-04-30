@@ -22,9 +22,7 @@
         <div class="d-flex flex-row-reverse">
           <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
             <span v-if="hasComments">{{
-              comments.length > 1
-                ? comments.length + " comments"
-                : "1 comment"
+              comments.length > 1 ? comments.length + " comments" : "1 comment"
             }}</span>
           </b-btn>
         </div>
@@ -52,6 +50,12 @@
           <div v-if="!this.isLoadingComments">
             <div v-for="comment in this.comments" :key="comment.id">
               <Comment :comment="comment"></Comment>
+            </div>
+          </div>
+          <div v-else>
+            <div class="d-flex align-items-center">
+              <strong>Loading...</strong>
+              <b-spinner class="ml-5"></b-spinner>
             </div>
           </div>
         </b-collapse>
@@ -86,7 +90,7 @@ export default class CommentSectionComponent extends Vue {
   private commentService!: IUserCommentService;
   private showComments: boolean = false;
   private showInput: boolean = false;
-  private isCommentSaving: boolean = false;
+  private isLoadingComments: boolean = false;
   private newComment: string = "";
   private comments: UserComment[] = [];
   private numComments = 0;
@@ -129,7 +133,7 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private addComment(): void {
-    this.isCommentSaving = true;
+    this.isLoadingComments = true;
     let commentPromise = this.commentService
       .createComment({
         text: this.newComment,
@@ -146,14 +150,15 @@ export default class CommentSectionComponent extends Vue {
         this.hasErrors = true;
       })
       .finally(() => {
-        this.isCommentSaving = false;
+        this.isLoadingComments = false;
       });
   }
 
   private getComments() {
-    const referenceId = this.parentEntry.id;
+    this.isLoadingComments = true;
+    const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
-      .getCommentsForEntry(referenceId)
+      .getCommentsForEntry(parentEntryId)
       .then((result) => {
         if (result) {
           this.comments = result.resourcePayload;
@@ -164,6 +169,9 @@ export default class CommentSectionComponent extends Vue {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
+      })
+      .finally(() => {
+        this.isLoadingComments = false;
       });
   }
 }

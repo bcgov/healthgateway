@@ -6,7 +6,7 @@ export default interface UserComment {
   userProfileId: string;
 
   // The entry this comment belongs to.
-  parentEntryId: number;
+  parentEntryId: string;
 
   // Gets or sets the text of the comment.
   text: string;

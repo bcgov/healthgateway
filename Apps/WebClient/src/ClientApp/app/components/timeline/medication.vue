@@ -183,7 +183,7 @@ import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import MedicationResult from '../../models/medicationResult';
+import MedicationResult from '@/models/medicationResult';
 
 @Component({
   components: {
