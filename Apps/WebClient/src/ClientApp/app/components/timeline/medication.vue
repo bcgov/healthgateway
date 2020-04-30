@@ -177,12 +177,13 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
-import { PhoneType } from "@/models/pharmacy";
+import Pharmacy, { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import MedicationResult from '../../models/medicationResult';
 
 @Component({
   components: {
@@ -193,8 +194,12 @@ export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
-  @Action("getMedication", { namespace: "medication" }) getMedication;
-  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy;
+  @Action("getMedication", { namespace: "medication" }) getMedication!: ({
+    din: string,
+  }: any) => Promise<MedicationResult>;
+  @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy!: ({
+    pharmacyId: string,
+  }: any) => Promise<Pharmacy>;
 
   private faxPhoneType: PhoneType = PhoneType.Fax;
   private isLoadingMedication: boolean = false;

@@ -88,7 +88,6 @@ import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import {
   faSyringe,
   IconDefinition,
-  faCommentAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
