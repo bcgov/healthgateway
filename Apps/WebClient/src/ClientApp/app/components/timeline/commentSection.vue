@@ -28,15 +28,15 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="py-2" v-if="showInput">
+    <b-row v-if="showInput" class="py-2">
       <b-col>
         <b-collapse :visible="showInput">
           <b-form @submit.prevent="addComment">
             <b-form-input
+              v-model="newComment"
               type="text"
               autofocus
               class="newComment"
-              v-model="newComment"
               placeholder="Enter a comment"
               maxlength="1000"
             ></b-form-input>
@@ -47,8 +47,8 @@
     <b-row>
       <b-col>
         <b-collapse :visible="showComments">
-          <div v-if="!this.isLoadingComments">
-            <div v-for="comment in this.comments" :key="comment.id">
+          <div v-if="!isLoadingComments">
+            <div v-for="comment in comments" :key="comment.id">
               <Comment :comment="comment"></Comment>
             </div>
           </div>
@@ -75,14 +75,14 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {
   faCommentAlt,
-  IconDefinition,
+  IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import { Getter } from "vuex-class";
 
 @Component({
   components: {
-    Comment: CommentComponent,
-  },
+    Comment: CommentComponent
+  }
 })
 export default class CommentSectionComponent extends Vue {
   @Getter("user", { namespace: "user" }) user!: User;
@@ -138,13 +138,13 @@ export default class CommentSectionComponent extends Vue {
       .createComment({
         text: this.newComment,
         parentEntryId: this.parentEntry.id,
-        userProfileId: this.user.hdid,
+        userProfileId: this.user.hdid
       })
       .then(() => {
         this.newComment = "";
         this.getComments();
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error adding comment on entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
@@ -159,13 +159,13 @@ export default class CommentSectionComponent extends Vue {
     const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
       .getCommentsForEntry(parentEntryId)
-      .then((result) => {
+      .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;

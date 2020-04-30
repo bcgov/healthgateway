@@ -149,7 +149,7 @@ library.add(
   faAngleDoubleLeft,
   faFileAlt,
   faChartBar,
-  faCommentAlt,
+  faCommentAlt
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

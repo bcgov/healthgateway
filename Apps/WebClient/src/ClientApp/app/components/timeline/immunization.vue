@@ -72,7 +72,7 @@ $radius: 15px;
             {{ entry.immunization.agents }}
           </b-col>
         </b-row>
-        <CommentSection :parentEntry="entry"></CommentSection>
+        <CommentSection :parent-entry="entry"></CommentSection>
       </b-col>
     </b-row>
   </b-col>
@@ -85,15 +85,12 @@ import { Prop, Component } from "vue-property-decorator";
 import { IUserCommentService } from "@/services/interfaces";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 
-import {
-  faSyringe,
-  IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSyringe, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   components: {
-    CommentSection: CommentSectionComponent,
-  },
+    CommentSection: CommentSectionComponent
+  }
 })
 export default class ImmunizationTimelineComponent extends Vue {
   @Prop() entry!: ImmunizationTimelineEntry;

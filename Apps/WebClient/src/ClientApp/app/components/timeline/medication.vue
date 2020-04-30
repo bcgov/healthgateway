@@ -169,7 +169,7 @@ $radius: 15px;
             </b-collapse>
           </b-col>
         </b-row>
-        <CommentSection :parentEntry="entry"></CommentSection>
+        <CommentSection :parent-entry="entry"></CommentSection>
       </b-col>
     </b-row>
   </b-col>
@@ -183,22 +183,22 @@ import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import MedicationResult from '@/models/medicationResult';
+import MedicationResult from "@/models/medicationResult";
 
 @Component({
   components: {
-    CommentSection: CommentSectionComponent,
-  },
+    CommentSection: CommentSectionComponent
+  }
 })
 export default class MedicationTimelineComponent extends Vue {
   @Prop() entry!: MedicationTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
   @Action("getMedication", { namespace: "medication" }) getMedication!: ({
-    din: string,
+    din: string
   }: any) => Promise<MedicationResult>;
   @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy!: ({
-    pharmacyId: string,
+    pharmacyId: string
   }: any) => Promise<Pharmacy>;
 
   private faxPhoneType: PhoneType = PhoneType.Fax;
@@ -232,16 +232,16 @@ export default class MedicationTimelineComponent extends Vue {
     if (!this.medicationLoaded) {
       this.isLoadingMedication = true;
       var medicationPromise = this.getMedication({
-        din: medicationEntry.medication.din,
+        din: medicationEntry.medication.din
       })
-        .then((result) => {
+        .then(result => {
           if (result) {
             medicationEntry.medication.populateFromModel(result);
           }
           this.medicationLoaded = true;
           this.isLoadingMedication = false;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Error loading medication details");
           console.log(err);
           this.hasErrors = true;
@@ -252,15 +252,15 @@ export default class MedicationTimelineComponent extends Vue {
     if (!medicationEntry.pharmacy.isLoaded) {
       this.isLoadingPharmacy = true;
       var pharmacyPromise = this.getPharmacy({
-        pharmacyId: medicationEntry.pharmacy.id,
+        pharmacyId: medicationEntry.pharmacy.id
       })
-        .then((result) => {
+        .then(result => {
           if (result) {
             medicationEntry.pharmacy.populateFromModel(result);
           }
           this.isLoadingPharmacy = false;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Error loading pharmacy details");
           console.log(err);
           this.hasErrors = true;
