@@ -30,9 +30,9 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="py-2" v-if="commentInputVisible">
+    <b-row class="py-2" v-if="showInput">
       <b-col>
-        <b-collapse :visible="commentInputVisible">
+        <b-collapse :visible="commentsVisible">
           <b-form @submit.prevent="addComment">
             <b-form-input
               type="text"
@@ -84,8 +84,8 @@ export default class CommentSectionComponent extends Vue {
   @Getter("user", { namespace: "user" }) user!: User;
   @Prop() parentEntry!: MedicationTimelineEntry;
   private commentService!: IUserCommentService;
-  private commentsVisible: boolean = false;
-  private commentInputVisible: boolean = false;
+  private showComments: boolean = false;
+  private showInput: boolean = false;
   private isCommentSaving: boolean = false;
   private isLoadingComments: boolean = false;
   private newComment: string = "";
@@ -98,6 +98,10 @@ export default class CommentSectionComponent extends Vue {
       SERVICE_IDENTIFIER.UserCommentService
     );
     this.getComments();
+  }
+
+  private get commentsVisible(): boolean {
+    return this.showComments || this.showInput
   }
 
   private get hasComments(): boolean {
@@ -121,16 +125,16 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private toggleComments(): void {
-    this.commentsVisible = !this.commentsVisible;
-    if (this.commentInputVisible && !this.commentsVisible) {
-      this.commentInputVisible = false;
+    this.showComments = !this.showComments;
+    if (this.showInput && !this.showComments) {
+      this.showInput = false;
     }
   }
 
   private toggleCommentInput(): void {
-    this.commentInputVisible = !this.commentInputVisible;
-    if (this.commentInputVisible && !this.commentsVisible) {
-      this.commentsVisible = true;
+    this.showInput = !this.showInput;
+    if (this.showInput && !this.showComments) {
+      this.showComments = true;
     }
   }
 
@@ -145,7 +149,7 @@ export default class CommentSectionComponent extends Vue {
       .then(() => {
         this.newComment = "";
         this.getComments();
-        this.commentsVisible = true;
+        this.showComments = true;
       })
       .catch((err) => {
         console.log("Error adding comment on entry " + this.parentEntry.id);
