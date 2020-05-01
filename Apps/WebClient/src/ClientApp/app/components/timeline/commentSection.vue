@@ -1,6 +1,7 @@
 <style scoped lang="scss">
 @import "@/assets/scss/_variables.scss";
 </style>
+
 <template>
   <div>
     <b-row class="pt-2">
@@ -28,21 +29,6 @@
         </div>
       </b-col>
     </b-row>
-    <b-row v-show="showInput" class="py-2">
-      <b-col>
-        <b-form @submit.prevent="onSubmit">
-          <b-form-input
-            ref="commentInput"
-            v-model="commentInput"
-            type="text"
-            autofocus
-            class="form-control commentInput"
-            placeholder="Enter a comment"
-            maxlength="1000"
-          ></b-form-input>
-        </b-form>
-      </b-col>
-    </b-row>
     <b-row>
       <b-col>
         <b-collapse :visible="showComments">
@@ -50,9 +36,9 @@
             <div v-for="comment in comments" :key="comment.id">
               <Comment
                 :comment="comment"
-                :editing="editing"
-                @on-comment-deleted="deleteComment"
-                @on-edit-started="onEdit"
+                @on-comment-deleted="onDelete"
+                @on-comment-created="onCreate"
+                @on-comment-updated="onUpdate"
               ></Comment>
             </div>
           </div>
@@ -95,17 +81,7 @@ export default class CommentSectionComponent extends Vue {
   private showComments: boolean = false;
   private showInput: boolean = false;
   private isLoadingComments: boolean = false;
-  private isEditMode: boolean = false;
-  private editing: UserComment = {
-    id: "",
-    userProfileId: "",
-    parentEntryId: "",
-    text: "",
-    createdDateTime: new Date(),
-    version: 0
-  };
 
-  private commentInput: string = "";
   private comments: UserComment[] = [];
   private hasErrors: boolean = false;
 
@@ -122,12 +98,6 @@ export default class CommentSectionComponent extends Vue {
 
   private get commentIcon(): IconDefinition {
     return faCommentAlt;
-  }
-
-  private setFocus(): void {
-    this.$nextTick(() => {
-      (this.$refs.commentInput as HTMLBodyElement).focus();
-    });
   }
 
   private sortComments() {
@@ -148,38 +118,6 @@ export default class CommentSectionComponent extends Vue {
 
   private toggleCommentInput(): void {
     this.showInput = !this.showInput;
-    this.commentInput = "";
-    this.setFocus();
-  }
-
-  private onSubmit(): void {
-    if (this.isEditMode) {
-      this.updateComment();
-    } else {
-      this.addComment();
-    }
-  }
-
-  private addComment(): void {
-    this.isLoadingComments = true;
-    let commentPromise = this.commentService
-      .createComment({
-        text: this.commentInput,
-        parentEntryId: this.parentEntry.id,
-        userProfileId: this.user.hdid
-      })
-      .then(() => {
-        this.commentInput = "";
-        this.getComments();
-      })
-      .catch(err => {
-        console.log("Error adding comment on entry " + this.parentEntry.id);
-        console.log(err);
-        this.hasErrors = true;
-      })
-      .finally(() => {
-        this.isLoadingComments = false;
-      });
   }
 
   private getComments() {
@@ -203,52 +141,17 @@ export default class CommentSectionComponent extends Vue {
       });
   }
 
-  private updateComment(): void {
-    this.isLoadingComments = true;
-    let commentPromise = this.commentService
-      .updateComment({
-        id: this.editing.id,
-        text: this.commentInput,
-        userProfileId: this.editing.userProfileId,
-        parentEntryId: this.editing.parentEntryId,
-        createdDateTime: this.editing.createdDateTime,
-        version: this.editing.version
-      })
-      .then(result => {
-        this.getComments();
-        this.commentInput = "";
-      })
-      .catch(err => {
-        console.log(err);
-        this.hasErrors = true;
-      })
-      .finally(() => {
-        this.isLoadingComments = false;
-        this.showInput = false;
-        this.isEditMode = false;
-      });
+  private onCreate(comment: UserComment) {
+    this.getComments();
   }
 
-  private deleteComment(comment: UserComment): void {
-    if (confirm("Are you sure you want to delete this comment?")) {
-      let commentPromise = this.commentService
-        .deleteComment(comment)
-        .then(result => {
-          this.commentInput = "";
-          this.getComments();
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
+  private onDelete(comment: UserComment) {
+    this.getComments();
   }
 
-  private onEdit(comment: UserComment) {
-    this.showInput = true;
-    this.commentInput = comment.text;
-    this.editing = comment;
-    this.isEditMode = true;
-    this.setFocus();
+  private onUpdate(comment: UserComment) {
+    this.getComments();
   }
 }
 </script>
+
