@@ -28,21 +28,19 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="py-2">
+    <b-row class="py-2" v-show="showInput">
       <b-col>
-        <b-collapse :visible="showInput">
-          <b-form @submit.prevent="onSubmit">
-            <b-form-input
-              ref="commentInput"
-              v-model="commentInput"
-              type="text"
-              autofocus
-              class="form-control commentInput"
-              placeholder="Enter a comment"
-              maxlength="1000"
-            ></b-form-input>
-          </b-form>
-        </b-collapse>
+        <b-form @submit.prevent="onSubmit">
+          <b-form-input
+            ref="commentInput"
+            v-model="commentInput"
+            type="text"
+            autofocus
+            class="form-control commentInput"
+            placeholder="Enter a comment"
+            maxlength="1000"
+          ></b-form-input>
+        </b-form>
       </b-col>
     </b-row>
     <b-row>
@@ -127,7 +125,10 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private setFocus(): void {
-    (this.$refs["commentInput"] as HTMLInputElement).focus();
+    console.log("Focusing... ", this.$refs.commentInput);
+    this.$nextTick(() => {
+      (this.$refs.commentInput as HTMLBodyElement).focus();
+    })
   }
 
   private sortComments() {
@@ -149,6 +150,7 @@ export default class CommentSectionComponent extends Vue {
   private toggleCommentInput(): void {
     this.showInput = !this.showInput;
     this.commentInput = "";
+    this.setFocus();
   }
 
   private onSubmit(): void {
@@ -247,7 +249,8 @@ export default class CommentSectionComponent extends Vue {
     this.commentInput = comment.text;
     this.editing = comment;
     this.isEditMode = true;
-      this.setFocus();
+    console.log("editing.")
+    this.setFocus();
   }
 }
 </script>
