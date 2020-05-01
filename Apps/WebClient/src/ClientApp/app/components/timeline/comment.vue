@@ -60,7 +60,7 @@ import { faEllipsisV, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 @Component
 export default class CommentComponent extends Vue {
   @Prop() comment!: UserComment;
-  @Prop() isEditing!: UserComment;
+  @Prop() editing!: UserComment;
 
   private isEditMode: boolean = false;
   private hasErrors: boolean = false;
@@ -73,9 +73,9 @@ export default class CommentComponent extends Vue {
     return faEllipsisV;
   }
 
-  @Watch("isEditing")
+  @Watch("editing")
   private onEditMode(): void {
-    this.isEditing.id === this.comment.id
+    this.editing.id === this.comment.id
       ? (this.isEditMode = true)
       : (this.isEditMode = false);
   }

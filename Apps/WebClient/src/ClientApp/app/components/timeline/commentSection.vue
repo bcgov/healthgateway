@@ -50,7 +50,7 @@
             <div v-for="comment in comments" :key="comment.id">
               <Comment
                 :comment="comment"
-                :is-editing="editing"
+                :editing="editing"
                 @on-comment-deleted="deleteComment"
                 @on-edit-started="onEdit"
               ></Comment>
@@ -125,7 +125,6 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private setFocus(): void {
-    console.log("Focusing... ", this.$refs.commentInput);
     this.$nextTick(() => {
       (this.$refs.commentInput as HTMLBodyElement).focus();
     })
@@ -249,7 +248,6 @@ export default class CommentSectionComponent extends Vue {
     this.commentInput = comment.text;
     this.editing = comment;
     this.isEditMode = true;
-    console.log("editing.")
     this.setFocus();
   }
 }
