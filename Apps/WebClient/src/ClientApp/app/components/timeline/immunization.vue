@@ -40,14 +40,6 @@ $radius: 15px;
   margin-top: 15px;
 }
 
-.commentButton {
-  border-radius: $radius;
-}
-
-.newComment {
-  border-radius: $radius;
-}
-
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
   display: none;

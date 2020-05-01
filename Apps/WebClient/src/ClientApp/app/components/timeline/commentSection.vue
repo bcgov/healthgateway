@@ -31,12 +31,13 @@
     <b-row v-if="showInput" class="py-2">
       <b-col>
         <b-collapse :visible="showInput">
-          <b-form @submit.prevent="addComment">
+          <b-form @submit.prevent="onSubmit">
             <b-form-input
-              v-model="newComment"
+              ref="commentInput"
+              v-model="commentInput"
               type="text"
               autofocus
-              class="newComment"
+              class="commentInput"
               placeholder="Enter a comment"
               maxlength="1000"
             ></b-form-input>
@@ -49,7 +50,12 @@
         <b-collapse :visible="showComments">
           <div v-if="!isLoadingComments">
             <div v-for="comment in comments" :key="comment.id">
-              <Comment :comment="comment"></Comment>
+              <Comment
+                :comment="comment"
+                :is-editing="editing"
+                @on-comment-deleted="deleteComment"
+                @on-edit-started="onEdit"
+              ></Comment>
             </div>
           </div>
           <div v-else>
@@ -91,9 +97,18 @@ export default class CommentSectionComponent extends Vue {
   private showComments: boolean = false;
   private showInput: boolean = false;
   private isLoadingComments: boolean = false;
-  private newComment: string = "";
+  private isEditMode: boolean = false;
+  private editing: UserComment = {
+    id: "",
+    userProfileId: "",
+    parentEntryId: "",
+    text: "",
+    createdDateTime: new Date(),
+    version: 0
+  };
+
+  private commentInput: string = "";
   private comments: UserComment[] = [];
-  private numComments = 0;
   private hasErrors: boolean = false;
 
   private mounted() {
@@ -129,19 +144,27 @@ export default class CommentSectionComponent extends Vue {
 
   private toggleCommentInput(): void {
     this.showInput = !this.showInput;
-    this.newComment = "";
+    this.commentInput = "";
+  }
+
+  private onSubmit(): void {
+    if (this.isEditMode) {
+      this.updateComment();
+    } else {
+      this.addComment();
+    }
   }
 
   private addComment(): void {
     this.isLoadingComments = true;
     let commentPromise = this.commentService
       .createComment({
-        text: this.newComment,
+        text: this.commentInput,
         parentEntryId: this.parentEntry.id,
         userProfileId: this.user.hdid
       })
       .then(() => {
-        this.newComment = "";
+        this.commentInput = "";
         this.getComments();
       })
       .catch(err => {
@@ -173,6 +196,52 @@ export default class CommentSectionComponent extends Vue {
       .finally(() => {
         this.isLoadingComments = false;
       });
+  }
+
+  private updateComment(): void {
+    this.isLoadingComments = true;
+    let commentPromise = this.commentService
+      .updateComment({
+        id: this.editing.id,
+        text: this.commentInput,
+        userProfileId: this.editing.userProfileId,
+        parentEntryId: this.editing.parentEntryId,
+        createdDateTime: this.editing.createdDateTime,
+        version: this.editing.version
+      })
+      .then(result => {
+        this.getComments();
+        this.commentInput = "";
+      })
+      .catch(err => {
+        console.log(err);
+        this.hasErrors = true;
+      })
+      .finally(() => {
+        this.isLoadingComments = false;
+        this.showInput = false;
+        this.isEditMode = false;
+      });
+  }
+
+  private deleteComment(comment: UserComment): void {
+    if (confirm("Are you sure you want to delete this comment?")) {
+      let commentPromise = this.commentService
+        .deleteComment(comment)
+        .then(result => {
+          this.getComments();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
+
+  private onEdit(comment: UserComment) {
+    this.commentInput = comment.text;
+    this.editing = comment;
+    this.showInput = true;
+    this.isEditMode = true;
   }
 }
 </script>
