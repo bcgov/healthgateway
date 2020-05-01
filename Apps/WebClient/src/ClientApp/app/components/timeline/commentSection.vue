@@ -28,7 +28,7 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="py-2" v-show="showInput">
+    <b-row v-show="showInput" class="py-2">
       <b-col>
         <b-form @submit.prevent="onSubmit">
           <b-form-input
@@ -79,14 +79,14 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {
   faCommentAlt,
-  IconDefinition,
+  IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import { Getter } from "vuex-class";
 
 @Component({
   components: {
-    Comment: CommentComponent,
-  },
+    Comment: CommentComponent
+  }
 })
 export default class CommentSectionComponent extends Vue {
   @Getter("user", { namespace: "user" }) user!: User;
@@ -102,7 +102,7 @@ export default class CommentSectionComponent extends Vue {
     parentEntryId: "",
     text: "",
     createdDateTime: new Date(),
-    version: 0,
+    version: 0
   };
 
   private commentInput: string = "";
@@ -127,7 +127,7 @@ export default class CommentSectionComponent extends Vue {
   private setFocus(): void {
     this.$nextTick(() => {
       (this.$refs.commentInput as HTMLBodyElement).focus();
-    })
+    });
   }
 
   private sortComments() {
@@ -166,13 +166,13 @@ export default class CommentSectionComponent extends Vue {
       .createComment({
         text: this.commentInput,
         parentEntryId: this.parentEntry.id,
-        userProfileId: this.user.hdid,
+        userProfileId: this.user.hdid
       })
       .then(() => {
         this.commentInput = "";
         this.getComments();
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error adding comment on entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
@@ -187,13 +187,13 @@ export default class CommentSectionComponent extends Vue {
     const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
       .getCommentsForEntry(parentEntryId)
-      .then((result) => {
+      .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
@@ -212,13 +212,13 @@ export default class CommentSectionComponent extends Vue {
         userProfileId: this.editing.userProfileId,
         parentEntryId: this.editing.parentEntryId,
         createdDateTime: this.editing.createdDateTime,
-        version: this.editing.version,
+        version: this.editing.version
       })
-      .then((result) => {
+      .then(result => {
         this.getComments();
         this.commentInput = "";
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
         this.hasErrors = true;
       })
@@ -233,11 +233,11 @@ export default class CommentSectionComponent extends Vue {
     if (confirm("Are you sure you want to delete this comment?")) {
       let commentPromise = this.commentService
         .deleteComment(comment)
-        .then((result) => {
+        .then(result => {
           this.commentInput = "";
           this.getComments();
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     }
