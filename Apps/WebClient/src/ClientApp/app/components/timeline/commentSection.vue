@@ -36,7 +36,6 @@
               ref="commentInput"
               v-model="commentInput"
               type="text"
-              ref="commentInput"
               autofocus
               class="commentInput"
               placeholder="Enter a comment"
@@ -151,14 +150,6 @@ export default class CommentSectionComponent extends Vue {
   private onSubmit(): void {
     if (this.isEditMode) {
       this.updateComment();
-    } else {
-      this.addComment();
-    }
-  }
-
-  private onSubmit(): void {
-    if (this.isEditMode) {
-      this.updateComment(this.editing);
     } else {
       this.addComment();
     }
