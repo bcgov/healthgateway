@@ -6,20 +6,6 @@
   <div>
     <b-row class="pt-2">
       <b-col>
-        <b-btn
-          class="commentButton"
-          variant="outline-primary"
-          @click="toggleCommentInput()"
-        >
-          <font-awesome-icon
-            :icon="commentIcon"
-            size="1x"
-            class="pr-1"
-          ></font-awesome-icon>
-          <span>Comment</span>
-        </b-btn>
-      </b-col>
-      <b-col>
         <div class="d-flex flex-row-reverse">
           <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
             <span v-if="hasComments">{{
@@ -31,13 +17,17 @@
     </b-row>
     <b-row>
       <b-col>
+        <Comment :comment="newComment" @on-comment-created="onCreate"></Comment>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
         <b-collapse :visible="showComments">
           <div v-if="!isLoadingComments">
             <div v-for="comment in comments" :key="comment.id">
               <Comment
                 :comment="comment"
                 @on-comment-deleted="onDelete"
-                @on-comment-created="onCreate"
                 @on-comment-updated="onUpdate"
               ></Comment>
             </div>
@@ -58,24 +48,17 @@ import Vue from "vue";
 import UserComment from "@/models/userComment";
 import CommentComponent from "@/components/timeline/comment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import User from "@/models/user";
 import { Prop, Component } from "vue-property-decorator";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import {
-  faCommentAlt,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
-import { Getter } from "vuex-class";
 
 @Component({
   components: {
-    Comment: CommentComponent
-  }
+    Comment: CommentComponent,
+  },
 })
 export default class CommentSectionComponent extends Vue {
-  @Getter("user", { namespace: "user" }) user!: User;
   @Prop() parentEntry!: MedicationTimelineEntry;
   private commentService!: IUserCommentService;
   private showComments: boolean = false;
@@ -84,6 +67,15 @@ export default class CommentSectionComponent extends Vue {
 
   private comments: UserComment[] = [];
   private hasErrors: boolean = false;
+
+  private newComment: UserComment = {
+    id: "",
+    text: "",
+    parentEntryId: this.parentEntry.id,
+    userProfileId: "",
+    createdDateTime: new Date(),
+    version: 0,
+  };
 
   private mounted() {
     this.commentService = container.get<IUserCommentService>(
@@ -94,10 +86,6 @@ export default class CommentSectionComponent extends Vue {
 
   private get hasComments(): boolean {
     return this.comments.length > 0;
-  }
-
-  private get commentIcon(): IconDefinition {
-    return faCommentAlt;
   }
 
   private sortComments() {
@@ -116,22 +104,18 @@ export default class CommentSectionComponent extends Vue {
     this.showComments = !this.showComments;
   }
 
-  private toggleCommentInput(): void {
-    this.showInput = !this.showInput;
-  }
-
   private getComments() {
     this.isLoadingComments = true;
     const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
       .getCommentsForEntry(parentEntryId)
-      .then(result => {
+      .then((result) => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
@@ -142,6 +126,7 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private onCreate(comment: UserComment) {
+    console.log("Created!");
     this.getComments();
   }
 
@@ -154,4 +139,3 @@ export default class CommentSectionComponent extends Vue {
   }
 }
 </script>
-

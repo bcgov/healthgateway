@@ -47,37 +47,51 @@
         </div>
       </b-col>
     </b-row>
+    <b-row v-if="mode === 'edit'" class="comment-body my-1" align-v="center">
+      <b-col>
+        <b-form @submit.prevent="editComment">
+          <b-form-input
+            ref="commentInput"
+            v-model="commentInput"
+            type="text"
+            autofocus
+            class="form-control"
+            placeholder="Editing comment"
+            maxlength="1000"
+          ></b-form-input>
+        </b-form>
+      </b-col>
+    </b-row>
     <b-row
-      v-if="mode === 'edit'"
-      class="comment-body p-2 my-1"
+      v-if="mode === 'add'"
+      class="comment-body py-2 my-1"
       align-v="center"
     >
-      <b-form @submit.prevent="editComment">
-        <b-form-input
-          ref="commentInput"
-          v-model="commentInput"
-          type="text"
-          autofocus
-          class="form-control"
-          placeholder="Editing comment"
-          maxlength="1000"
-        ></b-form-input>
-      </b-form>
+      <b-col cols="10" class="px-2">
+        <b-form @submit.prevent>
+          <b-form-textarea
+            rows="1"
+            no-resize
+            ref="commentInput"
+            v-model="commentInput"
+            placeholder="Create a private comment"
+            maxlength="1000"
+          ></b-form-textarea>
+        </b-form>
+      </b-col>
+      <b-col>
+        <div class="d-flex flex-row-reverse">
+          <b-button variant="primary" @click="addComment" :disabled="commentInput === ''">
+            <font-awesome-icon
+              :icon="commentIcon"
+              aria-hidden="true"
+              size="1x"
+            />
+          </b-button>
+        </div>
+      </b-col>
     </b-row>
-    <b-row v-if="mode === 'add'" class="comment-body p-2 my-1" align-v="center">
-      <b-form @submit.prevent="onSubmit">
-        <b-form-input
-          ref="commentInput"
-          v-model="commentInput"
-          type="text"
-          autofocus
-          class="form-control"
-          placeholder="Enter a comment"
-          maxlength="1000"
-        ></b-form-input>
-      </b-form>
-    </b-row>
-    <b-row class="px-3">
+    <b-row class="px-3" v-if="mode !== 'add'">
       <span> {{ formatDate(comment.createdDateTime) }} </span>
     </b-row>
   </b-col>
@@ -85,14 +99,17 @@
 <script lang="ts">
 import Vue from "vue";
 import UserComment from "@/models/userComment";
+import User from "@/models/user";
+import { Getter } from "vuex-class";
 import { Prop, Component, Emit, Watch } from "vue-property-decorator";
-import { faEllipsisV, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, IconDefinition, faCommentAlt } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
 @Component
 export default class CommentComponent extends Vue {
+  @Getter("user", { namespace: "user" }) user!: User;
   @Prop() comment!: UserComment;
 
   private commentInput: string = "";
@@ -103,9 +120,17 @@ export default class CommentComponent extends Vue {
   private hasErrors: boolean = false;
 
   private mounted() {
+    console.log(this.comment);
+    if (this.comment.id === "") {
+      this.mode = "add";
+    }
     this.commentService = container.get<IUserCommentService>(
       SERVICE_IDENTIFIER.UserCommentService
     );
+  }
+
+  private get commentIcon(): IconDefinition {
+    return faCommentAlt;
   }
 
   private formatDate(date: Date): string {
@@ -116,24 +141,17 @@ export default class CommentComponent extends Vue {
     return faEllipsisV;
   }
 
-  private onSubmit(): void {
-    if (this.isEditMode) {
-      console.log("Edit mode");
-    } else {
-      this.addComment();
-    }
-  }
-
   private addComment(): void {
+    console.log(this.commentInput, this.comment.parentEntryId, this.user.hdid);
     let commentPromise = this.commentService
       .createComment({
         text: this.commentInput,
-        parentEntryId: this.parentEntry.id,
+        parentEntryId: this.comment.parentEntryId,
         userProfileId: this.user.hdid,
       })
       .then(() => {
         this.commentInput = "";
-        this.getComments();
+        this.onCommentCreated(this.comment);
       })
       .catch((err) => {
         console.log(
@@ -146,18 +164,18 @@ export default class CommentComponent extends Vue {
   }
 
   private editComment(): void {
-    this.isEditMode = true;
+    // this.isEditMode = true;
   }
 
   private updateComment(): void {
     let commentPromise = this.commentService
       .updateComment({
-        id: this.editing.id,
+        id: this.comment.id,
         text: this.commentInput,
-        userProfileId: this.editing.userProfileId,
-        parentEntryId: this.editing.parentEntryId,
-        createdDateTime: this.editing.createdDateTime,
-        version: this.editing.version,
+        userProfileId: this.comment.userProfileId,
+        parentEntryId: this.comment.parentEntryId,
+        createdDateTime: this.comment.createdDateTime,
+        version: this.comment.version,
       })
       .then((result) => {
         this.onEditStarted(this.comment);
@@ -167,7 +185,7 @@ export default class CommentComponent extends Vue {
         this.hasErrors = true;
       })
       .finally(() => {
-        this.isEditMode = false;
+        // this.isEditMode = false;
       });
   }
 
@@ -182,6 +200,12 @@ export default class CommentComponent extends Vue {
           console.log(err);
         });
     }
+  }
+
+  @Emit()
+  onCommentCreated(comment: UserComment) {
+    console.log("Finished creation")
+    return comment;
   }
 
   @Emit()
