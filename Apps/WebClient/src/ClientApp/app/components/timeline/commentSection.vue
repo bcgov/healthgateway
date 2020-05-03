@@ -1,7 +1,6 @@
 <style scoped lang="scss">
 @import "@/assets/scss/_variables.scss";
 </style>
-
 <template>
   <div>
     <b-row class="pt-2">
@@ -64,10 +63,8 @@ export default class CommentSectionComponent extends Vue {
   private showComments: boolean = false;
   private showInput: boolean = false;
   private isLoadingComments: boolean = false;
-
   private comments: UserComment[] = [];
   private hasErrors: boolean = false;
-
   private newComment: UserComment = {
     id: "",
     text: "",
@@ -126,7 +123,6 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private onCreate(comment: UserComment) {
-    console.log("Created!");
     this.getComments();
   }
 

@@ -4,6 +4,7 @@
 .comment-body {
   background-color: $lightGrey;
   border-radius: 10px;
+  display: flex;
 }
 
 .editing {
@@ -14,6 +15,18 @@
   color: $soft_text;
 }
 
+.comment-text {
+  white-space: pre-line;
+}
+
+.comment-input {
+  flex: 1 1 auto;
+}
+
+.comment-button {
+  flex: 0 0 auto;
+  flex-direction: row;
+}
 </style>
 <template>
   <b-col>
@@ -22,9 +35,7 @@
       align-v="center"
       v-if="mode === 'text'"
     >
-      <b-col>
-        {{ comment.text }}
-      </b-col>
+      <b-col class="comment-text">{{ comment.text }}</b-col>
       <b-col>
         <div class="d-flex flex-row-reverse">
           <b-navbar-nav>
@@ -47,49 +58,38 @@
         </div>
       </b-col>
     </b-row>
-    <b-row v-if="mode === 'edit'" class="comment-body my-1" align-v="center">
-      <b-col>
-        <b-form @submit.prevent="editComment">
-          <b-form-input
-            ref="commentInput"
-            v-model="commentInput"
-            type="text"
-            autofocus
-            class="form-control"
-            placeholder="Editing comment"
-            maxlength="1000"
-          ></b-form-input>
-        </b-form>
-      </b-col>
-    </b-row>
     <b-row
-      v-if="mode === 'add'"
+      v-if="mode !== 'text'"
       class="comment-body py-2 my-1"
       align-v="center"
     >
-      <b-col cols="10" class="px-2">
+      <div class="comment-input pl-2">
         <b-form @submit.prevent>
           <b-form-textarea
             rows="1"
             no-resize
             ref="commentInput"
             v-model="commentInput"
-            placeholder="Create a private comment"
+            :placeholder="placeholder"
             maxlength="1000"
           ></b-form-textarea>
         </b-form>
-      </b-col>
-      <b-col>
-        <div class="d-flex flex-row-reverse">
-          <b-button variant="primary" @click="addComment" :disabled="commentInput === ''">
-            <font-awesome-icon
-              :icon="commentIcon"
-              aria-hidden="true"
-              size="1x"
-            />
+      </div>
+      <div class="d-flex comment-button px-3 flex-row">
+        <b-button
+          variant="primary"
+          @click="onSubmit"
+          :disabled="commentInput === ''"
+          class="d-flex"
+        >
+          Save
+        </b-button>
+        <div v-if="mode === 'edit'" class="d-flex pl-2">
+          <b-button variant="secondary" @click="onCancel">
+            Cancel
           </b-button>
         </div>
-      </b-col>
+      </div>
     </b-row>
     <b-row class="px-3" v-if="mode !== 'add'">
       <span> {{ formatDate(comment.createdDateTime) }} </span>
@@ -102,7 +102,11 @@ import UserComment from "@/models/userComment";
 import User from "@/models/user";
 import { Getter } from "vuex-class";
 import { Prop, Component, Emit, Watch } from "vue-property-decorator";
-import { faEllipsisV, IconDefinition, faCommentAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsisV,
+  IconDefinition,
+  faCommentAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -111,16 +115,12 @@ import container from "@/plugins/inversify.config";
 export default class CommentComponent extends Vue {
   @Getter("user", { namespace: "user" }) user!: User;
   @Prop() comment!: UserComment;
-
   private commentInput: string = "";
-
   private commentService!: IUserCommentService;
-
   private mode: string = "text";
   private hasErrors: boolean = false;
 
   private mounted() {
-    console.log(this.comment);
     if (this.comment.id === "") {
       this.mode = "add";
     }
@@ -133,6 +133,14 @@ export default class CommentComponent extends Vue {
     return faCommentAlt;
   }
 
+  private get placeholder(): string {
+    if (this.mode === "edit") {
+      return "Editing a comment";
+    } else {
+      return "Add a private comment";
+    }
+  }
+
   private formatDate(date: Date): string {
     return new Date(Date.parse(date + "Z")).toLocaleString();
   }
@@ -141,8 +149,19 @@ export default class CommentComponent extends Vue {
     return faEllipsisV;
   }
 
+  private onSubmit(): void {
+    if (this.mode === "edit") {
+      this.updateComment();
+    } else {
+      this.addComment();
+    }
+  }
+
+  private onCancel(): void {
+    this.mode = "text";
+  }
+
   private addComment(): void {
-    console.log(this.commentInput, this.comment.parentEntryId, this.user.hdid);
     let commentPromise = this.commentService
       .createComment({
         text: this.commentInput,
@@ -164,7 +183,8 @@ export default class CommentComponent extends Vue {
   }
 
   private editComment(): void {
-    // this.isEditMode = true;
+    this.commentInput = this.comment.text;
+    this.mode = "edit";
   }
 
   private updateComment(): void {
@@ -178,23 +198,23 @@ export default class CommentComponent extends Vue {
         version: this.comment.version,
       })
       .then((result) => {
-        this.onEditStarted(this.comment);
+        this.onCommentUpdated(this.comment);
       })
       .catch((err) => {
         console.log(err);
         this.hasErrors = true;
       })
       .finally(() => {
-        // this.isEditMode = false;
+        this.mode = "text";
       });
   }
 
-  private deleteComment(comment: UserComment): void {
+  private deleteComment(): void {
     if (confirm("Are you sure you want to delete this comment?")) {
       let commentPromise = this.commentService
-        .deleteComment(comment)
+        .deleteComment(this.comment)
         .then((result) => {
-          this.onCommentDeleted(comment);
+          this.onCommentDeleted(this.comment);
         })
         .catch((err) => {
           console.log(err);
@@ -204,7 +224,6 @@ export default class CommentComponent extends Vue {
 
   @Emit()
   onCommentCreated(comment: UserComment) {
-    console.log("Finished creation")
     return comment;
   }
 
@@ -214,7 +233,7 @@ export default class CommentComponent extends Vue {
   }
 
   @Emit()
-  onEditStarted(comment: UserComment) {
+  onCommentUpdated(comment: UserComment) {
     return comment;
   }
 }
