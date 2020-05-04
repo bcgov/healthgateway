@@ -16,7 +16,7 @@
     </b-row>
     <b-row>
       <b-col>
-        <Comment :comment="newComment" @on-comment-created="onCreate"></Comment>
+        <Comment :comment="newComment" @needs-update="needsUpdate"></Comment>
       </b-col>
     </b-row>
     <b-row>
@@ -24,11 +24,7 @@
         <b-collapse :visible="showComments">
           <div v-if="!isLoadingComments">
             <div v-for="comment in comments" :key="comment.id">
-              <Comment
-                :comment="comment"
-                @on-comment-deleted="onDelete"
-                @on-comment-updated="onUpdate"
-              ></Comment>
+              <Comment :comment="comment" @needs-update="needsUpdate"></Comment>
             </div>
           </div>
           <div v-else>
@@ -54,8 +50,8 @@ import container from "@/plugins/inversify.config";
 
 @Component({
   components: {
-    Comment: CommentComponent,
-  },
+    Comment: CommentComponent
+  }
 })
 export default class CommentSectionComponent extends Vue {
   @Prop() parentEntry!: MedicationTimelineEntry;
@@ -71,7 +67,7 @@ export default class CommentSectionComponent extends Vue {
     parentEntryId: this.parentEntry.id,
     userProfileId: "",
     createdDateTime: new Date(),
-    version: 0,
+    version: 0
   };
 
   private mounted() {
@@ -106,13 +102,13 @@ export default class CommentSectionComponent extends Vue {
     const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
       .getCommentsForEntry(parentEntryId)
-      .then((result) => {
+      .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
@@ -122,15 +118,7 @@ export default class CommentSectionComponent extends Vue {
       });
   }
 
-  private onCreate(comment: UserComment) {
-    this.getComments();
-  }
-
-  private onDelete(comment: UserComment) {
-    this.getComments();
-  }
-
-  private onUpdate(comment: UserComment) {
+  private needsUpdate(comment: UserComment) {
     this.getComments();
   }
 }
