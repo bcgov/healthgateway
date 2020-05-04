@@ -17,8 +17,8 @@
 namespace HealthGateway.Medication
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;

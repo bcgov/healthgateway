@@ -243,7 +243,7 @@ namespace HealthGateway.Medication.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, null);
+            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, null).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual.ResourcePayload.Count == 0);

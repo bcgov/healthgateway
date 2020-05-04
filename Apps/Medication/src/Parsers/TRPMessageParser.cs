@@ -60,7 +60,6 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public override HNMessage<string> CreateRequestMessage(HNMessageRequest request)
         {
-            Contract.Requires(request != null);
             this.logger.LogTrace($"Creating TRP request message... {JsonConvert.SerializeObject(request)}");
 
             // HNClient only accepts a 13 digit phn
@@ -69,7 +68,7 @@ namespace HealthGateway.Medication.Parsers
 
             this.SetMessageHeader(message, request.UserId, request.IpAddress, request.TraceId);
             this.SetTransactionControlSegment(message, HNClientConfiguration.PATIENT_PROFILE_TRANSACTION_ID, request.TraceId, request.ProtectiveWord);
-            this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA.BIN);
+            this.SetClaimsStandardSegment(message, this.ClientConfig.ZCA!.BIN);
             this.SetProviderInfoSegment(message, request.TraceId);
 
             // ZCC - Beneficiary Information
@@ -154,7 +153,7 @@ namespace HealthGateway.Medication.Parsers
                     // fields[6]; // Ingredient Code
                     // fields[7]; // Ingredient Name
                     medicationStatement.PrescriptionStatus = fields[8][0]; // RX Status
-                    medicationStatement.DispensedDate = this.ParseDate(fields[9]).Value; // Date Dispensed
+                    medicationStatement.DispensedDate = this.ParseDate(fields[9]) !.Value; // Date Dispensed
 
                     // fields[10]; // Intervention Code
                     // fields[11]; // Practitioner ID Reference

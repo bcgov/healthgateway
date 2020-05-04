@@ -48,7 +48,7 @@ namespace HealthGateway.Medication.Delegates
         private readonly IGenericCacheDelegate genericCacheDelegate;
         private readonly IHashDelegate hashDelegate;
         private readonly ODRConfig odrConfig;
-        private readonly string baseURL;
+        private readonly Uri baseURL;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedStatementDelegate"/> class.
@@ -81,14 +81,14 @@ namespace HealthGateway.Medication.Delegates
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
-                this.baseURL = StringManipulator.Replace(this.odrConfig.Url, replacementData)!;
+                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData) !);
             }
             else
             {
-                this.baseURL = this.odrConfig.Url;
+                this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL}");
+            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL.ToString()}");
         }
 
         /// <inheritdoc/>
@@ -111,8 +111,6 @@ namespace HealthGateway.Medication.Delegates
                 this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                client.BaseAddress = new Uri(this.baseURL);
-                string patientProfileEndpoint = this.odrConfig.PatientProfileEndpoint;
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -133,7 +131,8 @@ namespace HealthGateway.Medication.Delegates
                 {
                     string json = JsonSerializer.Serialize(request, options);
                     using HttpContent content = new StringContent(json);
-                    HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
+                    Uri endpoint = new Uri(this.baseURL, this.odrConfig.PatientProfileEndpoint);
+                    HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
@@ -147,7 +146,9 @@ namespace HealthGateway.Medication.Delegates
                         this.logger.LogError(retVal.ResultMessage);
                     }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     retVal.Result = Common.Constants.ResultType.Error;
                     retVal.ResultMessage = e.ToString();
@@ -237,8 +238,6 @@ namespace HealthGateway.Medication.Delegates
             this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.BaseAddress = new Uri(this.baseURL);
-            string patientProfileEndpoint = this.odrConfig.ProtectiveWordEndpoint;
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -260,8 +259,9 @@ namespace HealthGateway.Medication.Delegates
                 WriteIndented = true,
             };
             string json = JsonSerializer.Serialize(request, options);
+            Uri endpoint = new Uri(this.baseURL, this.odrConfig.ProtectiveWordEndpoint);
             using HttpContent content = new StringContent(json);
-            HttpResponseMessage response = await client.PostAsync(patientProfileEndpoint, content).ConfigureAwait(true);
+            HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
