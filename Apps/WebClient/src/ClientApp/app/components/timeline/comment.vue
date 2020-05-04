@@ -63,6 +63,22 @@
       class="comment-body py-2 my-1"
       align-v="center"
     >
+      <div v-if="mode === 'add'">
+        <div
+          :id="'tooltip-' + comment.parentEntryId"
+          class="tooltip-info d-flex pl-2"
+        >
+          <font-awesome-icon :icon="lockIcon" size="1x"> </font-awesome-icon>
+        </div>
+        <b-tooltip
+          variant="secondary"
+          :target="'tooltip-' + comment.parentEntryId"
+          placement="left"
+          triggers="hover"
+        >
+          Only you can see comments added to your medical records.
+        </b-tooltip>
+      </div>
       <div class="comment-input pl-2">
         <b-form @submit.prevent>
           <b-form-textarea
@@ -105,7 +121,7 @@ import { Prop, Component, Emit, Watch } from "vue-property-decorator";
 import {
   faEllipsisV,
   IconDefinition,
-  faCommentAlt,
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -129,10 +145,6 @@ export default class CommentComponent extends Vue {
     );
   }
 
-  private get commentIcon(): IconDefinition {
-    return faCommentAlt;
-  }
-
   private get placeholder(): string {
     if (this.mode === "edit") {
       return "Editing a comment";
@@ -147,6 +159,10 @@ export default class CommentComponent extends Vue {
 
   private get menuIcon(): IconDefinition {
     return faEllipsisV;
+  }
+
+  private get lockIcon(): IconDefinition {
+    return faLock;
   }
 
   private onSubmit(): void {
