@@ -43,7 +43,7 @@ export default class CovidSidebarComponent extends Vue {
   private card: CovidSideCard = {
     title: "COVID-19 Test Result",
     description: "If you have taken a COVID-19 test, you can view your results here.",
-    urlLink: ""
+    urlLink: "" // TO BE IMPLEMENTED
   };
 
   private get attentionIcon(): IconDefinition {
@@ -51,6 +51,7 @@ export default class CovidSidebarComponent extends Vue {
   }
 
   private handleClick(urlLink: string): void {
+    // TO BE IMPLEMENTED
     window.open(urlLink, "_blank");
   }
 }
