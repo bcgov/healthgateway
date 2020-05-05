@@ -106,7 +106,15 @@ namespace HealthGateway.Medication.Delegates
                 if (response.IsSuccessStatusCode)
                 {
                     HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    retVal = this.medicationParser.ParseResponseMessage(responseMessage.Message!);
+                    if (responseMessage != null && responseMessage.Message != null)
+                    {
+                        retVal = this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Parsed payload is null or not valid: {payload}");
+                        retVal = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to parse response");
+                    }
                 }
                 else
                 {
