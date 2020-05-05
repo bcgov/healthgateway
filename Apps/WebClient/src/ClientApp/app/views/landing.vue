@@ -75,20 +75,21 @@
       margin-top: -40px;
 
       .status-active {
-        .innerIcon {
 
+        .innerIcon {
+          color: white;
         }
         .outerIcon {
-
+          color: $primary
         }
       }
 
       .status-disabled {
         .innerIcon {
-
+          color: darkgray !important
         }
         .outerIcon {
-          
+          color: lightgray !important
         }
       }
     }
@@ -285,16 +286,20 @@
       <b-col class="col-10 col-md-6">
         <div class="devices-text my-5 my-md-5 ml-md-5">
           <b-row>
-            <h4>Browse your health records</h4>
+            <h2>Browse your health records</h2>
           </b-row>
           <b-row class="status-active">
             <font-awesome-layers>
               <font-awesome-icon
+                class="outerIcon"
                 :icon="circleIcon"
                 size="2x"
               ></font-awesome-icon>
-
-              <font-awesome-icon :icon="medsIcon" size="2x"></font-awesome-icon>
+              <font-awesome-icon
+                class="innerIcon"
+                :icon="medsIcon"
+                size="1x"
+              ></font-awesome-icon>
             </font-awesome-layers>
             <h4 class="px-2">
               Prescription Medications
@@ -303,11 +308,16 @@
           <b-row class="status-active">
             <font-awesome-layers>
               <font-awesome-icon
+                class="outerIcon"
                 :icon="circleIcon"
                 size="2x"
               ></font-awesome-icon>
 
-              <font-awesome-icon :icon="immzIcon" size="2x"></font-awesome-icon>
+              <font-awesome-icon
+                class="innerIcon"
+                :icon="immzIcon"
+                size="1x"
+              ></font-awesome-icon>
             </font-awesome-layers>
             <h4 class="px-2">
               Immunizations
@@ -316,10 +326,15 @@
           <b-row class="status-inactive">
             <font-awesome-layers>
               <font-awesome-icon
+                class="outerIcon"
                 :icon="circleIcon"
                 size="2x"
               ></font-awesome-icon>
-              <font-awesome-icon :icon="labsIcon" size="2x"></font-awesome-icon>
+              <font-awesome-icon
+                class="innerIcon"
+                :icon="labsIcon"
+                size="1x"
+              ></font-awesome-icon>
             </font-awesome-layers>
             <h4 class="px-2">
               Lab Results
@@ -328,12 +343,14 @@
           <b-row class="status-inactive">
             <font-awesome-layers>
               <font-awesome-icon
+                class="outerIcon"
                 :icon="circleIcon"
                 size="2x"
               ></font-awesome-icon>
               <font-awesome-icon
+                class="innerIcon"
                 :icon="visitsIcon"
-                size="2x"
+                size="1x"
               ></font-awesome-icon>
             </font-awesome-layers>
             <h4 class="px-2">
