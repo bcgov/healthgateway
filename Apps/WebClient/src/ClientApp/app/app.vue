@@ -131,7 +131,8 @@ import {
   faAngleDoubleLeft,
   faFileAlt,
   faChartBar,
-  faCommentAlt
+  faCommentAlt,
+  faHeartbeat
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -149,7 +150,8 @@ library.add(
   faAngleDoubleLeft,
   faFileAlt,
   faChartBar,
-  faCommentAlt
+  faCommentAlt,
+  faHeartbeat
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

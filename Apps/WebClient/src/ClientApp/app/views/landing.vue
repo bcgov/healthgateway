@@ -266,17 +266,33 @@
       /></b-col>
       <b-col class="col-10 col-md-6">
         <div class="devices-text my-5 my-md-5 ml-md-5">
-          <h3>Browse your health records</h3>
-          <div>
-            Prescription medications
-          </div>
-          <div>
-            Visits to clinics <span class="font-italic">(coming soon)</span>
-          </div>
-          <div>
-            Lab test results <span class="font-italic">(coming soon)</span>
-          </div>
-          <div>Vaccinations <span class="font-italic">(coming soon)</span></div>
+          <b-row>
+            <h4>Browse your health records</h4>
+          </b-row>
+          <b-row class="status-active">
+            <font-awesome-icon :icon="medsIcon" fa-lg></font-awesome-icon>
+            <h4 class="px-2">
+              Prescription Medications
+            </h4>
+          </b-row>
+          <b-row class="status-active">
+            <font-awesome-icon :icon="immzIcon" fa-lg></font-awesome-icon>
+            <h4 class="px-2">
+              Immunizations
+            </h4>
+          </b-row>
+          <b-row class="status-inactive">
+            <font-awesome-icon :icon="labsIcon" fa-lg></font-awesome-icon>
+            <h4 class="px-2">
+              Lab Results
+            </h4>
+          </b-row>
+          <b-row class="status-inactive">
+            <font-awesome-icon :icon="visitsIcon" fa-lg></font-awesome-icon>
+            <h4 class="px-2">
+              Health Visits
+            </h4>
+          </b-row>
         </div>
       </b-col>
     </b-row>
@@ -374,7 +390,9 @@ import {
   faUserMd,
   faFlask,
   faSyringe,
-  IconDefinition
+  IconDefinition,
+  faClipboard,
+  faHeartbeat,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Icon {
@@ -390,27 +408,27 @@ interface Tile {
 
 @Component({
   components: {
-    CommunicationComponent
-  }
+    CommunicationComponent,
+  },
 })
 export default class LandingComponent extends Vue {
   private icons: Icon[] = [
     {
       definition: faPills,
-      label: "Medications"
+      label: "Medications",
     },
     {
       definition: faUserMd,
-      label: "Consultations"
+      label: "Consultations",
     },
     {
       definition: faFlask,
-      label: "Lab Tests"
+      label: "Lab Tests",
     },
     {
       definition: faSyringe,
-      label: "Vaccinations"
-    }
+      label: "Vaccinations",
+    },
   ];
 
   private tiles: Tile[] = [
@@ -418,25 +436,25 @@ export default class LandingComponent extends Vue {
       title: "All in one place",
       description:
         "Conveniently access your data on a computer, tablet or smartphone",
-      imageSrc: Image03
+      imageSrc: Image03,
     },
     {
       title: "Take control of your health",
       description: "Look at historical information captured over time.",
-      imageSrc: Image04
+      imageSrc: Image04,
     },
     {
       title: "Manage family records",
       description:
         "Care for the needs of your children and those who depend on you.",
-      imageSrc: Image05
+      imageSrc: Image05,
     },
     {
       title: "Collaborate with others",
       description:
         "Become an active participant by sharing and discussing your data with health care providers.",
-      imageSrc: Image06
-    }
+      imageSrc: Image06,
+    },
   ];
 
   private logo: string = Image00;
@@ -446,6 +464,22 @@ export default class LandingComponent extends Vue {
 
   private getTileClass(index: number): string {
     return index % 2 == 0 ? "order-md-1" : "order-md-2";
+  }
+
+  private get medsIcon(): IconDefinition {
+    return faPills;
+  }
+
+  private get immzIcon(): IconDefinition {
+    return faSyringe;
+  }
+
+  private get labsIcon(): IconDefinition {
+    return faClipboard;
+  }
+
+  private get visitsIcon(): IconDefinition {
+    return faHeartbeat;
   }
 }
 </script>
