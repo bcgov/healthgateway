@@ -39,88 +39,95 @@
 </style>
 <template>
   <b-col>
-    <b-row
-      v-if="!isEditMode && !isNewComment"
-      class="comment-body p-2 my-1"
-      align-v="center"
-    >
-      <b-col class="comment-text">{{ comment.text }}</b-col>
-      <div class="d-flex flex-row-reverse">
-        <b-dropdown
-          dropright
-          text=""
-          :no-caret="true"
-          class="dropdown"
-          variant="link"
-        >
-          <template slot="button-content">
-            <font-awesome-icon
-              class="comment-menu"
-              :icon="menuIcon"
-              size="1x"
-            ></font-awesome-icon>
-          </template>
-          <b-dropdown-item class="menuItem" @click="editComment()">
-            Edit
-          </b-dropdown-item>
-          <b-dropdown-item class="menuItem" @click="deleteComment()">
-            Delete
-          </b-dropdown-item>
-        </b-dropdown>
-      </div>
-    </b-row>
-    <b-row
-      v-if="isEditMode || isNewComment"
-      class="comment-body py-2 my-1"
-      align-v="center"
-    >
-      <div v-if="isNewComment">
-        <div
-          :id="'tooltip-' + comment.parentEntryId"
-          class="tooltip-info d-flex pl-2"
-        >
-          <font-awesome-icon :icon="lockIcon" size="1x"> </font-awesome-icon>
+    <div v-show="!isLoading">
+      <b-row
+        v-if="!inputShowing"
+        class="comment-body p-2 my-1"
+        align-v="center"
+      >
+        <b-col class="comment-text">{{ comment.text }}</b-col>
+        <div class="d-flex flex-row-reverse">
+          <b-dropdown
+            dropright
+            text=""
+            :no-caret="true"
+            class="dropdown"
+            variant="link"
+          >
+            <template slot="button-content">
+              <font-awesome-icon
+                class="comment-menu"
+                :icon="menuIcon"
+                size="1x"
+              ></font-awesome-icon>
+            </template>
+            <b-dropdown-item class="menuItem" @click="editComment()">
+              Edit
+            </b-dropdown-item>
+            <b-dropdown-item class="menuItem" @click="deleteComment()">
+              Delete
+            </b-dropdown-item>
+          </b-dropdown>
         </div>
-        <b-tooltip
-          variant="secondary"
-          :target="'tooltip-' + comment.parentEntryId"
-          placement="left"
-          triggers="hover"
-        >
-          Only you can see comments added to your medical records.
-        </b-tooltip>
-      </div>
-      <div class="comment-input pl-2">
-        <b-form @submit.prevent>
-          <b-form-textarea
-            ref="commentInput"
-            v-model="commentInput"
-            rows="1"
-            no-resize
-            :placeholder="placeholder"
-            maxlength="1000"
-          ></b-form-textarea>
-        </b-form>
-      </div>
-      <div class="d-flex comment-button px-3 flex-row">
-        <b-button
-          variant="primary"
-          :disabled="commentInput === ''"
-          class="d-flex"
-          @click="onSubmit"
-        >
-          Save
-        </b-button>
-        <div v-if="!isNewComment" class="d-flex pl-2">
-          <b-button variant="secondary" @click="onCancel">
-            Cancel
+      </b-row>
+      <b-row
+        v-if="inputShowing"
+        class="comment-body py-2 my-1"
+        align-v="center"
+      >
+        <div v-if="isNewComment">
+          <div
+            :id="'tooltip-' + comment.parentEntryId"
+            class="tooltip-info d-flex pl-2"
+          >
+            <font-awesome-icon :icon="lockIcon" size="1x"> </font-awesome-icon>
+          </div>
+          <b-tooltip
+            variant="secondary"
+            :target="'tooltip-' + comment.parentEntryId"
+            placement="left"
+            triggers="hover"
+          >
+            Only you can see comments added to your medical records.
+          </b-tooltip>
+        </div>
+        <div class="comment-input pl-2">
+          <b-form @submit.prevent>
+            <b-form-textarea
+              v-model="commentInput"
+              rows="1"
+              no-resize
+              :placeholder="placeholder"
+              maxlength="1000"
+            ></b-form-textarea>
+          </b-form>
+        </div>
+        <div class="d-flex comment-button px-3 flex-row">
+          <b-button
+            variant="primary"
+            :disabled="commentInput === ''"
+            class="d-flex"
+            @click="onSubmit"
+          >
+            Save
           </b-button>
+          <div v-if="!isNewComment" class="d-flex pl-2">
+            <b-button variant="secondary" @click="onCancel">
+              Cancel
+            </b-button>
+          </div>
         </div>
+      </b-row>
+      <b-row v-if="!isNewComment" class="px-3">
+        <span> {{ formatDate(comment.createdDateTime) }} </span>
+      </b-row>
+    </div>
+    <div v-show="isLoading">
+      <div class="d-flex align-items-center">
+        <strong>Loading...</strong>
+        <b-spinner class="ml-5"></b-spinner>
       </div>
-    </b-row>
-    <b-row v-if="!isNewComment" class="px-3">
-      <span> {{ formatDate(comment.createdDateTime) }} </span>
-    </b-row>
+    </div>
   </b-col>
 </template>
 <script lang="ts">
@@ -132,7 +139,7 @@ import { Prop, Component, Emit, Watch } from "vue-property-decorator";
 import {
   faEllipsisV,
   IconDefinition,
-  faLock
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -146,6 +153,7 @@ export default class CommentComponent extends Vue {
   private commentService!: IUserCommentService;
   private hasErrors: boolean = false;
   private isEditMode: boolean = false;
+  private isLoading: boolean = false;
 
   private mounted() {
     this.commentService = container.get<IUserCommentService>(
@@ -162,7 +170,11 @@ export default class CommentComponent extends Vue {
   }
 
   private get isNewComment(): boolean {
-    return this.comment.id === ""
+    return this.comment.id === "";
+  }
+
+  private get inputShowing(): boolean {
+    return this.isNewComment || this.isEditMode;
   }
 
   private formatDate(date: Date): string {
@@ -190,24 +202,27 @@ export default class CommentComponent extends Vue {
   }
 
   private addComment(): void {
-    let commentPromise = this.commentService
+    this.isLoading = true;
+    this.commentService
       .createComment({
         text: this.commentInput,
         parentEntryId: this.comment.parentEntryId,
-        userProfileId: this.user.hdid
+        userProfileId: this.user.hdid,
       })
       .then(() => {
         this.commentInput = "";
         this.needsUpdate(this.comment);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(
           "Error adding comment on entry " + this.comment.parentEntryId
         );
         console.log(err);
         this.hasErrors = true;
       })
-      .finally(() => {});
+      .finally(() => {
+        this.isLoading = false;
+      });
   }
 
   private editComment(): void {
@@ -216,36 +231,42 @@ export default class CommentComponent extends Vue {
   }
 
   private updateComment(): void {
-    let commentPromise = this.commentService
+    this.isLoading = true;
+    this.commentService
       .updateComment({
         id: this.comment.id,
         text: this.commentInput,
         userProfileId: this.comment.userProfileId,
         parentEntryId: this.comment.parentEntryId,
         createdDateTime: this.comment.createdDateTime,
-        version: this.comment.version
+        version: this.comment.version,
       })
-      .then(result => {
+      .then((result) => {
         this.needsUpdate(this.comment);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.hasErrors = true;
       })
       .finally(() => {
         this.isEditMode = false;
+        this.isLoading = false;
       });
   }
 
   private deleteComment(): void {
     if (confirm("Are you sure you want to delete this comment?")) {
-      let commentPromise = this.commentService
+      this.isLoading = true;
+      this.commentService
         .deleteComment(this.comment)
-        .then(result => {
+        .then((result) => {
           this.needsUpdate(this.comment);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     }
   }
