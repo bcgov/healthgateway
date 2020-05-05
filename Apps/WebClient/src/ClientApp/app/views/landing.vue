@@ -75,21 +75,20 @@
       margin-top: -40px;
 
       .status-active {
-
         .innerIcon {
           color: white;
         }
         .outerIcon {
-          color: $primary
+          color: $primary;
         }
       }
 
-      .status-disabled {
+      .status-inactive {
         .innerIcon {
-          color: darkgray !important
+          color: darkgray;
         }
         .outerIcon {
-          color: lightgray !important
+          color: lightgray;
         }
       }
     }
@@ -306,7 +305,7 @@
             </h4>
           </b-row>
           <b-row class="status-active">
-            <font-awesome-layers>
+            <font-awesome-layers class="mr-3">
               <font-awesome-icon
                 class="outerIcon"
                 :icon="circleIcon"
@@ -314,7 +313,7 @@
               ></font-awesome-icon>
 
               <font-awesome-icon
-                class="innerIcon"
+                class="innerIcon ml-2"
                 :icon="immzIcon"
                 size="1x"
               ></font-awesome-icon>
