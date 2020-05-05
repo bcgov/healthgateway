@@ -40,7 +40,7 @@
 <template>
   <b-col>
     <b-row
-      v-if="mode === 'text'"
+      v-if="!isEditMode && !isNewComment"
       class="comment-body p-2 my-1"
       align-v="center"
     >
@@ -70,11 +70,11 @@
       </div>
     </b-row>
     <b-row
-      v-if="mode !== 'text'"
+      v-if="isEditMode || isNewComment"
       class="comment-body py-2 my-1"
       align-v="center"
     >
-      <div v-if="mode === 'add'">
+      <div v-if="isNewComment">
         <div
           :id="'tooltip-' + comment.parentEntryId"
           class="tooltip-info d-flex pl-2"
@@ -111,14 +111,14 @@
         >
           Save
         </b-button>
-        <div v-if="mode === 'edit'" class="d-flex pl-2">
+        <div v-if="!isNewComment" class="d-flex pl-2">
           <b-button variant="secondary" @click="onCancel">
             Cancel
           </b-button>
         </div>
       </div>
     </b-row>
-    <b-row v-if="mode !== 'add'" class="px-3">
+    <b-row v-if="!isNewComment" class="px-3">
       <span> {{ formatDate(comment.createdDateTime) }} </span>
     </b-row>
   </b-col>
@@ -144,24 +144,25 @@ export default class CommentComponent extends Vue {
   @Prop() comment!: UserComment;
   private commentInput: string = "";
   private commentService!: IUserCommentService;
-  private mode: string = "text";
   private hasErrors: boolean = false;
+  private isEditMode: boolean = false;
 
   private mounted() {
-    if (this.comment.id === "") {
-      this.mode = "add";
-    }
     this.commentService = container.get<IUserCommentService>(
       SERVICE_IDENTIFIER.UserCommentService
     );
   }
 
   private get placeholder(): string {
-    if (this.mode === "edit") {
+    if (this.isEditMode) {
       return "Editing a comment";
     } else {
       return "Add a private comment";
     }
+  }
+
+  private get isNewComment(): boolean {
+    return this.comment.id === ""
   }
 
   private formatDate(date: Date): string {
@@ -177,7 +178,7 @@ export default class CommentComponent extends Vue {
   }
 
   private onSubmit(): void {
-    if (this.mode === "edit") {
+    if (this.isEditMode) {
       this.updateComment();
     } else {
       this.addComment();
@@ -185,7 +186,7 @@ export default class CommentComponent extends Vue {
   }
 
   private onCancel(): void {
-    this.mode = "text";
+    this.isEditMode = false;
   }
 
   private addComment(): void {
@@ -211,7 +212,7 @@ export default class CommentComponent extends Vue {
 
   private editComment(): void {
     this.commentInput = this.comment.text;
-    this.mode = "edit";
+    this.isEditMode = true;
   }
 
   private updateComment(): void {
@@ -232,7 +233,7 @@ export default class CommentComponent extends Vue {
         this.hasErrors = true;
       })
       .finally(() => {
-        this.mode = "text";
+        this.isEditMode = false;
       });
   }
 
