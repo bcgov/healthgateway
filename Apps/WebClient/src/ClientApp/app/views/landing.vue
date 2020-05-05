@@ -73,6 +73,24 @@
       margin-left: auto;
       margin-right: auto;
       margin-top: -40px;
+
+      .status-active {
+        .innerIcon {
+
+        }
+        .outerIcon {
+
+        }
+      }
+
+      .status-disabled {
+        .innerIcon {
+
+        }
+        .outerIcon {
+          
+        }
+      }
     }
   }
 
@@ -270,25 +288,54 @@
             <h4>Browse your health records</h4>
           </b-row>
           <b-row class="status-active">
-            <font-awesome-icon :icon="medsIcon" fa-lg></font-awesome-icon>
+            <font-awesome-layers>
+              <font-awesome-icon
+                :icon="circleIcon"
+                size="2x"
+              ></font-awesome-icon>
+
+              <font-awesome-icon :icon="medsIcon" size="2x"></font-awesome-icon>
+            </font-awesome-layers>
             <h4 class="px-2">
               Prescription Medications
             </h4>
           </b-row>
           <b-row class="status-active">
-            <font-awesome-icon :icon="immzIcon" fa-lg></font-awesome-icon>
+            <font-awesome-layers>
+              <font-awesome-icon
+                :icon="circleIcon"
+                size="2x"
+              ></font-awesome-icon>
+
+              <font-awesome-icon :icon="immzIcon" size="2x"></font-awesome-icon>
+            </font-awesome-layers>
             <h4 class="px-2">
               Immunizations
             </h4>
           </b-row>
           <b-row class="status-inactive">
-            <font-awesome-icon :icon="labsIcon" fa-lg></font-awesome-icon>
+            <font-awesome-layers>
+              <font-awesome-icon
+                :icon="circleIcon"
+                size="2x"
+              ></font-awesome-icon>
+              <font-awesome-icon :icon="labsIcon" size="2x"></font-awesome-icon>
+            </font-awesome-layers>
             <h4 class="px-2">
               Lab Results
             </h4>
           </b-row>
           <b-row class="status-inactive">
-            <font-awesome-icon :icon="visitsIcon" fa-lg></font-awesome-icon>
+            <font-awesome-layers>
+              <font-awesome-icon
+                :icon="circleIcon"
+                size="2x"
+              ></font-awesome-icon>
+              <font-awesome-icon
+                :icon="visitsIcon"
+                size="2x"
+              ></font-awesome-icon>
+            </font-awesome-layers>
             <h4 class="px-2">
               Health Visits
             </h4>
@@ -393,6 +440,7 @@ import {
   IconDefinition,
   faClipboard,
   faHeartbeat,
+  faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Icon {
@@ -480,6 +528,10 @@ export default class LandingComponent extends Vue {
 
   private get visitsIcon(): IconDefinition {
     return faHeartbeat;
+  }
+
+  private get circleIcon(): IconDefinition {
+    return faCircle;
   }
 }
 </script>
