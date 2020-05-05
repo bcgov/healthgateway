@@ -72,61 +72,61 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the provider information configuration.
         /// </summary>
-        public ZCBConfiguration ZCB { get; set; }
+        public ZCBConfiguration? ZCB { get; set; }
 
         /// <summary>
         /// Gets or sets the claims standard message header configuration.
         /// </summary>
-        public ZCAConfiguration ZCA { get; set; }
+        public ZCAConfiguration? ZCA { get; set; }
 
         /// <summary>
         /// Gets or sets the transaction control configuration.
         /// </summary>
-        public ZZZConfiguration ZZZ { get; set; }
+        public ZZZConfiguration? ZZZ { get; set; }
 
         /// <summary>
         /// Gets or sets the location information configuration.
         /// </summary>
-        public ZPLConfiguration ZPL { get; set; }
+        public ZPLConfiguration? ZPL { get; set; }
 
         /// <summary>
         /// Gets or sets the message version.
         /// </summary>
-        public string MessageVersion { get; set; }
+        public string MessageVersion { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the processing id.
         /// </summary>
-        public string ProcessingID { get; set; }
+        public string ProcessingID { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the sending application.
         /// </summary>
-        public string SendingApplication { get; set; }
+        public string SendingApplication { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the sending facility.
         /// </summary>
-        public string SendingFacility { get; set; }
+        public string SendingFacility { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the receiving application.
         /// </summary>
-        public string ReceivingApplication { get; set; }
+        public string ReceivingApplication { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the receiving facility.
         /// </summary>
-        public string ReceivingFacility { get; set; }
+        public string ReceivingFacility { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the unix timezone id.
         /// </summary>
-        public string UnixTimeZoneId { get; set; }
+        public string UnixTimeZoneId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the windows timezone id.
         /// </summary>
-        public string WindowsTimeZoneId { get; set; }
+        public string WindowsTimeZoneId { get; set; } = string.Empty;
     }
 }

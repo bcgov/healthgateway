@@ -36,9 +36,9 @@ namespace HealthGateway.Medication.Models
         public string ServicePortSuffix { get; set; } = "_PORT";
 
         /// <summary>
-        /// Gets or sets the Url used to connect to the ODR Proxy.
+        /// Gets or sets the base Url used to connect to the ODR Proxy.
         /// </summary>
-        public string Url { get; set; } = string.Empty;
+        public string BaseEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the endpoint path for the patient profile service.

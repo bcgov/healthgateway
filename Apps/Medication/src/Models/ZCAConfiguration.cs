@@ -23,26 +23,26 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the software id.
         /// </summary>
-        public string SoftwareId { get; set; }
+        public string SoftwareId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the software version.
         /// </summary>
-        public string SoftwareVersion { get; set; }
+        public string SoftwareVersion { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the BIN.
         /// </summary>
-        public string BIN { get; set; }
+        public string BIN { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the CPHA version number.
         /// </summary>
-        public string CPHAVersionNumber { get; set; }
+        public string CPHAVersionNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the transaction code.
         /// </summary>
-        public string TransactionCode { get; set; }
+        public string TransactionCode { get; set; } = string.Empty;
     }
 }

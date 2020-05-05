@@ -36,8 +36,13 @@ namespace HealthGateway.Common.Constants
         public const char NotDispensed = 'N';
 
         /// <summary>
-        /// Teh status code for reversed prescriptions.
+        /// The status code for reversed prescriptions.
         /// </summary>
         public const char Reversed = 'R';
+
+        /// <summary>
+        /// Represents an uninitialized PrescriptionStatus.
+        /// </summary>
+        public const char NotSet = '\0';
     }
 }

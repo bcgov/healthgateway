@@ -23,6 +23,6 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets pharmacy id.
         /// </summary>
-        public string PharmacyId { get; set; }
+        public string PharmacyId { get; set; } = string.Empty;
     }
 }
