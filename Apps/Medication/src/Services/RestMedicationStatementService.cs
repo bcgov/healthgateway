@@ -132,7 +132,7 @@ namespace HealthGateway.Medication.Services
                 };
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
-                HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord ?? string.Empty, hdid, ipv4Address).ConfigureAwait(true);
+                HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
                 result.ResultStatus = response.Result;
                 result.ResultMessage = response.ResultMessage;
                 if (response.Result == ResultType.Success)

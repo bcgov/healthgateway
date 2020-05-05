@@ -92,7 +92,7 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string hdid, string ipAddress)
+        public async Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
             if (query == null)
             {
@@ -180,7 +180,7 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress)
+        public bool ValidateProtectiveWord(string phn, string? protectiveWord, string hdid, string ipAddress)
         {
             bool retVal = false;
             try
