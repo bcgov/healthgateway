@@ -139,7 +139,7 @@ import { Prop, Component, Emit, Watch } from "vue-property-decorator";
 import {
   faEllipsisV,
   IconDefinition,
-  faLock,
+  faLock
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -207,13 +207,13 @@ export default class CommentComponent extends Vue {
       .createComment({
         text: this.commentInput,
         parentEntryId: this.comment.parentEntryId,
-        userProfileId: this.user.hdid,
+        userProfileId: this.user.hdid
       })
       .then(() => {
         this.commentInput = "";
         this.needsUpdate(this.comment);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(
           "Error adding comment on entry " + this.comment.parentEntryId
         );
@@ -239,12 +239,12 @@ export default class CommentComponent extends Vue {
         userProfileId: this.comment.userProfileId,
         parentEntryId: this.comment.parentEntryId,
         createdDateTime: this.comment.createdDateTime,
-        version: this.comment.version,
+        version: this.comment.version
       })
-      .then((result) => {
+      .then(result => {
         this.needsUpdate(this.comment);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
         this.hasErrors = true;
       })
@@ -259,10 +259,10 @@ export default class CommentComponent extends Vue {
       this.isLoading = true;
       this.commentService
         .deleteComment(this.comment)
-        .then((result) => {
+        .then(result => {
           this.needsUpdate(this.comment);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         })
         .finally(() => {
