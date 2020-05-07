@@ -98,8 +98,11 @@ namespace HealthGateway.Medication.Services
             {
                 result.ResourcePayload = hnClientMedicationResult.Message;
                 result.PageIndex = 0;
-                result.PageSize = hnClientMedicationResult.Message.Count;
-                result.TotalResultCount = hnClientMedicationResult.Message.Count;
+                if (hnClientMedicationResult.Message != null)
+                {
+                    result.PageSize = hnClientMedicationResult.Message.Count;
+                    result.TotalResultCount = hnClientMedicationResult.Message.Count;
+                }
             }
 
             this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(result)}");
@@ -136,9 +139,9 @@ namespace HealthGateway.Medication.Services
                 {
                     result.PageSize = historyQuery.PageSize;
                     result.PageIndex = historyQuery.PageNumber;
-                    result.TotalResultCount = response.Message.Records;
-                    if (response.Message.Results != null)
+                    if (response.Message != null && response.Message.Results != null)
                     {
+                        result.TotalResultCount = response.Message.Records;
                         result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.Message.Results.ToList());
                         this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
                     }
@@ -154,6 +157,7 @@ namespace HealthGateway.Medication.Services
                 result.ResultStatus = ResultType.Protected;
                 result.ResultMessage = validationResult.Item2!;
             }
+
             this.logger.LogInformation($"Finished getting history of medication statements...{hdid}");
             return result;
         }
@@ -193,7 +197,7 @@ namespace HealthGateway.Medication.Services
 
         private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string? protectiveWord)
         {
-            HNMessage<List<MedicationStatement>> retMessage = null;
+            HNMessage<List<MedicationStatement>> retMessage;
             var validationResult = ValidateProtectiveWord(protectiveWord);
             bool okProtectiveWord = validationResult.Item1;
             if (okProtectiveWord)
@@ -208,13 +212,13 @@ namespace HealthGateway.Medication.Services
 
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
-
-                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord?.ToUpper(CultureInfo.CurrentCulture), phn, ipv4Address).ConfigureAwait(true);
+                protectiveWord = (protectiveWord ?? string.Empty).ToUpper(CultureInfo.CurrentCulture);
+                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, phn, ipv4Address).ConfigureAwait(true);
             }
             else
             {
                 this.logger.LogInformation($"Invalid protective word. {hdid}");
-                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, validationResult.Item2);
+                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, validationResult.Item2!);
             }
 
             return retMessage;

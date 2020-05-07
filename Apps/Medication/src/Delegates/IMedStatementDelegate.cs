@@ -33,7 +33,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>The Medication History response wrapped in an HNMessage.</returns>
-        Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string protectiveWord, string hdid, string ipAddress);
+        Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress);
 
         /// <summary>
         /// Updates the Protective word to the new value.

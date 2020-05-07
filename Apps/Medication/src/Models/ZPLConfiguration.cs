@@ -23,6 +23,6 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the transaction reason code.
         /// </summary>
-        public string TransactionReasonCode { get; set; }
+        public string TransactionReasonCode { get; set; } = string.Empty;
     }
 }
