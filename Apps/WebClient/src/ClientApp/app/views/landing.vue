@@ -454,8 +454,6 @@ import {
   faSyringe,
   IconDefinition,
   faClipboard,
-  faHeartbeat,
-  faCircle,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -549,14 +547,6 @@ export default class LandingComponent extends Vue {
 
   private get labsIcon(): IconDefinition {
     return faClipboard;
-  }
-
-  private get visitsIcon(): IconDefinition {
-    return faHeartbeat;
-  }
-
-  private get circleIcon(): IconDefinition {
-    return faCircle;
   }
 }
 </script>
