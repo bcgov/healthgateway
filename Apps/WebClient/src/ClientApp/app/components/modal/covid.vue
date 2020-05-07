@@ -7,8 +7,7 @@
   background-color: darkred;
   color: $primary_text;
 
-  .close
-  {
+  .close {
       color: $primary_text;
   }
 }
@@ -30,7 +29,7 @@
         <form @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col>
-              <span>Are you here to view your COVID-19 test results?</span>
+              <span>Check the status of your COVID-19 test and view your result if it is available.</span>
             </b-col>
           </b-row>
         </form>
@@ -41,13 +40,13 @@
         <b-col>
           <b-row>
             <b-col>
-              <b-button size="lg" variant="outline-primary" @click="handleYes($event)">
-                YES
+              <b-button size="lg" variant="outline-primary" @click="handleSubmit($event)">
+                View Result
               </b-button>
             </b-col>
             <b-col>
-              <b-button size="lg" variant="outline-primary" @click="handleNo($event)">
-                NO
+              <b-button size="lg" variant="link" @click="handleCancel($event)">
+                Dismiss
               </b-button>
             </b-col>
           </b-row>
@@ -97,15 +96,20 @@ export default class CovidModalComponent extends Vue {
     return;
   }
 
-  private handleYes(bvModalEvt: Event) {
+  private handleSubmit(bvModalEvt: Event) {
     // Prevent modal from closing
     bvModalEvt.preventDefault();
 
     // Trigger submit handler
-    this.handleSubmit();
+    this.submit();
+
+    // Hide the modal manually
+    this.$nextTick(() => {
+      this.hideModal();
+    });
   }
 
-  private handleNo(bvModalEvt: Event) {
+  private handleCancel(bvModalEvt: Event) {
     // Prevent modal from closing
     bvModalEvt.preventDefault();
 
@@ -118,13 +122,5 @@ export default class CovidModalComponent extends Vue {
     });
   }
 
-  private handleSubmit() {
-    this.submit();
-
-    // Hide the modal manually
-    this.$nextTick(() => {
-      this.hideModal();
-    });
-  }
 }
 </script>
