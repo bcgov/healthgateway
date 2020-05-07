@@ -47,7 +47,6 @@ namespace HealthGateway.Medication.Parsers
         /// <inheritdoc/>
         public override HNMessage<string> CreateRequestMessage(HNMessageRequest request)
         {
-            Contract.Requires(request != null);
             this.logger.LogTrace($"Creating TIL request message... {JsonConvert.SerializeObject(request)}");
             Message m = new Message();
 
@@ -71,7 +70,7 @@ namespace HealthGateway.Medication.Parsers
             zpl.AddNewField(string.Empty); // Area Code
             zpl.AddNewField(string.Empty); // Telephone Number
             zpl.AddNewField(string.Empty); // Termination Date
-            zpl.AddNewField(this.ClientConfig.ZPL.TransactionReasonCode); // Transaction Reason Code
+            zpl.AddNewField(this.ClientConfig.ZPL!.TransactionReasonCode); // Transaction Reason Code
             m.AddNewSegment(zpl);
 
             this.SetTransactionControlSegment(m, HNClientConfiguration.PHARMACY_PROFILE_TRANSACTION_ID, request.TraceId, null);

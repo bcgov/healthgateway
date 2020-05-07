@@ -28,7 +28,7 @@ namespace HealthGateway.Medication.Models
         /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
         /// </summary>
         public HNMessage()
-            : this(null, ResultType.Success, null)
+            : this(null, ResultType.Success, string.Empty)
         {
         }
 
@@ -36,8 +36,8 @@ namespace HealthGateway.Medication.Models
         /// Initializes a new instance of the <see cref="HNMessage{T}"/> class.
         /// </summary>
         /// <param name="response">The response message object.</param>
-        public HNMessage(T response)
-            : this(response, ResultType.Success, null)
+        public HNMessage(T? response)
+            : this(response, ResultType.Success, string.Empty)
         {
         }
 
@@ -57,7 +57,7 @@ namespace HealthGateway.Medication.Models
         /// <param name="response">The response message object.</param>
         /// <param name="result">The result of the transaction.</param>
         /// <param name="resultMessage">A message based on the result.</param>
-        public HNMessage(T response, ResultType result, string resultMessage)
+        public HNMessage(T? response, ResultType result, string resultMessage)
         {
             this.Message = response;
             this.Result = result;
@@ -67,7 +67,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the response message.
         /// </summary>
-        public T Message { get; set; }
+        public T? Message { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the result.
