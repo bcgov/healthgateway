@@ -4,7 +4,7 @@
   font-size: 250%;
 }
 .modal-header {
-  background-color: darkred;
+  background-color: $danger;
   color: $primary_text;
 
   .close {
@@ -40,13 +40,8 @@
         <b-col>
           <b-row>
             <b-col>
-              <b-button size="lg" variant="outline-primary" @click="handleSubmit($event)">
+              <b-button variant="outline-primary" @click="handleSubmit($event)">
                 View Result
-              </b-button>
-            </b-col>
-            <b-col>
-              <b-button size="lg" variant="link" @click="handleCancel($event)">
-                Dismiss
               </b-button>
             </b-col>
           </b-row>
