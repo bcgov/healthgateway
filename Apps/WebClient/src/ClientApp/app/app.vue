@@ -90,7 +90,8 @@ import {
   AlertPlugin,
   SpinnerPlugin,
   InputGroupPlugin,
-  PaginationNavPlugin
+  PaginationNavPlugin,
+  TooltipPlugin
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -107,6 +108,7 @@ Vue.use(AlertPlugin);
 Vue.use(SpinnerPlugin);
 Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
+Vue.use(TooltipPlugin);
 
 // Load general icons
 import { config, library } from "@fortawesome/fontawesome-svg-core";
@@ -132,7 +134,7 @@ import {
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faHeartbeat
+  faLock
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -151,7 +153,7 @@ library.add(
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faHeartbeat
+  faLock
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

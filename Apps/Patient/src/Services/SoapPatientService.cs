@@ -101,14 +101,13 @@ namespace HealthGateway.Patient.Services
                     lastNameList.Add(name.Text[0]);
                 }
             }
-
             string delimiter = " ";
             string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
             string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
             string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
             string? dobStr = ((TS)retrievedPerson.identifiedPerson.birthTime).value; // yyyyMMdd
             DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-            retVal = new Patient(hdid, phn, givenNames, lastNames, dob);
+            retVal = new Patient(hdid, phn, givenNames, lastNames, dob, string.Empty);
 
             timer.Stop();
             this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(retVal)} Time Elapsed: {timer.Elapsed}");

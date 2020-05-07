@@ -17,9 +17,8 @@ import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
 import { TermsOfService } from "@/models/termsOfService";
 import UserNote from "@/models/userNote";
-import TimelineEntry from "@/models/timelineEntry";
-import User from "@/models/user";
 import Communication from "@/models/communication";
+import Observation from "@/models/observation";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -61,6 +60,11 @@ export interface IMedicationService {
   ): Promise<RequestResult<MedicationStatement[]>>;
   getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;
   getPharmacyInfo(pharmacyId: string): Promise<Pharmacy>;
+}
+
+export interface IObservationService {
+  initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+  getLaboratoryResults(hdid: string): Promise<Observation>;
 }
 
 export interface IConfigService {
