@@ -91,7 +91,7 @@ import {
   SpinnerPlugin,
   InputGroupPlugin,
   PaginationNavPlugin,
-  TooltipPlugin
+  TooltipPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -134,7 +134,7 @@ import {
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faLock
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -166,8 +166,8 @@ import SidebarComponent from "@/components/navmenu/sidebar.vue";
     NavHeader: HeaderComponent,
     NavFooter: FooterComponent,
     NavSidebar: SidebarComponent,
-    IdleComponent
-  }
+    IdleComponent,
+  },
 })
 export default class AppComponent extends Vue {
   @Ref("idleModal") readonly idleModal?: IdleComponent;
