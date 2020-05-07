@@ -23,6 +23,10 @@
   flex: 1 1 auto;
 }
 
+.no-text {
+  height: 38px;
+}
+
 .comment-button {
   flex: 0 0 auto;
   flex-direction: row;
@@ -94,8 +98,10 @@
         <div class="comment-input pl-2">
           <b-form @submit.prevent>
             <b-form-textarea
+              class="no-text"
               v-model="commentInput"
-              rows="1"
+              rows="2"
+              max-rows="10"
               no-resize
               :placeholder="placeholder"
               maxlength="1000"
@@ -166,6 +172,14 @@ export default class CommentComponent extends Vue {
       return "Editing a comment";
     } else {
       return "Add a private comment";
+    }
+  }
+
+  private get inputClass(): string {
+    if (this.commentInput === "") {
+      return ""
+    } else {
+      return ""
     }
   }
 
