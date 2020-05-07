@@ -2,69 +2,69 @@ name: 1.0.0$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/Labratory
-  App.Name: labratory
+  App.Home: $(Build.SourcesDirectory)/Apps/Laboratory
+  App.Name: laboratory
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
 
 pr: none
 
 trigger:
- batch: 'true'
- branches:
-   include:
-     - dev
- paths:
-   include:
-     - Apps/Labratory
-     - Apps/Common
-     - Apps/Database
+  batch: "true"
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Laboratory
+      - Apps/Common
+      - Apps/Database
 
 pool:
-  name: 'HealthGateway'
+  name: "HealthGateway"
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
-  inputs:
-    command: 'test'
-    projects: '$(App.UnitTests)/LabratoryTests.csproj'
-    testRunTitle: 'Labratory Service Tests'
-  enabled: 'true'
+  - task: DotNetCoreCLI@2
+    displayName: Run dotnet Tests
+    inputs:
+      command: "test"
+      projects: "$(App.UnitTests)/LaboratoryTests.csproj"
+      testRunTitle: "Laboratory Service Tests"
+    enabled: "true"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '$(App.UnitTests)/LabratoryTests.csproj'
-    testRunTitle: 'Build Labratory Service'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "$(App.UnitTests)/LaboratoryTests.csproj"
+      testRunTitle: "Build Laboratory Service"
 
-- task: DotNetCoreCLI@2
-  displayName: Publish dotnet code
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+  - task: DotNetCoreCLI@2
+    displayName: Publish dotnet code
+    inputs:
+      modifyOutputPath: false
+      command: "publish"
+      publishWebProjects: false
+      projects: "$(App.Home)/src"
+      arguments: "-o $(Build.BinariesDirectory)"
+      zipAfterPublish: false
 
-- script: |
-    set -e
-    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
-    oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-  displayName: 'Build OpenShift Image and push to Image Stream'
+  - script: |
+      set -e
+      cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+      oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
+      oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+      oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+      echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+    displayName: "Build OpenShift Image and push to Image Stream"
 
-- task: CopyFiles@2
-  displayName: Copy Functional Tests to Staging
-  inputs:
-    SourceFolder: '$(App.FunctionalTests)'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    displayName: Copy Functional Tests to Staging
+    inputs:
+      SourceFolder: "$(App.FunctionalTests)"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
 
-- task: PublishPipelineArtifact@0
-  displayName: 'Publish Pipeline Artifact'
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishPipelineArtifact@0
+    displayName: "Publish Pipeline Artifact"
+    inputs:
+      targetPath: "$(Build.ArtifactStagingDirectory)"
