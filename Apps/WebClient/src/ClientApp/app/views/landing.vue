@@ -74,21 +74,52 @@
       margin-right: auto;
       margin-top: -40px;
 
+      .icons {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: column;
+      }
+
+      .iconNames {
+        flex-direction: column;
+        display: flex;
+        flex: 1 1 auto;
+      }
+
       .status-active {
-        .innerIcon {
+        display: inline-block;
+        color: $primary;
+        line-height: 40px;
+        height: 40px;
+        vertical-align: middle;
+        .icon {
+          text-align: center;
+          background-color: $primary;
           color: white;
-        }
-        .outerIcon {
-          color: $primary;
+          border-radius: 50%;
+          width: 40px;
         }
       }
 
       .status-inactive {
-        .innerIcon {
-          color: darkgray;
+        color: darkgray;
+        display: inline-block;
+        line-height: 40px;
+        height: 40px;
+        vertical-align: middle;
+        .icon {
+          text-align: center;
+          background-color: darkgray;
+          color: white;
+          border-radius: 50%;
+          width: 40px;
         }
-        .outerIcon {
-          color: lightgray;
+        .covid {
+          color: white;
+          background-color: $danger;
+          border-radius: 15px;
+          height: 25px;
+          line-height: 28px;
         }
       }
     }
@@ -287,74 +318,42 @@
           <b-row>
             <h2>Browse your health records</h2>
           </b-row>
-          <b-row class="status-active">
-            <font-awesome-layers>
-              <font-awesome-icon
-                class="outerIcon"
-                :icon="circleIcon"
-                size="2x"
-              ></font-awesome-icon>
-              <font-awesome-icon
-                class="innerIcon"
-                :icon="medsIcon"
-                size="1x"
-              ></font-awesome-icon>
-            </font-awesome-layers>
-            <h4 class="px-2">
-              Prescription Medications
-            </h4>
-          </b-row>
-          <b-row class="status-active">
-            <font-awesome-layers class="mr-3">
-              <font-awesome-icon
-                class="outerIcon"
-                :icon="circleIcon"
-                size="2x"
-              ></font-awesome-icon>
-
-              <font-awesome-icon
-                class="innerIcon ml-2"
-                :icon="immzIcon"
-                size="1x"
-              ></font-awesome-icon>
-            </font-awesome-layers>
-            <h4 class="px-2">
-              Immunizations
-            </h4>
-          </b-row>
-          <b-row class="status-inactive">
-            <font-awesome-layers>
-              <font-awesome-icon
-                class="outerIcon"
-                :icon="circleIcon"
-                size="2x"
-              ></font-awesome-icon>
-              <font-awesome-icon
-                class="innerIcon"
-                :icon="labsIcon"
-                size="1x"
-              ></font-awesome-icon>
-            </font-awesome-layers>
-            <h4 class="px-2">
-              Lab Results
-            </h4>
-          </b-row>
-          <b-row class="status-inactive">
-            <font-awesome-layers>
-              <font-awesome-icon
-                class="outerIcon"
-                :icon="circleIcon"
-                size="2x"
-              ></font-awesome-icon>
-              <font-awesome-icon
-                class="innerIcon"
-                :icon="visitsIcon"
-                size="1x"
-              ></font-awesome-icon>
-            </font-awesome-layers>
-            <h4 class="px-2">
-              Health Visits
-            </h4>
+          <b-row>
+            <div class="icons mr-4">
+              <div
+                class="mb-2"
+                v-for="icon in icons"
+                :class="icon.active ? 'status-active' : 'status-inactive'"
+                :key="icon.label"
+                align-content="center"
+              >
+                <div class="icon">
+                  <font-awesome-icon
+                    :icon="icon.definition"
+                    size="lg"
+                  ></font-awesome-icon>
+                </div>
+              </div>
+            </div>
+            <div class="iconNames">
+              <b-row
+                class="mb-2 d-flex flex-direction-row"
+                v-for="icon in icons"
+                :class="icon.active ? 'status-active' : 'status-inactive'"
+                :key="icon.label"
+                align-v="center"
+              >
+                <span>{{ icon.label }}</span>
+                <div class="covid ml-2 px-2" v-if="icon.label === 'Lab Tests'">
+                  <font-awesome-icon
+                    class="px-1"
+                    :icon="warningIcon"
+                    size="1x"
+                  ></font-awesome-icon>
+                  <span class="pr-1">COVID-19 Test Result</span>
+                </div>
+              </b-row>
+            </div>
           </b-row>
         </div>
       </b-col>
@@ -457,11 +456,13 @@ import {
   faClipboard,
   faHeartbeat,
   faCircle,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Icon {
   label: string;
   definition: IconDefinition;
+  active: boolean;
 }
 
 interface Tile {
@@ -480,18 +481,22 @@ export default class LandingComponent extends Vue {
     {
       definition: faPills,
       label: "Medications",
-    },
-    {
-      definition: faUserMd,
-      label: "Consultations",
-    },
-    {
-      definition: faFlask,
-      label: "Lab Tests",
+      active: true,
     },
     {
       definition: faSyringe,
       label: "Vaccinations",
+      active: true,
+    },
+    {
+      definition: faFlask,
+      label: "Lab Tests",
+      active: false,
+    },
+    {
+      definition: faUserMd,
+      label: "Consultations",
+      active: false,
     },
   ];
 
@@ -528,6 +533,10 @@ export default class LandingComponent extends Vue {
 
   private getTileClass(index: number): string {
     return index % 2 == 0 ? "order-md-1" : "order-md-2";
+  }
+
+  private get warningIcon(): IconDefinition {
+    return faExclamationTriangle;
   }
 
   private get medsIcon(): IconDefinition {
