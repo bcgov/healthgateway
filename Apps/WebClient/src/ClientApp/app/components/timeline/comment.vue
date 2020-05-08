@@ -24,7 +24,7 @@
 }
 
 .no-text {
-  height: 38px;
+  height: 38px !important;
 }
 
 .comment-button {
@@ -98,7 +98,7 @@
         <div class="comment-input pl-2">
           <b-form @submit.prevent>
             <b-form-textarea
-              class="no-text"
+              :class="commentInput.length === 0 ? 'no-text' : ''"
               v-model="commentInput"
               rows="2"
               max-rows="10"
@@ -118,7 +118,11 @@
             Save
           </b-button>
           <div class="d-flex pl-2">
-            <b-button :disabled="commentInput === ''" variant="secondary" @click="onCancel">
+            <b-button
+              :disabled="commentInput === '' && isNewComment"
+              variant="secondary"
+              @click="onCancel"
+            >
               Cancel
             </b-button>
           </div>

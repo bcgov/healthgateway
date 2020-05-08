@@ -150,7 +150,13 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private onAdd(comment: UserComment) {
-    this.showComments = true;
+    if (!this.showComments) {
+      this.showComments = true;
+      this.$root.$emit(
+        "bv::toggle::collapse",
+        "entryComments-" + this.parentEntry.id
+      );
+    }
     this.getComments();
   }
 }
