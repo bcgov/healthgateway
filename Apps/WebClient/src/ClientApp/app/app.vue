@@ -134,7 +134,8 @@ import {
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faLock
+  faLock,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -153,7 +154,8 @@ library.add(
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faLock
+  faLock,
+  faExclamationTriangle
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
