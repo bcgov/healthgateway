@@ -314,10 +314,10 @@
           <b-row>
             <b-col cols="1" class="icon-wrapper mr-4 px-0">
               <div
-                class="mb-2 icon-row"
                 v-for="icon in icons"
-                :class="icon.active ? 'status-active' : 'status-inactive'"
                 :key="icon.label"
+                class="mb-2 icon-row"
+                :class="icon.active ? 'status-active' : 'status-inactive'"
                 align-content="center"
               >
                 <div class="icon">
@@ -330,19 +330,19 @@
             </b-col>
             <b-col class="px-0">
               <div
-                class="mb-2 d-flex icon-row"
                 v-for="icon in icons"
-                :class="icon.active ? 'status-active' : 'status-inactive'"
                 :key="icon.label"
+                class="mb-2 d-flex icon-row"
+                :class="icon.active ? 'status-active' : 'status-inactive'"
                 align-v="center"
               >
                 <b-col cols="0" class="px-0">
                   <span>{{ icon.label }}</span>
                 </b-col>
                 <b-col
+                  v-if="icon.label === 'Lab Tests'"
                   cols="0"
                   class="covid-container ml-2 px-2"
-                  v-if="icon.label === 'Lab Tests'"
                 >
                   <font-awesome-icon
                     class="px-1"
@@ -453,7 +453,7 @@ import {
   faSyringe,
   IconDefinition,
   faClipboard,
-  faExclamationTriangle,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Icon {
@@ -470,31 +470,31 @@ interface Tile {
 
 @Component({
   components: {
-    CommunicationComponent,
-  },
+    CommunicationComponent
+  }
 })
 export default class LandingComponent extends Vue {
   private icons: Icon[] = [
     {
       definition: faPills,
       label: "Medications",
-      active: true,
+      active: true
     },
     {
       definition: faSyringe,
       label: "Vaccinations",
-      active: true,
+      active: true
     },
     {
       definition: faFlask,
       label: "Lab Tests",
-      active: false,
+      active: false
     },
     {
       definition: faUserMd,
       label: "Consultations",
-      active: false,
-    },
+      active: false
+    }
   ];
 
   private tiles: Tile[] = [
@@ -502,25 +502,25 @@ export default class LandingComponent extends Vue {
       title: "All in one place",
       description:
         "Conveniently access your data on a computer, tablet or smartphone",
-      imageSrc: Image03,
+      imageSrc: Image03
     },
     {
       title: "Take control of your health",
       description: "Look at historical information captured over time.",
-      imageSrc: Image04,
+      imageSrc: Image04
     },
     {
       title: "Manage family records",
       description:
         "Care for the needs of your children and those who depend on you.",
-      imageSrc: Image05,
+      imageSrc: Image05
     },
     {
       title: "Collaborate with others",
       description:
         "Become an active participant by sharing and discussing your data with health care providers.",
-      imageSrc: Image06,
-    },
+      imageSrc: Image06
+    }
   ];
 
   private logo: string = Image00;
