@@ -219,6 +219,12 @@
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
     />
+    <CovidModalComponent
+      ref="covidModal"
+      :is-loading="isLoading"
+      @submit="onCovidSubmit"
+      @cancel="onCovidCancel"
+    />
   </div>
 </template>
 
@@ -243,6 +249,7 @@ import MedicationStatement from "@/models/medicationStatement";
 import moment from "moment";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
@@ -267,6 +274,7 @@ Component.registerHooks(["beforeRouteLeave"]);
   components: {
     LoadingComponent,
     ProtectiveWordComponent,
+    CovidModalComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
     NoteTimelineComponent
@@ -297,6 +305,8 @@ export default class TimelineComponent extends Vue {
 
   @Ref("protectiveWordModal")
   readonly protectiveWordModal!: ProtectiveWordComponent;
+  @Ref("covidModal")
+  readonly covidModal!: CovidModalComponent;
 
   private created() {
     window.addEventListener("resize", this.handleResize);
@@ -319,6 +329,9 @@ export default class TimelineComponent extends Vue {
     EventBus.$on("idleLogoutWarning", function(isVisible: boolean) {
       self.idleLogoutWarning = isVisible;
     });
+
+    // To be updated with Enabled/Disabled covid message configuration
+    this.covidModal.showModal();
   }
 
   private beforeRouteLeave(to: Route, from: Route, next: any) {
@@ -471,6 +484,14 @@ export default class TimelineComponent extends Vue {
       .finally(() => {
         this.isMedicationLoading = false;
       });
+  }
+
+  private onCovidSubmit() {
+    // TO BE IMPLEMENTED
+  }
+
+  private onCovidCancel() {
+    // TO BE IMPLEMENTED
   }
 
   private fetchImmunizations() {
