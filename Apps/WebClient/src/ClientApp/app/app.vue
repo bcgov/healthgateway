@@ -173,7 +173,7 @@ import SidebarComponent from "@/components/navmenu/sidebar.vue";
 })
 export default class AppComponent extends Vue {
   @Ref("idleModal") readonly idleModal?: IdleComponent;
-  @Getter("oidcIsAuthenticated", { namespace: "auth" })
+  @Getter("oidcIsAuthenticated", { namespace: "auth" });
   oidcIsAuthenticated?: boolean;
 
   private readonly host: string = window.location.hostname.toLocaleUpperCase();
