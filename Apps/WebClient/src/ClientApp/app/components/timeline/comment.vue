@@ -175,14 +175,6 @@ export default class CommentComponent extends Vue {
     }
   }
 
-  private get inputClass(): string {
-    if (this.commentInput === "") {
-      return ""
-    } else {
-      return ""
-    }
-  }
-
   private get isNewComment(): boolean {
     return this.comment.id === "";
   }

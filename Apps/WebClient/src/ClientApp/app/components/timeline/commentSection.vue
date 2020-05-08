@@ -10,7 +10,12 @@
     <b-row class="pt-2">
       <b-col>
         <div v-if="hasComments" class="d-flex flex-row-reverse">
-          <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
+          <b-btn
+            v-b-toggle="'entryComments-' + parentEntry.id"
+            variant="link"
+            class="px-0 py-2"
+            @click="toggleComments()"
+          >
             <span class="when-opened">
               <font-awesome-icon
                 icon="chevron-up"
@@ -41,7 +46,9 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-collapse :visible="showComments">
+        <b-collapse
+          :id="'entryComments-' + parentEntry.id"
+        >
           <div v-if="!isLoadingComments">
             <div v-for="comment in comments" :key="comment.id">
               <Comment :comment="comment" @needs-update="needsUpdate"></Comment>
