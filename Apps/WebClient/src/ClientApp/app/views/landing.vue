@@ -113,6 +113,7 @@
         border-radius: 15px;
         height: 25px;
         line-height: 28px;
+        margin-top: 5px;
       }
     }
   }
@@ -306,14 +307,14 @@
           alt="Devices"
       /></b-col>
       <b-col class="col-10 col-md-6">
-        <div class="devices-text my-5 my-md-5 ml-md-5">
+        <div class="devices-text my-5 my-md-5 ml-md-4">
           <b-row>
             <h2>Browse your health records</h2>
           </b-row>
           <b-row>
             <b-col cols="1" class="icon-wrapper mr-4 px-0">
-              <b-col
-                class="mb-2 px-0 icon-row"
+              <div
+                class="mb-2 icon-row"
                 v-for="icon in icons"
                 :class="icon.active ? 'status-active' : 'status-inactive'"
                 :key="icon.label"
@@ -325,11 +326,11 @@
                     size="lg"
                   ></font-awesome-icon>
                 </div>
-              </b-col>
+              </div>
             </b-col>
             <b-col class="px-0">
-              <b-col
-                class="mb-2 px-0 d-flex icon-row flex-direction-row"
+              <div
+                class="mb-2 d-flex icon-row"
                 v-for="icon in icons"
                 :class="icon.active ? 'status-active' : 'status-inactive'"
                 :key="icon.label"
@@ -340,7 +341,7 @@
                 </b-col>
                 <b-col
                   cols="0"
-                  class="covid-container mt-1 ml-2 px-2"
+                  class="covid-container ml-2 px-2"
                   v-if="icon.label === 'Lab Tests'"
                 >
                   <font-awesome-icon
@@ -350,7 +351,7 @@
                   ></font-awesome-icon>
                   <span class="pr-1">COVID-19 Test Result</span>
                 </b-col>
-              </b-col>
+              </div>
             </b-col>
           </b-row>
         </div>
