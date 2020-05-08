@@ -73,54 +73,46 @@
       margin-left: auto;
       margin-right: auto;
       margin-top: -40px;
-
-      .icons {
-        display: flex;
-        flex: 0 0 auto;
-        flex-direction: column;
+      .icon-wrapper {
+        /* Small Devices*/
+        @media (max-width: 816px) {
+          display: none;
+        }
       }
-
-      .iconNames {
-        flex-direction: column;
-        display: flex;
-        flex: 1 1 auto;
-      }
-
-      .status-active {
+      .icon-row {
         display: inline-block;
-        color: $primary;
         line-height: 40px;
         height: 40px;
         vertical-align: middle;
         .icon {
           text-align: center;
-          background-color: $primary;
-          color: white;
           border-radius: 50%;
           width: 40px;
+        }
+      }
+
+      .status-active {
+        color: $primary;
+        .icon {
+          background-color: $primary;
+          color: white;
         }
       }
 
       .status-inactive {
         color: darkgray;
-        display: inline-block;
-        line-height: 40px;
-        height: 40px;
-        vertical-align: middle;
         .icon {
-          text-align: center;
           background-color: darkgray;
           color: white;
-          border-radius: 50%;
-          width: 40px;
         }
-        .covid {
-          color: white;
-          background-color: $danger;
-          border-radius: 15px;
-          height: 25px;
-          line-height: 28px;
-        }
+      }
+
+      .covid-container {
+        color: white;
+        background-color: $danger;
+        border-radius: 15px;
+        height: 25px;
+        line-height: 28px;
       }
     }
   }
@@ -319,9 +311,9 @@
             <h2>Browse your health records</h2>
           </b-row>
           <b-row>
-            <div class="icons mr-4">
-              <div
-                class="mb-2"
+            <b-col cols="1" class="icon-wrapper mr-4 px-0">
+              <b-col
+                class="mb-2 px-0 icon-row"
                 v-for="icon in icons"
                 :class="icon.active ? 'status-active' : 'status-inactive'"
                 :key="icon.label"
@@ -333,27 +325,33 @@
                     size="lg"
                   ></font-awesome-icon>
                 </div>
-              </div>
-            </div>
-            <div class="iconNames">
-              <b-row
-                class="mb-2 d-flex flex-direction-row"
+              </b-col>
+            </b-col>
+            <b-col class="px-0">
+              <b-col
+                class="mb-2 px-0 d-flex icon-row flex-direction-row"
                 v-for="icon in icons"
                 :class="icon.active ? 'status-active' : 'status-inactive'"
                 :key="icon.label"
                 align-v="center"
               >
-                <span>{{ icon.label }}</span>
-                <div class="covid ml-2 px-2" v-if="icon.label === 'Lab Tests'">
+                <b-col cols="0" class="px-0">
+                  <span>{{ icon.label }}</span>
+                </b-col>
+                <b-col
+                  cols="0"
+                  class="covid-container mt-1 ml-2 px-2"
+                  v-if="icon.label === 'Lab Tests'"
+                >
                   <font-awesome-icon
                     class="px-1"
-                    :icon="warningIcon"
+                    icon="exclamation-triangle"
                     size="1x"
                   ></font-awesome-icon>
                   <span class="pr-1">COVID-19 Test Result</span>
-                </div>
-              </b-row>
-            </div>
+                </b-col>
+              </b-col>
+            </b-col>
           </b-row>
         </div>
       </b-col>
@@ -531,22 +529,6 @@ export default class LandingComponent extends Vue {
 
   private getTileClass(index: number): string {
     return index % 2 == 0 ? "order-md-1" : "order-md-2";
-  }
-
-  private get warningIcon(): IconDefinition {
-    return faExclamationTriangle;
-  }
-
-  private get medsIcon(): IconDefinition {
-    return faPills;
-  }
-
-  private get immzIcon(): IconDefinition {
-    return faSyringe;
-  }
-
-  private get labsIcon(): IconDefinition {
-    return faClipboard;
   }
 }
 </script>
