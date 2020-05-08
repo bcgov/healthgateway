@@ -1,0 +1,22 @@
+import { Module } from "vuex";
+import { getters } from "./getters";
+import { actions } from "./actions";
+import { mutations } from "./mutations";
+import { RootState, StateType, LaboratoryState } from "@/models/storeState";
+
+export const state: LaboratoryState = {
+  statusMessage: "",
+  laboratoryReports: new Array(),
+  error: false,
+  stateType: StateType.NONE
+};
+
+const namespaced: boolean = true;
+
+export const laboratory: Module<LaboratoryState, RootState> = {
+  namespaced,
+  state,
+  getters,
+  actions,
+  mutations
+};

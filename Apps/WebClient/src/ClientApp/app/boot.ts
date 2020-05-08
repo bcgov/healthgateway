@@ -19,6 +19,7 @@ import {
   IImmunizationService,
   IPatientService,
   IMedicationService,
+  ILaboratoryService,
   IHttpDelegate,
   IConfigService,
   IUserProfileService,
@@ -62,6 +63,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const medicationService: IMedicationService = container.get(
     SERVICE_IDENTIFIER.MedicationService
   );
+  const laboratoryService: ILaboratoryService = container.get(
+    SERVICE_IDENTIFIER.LaboratoryService
+  );
   const userProfileService: IUserProfileService = container.get(
     SERVICE_IDENTIFIER.UserProfileService
   );
@@ -89,6 +93,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   immunizationService.initialize(config, httpDelegate);
   patientService.initialize(config, httpDelegate);
   medicationService.initialize(config, httpDelegate);
+  laboratoryService.initialize(config, httpDelegate);
   userProfileService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
   betaRequestService.initialize(httpDelegate);

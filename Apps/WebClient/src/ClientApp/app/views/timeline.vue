@@ -141,6 +141,16 @@
               Immunizations
             </b-form-checkbox>
           </b-col>
+          <b-col v-if="isLaboratoryEnabled">
+            <b-form-checkbox
+              id="laboratoryFilter"
+              v-model="filterTypes"
+              name="laboratoryFilter"
+              value="Laboratory"
+            >
+              Laboratory
+            </b-form-checkbox>
+          </b-col>
           <b-col v-if="isNoteEnabled">
             <b-form-checkbox
               id="notesFilter"
@@ -226,9 +236,14 @@
 import Vue from "vue";
 import { Component, Watch, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
+import moment from "moment";
+import { Route } from "vue-router";
+import EventBus from "@/eventbus";
+import { WebClientConfiguration } from "@/models/configData";
 import {
   IMedicationService,
   IImmunizationService,
+  ILaboratoryService,
   IUserNoteService
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -238,20 +253,19 @@ import User from "@/models/user";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
-import moment from "moment";
+import UserNote from "@/models/userNote";
+import RequestResult from "@/models/requestResult";
+import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
-import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import UserNote from "@/models/userNote";
-import { WebClientConfiguration } from "@/models/configData";
-import RequestResult from "@/models/requestResult";
-import { Route } from "vue-router";
-import EventBus from "@/eventbus";
+import { LaboratoryResult, LaboratoryReport } from "../models/laboratory";
 
 const namespace: string = "user";
 
@@ -274,6 +288,9 @@ Component.registerHooks(["beforeRouteLeave"]);
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
+  @Action("getReports", { namespace: "laboratory" }) getLaboratoryReports!: ({
+    hdid: string
+  }: any) => Promise<RequestResult<LaboratoryReport[]>>;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
 
   private filterText: string = "";
@@ -282,6 +299,7 @@ export default class TimelineComponent extends Vue {
   private visibleTimelineEntries: TimelineEntry[] = [];
   private isMedicationLoading: boolean = false;
   private isImmunizationLoading: boolean = false;
+  private isLaboratoryLoading: boolean = false;
   private isNoteLoading: boolean = false;
   private windowWidth: number = 0;
   private currentPage: number = 1;
@@ -307,6 +325,7 @@ export default class TimelineComponent extends Vue {
     this.initializeFilters();
     this.fetchMedicationStatements();
     this.fetchImmunizations();
+    this.fetchLaboratoryResults();
     this.fetchNotes();
     window.addEventListener("beforeunload", this.onBrowserClose);
     let self = this;
@@ -366,6 +385,7 @@ export default class TimelineComponent extends Vue {
     return (
       this.isMedicationLoading ||
       this.isImmunizationLoading ||
+      this.isLaboratoryLoading ||
       this.isNoteLoading
     );
   }
@@ -379,6 +399,13 @@ export default class TimelineComponent extends Vue {
 
   private get isImmunizationEnabled(): boolean {
     return this.config.modules["Immunization"];
+  }
+
+  private get isLaboratoryEnabled(): boolean {
+    return (
+      this.config.modules["Laboratory"] ||
+      this.config.modules["CovidLabResults"]
+    );
   }
 
   private get isNoteEnabled(): boolean {
@@ -418,6 +445,9 @@ export default class TimelineComponent extends Vue {
     }
     if (this.isImmunizationEnabled) {
       this.filterTypes.push("Immunization");
+    }
+    if (this.isLaboratoryEnabled) {
+      this.filterTypes.push("Laboratory");
     }
     if (this.isNoteEnabled) {
       this.filterTypes.push("Note");
@@ -502,6 +532,36 @@ export default class TimelineComponent extends Vue {
       })
       .finally(() => {
         this.isImmunizationLoading = false;
+      });
+  }
+
+  private fetchLaboratoryResults() {
+    const laboratoryService: ILaboratoryService = container.get(
+      SERVICE_IDENTIFIER.LaboratoryService
+    );
+    this.isLaboratoryLoading = true;
+    this.getLaboratoryReports({ hdid: this.user.hdid })
+      .then(results => {
+        if (results.resultStatus == ResultType.Success) {
+          // Add the laboratory entries to the timeline list
+          for (let result of results.resourcePayload) {
+            this.timelineEntries.push(new LaboratoryTimelineEntry(result));
+          }
+          this.sortEntries();
+          this.applyTimelineFilter();
+        } else {
+          console.log(
+            "Error returned from the laboratory call: " + results.resultMessage
+          );
+          this.hasErrors = true;
+        }
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isLaboratoryLoading = false;
       });
   }
 
