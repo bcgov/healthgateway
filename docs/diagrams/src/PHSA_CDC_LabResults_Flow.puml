@@ -20,5 +20,5 @@ autonumber
     PHSA_CDC_LabReportsService <-> PHSA_CDC_LabReportsService : Resolve HDID to PHN using internal HCIM access
     WebClient <- PHSA_CDC_LabReportsService : Return LabReports for this user
     Citizen -> WebClient : View and Download PDF Document
-    Citizen -> We
+    Citizen -> WebClient : Logoff
 @enduml
