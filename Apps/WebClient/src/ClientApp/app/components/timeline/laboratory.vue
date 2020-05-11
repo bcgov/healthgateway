@@ -83,13 +83,13 @@ $radius: 15px;
               >
                 <span class="when-opened">
                   <font-awesome-icon
-                    icon="chevron-down"
+                    icon="chevron-up"
                     aria-hidden="true"
                   ></font-awesome-icon
                 ></span>
                 <span class="when-closed">
                   <font-awesome-icon
-                    icon="chevron-up"
+                    icon="chevron-down"
                     aria-hidden="true"
                   ></font-awesome-icon
                 ></span>
@@ -190,10 +190,6 @@ export default class LaboratoryTimelineComponent extends Vue {
   private toggleDetails(): void {
     this.detailsVisible = !this.detailsVisible;
     this.hasErrors = false;
-
-    if (!this.detailsVisible) {
-      return;
-    }
   }
 
   private formatDate(date: Date): string {
