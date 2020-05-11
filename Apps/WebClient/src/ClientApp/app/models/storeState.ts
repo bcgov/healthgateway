@@ -3,6 +3,7 @@ import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
+import { LaboratoryReport } from "@/models//laboratory";
 
 export enum StateType {
   NONE,
@@ -46,6 +47,13 @@ export interface MedicationState {
 
 export interface PharmacyState {
   pharmacies: Pharmacy[];
+  statusMessage: string;
+  error: boolean;
+  stateType: StateType;
+}
+
+export interface LaboratoryState {
+  laboratoryReports: LaboratoryReport[];
   statusMessage: string;
   error: boolean;
   stateType: StateType;

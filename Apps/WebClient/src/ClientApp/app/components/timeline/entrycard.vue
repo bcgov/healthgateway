@@ -23,6 +23,13 @@
       :entry="entry"
       :index="index"
     />
+    <LaboratoryComponent
+      v-if="entry.type === EntryType.Laboratory"
+      :key="entry.id"
+      :datekey="datekey"
+      :entry="entry"
+      :index="index"
+    />
     <NoteComponent
       v-if="entry.type === EntryType.Note"
       :key="entry.id"
@@ -45,12 +52,14 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import { Prop, Component, Emit } from "vue-property-decorator";
 import MedicationTimelineComponent from "./medication.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
+import LaboratoryTimelineComponent from "./laboratory.vue";
 import NoteTimelineComponent from "./note.vue";
 
 @Component({
   components: {
     MedicationComponent: MedicationTimelineComponent,
     ImmunizationComponent: ImmunizationTimelineComponent,
+    LaboratoryComponent: LaboratoryTimelineComponent,
     NoteComponent: NoteTimelineComponent
   }
 })
