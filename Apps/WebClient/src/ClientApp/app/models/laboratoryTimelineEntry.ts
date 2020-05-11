@@ -1,20 +1,72 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import { LaboratoryReport } from "./laboratory";
+import { LaboratoryReport, LaboratoryResult } from "./laboratory";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
   public id: string;
-  public phn: string | null;
   public orderingProviderIds: string | null;
   public orderingProviders: string | null;
   public reportingLab: string | null;
   public location: string | null;
-  public ormOrOru: string | null;
-  public messageDateTime: Date | null;
-  public messageId: string | null;
-  public additionalData: string | null;
+  public displayDate: Date;
 
-  public labResultId: string;
+  public summaryTestType: string;
+  public summaryDescription: string;
+  public summaryStatus: string;
+
+  public resultList: LaboratoryResultViewModel[];
+
+  public constructor(model: LaboratoryReport) {
+    super(model.id, EntryType.Laboratory, model.messageDateTime);
+
+    this.id = model.id;
+    this.orderingProviderIds = model.orderingProviderIds;
+    this.orderingProviders = model.orderingProviders;
+    this.reportingLab = model.reportingLab;
+    this.location = model.location;
+
+    console.log(model.labResults.length);
+    this.resultList = new Array();
+    model.labResults.forEach(result => {
+      console.log(result);
+      this.resultList.push(new LaboratoryResultViewModel(result));
+    });
+
+    this.sortResults();
+
+    let firstResult = this.resultList[0];
+    this.displayDate = firstResult.receivedDateTime;
+
+    this.summaryTestType = firstResult.testType || "";
+    this.summaryDescription = firstResult.loincName || "";
+    this.summaryStatus = firstResult.testStatus || "";
+
+    console.log(this.resultList);
+  }
+
+  public filterApplies(filterText: string, filterTypes: string[]): boolean {
+    if (!filterTypes.includes("Laboratory")) {
+      return false;
+    }
+
+    var text = (this.summaryTestType! || "") + (this.summaryDescription! || "");
+    text = text.toUpperCase();
+    return text.includes(filterText.toUpperCase());
+  }
+
+  private sortResults() {
+    this.resultList.sort((a, b) =>
+      a.receivedDateTime > b.receivedDateTime
+        ? -1
+        : a.receivedDateTime < b.receivedDateTime
+        ? 1
+        : 0
+    );
+  }
+}
+
+export class LaboratoryResultViewModel {
+  public id: string;
   public testType: string | null;
   public outOfRange: boolean;
   public collectedDateTime: Date;
@@ -25,43 +77,16 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
   public loinc: string | null;
   public loincName: string | null;
 
-  public constructor(model: LaboratoryReport) {
-    super(model.id, EntryType.Laboratory, model.messageDateTime);
-
+  constructor(model: LaboratoryResult) {
     this.id = model.id;
-    this.phn = model.phn;
-    this.orderingProviderIds = model.orderingProviderIds;
-    this.orderingProviders = model.orderingProviders;
-    this.reportingLab = model.reportingLab;
-    this.location = model.location;
-    this.ormOrOru = model.ormOrOru;
-    this.messageDateTime = model.messageDateTime;
-    this.messageId = model.messageId;
-    this.additionalData = model.additionalData;
-
-    var labResult = model.labResults[0];
-    this.labResultId = labResult.id;
-    this.testType = labResult.testType;
-    this.outOfRange = labResult.outOfRange;
-    this.collectedDateTime = labResult.collectedDateTime;
-    this.testStatus = labResult.testStatus;
-    this.resultDescription = labResult.resultDescription;
-    this.receivedDateTime = labResult.receivedDateTime;
-    this.resultDateTime = labResult.resultDateTime;
-    this.loinc = labResult.loinc;
-    this.loincName = labResult.loincName;
-  }
-
-  public filterApplies(filterText: string, filterTypes: string[]): boolean {
-    if (!filterTypes.includes("Laboratory")) {
-      return false;
-    }
-
-    var text =
-      (this.testType! || "") +
-      (this.resultDescription! || "") +
-      (this.loincName! || "");
-    text = text.toUpperCase();
-    return text.includes(filterText.toUpperCase());
+    this.testType = model.testType;
+    this.outOfRange = model.outOfRange;
+    this.collectedDateTime = model.collectedDateTime;
+    this.testStatus = model.testStatus;
+    this.resultDescription = model.resultDescription;
+    this.receivedDateTime = model.receivedDateTime;
+    this.resultDateTime = model.resultDateTime;
+    this.loinc = model.loinc;
+    this.loincName = model.loincName;
   }
 }
