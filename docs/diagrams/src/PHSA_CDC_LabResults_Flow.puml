@@ -1,24 +1,22 @@
-@startuml PharmaNet_ODR_Proxy_Flow
+@startuml PHSA_CDC_LabResults_Flow
 autonumber
-    actor Citizen
-    Browser <-- HealthGateway : Begin- Load WebClient into Browser\
-    Citizen -> HG_WebClient : Login
-    WebClient <-> KeyCloak_AuthServer : OIDC Authentication Request
-    Citizen <-> BCSC_IDIM_Services : BCSC login at id.gov.bc.ca
-    BCSC_IDIM_Services -> KeyCloak_AuthServer : Redirect back after successful BCSC login
-    WebClient <- KeyCloak_AuthServer : Authentication Successful, Grant JWT
-    WebClient -> HG_LabResults_Controller : Fetch COVID Results
-    LabResults_Controller -> PHSA_CDC_LabReportsService_/api/v1/LabReports :  Fetch All COVID Results (JWT, HDID)
-    PHSA_CDC_LabReportsService <-> KeyCloak_AuthServer : Verify Access Token (JWT)
-    PHSA_CDC_LabReportsService <-> PHSA_CDC_LabReportsService : Verify Scope in JWT is correct
-    PHSA_CDC_LabReportsService <-> PHSA_CDC_LabReportsService : Resolve HDID to PHN using internal HCIM access
-    WebClient <- PHSA_CDC_LabReportsService : Return LabReports for this user
-    Citizen -> WebClient : Select to View LabReport Document (a PDF)
-    LabResults_Controller -> PHSA_CDC_LabReportsService_/api/v1/LabReports/{id}/LabReportDocument :  Fetch All COVID Report Doc (JWT, HDID)
-    PHSA_CDC_LabReportsService <-> KeyCloak_AuthServer : Verify Access Token (JWT)
-    PHSA_CDC_LabReportsService <-> PHSA_CDC_LabReportsService : Verify Scope in JWT is correct
-    PHSA_CDC_LabReportsService <-> PHSA_CDC_LabReportsService : Resolve HDID to PHN using internal HCIM access
-    WebClient <- PHSA_CDC_LabReportsService : Return LabReports for this user
-    Citizen -> WebClient : View and Download PDF Document
-    Citizen -> WebClient : Logoff
+actor Citizen
+Citizen -> HealthGateway_WebClient : Login
+HealthGateway_WebClient <-> KeyCloak_AuthServer : OIDC Authentication Request
+Citizen <-> BCSC_IDIM_Services : External IdP; BCSC login flow at id.gov.bc.ca
+BCSC_IDIM_Services -> KeyCloak_AuthServer : Redirect back after successful BCSC login
+HealthGateway_WebClient <- KeyCloak_AuthServer : Authentication Successful, Grant JWT
+HealthGateway_WebClient -> HealthGateway_Laboratory_Controller : Fetch COVID Results
+HealthGateway_Laboratory_Controller -> PHSA_CDC_LabReports_Service : /api/v1/LabReports Fetch All COVID Results (JWT, HDID)
+PHSA_CDC_LabReports_Service -> KeyCloak_AuthServer : Verify Access Token by fetching public key (JWT)
+PHSA_CDC_LabReports_Service <-> PHSA_CDC_LabReports_Service : Verify Scope in JWT is correct
+PHSA_CDC_LabReports_Service <-> PHSA_CDC_LabReports_Service :  Resolve HDID to PHN using internal HCIM access
+HealthGateway_WebClient <- PHSA_CDC_LabReports_Service :  Return LabReports for this user
+Citizen -> HealthGateway_WebClient : Select to View LabReport Document (a PDF)
+LabResults_Controller -> PHSA_CDC_LabReports_Service:  /api/v1/{id}/LabReportDocument Fetch All COVID Report Doc (JWT, HDID)
+PHSA_CDC_LabReports_Service -> KeyCloak_AuthServer : Verify Access Token by fetching public key (JWT)
+PHSA_CDC_LabReports_Service <-> PHSA_CDC_LabReports_Service : Verify Scope in JWT is correct
+PHSA_CDC_LabReports_Service <-> PHSA_CDC_LabReports_Service : Resolve HDID to PHN using internal HCIM access
+HealthGateway_WebClient <- PHSA_CDC_LabReports_Service : 17) Return Lab report document (PDF) for this user
+Citizen -> HealthGateway_WebClient : 18) View and/or Download PDF Document
 @enduml
