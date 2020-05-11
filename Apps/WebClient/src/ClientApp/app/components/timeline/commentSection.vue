@@ -1,27 +1,54 @@
 <style scoped lang="scss">
 @import "@/assets/scss/_variables.scss";
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
+}
 </style>
 <template>
   <div>
     <b-row class="pt-2">
       <b-col>
-        <div class="d-flex flex-row-reverse">
-          <b-btn variant="link" class="px-0 py-2" @click="toggleComments()">
-            <span v-if="hasComments">{{
-              comments.length > 1 ? comments.length + " comments" : "1 comment"
-            }}</span>
+        <div v-if="hasComments" class="d-flex flex-row-reverse">
+          <b-btn
+            v-b-toggle="'entryComments-' + parentEntry.id"
+            variant="link"
+            class="px-0 py-2"
+            @click="toggleComments()"
+          >
+            <span class="when-opened">
+              <font-awesome-icon
+                icon="chevron-up"
+                aria-hidden="true"
+              ></font-awesome-icon
+            ></span>
+            <span class="when-closed">
+              <font-awesome-icon
+                icon="chevron-down"
+                aria-hidden="true"
+              ></font-awesome-icon
+            ></span>
+            <span>
+              {{
+                comments.length > 1
+                  ? comments.length + " comments"
+                  : "1 comment"
+              }}</span
+            >
           </b-btn>
         </div>
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-        <Comment :comment="newComment" @needs-update="needsUpdate"></Comment>
+        <Comment :comment="newComment" @on-comment-added="onAdd"></Comment>
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-        <b-collapse :visible="showComments">
+        <b-collapse
+          :id="'entryComments-' + parentEntry.id"
+        >
           <div v-if="!isLoadingComments">
             <div v-for="comment in comments" :key="comment.id">
               <Comment :comment="comment" @needs-update="needsUpdate"></Comment>
@@ -50,8 +77,8 @@ import container from "@/plugins/inversify.config";
 
 @Component({
   components: {
-    Comment: CommentComponent
-  }
+    Comment: CommentComponent,
+  },
 })
 export default class CommentSectionComponent extends Vue {
   @Prop() parentEntry!: MedicationTimelineEntry;
@@ -67,7 +94,7 @@ export default class CommentSectionComponent extends Vue {
     parentEntryId: this.parentEntry.id,
     userProfileId: "",
     createdDateTime: new Date(),
-    version: 0
+    version: 0,
   };
 
   private mounted() {
@@ -102,13 +129,13 @@ export default class CommentSectionComponent extends Vue {
     const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
       .getCommentsForEntry(parentEntryId)
-      .then(result => {
+      .then((result) => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;
@@ -119,6 +146,17 @@ export default class CommentSectionComponent extends Vue {
   }
 
   private needsUpdate(comment: UserComment) {
+    this.getComments();
+  }
+
+  private onAdd(comment: UserComment) {
+    if (!this.showComments) {
+      this.showComments = true;
+      this.$root.$emit(
+        "bv::toggle::collapse",
+        "entryComments-" + this.parentEntry.id
+      );
+    }
     this.getComments();
   }
 }

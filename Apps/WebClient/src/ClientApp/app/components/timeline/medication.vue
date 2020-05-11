@@ -83,13 +83,13 @@ $radius: 15px;
               >
                 <span class="when-opened">
                   <font-awesome-icon
-                    icon="chevron-down"
+                    icon="chevron-up"
                     aria-hidden="true"
                   ></font-awesome-icon
                 ></span>
                 <span class="when-closed">
                   <font-awesome-icon
-                    icon="chevron-up"
+                    icon="chevron-down"
                     aria-hidden="true"
                   ></font-awesome-icon
                 ></span>
