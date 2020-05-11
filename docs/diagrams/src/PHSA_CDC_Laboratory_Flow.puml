@@ -18,6 +18,6 @@ HealthGateway_Laboratory_Controller -> PHSA_CDC_Laboratory_Service:  /api/v1/{id
 PHSA_CDC_Laboratory_Service -> KeyCloak_AuthServer : Verify Access Token by fetching public key (JWT)
 PHSA_CDC_Laboratory_Service <-> PHSA_CDC_Laboratory_Service : Verify Scope in JWT is correct
 PHSA_CDC_Laboratory_Service <-> PHSA_CDC_Laboratory_Service : Resolve HDID to PHN using internal HCIM access
-HealthGateway_WebClient <- PHSA_CDC_Laboratory_Service : 17) Return Lab report document (PDF) for this user
-Citizen -> HealthGateway_WebClient : 18) View and/or Download PDF Document
+HealthGateway_WebClient <- PHSA_CDC_Laboratory_Service : Return Lab report document (PDF) for this user
+Citizen -> HealthGateway_WebClient : View and/or Download PDF Document
 @enduml
