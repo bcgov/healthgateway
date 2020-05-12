@@ -16,6 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Authorization\**" />
+    <EmbeddedResource Remove="Authorization\**" />
+    <None Remove="Authorization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
@@ -60,7 +66,6 @@
     <Folder Include="Auditing\" />
     <Folder Include="Constants\" />
     <Folder Include="Delegates\" />
-    <Folder Include="Authorization\Admin\" />
     <Folder Include="FileDownload\" />
     <Folder Include="Filters\" />
     <Folder Include="Jobs\" />

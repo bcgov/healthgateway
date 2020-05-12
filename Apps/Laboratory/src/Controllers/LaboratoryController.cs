@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -77,7 +78,6 @@ namespace HealthGateway.Laboratory.Controllers
         /// <summary>
         /// Gets a json list of laboratory records.
         /// </summary>
-        /// <param name="hdid">The hdid patient id.</param>
         /// <returns>A list of laboratory records wrapped in a request result.</returns>
         /// <response code="200">Returns the List of laboratory records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -85,21 +85,54 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("{hdid}")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetLaboratoryData(string hdid)
+        public async Task<IActionResult> GetLaboratoryReports()
         {
-            this.logger.LogDebug($"Getting laboratory from controller... {hdid}");
+            this.logger.LogDebug($"Getting list of laboratory reports... ");
 
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string hdid = user.FindFirst("hdid").Value;
+            string accessToken = user.FindFirstValue("access_token");
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
             }
 
-            RequestResult<IEnumerable<LaboratoryResult>> result = this.service.GetLaboratory(hdid);
-            this.logger.LogDebug($"Finished getting laboratory from controller... {hdid}");
+            RequestResult<IEnumerable<LaboratoryReport>> result = await this.service.GetLaboratoryReports(accessToken).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting lab reports from controller... {hdid}");
+
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Gets a a specific Laboratory report in PDF format.
+        /// </summary>
+        /// <param name="reportId">The ID of the report belonging to the authenticated user to fetch.</param>
+        /// <returns>A Laboratory PDF Report wrapped in a request result.</returns>
+        /// <response code="200">Returns the specified PDF lab report.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Route("{reportId}")]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> GetLaboratoryPDFReport(Guid reportId)
+        {
+            this.logger.LogDebug($"Getting PDF version of Laboratory Report... {1}");
+
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string hdid = user.FindFirst("hdid").Value;
+            string accessToken = user.FindFirstValue("access_token");
+            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            RequestResult<LaboratoryPDFReport> result = await this.service.GetLabReportPDF(reportId, accessToken).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
 
             return new JsonResult(result);
         }

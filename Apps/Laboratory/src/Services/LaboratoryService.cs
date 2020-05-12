@@ -15,9 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -34,26 +37,27 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="laboratoryDelegate">The laboratory delegates.</param>
+        /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
         public LaboratoryService(
             ILogger<LaboratoryService> logger,
             IHttpContextAccessor httpAccessor,
-            ILaboratoryDelegate laboratoryDelegate)
+            ILaboratoryDelegateFactory laboratoryDelegateFactory)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
-            this.laboratoryDelegate = laboratoryDelegate;
+            this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<LaboratoryResult>> GetLaboratory(string hdid)
+        public async Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0)
         {
-            IEnumerable<LaboratoryResult> result = this.laboratoryDelegate.GetLaboratoryData();
-            return new RequestResult<IEnumerable<LaboratoryResult>>()
-            {
-                ResourcePayload = result,
-                ResultStatus = Common.Constants.ResultType.Success,
-            };
+            return await this.laboratoryDelegate.GetLaboratoryReports(bearerToken, pageIndex).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<LaboratoryPDFReport>> GetLabReportPDF(Guid id, string bearerToken)
+        {
+            return await this.laboratoryDelegate.GetLabReportPDF(id, bearerToken).ConfigureAwait(true);
         }
     }
 }
