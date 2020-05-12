@@ -116,7 +116,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("{reportId}")]
+        [Route("{reportId}/Document")]
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> GetLaboratoryPDFReport(Guid reportId)
         {

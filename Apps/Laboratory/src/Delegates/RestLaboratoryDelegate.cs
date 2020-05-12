@@ -188,7 +188,11 @@ namespace HealthGateway.Laboratory.Delegates
 
                         break;
                     case HttpStatusCode.NoContent: // No Lab exits for this user
+                        retVal.ResultStatus = Common.Constants.ResultType.Success;
                         retVal.ResultMessage = $"No Lab Report exists for id: {id}";
+                        retVal.PageIndex = 0;
+                        retVal.TotalResultCount = 0;
+                        retVal.ResourcePayload = new LaboratoryPDFReport();
                         break;
                     case HttpStatusCode.Forbidden:
                         retVal.ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}";
