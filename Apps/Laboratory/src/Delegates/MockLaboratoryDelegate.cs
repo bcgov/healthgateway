@@ -76,7 +76,7 @@ namespace HealthGateway.Laboratory.Delegates
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new LaboratoryPDFReport()
                 {
-                    ReportPDF = expectedPDF,
+                    ReportPDF = $"data:application/pdf;base64,{expectedPDF}",
                 },
             };
             await Task.Delay(0).ConfigureAwait(true);
