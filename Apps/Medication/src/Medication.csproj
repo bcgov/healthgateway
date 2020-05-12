@@ -11,6 +11,12 @@
     <DocumentationFile>bin\Debug\netcoreapp3.1\Medication.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Database\**" />
+    <Content Remove="Database\**" />
+    <EmbeddedResource Remove="Database\**" />
+    <None Remove="Database\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="HL7-dotnetcore" Version="2.16.0" />
     <PackageReference Include="Macross.Json.Extensions" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
@@ -52,7 +58,6 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Database\" />
     <Folder Include="Constants\" />
     <Folder Include="Models\ODR\" />
   </ItemGroup>

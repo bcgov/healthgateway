@@ -17,6 +17,8 @@ namespace HealthGateway.Laboratory
 {
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Laboratory.Factories;
+    using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -65,8 +67,10 @@ namespace HealthGateway.Laboratory
                 });
             });
 
-            // Add delegates
+            // Add services
+            services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
+            services.AddTransient<ILaboratoryService, LaboratoryService>();
         }
 
         /// <summary>

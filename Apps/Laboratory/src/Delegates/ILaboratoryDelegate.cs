@@ -15,7 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Delegates
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
 
     /// <summary>
@@ -24,9 +27,22 @@ namespace HealthGateway.Laboratory.Delegates
     public interface ILaboratoryDelegate
     {
         /// <summary>
-        /// Gets the laboratory result.
+        /// Returns a List of Covid Lab reports for the authenticated user.
+        /// A Lab Report represents the overall Lab order.
+        /// It has a collection of one or more Lab Results depending on the tests ordered.
+        /// A Lab Report also has a Lab Report Document in PDF form.
         /// </summary>
-        /// <returns>The laboratory list result.</returns>
-        IEnumerable<LaboratoryResult> GetLaboratoryData();
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <param name="pageIndex">The page index to return.</param>
+        /// <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0);
+
+        /// <summary>
+        /// Gets the PDF Lab report for the identified report belonging to the authenticated user.
+        /// </summary>
+        /// <param name="id">The ID of the lab report to get.</param>
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <returns>A base64 encoded PDF.</returns>
+        Task<RequestResult<LaboratoryPDFReport>> GetLabReportPDF(Guid id, string bearerToken);
     }
 }
