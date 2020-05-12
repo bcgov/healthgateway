@@ -28,6 +28,6 @@ namespace HealthGateway.Laboratory.Factories
         /// Returns a new instance of IImunizationFhirDelegate via configuration.
         /// </summary>
         /// <returns>The IImunizationFhirDelegate.</returns>
-        public ILaboratoryDelegate CreateInstance();
+        ILaboratoryDelegate CreateInstance();
     }
 }
