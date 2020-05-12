@@ -73,6 +73,48 @@
       margin-left: auto;
       margin-right: auto;
       margin-top: -40px;
+      .icon-wrapper {
+        /* Small Devices*/
+        @media (max-width: 816px) {
+          display: none;
+        }
+      }
+      .icon-row {
+        display: inline-block;
+        line-height: 40px;
+        height: 40px;
+        vertical-align: middle;
+        .icon {
+          text-align: center;
+          border-radius: 50%;
+          width: 40px;
+        }
+      }
+
+      .status-active {
+        color: $primary;
+        .icon {
+          background-color: $primary;
+          color: white;
+        }
+      }
+
+      .status-inactive {
+        color: darkgray;
+        .icon {
+          background-color: darkgray;
+          color: white;
+        }
+      }
+
+      .covid-container {
+        color: white;
+        background-color: $danger;
+        border-radius: 15px;
+        height: 25px;
+        line-height: 28px;
+        margin-top: 5px;
+      }
     }
   }
 
@@ -265,18 +307,53 @@
           alt="Devices"
       /></b-col>
       <b-col class="col-10 col-md-6">
-        <div class="devices-text my-5 my-md-5 ml-md-5">
-          <h3>Browse your health records</h3>
-          <div>
-            Prescription medications
-          </div>
-          <div>
-            Visits to clinics <span class="font-italic">(coming soon)</span>
-          </div>
-          <div>
-            Lab test results <span class="font-italic">(coming soon)</span>
-          </div>
-          <div>Vaccinations <span class="font-italic">(coming soon)</span></div>
+        <div class="devices-text my-5 my-md-5 ml-md-4">
+          <b-row>
+            <h2>Browse your health records</h2>
+          </b-row>
+          <b-row>
+            <b-col cols="1" class="icon-wrapper mr-4 px-0">
+              <div
+                v-for="icon in icons"
+                :key="icon.label"
+                class="mb-2 icon-row"
+                :class="icon.active ? 'status-active' : 'status-inactive'"
+                align-content="center"
+              >
+                <div class="icon">
+                  <font-awesome-icon
+                    :icon="icon.definition"
+                    size="lg"
+                  ></font-awesome-icon>
+                </div>
+              </div>
+            </b-col>
+            <b-col class="px-0">
+              <div
+                v-for="icon in icons"
+                :key="icon.label"
+                class="mb-2 d-flex icon-row"
+                :class="icon.active ? 'status-active' : 'status-inactive'"
+                align-v="center"
+              >
+                <b-col cols="0" class="px-0">
+                  <span>{{ icon.label }}</span>
+                </b-col>
+                <b-col
+                  v-if="icon.label === 'Lab Tests'"
+                  cols="0"
+                  class="covid-container ml-2 px-2"
+                >
+                  <font-awesome-icon
+                    class="px-1"
+                    icon="exclamation-triangle"
+                    size="1x"
+                  ></font-awesome-icon>
+                  <span class="pr-1">COVID-19 Test Result</span>
+                </b-col>
+              </div>
+            </b-col>
+          </b-row>
         </div>
       </b-col>
     </b-row>
@@ -374,12 +451,15 @@ import {
   faUserMd,
   faFlask,
   faSyringe,
-  IconDefinition
+  IconDefinition,
+  faClipboard,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Icon {
   label: string;
   definition: IconDefinition;
+  active: boolean;
 }
 
 interface Tile {
@@ -397,19 +477,23 @@ export default class LandingComponent extends Vue {
   private icons: Icon[] = [
     {
       definition: faPills,
-      label: "Medications"
-    },
-    {
-      definition: faUserMd,
-      label: "Consultations"
-    },
-    {
-      definition: faFlask,
-      label: "Lab Tests"
+      label: "Medications",
+      active: true
     },
     {
       definition: faSyringe,
-      label: "Vaccinations"
+      label: "Vaccinations",
+      active: true
+    },
+    {
+      definition: faFlask,
+      label: "Lab Tests",
+      active: false
+    },
+    {
+      definition: faUserMd,
+      label: "Consultations",
+      active: false
     }
   ];
 

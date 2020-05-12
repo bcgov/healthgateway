@@ -15,7 +15,8 @@ import {
   IBetaRequestService,
   IUserNoteService,
   ICommunicationService,
-  IUserCommentService
+  IUserCommentService,
+  ILaboratoryService
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
@@ -23,6 +24,7 @@ import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestMedicationService } from "@/services/restMedicationService";
+import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserEmailService } from "@/services/restUserEmailService";
@@ -51,6 +53,10 @@ container
 container
   .bind<IMedicationService>(SERVICE_IDENTIFIER.MedicationService)
   .to(RestMedicationService)
+  .inSingletonScope();
+container
+  .bind<ILaboratoryService>(SERVICE_IDENTIFIER.LaboratoryService)
+  .to(RestLaboratoryService)
   .inSingletonScope();
 container
   .bind<IUserProfileService>(SERVICE_IDENTIFIER.UserProfileService)

@@ -23,6 +23,10 @@
   flex: 1 1 auto;
 }
 
+.no-text {
+  height: 38px !important;
+}
+
 .comment-button {
   flex: 0 0 auto;
   flex-direction: row;
@@ -94,8 +98,10 @@
         <div class="comment-input pl-2">
           <b-form @submit.prevent>
             <b-form-textarea
+              :class="commentInput.length === 0 ? 'no-text' : ''"
               v-model="commentInput"
-              rows="1"
+              rows="2"
+              max-rows="10"
               no-resize
               :placeholder="placeholder"
               maxlength="1000"
@@ -111,8 +117,12 @@
           >
             Save
           </b-button>
-          <div v-if="!isNewComment" class="d-flex pl-2">
-            <b-button variant="secondary" @click="onCancel">
+          <div class="d-flex pl-2">
+            <b-button
+              :disabled="commentInput === '' && isNewComment"
+              variant="secondary"
+              @click="onCancel"
+            >
               Cancel
             </b-button>
           </div>
@@ -139,7 +149,7 @@ import { Prop, Component, Emit, Watch } from "vue-property-decorator";
 import {
   faEllipsisV,
   IconDefinition,
-  faLock
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -198,7 +208,11 @@ export default class CommentComponent extends Vue {
   }
 
   private onCancel(): void {
-    this.isEditMode = false;
+    if (this.isNewComment) {
+      this.commentInput = "";
+    } else {
+      this.isEditMode = false;
+    }
   }
 
   private addComment(): void {
@@ -207,13 +221,13 @@ export default class CommentComponent extends Vue {
       .createComment({
         text: this.commentInput,
         parentEntryId: this.comment.parentEntryId,
-        userProfileId: this.user.hdid
+        userProfileId: this.user.hdid,
       })
       .then(() => {
         this.commentInput = "";
-        this.needsUpdate(this.comment);
+        this.onCommentAdded(this.comment);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(
           "Error adding comment on entry " + this.comment.parentEntryId
         );
@@ -239,12 +253,12 @@ export default class CommentComponent extends Vue {
         userProfileId: this.comment.userProfileId,
         parentEntryId: this.comment.parentEntryId,
         createdDateTime: this.comment.createdDateTime,
-        version: this.comment.version
+        version: this.comment.version,
       })
-      .then(result => {
+      .then((result) => {
         this.needsUpdate(this.comment);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.hasErrors = true;
       })
@@ -259,10 +273,10 @@ export default class CommentComponent extends Vue {
       this.isLoading = true;
       this.commentService
         .deleteComment(this.comment)
-        .then(result => {
+        .then((result) => {
           this.needsUpdate(this.comment);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         })
         .finally(() => {
@@ -273,6 +287,11 @@ export default class CommentComponent extends Vue {
 
   @Emit()
   needsUpdate(comment: UserComment) {
+    return comment;
+  }
+
+  @Emit()
+  onCommentAdded(comment: UserComment) {
     return comment;
   }
 }

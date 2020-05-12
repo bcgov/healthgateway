@@ -134,7 +134,8 @@ import {
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faLock
+  faLock,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -153,7 +154,8 @@ library.add(
   faFileAlt,
   faChartBar,
   faCommentAlt,
-  faLock
+  faLock,
+  faExclamationTriangle
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
@@ -189,7 +191,7 @@ export default class AppComponent extends Vue {
   @Watch("isAppIdle")
   public onIsAppIdleChanged(idle: boolean) {
     if (idle && this.oidcIsAuthenticated) {
-      this.idleModal.show();
+      this.idleModal?.show();
     }
   }
 }
