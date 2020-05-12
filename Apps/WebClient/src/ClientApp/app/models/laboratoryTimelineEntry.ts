@@ -56,9 +56,9 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
   private sortResults() {
     this.resultList.sort((a, b) =>
-      a.receivedDateTime > b.receivedDateTime
+      a.collectionDateTime > b.collectionDateTime
         ? -1
-        : a.receivedDateTime < b.receivedDateTime
+        : a.collectionDateTime < b.collectionDateTime
         ? 1
         : 0
     );
