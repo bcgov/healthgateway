@@ -36,7 +36,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
       } else {
         console.log("Retrieving Laboratory Reports");
         laboratoryService
-          .getLaboratoryReports(hdid)
+          .getReports(hdid)
           .then(laboratoryReports => {
             commit("setLaboratoryReports", laboratoryReports);
             resolve(laboratoryReports);

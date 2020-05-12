@@ -61,7 +61,7 @@ $radius: 15px;
         <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>
       </b-col>
       <b-col class="entryTitle">
-        {{ entry.testType }}
+        {{ entry.summaryTestType }}
       </b-col>
     </b-row>
     <b-row class="my-2">
@@ -69,8 +69,9 @@ $radius: 15px;
       <b-col>
         <b-row>
           <b-col>
-            {{ entry.loincName }}
+            {{ entry.summaryDescription }}
           </b-col>
+          <b-col> <strong>Status:</strong> {{ entry.summaryStatus }} </b-col>
         </b-row>
         <b-row>
           <b-col>
@@ -100,55 +101,52 @@ $radius: 15px;
             <b-collapse :id="'entryDetails-' + index + '-' + datekey">
               <div>
                 <div class="detailSection">
-                  <div><strong>Id:</strong> {{ entry.id }}</div>
-                  <div><strong>Phn:</strong> {{ entry.phn }}</div>
                   <div>
-                    <strong>OrderingProviderIds:</strong>
-                    {{ entry.orderingProviderIds }}
-                  </div>
-                  <div>
-                    <strong>OrderingProviders:</strong>
+                    <strong>Ordering Providers:</strong>
                     {{ entry.orderingProviders }}
                   </div>
                   <div>
-                    <strong>ReportingLab:</strong> {{ entry.reportingLab }}
+                    <strong>Reporting Lab:</strong> {{ entry.reportingLab }}
                   </div>
                   <div><strong>Location:</strong> {{ entry.location }}</div>
-                  <div><strong>OrmOrOru:</strong> {{ entry.ormOrOru }}</div>
-                  <div>
-                    <strong>MessageDateTime:</strong>
-                    {{ formatDate(entry.messageDateTime) }}
-                  </div>
-                  <div><strong>MessageId:</strong> {{ entry.messageId }}</div>
-                  <div>
-                    <strong>AdditionalData:</strong> {{ entry.additionalData }}
-                  </div>
                 </div>
-                <strong>LabResults:</strong>
-                <div class="detailSection">
-                  <div><strong>ResultId:</strong>{{ entry.labResultId }}</div>
-                  <div><strong>TestType:</strong>{{ entry.testType }}</div>
-                  <div><strong>OutOfRange:</strong>{{ entry.outOfRange }}</div>
+
+                <strong>Results:</strong>
+                <div
+                  v-for="result in entry.resultList"
+                  :key="result.id"
+                  class="detailSection border"
+                >
+                  <div><strong>Test Type:</strong> {{ result.testType }}</div>
                   <div>
-                    <strong>CollectedDateTime:</strong
-                    >{{ formatDate(entry.collectedDateTime) }}
-                  </div>
-                  <div><strong>TestStatus:</strong>{{ entry.testStatus }}</div>
-                  <div>
-                    <strong>ReceivedDateTime:</strong
-                    >{{ formatDate(entry.receivedDateTime) }}
+                    <strong>Out Of Range:</strong> {{ result.outOfRange }}
                   </div>
                   <div>
-                    <strong>ResultDateTime:</strong
-                    >{{ formatDate(entry.resultDateTime) }}
+                    <strong>Test Status:</strong> {{ result.testStatus }}
                   </div>
-                  <div><strong>Loinc:</strong>{{ entry.loinc }}</div>
-                  <div><strong>LoincName:</strong>{{ entry.loincName }}</div>
-                </div>
-                <div class="detailSection">
                   <div>
-                    <strong>ResultDescription:</strong>
-                    <p v-html="entry.resultDescription"></p>
+                    <strong>Result Description:</strong>
+                    <p v-html="result.resultDescription"></p>
+                  </div>
+                  <div>
+                    <strong>Collected Date Time:</strong>
+                    {{ formatDate(result.collectedDateTime) }}
+                  </div>
+
+                  <div>
+                    <strong>Result Date Time:</strong>
+                    {{ formatDate(result.resultDateTime) }}
+                  </div>
+                  <div>
+                    <strong>Report Document:</strong>
+                    <b-btn variant="link" @click="getDocument(result)">
+                      <font-awesome-icon
+                        icon="file-download"
+                        aria-hidden="true"
+                        size="1x"
+                      />
+                    </b-btn>
+                    <b-spinner v-if="isLoadingDocument"></b-spinner>
                   </div>
                 </div>
               </div>
@@ -166,9 +164,19 @@ import Vue from "vue";
 import { Prop, Component } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import LaboratoryTimelineEntry, {
+  LaboratoryResultViewModel
+} from "@/models/laboratoryTimelineEntry";
 import { LaboratoryResult, LaboratoryReport } from "@/models/laboratory";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import { ILaboratoryService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import User from "@/models/user";
+import moment from "moment";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+library.add(faFileDownload);
 
 @Component({
   components: {
@@ -179,9 +187,19 @@ export default class LaboratoryTimelineComponent extends Vue {
   @Prop() entry!: LaboratoryTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
+  @Getter("user", { namespace: "user" }) user!: User;
+
+  private laboratoryService!: ILaboratoryService;
 
   private hasErrors: boolean = false;
   private detailsVisible: boolean = false;
+  private isLoadingDocument: boolean = false;
+
+  mounted() {
+    this.laboratoryService = container.get<ILaboratoryService>(
+      SERVICE_IDENTIFIER.LaboratoryService
+    );
+  }
 
   private get entryIcon(): IconDefinition {
     return faFlask;
@@ -193,7 +211,29 @@ export default class LaboratoryTimelineComponent extends Vue {
   }
 
   private formatDate(date: Date): string {
-    return new Date(Date.parse(date + "Z")).toLocaleString();
+    return date.toLocaleString();
+  }
+
+  private getDocument(report: LaboratoryResultViewModel) {
+    this.isLoadingDocument = true;
+    this.laboratoryService
+      .getReportDocument(this.user.hdid, report.id)
+      .then(result => {
+        const link = document.createElement("a");
+        let dateString = moment(report.resultDateTime)
+          .local()
+          .format("YYYY_MM_DD-HH_mm");
+        link.href = "data:application/pdf;base64," + result.resourcePayload;
+        link.download = `COVID_Result_${dateString}.pdf`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      })
+      .catch(() => {
+        this.hasErrors = true;
+      })
+      .finally(() => {
+        this.isLoadingDocument = false;
+      });
   }
 }
 </script>
