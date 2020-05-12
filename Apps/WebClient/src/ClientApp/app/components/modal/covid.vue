@@ -8,7 +8,7 @@
   color: $primary_text;
 
   .close {
-      color: $primary_text;
+    color: $primary_text;
   }
 }
 .modal-footer {
@@ -29,7 +29,10 @@
         <form @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col>
-              <span>Check the status of your COVID-19 test and view your result if it is available.</span>
+              <span
+                >Check the status of your COVID-19 test and view your result if
+                it is available.</span
+              >
             </b-col>
           </b-row>
         </form>
@@ -116,6 +119,5 @@ export default class CovidModalComponent extends Vue {
       this.hideModal();
     });
   }
-
 }
 </script>

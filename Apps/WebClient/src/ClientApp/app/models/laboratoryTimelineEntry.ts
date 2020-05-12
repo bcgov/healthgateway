@@ -17,7 +17,11 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
   public resultList: LaboratoryResultViewModel[];
 
   public constructor(model: LaboratoryReport) {
-    super(model.id, EntryType.Laboratory, model.messageDateTime);
+    super(
+      model.id,
+      EntryType.Laboratory,
+      model.labResults[0].collectionDateTime
+    );
 
     this.id = model.id;
     this.orderingProviderIds = model.orderingProviderIds;
@@ -25,23 +29,19 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     this.reportingLab = model.reportingLab;
     this.location = model.location;
 
-    console.log(model.labResults.length);
     this.resultList = new Array();
     model.labResults.forEach(result => {
-      console.log(result);
       this.resultList.push(new LaboratoryResultViewModel(result));
     });
 
     this.sortResults();
 
     let firstResult = this.resultList[0];
-    this.displayDate = firstResult.receivedDateTime;
+    this.displayDate = firstResult.collectionDateTime;
 
     this.summaryTestType = firstResult.testType || "";
     this.summaryDescription = firstResult.loincName || "";
     this.summaryStatus = firstResult.testStatus || "";
-
-    console.log(this.resultList);
   }
 
   public filterApplies(filterText: string, filterTypes: string[]): boolean {
@@ -69,7 +69,7 @@ export class LaboratoryResultViewModel {
   public id: string;
   public testType: string | null;
   public outOfRange: boolean;
-  public collectedDateTime: Date;
+  public collectionDateTime: Date;
   public testStatus: string | null;
   public resultDescription: string | null;
   public receivedDateTime: Date;
@@ -81,7 +81,7 @@ export class LaboratoryResultViewModel {
     this.id = model.id;
     this.testType = model.testType;
     this.outOfRange = model.outOfRange;
-    this.collectedDateTime = model.collectedDateTime;
+    this.collectionDateTime = model.collectionDateTime;
     this.testStatus = model.testStatus;
     this.resultDescription = model.resultDescription;
     this.receivedDateTime = model.receivedDateTime;
