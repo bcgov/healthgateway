@@ -468,7 +468,7 @@ import {
   faSyringe,
   IconDefinition,
   faClipboard,
-  faExclamationTriangle
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Icon {
@@ -485,31 +485,31 @@ interface Tile {
 
 @Component({
   components: {
-    CommunicationComponent
-  }
+    CommunicationComponent,
+  },
 })
 export default class LandingComponent extends Vue {
   private icons: Icon[] = [
     {
       definition: faPills,
       label: "Medications",
-      active: true
-    },
-    {
-      definition: faSyringe,
-      label: "Vaccinations",
-      active: true
+      active: true,
     },
     {
       definition: faFlask,
       label: "Lab Tests",
-      active: false
+      active: true,
+    },
+    {
+      definition: faSyringe,
+      label: "Immunizations",
+      active: false,
     },
     {
       definition: faUserMd,
       label: "Consultations",
-      active: false
-    }
+      active: false,
+    },
   ];
 
   private tiles: Tile[] = [
@@ -517,25 +517,25 @@ export default class LandingComponent extends Vue {
       title: "All in one place",
       description:
         "Conveniently access your data on a computer, tablet or smartphone",
-      imageSrc: Image03
+      imageSrc: Image03,
     },
     {
       title: "Take control of your health",
       description: "Look at historical information captured over time.",
-      imageSrc: Image04
+      imageSrc: Image04,
     },
     {
       title: "Manage family records",
       description:
         "Care for the needs of your children and those who depend on you.",
-      imageSrc: Image05
+      imageSrc: Image05,
     },
     {
       title: "Collaborate with others",
       description:
         "Become an active participant by sharing and discussing your data with health care providers.",
-      imageSrc: Image06
-    }
+      imageSrc: Image06,
+    },
   ];
 
   private logo: string = Image00;
