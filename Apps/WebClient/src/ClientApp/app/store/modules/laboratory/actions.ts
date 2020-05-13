@@ -3,7 +3,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { RootState, LaboratoryState } from "@/models/storeState";
 import { ILaboratoryService } from "@/services/interfaces";
-import { LaboratoryReport, LaboratoryOrder } from "@/models/laboratory";
+import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 

@@ -272,7 +272,11 @@ import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
-import { LaboratoryOrder, LaboratoryResult, LaboratoryReport } from "../models/laboratory";
+import {
+  LaboratoryOrder,
+  LaboratoryResult,
+  LaboratoryReport
+} from "../models/laboratory";
 
 const namespace: string = "user";
 
