@@ -75,7 +75,7 @@ namespace HealthGateway.Laboratory.Delegates
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting laboratory reports...");
+            this.logger.LogTrace($"Getting laboratory orders...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -136,25 +136,25 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
             #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultMessage = $"Exception getting LabReports: {e}";
-                this.logger.LogError($"Unexpected exception in Get Lab Reports {e}");
+                retVal.ResultMessage = $"Exception getting Lab Orders: {e}";
+                this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting Laboratory reports, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting Laboratory Orders, Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryBinaryReport>> GetLabReport(Guid id, string bearerToken)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
         {
-            RequestResult<LaboratoryBinaryReport> retVal = new RequestResult<LaboratoryBinaryReport>()
+            RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting laboratory report PDF...");
+            this.logger.LogTrace($"Getting laboratory report...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -174,7 +174,7 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        LaboratoryBinaryReport report = JsonSerializer.Deserialize<LaboratoryBinaryReport>(payload, options);
+                        LaboratoryReport report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
                         if (report != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -192,7 +192,7 @@ namespace HealthGateway.Laboratory.Delegates
                         retVal.ResultMessage = $"No Lab Report exists for id: {id}";
                         retVal.PageIndex = 0;
                         retVal.TotalResultCount = 0;
-                        retVal.ResourcePayload = new LaboratoryBinaryReport();
+                        retVal.ResourcePayload = new LaboratoryReport();
                         break;
                     case HttpStatusCode.Forbidden:
                         retVal.ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}";
@@ -207,12 +207,12 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultMessage = $"Exception getting Lab Report PDF: {e}";
-                this.logger.LogError($"Unexpected exception in Lab Report PDF {e}");
+                retVal.ResultMessage = $"Exception getting Lab Report: {e}";
+                this.logger.LogError($"Unexpected exception in Lab Report {e}");
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting Laboratory Report PDF, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting Laboratory Report, Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
     }

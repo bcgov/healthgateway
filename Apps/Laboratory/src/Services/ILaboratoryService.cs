@@ -41,6 +41,6 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="id">The ID of the lab report to get.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryBinaryReport>> GetLabReport(Guid id, string bearerToken);
+        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken);
     }
 }

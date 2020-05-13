@@ -18,9 +18,9 @@ namespace HealthGateway.Laboratory.Models
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// An instance of a Laboratory PDF Report.
+    /// An instance of a Laboratory Report.
     /// </summary>
-    public class LaboratoryBinaryReport
+    public class LaboratoryReport
     {
         /// <summary>
         /// Gets or sets the media type for the report data.
