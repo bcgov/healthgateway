@@ -145,6 +145,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Medication;
                 case "AdminWebClient":
                     return ApplicationType.AdminWebClient;
+                case "Laboratory":
+                    return ApplicationType.Laboratory;
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }

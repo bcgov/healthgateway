@@ -159,7 +159,7 @@ function handleUserIsAuthorized(to: Route, from: Route, next: any) {
 
   // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
-    next({ path: "/timeline" });
+    next({ path: "/timeline", replace: true });
   } else if (
     userIsRegistered &&
     !userIsActive &&
