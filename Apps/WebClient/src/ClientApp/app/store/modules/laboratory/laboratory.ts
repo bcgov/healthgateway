@@ -6,7 +6,7 @@ import { RootState, StateType, LaboratoryState } from "@/models/storeState";
 
 export const state: LaboratoryState = {
   statusMessage: "",
-  laboratoryReports: new Array(),
+  laboratoryOrders: new Array(),
   error: false,
   stateType: StateType.NONE
 };

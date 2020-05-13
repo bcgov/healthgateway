@@ -64,7 +64,7 @@ export interface IMedicationService {
 
 export interface ILaboratoryService {
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-  getReports(hdid: string): Promise<RequestResult<LaboratoryOrder[]>>;
+  getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>>;
   getReportDocument(reportId: string): Promise<RequestResult<LaboratoryReport>>;
 }
 

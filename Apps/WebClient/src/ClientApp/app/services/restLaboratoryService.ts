@@ -20,7 +20,7 @@ export class RestLaboratoryService implements ILaboratoryService {
     this.isEnabled = config.webClient.modules["Laboratory"];
   }
 
-  public getReports(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
+  public getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
         resolve({
