@@ -15,9 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Models
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -26,69 +23,21 @@ namespace HealthGateway.Laboratory.Models
     public class LaboratoryReport
     {
         /// <summary>
-        /// Gets or sets the id for the lab result.
+        /// Gets or sets the media type for the report data.
         /// </summary>
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        [JsonPropertyName("mediaType")]
+        public string MediaType { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the PHN the report is for.
+        /// Gets or sets the encoding used for the report binary data.
         /// </summary>
-        [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+        [JsonPropertyName("encoding")]
+        public string Encoding { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Provider IDs for the Order.
+        /// Gets or sets the report data.
         /// </summary>
-        [JsonPropertyName("orderingProviderIds")]
-        public string OrderProviderIDs { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the providers names.
-        /// </summary>
-        [JsonPropertyName("orderingProviders")]
-        public string OrderingProviders { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the name of the reporting lab.
-        /// </summary>
-        [JsonPropertyName("reportingLab")]
-        public string ReportingLab { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the location.
-        /// </summary>
-        [JsonPropertyName("location")]
-        public string Location { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets if this is an Order or Result.
-        /// </summary>
-        [JsonPropertyName("ormOrOru")]
-        public string LabType { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Message datetime.
-        /// </summary>
-        [JsonPropertyName("messageDateTime")]
-        public DateTime MessageDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the message id.
-        /// </summary>
-        [JsonPropertyName("messageId")]
-        public string MessageID { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets additional related data.
-        /// </summary>
-        [JsonPropertyName("additionalData")]
-        public string AdditionalData { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the list of lab results.
-        /// </summary>
-        [JsonPropertyName("labResults")]
-        public IEnumerable<LaboratoryResult>? LabResults { get; set; }
+        [JsonPropertyName("data")]
+        public string Report { get; set; } = string.Empty;
     }
 }

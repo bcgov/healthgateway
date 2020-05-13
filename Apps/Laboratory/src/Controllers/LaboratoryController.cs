@@ -24,6 +24,7 @@ namespace HealthGateway.Laboratory.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -76,7 +77,7 @@ namespace HealthGateway.Laboratory.Controllers
         }
 
         /// <summary>
-        /// Gets a json list of laboratory records.
+        /// Gets a json list of laboratory orders.
         /// </summary>
         /// <returns>A list of laboratory records wrapped in a request result.</returns>
         /// <response code="200">Returns the List of laboratory records.</response>
@@ -86,27 +87,27 @@ namespace HealthGateway.Laboratory.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetLaboratoryReports()
+        public async Task<IActionResult> GetLaboratoryOrders()
         {
-            this.logger.LogDebug($"Getting list of laboratory reports... ");
+            this.logger.LogDebug($"Getting list of laboratory orders... ");
 
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string hdid = user.FindFirst("hdid").Value;
-            string accessToken = user.FindFirstValue("access_token");
+            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
             }
 
-            RequestResult<IEnumerable<LaboratoryReport>> result = await this.service.GetLaboratoryReports(accessToken).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting lab reports from controller... {hdid}");
+            RequestResult<IEnumerable<LaboratoryOrder>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
 
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Gets a a specific Laboratory report in PDF format.
+        /// Gets a a specific Laboratory report.
         /// </summary>
         /// <param name="reportId">The ID of the report belonging to the authenticated user to fetch.</param>
         /// <returns>A Laboratory PDF Report wrapped in a request result.</returns>
@@ -118,20 +119,20 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{reportId}/Document")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetLaboratoryPDFReport(Guid reportId)
+        public async Task<IActionResult> GetLaboratoryReport(Guid reportId)
         {
             this.logger.LogDebug($"Getting PDF version of Laboratory Report... {1}");
 
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string hdid = user.FindFirst("hdid").Value;
-            string accessToken = user.FindFirstValue("access_token");
+            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
             }
 
-            RequestResult<LaboratoryBinaryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
 
             return new JsonResult(result);

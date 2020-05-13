@@ -66,16 +66,16 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<LaboratoryReport>> retVal = new RequestResult<IEnumerable<LaboratoryReport>>()
+            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 PageIndex = pageIndex,
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting laboratory reports...");
+            this.logger.LogTrace($"Getting laboratory orders...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -99,7 +99,7 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        IEnumerable<LaboratoryReport> labReports = JsonSerializer.Deserialize<List<LaboratoryReport>>(payload, options);
+                        IEnumerable<LaboratoryOrder> labReports = JsonSerializer.Deserialize<List<LaboratoryOrder>>(payload, options);
                         if (labReports != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -117,7 +117,7 @@ namespace HealthGateway.Laboratory.Delegates
                         break;
                     case HttpStatusCode.NoContent: // No Lab exits for this user
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = new List<LaboratoryReport>();
+                        retVal.ResourcePayload = new List<LaboratoryOrder>();
                         retVal.TotalResultCount = 0;
                         #pragma warning disable CA1305 // Specify IFormatProvider
                         retVal.PageSize = int.Parse(this.labConfig.FetchSize);
@@ -136,25 +136,25 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
             #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultMessage = $"Exception getting LabReports: {e}";
-                this.logger.LogError($"Unexpected exception in Get Lab Reports {e}");
+                retVal.ResultMessage = $"Exception getting Lab Orders: {e}";
+                this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting Laboratory reports, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting Laboratory Orders, Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryBinaryReport>> GetLabReport(Guid id, string bearerToken)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
         {
-            RequestResult<LaboratoryBinaryReport> retVal = new RequestResult<LaboratoryBinaryReport>()
+            RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting laboratory report PDF...");
+            this.logger.LogTrace($"Getting laboratory report...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -174,7 +174,7 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        LaboratoryBinaryReport report = JsonSerializer.Deserialize<LaboratoryBinaryReport>(payload, options);
+                        LaboratoryReport report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
                         if (report != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -192,7 +192,7 @@ namespace HealthGateway.Laboratory.Delegates
                         retVal.ResultMessage = $"No Lab Report exists for id: {id}";
                         retVal.PageIndex = 0;
                         retVal.TotalResultCount = 0;
-                        retVal.ResourcePayload = new LaboratoryBinaryReport();
+                        retVal.ResourcePayload = new LaboratoryReport();
                         break;
                     case HttpStatusCode.Forbidden:
                         retVal.ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}";
@@ -207,12 +207,12 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultMessage = $"Exception getting Lab Report PDF: {e}";
-                this.logger.LogError($"Unexpected exception in Lab Report PDF {e}");
+                retVal.ResultMessage = $"Exception getting Lab Report: {e}";
+                this.logger.LogError($"Unexpected exception in Lab Report {e}");
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting Laboratory Report PDF, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting Laboratory Report, Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
     }

@@ -49,13 +49,13 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
-            return await this.laboratoryDelegate.GetLaboratoryReports(bearerToken, pageIndex).ConfigureAwait(true);
+            return await this.laboratoryDelegate.GetLaboratoryOrders(bearerToken, pageIndex).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryBinaryReport>> GetLabReport(Guid id, string bearerToken)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
         {
             return await this.laboratoryDelegate.GetLabReport(id, bearerToken).ConfigureAwait(true);
         }
