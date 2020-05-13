@@ -12,7 +12,7 @@ export interface LaboratoryResult {
   loincName: string | null;
 }
 
-export interface LaboratoryReport {
+export interface LaboratoryOrder {
   id: string;
   phn: string | null;
   orderingProviderIds: string | null;
@@ -26,6 +26,8 @@ export interface LaboratoryReport {
   labResults: LaboratoryResult[];
 }
 
-export interface LaboratoryPDFReport {
-  base64Pdf: string;
+export interface LaboratoryReport {
+  mediaType: string;
+  encoding: string;
+  data: string;
 }

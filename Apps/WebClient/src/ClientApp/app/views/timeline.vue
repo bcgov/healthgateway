@@ -272,7 +272,11 @@ import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
-import { LaboratoryResult, LaboratoryReport } from "../models/laboratory";
+import {
+  LaboratoryOrder,
+  LaboratoryResult,
+  LaboratoryReport
+} from "@/models/laboratory";
 
 const namespace: string = "user";
 
@@ -296,9 +300,9 @@ Component.registerHooks(["beforeRouteLeave"]);
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
-  @Action("getReports", { namespace: "laboratory" }) getLaboratoryReports!: ({
+  @Action("getOrders", { namespace: "laboratory" }) getLaboratoryOrders!: ({
     hdid: string
-  }: any) => Promise<RequestResult<LaboratoryReport[]>>;
+  }: any) => Promise<RequestResult<LaboratoryOrder[]>>;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
 
   private filterText: string = "";
@@ -558,7 +562,7 @@ export default class TimelineComponent extends Vue {
       SERVICE_IDENTIFIER.LaboratoryService
     );
     this.isLaboratoryLoading = true;
-    this.getLaboratoryReports({ hdid: this.user.hdid })
+    this.getLaboratoryOrders({ hdid: this.user.hdid })
       .then(results => {
         if (results.resultStatus == ResultType.Success) {
           // Add the laboratory entries to the timeline list

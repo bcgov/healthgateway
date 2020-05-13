@@ -67,11 +67,13 @@ $radius: 15px;
     <b-row class="my-2">
       <b-col class="leftPane"></b-col>
       <b-col>
-        <b-row>
+        <b-row class="justify-content-between">
           <b-col cols="8">
             {{ entry.summaryDescription }}
           </b-col>
-          <b-col> <strong>Status:</strong> {{ entry.summaryStatus }} </b-col>
+          <b-col cols="auto">
+            <strong>Status:</strong> {{ entry.summaryStatus }}
+          </b-col>
         </b-row>
         <b-row>
           <b-col>
@@ -98,7 +100,10 @@ $radius: 15px;
                 <span v-else>View Details</span>
               </b-btn>
             </div>
-            <b-collapse :id="'entryDetails-' + index + '-' + datekey">
+            <b-collapse
+              :id="'entryDetails-' + index + '-' + datekey"
+              v-model="detailsVisible"
+            >
               <div>
                 <div class="detailSection">
                   <div>
@@ -169,7 +174,7 @@ import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import LaboratoryTimelineEntry, {
   LaboratoryResultViewModel
 } from "@/models/laboratoryTimelineEntry";
-import { LaboratoryResult, LaboratoryReport } from "@/models/laboratory";
+import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { ILaboratoryService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -215,16 +220,17 @@ export default class LaboratoryTimelineComponent extends Vue {
     return moment(date).format("lll");
   }
 
-  private getDocument(report: LaboratoryResultViewModel) {
+  private getDocument(labResult: LaboratoryResultViewModel) {
     this.isLoadingDocument = true;
     this.laboratoryService
-      .getReportDocument(report.id)
+      .getReportDocument(labResult.id)
       .then(result => {
         const link = document.createElement("a");
-        let dateString = moment(report.resultDateTime)
+        let dateString = moment(labResult.resultDateTime)
           .local()
           .format("YYYY_MM_DD-HH_mm");
-        link.href = result.resourcePayload.base64Pdf;
+        let report: LaboratoryReport = result.resourcePayload;
+        link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
         link.download = `COVID_Result_${dateString}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);

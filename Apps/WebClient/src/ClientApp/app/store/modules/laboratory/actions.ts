@@ -3,7 +3,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { RootState, LaboratoryState } from "@/models/storeState";
 import { ILaboratoryService } from "@/services/interfaces";
-import { LaboratoryReport } from "@/models/laboratory";
+import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 
@@ -17,29 +17,29 @@ const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
 );
 
 export const actions: ActionTree<LaboratoryState, RootState> = {
-  getReports(
+  getOrders(
     { commit, getters },
     { hdid }
-  ): Promise<RequestResult<LaboratoryReport[]>> {
+  ): Promise<RequestResult<LaboratoryOrder[]>> {
     return new Promise((resolve, reject) => {
-      var laboratoryReports: LaboratoryReport[] = getters.getStoredLaboratoryReports();
-      if (laboratoryReports.length > 0) {
+      var laboratoryOrders: LaboratoryOrder[] = getters.getStoredLaboratoryOrders();
+      if (laboratoryOrders.length > 0) {
         console.log("Laboratory found stored, not quering!");
         resolve({
           pageIndex: 0,
           pageSize: 0,
-          resourcePayload: laboratoryReports,
+          resourcePayload: laboratoryOrders,
           resultMessage: "From storage",
           resultStatus: ResultType.Success,
-          totalResultCount: laboratoryReports.length
+          totalResultCount: laboratoryOrders.length
         });
       } else {
-        console.log("Retrieving Laboratory Reports");
+        console.log("Retrieving Laboratory Orders");
         laboratoryService
-          .getReports(hdid)
-          .then(laboratoryReports => {
-            commit("setLaboratoryReports", laboratoryReports);
-            resolve(laboratoryReports);
+          .getOrders(hdid)
+          .then(laboratoryOrders => {
+            commit("setLaboratoryOrders", laboratoryOrders);
+            resolve(laboratoryOrders);
           })
           .catch(error => {
             handleError(commit, error);
