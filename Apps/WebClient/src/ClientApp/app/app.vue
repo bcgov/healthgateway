@@ -91,7 +91,9 @@ import {
   SpinnerPlugin,
   InputGroupPlugin,
   PaginationNavPlugin,
-  TooltipPlugin
+  TooltipPlugin,
+  FormGroupPlugin,
+  FormRadioPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -109,6 +111,8 @@ Vue.use(SpinnerPlugin);
 Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
 Vue.use(TooltipPlugin);
+Vue.use(FormGroupPlugin);
+Vue.use(FormRadioPlugin);
 
 // Load general icons
 import { config, library } from "@fortawesome/fontawesome-svg-core";
