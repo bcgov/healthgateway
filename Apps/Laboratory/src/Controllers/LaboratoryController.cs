@@ -24,6 +24,7 @@ namespace HealthGateway.Laboratory.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -92,14 +93,14 @@ namespace HealthGateway.Laboratory.Controllers
 
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string hdid = user.FindFirst("hdid").Value;
-            string accessToken = user.FindFirstValue("access_token");
+            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
             var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
             if (!isAuthorized.Succeeded)
             {
                 return new ForbidResult();
             }
 
-            RequestResult<IEnumerable<LaboratoryReport>> result = await this.service.GetLaboratoryReports(accessToken).ConfigureAwait(true);
+            RequestResult<IEnumerable<LaboratoryOrder>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting lab reports from controller... {hdid}");
 
             return new JsonResult(result);

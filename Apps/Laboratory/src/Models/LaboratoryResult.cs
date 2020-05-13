@@ -58,6 +58,11 @@ namespace HealthGateway.Laboratory.Models
         public DateTime ReceivedDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the result datetime.
+        /// </summary>
+        public DateTime ResultDateTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the LOINC code.
         /// </summary>
         public string? LOINC { get; set; }

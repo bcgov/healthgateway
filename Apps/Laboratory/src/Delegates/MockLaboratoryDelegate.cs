@@ -18,7 +18,6 @@ namespace HealthGateway.Laboratory.Delegates
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices.WindowsRuntime;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
@@ -30,32 +29,42 @@ namespace HealthGateway.Laboratory.Delegates
     public class MockLaboratoryDelegate : ILaboratoryDelegate
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<LaboratoryReport>> retVal = new RequestResult<IEnumerable<LaboratoryReport>>()
+            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
             {
                 PageIndex = 0,
                 PageSize = 10000,
                 ResultStatus = Common.Constants.ResultType.Success,
             };
-            LaboratoryReport[] mockData =
+            LaboratoryOrder[] mockData =
             {
-                new LaboratoryReport()
+                new LaboratoryOrder()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("612d31e5-12e1-451f-a475-58d6b0a8f007"),
+                    PHN = "9735352542",
+                    OrderProviderIDs = string.Empty,
+                    OrderingProviders = "Davidson, Jana-Lea",
+                    ReportingLab = string.Empty,
+                    Location = "VCHA",
+                    LabType = "ORU",
+                    MessageDateTime = DateTime.Now.AddDays(-1),
+                    MessageID = "20200770000196",
+                    AdditionalData = string.Empty,
                     LabResults = new LaboratoryResult[]
                     {
                         new LaboratoryResult()
                         {
                             Id = Guid.Parse("dee12642-fb2c-481f-9ae4-c672b045b2b1"),
-                            TestType = string.Empty,
+                            TestType = "COVID19",
                             OutOfRange = false,
-                            CollectionDateTime = DateTime.Now,
-                            TestStatus = string.Empty,
-                            ResultDescription = string.Empty,
-                            ReceivedDateTime = DateTime.Now,
-                            LOINC = "94845-5",
-                            LOINCName = "SARS coronavirus 2 RNA [Presence] in Saliva (oral fluid) by NAA with probe detection",
+                            CollectionDateTime = DateTime.Now.AddDays(-1),
+                            TestStatus = "Final",
+                            ResultDescription = "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.<br><br>This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated.",
+                            ReceivedDateTime = DateTime.Now.AddDays(-1),
+                            ResultDateTime = DateTime.Now.AddHours(-1),
+                            LOINC = "XXX-3286",
+                            LOINCName = "COVID-19 n-Coronavirus  NAT",
                         },
                     },
                 },

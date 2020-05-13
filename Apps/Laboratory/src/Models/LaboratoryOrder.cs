@@ -16,14 +16,13 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// An instance of a Laboratory Report.
+    /// An instance of a Laboratory Order.
     /// </summary>
-    public class LaboratoryReport
+    public class LaboratoryOrder
     {
         /// <summary>
         /// Gets or sets the id for the lab result.

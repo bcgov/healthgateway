@@ -66,9 +66,9 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<LaboratoryReport>> retVal = new RequestResult<IEnumerable<LaboratoryReport>>()
+            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 PageIndex = pageIndex,
@@ -99,7 +99,7 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        IEnumerable<LaboratoryReport> labReports = JsonSerializer.Deserialize<List<LaboratoryReport>>(payload, options);
+                        IEnumerable<LaboratoryOrder> labReports = JsonSerializer.Deserialize<List<LaboratoryOrder>>(payload, options);
                         if (labReports != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -117,7 +117,7 @@ namespace HealthGateway.Laboratory.Delegates
                         break;
                     case HttpStatusCode.NoContent: // No Lab exits for this user
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = new List<LaboratoryReport>();
+                        retVal.ResourcePayload = new List<LaboratoryOrder>();
                         retVal.TotalResultCount = 0;
                         #pragma warning disable CA1305 // Specify IFormatProvider
                         retVal.PageSize = int.Parse(this.labConfig.FetchSize);

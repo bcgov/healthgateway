@@ -22,7 +22,6 @@ namespace HealthGateway.Laboratory.Models
     /// </summary>
     public class LaboratoryBinaryReport
     {
-
         /// <summary>
         /// Gets or sets the media type for the report data.
         /// </summary>
