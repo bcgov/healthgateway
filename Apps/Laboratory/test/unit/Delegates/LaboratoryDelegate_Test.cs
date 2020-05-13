@@ -145,7 +145,7 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success && actualResult.ResourcePayload.BinaryData == expectedPDF);
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success && actualResult.ResourcePayload.Report == expectedPDF);
 
         }
 
@@ -239,5 +239,15 @@ namespace HealthGateway.LaboratoryTests
         //        .AddJsonFile("appsettings.local.json", optional: true)
         //        .Build();
         //}
+
+        private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
+        {
+            return new ConfigurationBuilder()
+                // .SetBasePath(outputPath)
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .Build();
+        }
     }
 }

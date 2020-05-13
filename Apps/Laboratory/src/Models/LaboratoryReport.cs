@@ -35,9 +35,9 @@ namespace HealthGateway.Laboratory.Models
         public string Encoding { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the base64 encoded PDF Report.
+        /// Gets or sets the report data.
         /// </summary>
         [JsonPropertyName("data")]
-        public string BinaryData { get; set; } = string.Empty;
+        public string Report { get; set; } = string.Empty;
     }
 }

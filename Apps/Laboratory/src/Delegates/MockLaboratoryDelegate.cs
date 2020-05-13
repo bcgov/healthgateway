@@ -87,7 +87,7 @@ namespace HealthGateway.Laboratory.Delegates
                 {
                     MediaType = "application/pdf",
                     Encoding = "base64",
-                    BinaryData = pdfData,
+                    Report = pdfData,
                 },
             };
             await Task.Delay(0).ConfigureAwait(true);
