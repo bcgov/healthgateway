@@ -68,7 +68,7 @@ $radius: 15px;
       <b-col class="leftPane"></b-col>
       <b-col>
         <b-row>
-          <b-col>
+          <b-col cols="8">
             {{ entry.summaryDescription }}
           </b-col>
           <b-col> <strong>Status:</strong> {{ entry.summaryStatus }} </b-col>
@@ -111,42 +111,44 @@ $radius: 15px;
                   <div><strong>Location:</strong> {{ entry.location }}</div>
                 </div>
 
-                <strong>Results:</strong>
-                <div
-                  v-for="result in entry.resultList"
-                  :key="result.id"
-                  class="detailSection border"
-                >
-                  <div><strong>Test Type:</strong> {{ result.testType }}</div>
-                  <div>
-                    <strong>Out Of Range:</strong> {{ result.outOfRange }}
-                  </div>
-                  <div>
-                    <strong>Test Status:</strong> {{ result.testStatus }}
-                  </div>
-                  <div>
-                    <strong>Result Description:</strong>
-                    <p v-html="result.resultDescription"></p>
-                  </div>
-                  <div>
-                    <strong>Collected Date Time:</strong>
-                    {{ formatDate(result.collectedDateTime) }}
-                  </div>
+                <div class="detailSection">
+                  <strong>Results:</strong>
+                  <div
+                    v-for="result in entry.resultList"
+                    :key="result.id"
+                    class="border p-1"
+                  >
+                    <div><strong>Test Type:</strong> {{ result.testType }}</div>
+                    <div>
+                      <strong>Out Of Range:</strong> {{ result.outOfRange }}
+                    </div>
+                    <div>
+                      <strong>Test Status:</strong> {{ result.testStatus }}
+                    </div>
+                    <div>
+                      <strong>Result Description:</strong>
+                      <p v-html="result.resultDescription"></p>
+                    </div>
+                    <div>
+                      <strong>Collected Date Time:</strong>
+                      {{ formatDate(result.collectionDateTime) }}
+                    </div>
 
-                  <div>
-                    <strong>Result Date Time:</strong>
-                    {{ formatDate(result.resultDateTime) }}
-                  </div>
-                  <div>
-                    <strong>Report Document:</strong>
-                    <b-btn variant="link" @click="getDocument(result)">
-                      <font-awesome-icon
-                        icon="file-download"
-                        aria-hidden="true"
-                        size="1x"
-                      />
-                    </b-btn>
-                    <b-spinner v-if="isLoadingDocument"></b-spinner>
+                    <div>
+                      <strong>Received Date Time:</strong>
+                      {{ formatDate(result.receivedDateTime) }}
+                    </div>
+                    <div>
+                      <strong>Report Document:</strong>
+                      <b-btn variant="link" @click="getDocument(result)">
+                        <font-awesome-icon
+                          icon="file-download"
+                          aria-hidden="true"
+                          size="1x"
+                        />
+                      </b-btn>
+                      <b-spinner v-if="isLoadingDocument"></b-spinner>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -187,7 +189,6 @@ export default class LaboratoryTimelineComponent extends Vue {
   @Prop() entry!: LaboratoryTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
-  @Getter("user", { namespace: "user" }) user!: User;
 
   private laboratoryService!: ILaboratoryService;
 
@@ -211,19 +212,19 @@ export default class LaboratoryTimelineComponent extends Vue {
   }
 
   private formatDate(date: Date): string {
-    return date.toLocaleString();
+    return moment(date).format("lll");
   }
 
   private getDocument(report: LaboratoryResultViewModel) {
     this.isLoadingDocument = true;
     this.laboratoryService
-      .getReportDocument(this.user.hdid, report.id)
+      .getReportDocument(report.id)
       .then(result => {
         const link = document.createElement("a");
         let dateString = moment(report.resultDateTime)
           .local()
           .format("YYYY_MM_DD-HH_mm");
-        link.href = "data:application/pdf;base64," + result.resourcePayload;
+        link.href = result.resourcePayload.base64Pdf;
         link.download = `COVID_Result_${dateString}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);

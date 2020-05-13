@@ -411,10 +411,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private get isLaboratoryEnabled(): boolean {
-    return (
-      this.config.modules["Laboratory"] ||
-      this.config.modules["CovidLabResults"]
-    );
+    return this.config.modules["Laboratory"];
   }
 
   private get isNoteEnabled(): boolean {

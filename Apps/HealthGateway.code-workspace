@@ -47,6 +47,9 @@
     {
       "name": "Dolphin",
       "path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
+    },
+    {
+      "path": "Laboratory"
     }
   ],
   "settings": {}

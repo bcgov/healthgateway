@@ -24,10 +24,15 @@
     height: 750px;
     background-size: cover;
 
-    /* Large Devices, Wide Screens */
+    /* Small Devices */
     @media (max-width: 767px) {
       /* your desktop css */
       height: 560px;
+    }
+
+    /* Very Small Devices */
+    @media (max-width: 400px) {
+      height: 480px;
     }
 
     .title-wrapper {
@@ -42,7 +47,6 @@
 
     .logo {
       margin-bottom: 1em;
-      max-width: 320px;
     }
 
     .title-text {
@@ -57,6 +61,17 @@
 
     .register-button {
       max-width: 300px;
+    }
+
+    /* Small Devices */
+    @media (max-width: 440px) {
+      .title-wrapper {
+        margin-top: -40px;
+      }
+
+      .title-text {
+        font-size: 1.5em;
+      }
     }
   }
 
@@ -306,7 +321,7 @@
           height="auto"
           alt="Devices"
       /></b-col>
-      <b-col class="col-10 col-md-6">
+      <b-col class="col-12 col-md-6">
         <div class="devices-text my-5 my-md-5 ml-md-4">
           <b-row>
             <h2>Browse your health records</h2>

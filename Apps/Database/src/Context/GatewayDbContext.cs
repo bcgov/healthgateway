@@ -319,6 +319,15 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
+                    ProgramCode = ApplicationType.Laboratory,
+                    Description = "Laboratory Service",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
                     ProgramCode = ApplicationType.AdminWebClient,
                     Description = "Admin Client",
                     CreatedBy = UserId.DefaultUser,
