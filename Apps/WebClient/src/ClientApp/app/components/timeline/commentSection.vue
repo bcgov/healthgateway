@@ -1,4 +1,4 @@
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {

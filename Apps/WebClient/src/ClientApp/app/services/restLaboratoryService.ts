@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { IHttpDelegate, ILaboratoryService } from "@/services/interfaces";
 import { ExternalConfiguration } from "@/models/configData";
-import { LaboratoryReport, LaboratoryPDFReport } from "@/models/laboratory";
+import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 
@@ -20,7 +20,7 @@ export class RestLaboratoryService implements ILaboratoryService {
     this.isEnabled = config.webClient.modules["Laboratory"];
   }
 
-  public getReports(hdid: string): Promise<RequestResult<LaboratoryReport[]>> {
+  public getReports(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
         resolve({
@@ -34,7 +34,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         return;
       }
       this.http
-        .getWithCors<RequestResult<LaboratoryReport[]>>(
+        .getWithCors<RequestResult<LaboratoryOrder[]>>(
           `${this.baseUri}${this.LABORATORY_BASE_URI}`
         )
         .then(requestResult => {
@@ -49,13 +49,13 @@ export class RestLaboratoryService implements ILaboratoryService {
 
   public getReportDocument(
     reportId: string
-  ): Promise<RequestResult<LaboratoryPDFReport>> {
+  ): Promise<RequestResult<LaboratoryReport>> {
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
         resolve({
           pageIndex: 0,
           pageSize: 0,
-          resourcePayload: { base64Pdf: "" },
+          resourcePayload: { data: "", encoding: "", mediaType: "" },
           resultMessage: "",
           resultStatus: ResultType.Success,
           totalResultCount: 0
@@ -63,8 +63,8 @@ export class RestLaboratoryService implements ILaboratoryService {
         return;
       }
       this.http
-        .getWithCors<RequestResult<LaboratoryPDFReport>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}${reportId}/Document/`
+        .getWithCors<RequestResult<LaboratoryReport>>(
+          `${this.baseUri}${this.LABORATORY_BASE_URI}${reportId}/Report/`
         )
         .then(requestResult => {
           resolve(requestResult);
