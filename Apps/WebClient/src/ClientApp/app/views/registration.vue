@@ -22,8 +22,15 @@ input {
   color: $primary;
 }
 
-.optout label {
+.subheading {
   color: $soft_text;
+  font-size: inherit;
+  margin-bottom: 5px;
+}
+
+label {
+  font-size: 1.2em;
+  margin: 0px;
 }
 
 #termsOfService {
@@ -224,11 +231,12 @@ input {
         <!-- SMS section -->
         <b-row class="mb-3">
           <b-col>
-            <label for="phoneNumber"
+            <label class="d-flex" for="phoneNumber"
               >Phone number (for SMS notifications)</label
             >
             <b-form-input
               id="phoneNumber"
+              class="d-flex"
               v-model="$v.phoneNumber.$model"
               type="text"
               placeholder="Your phone number"
@@ -242,27 +250,53 @@ input {
         </b-row>
         <b-row v-if="!isRegistrationInviteOnly" class="mb-3">
           <b-col>
-            <b-form-group label="Preferred method of communication">
-              <b-form-radio
-                id="emailPreferred"
-                v-model="preferredMethod"
+            <div>
+              <label for="radio"
+                >Communication Preference for Lab Result Notification</label
               >
-                Email
-              </b-form-radio>
-              <b-form-radio
-                id="phonePreferred"
-                v-model="preferredMethod"
+            </div>
+            <div>
+              <label for="radio" class="subheading"
+                >The Provincial Health Services Authority will notify you when
+                your laboratory test result is available</label
               >
-                Phone
-              </b-form-radio>
-              <b-form-radio
-                id="noNotifications"
+            </div>
+            <div>
+              <b-form-radio-group
+                class="d-flex flex-direction-row"
+                id="radio"
                 v-model="preferredMethod"
-                @change="optOutChanged($event)"
+                :state="isValid($v.preferredMethod)"
               >
-                No notifications
-              </b-form-radio>
-            </b-form-group>
+                <b-form-radio
+                  class="d-flex"
+                  id="emailPreferred"
+                  value="email"
+                >
+                  Email
+                </b-form-radio>
+                <b-form-radio
+                  class="d-flex"
+                  id="phonePreferred"
+                  value="phone"
+                >
+                  Phone
+                </b-form-radio>
+                <b-form-radio
+                  class="d-flex"
+                  id="noNotifications"
+                  value="optout"
+                  @change="optOutChanged($event)"
+                >
+                  No notifications
+                </b-form-radio>
+              </b-form-radio-group>
+            </div>
+            <div>
+              <b-form-invalid-feedback :state="isValid($v.preferredMethod)">
+                Please select a preferredmethod of communication
+              </b-form-invalid-feedback>
+            </div>
           </b-col>
         </b-row>
         <b-row class="mb-3">
@@ -319,6 +353,7 @@ import {
   requiredIf,
   sameAs,
   email,
+  helpers,
   ValidationRule,
 } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
@@ -430,11 +465,13 @@ export default class RegistrationComponent extends Vue {
   }
 
   validations() {
+    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/)
     return {
       phoneNumber: {
         required: requiredIf(() => {
           return !this.optout && this.preferredMethod === "phone";
         }),
+        phone
       },
       email: {
         required: requiredIf(() => {
@@ -448,6 +485,9 @@ export default class RegistrationComponent extends Vue {
         }),
         sameAsEmail: sameAs("email"),
         email,
+      },
+      preferredMethod: {
+        required
       },
       accepted: { isChecked: sameAs(() => true) },
     };
@@ -518,7 +558,7 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            //phoneNumber: this.phoneNumber || "",
+            // phoneNumber: this.phoneNumber || "",
           },
           inviteCode: this.inviteKey || "",
         })
