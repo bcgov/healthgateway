@@ -131,7 +131,7 @@ namespace HealthGateway.Laboratory.Controllers
                 return new ForbidResult();
             }
 
-            RequestResult<LaboratoryPDFReport> result = await this.service.GetLabReportPDF(reportId, accessToken).ConfigureAwait(true);
+            RequestResult<LaboratoryBinaryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
 
             return new JsonResult(result);

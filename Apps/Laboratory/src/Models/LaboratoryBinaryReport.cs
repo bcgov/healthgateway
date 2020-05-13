@@ -20,12 +20,25 @@ namespace HealthGateway.Laboratory.Models
     /// <summary>
     /// An instance of a Laboratory PDF Report.
     /// </summary>
-    public class LaboratoryPDFReport
+    public class LaboratoryBinaryReport
     {
+
+        /// <summary>
+        /// Gets or sets the media type for the report data.
+        /// </summary>
+        [JsonPropertyName("mediaType")]
+        public string MediaType { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the encoding used for the report binary data.
+        /// </summary>
+        [JsonPropertyName("encoding")]
+        public string Encoding { get; set; } = string.Empty;
+
         /// <summary>
         /// Gets or sets the base64 encoded PDF Report.
         /// </summary>
-        [JsonPropertyName("base64Pdf")]
-        public string ReportPDF { get; set; } = string.Empty;
+        [JsonPropertyName("data")]
+        public string BinaryData { get; set; } = string.Empty;
     }
 }

@@ -146,9 +146,9 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryPDFReport>> GetLabReportPDF(Guid id, string bearerToken)
+        public async Task<RequestResult<LaboratoryBinaryReport>> GetLabReport(Guid id, string bearerToken)
         {
-            RequestResult<LaboratoryPDFReport> retVal = new RequestResult<LaboratoryPDFReport>()
+            RequestResult<LaboratoryBinaryReport> retVal = new RequestResult<LaboratoryBinaryReport>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -174,11 +174,11 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        LaboratoryPDFReport pdfReport = JsonSerializer.Deserialize<LaboratoryPDFReport>(payload, options);
-                        if (pdfReport != null)
+                        LaboratoryBinaryReport report = JsonSerializer.Deserialize<LaboratoryBinaryReport>(payload, options);
+                        if (report != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.ResourcePayload = pdfReport;
+                            retVal.ResourcePayload = report;
                             retVal.TotalResultCount = 1;
                         }
                         else
@@ -192,7 +192,7 @@ namespace HealthGateway.Laboratory.Delegates
                         retVal.ResultMessage = $"No Lab Report exists for id: {id}";
                         retVal.PageIndex = 0;
                         retVal.TotalResultCount = 0;
-                        retVal.ResourcePayload = new LaboratoryPDFReport();
+                        retVal.ResourcePayload = new LaboratoryBinaryReport();
                         break;
                     case HttpStatusCode.Forbidden:
                         retVal.ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}";

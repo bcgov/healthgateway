@@ -38,11 +38,11 @@ namespace HealthGateway.Laboratory.Delegates
         Task<RequestResult<IEnumerable<LaboratoryReport>>> GetLaboratoryReports(string bearerToken, int pageIndex = 0);
 
         /// <summary>
-        /// Gets the PDF Lab report for the identified report belonging to the authenticated user.
+        /// Gets the Lab report in binary format for the supplied id belonging to the authenticated user.
         /// </summary>
         /// <param name="id">The ID of the lab report to get.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryPDFReport>> GetLabReportPDF(Guid id, string bearerToken);
+        Task<RequestResult<LaboratoryBinaryReport>> GetLabReport(Guid id, string bearerToken);
     }
 }
