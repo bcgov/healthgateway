@@ -202,19 +202,19 @@ namespace HealthGateway.LaboratoryTests
         }
 
 
-        [Fact]
-        public async void FunctionalGetLabOrders()
-        {
-            string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiIwNDRjYjE4MS1iYjU1LTQzNWUtOThmNC00YTAzYzEwYTVmMmYiLCJleHAiOjE1ODkzMDIxODEsIm5iZiI6MCwiaWF0IjoxNTg5MzAxODgxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOiJoZWFsdGhnYXRld2F5Iiwic3ViIjoiNWQxODg4ZTgtMzVhZS00M2E1LTk3MGItNzI1MjI2YzkyZTA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaGVhbHRoZ2F0ZXdheSIsIm5vbmNlIjoiYjFhMDM0ZjktMjQ2Yi00ZjA0LWFjYjAtNDlmZTVjMGRjNjE1IiwiYXV0aF90aW1lIjoxNTg5MzAxODgwLCJzZXNzaW9uX3N0YXRlIjoiNGY5MThmNjgtNGFkOC00YjQyLTgzYzEtNTYyNDFjMjU3NjYzIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2Rldi5oZWFsdGhnYXRld2F5Lmdvdi5iYy5jYSJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBhdWRpZW5jZSBvZmZsaW5lX2FjY2VzcyBwYXRpZW50L09ic2VydmF0aW9uLnJlYWQgcGF0aWVudC9NZWRpY2F0aW9uRGlzcGVuc2UucmVhZCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.DN2FS_LnUmUFvnN56_Igcwqkl6Lf9eezXDo96wt1yW1CCfowBRijemBhH0SYWJAzFROPtqRq1UsHPAumfAwB7pPedqnOzhGqY2QXEmk7rGdA0UNvkoGsvTGC7n9R3Z4wW1zUeHLHG9l-QvNIkiTsU1KFBViCKCRCas4B2OY0Io0lz_uj6gMtrC4WedaMR5HJq2r5oai6y1DssKsp6YmYG29wOn8lp3szNOOn2zk-Fkt8AdiaAwziGCUCaip8g6tmaqBCI71qOFpu5xluSU4PA9CMNv8M6n-Ul55NcoV1yXPqi3vPNNg4MHhvyMOSKcvG7MR5sAnTQA2l9eANoxaTiA";
-            // string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiI5Mjk1NzNiNS03MDE2LTQyZWEtOTY4Zi00MjJkY2EwZGM1ODQiLCJleHAiOjE1ODg4MDI0MjEsIm5iZiI6MCwiaWF0IjoxNTg4ODAyMTIxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOlsicGhzYS1jZGMtbG9jYWwiLCJhY2NvdW50Il0sInN1YiI6IjVkMTg4OGU4LTM1YWUtNDNhNS05NzBiLTcyNTIyNmM5MmUwNyIsInR5cCI6IkJlYXJlciIsImF6cCI6InBoc2EtY2RjLWxvY2FsIiwibm9uY2UiOiI2MzcyNDM5ODg4NzIyNzYzNzMuTXpnd1pHWm1NMk10WldOa1ppMDBPRGhtTFRoak5tWXRZbVJrWVRWalltUmpZMlV6TURWbU9HVTNPRGd0TURoaFppMDBPV0ppTFRnd1pXSXRZVEV6WWpsbVlUWXlNV0k1IiwiYXV0aF90aW1lIjoxNTg4ODAyMTIxLCJzZXNzaW9uX3N0YXRlIjoiZmJmYWQzYzMtYjM4OS00MGU0LWJmOWYtNmUxOGVhNzYxNTE0IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2xvY2FsaG9zdDo0NDM5NyJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBwcm9maWxlIHBhdGllbnQvT2JzZXJ2YXRpb24ucmVhZCBlbWFpbCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.WVvFC94LqpEUj1HdJyV-yENa_VosWFJFGUVjsfW1jI6NIQ4BzpcpBBOVUfIqJBXMUY022ghHOrVK1rCBguhamVbpI-TfFjoufikjHBn3Ivp-OKN8Qhp96Qi_EcNwULaf50srrTlHGTXHrFuZGb_8gw9D7gExpQ5qNMdHMsz5noKMHDYdXVvnT2pM8cysqStNc3LQuol8U5P3KC7GsCINsl7ZJkMqJoi_WtBkK2O3-lxEyGiVoLnrVo3Yt6epn6P2rH_GOQa2m_OlRNmwF0DMKf8LPDDEGfSgVkXXEdqJge-n7doqr1-6QSNj15vcQFLQJ8MafzSdD9wNi16joXnaeg";
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+        //[Fact]
+        //public async void FunctionalGetLabOrders()
+        //{
+        //    string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiIwNDRjYjE4MS1iYjU1LTQzNWUtOThmNC00YTAzYzEwYTVmMmYiLCJleHAiOjE1ODkzMDIxODEsIm5iZiI6MCwiaWF0IjoxNTg5MzAxODgxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOiJoZWFsdGhnYXRld2F5Iiwic3ViIjoiNWQxODg4ZTgtMzVhZS00M2E1LTk3MGItNzI1MjI2YzkyZTA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaGVhbHRoZ2F0ZXdheSIsIm5vbmNlIjoiYjFhMDM0ZjktMjQ2Yi00ZjA0LWFjYjAtNDlmZTVjMGRjNjE1IiwiYXV0aF90aW1lIjoxNTg5MzAxODgwLCJzZXNzaW9uX3N0YXRlIjoiNGY5MThmNjgtNGFkOC00YjQyLTgzYzEtNTYyNDFjMjU3NjYzIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2Rldi5oZWFsdGhnYXRld2F5Lmdvdi5iYy5jYSJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBhdWRpZW5jZSBvZmZsaW5lX2FjY2VzcyBwYXRpZW50L09ic2VydmF0aW9uLnJlYWQgcGF0aWVudC9NZWRpY2F0aW9uRGlzcGVuc2UucmVhZCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.DN2FS_LnUmUFvnN56_Igcwqkl6Lf9eezXDo96wt1yW1CCfowBRijemBhH0SYWJAzFROPtqRq1UsHPAumfAwB7pPedqnOzhGqY2QXEmk7rGdA0UNvkoGsvTGC7n9R3Z4wW1zUeHLHG9l-QvNIkiTsU1KFBViCKCRCas4B2OY0Io0lz_uj6gMtrC4WedaMR5HJq2r5oai6y1DssKsp6YmYG29wOn8lp3szNOOn2zk-Fkt8AdiaAwziGCUCaip8g6tmaqBCI71qOFpu5xluSU4PA9CMNv8M6n-Ul55NcoV1yXPqi3vPNNg4MHhvyMOSKcvG7MR5sAnTQA2l9eANoxaTiA";
+        //    // string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiI5Mjk1NzNiNS03MDE2LTQyZWEtOTY4Zi00MjJkY2EwZGM1ODQiLCJleHAiOjE1ODg4MDI0MjEsIm5iZiI6MCwiaWF0IjoxNTg4ODAyMTIxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOlsicGhzYS1jZGMtbG9jYWwiLCJhY2NvdW50Il0sInN1YiI6IjVkMTg4OGU4LTM1YWUtNDNhNS05NzBiLTcyNTIyNmM5MmUwNyIsInR5cCI6IkJlYXJlciIsImF6cCI6InBoc2EtY2RjLWxvY2FsIiwibm9uY2UiOiI2MzcyNDM5ODg4NzIyNzYzNzMuTXpnd1pHWm1NMk10WldOa1ppMDBPRGhtTFRoak5tWXRZbVJrWVRWalltUmpZMlV6TURWbU9HVTNPRGd0TURoaFppMDBPV0ppTFRnd1pXSXRZVEV6WWpsbVlUWXlNV0k1IiwiYXV0aF90aW1lIjoxNTg4ODAyMTIxLCJzZXNzaW9uX3N0YXRlIjoiZmJmYWQzYzMtYjM4OS00MGU0LWJmOWYtNmUxOGVhNzYxNTE0IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2xvY2FsaG9zdDo0NDM5NyJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBwcm9maWxlIHBhdGllbnQvT2JzZXJ2YXRpb24ucmVhZCBlbWFpbCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.WVvFC94LqpEUj1HdJyV-yENa_VosWFJFGUVjsfW1jI6NIQ4BzpcpBBOVUfIqJBXMUY022ghHOrVK1rCBguhamVbpI-TfFjoufikjHBn3Ivp-OKN8Qhp96Qi_EcNwULaf50srrTlHGTXHrFuZGb_8gw9D7gExpQ5qNMdHMsz5noKMHDYdXVvnT2pM8cysqStNc3LQuol8U5P3KC7GsCINsl7ZJkMqJoi_WtBkK2O3-lxEyGiVoLnrVo3Yt6epn6P2rH_GOQa2m_OlRNmwF0DMKf8LPDDEGfSgVkXXEdqJge-n7doqr1-6QSNj15vcQFLQJ8MafzSdD9wNi16joXnaeg";
+        //    using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        //    Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+        //    mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
+        //    ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
 
-            RequestResult<IEnumerable<LaboratoryOrder>> actualResult = await labDelegate.GetLaboratoryOrders(token).ConfigureAwait(true);
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
-        }
+        //    RequestResult<IEnumerable<LaboratoryOrder>> actualResult = await labDelegate.GetLaboratoryOrders(token).ConfigureAwait(true);
+        //    Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+        //}
 
         //[Fact]
         //public async void FunctinalGetLabReport()
@@ -228,16 +228,6 @@ namespace HealthGateway.LaboratoryTests
 
         //    RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(id, token).ConfigureAwait(true);
         //    Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
-        //}
-
-        //private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
-        //{
-        //    return new ConfigurationBuilder()
-        //        // .SetBasePath(outputPath)
-        //        .AddJsonFile("appsettings.json", optional: true)
-        //        .AddJsonFile("appsettings.Development.json", optional: true)
-        //        .AddJsonFile("appsettings.local.json", optional: true)
-        //        .Build();
         //}
 
         private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
