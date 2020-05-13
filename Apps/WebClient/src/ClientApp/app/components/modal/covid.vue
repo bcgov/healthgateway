@@ -1,4 +1,4 @@
-﻿<style lang="scss">
+﻿<style lang="scss" scoped>
 .modal-footer {
   justify-content: flex-end;
 }
