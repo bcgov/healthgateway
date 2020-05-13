@@ -513,6 +513,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCovidSubmit() {
+    this.protectiveWordModal.hideModal();
     this.filterTypes = ["Laboratory"];
   }
 
