@@ -58,11 +58,11 @@ input {
             <b-col>
               <label for="email">Email Address</label>
               <b-button
-                v-if="!isEdditable"
+                v-if="!isEmailEditable"
                 id="editEmail"
                 class="mx-auto"
                 variant="link"
-                @click="makeEdditable()"
+                @click="makeEmailEditable()"
                 >Edit
               </b-button>
               <b-button
@@ -71,7 +71,7 @@ input {
                 class="text-danger"
                 variant="link"
                 @click="
-                  makeEdditable();
+                  makeEmailEditable();
                   removeEmail();
                 "
               >
@@ -82,18 +82,18 @@ input {
                   id="email"
                   v-model="$v.email.$model"
                   type="email"
-                  :placeholder="isEdditable ? 'Your email address' : 'Empty'"
-                  :disabled="!isEdditable"
+                  :placeholder="isEmailEditable ? 'Your email address' : 'Empty'"
+                  :disabled="!isEmailEditable"
                   :state="isValid($v.email)"
                 />
                 <div
-                  v-if="!emailVerified && !isEdditable && email"
+                  v-if="!emailVerified && !isEmailEditable && email"
                   class="ml-3"
                 >
                   (Not Verified)
                 </div>
                 <b-button
-                  v-if="!emailVerified && !isEdditable && email"
+                  v-if="!emailVerified && !isEmailEditable && email"
                   id="resendEmail"
                   variant="warning"
                   class="ml-auto"
@@ -110,7 +110,7 @@ input {
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
-          <b-row v-if="isEdditable" class="mb-3">
+          <b-row v-if="isEmailEditable" class="mb-3">
             <b-col>
               <b-form-input
                 id="emailConfirmation"
@@ -132,16 +132,16 @@ input {
                 icon="exclamation-triangle"
                 aria-hidden="true"
               ></font-awesome-icon>
-              Removing your email address will disable future communications
+              Removing your email address will disable future email communications
               from the Health Gateway
             </b-col>
           </b-row>
-          <b-row v-if="isEdditable" class="mb-3 justify-content-end">
+          <b-row v-if="isEmailEditable" class="mb-3 justify-content-end">
             <b-col class="text-right">
               <b-button
                 id="cancelBtn"
                 class="mx-2 actionButton"
-                @click="cancelEdit()"
+                @click="cancelEmailEdit()"
                 >Cancel
               </b-button>
               <b-button
@@ -149,7 +149,76 @@ input {
                 variant="primary"
                 class="mx-2 actionButton"
                 :disabled="tempEmail === email"
-                @click="saveEdit()"
+                @click="saveEmailEdit()"
+                >Save
+              </b-button>
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col>
+              <label for="email">Cell Phone Number (SMS notifications)</label>
+              <b-button
+                v-if="!isPhoneEditable"
+                id="editPhone"
+                class="mx-auto"
+                variant="link"
+                @click="makePhoneEditable()"
+                >Edit
+              </b-button>
+              <b-button
+                v-if="phoneNumber"
+                id="removePhone"
+                class="text-danger"
+                variant="link"
+                @click="
+                  makePhoneEditable();
+                  removePhone();
+                "
+              >
+                Remove
+              </b-button>
+              <div class="form-inline">
+                <b-form-input
+                  id="phoneNumber"
+                  v-model="$v.phoneNumber.$model"
+                  type="email"
+                  :placeholder="isPhoneEditable ? 'Your phone number' : 'Empty'"
+                  :disabled="!isPhoneEditable"
+                  :state="isValid($v.phoneNumber)"
+                />
+              </div>
+              <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
+                Valid phone number is required
+              </b-form-invalid-feedback>
+              <b-form-invalid-feedback :state="$v.phoneNumber.newPhoneNumber">
+                New email must be different from the previous one
+              </b-form-invalid-feedback>
+            </b-col>
+          </b-row>
+          <b-row v-if="!phoneNumber && tempPhone">
+            <b-col class="font-weight-bold text-primary text-center">
+              <font-awesome-icon
+                icon="exclamation-triangle"
+                aria-hidden="true"
+              ></font-awesome-icon>
+              Removing your phone number will disable future SMS communications
+              from the Health Gateway
+            </b-col>
+          </b-row>
+          <b-row v-if="isPhoneEditable" class="mb-3 justify-content-end">
+            <b-col class="text-right">
+              <b-button
+                id="cancelBtn"
+                class="mx-2 actionButton"
+                @click="cancelPhoneEdit()"
+                >Cancel
+              </b-button>
+              <b-button
+                id="saveBtn"
+                variant="primary"
+                class="mx-2 actionButton"
+                :disabled="tempPhone === phoneNumber"
+                @click="savePhoneEdit()"
                 >Save
               </b-button>
             </b-col>
@@ -250,12 +319,13 @@ import {
   requiredIf,
   sameAs,
   email,
-  not
+  not,
+  helpers,
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
   IUserEmailService,
-  IAuthenticationService
+  IAuthenticationService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -275,12 +345,12 @@ const authNamespace: string = "auth";
 
 @Component({
   components: {
-    LoadingComponent
-  }
+    LoadingComponent,
+  },
 })
 export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
-    namespace: authNamespace
+    namespace: authNamespace,
   })
   oidcIsAuthenticated!: boolean;
 
@@ -290,7 +360,7 @@ export default class ProfileComponent extends Vue {
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
     hdid,
-    emailAddress
+    emailAddress,
   }: {
     hdid: string;
     emailAddress: string;
@@ -317,9 +387,13 @@ export default class ProfileComponent extends Vue {
   private emailVerified = false;
   private email: string = "";
   private emailConfirmation: string = "";
-  private isEdditable: boolean = false;
+  private isEmailEditable: boolean = false;
   private oidcUser: any = {};
   private verificationSent: boolean = false;
+
+  private phoneNumber: string = "";
+  private isPhoneEditable: boolean = false;
+  private tempPhone: string = "";
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -356,7 +430,7 @@ export default class ProfileComponent extends Vue {
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
     Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
-      .then(results => {
+      .then((results) => {
         // Load oidc user details
         if (results[0]) {
           this.oidcUser = results[0];
@@ -376,11 +450,12 @@ export default class ProfileComponent extends Vue {
           this.lastLoginDateString = moment(
             this.userProfile.lastLoginDateTime
           ).format("lll");
+          // this.phoneNumber = this.userProfile.phoneNumber;
         }
 
         this.isLoading = false;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("Error loading profile");
         console.log(err);
         this.hasErrors = true;
@@ -394,21 +469,29 @@ export default class ProfileComponent extends Vue {
   }
 
   validations() {
+    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
     return {
+      phoneNumber: {
+        required: requiredIf(() => {
+          return !this.isPhoneEditable;
+        }),
+        newPhoneNumber: not(sameAs("tempPhone")),
+        phone,
+      },
       email: {
         required: requiredIf(() => {
-          return !this.isEdditable;
+          return !this.isEmailEditable;
         }),
         newEmail: not(sameAs("tempEmail")),
-        email
+        email,
       },
       emailConfirmation: {
         required: requiredIf(() => {
-          return !this.isEdditable;
+          return !this.isEmailEditable;
         }),
         sameAsEmail: sameAs("email"),
-        email
-      }
+        email,
+      },
     };
   }
 
@@ -462,24 +545,36 @@ export default class ProfileComponent extends Vue {
     return param.$dirty ? !param.$invalid : undefined;
   }
 
-  private makeEdditable(): void {
-    this.isEdditable = true;
+  private makeEmailEditable(): void {
+    this.isEmailEditable = true;
     this.emailConfirmation = this.email;
     this.tempEmail = this.email || "";
   }
 
-  private cancelEdit(): void {
-    this.isEdditable = false;
+  private makePhoneEditable(): void {
+    this.isPhoneEditable = true;
+    this.tempPhone = this.phoneNumber || "";
+  }
+
+  private cancelEmailEdit(): void {
+    this.isEmailEditable = false;
     this.email = this.tempEmail;
     this.emailConfirmation = "";
     this.tempEmail = "";
     this.$v.$reset();
   }
 
-  private saveEdit(event: any): void {
+  private cancelPhoneEdit(): void {
+    this.isPhoneEditable = false;
+    this.phoneNumber = this.tempPhone;
+    this.tempPhone = "";
+    this.$v.$reset();
+  }
+
+  private saveEmailEdit(event: any): void {
     this.$v.$touch();
     console.log(this.$v);
-    if (this.$v.$invalid) {
+    if (this.$v.email.$invalid || this.$v.emailConfirmation.$invalid) {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
@@ -492,21 +587,34 @@ export default class ProfileComponent extends Vue {
     event.preventDefault();
   }
 
+  private savePhoneEdit(event: any): void {
+    this.$v.$touch();
+    console.log(this.$v);
+    if (this.$v.phoneNumber.$invalid) {
+      this.submitStatus = "ERROR";
+    } else {
+      this.submitStatus = "PENDING";
+      console.log(this.phoneNumber);
+      this.updatePhoneNumber();
+    }
+    event.preventDefault();
+  }
+
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({
       hdid: this.user.hdid || "",
-      emailAddress: this.email
+      emailAddress: this.email,
     })
       .then(() => {
         console.log("success!");
-        this.isEdditable = false;
+        this.isEmailEditable = false;
         this.verificationSent = true;
         this.emailConfirmation = "";
         this.tempEmail = "";
         this.$v.$reset();
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -515,21 +623,34 @@ export default class ProfileComponent extends Vue {
       });
   }
 
+  private updatePhoneNumber(): void {
+    console.log("Updating " + this.phoneNumber ? this.phoneNumber : "phone number...");
+    // Send update to backend
+    this.isPhoneEditable = false;
+    this.tempPhone = "";
+    this.$v.$reset();
+  }
+
   private removeEmail(): void {
     this.$v.$touch();
     this.email = "";
     this.emailConfirmation = "";
   }
 
+  private removePhone(): void {
+    this.$v.$touch();
+    this.phoneNumber = "";
+  }
+
   private recoverAccount(): void {
     this.isLoading = true;
     this.recoverUserAccount({
-      hdid: this.user.hdid
+      hdid: this.user.hdid,
     })
       .then(() => {
         console.log("success!");
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -549,13 +670,13 @@ export default class ProfileComponent extends Vue {
   private closeAccount(): void {
     this.isLoading = true;
     this.closeUserAccount({
-      hdid: this.user.hdid
+      hdid: this.user.hdid,
     })
       .then(() => {
         console.log("success!");
         this.showCloseWarning = false;
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
