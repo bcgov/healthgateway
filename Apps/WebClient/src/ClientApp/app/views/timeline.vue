@@ -276,7 +276,7 @@ import {
   LaboratoryOrder,
   LaboratoryResult,
   LaboratoryReport
-} from "../models/laboratory";
+} from "@/models/laboratory";
 
 const namespace: string = "user";
 
