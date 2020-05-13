@@ -46,9 +46,7 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-collapse
-          :id="'entryComments-' + parentEntry.id"
-        >
+        <b-collapse :id="'entryComments-' + parentEntry.id">
           <div v-if="!isLoadingComments">
             <div v-for="comment in comments" :key="comment.id">
               <Comment :comment="comment" @needs-update="needsUpdate"></Comment>
@@ -77,8 +75,8 @@ import container from "@/plugins/inversify.config";
 
 @Component({
   components: {
-    Comment: CommentComponent,
-  },
+    Comment: CommentComponent
+  }
 })
 export default class CommentSectionComponent extends Vue {
   @Prop() parentEntry!: MedicationTimelineEntry;
@@ -94,7 +92,7 @@ export default class CommentSectionComponent extends Vue {
     parentEntryId: this.parentEntry.id,
     userProfileId: "",
     createdDateTime: new Date(),
-    version: 0,
+    version: 0
   };
 
   private mounted() {
@@ -129,13 +127,13 @@ export default class CommentSectionComponent extends Vue {
     const parentEntryId = this.parentEntry.id;
     let commentPromise = this.commentService
       .getCommentsForEntry(parentEntryId)
-      .then((result) => {
+      .then(result => {
         if (result) {
           this.comments = result.resourcePayload;
           this.sortComments();
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading comments for entry " + this.parentEntry.id);
         console.log(err);
         this.hasErrors = true;

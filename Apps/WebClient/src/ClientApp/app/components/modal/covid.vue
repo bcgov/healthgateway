@@ -1,16 +1,4 @@
 ﻿<style lang="scss">
-@import "@/assets/scss/_variables.scss";
-.text-large {
-  font-size: 250%;
-}
-.modal-header {
-  background-color: $danger;
-  color: $primary_text;
-
-  .close {
-      color: $primary_text;
-  }
-}
 .modal-footer {
   justify-content: flex-end;
 }
@@ -20,8 +8,10 @@
   <b-modal
     id="covid-modal"
     title="COVID-19"
-    header-class="modal-header"
+    header-bg-variant="danger"
+    header-text-variant="light"
     footer-class="modal-footer"
+    :no-close-on-backdrop="true"
     centered
   >
     <b-row>
@@ -29,7 +19,10 @@
         <form @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col>
-              <span>Check the status of your COVID-19 test and view your result if it is available.</span>
+              <span
+                >Check the status of your COVID-19 test and view your result
+                when it is available</span
+              >
             </b-col>
           </b-row>
         </form>
@@ -116,6 +109,5 @@ export default class CovidModalComponent extends Vue {
       this.hideModal();
     });
   }
-
 }
 </script>
