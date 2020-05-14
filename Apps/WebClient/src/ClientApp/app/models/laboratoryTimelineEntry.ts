@@ -9,6 +9,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
   public reportingLab: string | null;
   public location: string | null;
   public displayDate: Date;
+  public reportAvailable: boolean;
 
   public summaryTestType: string;
   public summaryDescription: string;
@@ -28,6 +29,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     this.orderingProviders = model.orderingProviders;
     this.reportingLab = model.reportingLab;
     this.location = model.location;
+    this.reportAvailable = model.reportAvailable;
 
     this.resultList = new Array();
     model.labResults.forEach(result => {
@@ -68,7 +70,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 export class LaboratoryResultViewModel {
   public id: string;
   public testType: string | null;
-  public outOfRange: boolean;
+  public outOfRange: string;
   public collectionDateTime: Date;
   public testStatus: string | null;
   public resultDescription: string | null;
@@ -80,7 +82,7 @@ export class LaboratoryResultViewModel {
   constructor(model: LaboratoryResult) {
     this.id = model.id;
     this.testType = model.testType;
-    this.outOfRange = model.outOfRange;
+    this.outOfRange = model.outOfRange ? "True" : "False";
     this.collectionDateTime = model.collectionDateTime;
     this.testStatus = model.testStatus;
     this.resultDescription = model.resultDescription;
