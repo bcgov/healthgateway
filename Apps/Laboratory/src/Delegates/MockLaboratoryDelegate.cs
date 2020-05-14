@@ -51,6 +51,7 @@ namespace HealthGateway.Laboratory.Delegates
                     MessageDateTime = DateTime.Now.AddDays(-1),
                     MessageID = "20200770000196",
                     AdditionalData = string.Empty,
+                    ReportAvailable = true,
                     LabResults = new LaboratoryResult[]
                     {
                         new LaboratoryResult()
