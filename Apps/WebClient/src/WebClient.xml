@@ -4,6 +4,26 @@
         <name>WebClient</name>
     </assembly>
     <members>
+        <member name="T:HealthGateway.WebClient.Constants.NotificationTarget">
+            <summary>
+            Notification Targets for PHSA Notificaiton Settings.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Constants.NotificationTarget.Covid19">
+            <summary>
+            Specifies the target is for Covid19.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Constants.NotificationTarget.Labs">
+            <summary>
+            Specifies that the target is for Labs.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Constants.NotificationTarget.Imaging">
+            <summary>
+            Specifies that the target is for Imaging.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Constant.RegistrationStatus">
             <summary>
             Registration status modes.
@@ -389,6 +409,26 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Delegates.INotificationSettingsDelegate">
+            <summary>
+            Interface that defines a delegate to get and set Notification Settings at PHSA.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.INotificationSettingsDelegate.GetNotificationSettings(System.String)">
+            <summary>
+            Gets the Notification Settings for authenticated user.
+            </summary>
+            <param name="bearerToken">The access token of the authenticated user.</param>
+            <returns>The Notification Settings wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.INotificationSettingsDelegate.SetNotificationSettings(HealthGateway.WebClient.Models.NotificationSettings,System.String)">
+            <summary>
+            Creates or Updates the Notification Settings at PHSA.
+            </summary>
+            <param name="notificationSettings">The notification settings to send to PHSA.</param>
+            <param name="bearerToken">The access token of the authenticated user.</param>
+            <returns>The notification settings sent to PHSA wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.CreateNoteRequest">
             <summary>
             Object that defines the request for creating a User.
@@ -484,6 +524,51 @@
             <summary>
             Gets or sets a value indicating whether this identity provider
             should be used.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.NotificationSettings">
+            <summary>
+            PHSA Notification Settings.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettings.SMSEnabled">
+            <summary>
+            Gets or sets a value indicating whether SMS notifications are enabled.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettings.SMSNumber">
+            <summary>
+            Gets or sets the number to be used for SMS notifications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettings.SMSScope">
+            <summary>
+            Gets or sets the SMS scope.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettings.EmailEnabled">
+            <summary>
+            Gets or sets a value indicating whether Email notifications are enabled.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettings.EmailAddress">
+            <summary>
+            Gets or sets the email to be used for notifications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettings.EmailScope">
+            <summary>
+            Gets or sets the Email scope.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.NotificationSettingsConfig">
+            <summary>
+            Provides configuration data for the Notifications Settings PHSA API.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettingsConfig.Endpoint">
+            <summary>
+            Gets or sets the PHSA Notification Settings external endpoint.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
@@ -1250,6 +1335,25 @@
             <param name="app">The application builder.</param>
             <param name="env">The hosting environment.</param>
             <param name="nonceService">Service that provides nonce utilities.</param>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Delegates.RestNotificationSettingsDelegate">
+            <summary>
+            Implementation that uses HTTP to sends notification settings to PHSA.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.RestNotificationSettingsDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Laboratory.Delegates.RestNotificationSettingsDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Delegates.RestNotificationSettingsDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.RestNotificationSettingsDelegate.GetNotificationSettings(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.RestNotificationSettingsDelegate.SetNotificationSettings(HealthGateway.WebClient.Models.NotificationSettings,System.String)">
+            <inheritdoc/>
         </member>
     </members>
 </doc>
