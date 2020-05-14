@@ -233,7 +233,6 @@
       ref="covidModal"
       :is-loading="isLoading"
       @submit="onCovidSubmit"
-      @cancel="onCovidCancel"
     />
   </div>
 </template>
@@ -352,9 +351,6 @@ export default class TimelineComponent extends Vue {
     EventBus.$on("idleLogoutWarning", function(isVisible: boolean) {
       self.idleLogoutWarning = isVisible;
     });
-
-    // To be updated with Enabled/Disabled covid message configuration
-    this.covidModal.showModal();
   }
 
   private beforeRouteLeave(to: Route, from: Route, next: any) {
@@ -518,11 +514,8 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCovidSubmit() {
-    // TO BE IMPLEMENTED
-  }
-
-  private onCovidCancel() {
-    // TO BE IMPLEMENTED
+    this.protectiveWordModal.hideModal();
+    this.filterTypes = ["Laboratory"];
   }
 
   private fetchImmunizations() {
@@ -571,6 +564,10 @@ export default class TimelineComponent extends Vue {
           }
           this.sortEntries();
           this.applyTimelineFilter();
+
+          if (results.resourcePayload.length > 0) {
+            this.covidModal.showModal();
+          }
         } else {
           console.log(
             "Error returned from the laboratory call: " + results.resultMessage
