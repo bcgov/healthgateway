@@ -27,9 +27,31 @@
   height: 38px !important;
 }
 
-.comment-button {
+.comment-button-wrapper {
   flex: 0 0 auto;
   flex-direction: row;
+  margin-right: 10px;
+
+  // Small screens
+  @media (max-width: 509px) {
+    justify-content: flex-end;
+    margin-top: 5px;
+    flex-grow: 1;
+  }
+
+  // 768 - 845
+  @media (max-width: 844px) and (min-width: 768px) {
+    justify-content: flex-end;
+    margin-top: 5px;
+    flex-grow: 1;
+  }
+
+  // 992 - 1100
+  @media (max-width: 1099px) and (min-width: 992px) {
+    justify-content: flex-end;
+    margin-top: 5px;
+    flex-grow: 1;
+  }
 }
 
 .dropdown {
@@ -95,7 +117,7 @@
             Only you can see comments added to your medical records.
           </b-tooltip>
         </div>
-        <div class="comment-input pl-2">
+        <div class="comment-input px-2">
           <b-form @submit.prevent>
             <b-form-textarea
               v-model="commentInput"
@@ -108,24 +130,22 @@
             ></b-form-textarea>
           </b-form>
         </div>
-        <div class="d-flex comment-button px-3 flex-row">
+        <div class="d-flex comment-button-wrapper flex-row">
           <b-button
+            class="mr-2"
             variant="primary"
             :disabled="commentInput === ''"
-            class="d-flex"
             @click="onSubmit"
           >
             Save
           </b-button>
-          <div class="d-flex pl-2">
-            <b-button
-              :disabled="commentInput === '' && isNewComment"
-              variant="secondary"
-              @click="onCancel"
-            >
-              Cancel
-            </b-button>
-          </div>
+          <b-button
+            :disabled="commentInput === '' && isNewComment"
+            variant="secondary"
+            @click="onCancel"
+          >
+            Cancel
+          </b-button>
         </div>
       </b-row>
       <b-row v-if="!isNewComment" class="px-3">
@@ -149,7 +169,7 @@ import { Prop, Component, Emit, Watch } from "vue-property-decorator";
 import {
   faEllipsisV,
   IconDefinition,
-  faLock
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -221,13 +241,13 @@ export default class CommentComponent extends Vue {
       .createComment({
         text: this.commentInput,
         parentEntryId: this.comment.parentEntryId,
-        userProfileId: this.user.hdid
+        userProfileId: this.user.hdid,
       })
       .then(() => {
         this.commentInput = "";
         this.onCommentAdded(this.comment);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(
           "Error adding comment on entry " + this.comment.parentEntryId
         );
@@ -253,12 +273,12 @@ export default class CommentComponent extends Vue {
         userProfileId: this.comment.userProfileId,
         parentEntryId: this.comment.parentEntryId,
         createdDateTime: this.comment.createdDateTime,
-        version: this.comment.version
+        version: this.comment.version,
       })
-      .then(result => {
+      .then((result) => {
         this.needsUpdate(this.comment);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.hasErrors = true;
       })
@@ -273,10 +293,10 @@ export default class CommentComponent extends Vue {
       this.isLoading = true;
       this.commentService
         .deleteComment(this.comment)
-        .then(result => {
+        .then((result) => {
           this.needsUpdate(this.comment);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         })
         .finally(() => {
