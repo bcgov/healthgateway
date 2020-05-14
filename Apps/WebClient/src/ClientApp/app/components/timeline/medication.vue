@@ -99,7 +99,6 @@ $radius: 15px;
             </div>
             <b-collapse
               :id="'entryDetails-' + index + '-' + datekey"
-              v-model="detailsVisible"
             >
               <div v-if="detailsLoaded">
                 <div class="detailSection">
