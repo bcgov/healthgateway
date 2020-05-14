@@ -93,7 +93,7 @@ import {
   PaginationNavPlugin,
   TooltipPlugin,
   FormGroupPlugin,
-  FormRadioPlugin,
+  FormRadioPlugin
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);

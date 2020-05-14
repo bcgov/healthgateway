@@ -14,7 +14,6 @@ $radius: 15px;
   background-color: $soft_background;
   color: $primary;
   padding: 13px 15px;
-  font-weight: bold;
   margin-right: -1px;
   border-radius: 0px $radius 0px 0px;
 }
@@ -61,7 +60,14 @@ $radius: 15px;
         <font-awesome-icon :icon="entryIcon" size="2x"></font-awesome-icon>
       </b-col>
       <b-col class="entryTitle">
-        {{ entry.summaryTestType }}
+        <b-row class="justify-content-between">
+          <b-col cols="auto">
+            <strong>{{ entry.summaryTestType }}</strong>
+          </b-col>
+          <b-col cols="auto" class="text-muted">
+            <strong> Status: {{ entry.summaryStatus }}</strong>
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
     <b-row class="my-2">
@@ -71,8 +77,18 @@ $radius: 15px;
           <b-col cols="8">
             {{ entry.summaryDescription }}
           </b-col>
-          <b-col cols="auto">
-            <strong>Status:</strong> {{ entry.summaryStatus }}
+          <b-col v-if="reportAvailiable" cols="auto" class="pr-0">
+            <b-spinner v-if="isLoadingDocument"></b-spinner>
+            <span v-else>
+              <strong>Report:</strong>
+              <b-btn variant="link" @click="getReport()">
+                <font-awesome-icon
+                  icon="file-download"
+                  aria-hidden="true"
+                  size="1x"
+                />
+              </b-btn>
+            </span>
           </b-col>
         </b-row>
         <b-row>
@@ -130,7 +146,7 @@ $radius: 15px;
                     <div>
                       <strong>Test Status:</strong> {{ result.testStatus }}
                     </div>
-                    <div>
+                    <div class="my-2">
                       <strong>Result Description:</strong>
                       <p v-html="result.resultDescription"></p>
                     </div>
@@ -142,17 +158,6 @@ $radius: 15px;
                     <div>
                       <strong>Received Date Time:</strong>
                       {{ formatDate(result.receivedDateTime) }}
-                    </div>
-                    <div>
-                      <strong>Report Document:</strong>
-                      <b-btn variant="link" @click="getDocument(result)">
-                        <font-awesome-icon
-                          icon="file-download"
-                          aria-hidden="true"
-                          size="1x"
-                        />
-                      </b-btn>
-                      <b-spinner v-if="isLoadingDocument"></b-spinner>
                     </div>
                   </div>
                 </div>
@@ -220,13 +225,13 @@ export default class LaboratoryTimelineComponent extends Vue {
     return moment(date).format("lll");
   }
 
-  private getDocument(labResult: LaboratoryResultViewModel) {
+  private getReport() {
     this.isLoadingDocument = true;
     this.laboratoryService
-      .getReportDocument(labResult.id)
+      .getReportDocument(this.entry.id)
       .then(result => {
         const link = document.createElement("a");
-        let dateString = moment(labResult.resultDateTime)
+        let dateString = moment(this.entry.displayDate)
           .local()
           .format("YYYY_MM_DD-HH_mm");
         let report: LaboratoryReport = result.resourcePayload;
@@ -241,6 +246,10 @@ export default class LaboratoryTimelineComponent extends Vue {
       .finally(() => {
         this.isLoadingDocument = false;
       });
+  }
+
+  private get reportAvailiable(): boolean {
+    return this.entry.reportAvailable;
   }
 }
 </script>

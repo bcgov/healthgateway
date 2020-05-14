@@ -23,6 +23,7 @@ export interface LaboratoryOrder {
   messageDateTime: Date;
   messageId: string | null;
   additionalData: string | null;
+  reportAvailable: boolean;
   labResults: LaboratoryResult[];
 }
 
