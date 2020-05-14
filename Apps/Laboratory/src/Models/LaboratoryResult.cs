@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// The user representation of laboratory data.
@@ -25,51 +26,61 @@ namespace HealthGateway.Laboratory.Models
         /// <summary>
         /// Gets or sets the id for the lab result.
         /// </summary>
+        [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the test type.
         /// </summary>
+        [JsonPropertyName("testType")]
         public string TestType { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether the result is out of range.
         /// </summary>
+        [JsonPropertyName("outOfRange")]
         public bool OutOfRange { get; set; }
 
         /// <summary>
         /// Gets or sets the datetime the lab collection took place.
         /// </summary>
+        [JsonPropertyName("collectedDateTime")]
         public DateTime CollectionDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the test.
         /// </summary>
+        [JsonPropertyName("testStatus")]
         public string? TestStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the result description.
         /// </summary>
+        [JsonPropertyName("resultDescription")]
         public string ResultDescription { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the received datetime.
         /// </summary>
+        [JsonPropertyName("receivedDateTime")]
         public DateTime ReceivedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the result datetime.
         /// </summary>
+        [JsonPropertyName("resultDateTime")]
         public DateTime ResultDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the LOINC code.
         /// </summary>
+        [JsonPropertyName("loinc")]
         public string? LOINC { get; set; }
 
         /// <summary>
         /// Gets or sets the LOINC Name/Description.
         /// </summary>
+        [JsonPropertyName("loincName")]
         public string? LOINCName { get; set; }
     }
 }
