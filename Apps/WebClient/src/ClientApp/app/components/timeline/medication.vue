@@ -97,7 +97,10 @@ $radius: 15px;
                 <span v-else>View Details</span>
               </b-btn>
             </div>
-            <b-collapse :id="'entryDetails-' + index + '-' + datekey">
+            <b-collapse
+              :id="'entryDetails-' + index + '-' + datekey"
+              v-model="detailsVisible"
+            >
               <div v-if="detailsLoaded">
                 <div class="detailSection">
                   <div>

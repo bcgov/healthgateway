@@ -1,5 +1,5 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import { LaboratoryReport, LaboratoryResult } from "./laboratory";
+import { LaboratoryOrder, LaboratoryResult } from "./laboratory";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
@@ -16,7 +16,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
   public resultList: LaboratoryResultViewModel[];
 
-  public constructor(model: LaboratoryReport) {
+  public constructor(model: LaboratoryOrder) {
     super(
       model.id,
       EntryType.Laboratory,
