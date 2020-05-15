@@ -558,7 +558,7 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            // phoneNumber: this.phoneNumber || "",
+            phoneNumber: this.phoneNumber || "",
           },
           inviteCode: this.inviteKey || "",
         })
