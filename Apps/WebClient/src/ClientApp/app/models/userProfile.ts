@@ -8,6 +8,9 @@ export default interface UserProfile {
   // The user email.
   email: string;
 
+  // The user phone number.
+  phoneNumber: string;
+
   // Flag to know if the terms of service have been updated since last login
   hasTermsOfServiceUpdated: boolean;
 
