@@ -1,17 +1,5 @@
 ﻿<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.text-large {
-  font-size: 250%;
-}
-.modal-header {
-  background-color: $primary;
-  color: $primary_text;
-
-  button,
-  button:hover {
-    color: #fff;
-  }
-}
 .modal-footer {
   justify-content: flex-start;
 }
@@ -20,8 +8,8 @@
   <b-modal
     ref="idle-modal"
     v-model="visible"
-    header-class="modal-header"
-    footer-class="modal-footer"
+    header-bg-variant="primary"
+    header-text-variant="light"
     :ok-only="true"
     title="Are you still there?"
     ok-title="I'm here!"
