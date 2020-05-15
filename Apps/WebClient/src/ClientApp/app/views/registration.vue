@@ -236,8 +236,8 @@ label {
             >
             <b-form-input
               id="phoneNumber"
-              class="d-flex"
               v-model="$v.phoneNumber.$model"
+              class="d-flex"
               type="text"
               placeholder="Your phone number"
               :state="isValid($v.phoneNumber)"
@@ -263,28 +263,20 @@ label {
             </div>
             <div>
               <b-form-radio-group
-                class="d-flex flex-direction-row"
                 id="radio"
                 v-model="preferredMethod"
+                class="d-flex flex-direction-row"
                 :state="isValid($v.preferredMethod)"
               >
-                <b-form-radio
-                  class="d-flex"
-                  id="emailPreferred"
-                  value="email"
-                >
+                <b-form-radio id="emailPreferred" class="d-flex" value="email">
                   Email
                 </b-form-radio>
-                <b-form-radio
-                  class="d-flex"
-                  id="phonePreferred"
-                  value="phone"
-                >
+                <b-form-radio id="phonePreferred" class="d-flex" value="phone">
                   Phone
                 </b-form-radio>
                 <b-form-radio
-                  class="d-flex"
                   id="noNotifications"
+                  class="d-flex"
                   value="optout"
                   @change="optOutChanged($event)"
                 >
@@ -343,7 +335,7 @@ import { Component, Ref, Prop } from "vue-property-decorator";
 import {
   IUserProfileService,
   IAuthenticationService,
-  IBetaRequestService,
+  IBetaRequestService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -354,7 +346,7 @@ import {
   sameAs,
   email,
   helpers,
-  ValidationRule,
+  ValidationRule
 } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
@@ -368,8 +360,8 @@ library.add(faCheck);
 @Component({
   components: {
     LoadingComponent,
-    HtmlTextAreaComponent,
-  },
+    HtmlTextAreaComponent
+  }
 })
 export default class RegistrationComponent extends Vue {
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
@@ -429,13 +421,13 @@ export default class RegistrationComponent extends Vue {
     );
     authenticationService
       .getOidcUserProfile()
-      .then((oidcUser) => {
+      .then(oidcUser => {
         if (oidcUser) {
           this.oidcUser = oidcUser;
 
           this.betaRequestService
             .getRequest(this.oidcUser.hdid)
-            .then((betaRequest) => {
+            .then(betaRequest => {
               console.log("beta request:", betaRequest);
               if (betaRequest) {
                 this.email = betaRequest.emailAddress;
@@ -465,7 +457,7 @@ export default class RegistrationComponent extends Vue {
   }
 
   validations() {
-    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/)
+    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
     return {
       phoneNumber: {
         required: requiredIf(() => {
@@ -477,19 +469,19 @@ export default class RegistrationComponent extends Vue {
         required: requiredIf(() => {
           return !this.optout && this.preferredMethod === "email";
         }),
-        email,
+        email
       },
       emailConfirmation: {
         required: requiredIf(() => {
           return !this.optout && this.preferredMethod === "email";
         }),
         sameAsEmail: sameAs("email"),
-        email,
+        email
       },
       preferredMethod: {
         required
       },
-      accepted: { isChecked: sameAs(() => true) },
+      accepted: { isChecked: sameAs(() => true) }
     };
   }
 
@@ -519,11 +511,11 @@ export default class RegistrationComponent extends Vue {
     this.loadingTermsOfService = true;
     this.userProfileService
       .getTermsOfService()
-      .then((result) => {
+      .then(result => {
         console.log(result);
         this.termsOfService = result.content;
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
         this.handleError("Please refresh your browser.");
       })
@@ -558,11 +550,11 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            phoneNumber: this.phoneNumber || "",
+            phoneNumber: this.phoneNumber || ""
           },
-          inviteCode: this.inviteKey || "",
+          inviteCode: this.inviteKey || ""
         })
-        .then((result) => {
+        .then(result => {
           console.log(result);
           this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
             (isRegistered: boolean) => {
@@ -574,7 +566,7 @@ export default class RegistrationComponent extends Vue {
             }
           );
         })
-        .catch((err) => {
+        .catch(err => {
           this.handleError(err);
         })
         .finally(() => {
@@ -602,12 +594,12 @@ export default class RegistrationComponent extends Vue {
 
       let newRequest: BetaRequest = {
         hdid: this.oidcUser.hdid,
-        emailAddress: this.email,
+        emailAddress: this.email
       };
 
       this.betaRequestService
         .putRequest(newRequest)
-        .then((result) => {
+        .then(result => {
           console.log("success!");
           console.log(result);
           this.waitlistEdditable = false;
@@ -617,7 +609,7 @@ export default class RegistrationComponent extends Vue {
           this.hasErrors = false;
           this.$v.$reset();
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("OH NO!", err);
           this.hasErrors = true;
         })
