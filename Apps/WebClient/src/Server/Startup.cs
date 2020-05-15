@@ -25,6 +25,8 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.WebClient.Delegates;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -95,6 +97,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
+            services.AddSingleton<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
