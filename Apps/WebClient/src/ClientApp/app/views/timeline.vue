@@ -222,17 +222,17 @@
         <HealthlinkComponent />
       </b-col>
     </b-row>
+    <CovidModalComponent
+      ref="covidModal"
+      :is-loading="isLoading"
+      @submit="onCovidSubmit"
+    />
     <ProtectiveWordComponent
       ref="protectiveWordModal"
       :error="protectiveWordAttempts > 1"
       :is-loading="isLoading"
       @submit="onProtectiveWordSubmit"
       @cancel="onProtectiveWordCancel"
-    />
-    <CovidModalComponent
-      ref="covidModal"
-      :is-loading="isLoading"
-      @submit="onCovidSubmit"
     />
   </div>
 </template>
