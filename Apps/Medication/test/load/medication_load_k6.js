@@ -15,7 +15,7 @@ let auth_form_data = {
   audience: "healthgateway",
   scope: "openid",
   username: "2gateway",
-  password: "fubar"
+  password: '${__ENV.PWD}'
 };
 
 let access_token = null;
