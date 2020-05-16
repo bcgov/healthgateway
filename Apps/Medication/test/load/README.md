@@ -3,4 +3,4 @@
 
 ## How to run
 
-`docker run -i loadimpact/k6 run - <medication_load_k6.js`
+`docker run -i loadimpact/k6 run -d 30s -u 20 - <medication_load_k6.js`
