@@ -1,0 +1,39 @@
+import http from 'k6/http';
+import { check } from 'k6';
+import { Rate } from 'k6/metrics';
+
+export let errorRate = new Rate('errors');
+
+let TokenEndpointUrl  = 'https://sso-dev.pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token'; 
+let ServiceEndPointUrl = 'https://dev.healthgateway.gov.bc.ca/api/medicationservice/v1/api/MedicationStatement';
+
+let auth_form_data = {
+  grant_type: "password",
+  client_id: "healthgateway",
+  audience: "healthgateway",
+  scope: "openid",
+  username: "2gateway",
+  password: "fubar"
+};
+
+let access_token = null;
+
+ export default function() {
+
+  if (access_token == null)
+  {
+    var res = http.post(TokenEndpointUrl, auth_form_data);
+    var res_json = JSON.parse(res.body);
+		access_token = res_json['access_token'];
+  }
+  var url = ServiceEndPointUrl;
+  var params = {
+    headers: {
+      Authorization: 'Bearer ' + access_token,
+      'Content-Type': 'application/json'
+    }
+  };
+  check(http.get(url, params), {
+    'status is 200': r => r.status == 200
+  }) || errorRate.add(1);
+}
