@@ -48,5 +48,5 @@ export default function () {
     'status is 200': r => r.status == 200
   }) ||  errorRate.add(1);
 
-  sleep(1);
+  sleep(0.3);
 }
