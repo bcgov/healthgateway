@@ -7,7 +7,7 @@ import { ResultType } from "@/constants/resulttype";
 
 @injectable()
 export class RestImmunizationService implements IImmunizationService {
-  private readonly IMMS_BASE_URI: string = "v1/api/Immunization/";
+  private readonly IMMS_BASE_URI: string = "v1/api/Immunization";
   private baseUri: string = "";
   private http!: IHttpDelegate;
   private isEnabled: boolean = false;
@@ -38,7 +38,7 @@ export class RestImmunizationService implements IImmunizationService {
 
       this.http
         .getWithCors<RequestResult<ImmunizationData[]>>(
-          `${this.baseUri}${this.IMMS_BASE_URI}${hdid}`
+          `${this.baseUri}${this.IMMS_BASE_URI}/${hdid}`
         )
         .then(requestResult => {
           resolve(requestResult);

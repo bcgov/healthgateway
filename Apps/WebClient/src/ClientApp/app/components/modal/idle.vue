@@ -6,7 +6,7 @@
 </style>
 <template>
   <b-modal
-    ref="idle-modal"
+    id="idle-modal"
     v-model="visible"
     header-bg-variant="primary"
     header-text-variant="light"
@@ -27,17 +27,17 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Ref, Emit, Component } from "vue-property-decorator";
+import { Emit, Component } from "vue-property-decorator";
 import { Action } from "vuex-class";
 import EventBus from "@/eventbus";
 import User from "@/models/user";
 
 @Component
 export default class IdleComponent extends Vue {
-  @Ref("idle-modal") readonly modal!: HTMLElement;
   @Action("authenticateOidcSilent", { namespace: "auth" })
   authenticateOidcSilent!: () => Promise<User | null>;
 
+  private readonly modalId: string = "idle-modal";
   private totalTime: number = 60;
   private visible: boolean = false;
   private timerHandle?: number;
@@ -46,7 +46,7 @@ export default class IdleComponent extends Vue {
   @Emit()
   public show() {
     if (!this.visible) {
-      this.modal.show();
+      this.$bvModal.show(this.modalId);
       var self = this;
       this.timerHandle = setInterval(() => self.countdown(), 1000);
       this.timeoutHandle = setTimeout(() => {

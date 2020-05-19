@@ -1,10 +1,6 @@
 import { ActionTree, Commit } from "vuex";
 
-import {
-  IPatientService,
-  IUserProfileService,
-  IUserEmailService
-} from "@/services/interfaces";
+import { IPatientService, IUserProfileService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
@@ -23,10 +19,6 @@ const patientService: IPatientService = container.get<IPatientService>(
 const userProfileService: IUserProfileService = container.get<
   IUserProfileService
 >(SERVICE_IDENTIFIER.UserProfileService);
-
-const userEmailService: IUserEmailService = container.get<IUserEmailService>(
-  SERVICE_IDENTIFIER.UserEmailService
-);
 
 export const actions: ActionTree<UserState, RootState> = {
   getPatientData({ commit }, { hdid }): Promise<PatientData> {
@@ -62,7 +54,7 @@ export const actions: ActionTree<UserState, RootState> = {
 
           // If registered retrieve the invite as well
           if (isRegistered) {
-            userEmailService
+            userProfileService
               .getLatestInvite(hdid)
               .then(userEmailInvite => {
                 commit("setValidatedEmail", userEmailInvite);
@@ -85,7 +77,7 @@ export const actions: ActionTree<UserState, RootState> = {
   },
   getUserEmail({ commit }, { hdid }): Promise<UserEmailInvite> {
     return new Promise((resolve, reject) => {
-      userEmailService
+      userProfileService
         .getLatestInvite(hdid)
         .then(userEmailInvite => {
           commit("setValidatedEmail", userEmailInvite);
@@ -99,7 +91,7 @@ export const actions: ActionTree<UserState, RootState> = {
   },
   updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
     return new Promise((resolve, reject) => {
-      userEmailService
+      userProfileService
         .updateEmail(hdid, emailAddress)
         .then(() => {
           resolve();
