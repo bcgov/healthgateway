@@ -70,10 +70,13 @@ namespace HealthGateway.WebClient.Test.Controllers
             userProfileServiceMock.Setup(s => s.GetUserProfile(hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
 
+            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
-                authorizationServiceMock.Object
+                authorizationServiceMock.Object,
+                emailServiceMock.Object
             );
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
@@ -97,11 +100,13 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(AuthorizationResult.Failed);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
-                authorizationServiceMock.Object
+                authorizationServiceMock.Object,
+                emailServiceMock.Object
             );
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
@@ -143,11 +148,13 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>())).Returns(expected);
+            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();            
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
-                authorizationServiceMock.Object
+                authorizationServiceMock.Object,
+                emailServiceMock.Object
             );
             IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest).ConfigureAwait(true);
 
