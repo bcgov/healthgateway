@@ -5,7 +5,7 @@ import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestPatientService implements IPatientService {
-  private readonly PATIENT_BASE_URI: string = "v1/api/Patient/";
+  private readonly PATIENT_BASE_URI: string = "v1/api/Patient";
   private baseUri: string = "";
   private http!: IHttpDelegate;
   constructor() {}
@@ -17,7 +17,7 @@ export class RestPatientService implements IPatientService {
 
   public getPatientData(hdid: string): Promise<PatientData> {
     return this.http.get<PatientData>(
-      `${this.baseUri}${this.PATIENT_BASE_URI}${hdid}`
+      `${this.baseUri}${this.PATIENT_BASE_URI}/${hdid}`
     );
   }
 }

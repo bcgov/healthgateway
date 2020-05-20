@@ -11,7 +11,6 @@ import {
   IMedicationService,
   IUserProfileService,
   IUserFeedbackService,
-  IUserEmailService,
   IBetaRequestService,
   IUserNoteService,
   ICommunicationService,
@@ -27,7 +26,6 @@ import { RestMedicationService } from "@/services/restMedicationService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
-import { RestUserEmailService } from "@/services/restUserEmailService";
 import { RestBetaRequestService } from "@/services/restBetaRequestService";
 import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
@@ -65,10 +63,6 @@ container
 container
   .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
   .to(RestUserFeedbackService)
-  .inSingletonScope();
-container
-  .bind<IUserEmailService>(SERVICE_IDENTIFIER.UserEmailService)
-  .to(RestUserEmailService)
   .inSingletonScope();
 container
   .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)

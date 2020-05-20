@@ -11,5 +11,5 @@ $lightGrey: #edf1f8;
 $danger: #d93e45;
 
 $z_top_layer: 9999;
-$z_sidebar: 9990;
+$z_sidebar: 1030; // Less than modal backdrop (1040)
 $z_overlay: 998;

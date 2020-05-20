@@ -65,6 +65,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Server\Models\NotificationSettings.cs" />
+    <Compile Remove="Server\Models\NotificationSettingsConfig.cs" />
+    <Compile Remove="Server\Models\NotificationSettingsBase %28copy%29.cs" />
+    <Compile Remove="Server\Models\NotificationSettingsRequest %28copy%29.cs" />
+    <Compile Remove="Server\Constants\NotificationTarget.cs" />
+  </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
   </Target>
@@ -112,7 +119,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="wwwroot\dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
