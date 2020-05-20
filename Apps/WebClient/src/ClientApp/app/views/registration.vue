@@ -187,25 +187,39 @@ label {
           <b-col>
             <div id="pageTitle">
               <h1 id="Subject">
-                Terms of Service
+                Communication Preferences
               </h1>
               <div id="Description">
-                <strong>{{ fullName }}</strong>
-                , please provide your email address to receive notifications
-                about updates to the Health Gateway, such as new features and
-                changes.
+                Health Gateway will send you mandatory notifications via email
+                and based on your preference, may send email and/or text for
+                other notifications.
               </div>
             </div>
           </b-col>
         </b-row>
         <b-row class="mb-3">
           <b-col>
+            <b-row class="d-flex">
+              <b-col class="d-flex flex-grow-0 pr-0">
+                <b-form-checkbox
+                  @click="handleEmailCheckbox"
+                  v-model="isEmailChecked"
+                  id="emailCheckbox"
+                >
+                </b-form-checkbox>
+              </b-col>
+              <b-col class="d-flex flex-grow-1 px-0">
+                <label class="d-flex" for="email"
+                  >Email Notifications <Address></Address>
+                </label>
+              </b-col>
+            </b-row>
             <b-form-input
               id="email"
               v-model="$v.email.$model"
               type="email"
               placeholder="Your email address"
-              :disabled="optout || isPredefinedEmail"
+              :disabled="isPredefinedEmail || !isEmailChecked"
               :state="isValid($v.email)"
             />
             <b-form-invalid-feedback :state="isValid($v.email)">
@@ -220,7 +234,7 @@ label {
               v-model="$v.emailConfirmation.$model"
               type="email"
               placeholder="Confirm your email address"
-              :disabled="optout"
+              :disabled="!isEmailChecked"
               :state="isValid($v.emailConfirmation)"
             />
             <b-form-invalid-feedback :state="$v.emailConfirmation.sameAsEmail">
@@ -231,9 +245,20 @@ label {
         <!-- SMS section -->
         <b-row class="mb-3">
           <b-col>
-            <label class="d-flex" for="phoneNumber"
-              >Phone number (for SMS notifications)</label
-            >
+            <b-row class="d-flex">
+              <b-col class="d-flex flex-grow-0 pr-0">
+                <b-form-checkbox
+                  @click="handlePhoneCheckbox"
+                  v-model="isPhoneNumberChecked"
+                  id="phoneCheckbox"
+                ></b-form-checkbox>
+              </b-col>
+              <b-col class="d-flex flex-grow-1 px-0">
+                <label class="d-flex" for="phoneNumber"
+                  >SMS Notifications <Address></Address>
+                </label>
+              </b-col>
+            </b-row>
             <b-form-input
               id="phoneNumber"
               v-model="$v.phoneNumber.$model"
@@ -241,6 +266,7 @@ label {
               type="text"
               placeholder="Your phone number"
               :state="isValid($v.phoneNumber)"
+              :disabled="!isPhoneNumberChecked"
             >
             </b-form-input>
             <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
@@ -248,47 +274,19 @@ label {
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row v-if="!isRegistrationInviteOnly" class="mb-3">
+        <b-row v-if="!isEmailChecked && !isPhoneNumberChecked">
+          <b-col class="font-weight-bold text-primary">
+            <font-awesome-icon
+              icon="exclamation-triangle"
+              aria-hidden="true"
+            ></font-awesome-icon>
+            You won't receive notifications from the Health Gateway. You can
+            update this from your Profile Page later.
+          </b-col>
+        </b-row>
+        <b-row class="mt-4">
           <b-col>
-            <div>
-              <label for="radio"
-                >Communication Preference for Lab Result Notification</label
-              >
-            </div>
-            <div>
-              <label for="radio" class="subheading"
-                >The Provincial Health Services Authority will notify you when
-                your laboratory test result is available</label
-              >
-            </div>
-            <div>
-              <b-form-radio-group
-                id="radio"
-                v-model="preferredMethod"
-                class="d-flex flex-direction-row"
-                :state="isValid($v.preferredMethod)"
-              >
-                <b-form-radio id="emailPreferred" class="d-flex" value="email">
-                  Email
-                </b-form-radio>
-                <b-form-radio id="phonePreferred" class="d-flex" value="phone">
-                  Phone
-                </b-form-radio>
-                <b-form-radio
-                  id="noNotifications"
-                  class="d-flex"
-                  value="optout"
-                  @change="optOutChanged($event)"
-                >
-                  No notifications
-                </b-form-radio>
-              </b-form-radio-group>
-            </div>
-            <div>
-              <b-form-invalid-feedback :state="isValid($v.preferredMethod)">
-                Please select a preferredmethod of communication
-              </b-form-invalid-feedback>
-            </div>
+            <h2>Terms of Service</h2>
           </b-col>
         </b-row>
         <b-row class="mb-3">
@@ -335,7 +333,7 @@ import { Component, Ref, Prop } from "vue-property-decorator";
 import {
   IUserProfileService,
   IAuthenticationService,
-  IBetaRequestService
+  IBetaRequestService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -346,7 +344,7 @@ import {
   sameAs,
   email,
   helpers,
-  ValidationRule
+  ValidationRule,
 } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
@@ -360,8 +358,8 @@ library.add(faCheck);
 @Component({
   components: {
     LoadingComponent,
-    HtmlTextAreaComponent
-  }
+    HtmlTextAreaComponent,
+  },
 })
 export default class RegistrationComponent extends Vue {
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
@@ -371,13 +369,13 @@ export default class RegistrationComponent extends Vue {
   @Prop() inviteKey?: string;
   @Prop() inviteEmail?: string;
 
-  private optout: boolean = false;
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
   private phoneNumber: string = "";
 
-  private preferredMethod: string = "";
+  private isEmailChecked: boolean = true;
+  private isPhoneNumberChecked: boolean = true;
 
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
@@ -421,13 +419,13 @@ export default class RegistrationComponent extends Vue {
     );
     authenticationService
       .getOidcUserProfile()
-      .then(oidcUser => {
+      .then((oidcUser) => {
         if (oidcUser) {
           this.oidcUser = oidcUser;
 
           this.betaRequestService
             .getRequest(this.oidcUser.hdid)
-            .then(betaRequest => {
+            .then((betaRequest) => {
               console.log("beta request:", betaRequest);
               if (betaRequest) {
                 this.email = betaRequest.emailAddress;
@@ -461,27 +459,24 @@ export default class RegistrationComponent extends Vue {
     return {
       phoneNumber: {
         required: requiredIf(() => {
-          return !this.optout && this.preferredMethod === "phone";
+          return this.isPhoneNumberChecked;
         }),
-        phone
+        phone,
       },
       email: {
         required: requiredIf(() => {
-          return !this.optout && this.preferredMethod === "email";
+          return this.isEmailChecked;
         }),
-        email
+        email,
       },
       emailConfirmation: {
         required: requiredIf(() => {
-          return !this.optout && this.preferredMethod === "email";
+          return this.isEmailChecked;
         }),
         sameAsEmail: sameAs("email"),
-        email
+        email,
       },
-      preferredMethod: {
-        required
-      },
-      accepted: { isChecked: sameAs(() => true) }
+      accepted: { isChecked: sameAs(() => true) },
     };
   }
 
@@ -511,11 +506,11 @@ export default class RegistrationComponent extends Vue {
     this.loadingTermsOfService = true;
     this.userProfileService
       .getTermsOfService()
-      .then(result => {
+      .then((result) => {
         console.log(result);
         this.termsOfService = result.content;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.handleError("Please refresh your browser.");
       })
@@ -526,14 +521,6 @@ export default class RegistrationComponent extends Vue {
 
   private isValid(param: any): boolean | undefined {
     return param.$dirty ? !param.$invalid : undefined;
-  }
-
-  private optOutChanged(isChecked: boolean) {
-    if (isChecked) {
-      this.email = "";
-      this.emailConfirmation = "";
-      this.phoneNumber = "";
-    }
   }
 
   private onSubmit(event: any) {
@@ -550,11 +537,11 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            phoneNumber: this.phoneNumber || ""
+            phoneNumber: this.phoneNumber || "",
           },
-          inviteCode: this.inviteKey || ""
+          inviteCode: this.inviteKey || "",
         })
-        .then(result => {
+        .then((result) => {
           console.log(result);
           this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
             (isRegistered: boolean) => {
@@ -566,7 +553,7 @@ export default class RegistrationComponent extends Vue {
             }
           );
         })
-        .catch(err => {
+        .catch((err) => {
           this.handleError(err);
         })
         .finally(() => {
@@ -594,12 +581,12 @@ export default class RegistrationComponent extends Vue {
 
       let newRequest: BetaRequest = {
         hdid: this.oidcUser.hdid,
-        emailAddress: this.email
+        emailAddress: this.email,
       };
 
       this.betaRequestService
         .putRequest(newRequest)
-        .then(result => {
+        .then((result) => {
           console.log("success!");
           console.log(result);
           this.waitlistEdditable = false;
@@ -609,7 +596,7 @@ export default class RegistrationComponent extends Vue {
           this.hasErrors = false;
           this.$v.$reset();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("OH NO!", err);
           this.hasErrors = true;
         })
@@ -624,6 +611,19 @@ export default class RegistrationComponent extends Vue {
     this.email = this.waitlistTempEmail;
     this.waitlistEmailConfirmation = "";
     this.$v.$reset();
+  }
+
+  private handleEmailCheckbox(): void {
+    if (!this.isEmailChecked) {
+      this.email = "";
+      this.emailConfirmation = "";
+    }
+  }
+
+  private handlePhoneCheckbox(): void {
+    if (!this.isPhoneNumberChecked) {
+      this.phoneNumber = "";
+    }
   }
 
   private handleError(error: string): void {
