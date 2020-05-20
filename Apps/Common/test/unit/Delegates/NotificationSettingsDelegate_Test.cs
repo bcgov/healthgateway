@@ -45,7 +45,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateGetNotificationSettings200()
         {
-            string json = @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
+            string json = @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -347,7 +347,8 @@ namespace HealthGateway.CommonTests.Delegates
         //        ResourcePayload = new NotificationSettingsResponse()
         //        {
         //            SMSEnabled = true,
-        //            SMSNumber = "(604) 202-6997",
+        //            SMSNumber = "6042026997",
+        //            SMSVerified = true,
         //            SMSScope = new List<NotificationTarget>
         //            {
         //                NotificationTarget.Covid19,
@@ -380,7 +381,8 @@ namespace HealthGateway.CommonTests.Delegates
         //        ResourcePayload = new NotificationSettingsResponse()
         //        {
         //            SMSEnabled = true,
-        //            SMSNumber = "(604) 202-6997",
+        //            SMSNumber = "6042026997",
+        //            SMSVerified = true,
         //            SMSScope = new List<NotificationTarget>
         //            {
         //                NotificationTarget.Covid19,

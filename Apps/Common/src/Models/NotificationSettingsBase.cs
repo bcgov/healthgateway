@@ -40,6 +40,7 @@ namespace HealthGateway.Common.Models
         {
             this.SMSEnabled = notificationSettings.SMSEnabled;
             this.SMSNumber = notificationSettings.SMSNumber;
+            this.SMSVerified = notificationSettings.SMSVerified;
             this.SMSScope = notificationSettings.SMSScope.ToList();
             this.EmailAddress = notificationSettings.EmailAddress;
             this.EmailEnabled = notificationSettings.EmailEnabled;
@@ -57,6 +58,12 @@ namespace HealthGateway.Common.Models
         /// </summary>
         [JsonPropertyName("smsCellNumber")]
         public string? SMSNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the SMS number has been validated.
+        /// </summary>
+        [JsonPropertyName("smsVerified")]
+        public bool SMSVerified { get; set; }
 
         /// <summary>
         /// Gets or sets the SMS scope.

@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Services
 {
     using System;
+    using System.Globalization;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Delegates;
@@ -48,7 +49,7 @@ namespace HealthGateway.Common.Services
         public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
-            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(notificationSettings, bearerToken));
+            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(this.ValidateVerificationCode(notificationSettings), bearerToken));
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
 
@@ -56,9 +57,22 @@ namespace HealthGateway.Common.Services
         public async Task<RequestResult<NotificationSettingsResponse>> SendNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
-            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, bearerToken).ConfigureAwait(true);
+            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.
+                            SetNotificationSettings(this.ValidateVerificationCode(notificationSettings), bearerToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
             return retVal;
+        }
+
+        private NotificationSettingsRequest ValidateVerificationCode(NotificationSettingsRequest notificationSettings)
+        {
+            if (!notificationSettings.SMSVerified && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
+            {
+                // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
+                Random generator = new Random();
+                notificationSettings.SMSVerificationCode = generator.Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
+            }
+
+            return notificationSettings;
         }
     }
 }
