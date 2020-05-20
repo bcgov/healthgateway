@@ -326,7 +326,6 @@ import {
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
-  IUserEmailService,
   IAuthenticationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -399,7 +398,6 @@ export default class ProfileComponent extends Vue {
 
   private tempEmail: string = "";
   private submitStatus: string = "";
-  private userEmailService!: IUserEmailService;
   private userProfileService!: IUserProfileService;
   private userProfile!: UserProfile;
 
@@ -415,10 +413,6 @@ export default class ProfileComponent extends Vue {
   mounted() {
     this.userProfileService = container.get<IUserProfileService>(
       SERVICE_IDENTIFIER.UserProfileService
-    );
-
-    this.userEmailService = container.get<IUserEmailService>(
-      SERVICE_IDENTIFIER.UserEmailService
     );
 
     // Load the user name and current email

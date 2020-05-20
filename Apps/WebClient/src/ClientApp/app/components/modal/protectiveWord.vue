@@ -1,17 +1,5 @@
 ﻿<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.text-large {
-  font-size: 250%;
-}
-.modal-header {
-  background-color: $primary;
-  color: $primary_text;
-
-  button,
-  button:hover {
-    color: #fff;
-  }
-}
 .modal-footer {
   justify-content: flex-start;
   button {
@@ -25,9 +13,8 @@
     id="protective-word-modal"
     v-model="isVisible"
     title="Restricted PharmaNet Records"
-    header-class="modal-header"
-    footer-class="modal-footer"
-    :no-stacking="true"
+    header-bg-variant="primary"
+    header-text-variant="light"
     centered
   >
     <b-row>

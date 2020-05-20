@@ -80,18 +80,15 @@ export interface IUserProfileService {
   getTermsOfService(): Promise<TermsOfService>;
   closeAccount(hdid: string): Promise<UserProfile>;
   recoverAccount(hdid: string): Promise<UserProfile>;
+  getLatestInvite(hdid: string): Promise<UserEmailInvite>;
+  validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
+  updateEmail(hdid: string, email: string): Promise<boolean>;
+  updatePhoneNumber(hdid: string, phoneNumber: string): Promise<boolean>;
 }
 
 export interface IUserFeedbackService {
   initialize(http: IHttpDelegate): void;
   submitFeedback(feedback: UserFeedback): Promise<boolean>;
-}
-
-export interface IUserEmailService {
-  initialize(http: IHttpDelegate): void;
-  getLatestInvite(hdid: string): Promise<UserEmailInvite>;
-  validateEmail(inviteKey: string): Promise<boolean>;
-  updateEmail(hdid: string, email: string): Promise<boolean>;
 }
 
 export interface IBetaRequestService {
@@ -141,7 +138,7 @@ export interface IHttpDelegate {
   ): Promise<T>;
   delete<T>(
     url: string,
-    payload: Object,
+    payload?: Object,
     headers?: Dictionary<string>
   ): Promise<T>;
 }
