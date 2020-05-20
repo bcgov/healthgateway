@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
-    using System;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -26,11 +25,11 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user profile.
         /// </summary>
-        public UserProfile Profile { get; set; }
+        public UserProfile Profile { get; set; } = new UserProfile();
 
         /// <summary>
         /// Gets or sets the code used to validate if the user has an invite.
         /// </summary>
-        public string InviteCode { get; set; }
+        public string InviteCode { get; set; } = string.Empty;
     }
 }

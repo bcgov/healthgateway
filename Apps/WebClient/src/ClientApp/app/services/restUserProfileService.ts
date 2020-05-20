@@ -4,6 +4,8 @@ import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 import { TermsOfService } from "@/models/termsOfService";
+import UserEmailInvite from "@/models/userEmailInvite";
+import { Dictionary } from "vue-router/types/router";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
@@ -84,7 +86,7 @@ export class RestUserProfileService implements IUserProfileService {
     return new Promise((resolve, reject) => {
       this.http
         .get<RequestResult<TermsOfService>>(
-          `${this.USER_PROFILE_BASE_URI}/TermsOfService`
+          `${this.USER_PROFILE_BASE_URI}/termsofservice`
         )
         .then(requestResult => {
           this.handleResult(requestResult, resolve, reject);
@@ -92,6 +94,83 @@ export class RestUserProfileService implements IUserProfileService {
         .catch(err => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
+        });
+    });
+  }
+
+  public validateEmail(hdid: string, inviteKey: string): Promise<boolean> {
+    return new Promise(resolve => {
+      this.http
+        .get(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
+        )
+        .then(() => {
+          return resolve(true);
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(false);
+        });
+    });
+  }
+
+  public getLatestInvite(hdid: string): Promise<UserEmailInvite> {
+    return new Promise(resolve => {
+      this.http
+        .get<UserEmailInvite>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/email/invite/`
+        )
+        .then(userEmailInvite => {
+          return resolve(userEmailInvite);
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(err);
+        });
+    });
+  }
+
+  public updateEmail(hdid: string, email: string): Promise<boolean> {
+    return new Promise(resolve => {
+      let headers: Dictionary<string> = {};
+      headers["Content-Type"] = "application/json; charset=utf-8";
+
+      this.http
+        .put<void>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/email`,
+          JSON.stringify(email),
+          headers
+        )
+        .then(() => {
+          return resolve();
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(err);
+        });
+    });
+  }
+
+  public updatePhoneNumber(
+    hdid: string,
+    phoneNumber: string
+  ): Promise<boolean> {
+    return new Promise(resolve => {
+      let headers: Dictionary<string> = {};
+      headers["Content-Type"] = "application/json; charset=utf-8";
+
+      this.http
+        .put<void>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/phone`,
+          JSON.stringify(phoneNumber),
+          headers
+        )
+        .then(() => {
+          return resolve();
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(err);
         });
     });
   }

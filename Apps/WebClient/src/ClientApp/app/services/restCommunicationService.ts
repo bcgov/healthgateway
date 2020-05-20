@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { IHttpDelegate, ICommunicationService } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
-import Communication from "../models/communication";
+import Communication from "@/models/communication";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {

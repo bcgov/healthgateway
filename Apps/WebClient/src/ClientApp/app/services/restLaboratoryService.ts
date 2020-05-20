@@ -7,7 +7,7 @@ import { ResultType } from "@/constants/resulttype";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
-  private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory/";
+  private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
   private baseUri: string = "";
   private http!: IHttpDelegate;
   private isEnabled: boolean = false;
@@ -35,7 +35,7 @@ export class RestLaboratoryService implements ILaboratoryService {
       }
       this.http
         .getWithCors<RequestResult<LaboratoryOrder[]>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}`
+          `${this.baseUri}${this.LABORATORY_BASE_URI}/`
         )
         .then(requestResult => {
           resolve(requestResult);
@@ -64,7 +64,7 @@ export class RestLaboratoryService implements ILaboratoryService {
       }
       this.http
         .getWithCors<RequestResult<LaboratoryReport>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}${reportId}/Report/`
+          `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report/`
         )
         .then(requestResult => {
           resolve(requestResult);

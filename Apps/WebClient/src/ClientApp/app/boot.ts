@@ -24,7 +24,6 @@ import {
   IConfigService,
   IUserProfileService,
   IUserFeedbackService,
-  IUserEmailService,
   IBetaRequestService,
   IUserNoteService,
   ICommunicationService,
@@ -72,9 +71,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   const userFeedbackService: IUserFeedbackService = container.get(
     SERVICE_IDENTIFIER.UserFeedbackService
   );
-  const userEmailService: IUserEmailService = container.get(
-    SERVICE_IDENTIFIER.UserEmailService
-  );
   const betaRequestService: IBetaRequestService = container.get(
     SERVICE_IDENTIFIER.BetaRequestService
   );
@@ -97,7 +93,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
   userProfileService.initialize(httpDelegate);
   userFeedbackService.initialize(httpDelegate);
   betaRequestService.initialize(httpDelegate);
-  userEmailService.initialize(httpDelegate);
   userNoteService.initialize(config, httpDelegate);
   communicationService.initialize(httpDelegate);
   userCommentService.initialize(config, httpDelegate);
