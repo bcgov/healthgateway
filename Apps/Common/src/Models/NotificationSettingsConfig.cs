@@ -13,33 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Constants
+namespace HealthGateway.Common.Models
 {
-    using System.Runtime.Serialization;
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Notification Targets for PHSA Notificaiton Settings.
+    /// Provides configuration data for the Notifications Settings PHSA API.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum NotificationTarget
+    public class NotificationSettingsConfig
     {
         /// <summary>
-        /// Specifies the target is for Covid19.
+        /// Gets or sets the PHSA Notification Settings external endpoint.
         /// </summary>
-        [EnumMember(Value = "COVID19")]
-        Covid19,
-
-        /// <summary>
-        /// Specifies that the target is for Labs.
-        /// </summary>
-        [EnumMember(Value = "LABS")]
-        Labs,
-
-        /// <summary>
-        /// Specifies that the target is for Imaging.
-        /// </summary>
-        [EnumMember(Value = "IMAGING")]
-        Imaging,
+        public string Endpoint { get; set; } = string.Empty;
     }
 }

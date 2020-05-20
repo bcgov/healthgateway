@@ -13,17 +13,38 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.Common.Models
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
-    using HealthGateway.WebClient.Constants;
+    using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// PHSA Notification Settings.
+    /// PHSA Notification Settings base request/response model.
     /// </summary>
-    public class NotificationSettings
+    public abstract class NotificationSettingsBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationSettingsBase"/> class.
+        /// </summary>
+        public NotificationSettingsBase()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationSettingsBase"/> class.
+        /// </summary>
+        /// <param name="notificationSettings">Initialize values from passed in object.</param>
+        public NotificationSettingsBase(NotificationSettingsBase notificationSettings)
+        {
+            this.SMSEnabled = notificationSettings.SMSEnabled;
+            this.SMSNumber = notificationSettings.SMSNumber;
+            this.SMSScope = notificationSettings.SMSScope.ToList();
+            this.EmailAddress = notificationSettings.EmailAddress;
+            this.EmailEnabled = notificationSettings.EmailEnabled;
+            this.EmailScope = notificationSettings.EmailScope.ToList();
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether SMS notifications are enabled.

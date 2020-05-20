@@ -17,7 +17,6 @@
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.8" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.6.3" />
-    <PackageReference Include="Macross.Json.Extensions" Version="1.4.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.4.0" />
@@ -65,6 +64,13 @@
     <Content Include="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Server\Models\NotificationSettings.cs" />
+    <Compile Remove="Server\Models\NotificationSettingsConfig.cs" />
+    <Compile Remove="Server\Models\NotificationSettingsBase %28copy%29.cs" />
+    <Compile Remove="Server\Models\NotificationSettingsRequest %28copy%29.cs" />
+    <Compile Remove="Server\Constants\NotificationTarget.cs" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />

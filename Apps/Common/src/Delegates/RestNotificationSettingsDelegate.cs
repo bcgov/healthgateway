@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Diagnostics;
@@ -21,12 +21,11 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.WebClient.Delegates;
-    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -61,9 +60,9 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<NotificationSettings>> GetNotificationSettings(string bearerToken)
+        public async Task<RequestResult<NotificationSettingsResponse>> GetNotificationSettings(string bearerToken)
         {
-            RequestResult<NotificationSettings> retVal = new RequestResult<NotificationSettings>()
+            RequestResult<NotificationSettingsResponse> retVal = new RequestResult<NotificationSettingsResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -89,7 +88,7 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        NotificationSettings notificationSettings = JsonSerializer.Deserialize<NotificationSettings>(payload, options);
+                        NotificationSettingsResponse notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
                         if (notificationSettings != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -104,7 +103,7 @@ namespace HealthGateway.Laboratory.Delegates
                         break;
                     case HttpStatusCode.NoContent: // No Notification Settings exits for this user
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = new NotificationSettings();
+                        retVal.ResourcePayload = new NotificationSettingsResponse();
                         retVal.TotalResultCount = 0;
                         break;
                     case HttpStatusCode.Forbidden:
@@ -132,9 +131,9 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<NotificationSettings>> SetNotificationSettings(NotificationSettings notificationSettings, string bearerToken)
+        public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
         {
-            RequestResult<NotificationSettings> retVal = new RequestResult<NotificationSettings>()
+            RequestResult<NotificationSettingsResponse> retVal = new RequestResult<NotificationSettingsResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -144,27 +143,28 @@ namespace HealthGateway.Laboratory.Delegates
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             try
             {
                 Uri endpoint = new Uri(this.nsConfig.Endpoint);
-                HttpResponseMessage response = await client.PutAsJsonAsync(endpoint, notificationSettings).ConfigureAwait(true);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    WriteIndented = true,
+                };
+                string json = JsonSerializer.Serialize(notificationSettings, options);
+                using HttpContent content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+                HttpResponseMessage response = await client.PutAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Created:
                     case HttpStatusCode.OK:
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                            IgnoreNullValues = true,
-                            WriteIndented = true,
-                        };
-                        NotificationSettings returnedSettings = JsonSerializer.Deserialize<NotificationSettings>(payload, options);
+                        NotificationSettingsResponse nsResponse = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
                         retVal.TotalResultCount = 1;
-                        retVal.ResourcePayload = returnedSettings;
+                        retVal.ResourcePayload = nsResponse;
                         break;
                     case HttpStatusCode.BadRequest:
                         this.logger.LogError($"Error Details: {payload}");
