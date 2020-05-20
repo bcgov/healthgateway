@@ -338,75 +338,75 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.True(actualResult.IsDeepEqual(expected));
         }
 
-        [Fact]
-        public async void FunctionalGetNotificationSettings()
-        {
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
-            {
-                ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new NotificationSettingsResponse()
-                {
-                    SMSEnabled = true,
-                    SMSNumber = "6042026997",
-                    SMSVerified = true,
-                    SMSScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
-                    EmailEnabled = true,
-                    EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
-                    EmailScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
-                },
-                TotalResultCount = 1,
-            };
-            string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiIwNDRjYjE4MS1iYjU1LTQzNWUtOThmNC00YTAzYzEwYTVmMmYiLCJleHAiOjE1ODkzMDIxODEsIm5iZiI6MCwiaWF0IjoxNTg5MzAxODgxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOiJoZWFsdGhnYXRld2F5Iiwic3ViIjoiNWQxODg4ZTgtMzVhZS00M2E1LTk3MGItNzI1MjI2YzkyZTA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaGVhbHRoZ2F0ZXdheSIsIm5vbmNlIjoiYjFhMDM0ZjktMjQ2Yi00ZjA0LWFjYjAtNDlmZTVjMGRjNjE1IiwiYXV0aF90aW1lIjoxNTg5MzAxODgwLCJzZXNzaW9uX3N0YXRlIjoiNGY5MThmNjgtNGFkOC00YjQyLTgzYzEtNTYyNDFjMjU3NjYzIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2Rldi5oZWFsdGhnYXRld2F5Lmdvdi5iYy5jYSJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBhdWRpZW5jZSBvZmZsaW5lX2FjY2VzcyBwYXRpZW50L09ic2VydmF0aW9uLnJlYWQgcGF0aWVudC9NZWRpY2F0aW9uRGlzcGVuc2UucmVhZCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.DN2FS_LnUmUFvnN56_Igcwqkl6Lf9eezXDo96wt1yW1CCfowBRijemBhH0SYWJAzFROPtqRq1UsHPAumfAwB7pPedqnOzhGqY2QXEmk7rGdA0UNvkoGsvTGC7n9R3Z4wW1zUeHLHG9l-QvNIkiTsU1KFBViCKCRCas4B2OY0Io0lz_uj6gMtrC4WedaMR5HJq2r5oai6y1DssKsp6YmYG29wOn8lp3szNOOn2zk-Fkt8AdiaAwziGCUCaip8g6tmaqBCI71qOFpu5xluSU4PA9CMNv8M6n-Ul55NcoV1yXPqi3vPNNg4MHhvyMOSKcvG7MR5sAnTQA2l9eANoxaTiA";
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+        //[Fact]
+        //public async void FunctionalGetNotificationSettings()
+        //{
+        //    RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+        //    {
+        //        ResultStatus = Common.Constants.ResultType.Success,
+        //        ResourcePayload = new NotificationSettingsResponse()
+        //        {
+        //            SMSEnabled = true,
+        //            SMSNumber = "6042026997",
+        //            SMSVerified = true,
+        //            SMSScope = new List<NotificationTarget>
+        //            {
+        //                NotificationTarget.Covid19,
+        //            },
+        //            EmailEnabled = true,
+        //            EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
+        //            EmailScope = new List<NotificationTarget>
+        //            {
+        //                NotificationTarget.Covid19,
+        //            },
+        //        },
+        //        TotalResultCount = 1,
+        //    };
+        //    string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiIwNDRjYjE4MS1iYjU1LTQzNWUtOThmNC00YTAzYzEwYTVmMmYiLCJleHAiOjE1ODkzMDIxODEsIm5iZiI6MCwiaWF0IjoxNTg5MzAxODgxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOiJoZWFsdGhnYXRld2F5Iiwic3ViIjoiNWQxODg4ZTgtMzVhZS00M2E1LTk3MGItNzI1MjI2YzkyZTA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaGVhbHRoZ2F0ZXdheSIsIm5vbmNlIjoiYjFhMDM0ZjktMjQ2Yi00ZjA0LWFjYjAtNDlmZTVjMGRjNjE1IiwiYXV0aF90aW1lIjoxNTg5MzAxODgwLCJzZXNzaW9uX3N0YXRlIjoiNGY5MThmNjgtNGFkOC00YjQyLTgzYzEtNTYyNDFjMjU3NjYzIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2Rldi5oZWFsdGhnYXRld2F5Lmdvdi5iYy5jYSJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBhdWRpZW5jZSBvZmZsaW5lX2FjY2VzcyBwYXRpZW50L09ic2VydmF0aW9uLnJlYWQgcGF0aWVudC9NZWRpY2F0aW9uRGlzcGVuc2UucmVhZCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.DN2FS_LnUmUFvnN56_Igcwqkl6Lf9eezXDo96wt1yW1CCfowBRijemBhH0SYWJAzFROPtqRq1UsHPAumfAwB7pPedqnOzhGqY2QXEmk7rGdA0UNvkoGsvTGC7n9R3Z4wW1zUeHLHG9l-QvNIkiTsU1KFBViCKCRCas4B2OY0Io0lz_uj6gMtrC4WedaMR5HJq2r5oai6y1DssKsp6YmYG29wOn8lp3szNOOn2zk-Fkt8AdiaAwziGCUCaip8g6tmaqBCI71qOFpu5xluSU4PA9CMNv8M6n-Ul55NcoV1yXPqi3vPNNg4MHhvyMOSKcvG7MR5sAnTQA2l9eANoxaTiA";
+        //    using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        //    Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+        //    mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
+        //    INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
 
-            RequestResult<NotificationSettingsResponse> actualResult = await nsDelegate.GetNotificationSettings(token).ConfigureAwait(true);
-            Assert.True(actualResult.IsDeepEqual(expected));
-        }
+        //    RequestResult<NotificationSettingsResponse> actualResult = await nsDelegate.GetNotificationSettings(token).ConfigureAwait(true);
+        //    Assert.True(actualResult.IsDeepEqual(expected));
+        //}
 
-        [Fact]
-        public async void FunctionalSetNotificationSettings()
-        {
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
-            {
-                ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new NotificationSettingsResponse()
-                {
-                    SMSEnabled = true,
-                    SMSNumber = "6042026997",
-                    SMSVerified = true,
-                    SMSScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
-                    EmailEnabled = true,
-                    EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
-                    EmailScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
-                },
-                TotalResultCount = 1,
-            };
-            NotificationSettingsRequest request = new NotificationSettingsRequest(expected.ResourcePayload);
-            request.SMSVerificationCode = "1234";
-            request.SMSNumber = "6042026997";
-            string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiIwNDRjYjE4MS1iYjU1LTQzNWUtOThmNC00YTAzYzEwYTVmMmYiLCJleHAiOjE1ODkzMDIxODEsIm5iZiI6MCwiaWF0IjoxNTg5MzAxODgxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOiJoZWFsdGhnYXRld2F5Iiwic3ViIjoiNWQxODg4ZTgtMzVhZS00M2E1LTk3MGItNzI1MjI2YzkyZTA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaGVhbHRoZ2F0ZXdheSIsIm5vbmNlIjoiYjFhMDM0ZjktMjQ2Yi00ZjA0LWFjYjAtNDlmZTVjMGRjNjE1IiwiYXV0aF90aW1lIjoxNTg5MzAxODgwLCJzZXNzaW9uX3N0YXRlIjoiNGY5MThmNjgtNGFkOC00YjQyLTgzYzEtNTYyNDFjMjU3NjYzIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2Rldi5oZWFsdGhnYXRld2F5Lmdvdi5iYy5jYSJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBhdWRpZW5jZSBvZmZsaW5lX2FjY2VzcyBwYXRpZW50L09ic2VydmF0aW9uLnJlYWQgcGF0aWVudC9NZWRpY2F0aW9uRGlzcGVuc2UucmVhZCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.DN2FS_LnUmUFvnN56_Igcwqkl6Lf9eezXDo96wt1yW1CCfowBRijemBhH0SYWJAzFROPtqRq1UsHPAumfAwB7pPedqnOzhGqY2QXEmk7rGdA0UNvkoGsvTGC7n9R3Z4wW1zUeHLHG9l-QvNIkiTsU1KFBViCKCRCas4B2OY0Io0lz_uj6gMtrC4WedaMR5HJq2r5oai6y1DssKsp6YmYG29wOn8lp3szNOOn2zk-Fkt8AdiaAwziGCUCaip8g6tmaqBCI71qOFpu5xluSU4PA9CMNv8M6n-Ul55NcoV1yXPqi3vPNNg4MHhvyMOSKcvG7MR5sAnTQA2l9eANoxaTiA";
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
-            RequestResult<NotificationSettingsResponse> actualResult = await nsDelegate.SetNotificationSettings(request, token).ConfigureAwait(true);
-            Assert.True(actualResult.IsDeepEqual(expected));
-        }
+        //[Fact]
+        //public async void FunctionalSetNotificationSettings()
+        //{
+        //    RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+        //    {
+        //        ResultStatus = Common.Constants.ResultType.Success,
+        //        ResourcePayload = new NotificationSettingsResponse()
+        //        {
+        //            SMSEnabled = true,
+        //            SMSNumber = "6042026997",
+        //            SMSVerified = true,
+        //            SMSScope = new List<NotificationTarget>
+        //            {
+        //                NotificationTarget.Covid19,
+        //            },
+        //            EmailEnabled = true,
+        //            EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
+        //            EmailScope = new List<NotificationTarget>
+        //            {
+        //                NotificationTarget.Covid19,
+        //            },
+        //        },
+        //        TotalResultCount = 1,
+        //    };
+        //    NotificationSettingsRequest request = new NotificationSettingsRequest(expected.ResourcePayload);
+        //    request.SMSVerificationCode = "1234";
+        //    request.SMSNumber = "6042026997";
+        //    string token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVS1ByRFNpSGdXZHM1NXhLc1dVajF6RFZ2alpTdXVib2FNTjZkbUxUcDBNIn0.eyJqdGkiOiIwNDRjYjE4MS1iYjU1LTQzNWUtOThmNC00YTAzYzEwYTVmMmYiLCJleHAiOjE1ODkzMDIxODEsIm5iZiI6MCwiaWF0IjoxNTg5MzAxODgxLCJpc3MiOiJodHRwczovL3Nzby1kZXYucGF0aGZpbmRlci5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvZmYwOXFuM2YiLCJhdWQiOiJoZWFsdGhnYXRld2F5Iiwic3ViIjoiNWQxODg4ZTgtMzVhZS00M2E1LTk3MGItNzI1MjI2YzkyZTA3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaGVhbHRoZ2F0ZXdheSIsIm5vbmNlIjoiYjFhMDM0ZjktMjQ2Yi00ZjA0LWFjYjAtNDlmZTVjMGRjNjE1IiwiYXV0aF90aW1lIjoxNTg5MzAxODgwLCJzZXNzaW9uX3N0YXRlIjoiNGY5MThmNjgtNGFkOC00YjQyLTgzYzEtNTYyNDFjMjU3NjYzIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2Rldi5oZWFsdGhnYXRld2F5Lmdvdi5iYy5jYSJdLCJzY29wZSI6Im9wZW5pZCBwYXRpZW50L1BhdGllbnQucmVhZCBhdWRpZW5jZSBvZmZsaW5lX2FjY2VzcyBwYXRpZW50L09ic2VydmF0aW9uLnJlYWQgcGF0aWVudC9NZWRpY2F0aW9uRGlzcGVuc2UucmVhZCIsImhkaWQiOiJRWUZMVkNLN0dKTkwyVDJERTMzRkRBWDdaNUU1UTc0MkUySE9YQjRPQUhaMzJXSTZZWFBBIn0.DN2FS_LnUmUFvnN56_Igcwqkl6Lf9eezXDo96wt1yW1CCfowBRijemBhH0SYWJAzFROPtqRq1UsHPAumfAwB7pPedqnOzhGqY2QXEmk7rGdA0UNvkoGsvTGC7n9R3Z4wW1zUeHLHG9l-QvNIkiTsU1KFBViCKCRCas4B2OY0Io0lz_uj6gMtrC4WedaMR5HJq2r5oai6y1DssKsp6YmYG29wOn8lp3szNOOn2zk-Fkt8AdiaAwziGCUCaip8g6tmaqBCI71qOFpu5xluSU4PA9CMNv8M6n-Ul55NcoV1yXPqi3vPNNg4MHhvyMOSKcvG7MR5sAnTQA2l9eANoxaTiA";
+        //    using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        //    Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+        //    mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient());
+        //    INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+        //    RequestResult<NotificationSettingsResponse> actualResult = await nsDelegate.SetNotificationSettings(request, token).ConfigureAwait(true);
+        //    Assert.True(actualResult.IsDeepEqual(expected));
+        //}
 
         private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
         {
