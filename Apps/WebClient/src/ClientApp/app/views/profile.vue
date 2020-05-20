@@ -326,6 +326,7 @@ import {
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
+  IUserEmailService,
   IAuthenticationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

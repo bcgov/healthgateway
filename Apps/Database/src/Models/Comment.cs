@@ -62,7 +62,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the related event id.
         /// </summary>
-        [MaxLength(32)]
+        [MaxLength(36)]
         [Required]
         public string ParentEntryId { get; set; } = string.Empty;
     }

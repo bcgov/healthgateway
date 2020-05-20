@@ -4,7 +4,6 @@
 .comment-body {
   background-color: $lightGrey;
   border-radius: 10px;
-  display: flex;
 }
 
 .editing {
@@ -19,17 +18,8 @@
   white-space: pre-line;
 }
 
-.comment-input {
-  flex: 1 1 auto;
-}
-
 .no-text {
   height: 38px !important;
-}
-
-.comment-button {
-  flex: 0 0 auto;
-  flex-direction: row;
 }
 
 .dropdown {
@@ -46,7 +36,7 @@
     <div v-show="!isLoading">
       <b-row
         v-if="!inputShowing"
-        class="comment-body p-2 my-1"
+        class="comment-body p-3 my-1"
         align-v="center"
       >
         <b-col class="comment-text">{{ comment.text }}</b-col>
@@ -74,16 +64,9 @@
           </b-dropdown>
         </div>
       </b-row>
-      <b-row
-        v-if="inputShowing"
-        class="comment-body py-2 my-1"
-        align-v="center"
-      >
-        <div v-if="isNewComment">
-          <div
-            :id="'tooltip-' + comment.parentEntryId"
-            class="tooltip-info d-flex pl-2"
-          >
+      <b-row v-if="inputShowing" class="comment-body p-2 my-1">
+        <b-col v-if="isNewComment" cols="auto" class="px-0 align-self-center">
+          <div :id="'tooltip-' + comment.parentEntryId" class="tooltip-info">
             <font-awesome-icon :icon="lockIcon" size="1x"> </font-awesome-icon>
           </div>
           <b-tooltip
@@ -94,8 +77,8 @@
           >
             Only you can see comments added to your medical records.
           </b-tooltip>
-        </div>
-        <div class="comment-input pl-2">
+        </b-col>
+        <b-col class="col pl-2 pr-0">
           <b-form @submit.prevent>
             <b-form-textarea
               v-model="commentInput"
@@ -107,26 +90,25 @@
               maxlength="1000"
             ></b-form-textarea>
           </b-form>
-        </div>
-        <div class="d-flex comment-button px-3 flex-row">
+        </b-col>
+        <b-col
+          class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
+        >
           <b-button
             variant="primary"
             :disabled="commentInput === ''"
-            class="d-flex"
             @click="onSubmit"
           >
             Save
           </b-button>
-          <div class="d-flex pl-2">
-            <b-button
-              :disabled="commentInput === '' && isNewComment"
-              variant="secondary"
-              @click="onCancel"
-            >
-              Cancel
-            </b-button>
-          </div>
-        </div>
+          <b-button
+            :disabled="commentInput === '' && isNewComment"
+            variant="secondary"
+            @click="onCancel"
+          >
+            Cancel
+          </b-button>
+        </b-col>
       </b-row>
       <b-row v-if="!isNewComment" class="px-3">
         <span> {{ formatDate(comment.createdDateTime) }} </span>
