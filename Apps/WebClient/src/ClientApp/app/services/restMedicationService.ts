@@ -12,9 +12,9 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 @injectable()
 export class RestMedicationService implements IMedicationService {
   private readonly MEDICATION_STATEMENT_BASE_URI: string =
-    "v1/api/MedicationStatement/";
-  private readonly MEDICATION_BASE_URI: string = "v1/api/Medication/";
-  private readonly PHARMACY_BASE_URI: string = "v1/api/Pharmacy/";
+    "v1/api/MedicationStatement";
+  private readonly MEDICATION_BASE_URI: string = "v1/api/Medication";
+  private readonly PHARMACY_BASE_URI: string = "v1/api/Pharmacy";
   private baseUri: string = "";
   private http!: IHttpDelegate;
   private readonly FETCH_ERROR = "Fetch error:";
@@ -37,7 +37,7 @@ export class RestMedicationService implements IMedicationService {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<RequestResult<MedicationStatement[]>>(
-          `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
+          `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
           headers
         )
         .then(requestResult => {
@@ -61,7 +61,7 @@ export class RestMedicationService implements IMedicationService {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<RequestResult<MedicationStatementHistory[]>>(
-          `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}${hdid}`,
+          `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
           headers
         )
         .then(requestResult => {
@@ -80,7 +80,7 @@ export class RestMedicationService implements IMedicationService {
     return new Promise((resolve, reject) => {
       return this.http
         .getWithCors<RequestResult<MedicationResult>>(
-          `${this.baseUri}${this.MEDICATION_BASE_URI}${drugIdentifier}`
+          `${this.baseUri}${this.MEDICATION_BASE_URI}/${drugIdentifier}`
         )
         .then(requestResult => {
           this.handleResult(requestResult, resolve, reject);
@@ -96,7 +96,7 @@ export class RestMedicationService implements IMedicationService {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<RequestResult<Pharmacy>>(
-          `${this.baseUri}${this.PHARMACY_BASE_URI}${pharmacyId}`
+          `${this.baseUri}${this.PHARMACY_BASE_URI}/${pharmacyId}`
         )
         .then(requestResult => {
           this.handleResult(requestResult, resolve, reject);
@@ -113,7 +113,6 @@ export class RestMedicationService implements IMedicationService {
     resolve: any,
     reject: any
   ) {
-    //console.log(requestResult);
     if (requestResult.resultStatus === ResultType.Success) {
       resolve(requestResult.resourcePayload);
     } else {

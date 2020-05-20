@@ -276,50 +276,6 @@
             </summary>
             <returns>The robots text file.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Controllers.UserEmailController">
-            <summary>
-            Web API to handle user email interactions.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserEmailController.#ctor(HealthGateway.WebClient.Services.IUserEmailService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserEmailController"/> class.
-            </summary>
-            <param name="userEmailService">The injected user email service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserEmailController.ValidateEmail(System.Guid)">
-            <summary>
-            Validates an email invite.
-            </summary>
-            <returns>The an empty response.</returns>
-            <param name="inviteKey">The email invite key.</param>
-            <response code="200">The email was validated.</response>
-            <response code="401">The client must authenticate itself to get the requested response.</response>
-            <response code="404">The invite key was not found.</response>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserEmailController.GetUserEmailInvite(System.String)">
-            <summary>
-            Validates an email invite.
-            </summary>
-            <returns>The invite email.</returns>
-            <param name="hdid">The user hdid.</param>
-            <response code="200">Returns the user email invite json.</response>
-            <response code="401">the client must authenticate itself to get the requested response.</response>
-            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserEmailController.UpdateUserEmail(System.String,System.String)">
-            <summary>
-            Updates the user email.
-            </summary>
-            <param name="hdid">The user hdid.</param>
-            <param name="emailAddress">The new email.</param>
-            <returns>True if the action was successful.</returns>
-            <response code="200">Returns true if the call was successful.</response>
-            <response code="401">the client must authenticate itself to get the requested response.</response>
-            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        </member>
         <member name="T:HealthGateway.WebClient.Controllers.UserFeedbackController">
             <summary>
             Web API to handle user feedback interactions.
@@ -350,13 +306,14 @@
             Web API to handle user profile interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService,HealthGateway.WebClient.Services.IUserEmailService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserProfileController"/> class.
             </summary>
             <param name="userProfileService">The injected user profile service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
             <param name="authorizationService">The injected authorization service.</param>
+            <param name="userEmailService">The injected user email service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.WebClient.Models.CreateUserRequest)">
             <summary>
@@ -406,6 +363,49 @@
             </summary>
             <returns>The terms of service model wrapped in a request result.</returns>
             <response code="200">Returns the terms of service json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.ValidateEmail(System.String,System.Guid)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The an empty response.</returns>
+            <param name="hdid">The user hdid.</param>
+            <param name="inviteKey">The email invite key.</param>
+            <response code="200">The email was validated.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="404">The invite key was not found.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetUserEmailInvite(System.String)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user email invite json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserEmail(System.String,System.String)">
+            <summary>
+            Updates the user email.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="emailAddress">The new email.</param>
+            <returns>True if the action was successful.</returns>
+            <response code="200">Returns true if the call was successful.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserPhoneNumber(System.String,System.String)">
+            <summary>
+            Updates the user phone number.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="phoneNumber">The new phone number.</param>
+            <returns>True if the action was successful.</returns>
+            <response code="200">Returns true if the call was successful.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>

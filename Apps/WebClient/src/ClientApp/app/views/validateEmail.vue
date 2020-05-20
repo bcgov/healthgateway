@@ -37,7 +37,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IUserEmailService } from "@/services/interfaces";
+import { IUserProfileService } from "@/services/interfaces";
 import { Action, Getter } from "vuex-class";
 import container from "@/plugins/inversify.config";
 import User from "@/models/user";
@@ -57,12 +57,12 @@ export default class ValidateEmailComponent extends Vue {
 
   mounted() {
     this.isLoading = true;
-    const userEmailService: IUserEmailService = container.get(
-      SERVICE_IDENTIFIER.UserEmailService
+    const userProfileService: IUserProfileService = container.get(
+      SERVICE_IDENTIFIER.UserProfileService
     );
 
-    userEmailService
-      .validateEmail(this.inviteKey)
+    userProfileService
+      .validateEmail(this.user.hdid, this.inviteKey)
       .then(isValid => {
         this.isSuccess = isValid;
         if (isValid) {
