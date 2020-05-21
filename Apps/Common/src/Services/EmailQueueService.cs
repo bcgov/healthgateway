@@ -127,7 +127,7 @@ namespace HealthGateway.Common.Services
         public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
-            EmailInvite invite = new EmailInvite();
+            MessagingVerification invite = new MessagingVerification();
             invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
             invite.ExpireDate = DateTime.MaxValue;
@@ -144,7 +144,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNewInviteEmail(EmailInvite invite)
+        public void QueueNewInviteEmail(MessagingVerification invite)
         {
             if (invite.Email == null || string.IsNullOrWhiteSpace(invite.Email.To))
             {

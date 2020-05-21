@@ -19,32 +19,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HealthGateway.Database.Migrations
 {
-    public partial class UpdateCommentModel : Migration
+    public partial class RenameEmailInviteModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "ParentEntryId",
+            migrationBuilder.RenameColumn(
+                name: "EmailInviteId",
                 schema: "gateway",
-                table: "Comment",
-                maxLength: 36,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "character varying(32)",
-                oldMaxLength: 32);
+                table: "MessagingVerification",
+                newName: "MessagingVerificationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "ParentEntryId",
+            migrationBuilder.RenameColumn(
+                name: "MessagingVerificationId",
                 schema: "gateway",
-                table: "Comment",
-                type: "character varying(32)",
-                maxLength: 32,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldMaxLength: 36);
+                table: "MessagingVerification",
+                newName: "EmailInviteId");
         }
     }
 }

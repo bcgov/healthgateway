@@ -138,7 +138,7 @@ namespace HealthGateway.WebClient.Services
             }
 
             string hdid = createProfileRequest.Profile.HdId;
-            EmailInvite emailInvite = null;
+            MessagingVerification emailInvite = null;
             if (registrationStatus == RegistrationStatus.InviteOnly)
             {
                 if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
