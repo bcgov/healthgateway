@@ -220,6 +220,7 @@
       </b-col>
       <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
         <HealthlinkComponent />
+        <CovidSidecardComponent class="mt-2" />
       </b-col>
     </b-row>
     <CovidModalComponent
@@ -276,6 +277,7 @@ import {
   LaboratoryResult,
   LaboratoryReport
 } from "@/models/laboratory";
+import CovidSidecardComponent from '../components/timeline/covidcard.vue';
 
 const namespace: string = "user";
 
@@ -294,6 +296,7 @@ Component.registerHooks(["beforeRouteLeave"]);
     CovidModalComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
+    CovidSidecardComponent: CovidSidecardComponent,
     NoteTimelineComponent
   }
 })
