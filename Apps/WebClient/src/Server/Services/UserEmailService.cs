@@ -50,7 +50,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
             bool retVal = false;
-            EmailInvite emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
+            MessagingVerification emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
 
             if (emailInvite != null &&
                 emailInvite.HdId == hdid &&
@@ -70,10 +70,10 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public EmailInvite RetrieveLastInvite(string hdid)
+        public MessagingVerification RetrieveLastInvite(string hdid)
         {
             this.logger.LogTrace($"Retrieving last invite for {hdid}");
-            EmailInvite emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
+            MessagingVerification emailInvite = this.emailInviteDelegate.GetLastForUser(hdid);
             this.logger.LogDebug($"Finished retrieving email: {JsonConvert.SerializeObject(emailInvite)}");
             return emailInvite;
         }
@@ -83,7 +83,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Updating user email...");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            EmailInvite emailInvite = this.RetrieveLastInvite(hdid);
+            MessagingVerification emailInvite = this.RetrieveLastInvite(hdid);
 
             this.logger.LogInformation($"Removing email from user ${hdid}");
             userProfile.Email = null;

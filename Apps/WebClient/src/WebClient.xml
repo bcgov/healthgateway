@@ -680,7 +680,7 @@
             Gets or sets the email address for the invite.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Models.UserEmailInvite.CreateFromDbModel(HealthGateway.Database.Models.EmailInvite)">
+        <member name="M:HealthGateway.WebClient.Models.UserEmailInvite.CreateFromDbModel(HealthGateway.Database.Models.MessagingVerification)">
             <summary>
             Constructs a UserInviteEmail from a EmailInvite.
             </summary>

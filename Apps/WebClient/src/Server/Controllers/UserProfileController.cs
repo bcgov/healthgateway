@@ -273,7 +273,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            EmailInvite emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
+            MessagingVerification emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
 
             // Check expiration and remove fields that contains sensitive information
             if (emailInvite != null)

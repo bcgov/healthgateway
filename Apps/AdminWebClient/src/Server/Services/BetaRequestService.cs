@@ -82,7 +82,7 @@ namespace HealthGateway.Admin.Services
             requestResult.ResourcePayload = new List<string>();
             foreach (BetaRequest betaRequest in requestsToInvite)
             {
-                EmailInvite invite = new EmailInvite();
+                MessagingVerification invite = new MessagingVerification();
                 invite.InviteKey = Guid.NewGuid();
                 invite.HdId = betaRequest.HdId;
                 invite.ExpireDate = DateTime.MaxValue;

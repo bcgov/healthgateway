@@ -71,12 +71,12 @@ namespace HealthGateway.Admin.Services
         {
             int pageIndex = 0;
             DBResult<List<Email>> dbEmail = this.emailDelegate.GetEmails(pageIndex, this.maxEmails);
-            IEnumerable<EmailInvite> emailInvites = this.emailInviteDelegate.GetAll();
+            IEnumerable<MessagingVerification> emailInvites = this.emailInviteDelegate.GetAll();
             RequestResult<IEnumerable<AdminEmail>> result = new RequestResult<IEnumerable<AdminEmail>>()
             {
                 ResourcePayload = dbEmail.Payload.Select(e =>
                 {
-                    EmailInvite emailInvite = emailInvites.FirstOrDefault(ei =>
+                    MessagingVerification emailInvite = emailInvites.FirstOrDefault(ei =>
                         e.To!.Equals(ei.Email?.To, System.StringComparison.CurrentCultureIgnoreCase));
                     string inviteStatus = this.GetEmailInviteStatus(emailInvite);
                     return AdminEmail.CreateFromDbModel(e, inviteStatus);
@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Services
             return result;
         }
 
-        private string GetEmailInviteStatus(EmailInvite emailInvite)
+        private string GetEmailInviteStatus(MessagingVerification emailInvite)
         {
             if (emailInvite == null)
             {

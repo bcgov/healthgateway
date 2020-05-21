@@ -36,7 +36,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>returns the last email invite if found.</returns>
-        EmailInvite RetrieveLastInvite(string hdid);
+        MessagingVerification RetrieveLastInvite(string hdid);
 
         /// <summary>
         /// Updates the user email.

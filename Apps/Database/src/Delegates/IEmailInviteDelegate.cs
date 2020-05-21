@@ -29,32 +29,32 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="invite">The invite to insert.</param>
         /// <returns>Returns the guid of the saved email invite.</returns>
-        Guid Insert(EmailInvite invite);
+        Guid Insert(MessagingVerification invite);
 
         /// <summary>
         /// Gets a particular EmailInvite based on the users HDID and inviteKey.
         /// </summary>
         /// <param name="inviteKey">The users inviteKey as emailed.</param>
         /// <returns>The EmailInvite that was fetched.</returns>
-        EmailInvite GetByInviteKey(Guid inviteKey);
+        MessagingVerification GetByInviteKey(Guid inviteKey);
 
         /// <summary>
         /// Gets the last EmailInvite based on the users HDID.
         /// </summary>
         /// <param name="hdid">The users hdid.</param>
         /// <returns>The EmailInvite that was fetched.</returns>
-        EmailInvite GetLastForUser(string hdid);
+        MessagingVerification GetLastForUser(string hdid);
 
         /// <summary>
         /// Updates an Email Invite using a populated EmailInvite object.
         /// </summary>
         /// <param name="emailInvite">The populated email to save.</param>
-        void Update(EmailInvite emailInvite);
+        void Update(MessagingVerification emailInvite);
 
         /// <summary>
         /// Gets all email invites from the database.
         /// </summary>
         /// <returns>A list of email invites.</returns>
-        IEnumerable<EmailInvite> GetAll();
+        IEnumerable<MessagingVerification> GetAll();
     }
 }

@@ -44,21 +44,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public Guid Insert(EmailInvite invite)
+        public Guid Insert(MessagingVerification invite)
         {
             this.logger.LogTrace($"Inserting email invite to DB... {JsonSerializer.Serialize(invite)}");
-            this.dbContext.Add<EmailInvite>(invite);
+            this.dbContext.Add<MessagingVerification>(invite);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished inserting email invite to DB. {invite.Id}");
             return invite.Id;
         }
 
         /// <inheritdoc />
-        public EmailInvite GetByInviteKey(Guid inviteKey)
+        public MessagingVerification GetByInviteKey(Guid inviteKey)
         {
             this.logger.LogTrace($"Getting email invite from DB... {inviteKey}");
-            EmailInvite retVal = this.dbContext
-                .EmailInvite
+            MessagingVerification retVal = this.dbContext
+                .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.InviteKey == inviteKey)
                 .FirstOrDefault();
@@ -68,11 +68,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public IEnumerable<EmailInvite> GetAll()
+        public IEnumerable<MessagingVerification> GetAll()
         {
             this.logger.LogTrace($"Getting all email invites from DB...");
-            IEnumerable<EmailInvite> retVal = this.dbContext
-                .EmailInvite
+            IEnumerable<MessagingVerification> retVal = this.dbContext
+                .MessagingVerification
                 .ToList();
 
             this.logger.LogDebug($"Finished getting all email invites from DB. {JsonSerializer.Serialize(retVal)}");
@@ -80,11 +80,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public EmailInvite GetLastForUser(string hdid)
+        public MessagingVerification GetLastForUser(string hdid)
         {
             this.logger.LogTrace($"Getting last email invite from DB for user... {hdid}");
-            EmailInvite retVal = this.dbContext
-                .EmailInvite
+            MessagingVerification retVal = this.dbContext
+                .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.HdId == hdid)
                 .OrderByDescending(p => p.UpdatedDateTime)
@@ -95,10 +95,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public void Update(EmailInvite emailInvite)
+        public void Update(MessagingVerification emailInvite)
         {
             this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(emailInvite)}");
-            this.dbContext.Update<EmailInvite>(emailInvite);
+            this.dbContext.Update<MessagingVerification>(emailInvite);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished updating email invite in DB. {emailInvite.Id}");
         }

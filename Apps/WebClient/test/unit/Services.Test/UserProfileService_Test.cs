@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new EmailInvite());
+            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new EmailInvite());
+            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = RegistrationStatus.Open } });

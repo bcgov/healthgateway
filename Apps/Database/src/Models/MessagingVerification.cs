@@ -21,13 +21,13 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class EmailInvite : AuditableEntity
+    public class MessagingVerification : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the email invite id.
+        /// Gets or sets the messaging verification id.
         /// </summary>
         [Key]
-        [Column("EmailInviteId")]
+        [Column("MessagingVerificationId")]
         public Guid Id { get; set; }
 
         /// <summary>

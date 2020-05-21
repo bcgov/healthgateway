@@ -55,7 +55,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Constructs a UserInviteEmail from a EmailInvite.
         /// </summary>
-        public static UserEmailInvite CreateFromDbModel(EmailInvite model)
+        public static UserEmailInvite CreateFromDbModel(MessagingVerification model)
         {
             return new UserEmailInvite()
             {
