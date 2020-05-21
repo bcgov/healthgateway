@@ -220,7 +220,6 @@
       </b-col>
       <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
         <HealthlinkComponent />
-        <CovidSidecardComponent class="mt-2" />
       </b-col>
     </b-row>
     <CovidModalComponent
@@ -296,7 +295,6 @@ Component.registerHooks(["beforeRouteLeave"]);
     CovidModalComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    CovidSidecardComponent: CovidSidecardComponent,
     NoteTimelineComponent
   }
 })
