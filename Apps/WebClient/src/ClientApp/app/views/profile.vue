@@ -470,21 +470,21 @@ export default class ProfileComponent extends Vue {
     return {
       phoneNumber: {
         required: requiredIf(() => {
-          return !this.isPhoneEditable;
+          return this.isPhoneEditable && this.phoneNumber !== "";
         }),
         newPhoneNumber: not(sameAs("tempPhone")),
         phone,
       },
       email: {
         required: requiredIf(() => {
-          return !this.isEmailEditable;
+          return this.isEmailEditable && this.email !== "";
         }),
         newEmail: not(sameAs("tempEmail")),
         email,
       },
       emailConfirmation: {
         required: requiredIf(() => {
-          return !this.isEmailEditable;
+          return this.isEmailEditable && this.emailConfirmation !== "";
         }),
         sameAsEmail: sameAs("email"),
         email,
