@@ -170,6 +170,7 @@ $radius: 15px;
     </b-row>
     <MessageModalComponent
       ref="messageModal"
+      message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
     />
   </b-col>
 </template>

@@ -19,9 +19,7 @@
         <form @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col>
-              <span
-                >{{ message }}e</span
-              >
+              <span>{{ message }}</span>
             </b-col>
           </b-row>
         </form>
@@ -52,8 +50,8 @@ export default class MessageModalComponent extends Vue {
   @Prop() error!: boolean;
   @Prop({ default: false }) isLoading!: boolean;
 
-  @Prop({ default: 'Info' }) private title!: string;
-  @Prop({ default: 'Message' }) private message!: string;
+  @Prop({ default: "Info" }) private title!: string;
+  @Prop({ default: "Message" }) private message!: string;
   private isVisible: boolean = false;
 
   public showModal() {
