@@ -168,12 +168,15 @@ $radius: 15px;
         <CommentSection :parent-entry="entry"></CommentSection>
       </b-col>
     </b-row>
+    <MessageModalComponent
+      ref="messageModal"
+    />
   </b-col>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component } from "vue-property-decorator";
+import { Prop, Component, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import LaboratoryTimelineEntry, {
@@ -181,6 +184,7 @@ import LaboratoryTimelineEntry, {
 } from "@/models/laboratoryTimelineEntry";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { ILaboratoryService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -192,6 +196,7 @@ library.add(faFileDownload);
 
 @Component({
   components: {
+    MessageModalComponent,
     CommentSection: CommentSectionComponent
   }
 })
@@ -199,6 +204,9 @@ export default class LaboratoryTimelineComponent extends Vue {
   @Prop() entry!: LaboratoryTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
+
+  @Ref("messageModal")
+  readonly messageModal!: MessageModalComponent;
 
   private laboratoryService!: ILaboratoryService;
 
@@ -239,6 +247,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         link.download = `COVID_Result_${dateString}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);
+        this.messageModal.showModal();
       })
       .catch(() => {
         this.hasErrors = true;
