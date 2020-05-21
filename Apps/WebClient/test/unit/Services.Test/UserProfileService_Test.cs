@@ -30,6 +30,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.WebClient.Constant;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Constants;
 
     public class UserProfileServiceTest
     {
@@ -76,6 +77,7 @@ namespace HealthGateway.WebClient.Test.Services
                 .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -85,7 +87,8 @@ namespace HealthGateway.WebClient.Test.Services
                 configServiceMock.Object,
                 emailer.Object,
                 legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object
+                cryptoDelegateMock.Object,
+                notificationServiceMock.Object
             );
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
@@ -125,6 +128,10 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
             cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns("abc");
 
+            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
+            notificationServiceMock.Setup(s => s.SendNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"))
+                .ReturnsAsync(new RequestResult<NotificationSettingsResponse>() { ResultStatus = ResultType.Success });
+
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
@@ -133,11 +140,67 @@ namespace HealthGateway.WebClient.Test.Services
                 configServiceMock.Object,
                 emailer.Object,
                 new Mock<ILegalAgreementDelegate>().Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                notificationServiceMock.Object);
 
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"));
+            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"), "bearer_token");
 
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
+        }
+
+        [Fact]
+        public void ShouldQueueNotificationUpdate()
+        {
+            UserProfile userProfile = new UserProfile
+            {
+                HdId = "1234567890123456789012345678901234567890123456789012",
+                AcceptedTermsOfService = true,
+                Email = string.Empty
+            };
+
+            DBResult<UserProfile> insertResult = new DBResult<UserProfile>
+            {
+                Payload = userProfile,
+                Status = DBStatusCode.Created
+            };
+
+            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
+
+            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
+            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
+
+            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
+            Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
+            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new EmailInvite());
+
+            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = RegistrationStatus.Open } });
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns("abc");
+
+            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
+            notificationServiceMock.Setup(s => s.SendNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"))
+                .ReturnsAsync(new RequestResult<NotificationSettingsResponse>() { ResultStatus = ResultType.Error });
+            notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"));
+
+
+            IUserProfileService service = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                profileDelegateMock.Object,
+                emailDelegateMock.Object,
+                emailInviteDelegateMock.Object,
+                configServiceMock.Object,
+                emailer.Object,
+                new Mock<ILegalAgreementDelegate>().Object,
+                cryptoDelegateMock.Object,
+                notificationServiceMock.Object);
+
+            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"), "bearer_token");
+            notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"), Times.Once());
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }

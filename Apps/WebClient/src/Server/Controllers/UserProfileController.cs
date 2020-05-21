@@ -41,6 +41,7 @@ namespace HealthGateway.WebClient.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationService authorizationService;
         private readonly IUserEmailService userEmailService;
+        private readonly IUserPhoneService userPhoneService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -49,16 +50,19 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="userEmailService">The injected user email service.</param>
+        /// <param name="userPhoneService">The injected user phone service.</param>
         public UserProfileController(
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IUserEmailService userEmailService)
+            IUserEmailService userEmailService,
+            IUserPhoneService userPhoneService)
         {
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
             this.userEmailService = userEmailService;
+            this.userPhoneService = userPhoneService;
         }
 
         /// <summary>
@@ -97,7 +101,9 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer));
+            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+
+            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
 
@@ -231,8 +237,10 @@ namespace HealthGateway.WebClient.Controllers
             {
                 return new BadRequestResult();
             }
-            
-            if (this.userEmailService.ValidateEmail(userHdid, inviteKey))
+
+            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+
+            if (this.userEmailService.ValidateEmail(userHdid, inviteKey, bearerToken))
             {
                 return new OkResult();
             }
@@ -331,7 +339,9 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer));
+            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+
+            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), bearerToken);
 
             return new JsonResult(result);
         }
@@ -373,9 +383,10 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            //bool result = this.userEmailService.UpdateUserEmail(hdid, phoneNumber, new Uri(referer));
-            //return new JsonResult(result);
-            return new JsonResult(null);
+            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+
+            bool result = this.userPhoneService.UpdateUserPhone(hdid, phoneNumber, new Uri(referer), bearerToken);
+            return new JsonResult(result);
         }
     }
 }

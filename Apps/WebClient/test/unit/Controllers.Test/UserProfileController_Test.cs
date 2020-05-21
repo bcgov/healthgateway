@@ -20,7 +20,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Controllers;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
@@ -29,7 +28,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using System;
-    using Microsoft.AspNetCore.Http.Headers;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
     using System.Collections.Generic;
@@ -46,7 +44,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 AcceptedTermsOfService = true
             };
 
-            RequestResult<UserProfileModel> expected = new RequestResult<UserProfileModel> {
+            RequestResult<UserProfileModel> expected = new RequestResult<UserProfileModel>
+            {
                 ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
                 ResultStatus = Common.Constants.ResultType.Success
             };
@@ -57,8 +56,14 @@ namespace HealthGateway.WebClient.Test.Controllers
             List<ClaimsIdentity> claimsIdentityList = new List<ClaimsIdentity>();
             claimsIdentityList.Add(new ClaimsIdentity(claimsList));
 
+            
+            HttpRequest request = new DefaultHttpContext().Request;
+            request.Headers["referer"] = "http://localhost/";
+            request.Headers["Authorization"] = "Bearer access_token";
+            
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentityList);
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext.Request).Returns(request);
             httpContextAccessorMock.Setup(s => s.HttpContext.User).Returns(claimsPrincipal);
 
             Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
@@ -71,17 +76,19 @@ namespace HealthGateway.WebClient.Test.Controllers
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
 
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserPhoneService> phoneServiceMock = new Mock<IUserPhoneService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object,
-                emailServiceMock.Object
+                emailServiceMock.Object,
+                phoneServiceMock.Object
             );
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected)); 
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
         }
 
         [Fact]
@@ -101,12 +108,14 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserPhoneService> phoneServiceMock = new Mock<IUserPhoneService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object,
-                emailServiceMock.Object
+                emailServiceMock.Object,
+                phoneServiceMock.Object
             );
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
@@ -137,8 +146,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
             HttpRequest request = new DefaultHttpContext().Request;
             request.Headers["referer"] = "http://localhost/";
+            request.Headers["Authorization"] = "Bearer access_token";
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext.Request).Returns(request);
+            httpContextAccessorMock.Setup(s => s.HttpContext.User).Returns(claimsPrincipal);
             httpContextAccessorMock.Setup(s => s.HttpContext.User).Returns(claimsPrincipal);
 
             Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
@@ -147,19 +158,21 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(AuthorizationResult.Success);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>())).Returns(expected);
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();            
+            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).Returns(expected);
+            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserPhoneService> phoneServiceMock = new Mock<IUserPhoneService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object,
-                emailServiceMock.Object
+                emailServiceMock.Object,
+                phoneServiceMock.Object
             );
             IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected)); 
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
         }
     }
 }

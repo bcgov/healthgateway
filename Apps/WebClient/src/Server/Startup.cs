@@ -83,6 +83,8 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommentService, CommentService>();
             services.AddSingleton<INonceService, NonceService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<IUserPhoneService, UserPhoneService>();
+            services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
 
             // Add delegates
             services.AddTransient<IProfileDelegate, DBProfileDelegate>();
@@ -95,6 +97,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
+            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
