@@ -56,7 +56,7 @@ export default class HealthlinkSidebarComponent extends Vue {
     {
       title: "COVID-19",
       description:
-        "Non-medical information about COVID-19 is available 7:30am-8pm, 7 days a week at 1-888-COVID19 (1-888-268-4319).",
+        "View more information about COVID-19.",
       imageSrc: CovidImage,
       urlLink: "http://www.bccdc.ca/health-info/diseases-conditions/covid-19",
     },
@@ -92,7 +92,7 @@ export default class HealthlinkSidebarComponent extends Vue {
   }
 
   private get cardDelay(): number {
-    return this.cardIndex === 0 ? 20000 : 10000;
+    return this.cardIndex === 0 ? 25000 : 7000;
   }
 
   private handleClick(urlLink: string): void {
