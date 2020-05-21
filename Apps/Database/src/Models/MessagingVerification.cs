@@ -61,7 +61,7 @@ namespace HealthGateway.Database.Models
         public Guid InviteKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the expire date for the email invite.
+        /// Gets or sets the expire date for the messaging verification.
         /// </summary>
         [Required]
         public DateTime ExpireDate { get; set; }
