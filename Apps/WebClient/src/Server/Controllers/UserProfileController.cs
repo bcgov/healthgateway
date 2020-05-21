@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient.Controllers
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -101,7 +102,7 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
             RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
             return new JsonResult(result);
@@ -227,7 +228,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
         [Route("{hdid}/email/validate/{inviteKey}")]
-        public IActionResult ValidateEmail(string hdid, Guid inviteKey)
+        public async Task<IActionResult> ValidateEmail(string hdid, Guid inviteKey)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
@@ -238,7 +239,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
             if (this.userEmailService.ValidateEmail(userHdid, inviteKey, bearerToken))
             {
@@ -339,7 +340,7 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
             bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), bearerToken);
 
@@ -383,7 +384,7 @@ namespace HealthGateway.WebClient.Controllers
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            string bearerToken = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0].Split(" ")[1];
+            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
             bool result = this.userPhoneService.UpdateUserPhone(hdid, phoneNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
