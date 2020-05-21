@@ -13,12 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Delegates
+namespace HealthGateway.Common.Delegates
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Models;
 
     /// <summary>
     /// Interface that defines a delegate to get and set Notification Settings at PHSA.
@@ -30,14 +28,14 @@ namespace HealthGateway.WebClient.Delegates
         /// </summary>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
         /// <returns>The Notification Settings wrapped in a RequestResult.</returns>
-        Task<RequestResult<NotificationSettings>> GetNotificationSettings(string bearerToken);
+        Task<RequestResult<NotificationSettingsResponse>> GetNotificationSettings(string bearerToken);
 
         /// <summary>
         /// Creates or Updates the Notification Settings at PHSA.
         /// </summary>
-        /// <param name="notificationSettings">The notification settings to send to PHSA.</param>
+        /// <param name="notificationSettings">The notification settings request to send to PHSA.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
-        /// <returns>The notification settings sent to PHSA wrapped in a RequestResult.</returns>
-        Task<RequestResult<NotificationSettings>> SetNotificationSettings(NotificationSettings notificationSettings, string bearerToken);
+        /// <returns>The notification settings response returned from PHSA wrapped in a RequestResult.</returns>
+        Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken);
     }
 }

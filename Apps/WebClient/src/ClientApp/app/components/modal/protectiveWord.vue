@@ -11,6 +11,7 @@
 <template>
   <b-modal
     id="protective-word-modal"
+    v-model="isVisible"
     title="Restricted PharmaNet Records"
     header-bg-variant="primary"
     header-text-variant="light"
@@ -90,35 +91,39 @@ export default class ProtectiveWordComponent extends Vue {
   @Prop() error!: boolean;
   @Prop({ default: false }) isLoading!: boolean;
 
-  private isShowing: boolean = false;
   private protectiveWord: string = "";
-  private readonly modalId: string = "protective-word-modal";
+  private show: boolean = false;
+  private isVisible: boolean = false;
 
   public showModal() {
-    this.isShowing = true;
+    this.show = true;
+    if (!this.isLoading) {
+      this.isVisible = true;
+    }
   }
 
   public hideModal() {
-    this.isShowing = false;
-    this.$bvModal.hide(this.modalId);
+    this.show = false;
+    this.isVisible = false;
   }
 
   @Watch("isLoading")
   private onIsLoading() {
-    if (!this.isLoading && this.isShowing) {
-      this.$bvModal.show(this.modalId);
+    if (!this.isLoading && this.show) {
+      this.isVisible = true;
     }
   }
 
   @Emit()
   private submit() {
-    this.isShowing = false;
-    return this.protectiveWord;
+    this.show = false;
+    this.isVisible = false;
+    return;
   }
 
   @Emit()
   private cancel() {
-    this.isShowing = false;
+    this.hideModal();
     return;
   }
 
