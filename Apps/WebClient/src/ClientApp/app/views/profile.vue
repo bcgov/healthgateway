@@ -193,7 +193,7 @@ input {
                 Valid phone number is required
               </b-form-invalid-feedback>
               <b-form-invalid-feedback :state="$v.phoneNumber.newPhoneNumber">
-                New email must be different from the previous one
+                New phone number must be different from the previous one
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
@@ -322,11 +322,11 @@ import {
   sameAs,
   email,
   not,
-  helpers
+  helpers,
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
-  IAuthenticationService
+  IAuthenticationService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -346,12 +346,12 @@ const authNamespace: string = "auth";
 
 @Component({
   components: {
-    LoadingComponent
-  }
+    LoadingComponent,
+  },
 })
 export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
-    namespace: authNamespace
+    namespace: authNamespace,
   })
   oidcIsAuthenticated!: boolean;
 
@@ -361,7 +361,7 @@ export default class ProfileComponent extends Vue {
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
     hdid,
-    emailAddress
+    emailAddress,
   }: {
     hdid: string;
     emailAddress: string;
@@ -426,7 +426,7 @@ export default class ProfileComponent extends Vue {
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
     Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
-      .then(results => {
+      .then((results) => {
         // Load oidc user details
         if (results[0]) {
           this.oidcUser = results[0];
@@ -443,15 +443,16 @@ export default class ProfileComponent extends Vue {
         if (results[2]) {
           // Load user profile
           this.userProfile = results[2];
+          console.log("User Profile: ", this.userProfile)
           this.lastLoginDateString = moment(
             this.userProfile.lastLoginDateTime
           ).format("lll");
-          // this.phoneNumber = this.userProfile.phoneNumber;
+          this.phoneNumber = this.userProfile.phoneNumber;
         }
 
         this.isLoading = false;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("Error loading profile");
         console.log(err);
         this.hasErrors = true;
@@ -472,22 +473,22 @@ export default class ProfileComponent extends Vue {
           return !this.isPhoneEditable;
         }),
         newPhoneNumber: not(sameAs("tempPhone")),
-        phone
+        phone,
       },
       email: {
         required: requiredIf(() => {
           return !this.isEmailEditable;
         }),
         newEmail: not(sameAs("tempEmail")),
-        email
+        email,
       },
       emailConfirmation: {
         required: requiredIf(() => {
           return !this.isEmailEditable;
         }),
         sameAsEmail: sameAs("email"),
-        email
-      }
+        email,
+      },
     };
   }
 
@@ -600,7 +601,7 @@ export default class ProfileComponent extends Vue {
     this.isLoading = true;
     this.updateUserEmail({
       hdid: this.user.hdid || "",
-      emailAddress: this.email
+      emailAddress: this.email,
     })
       .then(() => {
         console.log("success!");
@@ -610,7 +611,7 @@ export default class ProfileComponent extends Vue {
         this.tempEmail = "";
         this.$v.$reset();
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -624,9 +625,13 @@ export default class ProfileComponent extends Vue {
       "Updating " + this.phoneNumber ? this.phoneNumber : "phone number..."
     );
     // Send update to backend
-    this.isPhoneEditable = false;
-    this.tempPhone = "";
-    this.$v.$reset();
+    this.userProfileService
+      .updatePhoneNumber(this.user.hdid, this.phoneNumber)
+      .then(() => {
+        this.isPhoneEditable = false;
+        this.tempPhone = "";
+        this.$v.$reset();
+      });
   }
 
   private removeEmail(): void {
@@ -643,12 +648,12 @@ export default class ProfileComponent extends Vue {
   private recoverAccount(): void {
     this.isLoading = true;
     this.recoverUserAccount({
-      hdid: this.user.hdid
+      hdid: this.user.hdid,
     })
       .then(() => {
         console.log("success!");
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -668,13 +673,13 @@ export default class ProfileComponent extends Vue {
   private closeAccount(): void {
     this.isLoading = true;
     this.closeUserAccount({
-      hdid: this.user.hdid
+      hdid: this.user.hdid,
     })
       .then(() => {
         console.log("success!");
         this.showCloseWarning = false;
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })

@@ -202,7 +202,7 @@ label {
             <b-row class="d-flex">
               <b-col class="d-flex flex-grow-0 pr-0">
                 <b-form-checkbox
-                  @change="onCommunicationChange($event)"
+                  @change="onEmailOptout($event)"
                   v-model="isEmailChecked"
                   id="emailCheckbox"
                 >
@@ -248,7 +248,7 @@ label {
             <b-row class="d-flex">
               <b-col class="d-flex flex-grow-0 pr-0">
                 <b-form-checkbox
-                  @change="onCommunicationChange($event)"
+                  @change="onPhoneOptout($event)"
                   v-model="isPhoneNumberChecked"
                   id="phoneCheckbox"
                 ></b-form-checkbox>
@@ -613,8 +613,17 @@ export default class RegistrationComponent extends Vue {
     this.$v.$reset();
   }
 
-  private onCommunicationChange(isChecked: boolean): void {
-    
+  private onEmailOptout(isChecked: boolean): void {
+    if (!isChecked) {
+      this.emailConfirmation = "";
+      this.email = "";
+    }
+  }
+
+  private onPhoneOptout(isChecked: boolean): void {
+    if (!isChecked) {
+      this.phoneNumber = "";
+    }
   }
 
   private handleError(error: string): void {
