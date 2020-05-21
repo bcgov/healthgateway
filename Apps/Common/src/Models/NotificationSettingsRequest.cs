@@ -31,7 +31,8 @@ namespace HealthGateway.Common.Models
         }
 
         /// <summary>
-        /// Copy constructor for a instance of the <see cref="NotificationSettingsRequest"/> class.
+        /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class.
+        /// Copy constructor that uses a <see cref="NotificationSettingsBase"/> for initialization.
         /// </summary>
         /// <param name="notificationSettings">Initialize values from passed in object.</param>
         public NotificationSettingsRequest(NotificationSettingsBase notificationSettings)
