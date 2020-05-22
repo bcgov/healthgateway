@@ -276,7 +276,6 @@ import {
   LaboratoryResult,
   LaboratoryReport
 } from "@/models/laboratory";
-import CovidSidecardComponent from '../components/timeline/covidcard.vue';
 
 const namespace: string = "user";
 
