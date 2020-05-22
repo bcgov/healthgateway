@@ -81,7 +81,7 @@ $radius: 15px;
             <b-spinner v-if="isLoadingDocument"></b-spinner>
             <span v-else>
               <strong>Report:</strong>
-              <b-btn variant="link" @click="getReport()">
+              <b-btn variant="link" @click="showConfirmationModal()">
                 <font-awesome-icon
                   icon="file-download"
                   aria-hidden="true"
@@ -168,12 +168,17 @@ $radius: 15px;
         <CommentSection :parent-entry="entry"></CommentSection>
       </b-col>
     </b-row>
+    <MessageModalComponent
+      ref="messageModal"
+      @submit="getReport"
+      message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+    />
   </b-col>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component } from "vue-property-decorator";
+import { Prop, Component, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import LaboratoryTimelineEntry, {
@@ -181,6 +186,7 @@ import LaboratoryTimelineEntry, {
 } from "@/models/laboratoryTimelineEntry";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { ILaboratoryService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -192,6 +198,7 @@ library.add(faFileDownload);
 
 @Component({
   components: {
+    MessageModalComponent,
     CommentSection: CommentSectionComponent
   }
 })
@@ -199,6 +206,9 @@ export default class LaboratoryTimelineComponent extends Vue {
   @Prop() entry!: LaboratoryTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
+
+  @Ref("messageModal")
+  readonly messageModal!: MessageModalComponent;
 
   private laboratoryService!: ILaboratoryService;
 
@@ -223,6 +233,10 @@ export default class LaboratoryTimelineComponent extends Vue {
 
   private formatDate(date: Date): string {
     return moment(date).format("lll");
+  }
+
+  private showConfirmationModal(): string {
+    this.messageModal.showModal();
   }
 
   private getReport() {
