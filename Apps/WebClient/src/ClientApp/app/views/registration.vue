@@ -190,9 +190,9 @@ label {
                 Communication Preferences
               </h1>
               <div id="Description">
-                Health Gateway will send you notifications via email
-                and based on your preference, may send email and/or text for
-                other notifications.
+                Health Gateway will send you notifications via email and based
+                on your preference, may send email and/or text for other
+                notifications.
               </div>
             </div>
           </b-col>
@@ -333,7 +333,7 @@ import { Component, Ref, Prop } from "vue-property-decorator";
 import {
   IUserProfileService,
   IAuthenticationService,
-  IBetaRequestService
+  IBetaRequestService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -344,7 +344,7 @@ import {
   sameAs,
   email,
   helpers,
-  ValidationRule
+  ValidationRule,
 } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
@@ -358,8 +358,8 @@ library.add(faCheck);
 @Component({
   components: {
     LoadingComponent,
-    HtmlTextAreaComponent
-  }
+    HtmlTextAreaComponent,
+  },
 })
 export default class RegistrationComponent extends Vue {
   @Action("checkRegistration", { namespace: "user" }) checkRegistration;
@@ -419,13 +419,13 @@ export default class RegistrationComponent extends Vue {
     );
     authenticationService
       .getOidcUserProfile()
-      .then(oidcUser => {
+      .then((oidcUser) => {
         if (oidcUser) {
           this.oidcUser = oidcUser;
 
           this.betaRequestService
             .getRequest(this.oidcUser.hdid)
-            .then(betaRequest => {
+            .then((betaRequest) => {
               console.log("beta request:", betaRequest);
               if (betaRequest) {
                 this.email = betaRequest.emailAddress;
@@ -461,22 +461,22 @@ export default class RegistrationComponent extends Vue {
         required: requiredIf(() => {
           return this.isPhoneNumberChecked;
         }),
-        phone
+        phone,
       },
       email: {
         required: requiredIf(() => {
           return this.isEmailChecked;
         }),
-        email
+        email,
       },
       emailConfirmation: {
         required: requiredIf(() => {
           return this.isEmailChecked;
         }),
         sameAsEmail: sameAs("email"),
-        email
+        email,
       },
-      accepted: { isChecked: sameAs(() => true) }
+      accepted: { isChecked: sameAs(() => true) },
     };
   }
 
@@ -506,11 +506,11 @@ export default class RegistrationComponent extends Vue {
     this.loadingTermsOfService = true;
     this.userProfileService
       .getTermsOfService()
-      .then(result => {
+      .then((result) => {
         console.log(result);
         this.termsOfService = result.content;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.handleError("Please refresh your browser.");
       })
@@ -529,7 +529,9 @@ export default class RegistrationComponent extends Vue {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-      this.phoneNumber = this.phoneNumber.replace(/\D+/g, '');
+      if (this.phoneNumber) {
+        this.phoneNumber = this.phoneNumber.replace(/\D+/g, "");
+      }
       this.loadingTermsOfService = true;
       this.userProfileService
         .createProfile({
@@ -537,11 +539,11 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            phoneNumber: this.phoneNumber || ""
+            phoneNumber: this.phoneNumber || "",
           },
-          inviteCode: this.inviteKey || ""
+          inviteCode: this.inviteKey || "",
         })
-        .then(result => {
+        .then((result) => {
           console.log(result);
           this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
             (isRegistered: boolean) => {
@@ -553,7 +555,7 @@ export default class RegistrationComponent extends Vue {
             }
           );
         })
-        .catch(err => {
+        .catch((err) => {
           this.handleError(err);
         })
         .finally(() => {
@@ -581,12 +583,12 @@ export default class RegistrationComponent extends Vue {
 
       let newRequest: BetaRequest = {
         hdid: this.oidcUser.hdid,
-        emailAddress: this.email
+        emailAddress: this.email,
       };
 
       this.betaRequestService
         .putRequest(newRequest)
-        .then(result => {
+        .then((result) => {
           console.log("success!");
           console.log(result);
           this.waitlistEdditable = false;
@@ -596,7 +598,7 @@ export default class RegistrationComponent extends Vue {
           this.hasErrors = false;
           this.$v.$reset();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("OH NO!", err);
           this.hasErrors = true;
         })

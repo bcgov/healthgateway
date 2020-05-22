@@ -322,11 +322,11 @@ import {
   sameAs,
   email,
   not,
-  helpers
+  helpers,
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
-  IAuthenticationService
+  IAuthenticationService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -346,12 +346,12 @@ const authNamespace: string = "auth";
 
 @Component({
   components: {
-    LoadingComponent
-  }
+    LoadingComponent,
+  },
 })
 export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
-    namespace: authNamespace
+    namespace: authNamespace,
   })
   oidcIsAuthenticated!: boolean;
 
@@ -361,7 +361,7 @@ export default class ProfileComponent extends Vue {
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
     hdid,
-    emailAddress
+    emailAddress,
   }: {
     hdid: string;
     emailAddress: string;
@@ -426,7 +426,7 @@ export default class ProfileComponent extends Vue {
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
     Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
-      .then(results => {
+      .then((results) => {
         // Load oidc user details
         if (results[0]) {
           this.oidcUser = results[0];
@@ -452,7 +452,7 @@ export default class ProfileComponent extends Vue {
 
         this.isLoading = false;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("Error loading profile");
         console.log(err);
         this.hasErrors = true;
@@ -473,22 +473,22 @@ export default class ProfileComponent extends Vue {
           return this.isPhoneEditable && this.phoneNumber !== "";
         }),
         newPhoneNumber: not(sameAs("tempPhone")),
-        phone
+        phone,
       },
       email: {
         required: requiredIf(() => {
           return this.isEmailEditable && this.email !== "";
         }),
         newEmail: not(sameAs("tempEmail")),
-        email
+        email,
       },
       emailConfirmation: {
         required: requiredIf(() => {
           return this.isEmailEditable && this.emailConfirmation !== "";
         }),
         sameAsEmail: sameAs("email"),
-        email
-      }
+        email,
+      },
     };
   }
 
@@ -591,7 +591,9 @@ export default class ProfileComponent extends Vue {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-      this.phoneNumber = this.phoneNumber.replace(/\D+/g, '');
+      if (this.phoneNumber) {
+        this.phoneNumber = this.phoneNumber.replace(/\D+/g, "");
+      }
       this.updatePhoneNumber();
     }
     event.preventDefault();
@@ -601,7 +603,7 @@ export default class ProfileComponent extends Vue {
     this.isLoading = true;
     this.updateUserEmail({
       hdid: this.user.hdid || "",
-      emailAddress: this.email
+      emailAddress: this.email,
     })
       .then(() => {
         console.log("success!");
@@ -611,7 +613,7 @@ export default class ProfileComponent extends Vue {
         this.tempEmail = "";
         this.$v.$reset();
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -648,12 +650,12 @@ export default class ProfileComponent extends Vue {
   private recoverAccount(): void {
     this.isLoading = true;
     this.recoverUserAccount({
-      hdid: this.user.hdid
+      hdid: this.user.hdid,
     })
       .then(() => {
         console.log("success!");
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -673,13 +675,13 @@ export default class ProfileComponent extends Vue {
   private closeAccount(): void {
     this.isLoading = true;
     this.closeUserAccount({
-      hdid: this.user.hdid
+      hdid: this.user.hdid,
     })
       .then(() => {
         console.log("success!");
         this.showCloseWarning = false;
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
