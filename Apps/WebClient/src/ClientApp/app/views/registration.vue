@@ -190,7 +190,7 @@ label {
                 Communication Preferences
               </h1>
               <div id="Description">
-                Health Gateway will send you mandatory notifications via email
+                Health Gateway will send you notifications via email
                 and based on your preference, may send email and/or text for
                 other notifications.
               </div>
