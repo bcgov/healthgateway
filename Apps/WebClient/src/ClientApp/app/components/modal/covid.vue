@@ -14,6 +14,7 @@
     footer-class="modal-footer"
     :no-close-on-backdrop="true"
     centered
+    @close="cancel"
   >
     <b-row>
       <b-col>
