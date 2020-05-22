@@ -529,7 +529,7 @@ export default class RegistrationComponent extends Vue {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-
+      this.phoneNumber = this.phoneNumber.replace(/\D+/g, '');
       this.loadingTermsOfService = true;
       this.userProfileService
         .createProfile({

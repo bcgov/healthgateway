@@ -591,7 +591,7 @@ export default class ProfileComponent extends Vue {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-      console.log(this.phoneNumber);
+      this.phoneNumber = this.phoneNumber.replace(/\D+/g, '');
       this.updatePhoneNumber();
     }
     event.preventDefault();
