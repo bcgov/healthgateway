@@ -99,7 +99,7 @@ input {
                   id="resendEmail"
                   variant="warning"
                   class="ml-auto"
-                  :disabled="verificationSent"
+                  :disabled="emailVerificationSent"
                   @click="sendUserEmailUpdate()"
                   >Resend Verification
                 </b-button>
@@ -188,6 +188,21 @@ input {
                   :disabled="!isPhoneEditable"
                   :state="isValid($v.phoneNumber)"
                 />
+                <div
+                  v-if="!phoneVerified && !isPhoneEditable && phoneNumber"
+                  class="ml-3"
+                >
+                  (Not Verified)
+                </div>
+                <b-button
+                  v-if="!phoneVerified && !isPhoneEditable && phoneNumber"
+                  id="resendPhoneVerification"
+                  variant="warning"
+                  class="ml-auto"
+                  :disabled="phoneVerificationSent"
+                  @click="sendUserPhoneUpdate()"
+                  >Resend Verification
+                </b-button>
               </div>
               <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
                 Valid phone number is required
@@ -196,6 +211,23 @@ input {
                 New phone number must be different from the previous one
               </b-form-invalid-feedback>
             </b-col>
+          </b-row>
+          <b-row v-if="!phoneVerified && !isPhoneEditable && phoneNumber">
+              <b-col>
+                  <b-form-input id="phoneVerificationCode"
+                                v-model="$v.phoneVerificationCode.$model"
+                                type="number"
+                                maxlength="6"
+                                placeholder="000000"
+                                :state="isValid($v.phoneVerificationCode)" />
+                  <b-button
+                            id="verifyPhone"
+                            class="mx-auto"
+                            variant="link"
+                            @click="verifyPhone()">
+                      Verify
+                  </b-button>
+              </b-col>
           </b-row>
           <b-row v-if="!phoneNumber && tempPhone">
             <b-col class="font-weight-bold text-primary text-center">
@@ -390,11 +422,13 @@ export default class ProfileComponent extends Vue {
   private emailConfirmation: string = "";
   private isEmailEditable: boolean = false;
   private oidcUser: any = {};
-  private verificationSent: boolean = false;
+  private emailVerificationSent: boolean = false;
 
+  private phoneVerified = false;
   private phoneNumber: string = "";
   private isPhoneEditable: boolean = false;
   private tempPhone: string = "";
+  private phoneVerificationSent: boolean = false;
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -437,7 +471,7 @@ export default class ProfileComponent extends Vue {
           var userEmailInvite = results[1];
           this.email = userEmailInvite.emailAddress;
           this.emailVerified = userEmailInvite.validated;
-          this.verificationSent = this.emailVerified;
+          this.emailVerificationSent = this.emailVerified;
         }
 
         if (results[2]) {
@@ -597,6 +631,11 @@ export default class ProfileComponent extends Vue {
     event.preventDefault();
   }
 
+  private verifyPhone(): void {
+    // TODO: Implement backend call.
+    this.phoneVerified = true;
+  }
+
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({
@@ -606,7 +645,7 @@ export default class ProfileComponent extends Vue {
       .then(() => {
         console.log("success!");
         this.isEmailEditable = false;
-        this.verificationSent = true;
+        this.emailVerificationSent = true;
         this.emailConfirmation = "";
         this.tempEmail = "";
         this.$v.$reset();
@@ -631,6 +670,25 @@ export default class ProfileComponent extends Vue {
         this.isPhoneEditable = false;
         this.tempPhone = "";
         this.$v.$reset();
+      });
+  }
+
+  private sendUserPhoneUpdate(): void {
+    this.isLoading = true;
+    this.userProfileService
+      .updatePhoneNumber(this.user.hdid, this.phoneNumber)
+      .then(() => {
+        this.isPhoneEditable = false;
+        this.phoneVerificationSent = true;
+        this.tempPhone = "";
+        this.$v.$reset();
+      })
+      .catch(err => {
+        this.hasErrors = true;
+        console.log(err);
+      })
+      .finally(() => {
+        this.isLoading = false;
       });
   }
 
