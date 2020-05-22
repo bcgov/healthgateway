@@ -30,6 +30,9 @@
         <b-col>
           <b-row>
             <b-col>
+              <b-button variant="danger" @click="handleCancel($event)">
+                Cancel
+              </b-button>
               <b-button variant="primary" @click="handleSubmit($event)">
                 Continue
               </b-button>

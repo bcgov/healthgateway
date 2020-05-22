@@ -81,7 +81,7 @@ $radius: 15px;
             <b-spinner v-if="isLoadingDocument"></b-spinner>
             <span v-else>
               <strong>Report:</strong>
-              <b-btn variant="link" @click="getReport()">
+              <b-btn variant="link" @click="showConfirmationModal()">
                 <font-awesome-icon
                   icon="file-download"
                   aria-hidden="true"
@@ -170,6 +170,7 @@ $radius: 15px;
     </b-row>
     <MessageModalComponent
       ref="messageModal"
+      @submit="getReport"
       message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
     />
   </b-col>
@@ -234,6 +235,10 @@ export default class LaboratoryTimelineComponent extends Vue {
     return moment(date).format("lll");
   }
 
+  private showConfirmationModal(): string {
+    this.messageModal.showModal();
+  }
+
   private getReport() {
     this.isLoadingDocument = true;
     this.laboratoryService
@@ -248,7 +253,6 @@ export default class LaboratoryTimelineComponent extends Vue {
         link.download = `COVID_Result_${dateString}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);
-        this.messageModal.showModal();
       })
       .catch(() => {
         this.hasErrors = true;
