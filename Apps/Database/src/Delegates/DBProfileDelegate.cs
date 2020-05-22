@@ -54,6 +54,7 @@ namespace HealthGateway.Database.Delegates
             try
             {
                 this.dbContext.SaveChanges();
+                result.Payload = profile;
                 result.Status = DBStatusCode.Created;
             }
             catch (DbUpdateException e)

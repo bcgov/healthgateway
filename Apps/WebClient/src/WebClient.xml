@@ -791,6 +791,11 @@
             Gets or sets the user email.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.PhoneNumber">
+            <summary>
+            Gets or sets the user phone number.
+            </summary>
+        </member>
         <member name="P:HealthGateway.WebClient.Models.UserProfileModel.HasTermsOfServiceUpdated">
             <summary>
             Gets or sets a value indicating whether the user needs to be notified about new terms of service.
