@@ -201,7 +201,7 @@ namespace HealthGateway.WebClient.Services
                 requestResult.ResultStatus = ResultType.Success;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(insertResult.Payload, bearerToken);
+                this.UpdateNotificationSettings(newProfile, bearerToken);
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
