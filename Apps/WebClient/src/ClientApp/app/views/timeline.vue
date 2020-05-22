@@ -226,6 +226,7 @@
       ref="covidModal"
       :is-loading="isLoading"
       @submit="onCovidSubmit"
+      @cancel="onCovidCancel"
     />
     <ProtectiveWordComponent
       ref="protectiveWordModal"
@@ -494,7 +495,9 @@ export default class TimelineComponent extends Vue {
           this.sortEntries();
           this.applyTimelineFilter();
         } else if (results.resultStatus == ResultType.Protected) {
-          this.protectiveWordModal.showModal();
+          if (this.covidModal.isVisible) {
+            this.protectiveWordModal.showModal();
+          }
           this.protectiveWordAttempts++;
         } else {
           console.log(
@@ -514,8 +517,14 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCovidSubmit() {
-    this.protectiveWordModal.hideModal();
     this.filterTypes = ["Laboratory"];
+  }
+
+  private onCovidCancel() {
+    // Display protective word modal if required
+    if (this.protectiveWordAttempts > 0) {
+      this.protectiveWordModal.showModal();
+    }
   }
 
   private fetchImmunizations() {
@@ -566,6 +575,7 @@ export default class TimelineComponent extends Vue {
           this.applyTimelineFilter();
 
           if (results.resourcePayload.length > 0) {
+            this.protectiveWordModal.hideModal();
             this.covidModal.showModal();
           }
         } else {
