@@ -286,7 +286,7 @@
             Web API to handle user profile interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService,HealthGateway.WebClient.Services.IUserEmailService)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService,HealthGateway.WebClient.Services.IUserEmailService,HealthGateway.WebClient.Services.IUserPhoneService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserProfileController"/> class.
             </summary>
@@ -294,6 +294,7 @@
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
             <param name="authorizationService">The injected authorization service.</param>
             <param name="userEmailService">The injected user email service.</param>
+            <param name="userPhoneService">The injected user phone service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.WebClient.Models.CreateUserRequest)">
             <summary>
@@ -1056,12 +1057,13 @@
             The User Email service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.ValidateEmail(System.String,System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.ValidateEmail(System.String,System.Guid,System.String)">
             <summary>
             Validates the email that matches the given invite key.
             </summary>
             <param name="hdid">The requested user hdid.</param>
             <param name="inviteKey">The email invite key.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
             <returns>returns true if the email invite was found.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserEmailService.RetrieveLastInvite(System.String)">
@@ -1071,13 +1073,14 @@
             <param name="hdid">The requested user hdid.</param>
             <returns>returns the last email invite if found.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.UpdateUserEmail(System.String,System.String,System.Uri)">
+        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.UpdateUserEmail(System.String,System.String,System.Uri,System.String)">
             <summary>
             Updates the user email.
             </summary>
             <param name="hdid">The user hdid.</param>
             <param name="email">Email to be set for the user.</param>
             <param name="hostUri">The host uri for referal purposes.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
             <returns>returns true if the email invite was sucessfully created.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IUserFeedbackService">
@@ -1092,6 +1095,21 @@
             <param name="userFeedback">The user feedback model to be saved.</param>
             <returns>The wrappeed user feedback.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserPhoneService">
+            <summary>
+            The User Phone service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserPhoneService.UpdateUserPhone(System.String,System.String,System.Uri,System.String)">
+            <summary>
+            Updates the user phone number.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="phone">Phone number to be set for the user.</param>
+            <param name="hostUri">The host uri for referal purposes.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>returns true if the phone number was sucessfully updated.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserProfileService">
             <summary>
             The User Profile service.
@@ -1105,12 +1123,13 @@
             <param name="lastLogin">The date of last login performed by the user.</param>
             <returns>The wrappeed user profile.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri,System.String)">
             <summary>
             Saves the user profile to the database.
             </summary>
             <param name="createProfileRequest">The request to create a user profile model.</param>
             <param name="hostUri">The host of the email validation endpoint.</param>
+            <param name="bearerToken">The access token of the authenticated user.</param>
             <returns>The wrapped user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.Guid,System.String)">
@@ -1163,7 +1182,7 @@
         <member name="T:HealthGateway.WebClient.Services.UserEmailService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserEmailService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IEmailInviteDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.IEmailQueueService)">
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IEmailInviteDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Common.Services.INotificationSettingsService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserEmailService"/> class.
             </summary>
@@ -1171,14 +1190,15 @@
             <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
             <param name="profileDelegate">The profile delegate to interact with the DB.</param>
             <param name="emailQueueService">The email service to queue emails.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserEmailService.ValidateEmail(System.String,System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.ValidateEmail(System.String,System.Guid,System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserEmailService.RetrieveLastInvite(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserEmailService.UpdateUserEmail(System.String,System.String,System.Uri)">
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.UpdateUserEmail(System.String,System.String,System.Uri,System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserFeedbackService">
@@ -1194,10 +1214,24 @@
         <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.WebClient.Services.UserPhoneService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserPhoneService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserEmailService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserPhoneService.UpdateUserPhone(System.String,System.String,System.Uri,System.String)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IEmailInviteDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IEmailInviteDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
             </summary>
@@ -1209,11 +1243,12 @@
             <param name="emailQueueService">The email service to queue emails.</param>
             <param name="legalAgreementDelegate">The terms of service delegate.</param>
             <param name="cryptoDelegate">Injected Crypto delegate.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri,System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.Guid,System.String)">

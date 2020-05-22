@@ -32,11 +32,26 @@ namespace HealthGateway.Common.Models
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class.
+        /// Copy constructor that uses a <see cref="NotificationSettingsBase"/> for initialization.
         /// </summary>
         /// <param name="notificationSettings">Initialize values from passed in object.</param>
         public NotificationSettingsRequest(NotificationSettingsBase notificationSettings)
             : base(notificationSettings)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class using only the email address and phone number.
+        /// </summary>
+        /// <param name="emailAddress">Email address for the notification settings.</param>
+        /// <param name="smsNumber">SMS Number for the notification settings.</param>
+        public NotificationSettingsRequest(string? emailAddress, string? smsNumber)
+            : base()
+        {
+            this.EmailAddress = emailAddress;
+            this.EmailEnabled = !string.IsNullOrWhiteSpace(emailAddress);
+            this.SMSNumber = smsNumber;
+            this.SMSEnabled = !string.IsNullOrWhiteSpace(smsNumber);
         }
 
         /// <summary>

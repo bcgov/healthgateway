@@ -42,6 +42,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IEmailQueueService emailQueueService;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
+        private readonly INotificationSettingsService notificationSettingsService;
 
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string HOST_TEMPLATE_VARIABLE = "host";
@@ -58,6 +59,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        /// <param name="notificationSettingsService">Notification settings delegate.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IProfileDelegate profileDelegate,
@@ -66,7 +68,8 @@ namespace HealthGateway.WebClient.Services
             IConfigurationService configuration,
             IEmailQueueService emailQueueService,
             ILegalAgreementDelegate legalAgreementDelegate,
-            ICryptoDelegate cryptoDelegate)
+            ICryptoDelegate cryptoDelegate,
+            INotificationSettingsService notificationSettingsService)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
@@ -76,6 +79,7 @@ namespace HealthGateway.WebClient.Services
             this.emailQueueService = emailQueueService;
             this.legalAgreementDelegate = legalAgreementDelegate;
             this.cryptoDelegate = cryptoDelegate;
+            this.notificationSettingsService = notificationSettingsService;
         }
 
         /// <inheritdoc />
@@ -120,7 +124,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
+        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
         {
             Contract.Requires(createProfileRequest != null && hostUri != null);
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
@@ -195,6 +199,9 @@ namespace HealthGateway.WebClient.Services
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
                 requestResult.ResultStatus = ResultType.Success;
+
+                // Update the notification settings
+                this.UpdateNotificationSettings(insertResult.Payload, bearerToken);
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
@@ -295,6 +302,17 @@ namespace HealthGateway.WebClient.Services
                 ResultMessage = retVal.Message,
                 ResourcePayload = TermsOfServiceModel.CreateFromDbModel(retVal.Payload),
             };
+        }
+
+        private async void UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
+        {
+            // Update the notification settings
+            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.PhoneNumber);
+            RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Error)
+            {
+                this.notificationSettingsService.QueueNotificationSettings(request, bearerToken);
+            }
         }
     }
 }
