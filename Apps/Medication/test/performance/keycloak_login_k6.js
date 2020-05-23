@@ -12,7 +12,7 @@ let auth_form_data = {
   client_id: "healthgateway",
   audience: "healthgateway",
   scope: "openid",
-  username: "loadtest_01",
+  username: "loadtest_09",
   password: __ENV.HG_USER_PASSWORD,
 };
 

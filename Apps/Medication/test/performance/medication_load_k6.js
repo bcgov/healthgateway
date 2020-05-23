@@ -17,7 +17,6 @@ let users = [
   { username: "loadtest_04", password: passwd, hdid: null, token: null },
   { username: "loadtest_05", password: passwd, hdid: null, token: null },
   { username: "loadtest_06", password: passwd, hdid: null, token: null },
-  { username: "loadtest_06", password: passwd, hdid: null, token: null },
   { username: "loadtest_07", password: passwd, hdid: null, token: null },
   { username: "loadtest_08", password: passwd, hdid: null, token: null },
   { username: "loadtest_09", password: passwd, hdid: null, token: null },
