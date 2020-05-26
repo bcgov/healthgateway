@@ -53,7 +53,7 @@ namespace HealthGateway.CommonTests.Services
             IEmailQueueService emailService = new EmailQueueService(
                 new Mock<ILogger<EmailQueueService>>().Object,
                 new Mock<IEmailDelegate>().Object,
-                new Mock<IEmailInviteDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<IWebHostEnvironment>().Object);
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             Assert.True(expected.IsDeepEqual(actual));
