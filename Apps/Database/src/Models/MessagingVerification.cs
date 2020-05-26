@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
@@ -37,28 +38,47 @@ namespace HealthGateway.Database.Models
         public string? HdId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the invite was validated.
+        /// Gets or sets a value indicating whether the messageing verification was validated.
         /// </summary>
         [Required]
         public bool Validated { get; set; }
 
         /// <summary>
-        /// Gets or sets the associated email that was sent for this invite.
+        /// Gets or sets the associated email that was sent for this verification.
+        /// Required if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
-        [Required]
         public Guid EmailId { get; set; }
 
         /// <summary>
-        /// Gets or sets the associated email that was sent for this invite.
+        /// Gets or sets the associated email for this verification.
+        /// Required if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
-        [Required]
         public virtual Email? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets the invite key.
+        /// Gets or sets the email invite key.
         /// </summary>
         [Required]
         public Guid InviteKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Verification type as defined by MEssaginVerificationTypeCode.
+        /// </summary>
+        [Required]
+        [MaxLength(10)]
+        public string VerificationType { get; set; } = MessagingVerificationType.Email;
+
+        /// <summary>
+        /// Gets or sets the SMS number for this verification.
+        /// Required if the VerificationType = MessagingVerificationType.SMS.
+        /// </summary>
+        public string? SMSNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SMS validation code for this verification.
+        /// </summary>
+        [MaxLength(6)]
+        public string? SMSValidationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the expire date for the messaging verification.

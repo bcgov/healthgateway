@@ -162,12 +162,21 @@ namespace HealthGateway.Database.Context
                     .HasPrincipalKey(k => k.HdId)
                     .HasForeignKey(k => k.HdId);
 
+            // Create Foreign keys for Messaging Verifications
+            modelBuilder.Entity<MessagingVerification>()
+                .HasOne<MessagingVerificationTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.MessagingVerificationCode)
+                .HasForeignKey(k => k.VerificationType)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
             this.SeedAuditTransactionResults(modelBuilder);
             this.SeedLegalAgreements(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
+            this.SeedMessagingVerifications(modelBuilder);
         }
 
         /// <summary>
@@ -569,6 +578,33 @@ namespace HealthGateway.Database.Context
                     Component = "NotifyUpdatedLegalAgreementsJob",
                     Key = "ToS-Last-Checked",
                     Value = this.DefaultSeedDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Messaging Verification Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedMessagingVerifications(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MessagingVerificationTypeCode>().HasData(
+                new MessagingVerificationTypeCode
+                {
+                    MessagingVerificationCode = MessagingVerificationType.Email,
+                    Description = "Email Verification Type Code",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new MessagingVerificationTypeCode
+                {
+                    MessagingVerificationCode = MessagingVerificationType.SMS,
+                    Description = "SMS Verification Type Code",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
