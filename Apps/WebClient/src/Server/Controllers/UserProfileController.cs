@@ -252,6 +252,34 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
+        /// Validates an phone invite.
+        /// </summary>
+        /// <returns>An empty response.</returns>
+        /// <param name="digit">The phone invite digit.</param>
+        /// <response code="200">The phone was validated.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="404">The invite key was not found.</response>
+        [HttpGet]
+        [Route("phone/validate/{digit}")]
+        public async Task<IActionResult> ValidatePhone(string digit)
+        {
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+
+            // TODO: Update to call validates phone service method
+            //if (this.userEmailService.ValidatePhone(userHdid, digit, bearerToken))
+            if (true)
+            {
+                return new OkResult();
+            }
+            else
+            {
+                return new NotFoundResult();
+            }
+        }
+
+        /// <summary>
         /// Validates an email invite.
         /// </summary>
         /// <returns>The invite email.</returns>

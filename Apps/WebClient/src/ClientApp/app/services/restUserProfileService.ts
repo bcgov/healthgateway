@@ -114,6 +114,22 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
+  public validatePhone(digit: string): Promise<boolean> {
+    return new Promise(resolve => {
+      this.http
+        .get(
+          `${this.USER_PROFILE_BASE_URI}/phone/validate/${digit}`
+        )
+        .then(() => {
+          return resolve(true);
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(false);
+        });
+    });
+  }
+
   public getLatestInvite(hdid: string): Promise<UserEmailInvite> {
     return new Promise(resolve => {
       this.http
