@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -48,11 +49,13 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
         {
+#pragma warning disable CA1307 // Specify StringComparison
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)
                 .FirstOrDefault();
+#pragma warning restore CA1307 // Specify StringComparison
 
             return new DBResult<LegalAgreement>()
             {
