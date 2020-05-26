@@ -669,7 +669,7 @@
             Service that provides functionality to admin emails.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.EmailAdminService},HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IEmailInviteDelegate)">
+        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.EmailAdminService},HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.EmailAdminService"/> class.
             </summary>
