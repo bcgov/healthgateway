@@ -28,7 +28,7 @@ namespace HealthGateway.WebClient.Services
     public class UserEmailService : IUserEmailService
     {
         private readonly ILogger logger;
-        private readonly IEmailInviteDelegate emailInviteDelegate;
+        private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -42,7 +42,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
         public UserEmailService(ILogger<UserEmailService> logger,
-            IEmailInviteDelegate emailInviteDelegate,
+            IMessagingVerificationDelegate emailInviteDelegate,
             IProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService)

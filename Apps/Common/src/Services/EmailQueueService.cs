@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Services
         private const string ENVIRONMENT_VARIABLE = "Environment";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
-        private readonly IEmailInviteDelegate emailInviteDelegate;
+        private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IWebHostEnvironment enviroment;
         private readonly ILogger logger;
 
@@ -54,7 +54,7 @@ namespace HealthGateway.Common.Services
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IEmailDelegate emailDelegate,
-            IEmailInviteDelegate emailInviteDelegate,
+            IMessagingVerificationDelegate emailInviteDelegate,
             IWebHostEnvironment enviroment)
         {
             this.logger = logger;

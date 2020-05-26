@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Test.Services
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
+            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
             emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
@@ -119,7 +119,7 @@ namespace HealthGateway.WebClient.Test.Services
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
+            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
             emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
@@ -173,7 +173,7 @@ namespace HealthGateway.WebClient.Test.Services
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IEmailInviteDelegate> emailInviteDelegateMock = new Mock<IEmailInviteDelegate>();
+            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
             emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
