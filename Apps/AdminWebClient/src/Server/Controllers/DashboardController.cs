@@ -75,15 +75,16 @@ namespace HealthGateway.Admin.Controllers
         /// <summary>
         /// Retrieves the count of logged in user in the last day.
         /// </summary>
+        /// <param name="offset">The offset from the client browser to UTC.</param>
         /// <returns>The count of logged in users in the current day.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("LoggedInCount")]
-        public IActionResult GetTodayLoggedinUsersCount()
+        public IActionResult GetTodayLoggedinUsersCount(int offset)
         {
-            return new JsonResult(this.dashboardService.GetTodayLoggedInUsersCount());
+            return new JsonResult(this.dashboardService.GetTodayLoggedInUsersCount(offset));
         }
 
         /// <summary>
