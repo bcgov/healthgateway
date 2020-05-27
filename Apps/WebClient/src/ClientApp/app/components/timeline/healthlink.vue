@@ -50,30 +50,29 @@ export default class HealthlinkSidebarComponent extends Vue {
     title: "",
     description: "",
     imageSrc: "",
-    urlLink: "",
+    urlLink: ""
   };
   private cardPool: Healthcard[] = [
     {
       title: "COVID-19",
-      description:
-        "View more information about COVID-19.",
+      description: "View more information about COVID-19.",
       imageSrc: CovidImage,
-      urlLink: "http://www.bccdc.ca/health-info/diseases-conditions/covid-19",
+      urlLink: "http://www.bccdc.ca/health-info/diseases-conditions/covid-19"
     },
     {
       title: "8-1-1",
       description:
         "Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year.",
       imageSrc: PhoneImage,
-      urlLink: "https://www.healthlinkbc.ca/services-and-resources/about-8-1-1",
+      urlLink: "https://www.healthlinkbc.ca/services-and-resources/about-8-1-1"
     },
     {
       title: "Healthlink",
       description:
         "HealthLink BC provides reliable non-emergency health information and advice in British Columbia.",
       imageSrc: HealthlinkImage,
-      urlLink: "https://www.healthlinkbc.ca",
-    },
+      urlLink: "https://www.healthlinkbc.ca"
+    }
   ];
   private cardIndex: number = 1;
 
@@ -83,11 +82,11 @@ export default class HealthlinkSidebarComponent extends Vue {
 
   private rotate(): void {
     if (this.cardIndex !== this.cardPool.length - 1) {
-        this.cardIndex = this.cardIndex + 1;
-      } else {
-        this.cardIndex = 0;
-      }
-      this.currentCard = this.cardPool[this.cardIndex]
+      this.cardIndex = this.cardIndex + 1;
+    } else {
+      this.cardIndex = 0;
+    }
+    this.currentCard = this.cardPool[this.cardIndex];
     setTimeout(this.rotate, this.cardDelay);
   }
 

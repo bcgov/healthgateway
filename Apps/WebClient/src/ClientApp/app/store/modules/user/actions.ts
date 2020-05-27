@@ -89,6 +89,20 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     });
   },
+  getUserPhoneNumber({ commit }, { hdid }): Promise<UserEmailInvite> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .getLatestInvite(hdid)
+        .then(userEmailInvite => {
+          commit("setValidatedPhone", userEmailInvite);
+          resolve(userEmailInvite);
+        })
+        .catch(error => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
   updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
     return new Promise((resolve, reject) => {
       userProfileService

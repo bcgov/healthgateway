@@ -332,6 +332,64 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
+        /// Validates an email invite.
+        /// </summary>
+        /// <returns>The invite email.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the user email invite json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/phone/invite")]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> GetUserPhoneInvite(string hdid)
+        {
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+
+            // Validate that the query parameter matches the user claims
+            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
+            }
+
+            var isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            // TODO: update with service call.
+            // MessagingVerification phoneInvite = this.userPhoneService.RetrieveLastInvite(hdid);
+            MessagingVerification phoneInvite = new MessagingVerification()
+            {
+                SMSNumber = "1231231234",
+                Validated = false,
+            };
+
+            // Check expiration and remove fields that contains sensitive information
+            if (phoneInvite != null)
+            {
+                if (phoneInvite.ExpireDate < DateTime.UtcNow)
+                {
+                    return new JsonResult(null);
+                }
+                else
+                {
+                    UserPhoneInvite result = UserPhoneInvite.CreateFromDbModel(phoneInvite);
+                    return new JsonResult(result);
+                }
+            }
+            else
+            {
+                return new JsonResult(null);
+            }
+        }
+
+        /// <summary>
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>

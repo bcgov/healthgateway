@@ -19,6 +19,7 @@ import { TermsOfService } from "@/models/termsOfService";
 import UserNote from "@/models/userNote";
 import Communication from "@/models/communication";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import UserPhoneInvite from "@/models/userPhoneInvite";
 
 export interface IAuthenticationService {
   initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -80,8 +81,10 @@ export interface IUserProfileService {
   getTermsOfService(): Promise<TermsOfService>;
   closeAccount(hdid: string): Promise<UserProfile>;
   recoverAccount(hdid: string): Promise<UserProfile>;
-  getLatestInvite(hdid: string): Promise<UserEmailInvite>;
+  getLatestEmailInvite(hdid: string): Promise<UserEmailInvite>;
+  getLatestPhoneInvite(hdid: string): Promise<UserPhoneInvite>;
   validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
+  validatePhone(digit: string): Promise<boolean>;
   updateEmail(hdid: string, email: string): Promise<boolean>;
   updatePhoneNumber(hdid: string, phoneNumber: string): Promise<boolean>;
 }

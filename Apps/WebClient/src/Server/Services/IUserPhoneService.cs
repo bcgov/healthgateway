@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The User Phone service.
@@ -31,5 +32,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>returns true if the phone number was sucessfully updated.</returns>
         bool UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken);
+
+        /// <summary>
+        /// Retrieves the last invite SMS.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>returns the last SMS invite if found.</returns>
+        public MessagingVerification RetrieveLastInvite(string hdid);
     }
 }

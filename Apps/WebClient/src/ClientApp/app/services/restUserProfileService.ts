@@ -5,6 +5,7 @@ import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserPhoneInvite from "@/models/userPhoneInvite";
 import { Dictionary } from "vue-router/types/router";
 
 @injectable()
@@ -117,9 +118,7 @@ export class RestUserProfileService implements IUserProfileService {
   public validatePhone(digit: string): Promise<boolean> {
     return new Promise(resolve => {
       this.http
-        .get(
-          `${this.USER_PROFILE_BASE_URI}/phone/validate/${digit}`
-        )
+        .get(`${this.USER_PROFILE_BASE_URI}/phone/validate/${digit}`)
         .then(() => {
           return resolve(true);
         })
@@ -130,7 +129,7 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public getLatestInvite(hdid: string): Promise<UserEmailInvite> {
+  public getLatestEmailInvite(hdid: string): Promise<UserEmailInvite> {
     return new Promise(resolve => {
       this.http
         .get<UserEmailInvite>(
@@ -138,6 +137,22 @@ export class RestUserProfileService implements IUserProfileService {
         )
         .then(userEmailInvite => {
           return resolve(userEmailInvite);
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(err);
+        });
+    });
+  }
+
+  public getLatestPhoneInvite(hdid: string): Promise<UserPhoneInvite> {
+    return new Promise(resolve => {
+      this.http
+        .get<UserPhoneInvite>(
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/phone/invite/`
+        )
+        .then(userPhoneInvite => {
+          return resolve(userPhoneInvite);
         })
         .catch(err => {
           console.log(err);

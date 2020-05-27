@@ -31,18 +31,22 @@ namespace HealthGateway.WebClient.Services
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserEmailService"/> class.
+        /// Initializes a new instance of the <see cref="UserPhoneService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserPhoneService(ILogger<UserEmailService> logger,
+        public UserPhoneService(ILogger<UserPhoneService> logger,
+            IMessagingVerificationDelegate messageVerificationDelegate,
             IProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
         {
             this.logger = logger;
+            this.messageVerificationDelegate = messageVerificationDelegate;
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
         }
@@ -74,6 +78,13 @@ namespace HealthGateway.WebClient.Services
             {
                 this.notificationSettingsService.QueueNotificationSettings(request, bearerToken);
             }
+        }
+
+        /// <inheritdoc />
+        public MessagingVerification RetrieveLastInvite(string hdid)
+        {
+            MessagingVerification phoneInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            return phoneInvite;
         }
     }
 }

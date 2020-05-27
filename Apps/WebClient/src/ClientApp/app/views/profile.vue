@@ -201,7 +201,7 @@ input {
                   class="ml-auto"
                   :disabled="phoneVerificationSent"
                   @click="sendUserPhoneUpdate()"
-                  >Resend Verification
+                  >Resend Verification Code
                 </b-button>
               </div>
               <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
@@ -213,21 +213,29 @@ input {
             </b-col>
           </b-row>
           <b-row v-if="!phoneVerified && !isPhoneEditable && phoneNumber">
-              <b-col>
-                  <b-form-input id="phoneVerificationCode"
-                                v-model="$v.phoneVerificationCode.$model"
-                                type="number"
-                                maxlength="6"
-                                placeholder="000000"
-                                :state="isValid($v.phoneVerificationCode)" />
-                  <b-button
-                            id="verifyPhone"
-                            class="mx-auto"
-                            variant="link"
-                            @click="verifyPhone()">
-                      Verify
-                  </b-button>
-              </b-col>
+            <b-col>
+              <div class="form-inline">
+                <b-form-input
+                  id="phoneVerificationCode"
+                  v-model="$v.phoneVerificationCode.$model"
+                  type="number"
+                  maxlength="6"
+                  placeholder="000000"
+                  :state="isValid($v.phoneVerificationCode)"
+                />
+                <b-button
+                  id="verifyPhone"
+                  variant="warning"
+                  class="ml-3"
+                  @click="verifyPhone()"
+                >
+                  Verify
+                </b-button>
+              </div>
+              <b-form-invalid-feedback v-if="true">
+                Verification code invalid
+              </b-form-invalid-feedback>
+            </b-col>
           </b-row>
           <b-row v-if="!phoneNumber && tempPhone">
             <b-col class="font-weight-bold text-primary text-center">
@@ -352,13 +360,14 @@ import {
   required,
   requiredIf,
   sameAs,
+  minLength,
   email,
   not,
-  helpers,
+  helpers
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
-  IAuthenticationService,
+  IAuthenticationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -378,12 +387,12 @@ const authNamespace: string = "auth";
 
 @Component({
   components: {
-    LoadingComponent,
-  },
+    LoadingComponent
+  }
 })
 export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
-    namespace: authNamespace,
+    namespace: authNamespace
   })
   oidcIsAuthenticated!: boolean;
 
@@ -393,7 +402,7 @@ export default class ProfileComponent extends Vue {
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
     hdid,
-    emailAddress,
+    emailAddress
   }: {
     hdid: string;
     emailAddress: string;
@@ -429,6 +438,7 @@ export default class ProfileComponent extends Vue {
   private isPhoneEditable: boolean = false;
   private tempPhone: string = "";
   private phoneVerificationSent: boolean = false;
+  private phoneVerificationCode: string = "";
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -456,21 +466,21 @@ export default class ProfileComponent extends Vue {
 
     this.isLoading = true;
     var oidcUserPromise = authenticationService.getOidcUserProfile();
-    var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
+    var userContactPromise = this.getUserContact({ hdid: this.user.hdid });
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
-    Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
-      .then((results) => {
+    Promise.all([oidcUserPromise, userContactPromise, userProfilePromise])
+      .then(results => {
         // Load oidc user details
         if (results[0]) {
           this.oidcUser = results[0];
         }
 
         if (results[1]) {
-          // Load user email
-          var userEmailInvite = results[1];
-          this.email = userEmailInvite.emailAddress;
-          this.emailVerified = userEmailInvite.validated;
+          // Load user contact
+          var userContact = results[1];
+          this.email = userContact.emailAddress;
+          this.emailVerified = userContact.emailValidated;
           this.emailVerificationSent = this.emailVerified;
         }
 
@@ -486,7 +496,7 @@ export default class ProfileComponent extends Vue {
 
         this.isLoading = false;
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading profile");
         console.log(err);
         this.hasErrors = true;
@@ -507,22 +517,26 @@ export default class ProfileComponent extends Vue {
           return this.isPhoneEditable && this.phoneNumber !== "";
         }),
         newPhoneNumber: not(sameAs("tempPhone")),
-        phone,
+        phone
+      },
+      phoneVerificationCode: {
+        required: false,
+        minLength: minLength(6)
       },
       email: {
         required: requiredIf(() => {
           return this.isEmailEditable && this.email !== "";
         }),
         newEmail: not(sameAs("tempEmail")),
-        email,
+        email
       },
       emailConfirmation: {
         required: requiredIf(() => {
           return this.isEmailEditable && this.emailConfirmation !== "";
         }),
         sameAsEmail: sameAs("email"),
-        email,
-      },
+        email
+      }
     };
   }
 
@@ -634,15 +648,21 @@ export default class ProfileComponent extends Vue {
   }
 
   private verifyPhone(): void {
-    // TODO: Implement backend call.
-    this.phoneVerified = true;
+    this.userProfileService
+      .validatePhone(this.phoneVerificationCode)
+      .then(result => {
+        this.phoneVerified = result;
+        if (!result) {
+          this.hasErrors = true;
+        }
+      });
   }
 
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({
       hdid: this.user.hdid || "",
-      emailAddress: this.email,
+      emailAddress: this.email
     })
       .then(() => {
         console.log("success!");
@@ -652,7 +672,7 @@ export default class ProfileComponent extends Vue {
         this.tempEmail = "";
         this.$v.$reset();
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -708,12 +728,12 @@ export default class ProfileComponent extends Vue {
   private recoverAccount(): void {
     this.isLoading = true;
     this.recoverUserAccount({
-      hdid: this.user.hdid,
+      hdid: this.user.hdid
     })
       .then(() => {
         console.log("success!");
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -733,13 +753,13 @@ export default class ProfileComponent extends Vue {
   private closeAccount(): void {
     this.isLoading = true;
     this.closeUserAccount({
-      hdid: this.user.hdid,
+      hdid: this.user.hdid
     })
       .then(() => {
         console.log("success!");
         this.showCloseWarning = false;
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
