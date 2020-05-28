@@ -251,10 +251,11 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateSetNotificationSettings400()
         {
+            string errMsg = "Mocked Error";
             RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
-                ResultMessage = "Bad Request, HTTP Error BadRequest",
+                ResultMessage = $"Bad Request, HTTP Error BadRequest\nDetails:\n{errMsg}",
             };
             NotificationSettingsRequest notificationSettings = new NotificationSettingsRequest()
             {
@@ -282,7 +283,7 @@ namespace HealthGateway.CommonTests.Delegates
                .ReturnsAsync(new HttpResponseMessage()
                {
                    StatusCode = HttpStatusCode.BadRequest,
-                   Content = new StringContent(string.Empty),
+                   Content = new StringContent(errMsg),
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());

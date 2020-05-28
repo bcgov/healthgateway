@@ -168,7 +168,7 @@ namespace HealthGateway.Common.Delegates
                         break;
                     case HttpStatusCode.BadRequest:
                         this.logger.LogError($"Error Details: {payload}");
-                        retVal.ResultMessage = $"Bad Request, HTTP Error {response.StatusCode}";
+                        retVal.ResultMessage = $"Bad Request, HTTP Error {response.StatusCode}\nDetails:\n{payload}";
                         break;
                     case HttpStatusCode.Forbidden:
                         this.logger.LogError($"Error Details: {payload}");

@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Globalization;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Delegates;
@@ -49,7 +50,14 @@ namespace HealthGateway.Common.Services
         public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
-            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(this.ValidateVerificationCode(notificationSettings), bearerToken));
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                IgnoreNullValues = true,
+                WriteIndented = true,
+            };
+            string json = JsonSerializer.Serialize(this.ValidateVerificationCode(notificationSettings), options);
+            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json, bearerToken));
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
 
