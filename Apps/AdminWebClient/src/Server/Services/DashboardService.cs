@@ -57,15 +57,13 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetTodayLoggedInUsersCount()
+        public int GetTodayLoggedInUsersCount(int offset)
         {
             AdminConfiguration config = new AdminConfiguration();
             this.configuration.GetSection("Admin").Bind(config);
-            string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                config.WindowsTimeZoneId : config.UnixTimeZoneId;
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
-            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Today.ToUniversalTime(), tz);
-            return this.userProfileDelegate.GetLoggedInUsersCount(startDate);
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new TimeSpan(0, -1 * offset, 0);
+            return this.userProfileDelegate.GetLoggedInUsersCount(ts);
         }
 
         /// <inheritdoc />
