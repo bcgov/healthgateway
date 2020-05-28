@@ -201,7 +201,7 @@ input {
                   class="ml-auto"
                   :disabled="phoneVerificationSent"
                   @click="sendUserPhoneUpdate()"
-                  >Resend Verification Code
+                  >Resend Verification
                 </b-button>
               </div>
               <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
@@ -466,10 +466,10 @@ export default class ProfileComponent extends Vue {
 
     this.isLoading = true;
     var oidcUserPromise = authenticationService.getOidcUserProfile();
-    var userContactPromise = this.getUserContact({ hdid: this.user.hdid });
+    var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
-    Promise.all([oidcUserPromise, userContactPromise, userProfilePromise])
+    Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
       .then(results => {
         // Load oidc user details
         if (results[0]) {
@@ -477,10 +477,10 @@ export default class ProfileComponent extends Vue {
         }
 
         if (results[1]) {
-          // Load user contact
-          var userContact = results[1];
-          this.email = userContact.emailAddress;
-          this.emailVerified = userContact.emailValidated;
+          // Load user email
+          var userEmail = results[1];
+          this.email = userEmail.emailAddress;
+          this.emailVerified = userEmail.emailValidated;
           this.emailVerificationSent = this.emailVerified;
         }
 

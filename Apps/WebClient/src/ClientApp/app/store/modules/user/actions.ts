@@ -6,6 +6,7 @@ import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserPhoneInvite from '@/models/userPhoneInvite';
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -55,7 +56,7 @@ export const actions: ActionTree<UserState, RootState> = {
           // If registered retrieve the invite as well
           if (isRegistered) {
             userProfileService
-              .getLatestInvite(hdid)
+              .getLatestEmailInvite(hdid)
               .then(userEmailInvite => {
                 commit("setValidatedEmail", userEmailInvite);
                 resolve(isRegistered);
@@ -78,7 +79,7 @@ export const actions: ActionTree<UserState, RootState> = {
   getUserEmail({ commit }, { hdid }): Promise<UserEmailInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .getLatestInvite(hdid)
+        .getLatestEmailInvite(hdid)
         .then(userEmailInvite => {
           commit("setValidatedEmail", userEmailInvite);
           resolve(userEmailInvite);
@@ -89,13 +90,13 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     });
   },
-  getUserPhoneNumber({ commit }, { hdid }): Promise<UserEmailInvite> {
+  getUserPhoneNumber({ commit }, { hdid }): Promise<UserPhoneInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .getLatestInvite(hdid)
-        .then(userEmailInvite => {
-          commit("setValidatedPhone", userEmailInvite);
-          resolve(userEmailInvite);
+        .getLatestPhoneInvite(hdid)
+        .then(userPhoneInvite => {
+          commit("setValidatedPhone", userPhoneInvite);
+          resolve(userPhoneInvite);
         })
         .catch(error => {
           handleError(commit, error);
