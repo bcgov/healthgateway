@@ -173,9 +173,11 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public int GetLoggedInUsersCount(TimeSpan offset)
         {
-            DateTime clientTime = DateTime.SpecifyKind(DateTime.UtcNow.Add(offset), DateTimeKind.Local);
-            DateTime queryStartTime = clientTime.Date.ToUniversalTime();
-            DateTime queryEndTime = clientTime.ToUniversalTime();
+            DateTime now = DateTime.UtcNow;
+            DateTime clientTime = DateTime.SpecifyKind(now.Add(offset), DateTimeKind.Unspecified);
+            DateTimeOffset clientStartDate = new DateTimeOffset(clientTime.Date, offset);
+            DateTime queryStartTime = clientStartDate.UtcDateTime;
+            DateTime queryEndTime = now;
             int result = this.dbContext.UserProfile
                 .Count(u => u.LastLoginDateTime.HasValue &&
                u.LastLoginDateTime.Value >= queryStartTime &&
