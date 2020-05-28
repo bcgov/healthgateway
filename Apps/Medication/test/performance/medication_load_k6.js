@@ -5,7 +5,7 @@ import { Rate } from 'k6/metrics';
 
 export let errorRate = new Rate('errors');
 
-let environment  = (__ENV.HG_ENV != undefined) ? __ENV.HG_ENV : 'dev';
+let environment = (__ENV.HG_ENV != undefined) ? __ENV.HG_ENV : 'dev';
 
 let TokenEndpointUrl = "https://sso-" + environment + ".pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
 let ServiceEndPointUrl = "https://" + environment + ".healthgateway.gov.bc.ca/api/medicationservice/v1/api/MedicationStatement";
@@ -50,6 +50,13 @@ function parseHdid(accessToken) {
   return hdid;
 }
 
+function httpError(r) {
+  if (r.status != 200) {
+    console.log("Response Code is " + r.status);
+    errorRate.add(1);
+  }
+}
+
 export default function () {
 
   let access_token = null;
@@ -90,9 +97,11 @@ export default function () {
 
   console.log("Medications for username: " + auth_form_data.username);
 
-  check(http.get(url, params), {
-    "Status is 200": r => r.status == 200
-  }) || errorRate.add(1);
+  let r = http.get(url, params);
+
+  check(r, {
+    "Response Code is 200": r => r.status == 200
+  }) || httpError(r);
 
   sleep(getRandom(3, 15));
 }
