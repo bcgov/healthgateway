@@ -25,17 +25,17 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the logging level used by the Webclient.
         /// </summary>
-        public string LogLevel { get; set; }
+        public string LogLevel { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Webclient timeout values.
         /// </summary>
-        public TimeOutsConfiguration Timeouts { get; set; }
+        public TimeOutsConfiguration Timeouts { get; set; } = new TimeOutsConfiguration();
 
         /// <summary>
         /// Gets or sets the Webclient registration status.
         /// </summary>
-        public string RegistrationStatus { get; set; }
+        public string RegistrationStatus { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.

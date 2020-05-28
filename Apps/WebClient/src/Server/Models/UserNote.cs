@@ -32,33 +32,33 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        public string HdId { get; set; } = null!;
+        public string HdId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
-        public string? Title { get; set; }
+        public string? Title { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the text of the note.
         /// </summary>
-        public string? Text { get; set; }
+        public string? Text { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Note timeline datetime.
         /// </summary>
-        public DateTime JournalDateTime { get; set; }
+        public DateTime JournalDateTime { get; set; } = new DateTime(0);
 
         /// <summary>
         /// Gets or sets the note db version.
         /// </summary>
-        public uint Version { get; set; }
+        public uint Version { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the datetime the entity was created.
         /// This is generally set by the baseDbContext.
         /// </summary>
-        public DateTime CreatedDateTime { get; set; }
+        public DateTime CreatedDateTime { get; set; } = new DateTime(0);
 
         /// <summary>
         /// Gets or sets the user/system that created the entity.

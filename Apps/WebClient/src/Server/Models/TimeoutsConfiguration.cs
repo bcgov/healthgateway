@@ -24,12 +24,12 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the idle time in seconds that the Webclient will use
         /// before it automatically logs the user out.
         /// </summary>
-        public int Idle { get; set; }
+        public int Idle { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the amount of time in seconds after which the user will be
         /// redirected from the logout page back to the home.
         /// </summary>
-        public string LogoutRedirect { get; set; }
+        public string LogoutRedirect { get; set; } = string.Empty;
     }
 }

@@ -26,23 +26,23 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the OpenIdConnect configuration.
         /// </summary>
-        public OpenIdConnectConfiguration OpenIdConnect { get; set; }
+        public OpenIdConnectConfiguration OpenIdConnect { get; set; } = new OpenIdConnectConfiguration();
 
         /// <summary>
         /// Gets or sets the List of Identity providers.
         /// </summary>
-        #pragma warning disable CA1819 //disable should not return arrays
-        public IdentityProviderConfiguration[] IdentityProviders { get; set; }
+#pragma warning disable CA1819 //disable should not return arrays
+        public IdentityProviderConfiguration[] IdentityProviders { get; set; } = new IdentityProviderConfiguration[4];
 
         /// <summary>
         /// Gets or sets the Health Gateway Webclient specific configuration.
         /// </summary>
-        public WebClientConfiguration WebClient { get; set; }
+        public WebClientConfiguration WebClient { get; set; } = new WebClientConfiguration();
 
         /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
-        #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; }
+#pragma warning disable CA2227 //disable read-only Dictionary
+        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, System.Uri>();
     }
 }
