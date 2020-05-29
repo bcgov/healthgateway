@@ -73,7 +73,7 @@ namespace HealthGateway.Common.Services
 
         private NotificationSettingsRequest ValidateVerificationCode(NotificationSettingsRequest notificationSettings)
         {
-            if (!notificationSettings.SMSVerified && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
+            if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {
                 // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
                 Random generator = new Random();
