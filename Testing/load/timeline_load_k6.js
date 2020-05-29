@@ -140,6 +140,9 @@ export default function () {
 
       let r = http.get(MedicationServiceUrl + "/" + user.hdid, params);
 
+      if (r.status != 200) console.log("Http Eror Code: " + r.status);
+
+
       check(r, {
         "Response Code is 200": (r) => r.status == 200,
         "Response Code is not 504": (r) => r.status != 504,
@@ -152,6 +155,8 @@ export default function () {
       console.log("Laboratory for username: " + user.username);
 
       let res = http.get(LaboratoryServiceUrl, params);
+
+      if (res.status != 200) console.log("Http Eror Code: " + res.status);
 
       check(res, {
         "Response Code is 200": (res) => res.status == 200,
