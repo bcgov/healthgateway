@@ -594,7 +594,7 @@ export default class ProfileComponent extends Vue {
       if (this.smsNumber) {
         this.smsNumber = this.smsNumber.replace(/\D+/g, "");
       }
-      this.updateSMSNumber();
+      this.updateSMS();
     }
     event.preventDefault();
   }
@@ -622,7 +622,7 @@ export default class ProfileComponent extends Vue {
       });
   }
 
-  private updateSMSNumber(): void {
+  private updateSMS(): void {
     console.log(
       "Updating " + this.smsNumber ? this.smsNumber : "sms number..."
     );

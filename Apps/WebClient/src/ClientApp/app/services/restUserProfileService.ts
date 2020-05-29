@@ -161,7 +161,7 @@ export class RestUserProfileService implements IUserProfileService {
 
       this.http
         .put<void>(
-          `${this.USER_PROFILE_BASE_URI}/${hdid}/phone`,
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/sms`,
           JSON.stringify(smsNumber),
           headers
         )
