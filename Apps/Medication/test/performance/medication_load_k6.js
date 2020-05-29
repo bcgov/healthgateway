@@ -1,3 +1,6 @@
+//  Load Test script for Medications API
+//  Copyright (c) 1999 by Province of British Columbia
+
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { b64decode } from 'k6/encoding';
@@ -13,22 +16,22 @@ let ServiceEndPointUrl = "https://" + environment + ".healthgateway.gov.bc.ca/ap
 let passwd = __ENV.HG_PASSWORD;
 
 let users = [
-  { username: "loadtest_01", password: passwd, hdid: null, token: null },
-  { username: "loadtest_02", password: passwd, hdid: null, token: null },
-  { username: "loadtest_03", password: passwd, hdid: null, token: null },
-  { username: "loadtest_04", password: passwd, hdid: null, token: null },
-  { username: "loadtest_05", password: passwd, hdid: null, token: null },
-  { username: "loadtest_06", password: passwd, hdid: null, token: null },
-  { username: "loadtest_07", password: passwd, hdid: null, token: null },
-  { username: "loadtest_08", password: passwd, hdid: null, token: null },
-  { username: "loadtest_09", password: passwd, hdid: null, token: null },
-  { username: "loadtest_10", password: passwd, hdid: null, token: null },
-  { username: "loadtest_11", password: passwd, hdid: null, token: null },
-  { username: "loadtest_12", password: passwd, hdid: null, token: null },
-  { username: "loadtest_13", password: passwd, hdid: null, token: null },
-  { username: "loadtest_14", password: passwd, hdid: null, token: null },
-  { username: "loadtest_15", password: passwd, hdid: null, token: null },
-  { username: "loadtest_20", password: passwd, hdid: null, token: null },
+  { username: "loadtest_01", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_02", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_03", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_04", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_05", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_06", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_07", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_08", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_09", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_10", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_11", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_12", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_13", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_14", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_15", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  { username: "loadtest_20", password: passwd, hdid: null, token: null, refresh: null, expires: null },
 
 ];
 
@@ -44,26 +47,17 @@ function parseJwt(jwt) {
   return token_json;
 };
 
+function getExpiresTime(seconds) {
+  return (Date.now() + seconds*1000);
+}
+
 function parseHdid(accessToken) {
   var json = parseJwt(accessToken);
   var hdid = json["hdid"];
   return hdid;
 }
 
-function httpError(r) {
-  if (r.status != 200) {
-    console.log("Response Code is " + r.status);
-    errorRate.add(1);
-  }
-}
-
-export default function () {
-
-  let access_token = null;
-  let hdid = null;
-
-
-  let user = users[__VU % users.length];
+function authenticateUser(user) {
 
   let auth_form_data = {
     grant_type: "password",
@@ -74,15 +68,49 @@ export default function () {
     password: user.password,
   };
 
+  console.log(TokenEndpointUrl);
+  console.log("Authenticating username: " + auth_form_data.username);
+  var res = http.post(TokenEndpointUrl, auth_form_data);
+  var res_json = JSON.parse(res.body);
+  user.token = res_json["access_token"];
+  user.refresh = res_json["refresh_token"];
+  var seconds = res_json["expires_in"];
+  user.expires = getExpiresTime(seconds);
+  user.hdid = parseHdid(user.token);
+}
+
+function refreshUser(user) {
+  let refresh_form_data = {
+    grant_type: "refresh_token",
+    client_id: "healthgateway",
+    refresh_token: user.refresh,
+  };
+
+  console.log(TokenEndpointUrl);
+  console.log("Getting Refresh Token for username: " + user.username);
+  var res = http.post(TokenEndpointUrl, refresh_form_data);
+  var res_json = JSON.parse(res.body);
+  user.token = res_json["access_token"];
+  user.refresh = res_json["refresh_token"];
+  var seconds = res_json["expires_in"];
+  user.expires = getExpiresTime(seconds);
+}
+
+export default function () {
+
+  let access_token = null;
+  let hdid = null;
+
+  let user = users[__VU % users.length];
+
   if (__ITER == 0) {
     if (user.hdid == null) {
-      console.log(TokenEndpointUrl);
-      console.log("Authenticating username: " + auth_form_data.username);
-      var res = http.post(TokenEndpointUrl, auth_form_data);
-      var res_json = JSON.parse(res.body);
-      user.token = res_json["access_token"];
-      user.hdid = parseHdid(user.token);
+      authenticateUser(user);
     }
+  }
+  if (user.expires < (Date.now() - 3000)) // milliseconds
+  {
+    refreshUser(user);
   }
 
   var url = ServiceEndPointUrl + "/" + user.hdid;
@@ -95,14 +123,17 @@ export default function () {
     },
   };
 
-  console.log("Medications for username: " + auth_form_data.username);
+  console.log("Medications for username: " + user.username);
 
   let r = http.get(url, params);
 
   check(r, {
-    "Response Code is 200": r => r.status == 200
-  }) || httpError(r);
+    "Response Code is 200": (r) => r.status == 200,
+    "Response Code is not 504": (r) => r.status != 504,
+    "Response Code is not 500": (r) => r.status != 500,
+    "Response Code is not 403": (r) => r.status != 403,
+  }) || errorRate.add(1);
 
-  sleep(getRandom(3, 15));
+  sleep(getRandom(5, 15));
 }
 
