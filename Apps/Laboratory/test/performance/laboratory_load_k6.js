@@ -126,7 +126,7 @@ export default function () {
     refreshUser(user);
   }
 
-  var url = ServiceEndPointUrl + "/" + user.hdid;
+  var url = ServiceEndPointUrl;
   console.log('url = ' + url);
 
   var params = {
@@ -139,6 +139,8 @@ export default function () {
   console.log("username: " + user.username);
 
   let r = http.get(url, params);
+
+  console.log("HTTP Response Code: " + r.status);
 
   check(r, {
     "Response Code is 200": (r) => r.status == 200,
