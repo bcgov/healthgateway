@@ -158,69 +158,69 @@ input {
           </b-row>
           <b-row class="mb-3">
             <b-col>
-              <label for="email">Cell Phone Number (SMS notifications)</label>
+              <label for="email">Cell SMS Number (SMS notifications)</label>
               <b-button
-                v-if="!isPhoneEditable"
-                id="editPhone"
+                v-if="!isSMSEditable"
+                id="editSMS"
                 class="mx-auto"
                 variant="link"
-                @click="makePhoneEditable()"
+                @click="makeSMSEditable()"
                 >Edit
               </b-button>
               <b-button
-                v-if="phoneNumber"
-                id="removePhone"
+                v-if="smsNumber"
+                id="removeSMS"
                 class="text-danger"
                 variant="link"
                 @click="
-                  makePhoneEditable();
-                  removePhone();
+                  makeSMSEditable();
+                  removeSMS();
                 "
               >
                 Remove
               </b-button>
               <div class="form-inline">
                 <b-form-input
-                  id="phoneNumber"
-                  v-model="$v.phoneNumber.$model"
+                  id="smsNumber"
+                  v-model="$v.smsNumber.$model"
                   type="email"
-                  :placeholder="isPhoneEditable ? 'Your phone number' : 'Empty'"
-                  :disabled="!isPhoneEditable"
-                  :state="isValid($v.phoneNumber)"
+                  :placeholder="isSMSEditable ? 'Your SMS number' : 'Empty'"
+                  :disabled="!isSMSEditable"
+                  :state="isValid($v.smsNumber)"
                 />
               </div>
-              <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
-                Valid phone number is required
+              <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+                Valid sms number is required
               </b-form-invalid-feedback>
-              <b-form-invalid-feedback :state="$v.phoneNumber.newPhoneNumber">
-                New phone number must be different from the previous one
+              <b-form-invalid-feedback :state="$v.smsNumber.newSMSNumber">
+                New sms number must be different from the previous one
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
-          <b-row v-if="!phoneNumber && tempPhone">
+          <b-row v-if="!smsNumber && tempSMS">
             <b-col class="font-weight-bold text-primary text-center">
               <font-awesome-icon
                 icon="exclamation-triangle"
                 aria-hidden="true"
               ></font-awesome-icon>
-              Removing your phone number will disable future SMS communications
+              Removing your SMS number will disable future SMS communications
               from the Health Gateway
             </b-col>
           </b-row>
-          <b-row v-if="isPhoneEditable" class="mb-3 justify-content-end">
+          <b-row v-if="isSMSEditable" class="mb-3 justify-content-end">
             <b-col class="text-right">
               <b-button
                 id="cancelBtn"
                 class="mx-2 actionButton"
-                @click="cancelPhoneEdit()"
+                @click="cancelSMSEdit()"
                 >Cancel
               </b-button>
               <b-button
                 id="saveBtn"
                 variant="primary"
                 class="mx-2 actionButton"
-                :disabled="tempPhone === phoneNumber"
-                @click="savePhoneEdit()"
+                :disabled="tempSMS === smsNumber"
+                @click="saveSMSEdit()"
                 >Save
               </b-button>
             </b-col>
@@ -392,9 +392,9 @@ export default class ProfileComponent extends Vue {
   private oidcUser: any = {};
   private verificationSent: boolean = false;
 
-  private phoneNumber: string = "";
-  private isPhoneEditable: boolean = false;
-  private tempPhone: string = "";
+  private smsNumber: string = "";
+  private isSMSEditable: boolean = false;
+  private tempSMS: string = "";
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -447,7 +447,7 @@ export default class ProfileComponent extends Vue {
           this.lastLoginDateString = moment(
             this.userProfile.lastLoginDateTime
           ).format("lll");
-          this.phoneNumber = this.userProfile.phoneNumber;
+          this.smsNumber = this.userProfile.smsNumber;
         }
 
         this.isLoading = false;
@@ -466,14 +466,14 @@ export default class ProfileComponent extends Vue {
   }
 
   validations() {
-    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
+    const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
     return {
-      phoneNumber: {
+      smsNumber: {
         required: requiredIf(() => {
-          return this.isPhoneEditable && this.phoneNumber !== "";
+          return this.isSMSEditable && this.smsNumber !== "";
         }),
-        newPhoneNumber: not(sameAs("tempPhone")),
-        phone,
+        newSMSNumber: not(sameAs("tempSMS")),
+        sms,
       },
       email: {
         required: requiredIf(() => {
@@ -548,9 +548,9 @@ export default class ProfileComponent extends Vue {
     this.tempEmail = this.email || "";
   }
 
-  private makePhoneEditable(): void {
-    this.isPhoneEditable = true;
-    this.tempPhone = this.phoneNumber || "";
+  private makeSMSEditable(): void {
+    this.isSMSEditable = true;
+    this.tempSMS = this.smsNumber || "";
   }
 
   private cancelEmailEdit(): void {
@@ -561,10 +561,10 @@ export default class ProfileComponent extends Vue {
     this.$v.$reset();
   }
 
-  private cancelPhoneEdit(): void {
-    this.isPhoneEditable = false;
-    this.phoneNumber = this.tempPhone;
-    this.tempPhone = "";
+  private cancelSMSEdit(): void {
+    this.isSMSEditable = false;
+    this.smsNumber = this.tempSMS;
+    this.tempSMS = "";
     this.$v.$reset();
   }
 
@@ -584,17 +584,17 @@ export default class ProfileComponent extends Vue {
     event.preventDefault();
   }
 
-  private savePhoneEdit(event: any): void {
+  private saveSMSEdit(event: any): void {
     this.$v.$touch();
     console.log(this.$v);
-    if (this.$v.phoneNumber.$invalid) {
+    if (this.$v.smsNumber.$invalid) {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-      if (this.phoneNumber) {
-        this.phoneNumber = this.phoneNumber.replace(/\D+/g, "");
+      if (this.smsNumber) {
+        this.smsNumber = this.smsNumber.replace(/\D+/g, "");
       }
-      this.updatePhoneNumber();
+      this.updateSMSNumber();
     }
     event.preventDefault();
   }
@@ -622,16 +622,16 @@ export default class ProfileComponent extends Vue {
       });
   }
 
-  private updatePhoneNumber(): void {
+  private updateSMSNumber(): void {
     console.log(
-      "Updating " + this.phoneNumber ? this.phoneNumber : "phone number..."
+      "Updating " + this.smsNumber ? this.smsNumber : "sms number..."
     );
     // Send update to backend
     this.userProfileService
-      .updatePhoneNumber(this.user.hdid, this.phoneNumber)
+      .updateSMSNumber(this.user.hdid, this.smsNumber)
       .then(() => {
-        this.isPhoneEditable = false;
-        this.tempPhone = "";
+        this.isSMSEditable = false;
+        this.tempSMS = "";
         this.$v.$reset();
       });
   }
@@ -642,9 +642,9 @@ export default class ProfileComponent extends Vue {
     this.emailConfirmation = "";
   }
 
-  private removePhone(): void {
+  private removeSMS(): void {
     this.$v.$touch();
-    this.phoneNumber = "";
+    this.smsNumber = "";
   }
 
   private recoverAccount(): void {

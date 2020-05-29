@@ -26,7 +26,7 @@ namespace HealthGateway.WebClient.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
-    public class UserPhoneService : IUserPhoneService
+    public class UserSMSService : IUserSMSService
     {
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserPhoneService(ILogger<UserEmailService> logger,
+        public UserSMSService(ILogger<UserEmailService> logger,
             IProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
         {
@@ -48,18 +48,18 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken)
+        public bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
         {
-            this.logger.LogTrace($"Updating user phone numbner...");
+            this.logger.LogTrace($"Updating user sms numbner...");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            userProfile.PhoneNumber = phone;
+            userProfile.SMSNumber = sms;
             DBResult<UserProfile> updateResult = this.profileDelegate.Update(userProfile);
 
             if (updateResult.Status == DBStatusCode.Updated)
             {
                 // Update the notification settings
                 this.UpdateNotificationSettings(userProfile, bearerToken);
-                this.logger.LogDebug($"Finished updating user phone number");
+                this.logger.LogDebug($"Finished updating user sms number");
                 return true;
             }
             return false;
@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient.Services
         private async void UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
         {
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.PhoneNumber);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.SMSNumber);
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {
