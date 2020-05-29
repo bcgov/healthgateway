@@ -133,13 +133,12 @@ export default function () {
     },
   };
 
-  console.log("username: " + user.username);
 
   group('Timeline flow', function() {
     group('Medication', function() {
-      var url = MedicationServiceUrl + "/" + user.hdid;
-      console.log('url = ' + url);
-      let r = http.get(url, params);
+      console.log("Medications for username: " + user.username);
+
+      let r = http.get(MedicationServiceUrl + "/" + user.hdid, params);
 
       check(r, {
         "Response Code is 200": (r) => r.status == 200,
@@ -150,15 +149,15 @@ export default function () {
 
     });
     group('Laboratory', function() {
-      var url = LaboratoryServiceUrl + "/" + user.hdid;
-      console.log('url = ' + url);
-      let r = http.get(url, params);
+      console.log("Laboratory for username: " + user.username);
 
-      check(r, {
-        "Response Code is 200": (r) => r.status == 200,
-        "Response Code is not 504": (r) => r.status != 504,
-        "Response Code is not 500": (r) => r.status != 500,
-        "Response Code is not 403": (r) => r.status != 403,
+      let res = http.get(LaboratoryServiceUrl, params);
+
+      check(res, {
+        "Response Code is 200": (res) => res.status == 200,
+        "Response Code is not 504": (res) => res.status != 504,
+        "Response Code is not 500": (res) => res.status != 500,
+        "Response Code is not 403": (res) => res.status != 403,
       }) || errorRate.add(1);
 
     });
