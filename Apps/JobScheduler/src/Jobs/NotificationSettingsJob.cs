@@ -19,6 +19,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
@@ -49,7 +50,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async void PushNotificationSettings(string notificationSettingsJSON, string bearerToken)
+        public void PushNotificationSettings(string notificationSettingsJSON, string bearerToken)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
             var options = new JsonSerializerOptions
@@ -59,10 +60,11 @@ namespace Healthgateway.JobScheduler.Jobs
                 WriteIndented = true,
             };
             NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
-            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, bearerToken).ConfigureAwait(true);
+            RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
+                            this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, bearerToken).ConfigureAwait(true)).Result;
             if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
             {
-                throw new ApplicationException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
             }
 
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
