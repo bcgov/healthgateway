@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Services
         public NonceService()
         {
             // Generate the nonce
-            RNGCryptoServiceProvider rngProvider = new RNGCryptoServiceProvider();
+            using RNGCryptoServiceProvider rngProvider = new RNGCryptoServiceProvider();
             byte[] nonceBytes = new byte[32];
             rngProvider.GetBytes(nonceBytes);
             this.currentNonce = HttpUtility.HtmlEncode(Convert.ToBase64String(nonceBytes));

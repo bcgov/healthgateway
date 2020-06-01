@@ -24,7 +24,7 @@ namespace HealthGateway.Common.Services
         /// <summary>
         /// Retrieves the current nonce value.
         /// </summary>
-        /// <returns>The current nonce</returns>
+        /// <returns>The current nonce.</returns>
         string GetCurrentNonce();
     }
 }
