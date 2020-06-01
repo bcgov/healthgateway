@@ -83,7 +83,7 @@ export interface IUserProfileService {
   getLatestInvite(hdid: string): Promise<UserEmailInvite>;
   validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
   updateEmail(hdid: string, email: string): Promise<boolean>;
-  updatePhoneNumber(hdid: string, phoneNumber: string): Promise<boolean>;
+  updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
 }
 
 export interface IUserFeedbackService {
