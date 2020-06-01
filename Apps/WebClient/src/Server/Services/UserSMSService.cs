@@ -28,7 +28,7 @@ namespace HealthGateway.WebClient.Services
     using Newtonsoft.Json;
 
     /// <inheritdoc />
-    public class UserPhoneService : IUserPhoneService
+    public class UserSMSService : IUserSMSService
     {
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
@@ -42,8 +42,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserPhoneService(ILogger<UserPhoneService> logger,
-            IMessagingVerificationDelegate messageVerificationDelegate,
+        public UserSMSService(ILogger<UserSMSService> logger,
             IProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
         {
@@ -58,23 +57,23 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating phone... {validationCode}");
             bool retVal = false;
-            MessagingVerification phoneInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
-            if (phoneInvite != null &&
-                phoneInvite.HdId == hdid &&
-                !phoneInvite.Validated &&
-                phoneInvite.SMSValidationCode == validationCode &&
-                phoneInvite.ExpireDate >= DateTime.UtcNow)
+            if (smsInvite != null &&
+                smsInvite.HdId == hdid &&
+                !smsInvite.Validated &&
+                smsInvite.SMSValidationCode == validationCode &&
+                smsInvite.ExpireDate >= DateTime.UtcNow)
             {
-                phoneInvite.Validated = true;
-                this.messageVerificationDelegate.Update(phoneInvite);
+                smsInvite.Validated = true;
+                this.messageVerificationDelegate.Update(smsInvite);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.PhoneNumber = phoneInvite.SMSNumber; // Gets the user sms number from the message sent.
+                userProfile.SMSNumber = phoneInvite.SMSNumber; // Gets the user sms number from the message sent.
                 this.profileDelegate.Update(userProfile);
                 retVal = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile.Email, userProfile.PhoneNumber, bearerToken);
+                this.UpdateNotificationSettings(userProfile.Email, userProfile.SMSNumber, bearerToken);
             }
 
             this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
@@ -82,11 +81,11 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken)
+        public async Task<bool> UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            userProfile.PhoneNumber = null;
+            userProfile.SMSNumber = null;
             this.profileDelegate.Update(userProfile);
             MessagingVerification smsInvite = this.RetrieveLastInvite(hdid);
 
@@ -105,7 +104,7 @@ namespace HealthGateway.WebClient.Services
                 this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
                 MessagingVerification messagingVerification = new MessagingVerification();
                 messagingVerification.HdId = hdid;
-                messagingVerification.SMSNumber = phone;
+                messagingVerification.SMSNumber = sms;
                 messagingVerification.SMSValidationCode = notificationRequest.SMSVerificationCode;
                 messagingVerification.VerificationType = MessagingVerificationType.SMS;
                 messagingVerification.ExpireDate = DateTime.MaxValue;

@@ -158,110 +158,110 @@ input {
           </b-row>
           <b-row class="mb-3">
             <b-col>
-              <label for="email">Cell Phone Number (SMS notifications)</label>
+              <label for="email">Cell SMS Number (SMS notifications)</label>
               <b-button
-                v-if="!isPhoneEditable"
-                id="editPhone"
+                v-if="!isSMSEditable"
+                id="editSMS"
                 class="mx-auto"
                 variant="link"
-                @click="makePhoneEditable()"
+                @click="makeSMSEditable()"
                 >Edit
               </b-button>
               <b-button
-                v-if="phoneNumber"
-                id="removePhone"
+                v-if="smsNumber"
+                id="removeSMS"
                 class="text-danger"
                 variant="link"
                 @click="
-                  makePhoneEditable();
-                  removePhone();
+                  makeSMSEditable();
+                  removeSMS();
                 "
               >
                 Remove
               </b-button>
               <div class="form-inline">
                 <b-form-input
-                  id="phoneNumber"
-                  v-model="$v.phoneNumber.$model"
+                  id="smsNumber"
+                  v-model="$v.smsNumber.$model"
                   type="email"
-                  :placeholder="isPhoneEditable ? 'Your phone number' : 'Empty'"
-                  :disabled="!isPhoneEditable"
-                  :state="isValid($v.phoneNumber)"
+                  :placeholder="isSMSEditable ? 'Your SMS number' : 'Empty'"
+                  :disabled="!isSMSEditable"
+                  :state="isValid($v.smsNumber)"
                 />
                 <div
-                  v-if="!phoneVerified && !isPhoneEditable && phoneNumber"
+                  v-if="!smsVerified && !isSMSEditable && smsNumber"
                   class="ml-3"
                 >
                   (Not Verified)
                 </div>
                 <b-button
-                  v-if="!phoneVerified && !isPhoneEditable && phoneNumber"
-                  id="resendPhoneVerification"
+                  v-if="!smsVerified && !isSMSEditable && smsNumber"
+                  id="resendSMSVerification"
                   variant="warning"
                   class="ml-auto"
-                  :disabled="phoneVerificationSent"
-                  @click="sendUserPhoneUpdate()"
+                  :disabled="smsVerificationSent"
+                  @click="sendUserSMSUpdate()"
                   >Resend Verification
                 </b-button>
               </div>
-              <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
-                Valid phone number is required
+              <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+                Valid sms number is required
               </b-form-invalid-feedback>
-              <b-form-invalid-feedback :state="$v.phoneNumber.newPhoneNumber">
-                New phone number must be different from the previous one
+              <b-form-invalid-feedback :state="$v.smsNumber.newSMSNumber">
+                New sms number must be different from the previous one
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
-          <b-row v-if="!phoneVerified && !isPhoneEditable && phoneNumber" class="mb-3">
+          <b-row v-if="!smsVerified && !isSMSEditable && smsNumber" class="mb-3">
             <b-col>
               <div class="form-inline">
                 <b-form-input
-                  id="phoneVerificationCode"
-                  v-model="$v.phoneVerificationCode.$model"
+                  id="smsVerificationCode"
+                  v-model="$v.smsVerificationCode.$model"
                   type="number"
                   maxlength="6"
                   placeholder="000000"
-                  :state="isValid($v.phoneVerificationCode)"
+                  :state="isValid($v.smsVerificationCode)"
                 />
                 <b-button
-                  id="verifyPhone"
+                  id="verifySMS"
                   variant="warning"
                   class="ml-3"
-                  :disabled="!isValid($v.phoneVerificationCode)"
-                  @click="verifyPhone()"
+                  :disabled="!isValid($v.smsVerificationCode)"
+                  @click="verifySMS()"
                 >
                   Verify
                 </b-button>
               </div>
-              <b-form-invalid-feedback :state="!invalidPhoneVerificationCode">
+              <b-form-invalid-feedback :state="!invalidSMSVerificationCode">
                 Verification code invalid
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
-          <b-row v-if="!phoneNumber && tempPhone">
+          <b-row v-if="!smsNumber && tempSMS">
             <b-col class="font-weight-bold text-primary text-center">
               <font-awesome-icon
                 icon="exclamation-triangle"
                 aria-hidden="true"
               ></font-awesome-icon>
-              Removing your phone number will disable future SMS communications
+              Removing your SMS number will disable future SMS communications
               from the Health Gateway
             </b-col>
           </b-row>
-          <b-row v-if="isPhoneEditable" class="mb-3 justify-content-end">
+          <b-row v-if="isSMSEditable" class="mb-3 justify-content-end">
             <b-col class="text-right">
               <b-button
                 id="cancelBtn"
                 class="mx-2 actionButton"
-                @click="cancelPhoneEdit()"
+                @click="cancelSMSEdit()"
                 >Cancel
               </b-button>
               <b-button
                 id="saveBtn"
                 variant="primary"
                 class="mx-2 actionButton"
-                :disabled="tempPhone === phoneNumber"
-                @click="savePhoneEdit()"
+                :disabled="tempSMS === smsNumber"
+                @click="saveSMSEdit()"
                 >Save
               </b-button>
             </b-col>
@@ -375,7 +375,7 @@ import container from "@/plugins/inversify.config";
 import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserPhoneInvite from "@/models/userPhoneInvite";
+import UserSMSInvite from "@/models/userSMSInvite";
 import UserProfile from "@/models/userProfile";
 import { WebClientConfiguration } from "@/models/configData";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -401,8 +401,8 @@ export default class ProfileComponent extends Vue {
   @Action("getUserEmail", { namespace: userNamespace })
   getUserEmail!: ({ hdid }: { hdid: string }) => Promise<UserEmailInvite>;
 
-  @Action("getUserPhone", { namespace: userNamespace })
-  getUserPhone!: ({ hdid }: { hdid: string }) => Promise<UserPhoneInvite>;
+  @Action("getUserSMS", { namespace: userNamespace })
+  getUserSMS!: ({ hdid }: { hdid: string }) => Promise<UserSMSInvite>;
 
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
@@ -438,13 +438,13 @@ export default class ProfileComponent extends Vue {
   private oidcUser: any = {};
   private emailVerificationSent: boolean = false;
 
-  private phoneVerified = false;
-  private phoneNumber: string = "";
-  private isPhoneEditable: boolean = false;
-  private tempPhone: string = "";
-  private phoneVerificationSent: boolean = false;
-  private phoneVerificationCode: string = "";
-  private invalidPhoneVerificationCode: boolean = false;
+  private smsVerified = false;
+  private smsNumber: string = "";
+  private isSMSEditable: boolean = false;
+  private tempSMS: string = "";
+  private smsVerificationSent: boolean = false;
+  private smsVerificationCode: string = "";
+  private invalidSMSVerificationCode: boolean = false;
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -473,10 +473,10 @@ export default class ProfileComponent extends Vue {
     this.isLoading = true;
     var oidcUserPromise = authenticationService.getOidcUserProfile();
     var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
-    var userPhonePromise = this.getUserPhone({ hdid: this.user.hdid });
+    var userSMSPromise = this.getUserSMS({ hdid: this.user.hdid });
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
-    Promise.all([oidcUserPromise, userEmailPromise, userPhonePromise, userProfilePromise])
+    Promise.all([oidcUserPromise, userEmailPromise, userSMSPromise, userProfilePromise])
       .then(results => {
         // Load oidc user details
         if (results[0]) {
@@ -492,11 +492,11 @@ export default class ProfileComponent extends Vue {
         }
 
         if (results[2]) {
-          // Load user phone
-          var userPhone = results[2];
-          this.phoneNumber = userPhone.phoneNumber;
-          this.phoneVerified = userPhone.validated;
-          this.phoneVerificationSent = this.phoneVerified;
+          // Load user sms
+          var userSMS = results[2];
+          this.smsNumber = userSMS.smsNumber;
+          this.smsVerified = userSMS.validated;
+          this.smsVerificationSent = this.smsVerified;
         }
 
         if (results[3]) {
@@ -524,18 +524,18 @@ export default class ProfileComponent extends Vue {
   }
 
   validations() {
-    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
+    const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
     return {
-      phoneNumber: {
+      smsNumber: {
         required: requiredIf(() => {
-          return this.isPhoneEditable && this.phoneNumber !== "";
+          return this.isSMSEditable && this.smsNumber !== "";
         }),
-        newPhoneNumber: not(sameAs("tempPhone")),
-        phone
+        newSMSNumber: not(sameAs("tempSMS")),
+        sms,
       },
-      phoneVerificationCode: {
+      smsVerificationCode: {
         required: requiredIf(() => {
-          return !this.phoneVerified && this.phoneNumber !== "" && !this.isPhoneEditable;
+          return !this.smsVerified && this.smsNumber !== "" && !this.isSMSEditable;
         }),
         minLength: minLength(6)
       },
@@ -612,9 +612,9 @@ export default class ProfileComponent extends Vue {
     this.tempEmail = this.email || "";
   }
 
-  private makePhoneEditable(): void {
-    this.isPhoneEditable = true;
-    this.tempPhone = this.phoneNumber || "";
+  private makeSMSEditable(): void {
+    this.isSMSEditable = true;
+    this.tempSMS = this.smsNumber || "";
   }
 
   private cancelEmailEdit(): void {
@@ -625,10 +625,10 @@ export default class ProfileComponent extends Vue {
     this.$v.$reset();
   }
 
-  private cancelPhoneEdit(): void {
-    this.isPhoneEditable = false;
-    this.phoneNumber = this.tempPhone;
-    this.tempPhone = "";
+  private cancelSMSEdit(): void {
+    this.isSMSEditable = false;
+    this.smsNumber = this.tempSMS;
+    this.tempSMS = "";
     this.$v.$reset();
   }
 
@@ -648,30 +648,30 @@ export default class ProfileComponent extends Vue {
     event.preventDefault();
   }
 
-  private savePhoneEdit(event: any): void {
+  private saveSMSEdit(event: any): void {
     this.$v.$touch();
     console.log(this.$v);
-    if (this.$v.phoneNumber.$invalid) {
+    if (this.$v.smsNumber.$invalid) {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-      if (this.phoneNumber) {
-        this.phoneNumber = this.phoneNumber.replace(/\D+/g, "");
+      if (this.smsNumber) {
+        this.smsNumber = this.smsNumber.replace(/\D+/g, "");
       }
-      this.updatePhoneNumber();
+      this.updateSMS();
     }
     event.preventDefault();
   }
 
-  private verifyPhone(): void {
+  private verifySMS(): void {
     this.userProfileService
-      .validatePhone(this.phoneVerificationCode)
+      .validateSMS(this.smsVerificationCode)
       .then(result => {
-          this.phoneVerificationCode = "";
-          this.invalidPhoneVerificationCode = !result;
-          this.phoneVerified = result;
-          this.phoneVerificationSent = result;
-          this.getUserPhone({ hdid: this.user.hdid });
+          this.smsVerificationCode = "";
+          this.invalidSMSVerificationCode = !result;
+          this.smsVerified = result;
+          this.smsVerificationSent = result;
+          this.getUserSMS({ hdid: this.user.hdid });
       });
   }
 
@@ -698,31 +698,31 @@ export default class ProfileComponent extends Vue {
       });
   }
 
-  private updatePhoneNumber(): void {
+  private updateSMS(): void {
     console.log(
-      "Updating " + this.phoneNumber ? this.phoneNumber : "phone number..."
+      "Updating " + this.smsNumber ? this.smsNumber : "sms number..."
     );
     // Send update to backend
     this.userProfileService
-      .updatePhoneNumber(this.user.hdid, this.phoneNumber)
+      .updateSMSNumber(this.user.hdid, this.smsNumber)
       .then(() => {
-        this.isPhoneEditable = false;
-        this.phoneVerified = false;
-        this.phoneVerificationSent = false;
-        this.tempPhone = "";
-        this.getUserPhone({ hdid: this.user.hdid });
+        this.isSMSEditable = false;
+        this.smsVerified = false;
+        this.smsVerificationSent = false;
+        this.tempSMS = "";
+        this.getUserSMS({ hdid: this.user.hdid });
         this.$v.$reset();
       });
   }
 
-  private sendUserPhoneUpdate(): void {
+  private sendUserSMSUpdate(): void {
     this.isLoading = true;
     this.userProfileService
-      .updatePhoneNumber(this.user.hdid, this.phoneNumber)
+      .updateSMSNumber(this.user.hdid, this.smsNumber)
       .then(() => {
-        this.isPhoneEditable = false;
-        this.phoneVerificationSent = true;
-        this.tempPhone = "";
+        this.isSMSEditable = false;
+        this.smsVerificationSent = true;
+        this.tempSMS = "";
         this.$v.$reset();
       })
       .catch(err => {
@@ -740,9 +740,9 @@ export default class ProfileComponent extends Vue {
     this.emailConfirmation = "";
   }
 
-  private removePhone(): void {
+  private removeSMS(): void {
     this.$v.$touch();
-    this.phoneNumber = "";
+    this.smsNumber = "";
   }
 
   private recoverAccount(): void {

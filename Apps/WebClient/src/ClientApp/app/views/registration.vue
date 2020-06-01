@@ -248,33 +248,33 @@ label {
             <b-row class="d-flex">
               <b-col class="d-flex flex-grow-0 pr-0">
                 <b-form-checkbox
-                  id="phoneCheckbox"
-                  v-model="isPhoneNumberChecked"
-                  @change="onPhoneOptout($event)"
+                  id="smsCheckbox"
+                  v-model="isSMSNumberChecked"
+                  @change="onSMSOptout($event)"
                 ></b-form-checkbox>
               </b-col>
               <b-col class="d-flex flex-grow-1 px-0">
-                <label class="d-flex" for="phoneNumber"
+                <label class="d-flex" for="smsNumber"
                   >SMS Notifications <Address></Address>
                 </label>
               </b-col>
             </b-row>
             <b-form-input
-              id="phoneNumber"
-              v-model="$v.phoneNumber.$model"
+              id="smsNumber"
+              v-model="$v.smsNumber.$model"
               class="d-flex"
               type="text"
-              placeholder="Your phone number"
-              :state="isValid($v.phoneNumber)"
-              :disabled="!isPhoneNumberChecked"
+              placeholder="Your sms number"
+              :state="isValid($v.smsNumber)"
+              :disabled="!isSMSNumberChecked"
             >
             </b-form-input>
-            <b-form-invalid-feedback :state="isValid($v.phoneNumber)">
-              Valid phone number is required
+            <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+              Valid sms number is required
             </b-form-invalid-feedback>
           </b-col>
         </b-row>
-        <b-row v-if="!isEmailChecked && !isPhoneNumberChecked">
+        <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
           <b-col class="font-weight-bold text-primary">
             <font-awesome-icon
               icon="exclamation-triangle"
@@ -372,10 +372,10 @@ export default class RegistrationComponent extends Vue {
   private accepted: boolean = false;
   private email: string = "";
   private emailConfirmation: string = "";
-  private phoneNumber: string = "";
+  private smsNumber: string = "";
 
   private isEmailChecked: boolean = true;
-  private isPhoneNumberChecked: boolean = true;
+  private isSMSNumberChecked: boolean = true;
 
   private oidcUser: any = {};
   private userProfileService: IUserProfileService;
@@ -455,13 +455,13 @@ export default class RegistrationComponent extends Vue {
   }
 
   validations() {
-    const phone = helpers.regex("phone", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
+    const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
     return {
-      phoneNumber: {
+      smsNumber: {
         required: requiredIf(() => {
-          return this.isPhoneNumberChecked;
+          return this.isSMSNumberChecked;
         }),
-        phone
+        sms,
       },
       email: {
         required: requiredIf(() => {
@@ -529,8 +529,8 @@ export default class RegistrationComponent extends Vue {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-      if (this.phoneNumber) {
-        this.phoneNumber = this.phoneNumber.replace(/\D+/g, "");
+      if (this.smsNumber) {
+        this.smsNumber = this.smsNumber.replace(/\D+/g, "");
       }
       this.loadingTermsOfService = true;
       this.userProfileService
@@ -539,7 +539,7 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            phoneNumber: this.phoneNumber || ""
+            smsNumber: this.smsNumber || "",
           },
           inviteCode: this.inviteKey || ""
         })
@@ -622,9 +622,9 @@ export default class RegistrationComponent extends Vue {
     }
   }
 
-  private onPhoneOptout(isChecked: boolean): void {
+  private onSMSOptout(isChecked: boolean): void {
     if (!isChecked) {
-      this.phoneNumber = "";
+      this.smsNumber = "";
     }
   }
 

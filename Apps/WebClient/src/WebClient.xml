@@ -286,7 +286,7 @@
             Web API to handle user profile interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService,HealthGateway.WebClient.Services.IUserEmailService,HealthGateway.WebClient.Services.IUserPhoneService)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService,HealthGateway.WebClient.Services.IUserEmailService,HealthGateway.WebClient.Services.IUserSMSService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserProfileController"/> class.
             </summary>
@@ -294,7 +294,7 @@
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
             <param name="authorizationService">The injected authorization service.</param>
             <param name="userEmailService">The injected user email service.</param>
-            <param name="userPhoneService">The injected user phone service.</param>
+            <param name="userSMSService">The injected user sms service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.WebClient.Models.CreateUserRequest)">
             <summary>
@@ -399,12 +399,12 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserPhoneNumber(System.String,System.String)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserSMSNumber(System.String,System.String)">
             <summary>
-            Updates the user phone number.
+            Updates the user sms number.
             </summary>
             <param name="hdid">The user hdid.</param>
-            <param name="phoneNumber">The new phone number.</param>
+            <param name="smsNumber">The new sms number.</param>
             <returns>True if the action was successful.</returns>
             <response code="200">Returns true if the call was successful.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -832,9 +832,9 @@
             Gets or sets the user email.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.PhoneNumber">
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.SMSNumber">
             <summary>
-            Gets or sets the user phone number.
+            Gets or sets the user SMS number.
             </summary>
         </member>
         <member name="P:HealthGateway.WebClient.Models.UserProfileModel.HasTermsOfServiceUpdated">
@@ -1141,37 +1141,6 @@
             <param name="userFeedback">The user feedback model to be saved.</param>
             <returns>The wrappeed user feedback.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Services.IUserPhoneService">
-            <summary>
-            The User Phone service.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserPhoneService.UpdateUserPhone(System.String,System.String,System.Uri,System.String)">
-            <summary>
-            Updates the user phone number.
-            </summary>
-            <param name="hdid">The user hdid.</param>
-            <param name="phone">Phone number to be set for the user.</param>
-            <param name="hostUri">The host uri for referal purposes.</param>
-            <param name="bearerToken">The security token representing the authenticated user.</param>
-            <returns>returns true if the phone number was sucessfully updated.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserPhoneService.ValidateSMS(System.String,System.String,System.String)">
-            <summary>
-            Validates the sms number that matches the given validation code.
-            </summary>
-            <param name="hdid">The requested user hdid.</param>
-            <param name="validationCode">The sms validation code.</param>
-            <param name="bearerToken">The security token representing the authenticated user.</param>
-            <returns>returns true if the sms invite was found and validated.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserPhoneService.RetrieveLastInvite(System.String)">
-            <summary>
-            Retrieves the last invite SMS.
-            </summary>
-            <param name="hdid">The requested user hdid.</param>
-            <returns>returns the last SMS invite if found.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserProfileService">
             <summary>
             The User Profile service.
@@ -1216,6 +1185,21 @@
             Gets the most recent active terms of service.
             </summary>
             <returns>The wrapped terms of service.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserSMSService">
+            <summary>
+            The User SMS service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserSMSService.UpdateUserSMS(System.String,System.String,System.Uri,System.String)">
+            <summary>
+            Updates the user SMS number.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="sms">SMS number to be set for the user.</param>
+            <param name="hostUri">The host uri for referal purposes.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>returns true if the SMS number was sucessfully updated.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.NoteService">
             <inheritdoc />
@@ -1276,27 +1260,6 @@
         <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
             <inheritdoc />
         </member>
-        <member name="T:HealthGateway.WebClient.Services.UserPhoneService">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.UserPhoneService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserPhoneService},HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserPhoneService"/> class.
-            </summary>
-            <param name="logger">Injected Logger Provider.</param>
-            <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
-            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-            <param name="notificationSettingsService">Notification settings delegate.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.UserPhoneService.ValidateSMS(System.String,System.String,System.String)">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.UserPhoneService.UpdateUserPhone(System.String,System.String,System.Uri,System.String)">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.WebClient.Services.UserPhoneService.RetrieveLastInvite(System.String)">
-            <inheritdoc />
-        </member>
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
@@ -1327,6 +1290,20 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetActiveTermsOfService">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.UserSMSService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserSMSService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserEmailService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserSMSService.UpdateUserSMS(System.String,System.String,System.Uri,System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">
