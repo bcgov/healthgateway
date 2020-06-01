@@ -68,14 +68,14 @@ namespace HealthGateway.WebClient.Test.Controllers
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
 
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserPhoneService> phoneServiceMock = new Mock<IUserPhoneService>();
+            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object,
                 emailServiceMock.Object,
-                phoneServiceMock.Object
+                smsServiceMock.Object
             );
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
@@ -100,14 +100,14 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserPhoneService> phoneServiceMock = new Mock<IUserPhoneService>();
+            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object,
                 emailServiceMock.Object,
-                phoneServiceMock.Object
+                smsServiceMock.Object
             );
             IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
 
@@ -148,14 +148,14 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).Returns(expected);
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserPhoneService> phoneServiceMock = new Mock<IUserPhoneService>();
+            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 authorizationServiceMock.Object,
                 emailServiceMock.Object,
-                phoneServiceMock.Object
+                smsServiceMock.Object
             );
             IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest).ConfigureAwait(true);
 

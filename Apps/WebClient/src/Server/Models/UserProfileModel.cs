@@ -38,9 +38,9 @@ namespace HealthGateway.WebClient.Models
         public string? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets the user phone number.
+        /// Gets or sets the user SMS number.
         /// </summary>
-        public string? PhoneNumber { get; set; }
+        public string? SMSNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user needs to be notified about new terms of service.
@@ -75,7 +75,7 @@ namespace HealthGateway.WebClient.Models
                 HdId = model.HdId,
                 AcceptedTermsOfService = model.AcceptedTermsOfService,
                 Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
+                SMSNumber = model.SMSNumber,
                 LastLoginDateTime = model.LastLoginDateTime,
                 ClosedDateTime = model.ClosedDateTime,
             };
