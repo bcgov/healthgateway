@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserPhoneService : IUserPhoneService
@@ -52,27 +53,61 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken)
+        public bool ValidateSMS(string hdid, string validationCode, string bearerToken)
         {
-            this.logger.LogTrace($"Updating user phone numbner...");
-            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            userProfile.PhoneNumber = phone;
-            DBResult<UserProfile> updateResult = this.profileDelegate.Update(userProfile);
+            this.logger.LogTrace($"Validating phone... {validationCode}");
+            bool retVal = false;
+            MessagingVerification phoneInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
-            if (updateResult.Status == DBStatusCode.Updated)
+            if (phoneInvite != null &&
+                phoneInvite.HdId == hdid &&
+                !phoneInvite.Validated &&
+                phoneInvite.SMSValidationCode == validationCode &&
+                phoneInvite.ExpireDate >= DateTime.UtcNow)
             {
+                phoneInvite.Validated = true;
+                this.messageVerificationDelegate.Update(phoneInvite);
+                UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+                userProfile.PhoneNumber = phoneInvite.SMSNumber; // Gets the user sms number from the message sent.
+                this.profileDelegate.Update(userProfile);
+                retVal = true;
+
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile, bearerToken);
-                this.logger.LogDebug($"Finished updating user phone number");
-                return true;
+                this.UpdateNotificationSettings(userProfile.Email, userProfile.PhoneNumber, bearerToken);
             }
-            return false;
+
+            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
 
-        private async void UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
+        /// <inheritdoc />
+        public bool UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken)
+        {
+            this.logger.LogTrace($"Removing user sms number ${hdid}");
+            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+            userProfile.PhoneNumber = null;
+            this.profileDelegate.Update(userProfile);
+            MessagingVerification smsInvite = this.RetrieveLastInvite(hdid);
+
+            // Update the notification settings
+            this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
+            this.UpdateNotificationSettings(userProfile.Email, phone, bearerToken);
+
+            if (smsInvite != null && !smsInvite.Validated && smsInvite.ExpireDate >= DateTime.UtcNow)
+            {
+                this.logger.LogInformation($"Expiring old sms validation for user ${hdid}");
+                smsInvite.ExpireDate = DateTime.UtcNow;
+                this.messageVerificationDelegate.Update(smsInvite);
+            }
+
+            this.logger.LogDebug($"Finished updating user sms");
+            return true;
+        }
+
+        private async void UpdateNotificationSettings(string? email, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.PhoneNumber);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(email, smsNumber);
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {

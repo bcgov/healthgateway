@@ -34,10 +34,19 @@ namespace HealthGateway.WebClient.Services
         bool UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken);
 
         /// <summary>
+        /// Validates the sms number that matches the given validation code.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="validationCode">The sms validation code.</param>
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <returns>returns true if the sms invite was found and validated.</returns>
+        bool ValidateSMS(string hdid, string validationCode, string bearerToken);
+
+        /// <summary>
         /// Retrieves the last invite SMS.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>returns the last SMS invite if found.</returns>
-        public MessagingVerification RetrieveLastInvite(string hdid);
+        MessagingVerification RetrieveLastInvite(string hdid);
     }
 }
