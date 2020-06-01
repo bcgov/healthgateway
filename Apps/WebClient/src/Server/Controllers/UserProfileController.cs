@@ -360,13 +360,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new ForbidResult();
             }
 
-            // TODO: update with service call.
-            // MessagingVerification phoneInvite = this.userPhoneService.RetrieveLastInvite(hdid);
-            MessagingVerification phoneInvite = new MessagingVerification()
-            {
-                SMSNumber = "1231231234",
-                Validated = false,
-            };
+            MessagingVerification phoneInvite = this.userPhoneService.RetrieveLastInvite(hdid);
 
             // Check expiration and remove fields that contains sensitive information
             if (phoneInvite != null)
@@ -470,7 +464,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = this.userPhoneService.UpdateUserPhone(hdid, phoneNumber, new Uri(referer), bearerToken);
+            bool result = await this.userPhoneService.UpdateUserPhone(hdid, phoneNumber, new Uri(referer), bearerToken).ConfigureAwait(true);
             return new JsonResult(result);
         }
     }

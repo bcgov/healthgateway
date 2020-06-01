@@ -212,7 +212,7 @@ input {
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
-          <b-row v-if="!phoneVerified && !isPhoneEditable && phoneNumber">
+          <b-row v-if="!phoneVerified && !isPhoneEditable && phoneNumber" class="mb-3">
             <b-col>
               <div class="form-inline">
                 <b-form-input
@@ -227,12 +227,13 @@ input {
                   id="verifyPhone"
                   variant="warning"
                   class="ml-3"
+                  :disabled="!isValid($v.phoneVerificationCode)"
                   @click="verifyPhone()"
                 >
                   Verify
                 </b-button>
               </div>
-              <b-form-invalid-feedback v-if="true">
+              <b-form-invalid-feedback :state="!invalidPhoneVerificationCode">
                 Verification code invalid
               </b-form-invalid-feedback>
             </b-col>
@@ -374,6 +375,7 @@ import container from "@/plugins/inversify.config";
 import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserPhoneInvite from "@/models/userPhoneInvite";
 import UserProfile from "@/models/userProfile";
 import { WebClientConfiguration } from "@/models/configData";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -398,6 +400,9 @@ export default class ProfileComponent extends Vue {
 
   @Action("getUserEmail", { namespace: userNamespace })
   getUserEmail!: ({ hdid }: { hdid: string }) => Promise<UserEmailInvite>;
+
+  @Action("getUserPhone", { namespace: userNamespace })
+  getUserPhone!: ({ hdid }: { hdid: string }) => Promise<UserPhoneInvite>;
 
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
@@ -439,6 +444,7 @@ export default class ProfileComponent extends Vue {
   private tempPhone: string = "";
   private phoneVerificationSent: boolean = false;
   private phoneVerificationCode: string = "";
+  private invalidPhoneVerificationCode: boolean = false;
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -467,9 +473,10 @@ export default class ProfileComponent extends Vue {
     this.isLoading = true;
     var oidcUserPromise = authenticationService.getOidcUserProfile();
     var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
+    var userPhonePromise = this.getUserPhone({ hdid: this.user.hdid });
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
-    Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
+    Promise.all([oidcUserPromise, userEmailPromise, userPhonePromise, userProfilePromise])
       .then(results => {
         // Load oidc user details
         if (results[0]) {
@@ -485,13 +492,20 @@ export default class ProfileComponent extends Vue {
         }
 
         if (results[2]) {
+          // Load user phone
+          var userPhone = results[2];
+          this.phoneNumber = userPhone.phoneNumber;
+          this.phoneVerified = userPhone.validated;
+          this.phoneVerificationSent = this.phoneVerified;
+        }
+
+        if (results[3]) {
           // Load user profile
-          this.userProfile = results[2];
+          this.userProfile = results[3];
           console.log("User Profile: ", this.userProfile);
           this.lastLoginDateString = moment(
             this.userProfile.lastLoginDateTime
           ).format("lll");
-          this.phoneNumber = this.userProfile.phoneNumber;
         }
 
         this.isLoading = false;
@@ -520,7 +534,9 @@ export default class ProfileComponent extends Vue {
         phone
       },
       phoneVerificationCode: {
-        required: false,
+        required: requiredIf(() => {
+          return !this.phoneVerified && this.phoneNumber !== "" && !this.isPhoneEditable;
+        }),
         minLength: minLength(6)
       },
       email: {
@@ -651,10 +667,11 @@ export default class ProfileComponent extends Vue {
     this.userProfileService
       .validatePhone(this.phoneVerificationCode)
       .then(result => {
-        this.phoneVerified = result;
-        if (!result) {
-          this.hasErrors = true;
-        }
+          this.phoneVerificationCode = "";
+          this.invalidPhoneVerificationCode = !result;
+          this.phoneVerified = result;
+          this.phoneVerificationSent = result;
+          this.getUserPhone({ hdid: this.user.hdid });
       });
   }
 
@@ -690,7 +707,10 @@ export default class ProfileComponent extends Vue {
       .updatePhoneNumber(this.user.hdid, this.phoneNumber)
       .then(() => {
         this.isPhoneEditable = false;
+        this.phoneVerified = false;
+        this.phoneVerificationSent = false;
         this.tempPhone = "";
+        this.getUserPhone({ hdid: this.user.hdid });
         this.$v.$reset();
       });
   }

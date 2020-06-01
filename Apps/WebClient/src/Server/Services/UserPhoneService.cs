@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -81,7 +82,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken)
+        public async Task<bool> UpdateUserPhone(string hdid, string phone, Uri hostUri, string bearerToken)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
@@ -90,8 +91,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
-            this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
-            this.UpdateNotificationSettings(userProfile.Email, phone, bearerToken);
+            NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(userProfile.Email, phone, bearerToken).ConfigureAwait(true);
 
             if (smsInvite != null && !smsInvite.Validated && smsInvite.ExpireDate >= DateTime.UtcNow)
             {
@@ -100,11 +100,23 @@ namespace HealthGateway.WebClient.Services
                 this.messageVerificationDelegate.Update(smsInvite);
             }
 
+            if (!string.IsNullOrEmpty(phone))
+            {
+                this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
+                MessagingVerification messagingVerification = new MessagingVerification();
+                messagingVerification.HdId = hdid;
+                messagingVerification.SMSNumber = phone;
+                messagingVerification.SMSValidationCode = notificationRequest.SMSVerificationCode;
+                messagingVerification.VerificationType = MessagingVerificationType.SMS;
+                messagingVerification.ExpireDate = DateTime.MaxValue;
+                this.messageVerificationDelegate.Insert(messagingVerification);
+            }
+
             this.logger.LogDebug($"Finished updating user sms");
             return true;
         }
 
-        private async void UpdateNotificationSettings(string? email, string? smsNumber, string bearerToken)
+        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(string? email, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(email, smsNumber);
@@ -113,6 +125,8 @@ namespace HealthGateway.WebClient.Services
             {
                 this.notificationSettingsService.QueueNotificationSettings(request, bearerToken);
             }
+
+            return request;
         }
 
         /// <inheritdoc />

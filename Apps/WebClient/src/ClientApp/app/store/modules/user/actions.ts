@@ -65,8 +65,20 @@ export const actions: ActionTree<UserState, RootState> = {
                 handleError(commit, error);
                 reject(error);
               });
+
+            userProfileService
+              .getLatestPhoneInvite(hdid)
+              .then(userPhoneInvite => {
+                commit("setValidatedPhone", userPhoneInvite);
+                resolve(userPhoneInvite);
+              })
+              .catch(error => {
+                handleError(commit, error);
+                reject(error);
+              });
           } else {
             commit("setValidatedEmail", undefined);
+            commit("setValidatedPhone", undefined);
             resolve(isRegistered);
           }
         })
@@ -90,7 +102,7 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     });
   },
-  getUserPhoneNumber({ commit }, { hdid }): Promise<UserPhoneInvite> {
+  getUserPhone({ commit }, { hdid }): Promise<UserPhoneInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
         .getLatestPhoneInvite(hdid)

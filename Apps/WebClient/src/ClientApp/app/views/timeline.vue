@@ -54,169 +54,156 @@
     <b-row class="my-3 fluid justify-content-md-center">
       <b-col class="col-12 col-md-1 col-lg-1 column-wrapper no-print"> </b-col>
       <b-col id="timeline" class="col-12 col-md-8 col-lg-6 column-wrapper">
-        <b-alert
-          :show="hasErrors"
-          dismissible
-          variant="danger"
-          class="no-print"
-        >
-          <h4>Error</h4>
-          <span>An unexpected error occured while processing the request.</span>
-        </b-alert>
-        <b-alert
-          :show="hasNewTermsOfService"
-          dismissible
-          variant="info"
-          class="no-print"
-        >
-          <h4>Updated Terms of Service</h4>
-          <span>
-            The Terms of Service have been updated since your last login. You
-            can review them
-            <router-link
-              id="termsOfServiceLink"
-              variant="primary"
-              to="/termsOfService"
-            >
-              here </router-link
-            >.
-          </span>
-        </b-alert>
-        <b-alert
-          :show="unverifiedEmail"
-          dismissible
-          variant="info"
-          class="no-print"
-        >
-          <h4>Unverified email</h4>
-          <span>
-            Your email has not been verified. Please check your inbox or junk
-            folder for an email from Health Gateway. You can also edit your
-            profile or resend the email from the
-            <router-link id="profilePageLink" variant="primary" to="/profile">
-              profile page</router-link
-            >.
-          </span>
-        </b-alert>
-        <div id="pageTitle">
-          <h1 id="subject">Health Care Timeline</h1>
-          <hr />
-        </div>
-        <b-row class="no-print">
-          <b-col>
-            <div class="form-group has-filter">
-              <font-awesome-icon
-                :icon="searchIcon"
-                class="form-control-feedback"
-                fixed-width
-              ></font-awesome-icon>
-              <b-form-input
-                v-model="filterText"
-                type="text"
-                placeholder=""
-                maxlength="50"
-                debounce="250"
-              ></b-form-input>
-            </div>
-          </b-col>
-        </b-row>
-        <b-row align-h="start" class="no-print">
-          <b-col v-if="isMedicationEnabled">
-            <b-form-checkbox
-              id="medicationFilter"
-              v-model="filterTypes"
-              name="medicationFilter"
-              value="Medication"
-            >
-              Medications
-            </b-form-checkbox>
-          </b-col>
-          <b-col v-if="isImmunizationEnabled">
-            <b-form-checkbox
-              id="immunizationFilter"
-              v-model="filterTypes"
-              name="immunizationFilter"
-              value="Immunization"
-            >
-              Immunizations
-            </b-form-checkbox>
-          </b-col>
-          <b-col v-if="isLaboratoryEnabled">
-            <b-form-checkbox
-              id="laboratoryFilter"
-              v-model="filterTypes"
-              name="laboratoryFilter"
-              value="Laboratory"
-            >
-              Laboratory
-            </b-form-checkbox>
-          </b-col>
-          <b-col v-if="isNoteEnabled">
-            <b-form-checkbox
-              id="notesFilter"
-              v-model="filterTypes"
-              name="notesFilter"
-              value="Note"
-            >
-              Notes
-            </b-form-checkbox>
-          </b-col>
-        </b-row>
-        <br />
-        <div v-if="!isLoading">
-          <div id="listControlls" class="no-print">
-            <b-row>
-              <b-col>
-                Displaying {{ getVisibleCount() }} out of
-                {{ getTotalCount() }} records
-              </b-col>
-            </b-row>
+          <b-alert :show="hasErrors"
+                   dismissible
+                   variant="danger"
+                   class="no-print">
+              <h4>Error</h4>
+              <span>An unexpected error occured while processing the request.</span>
+          </b-alert>
+          <b-alert :show="hasNewTermsOfService"
+                   dismissible
+                   variant="info"
+                   class="no-print">
+              <h4>Updated Terms of Service</h4>
+              <span>
+                  The Terms of Service have been updated since your last login. You
+                  can review them
+                  <router-link id="termsOfServiceLink"
+                               variant="primary"
+                               to="/termsOfService">
+                      here
+                  </router-link>.
+              </span>
+          </b-alert>
+          <b-alert :show="unverifiedEmail"
+                   dismissible
+                   variant="info"
+                   class="no-print">
+              <h4>Unverified email</h4>
+              <span>
+                  Your email has not been verified. Please check your inbox or junk
+                  folder for an email from Health Gateway. You can also edit your
+                  profile or resend the email from the
+                  <router-link id="profilePageLink" variant="primary" to="/profile">
+                      profile page
+                  </router-link>.
+              </span>
+          </b-alert>
+          <b-alert :show="unverifiedPhone"
+                   dismissible
+                   variant="info"
+                   class="no-print">
+              <h4>Unverified phone number</h4>
+              <span>
+                  Your phone number has not been verified. Please check your text messages for a verification code from Health Gateway. You can also edit your
+                  profile or resend the text from the
+                  <router-link id="profilePageLink" variant="primary" to="/profile">
+                      profile page
+                  </router-link>.
+              </span>
+          </b-alert>
+          <div id="pageTitle">
+              <h1 id="subject">Health Care Timeline</h1>
+              <hr />
           </div>
-          <div id="timeData">
-            <b-row v-if="isAddingNote" class="pb-5">
+          <b-row class="no-print">
               <b-col>
-                <NoteTimelineComponent
-                  :is-add-mode="true"
-                  @on-edit-close="isAddingNote = false"
-                  @on-note-added="onNoteAdded"
-                />
+                  <div class="form-group has-filter">
+                      <font-awesome-icon :icon="searchIcon"
+                                         class="form-control-feedback"
+                                         fixed-width></font-awesome-icon>
+                      <b-form-input v-model="filterText"
+                                    type="text"
+                                    placeholder=""
+                                    maxlength="50"
+                                    debounce="250"></b-form-input>
+                  </div>
               </b-col>
-            </b-row>
-            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
-              <b-col cols="auto">
-                <div class="date">{{ getHeadingDate(dateGroup.date) }}</div>
+          </b-row>
+          <b-row align-h="start" class="no-print">
+              <b-col v-if="isMedicationEnabled">
+                  <b-form-checkbox id="medicationFilter"
+                                   v-model="filterTypes"
+                                   name="medicationFilter"
+                                   value="Medication">
+                      Medications
+                  </b-form-checkbox>
               </b-col>
-              <b-col>
-                <hr class="dateBreakLine" />
+              <b-col v-if="isImmunizationEnabled">
+                  <b-form-checkbox id="immunizationFilter"
+                                   v-model="filterTypes"
+                                   name="immunizationFilter"
+                                   value="Immunization">
+                      Immunizations
+                  </b-form-checkbox>
               </b-col>
-              <EntryCardComponent
-                v-for="(entry, index) in dateGroup.entries"
-                :key="entry.type + '-' + entry.id"
-                :datekey="dateGroup.key"
-                :entry="entry"
-                :index="index"
-                @on-change="onCardUpdated"
-                @on-remove="onCardRemoved"
-                @on-edit="onCardEdit"
-                @on-close="onCardClose"
-              />
-            </b-row>
-            <b-row class="no-print">
-              <b-col>
-                <b-pagination-nav
-                  v-model="currentPage"
-                  :link-gen="linkGen"
-                  :number-of-pages="numberOfPages"
-                  first-number
-                  last-number
-                  next-text="Next"
-                  prev-text="Prev"
-                  use-router
-                ></b-pagination-nav>
+              <b-col v-if="isLaboratoryEnabled">
+                  <b-form-checkbox id="laboratoryFilter"
+                                   v-model="filterTypes"
+                                   name="laboratoryFilter"
+                                   value="Laboratory">
+                      Laboratory
+                  </b-form-checkbox>
               </b-col>
-            </b-row>
+              <b-col v-if="isNoteEnabled">
+                  <b-form-checkbox id="notesFilter"
+                                   v-model="filterTypes"
+                                   name="notesFilter"
+                                   value="Note">
+                      Notes
+                  </b-form-checkbox>
+              </b-col>
+          </b-row>
+          <br />
+          <div v-if="!isLoading">
+              <div id="listControlls" class="no-print">
+                  <b-row>
+                      <b-col>
+                          Displaying {{ getVisibleCount() }} out of
+                          {{ getTotalCount() }} records
+                      </b-col>
+                  </b-row>
+              </div>
+              <div id="timeData">
+                  <b-row v-if="isAddingNote" class="pb-5">
+                      <b-col>
+                          <NoteTimelineComponent :is-add-mode="true"
+                                                 @on-edit-close="isAddingNote = false"
+                                                 @on-note-added="onNoteAdded" />
+                      </b-col>
+                  </b-row>
+                  <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
+                      <b-col cols="auto">
+                          <div class="date">{{ getHeadingDate(dateGroup.date) }}</div>
+                      </b-col>
+                      <b-col>
+                          <hr class="dateBreakLine" />
+                      </b-col>
+                      <EntryCardComponent v-for="(entry, index) in dateGroup.entries"
+                                          :key="entry.type + '-' + entry.id"
+                                          :datekey="dateGroup.key"
+                                          :entry="entry"
+                                          :index="index"
+                                          @on-change="onCardUpdated"
+                                          @on-remove="onCardRemoved"
+                                          @on-edit="onCardEdit"
+                                          @on-close="onCardClose" />
+                  </b-row>
+                  <b-row class="no-print">
+                      <b-col>
+                          <b-pagination-nav v-model="currentPage"
+                                            :link-gen="linkGen"
+                                            :number-of-pages="numberOfPages"
+                                            first-number
+                                            last-number
+                                            next-text="Next"
+                                            prev-text="Prev"
+                                            use-router></b-pagination-nav>
+                      </b-col>
+                  </b-row>
+              </div>
           </div>
-        </div>
       </b-col>
       <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
         <HealthlinkComponent />
@@ -385,6 +372,10 @@ export default class TimelineComponent extends Vue {
 
   private get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
+  }
+
+  private get unverifiedPhone(): boolean {
+    return !this.user.verifiedPhone && this.user.hasPhone;
   }
 
   private get hasNewTermsOfService(): boolean {
