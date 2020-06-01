@@ -237,7 +237,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_CLOSED, keyValues);
+                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountClosedTemplate, keyValues);
                 }
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
@@ -278,7 +278,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_RECOVERED, keyValues);
+                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate, keyValues);
                 }
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
@@ -307,7 +307,7 @@ namespace HealthGateway.WebClient.Services
         private async void UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
         {
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.PhoneNumber);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.SMSNumber);
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {

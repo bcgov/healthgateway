@@ -151,9 +151,9 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public updatePhoneNumber(
+  public updateSMSNumber(
     hdid: string,
-    phoneNumber: string
+    smsNumber: string
   ): Promise<boolean> {
     return new Promise(resolve => {
       let headers: Dictionary<string> = {};
@@ -161,8 +161,8 @@ export class RestUserProfileService implements IUserProfileService {
 
       this.http
         .put<void>(
-          `${this.USER_PROFILE_BASE_URI}/${hdid}/phone`,
-          JSON.stringify(phoneNumber),
+          `${this.USER_PROFILE_BASE_URI}/${hdid}/sms`,
+          JSON.stringify(smsNumber),
           headers
         )
         .then(() => {

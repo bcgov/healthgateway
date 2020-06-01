@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class using only the email address and phone number.
+        /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class using only the email address and SMS number.
         /// </summary>
         /// <param name="emailAddress">Email address for the notification settings.</param>
         /// <param name="smsNumber">SMS Number for the notification settings.</param>

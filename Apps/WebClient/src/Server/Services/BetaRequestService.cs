@@ -77,7 +77,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE, keyValues);
+                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BetaConfirmationTemplate, keyValues);
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
                     this.logger.LogDebug($"Finished updating beta request. {JsonConvert.SerializeObject(insertResult)}");
@@ -100,7 +100,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BETA_CONFIRMATION_TEMPLATE, keyValues);
+                    this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BetaConfirmationTemplate, keyValues);
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
                     this.logger.LogDebug($"Finished creating beta request. {JsonConvert.SerializeObject(insertResult)}");

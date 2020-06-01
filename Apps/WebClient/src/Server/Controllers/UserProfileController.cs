@@ -42,7 +42,7 @@ namespace HealthGateway.WebClient.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationService authorizationService;
         private readonly IUserEmailService userEmailService;
-        private readonly IUserPhoneService userPhoneService;
+        private readonly IUserSMSService userSMSService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -51,19 +51,19 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="userEmailService">The injected user email service.</param>
-        /// <param name="userPhoneService">The injected user phone service.</param>
+        /// <param name="userSMSService">The injected user sms service.</param>
         public UserProfileController(
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IUserEmailService userEmailService,
-            IUserPhoneService userPhoneService)
+            IUserSMSService userSMSService)
         {
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationService = authorizationService;
             this.userEmailService = userEmailService;
-            this.userPhoneService = userPhoneService;
+            this.userSMSService = userSMSService;
         }
 
         /// <summary>
@@ -348,18 +348,18 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Updates the user phone number.
+        /// Updates the user sms number.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="phoneNumber">The new phone number.</param>
+        /// <param name="smsNumber">The new sms number.</param>
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Route("{hdid}/phone")]
+        [Route("{hdid}/sms")]
         [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> UpdateUserPhoneNumber(string hdid, [FromBody] string phoneNumber)
+        public async Task<IActionResult> UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
@@ -386,7 +386,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = this.userPhoneService.UpdateUserPhone(hdid, phoneNumber, new Uri(referer), bearerToken);
+            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
     }

@@ -7,3 +7,7 @@
 ## Run migrations
 
 `dotnet ef database update --project "../Database/src"`
+
+## Remove latest migration
+
+`dotnet ef migrations remove --project "../Database/src"`
