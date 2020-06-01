@@ -18,6 +18,8 @@ namespace Healthgateway.JobScheduler.Jobs
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Text.Json;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
@@ -48,13 +50,21 @@ namespace Healthgateway.JobScheduler.Jobs
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async void PushNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
+        public void PushNotificationSettings(string notificationSettingsJSON, string bearerToken)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
-            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, bearerToken).ConfigureAwait(true);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                IgnoreNullValues = true,
+                WriteIndented = true,
+            };
+            NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
+            RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
+                            this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, bearerToken).ConfigureAwait(true)).Result;
             if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
             {
-                throw new ApplicationException($"Unable to send Notification Settings to PHSA, Error: {retVal.ResultMessage}");
+                throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
             }
 
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
