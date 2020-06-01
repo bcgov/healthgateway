@@ -24,6 +24,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -170,12 +171,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount(DateTime startDate)
+        public int GetLoggedInUsersCount(TimeSpan offset)
         {
+            DateTime now = DateTime.UtcNow;
+            DateTime clientTime = DateTime.SpecifyKind(now.Add(offset), DateTimeKind.Unspecified);
+            DateTimeOffset clientStartDate = new DateTimeOffset(clientTime.Date, offset);
+            DateTime queryStartTime = clientStartDate.UtcDateTime;
+            DateTime queryEndTime = now;
             int result = this.dbContext.UserProfile
                 .Count(u => u.LastLoginDateTime.HasValue &&
-               u.LastLoginDateTime.Value >= startDate.ToUniversalTime() &&
-               u.LastLoginDateTime.Value < startDate.AddDays(1).ToUniversalTime());
+               u.LastLoginDateTime.Value >= queryStartTime &&
+               u.LastLoginDateTime.Value < queryEndTime);
             return result;
         }
     }

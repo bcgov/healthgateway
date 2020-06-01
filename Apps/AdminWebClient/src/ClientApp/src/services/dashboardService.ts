@@ -41,7 +41,11 @@ export class DashboardService implements IDashboardService {
   public getLoggedInUsersCount(): Promise<number> {
     return new Promise((resolve, reject) => {
       this.http
-        .get<number>(`${this.BASE_URI}/LoggedInCount`)
+        .get<number>(
+          `${
+            this.BASE_URI
+          }/LoggedInCount?offset=${new Date().getTimezoneOffset()}`
+        )
         .then(requestResult => {
           resolve(requestResult);
         })

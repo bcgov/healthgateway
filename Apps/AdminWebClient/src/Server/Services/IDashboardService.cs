@@ -35,8 +35,9 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Retrieves the count of logged in users in the current day.
         /// </summary>
+        /// <param name="offset">The offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
-        int GetTodayLoggedInUsersCount();
+        int GetTodayLoggedInUsersCount(int offset);
 
         /// <summary>
         /// Retrieves the count of waitlisted users.

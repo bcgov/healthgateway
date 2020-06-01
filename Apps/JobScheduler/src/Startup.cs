@@ -29,6 +29,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
@@ -50,6 +51,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
+
 
     /// <summary>
     /// The startup class.
@@ -89,10 +91,8 @@ namespace HealthGateway.JobScheduler
                     this.configuration.GetConnectionString("GatewayConnection"),
                     b => b.MigrationsAssembly(nameof(Database))));
 
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
-            services.AddTransient<IEmailJob, EmailJob>();
 
-            // DB Maintainer Services
+            // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
@@ -102,14 +102,18 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
+            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
-            // Add app
+            // Add Jobs
             services.AddTransient<FedDrugJob>();
             services.AddTransient<ProvincialDrugJob>();
+            services.AddTransient<IEmailJob, EmailJob>();
+            services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
+
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));

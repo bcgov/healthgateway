@@ -81,10 +81,10 @@ namespace HealthGateway.Database.Delegates
         int GeUnregisteredInvitedUsersCount();
 
         /// <summary>
-        /// Returns the count of logged in users after the specified date.
+        /// Returns the count of logged in users for the date specified.
         /// </summary>
-        /// <param name="startDate">The start date.</param>
+        /// <param name="offset">The clients offset to get to UTC.</param>
         /// <returns>The count of logged in users.</returns>
-        int GetLoggedInUsersCount(DateTime startDate);
+        int GetLoggedInUsersCount(TimeSpan offset);
     }
 }
