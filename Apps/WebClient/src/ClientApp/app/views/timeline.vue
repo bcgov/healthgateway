@@ -88,13 +88,15 @@
           variant="info"
           class="no-print"
         >
-            <h4>Please complete your profile</h4>
-            <span>
-                Your email or cell phone number have not been verified. To complete your profile and receive notifications from the Health Gateway, visit the 
-                <router-link id="profilePageLink" variant="primary" to="/profile">
-                    Profile Page.
-                </router-link>
-            </span>
+          <h4>Please complete your profile</h4>
+          <span>
+            Your email or cell phone number have not been verified. To complete
+            your profile and receive notifications from the Health Gateway,
+            visit the
+            <router-link id="profilePageLink" variant="primary" to="/profile">
+              Profile Page.
+            </router-link>
+          </span>
         </b-alert>
 
         <div id="pageTitle">
