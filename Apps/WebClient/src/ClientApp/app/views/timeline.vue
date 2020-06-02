@@ -90,11 +90,11 @@
                   </router-link>.
               </span>
           </b-alert>
-          <b-alert :show="unverifiedPhone"
+          <b-alert :show="unverifiedSMS"
                    dismissible
                    variant="info"
                    class="no-print">
-              <h4>Unverified phone number</h4>
+              <h4>Unverified Phone Number</h4>
               <span>
                   Your phone number has not been verified. Please check your text messages for a verification code from Health Gateway. You can also edit your
                   profile or resend the text from the
@@ -374,8 +374,8 @@ export default class TimelineComponent extends Vue {
     return !this.user.verifiedEmail && this.user.hasEmail;
   }
 
-  private get unverifiedPhone(): boolean {
-    return !this.user.verifiedPhone && this.user.hasPhone;
+  private get unverifiedSMS(): boolean {
+    return !this.user.verifiedSMS && this.user.hasSMS;
   }
 
   private get hasNewTermsOfService(): boolean {

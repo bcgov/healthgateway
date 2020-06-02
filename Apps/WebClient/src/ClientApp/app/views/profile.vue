@@ -214,13 +214,13 @@ input {
           </b-row>
           <b-row v-if="!smsVerified && !isSMSEditable && smsNumber" class="mb-3">
             <b-col>
+              <label for="smsVerificationCode">SMS Verification Code</label>
               <div class="form-inline">
                 <b-form-input
                   id="smsVerificationCode"
                   v-model="$v.smsVerificationCode.$model"
                   type="number"
                   maxlength="6"
-                  placeholder="000000"
                   :state="isValid($v.smsVerificationCode)"
                 />
                 <b-button

@@ -464,7 +464,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
+            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
     }

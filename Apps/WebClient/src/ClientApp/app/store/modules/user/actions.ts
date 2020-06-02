@@ -6,7 +6,7 @@ import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserPhoneInvite from '@/models/userPhoneInvite';
+import UserSMSInvite from '@/models/userSMSInvite';
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -67,10 +67,10 @@ export const actions: ActionTree<UserState, RootState> = {
               });
 
             userProfileService
-              .getLatestPhoneInvite(hdid)
-              .then(userPhoneInvite => {
-                commit("setValidatedPhone", userPhoneInvite);
-                resolve(userPhoneInvite);
+              .getLatestSMSInvite(hdid)
+              .then(userSMSInvite => {
+                commit("setValidatedSMS", userSMSInvite);
+                resolve(userSMSInvite);
               })
               .catch(error => {
                 handleError(commit, error);
@@ -78,7 +78,7 @@ export const actions: ActionTree<UserState, RootState> = {
               });
           } else {
             commit("setValidatedEmail", undefined);
-            commit("setValidatedPhone", undefined);
+            commit("setValidatedSMS", undefined);
             resolve(isRegistered);
           }
         })
@@ -102,13 +102,13 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     });
   },
-  getUserPhone({ commit }, { hdid }): Promise<UserPhoneInvite> {
+  getUserSMS({ commit }, { hdid }): Promise<UserSMSInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .getLatestPhoneInvite(hdid)
-        .then(userPhoneInvite => {
-          commit("setValidatedPhone", userPhoneInvite);
-          resolve(userPhoneInvite);
+        .getLatestSMSInvite(hdid)
+        .then(userSMSInvite => {
+          commit("setValidatedSMS", userSMSInvite);
+          resolve(userSMSInvite);
         })
         .catch(error => {
           handleError(commit, error);
