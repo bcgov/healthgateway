@@ -138,7 +138,7 @@ namespace HealthGateway.Common.Services
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
-            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.REGISTRATION_TEMPLATE), keyValues);
+            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.RegistrationTemplate), keyValues);
             invite.EmailId = invite.Email.Id;
             this.QueueNewInviteEmail(invite);
         }
