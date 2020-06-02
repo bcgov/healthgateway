@@ -26,6 +26,7 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Adds a Communication to the database.
         /// </summary>
+        /// <param name="communication">The communication to add to the backend.</param>
         /// <returns>Returns the added communication wrapped in a RequestResult.</returns>
         RequestResult<Communication> Add(Communication communication);
     }

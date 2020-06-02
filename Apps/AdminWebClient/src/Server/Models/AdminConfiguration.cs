@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the logging level used by the Admin.
         /// </summary>
-        public string LogLevel { get; set; } = "";
+        public string LogLevel { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Admin timeout values.
@@ -36,16 +36,16 @@ namespace HealthGateway.Admin.Models
         /// Gets or sets the ExternalURLs used by the Admin.
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ExternalURLs { get; set; }
+        public Dictionary<string, System.Uri> ExternalURLs { get; set; } = new Dictionary<string, System.Uri>();
 
         /// <summary>
         /// Gets or sets the unix timezone id.
         /// </summary>
-        public string UnixTimeZoneId { get; set; }
+        public string UnixTimeZoneId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the windows timezone id.
         /// </summary>
-        public string WindowsTimeZoneId { get; set; }
+        public string WindowsTimeZoneId { get; set; } = string.Empty;
     }
 }

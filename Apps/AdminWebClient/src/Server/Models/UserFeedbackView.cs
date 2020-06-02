@@ -35,12 +35,12 @@ namespace HealthGateway.Admin.Models
         public string? Comment { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating whether the user is satisfied or not.
+        /// Gets or sets a value indicating whether the user is satisfied or not.
         /// </summary>
         public bool IsSatisfied { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the value indicating whether the feedback is reviewed or not.
+        /// Gets or sets a value indicating whether the feedback is reviewed or not.
         /// </summary>
         public bool IsReviewed { get; set; } = false;
 
@@ -58,23 +58,6 @@ namespace HealthGateway.Admin.Models
         /// Gets or sets the email if known for this feedback.
         /// </summary>
         public string Email { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Convers this view model into a DB model object.
-        /// </summary>
-        /// <returns>The DB model object.</returns>
-        public UserFeedback ToDbModel()
-        {
-            return new UserFeedback()
-            {
-                Id = this.Id,
-                Comment = this.Comment,
-                CreatedDateTime = this.CreatedDateTime,
-                IsReviewed = this.IsReviewed,
-                IsSatisfied = this.IsSatisfied,
-                Version = this.Version,
-            };
-        }
 
         /// <summary>
         /// Constructs a UserFeedbackView from a UserFeedback model.
@@ -109,6 +92,23 @@ namespace HealthGateway.Admin.Models
             }
 
             return newList;
+        }
+
+        /// <summary>
+        /// Convers this view model into a DB model object.
+        /// </summary>
+        /// <returns>The DB model object.</returns>
+        public UserFeedback ToDbModel()
+        {
+            return new UserFeedback()
+            {
+                Id = this.Id,
+                Comment = this.Comment,
+                CreatedDateTime = this.CreatedDateTime,
+                IsReviewed = this.IsReviewed,
+                IsSatisfied = this.IsSatisfied,
+                Version = this.Version,
+            };
         }
     }
 }

@@ -34,8 +34,8 @@ namespace HealthGateway.Admin.Services
         /// Saves the user profile to the database.
         /// </summary>
         /// <param name="betaRequestIds">The beta request ids to send invites to.</param>
-        /// <param name="hostUrl">The host url for referal purposes.</param>
+        /// <param name="referer">The host for referal template substitution.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string? hostUrl);
+        RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string referer);
     }
 }

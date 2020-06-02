@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------
-//  Copyright © 2020 Province of British Columbia
+//  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        public async Task<IActionResult> GetBetaRequests()
+        public IActionResult GetBetaRequests()
         {
             return new JsonResult(this.betaRequestService.GetPendingBetaRequests());
         }
@@ -76,11 +76,11 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPatch]
-        public async Task<IActionResult> SendBetaRequestsInvites(List<string> betaRequestIds)
+        public IActionResult SendBetaRequestsInvites(List<string> betaRequestIds)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
-                .Referer?
+                .Referer
                 .GetLeftPart(UriPartial.Authority);
 
             return new JsonResult(this.betaRequestService.SendInvites(betaRequestIds, referer));

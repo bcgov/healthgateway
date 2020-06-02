@@ -13,25 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-
 namespace HealthGateway.AdminWebClient.Pages
 {
-    public class ErrorModel : PageModel
+    using System.Diagnostics;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+
+    /// <summary>
+    /// Simple Error Model for the UI.
+    /// </summary>
+    public class ErrorPage : PageModel
     {
+        /// <summary>
+        /// Gets or sets the RequestId.
+        /// </summary>
         public string? RequestId { get; set; }
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        /// <summary>
+        /// Gets a value indicating whether to show the Request ID.
+        /// </summary>
+        public bool ShowRequestId => !string.IsNullOrEmpty(this.RequestId);
 
+        /// <summary>
+        /// Sets the RequestId on get to either the current Activity ID or the Trace Identifer.
+        /// </summary>
         public void OnGet()
         {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            this.RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier;
         }
     }
 }

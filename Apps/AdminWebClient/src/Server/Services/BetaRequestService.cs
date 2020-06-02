@@ -31,14 +31,13 @@ namespace HealthGateway.Admin.Services
     /// <inheritdoc />
     public class BetaRequestService : IBetaRequestService
     {
+        private const string HostTemplateVariable = "host";
+        private const string InviteKeyTemplateVariable = "inviteKey";
+        private const string EmailToTemplateVariable = "emailTo";
+
         private readonly ILogger logger;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IEmailQueueService emailQueueService;
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string HOST_TEMPLATE_VARIABLE = "host";
-        private const string INVITE_KEY_TEMPLATE_VARIABLE = "inviteKey";
-        private const string EMAIL_TO_TEMPLATE_VARIABLE = "emailTo";
-#pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetaRequestService"/> class.
@@ -69,7 +68,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string hostUrl)
+        public RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string referer)
         {
             this.logger.LogTrace($"Sending invites to beta requests... {JsonConvert.SerializeObject(betaRequestIds)}");
 
@@ -88,9 +87,9 @@ namespace HealthGateway.Admin.Services
                 invite.ExpireDate = DateTime.MaxValue;
 
                 Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                keyValues.Add(INVITE_KEY_TEMPLATE_VARIABLE, invite.InviteKey.ToString());
-                keyValues.Add(EMAIL_TO_TEMPLATE_VARIABLE, betaRequest.EmailAddress);
+                keyValues.Add(HostTemplateVariable, referer);
+                keyValues.Add(InviteKeyTemplateVariable, invite.InviteKey.ToString());
+                keyValues.Add(EmailToTemplateVariable, betaRequest.EmailAddress);
                 invite.Email = this.emailQueueService.ProcessTemplate(betaRequest.EmailAddress, this.emailQueueService.GetEmailTemplate(EmailTemplateName.InviteTemplate), keyValues);
                 this.emailQueueService.QueueNewInviteEmail(invite);
 
