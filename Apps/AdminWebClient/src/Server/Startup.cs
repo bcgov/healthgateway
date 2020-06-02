@@ -67,7 +67,7 @@ namespace HealthGateway.AdminWebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            //To show detail of error and see the problem.
+            // To show detail of error and see the problem.
             IdentityModelEventSource.ShowPII = true;
 
             this.logger.LogDebug("Configure Services...");

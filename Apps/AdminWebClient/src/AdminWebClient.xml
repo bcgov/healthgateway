@@ -473,12 +473,12 @@
         </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.IsSatisfied">
             <summary>
-            Gets or sets the value indicating whether the user is satisfied or not.
+            Gets or sets a value indicating whether the user is satisfied or not.
             </summary>
         </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.IsReviewed">
             <summary>
-            Gets or sets the value indicating whether the feedback is reviewed or not.
+            Gets or sets a value indicating whether the feedback is reviewed or not.
             </summary>
         </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.CreatedDateTime">
@@ -496,12 +496,6 @@
             Gets or sets the email if known for this feedback.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.ToDbModel">
-            <summary>
-            Convers this view model into a DB model object.
-            </summary>
-            <returns>The DB model object.</returns>
-        </member>
         <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedbackAdmin)">
             <summary>
             Constructs a UserFeedbackView from a UserFeedback model.
@@ -515,6 +509,12 @@
             </summary>
             <param name="models">List of user feedback models.</param>
             <returns>A list of UserFeedbackView.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.ToDbModel">
+            <summary>
+            Convers this view model into a DB model object.
+            </summary>
+            <returns>The DB model object.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.UserProfile">
             <summary>
@@ -734,6 +734,7 @@
             <summary>
             Adds a Communication to the database.
             </summary>
+            <param name="communication">The communication to add to the backend.</param>
             <returns>Returns the added communication wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IConfigurationService">
@@ -811,7 +812,7 @@
         </member>
         <member name="M:HealthGateway.Admin.Services.UserFeedbackService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserFeedbackService},HealthGateway.Database.Delegates.IFeedbackDelegate)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.BetaRequestService"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.UserFeedbackService"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="feedbackDelegate">The feedeback delegate to interact with the DB.</param>
@@ -821,6 +822,26 @@
         </member>
         <member name="M:HealthGateway.Admin.Services.UserFeedbackService.UpdateFeedbackReview(HealthGateway.Admin.Models.UserFeedbackView)">
             <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.AdminWebClient.Pages.ErrorPage">
+            <summary>
+            Simple Error Model for the UI.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.AdminWebClient.Pages.ErrorPage.RequestId">
+            <summary>
+            Gets or sets the RequestId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.AdminWebClient.Pages.ErrorPage.ShowRequestId">
+            <summary>
+            Gets a value indicating whether to show the Request ID.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.AdminWebClient.Pages.ErrorPage.OnGet">
+            <summary>
+            Sets the RequestId on get to either the current Activity ID or the Trace Identifer.
+            </summary>
         </member>
         <member name="T:HealthGateway.AdminWebClient.Program">
             <summary>

@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the logging level used by the Admin.
         /// </summary>
-        public string LogLevel { get; set; } = "";
+        public string LogLevel { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Admin timeout values.

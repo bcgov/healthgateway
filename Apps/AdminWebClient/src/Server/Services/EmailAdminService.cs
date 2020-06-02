@@ -34,7 +34,6 @@ namespace HealthGateway.Admin.Services
     /// </summary>
     public class EmailAdminService : IEmailAdminService
     {
-
         private const string EmailAdminSectionConfigKey = "EmailAdmin";
         private const string MaxEmailsConfigKey = "MaxEmails";
         private const int DefaultMaxEmails = 1000;
