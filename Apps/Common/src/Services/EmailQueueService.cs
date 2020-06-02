@@ -87,7 +87,7 @@ namespace HealthGateway.Common.Services
         {
             if (string.IsNullOrWhiteSpace(email.To))
             {
-                throw new ArgumentNullException(nameof(email.To), "Email To cannot be null or whitespace");
+                throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
@@ -148,7 +148,7 @@ namespace HealthGateway.Common.Services
         {
             if (invite.Email == null || string.IsNullOrWhiteSpace(invite.Email.To))
             {
-                throw new ArgumentNullException(nameof(invite.Email), "Invite Email To cannot be null or whitespace");
+                throw new ArgumentNullException(nameof(invite), "Invite Email To cannot be null or whitespace");
             }
 
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");

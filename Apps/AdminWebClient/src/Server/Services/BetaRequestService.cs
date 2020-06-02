@@ -91,7 +91,7 @@ namespace HealthGateway.Admin.Services
                 keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
                 keyValues.Add(INVITE_KEY_TEMPLATE_VARIABLE, invite.InviteKey.ToString());
                 keyValues.Add(EMAIL_TO_TEMPLATE_VARIABLE, betaRequest.EmailAddress);
-                invite.Email = this.emailQueueService.ProcessTemplate(betaRequest.EmailAddress, this.emailQueueService.GetEmailTemplate(EmailTemplateName.INVITE_TEMPLATE), keyValues);
+                invite.Email = this.emailQueueService.ProcessTemplate(betaRequest.EmailAddress, this.emailQueueService.GetEmailTemplate(EmailTemplateName.InviteTemplate), keyValues);
                 this.emailQueueService.QueueNewInviteEmail(invite);
 
                 requestResult.ResourcePayload.Add(betaRequest.HdId);

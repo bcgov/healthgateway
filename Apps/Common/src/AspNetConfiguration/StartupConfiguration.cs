@@ -349,7 +349,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.Use(async (context, next) =>
             {
                 context.Response.Headers.Add("Content-Security-Policy", $"default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-{nonce}' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data: 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
-                await next();
+                await next().ConfigureAwait(true);
             });
         }
 

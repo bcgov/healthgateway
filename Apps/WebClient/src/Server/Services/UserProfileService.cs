@@ -257,7 +257,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_CLOSED, keyValues);
+                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountClosedTemplate, keyValues);
                 }
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
@@ -298,7 +298,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
                     keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_RECOVERED, keyValues);
+                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate, keyValues);
                 }
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
