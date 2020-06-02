@@ -1279,7 +1279,7 @@
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate,HealthGateway.Common.Services.INotificationSettingsService,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
             </summary>
@@ -1292,6 +1292,7 @@
             <param name="legalAgreementDelegate">The terms of service delegate.</param>
             <param name="cryptoDelegate">Injected Crypto delegate.</param>
             <param name="notificationSettingsService">Notification settings delegate.</param>
+            <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
             <inheritdoc />

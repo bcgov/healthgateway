@@ -74,7 +74,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile.Email, userProfile.SMSNumber, bearerToken);
+                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken);
             }
 
             this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
@@ -91,9 +91,9 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
-            NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(userProfile.Email, sms, bearerToken).ConfigureAwait(true);
+            NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken).ConfigureAwait(true);
 
-            if (smsInvite != null && !smsInvite.Validated && smsInvite.ExpireDate >= DateTime.UtcNow)
+            if (smsInvite != null && smsInvite.ExpireDate >= DateTime.UtcNow)
             {
                 this.logger.LogInformation($"Expiring old sms validation for user ${hdid}");
                 smsInvite.ExpireDate = DateTime.UtcNow;
@@ -116,10 +116,10 @@ namespace HealthGateway.WebClient.Services
             return true;
         }
 
-        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(string? email, string? smsNumber, string bearerToken)
+        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(email, smsNumber);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, email, smsNumber);
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {

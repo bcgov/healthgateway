@@ -188,53 +188,21 @@ input {
                   :disabled="!isSMSEditable"
                   :state="isValid($v.smsNumber)"
                 />
-                <div
-                  v-if="!smsVerified && !isSMSEditable && smsNumber"
-                  class="ml-3"
-                >
-                  (Not Verified)
+                <div v-if="!smsVerified && !isSMSEditable && smsNumber"
+                     class="ml-3">
+                    <b-button id="verifySMS"
+                              variant="warning"
+                              class="ml-3"
+                              @click="verifySMS()">
+                        Verify
+                    </b-button>
                 </div>
-                <b-button
-                  v-if="!smsVerified && !isSMSEditable && smsNumber"
-                  id="resendSMSVerification"
-                  variant="warning"
-                  class="ml-auto"
-                  :disabled="smsVerificationSent"
-                  @click="sendUserSMSUpdate()"
-                  >Resend Verification
-                </b-button>
               </div>
               <b-form-invalid-feedback :state="isValid($v.smsNumber)">
                 Valid sms number is required
               </b-form-invalid-feedback>
               <b-form-invalid-feedback :state="$v.smsNumber.newSMSNumber">
                 New sms number must be different from the previous one
-              </b-form-invalid-feedback>
-            </b-col>
-          </b-row>
-          <b-row v-if="!smsVerified && !isSMSEditable && smsNumber" class="mb-3">
-            <b-col>
-              <label for="smsVerificationCode">SMS Verification Code</label>
-              <div class="form-inline">
-                <b-form-input
-                  id="smsVerificationCode"
-                  v-model="$v.smsVerificationCode.$model"
-                  type="number"
-                  maxlength="6"
-                  :state="isValid($v.smsVerificationCode)"
-                />
-                <b-button
-                  id="verifySMS"
-                  variant="warning"
-                  class="ml-3"
-                  :disabled="!isValid($v.smsVerificationCode)"
-                  @click="verifySMS()"
-                >
-                  Verify
-                </b-button>
-              </div>
-              <b-form-invalid-feedback :state="!invalidSMSVerificationCode">
-                Verification code invalid
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
@@ -349,13 +317,19 @@ input {
         </b-row>
       </div>
     </div>
+    <VerifySMSComponent
+        ref="verifySMSModal"
+        @submit="onVerifySMSSubmit"
+
+:smsNumber="smsNumber" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import LoadingComponent from "@/components/loading.vue";
+import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import { Action, Getter } from "vuex-class";
 import {
   required,
@@ -389,7 +363,8 @@ const authNamespace: string = "auth";
 
 @Component({
   components: {
-    LoadingComponent
+    LoadingComponent,
+    VerifySMSComponent
   }
 })
 export default class ProfileComponent extends Vue {
@@ -427,6 +402,9 @@ export default class ProfileComponent extends Vue {
   @Getter("webClient", { namespace: "config" })
   webClientConfig!: WebClientConfiguration;
 
+  @Ref("verifySMSModal")
+  readonly verifySMSModal!: VerifySMSComponent;
+
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
@@ -442,8 +420,6 @@ export default class ProfileComponent extends Vue {
   private smsNumber: string = "";
   private isSMSEditable: boolean = false;
   private tempSMS: string = "";
-  private smsVerificationSent: boolean = false;
-  private smsVerificationCode: string = "";
   private invalidSMSVerificationCode: boolean = false;
 
   private tempEmail: string = "";
@@ -496,7 +472,6 @@ export default class ProfileComponent extends Vue {
           var userSMS = results[2];
           this.smsNumber = userSMS.smsNumber;
           this.smsVerified = userSMS.validated;
-          this.smsVerificationSent = this.smsVerified;
         }
 
         if (results[3]) {
@@ -660,21 +635,16 @@ export default class ProfileComponent extends Vue {
       }
       this.updateSMS();
     }
-    event.preventDefault();
   }
 
   private verifySMS(): void {
-    this.userProfileService
-      .validateSMS(this.smsVerificationCode)
-      .then(result => {
-          this.smsVerificationCode = "";
-          this.invalidSMSVerificationCode = !result;
-          this.smsVerified = result;
-          this.smsVerificationSent = result;
-          this.getUserSMS({ hdid: this.user.hdid });
-      });
+    this.verifySMSModal.showModal();
   }
 
+private onVerifySMSSubmit(): void {
+    this.getUserSMS({ hdid: this.user.hdid });
+    this.smsVerified = true;
+}
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({
@@ -708,29 +678,9 @@ export default class ProfileComponent extends Vue {
       .then(() => {
         this.isSMSEditable = false;
         this.smsVerified = false;
-        this.smsVerificationSent = false;
         this.tempSMS = "";
         this.getUserSMS({ hdid: this.user.hdid });
         this.$v.$reset();
-      });
-  }
-
-  private sendUserSMSUpdate(): void {
-    this.isLoading = true;
-    this.userProfileService
-      .updateSMSNumber(this.user.hdid, this.smsNumber)
-      .then(() => {
-        this.isSMSEditable = false;
-        this.smsVerificationSent = true;
-        this.tempSMS = "";
-        this.$v.$reset();
-      })
-      .catch(err => {
-        this.hasErrors = true;
-        console.log(err);
-      })
-      .finally(() => {
-        this.isLoading = false;
       });
   }
 

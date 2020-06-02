@@ -76,33 +76,19 @@
                   </router-link>.
               </span>
           </b-alert>
-          <b-alert :show="unverifiedEmail"
+          <b-alert :show="unverifiedEmail || unverifiedSMS"
                    dismissible
                    variant="info"
                    class="no-print">
-              <h4>Unverified email</h4>
+              <h4>Profile Incomplete</h4>
               <span>
-                  Your email has not been verified. Please check your inbox or junk
-                  folder for an email from Health Gateway. You can also edit your
-                  profile or resend the email from the
+                  Your email and/or phone have not been verified. Go to the
                   <router-link id="profilePageLink" variant="primary" to="/profile">
                       profile page
-                  </router-link>.
+                  </router-link> to complete your personal information.
               </span>
           </b-alert>
-          <b-alert :show="unverifiedSMS"
-                   dismissible
-                   variant="info"
-                   class="no-print">
-              <h4>Unverified Phone Number</h4>
-              <span>
-                  Your phone number has not been verified. Please check your text messages for a verification code from Health Gateway. You can also edit your
-                  profile or resend the text from the
-                  <router-link id="profilePageLink" variant="primary" to="/profile">
-                      profile page
-                  </router-link>.
-              </span>
-          </b-alert>
+
           <div id="pageTitle">
               <h1 id="subject">Health Care Timeline</h1>
               <hr />

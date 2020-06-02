@@ -104,7 +104,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
+            RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken).ConfigureAwait(true);
             return new JsonResult(result);
         }
 
@@ -273,6 +273,7 @@ namespace HealthGateway.WebClient.Controllers
             }
             else
             {
+                System.Threading.Thread.Sleep(5000);
                 return new NotFoundResult();
             }
         }
