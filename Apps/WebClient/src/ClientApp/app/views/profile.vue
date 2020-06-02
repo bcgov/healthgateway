@@ -691,6 +691,7 @@ export default class ProfileComponent extends Vue {
         this.smsVerified = false;
         this.tempSMS = "";
         this.getUserSMS({ hdid: this.user.hdid });
+        this.verifySMS();
         this.$v.$reset();
       });
   }

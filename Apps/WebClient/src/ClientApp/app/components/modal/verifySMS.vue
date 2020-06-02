@@ -12,7 +12,7 @@
   <b-modal
     id="verify-sms-modal"
     v-model="isVisible"
-    title="Verify SMS"
+    title="Phone Verification"
     size="sm"
     header-bg-variant="primary"
     header-text-variant="light"
@@ -23,10 +23,10 @@
         <form>
           <b-row>
             <b-col>
-              <label for="verificationCode-input"
-                >Verification Code sent to
-                <strong>{{ smsNumber }}</strong></label
-              >
+                <label for="verificationCode-input" class="text-center">
+                    Enter the verification code sent to 
+                    <strong>{{ smsNumber }}</strong>
+                </label>
               <b-form-input
                 id="verificationCode-input"
                 v-model="smsVerificationCode"
@@ -52,19 +52,17 @@
       </b-col>
     </b-row>
     <template v-slot:modal-footer>
-      <b-row>
-        <b-col>
-          <b-button
-            id="resendSMSVerification"
-            variant="warning"
-            class="ml-auto"
-            :disabled="smsVerificationSent"
-            @click="sendUserSMSUpdate()"
-          >
-            Resend Verification
-          </b-button>
-        </b-col>
-      </b-row>
+        <b-row>
+            <b-col>
+                <b-button id="resendSMSVerification"
+                          variant="link"
+                          class="ml-auto"
+                          :disabled="smsVerificationSent"
+                          @click="sendUserSMSUpdate()">
+                    Didn't receive a code? Resend verification code
+                </b-button>
+            </b-col>
+        </b-row>
     </template>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
   </b-modal>
