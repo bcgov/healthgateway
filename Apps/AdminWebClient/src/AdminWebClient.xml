@@ -722,7 +722,7 @@
             Saves the user profile to the database.
             </summary>
             <param name="betaRequestIds">The beta request ids to send invites to.</param>
-            <param name="hostUrl">The host url for referal purposes.</param>
+            <param name="referer">The host for referal template substitution.</param>
             <returns>The wrapped user profile.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.ICommunicationService">

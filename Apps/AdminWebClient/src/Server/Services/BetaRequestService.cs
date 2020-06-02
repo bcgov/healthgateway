@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string hostUrl)
+        public RequestResult<List<string>> SendInvites(List<string> betaRequestIds, string referer)
         {
             this.logger.LogTrace($"Sending invites to beta requests... {JsonConvert.SerializeObject(betaRequestIds)}");
 
@@ -87,7 +87,7 @@ namespace HealthGateway.Admin.Services
                 invite.ExpireDate = DateTime.MaxValue;
 
                 Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                keyValues.Add(HostTemplateVariable, hostUrl);
+                keyValues.Add(HostTemplateVariable, referer);
                 keyValues.Add(InviteKeyTemplateVariable, invite.InviteKey.ToString());
                 keyValues.Add(EmailToTemplateVariable, betaRequest.EmailAddress);
                 invite.Email = this.emailQueueService.ProcessTemplate(betaRequest.EmailAddress, this.emailQueueService.GetEmailTemplate(EmailTemplateName.InviteTemplate), keyValues);
