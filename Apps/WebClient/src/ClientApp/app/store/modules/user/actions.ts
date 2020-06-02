@@ -6,7 +6,7 @@ import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserSMSInvite from '@/models/userSMSInvite';
+import UserSMSInvite from "@/models/userSMSInvite";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);

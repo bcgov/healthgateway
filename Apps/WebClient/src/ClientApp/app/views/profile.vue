@@ -188,14 +188,18 @@ input {
                   :disabled="!isSMSEditable"
                   :state="isValid($v.smsNumber)"
                 />
-                <div v-if="!smsVerified && !isSMSEditable && smsNumber"
-                     class="ml-3">
-                    <b-button id="verifySMS"
-                              variant="warning"
-                              class="ml-3"
-                              @click="verifySMS()">
-                        Verify
-                    </b-button>
+                <div
+                  v-if="!smsVerified && !isSMSEditable && smsNumber"
+                  class="ml-3"
+                >
+                  <b-button
+                    id="verifySMS"
+                    variant="warning"
+                    class="ml-3"
+                    @click="verifySMS()"
+                  >
+                    Verify
+                  </b-button>
                 </div>
               </div>
               <b-form-invalid-feedback :state="isValid($v.smsNumber)">
@@ -318,10 +322,10 @@ input {
       </div>
     </div>
     <VerifySMSComponent
-        ref="verifySMSModal"
-        @submit="onVerifySMSSubmit"
-
-:smsNumber="smsNumber" />
+      ref="verifySMSModal"
+      :sms-number="smsNumber"
+      @submit="onVerifySMSSubmit"
+    />
   </div>
 </template>
 
@@ -452,7 +456,12 @@ export default class ProfileComponent extends Vue {
     var userSMSPromise = this.getUserSMS({ hdid: this.user.hdid });
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
-    Promise.all([oidcUserPromise, userEmailPromise, userSMSPromise, userProfilePromise])
+    Promise.all([
+      oidcUserPromise,
+      userEmailPromise,
+      userSMSPromise,
+      userProfilePromise
+    ])
       .then(results => {
         // Load oidc user details
         if (results[0]) {
@@ -506,11 +515,13 @@ export default class ProfileComponent extends Vue {
           return this.isSMSEditable && this.smsNumber !== "";
         }),
         newSMSNumber: not(sameAs("tempSMS")),
-        sms,
+        sms
       },
       smsVerificationCode: {
         required: requiredIf(() => {
-          return !this.smsVerified && this.smsNumber !== "" && !this.isSMSEditable;
+          return (
+            !this.smsVerified && this.smsNumber !== "" && !this.isSMSEditable
+          );
         }),
         minLength: minLength(6)
       },
@@ -641,10 +652,10 @@ export default class ProfileComponent extends Vue {
     this.verifySMSModal.showModal();
   }
 
-private onVerifySMSSubmit(): void {
+  private onVerifySMSSubmit(): void {
     this.getUserSMS({ hdid: this.user.hdid });
     this.smsVerified = true;
-}
+  }
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({

@@ -148,9 +148,7 @@ export class RestUserProfileService implements IUserProfileService {
   public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite> {
     return new Promise(resolve => {
       this.http
-        .get<UserSMSInvite>(
-          `${this.USER_PROFILE_BASE_URI}/${hdid}/sms/invite/`
-        )
+        .get<UserSMSInvite>(`${this.USER_PROFILE_BASE_URI}/${hdid}/sms/invite/`)
         .then(userSMSInvite => {
           return resolve(userSMSInvite);
         })
@@ -182,10 +180,7 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public updateSMSNumber(
-    hdid: string,
-    smsNumber: string
-  ): Promise<boolean> {
+  public updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean> {
     return new Promise(resolve => {
       let headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";

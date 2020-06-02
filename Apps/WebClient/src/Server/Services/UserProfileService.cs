@@ -192,7 +192,7 @@ namespace HealthGateway.WebClient.Services
             if (insertResult.Status == DBStatusCode.Created)
             {
                 // Update the notification settings
-                NotificationSettingsRequest notificationRequest = await UpdateNotificationSettings(newProfile, bearerToken).ConfigureAwait(true);
+                NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(newProfile, requestedSMSNumber, bearerToken).ConfigureAwait(true);
 
                 if (emailInvite != null)
                 {
@@ -324,10 +324,10 @@ namespace HealthGateway.WebClient.Services
             };
         }
 
-        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
+        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, smsNumber);
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {

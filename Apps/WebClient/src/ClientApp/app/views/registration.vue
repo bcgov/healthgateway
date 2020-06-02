@@ -461,7 +461,7 @@ export default class RegistrationComponent extends Vue {
         required: requiredIf(() => {
           return this.isSMSNumberChecked;
         }),
-        sms,
+        sms
       },
       email: {
         required: requiredIf(() => {
@@ -539,7 +539,7 @@ export default class RegistrationComponent extends Vue {
             hdid: this.oidcUser.hdid,
             acceptedTermsOfService: this.accepted,
             email: this.email || "",
-            smsNumber: this.smsNumber || "",
+            smsNumber: this.smsNumber || ""
           },
           inviteCode: this.inviteKey || ""
         })
