@@ -104,7 +104,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
+            RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken).ConfigureAwait(true);
             return new JsonResult(result);
         }
 
@@ -252,6 +252,33 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
+        /// Validates a sms invite.
+        /// </summary>
+        /// <returns>An empty response.</returns>
+        /// <param name="validationCode">The sms invite validation code.</param>
+        /// <response code="200">The sms was validated.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="404">The invite key was not found.</response>
+        [HttpGet]
+        [Route("sms/validate/{validationCode}")]
+        public async Task<IActionResult> ValidateSMS(string validationCode)
+        {
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+
+            if (this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken))
+            {
+                return new OkResult();
+            }
+            else
+            {
+                System.Threading.Thread.Sleep(5000);
+                return new NotFoundResult();
+            }
+        }
+
+        /// <summary>
         /// Validates an email invite.
         /// </summary>
         /// <returns>The invite email.</returns>
@@ -294,6 +321,58 @@ namespace HealthGateway.WebClient.Controllers
                 else
                 {
                     UserEmailInvite result = UserEmailInvite.CreateFromDbModel(emailInvite);
+                    return new JsonResult(result);
+                }
+            }
+            else
+            {
+                return new JsonResult(null);
+            }
+        }
+
+        /// <summary>
+        /// Validates an email invite.
+        /// </summary>
+        /// <returns>The invite email.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the user email invite json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/sms/invite")]
+        [Authorize(Policy = "PatientOnly")]
+        public async Task<IActionResult> GetUserSMSInvite(string hdid)
+        {
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+
+            // Validate that the query parameter matches the user claims
+            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new BadRequestResult();
+            }
+
+            var isAuthorized = await this.authorizationService
+                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
+                .ConfigureAwait(true);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return new ForbidResult();
+            }
+
+            MessagingVerification smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
+
+            // Check expiration and remove fields that contains sensitive information
+            if (smsInvite != null)
+            {
+                if (smsInvite.ExpireDate < DateTime.UtcNow)
+                {
+                    return new JsonResult(null);
+                }
+                else
+                {
+                    UserSMSInvite result = UserSMSInvite.CreateFromDbModel(smsInvite);
                     return new JsonResult(result);
                 }
             }
@@ -386,7 +465,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
+            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
     }

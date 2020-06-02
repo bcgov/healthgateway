@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -43,6 +44,7 @@ namespace HealthGateway.WebClient.Services
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
 
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string HOST_TEMPLATE_VARIABLE = "host";
@@ -60,6 +62,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
+        /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IProfileDelegate profileDelegate,
@@ -69,7 +72,8 @@ namespace HealthGateway.WebClient.Services
             IEmailQueueService emailQueueService,
             ILegalAgreementDelegate legalAgreementDelegate,
             ICryptoDelegate cryptoDelegate,
-            INotificationSettingsService notificationSettingsService)
+            INotificationSettingsService notificationSettingsService,
+            IMessagingVerificationDelegate messageVerificationDelegate)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
@@ -80,6 +84,7 @@ namespace HealthGateway.WebClient.Services
             this.legalAgreementDelegate = legalAgreementDelegate;
             this.cryptoDelegate = cryptoDelegate;
             this.notificationSettingsService = notificationSettingsService;
+            this.messageVerificationDelegate = messageVerificationDelegate;
         }
 
         /// <inheritdoc />
@@ -124,7 +129,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
         {
             Contract.Requires(createProfileRequest != null && hostUri != null);
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
@@ -173,9 +178,11 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
+            string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
             string? requestedEmail = createProfileRequest.Profile.Email;
             UserProfile newProfile = createProfileRequest.Profile;
             newProfile.Email = string.Empty;
+            newProfile.SMSNumber = null;
             newProfile.CreatedBy = hdid;
             newProfile.UpdatedBy = hdid;
             newProfile.EncryptionKey = this.cryptoDelegate.GenerateKey();
@@ -184,6 +191,9 @@ namespace HealthGateway.WebClient.Services
 
             if (insertResult.Status == DBStatusCode.Created)
             {
+                // Update the notification settings
+                NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(newProfile, requestedSMSNumber, bearerToken).ConfigureAwait(true);
+
                 if (emailInvite != null)
                 {
                     // Validates the invite email
@@ -197,11 +207,21 @@ namespace HealthGateway.WebClient.Services
                     this.emailQueueService.QueueNewInviteEmail(hdid, requestedEmail, hostUri);
                 }
 
+                if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
+                {
+                    this.logger.LogInformation($"Sending sms invite for user ${hdid}");
+                    MessagingVerification messagingVerification = new MessagingVerification();
+                    messagingVerification.HdId = hdid;
+                    messagingVerification.SMSNumber = requestedSMSNumber;
+                    messagingVerification.SMSValidationCode = notificationRequest.SMSVerificationCode;
+                    messagingVerification.VerificationType = MessagingVerificationType.SMS;
+                    messagingVerification.ExpireDate = DateTime.MaxValue;
+                    this.messageVerificationDelegate.Insert(messagingVerification);
+                }
+
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
                 requestResult.ResultStatus = ResultType.Success;
 
-                // Update the notification settings
-                this.UpdateNotificationSettings(newProfile, bearerToken);
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
@@ -304,15 +324,17 @@ namespace HealthGateway.WebClient.Services
             };
         }
 
-        private async void UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
+        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile.Email, userProfile.SMSNumber);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, smsNumber);
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {
                 this.notificationSettingsService.QueueNotificationSettings(request, bearerToken);
             }
+
+            return request;
         }
     }
 }

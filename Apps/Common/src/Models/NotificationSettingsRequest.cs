@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System.Text.Json.Serialization;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// PHSA Notification Settings request model.
@@ -43,15 +44,17 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class using only the email address and SMS number.
         /// </summary>
+        /// <param name="userProfile">The user profile.</param>
         /// <param name="emailAddress">Email address for the notification settings.</param>
         /// <param name="smsNumber">SMS Number for the notification settings.</param>
-        public NotificationSettingsRequest(string? emailAddress, string? smsNumber)
+        public NotificationSettingsRequest(UserProfile userProfile, string? emailAddress, string? smsNumber)
             : base()
         {
             this.EmailAddress = emailAddress;
             this.EmailEnabled = !string.IsNullOrWhiteSpace(emailAddress);
             this.SMSNumber = smsNumber;
             this.SMSEnabled = !string.IsNullOrWhiteSpace(smsNumber);
+            this.SMSVerified = smsNumber == userProfile.SMSNumber;
         }
 
         /// <summary>

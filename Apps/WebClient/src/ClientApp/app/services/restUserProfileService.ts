@@ -5,6 +5,7 @@ import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserSMSInvite from "@/models/userSMSInvite";
 import { Dictionary } from "vue-router/types/router";
 
 @injectable()
@@ -114,7 +115,21 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public getLatestInvite(hdid: string): Promise<UserEmailInvite> {
+  public validateSMS(digit: string): Promise<boolean> {
+    return new Promise(resolve => {
+      this.http
+        .get(`${this.USER_PROFILE_BASE_URI}/sms/validate/${digit}`)
+        .then(() => {
+          return resolve(true);
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(false);
+        });
+    });
+  }
+
+  public getLatestEmailInvite(hdid: string): Promise<UserEmailInvite> {
     return new Promise(resolve => {
       this.http
         .get<UserEmailInvite>(
@@ -122,6 +137,20 @@ export class RestUserProfileService implements IUserProfileService {
         )
         .then(userEmailInvite => {
           return resolve(userEmailInvite);
+        })
+        .catch(err => {
+          console.log(err);
+          return resolve(err);
+        });
+    });
+  }
+
+  public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite> {
+    return new Promise(resolve => {
+      this.http
+        .get<UserSMSInvite>(`${this.USER_PROFILE_BASE_URI}/${hdid}/sms/invite/`)
+        .then(userSMSInvite => {
+          return resolve(userSMSInvite);
         })
         .catch(err => {
           console.log(err);
@@ -151,10 +180,7 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public updateSMSNumber(
-    hdid: string,
-    smsNumber: string
-  ): Promise<boolean> {
+  public updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean> {
     return new Promise(resolve => {
       let headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";

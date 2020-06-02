@@ -19,51 +19,30 @@ namespace HealthGateway.WebClient.Models
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Model that provides a user representation of an EmailInvite.
+    /// Model that provides a user representation of a sms verification invite.
     /// </summary>
-    public class UserEmailInvite
+    public class UserSMSInvite
     {
-        /// <summary>
-        /// Gets or sets the email invite id.
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the users directed identifier.
-        /// </summary>
-        public string? HdId { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the invite was validated.
         /// </summary>
         public bool Validated { get; set; }
 
         /// <summary>
-        /// Gets or sets the associated email that was sent for this invite.
+        /// Gets or sets the sms number for the invite.
         /// </summary>
-        public Guid EmailId { get; set; }
+        public string? SMSNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the associated email that was sent for this invite.
+        /// Constructs a UserSMSInvite from a MessagingVerification.
         /// </summary>
-
-        /// <summary>
-        /// Gets or sets the email address for the invite.
-        /// </summary>
-        public string? EmailAddress { get; set; }
-
-        /// <summary>
-        /// Constructs a UserInviteEmail from a EmailInvite.
-        /// </summary>
-        public static UserEmailInvite CreateFromDbModel(MessagingVerification model)
+        /// <returns>The UserSMSInvite model.</returns>
+        public static UserSMSInvite CreateFromDbModel(MessagingVerification model)
         {
-            return new UserEmailInvite()
+            return new UserSMSInvite()
             {
-                Id = model.Id,
-                HdId = model.HdId,
                 Validated = model.Validated,
-                EmailId = model.EmailId!.Value,
-                EmailAddress = model?.Email?.To,
+                SMSNumber = model.SMSNumber,
             };
         }
     }
