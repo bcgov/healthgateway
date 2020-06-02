@@ -85,10 +85,10 @@ namespace HealthGateway.Laboratory.Models
         public string AdditionalData { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets additional related data.
+        /// Gets or sets a value indicating whether a report is available.
         /// </summary>
         [JsonPropertyName("reportAvailable")]
-        public bool ReportAvailable { get; set; } = false;        
+        public bool ReportAvailable { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the list of lab results.
