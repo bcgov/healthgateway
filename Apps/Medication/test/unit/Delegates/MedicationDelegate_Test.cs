@@ -37,7 +37,7 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
-        public async Task ValidateGetMedicationStatement()
+        public void ValidateGetMedicationStatement()
         {
             return; //investigate how to make these run in Azure
             //using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -63,7 +63,7 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
-        public async Task GetProtectiveWord()
+        public void GetProtectiveWord()
         {
             return; //investigate how to make these run in Azure
             //using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -76,7 +76,7 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
-        public async Task GetNoProtectiveWord()
+        public void GetNoProtectiveWord()
         {
             return; //investigate how to make these run in Azure
             //using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());

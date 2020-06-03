@@ -94,13 +94,22 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <returns>The path to the unzipped folder.</returns>
         private string ExtractFiles(FileDownload downloadedFile)
         {
-            string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-            logger.LogInformation($"Extracting zip file: {filename}");
-            string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
-            ZipFile.ExtractToDirectory(filename, unzipedPath);
-            logger.LogInformation("Deleting Zip file");
-            File.Delete(filename);
-            return unzipedPath;
+            if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
+            {
+                string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
+                logger.LogInformation($"Extracting zip file: {filename}");
+                string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
+                ZipFile.ExtractToDirectory(filename, unzipedPath);
+                logger.LogInformation("Deleting Zip file");
+                File.Delete(filename);
+                return unzipedPath;
+            }
+            else
+            {
+                throw new ArgumentNullException(
+                            nameof(FileDownload),
+                            $"Downloaded file has null attributes, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
+            }
         }
 
         /// <summary>
@@ -173,9 +182,16 @@ namespace HealthGateway.DrugMaintainer.Apps
             else
             {
                 this.logger.LogInformation("File has been previously processed - exiting");
-                string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-                logger.LogInformation($"Removing zip file: {filename}");
-                File.Delete(filename);
+                if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
+                {
+                    string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
+                    logger.LogInformation($"Removing zip file: {filename}");
+                    File.Delete(filename);
+                }
+                else
+                {
+                    logger.LogWarning($"Unable to clean up as FileDownload contains null data, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
+                }
             }
         }
 
