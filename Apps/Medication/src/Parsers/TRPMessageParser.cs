@@ -17,7 +17,6 @@ namespace HealthGateway.Medication.Parsers
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using HealthGateway.Medication.Constants;

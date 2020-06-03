@@ -35,7 +35,7 @@
             </summary>
             <param name="betaRequestService">The injected beta request service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>        
+            <param name="authorizationService">The injected authorization service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
             <summary>
@@ -50,7 +50,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.GetBetaRequest(System.String)">
             <summary>
-            Retrieves the latest user queued email
+            Retrieves the latest user queued email.
             </summary>
             <returns>The email for the suer queued.</returns>
             <param name="hdid">The user hdid.</param>
@@ -168,6 +168,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.HomeController"/> class.
             </summary>
+            <param name="nonceService">The nonce service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.HomeController.Index">
             <summary>
@@ -622,14 +623,6 @@
             This is generally set by the baseDbContext.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Models.UserComment.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
-            <summary>
-            Constructs a database comment model from a user Node model.
-            </summary>
-            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
-            <param name="key">The security key.</param>
-            <returns>The database user comment model.</returns>
-        </member>
         <member name="M:HealthGateway.WebClient.Models.UserComment.CreateFromDbModel(HealthGateway.Database.Models.Comment,HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
             <summary>
             Constructs a UserComment model from a Node database model.
@@ -647,6 +640,14 @@
             <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
             <param name="key">The security key.</param>
             <returns>A list of use comments.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserComment.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a database comment model from a user Node model.
+            </summary>
+            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+            <param name="key">The security key.</param>
+            <returns>The database user comment model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.UserEmailInvite">
             <summary>
@@ -685,6 +686,8 @@
             <summary>
             Constructs a UserInviteEmail from a EmailInvite.
             </summary>
+            <param name="model">The messaging verification model.</param>
+            <returns>A new user email invite model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.UserNote">
             <summary>
@@ -745,14 +748,6 @@
             This is generally set by the baseDbContext.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Models.UserNote.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
-            <summary>
-            Constructs a database Note model from a user Node model.
-            </summary>
-            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
-            <param name="key">The security key.</param>
-            <returns>The database user note model.</returns>
-        </member>
         <member name="M:HealthGateway.WebClient.Models.UserNote.CreateFromDbModel(HealthGateway.Database.Models.Note,HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
             <summary>
             Constructs a UserNote model from a Node database model.
@@ -770,6 +765,14 @@
             <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
             <param name="key">The security key.</param>
             <returns>A list of use notes.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserNote.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a database Note model from a user Node model.
+            </summary>
+            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+            <param name="key">The security key.</param>
+            <returns>The database user note model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.UserProfileModel">
             <summary>
@@ -1256,7 +1259,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserSMSService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserEmailService"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserSMSService"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="profileDelegate">The profile delegate to interact with the DB.</param>

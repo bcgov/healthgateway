@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Parsers
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Runtime.InteropServices;
     using HealthGateway.Medication.Models;

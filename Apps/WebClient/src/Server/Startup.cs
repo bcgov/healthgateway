@@ -17,7 +17,6 @@
 namespace HealthGateway.WebClient
 {
     using System;
-    using System.Diagnostics.Contracts;
     using Hangfire;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -116,8 +115,6 @@ namespace HealthGateway.WebClient
         /// <param name="nonceService">Service that provides nonce utilities.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, INonceService nonceService)
         {
-            Contract.Requires(env != null);
-
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);

@@ -15,13 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />

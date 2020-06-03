@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System.Diagnostics.Contracts;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -42,7 +41,6 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
-            Contract.Requires(userFeedback != null);
             this.logger.LogTrace($"Creating user feedback... {JsonConvert.SerializeObject(userFeedback)}");
             DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
             this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");

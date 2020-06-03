@@ -16,7 +16,6 @@
 namespace HealthGateway.Database.Context
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Reflection;
@@ -74,7 +73,6 @@ namespace HealthGateway.Database.Context
         {
             modelBuilder.HasDefaultSchema("gateway");
 
-            Contract.Requires(modelBuilder != null);
             modelBuilder.HasSequence<long>(Sequence.PHARMANET_TRACE)
             .StartsAt(1)
             .IncrementsBy(1)

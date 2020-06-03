@@ -17,7 +17,6 @@ namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using Hangfire;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Constants;
@@ -50,7 +49,6 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="emailDelegate">The email delegate to use.</param>
         public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
         {
-            Contract.Requires((configuration != null) && (emailDelegate != null));
             this.configuration = configuration!;
             this.logger = logger;
             this.emailDelegate = emailDelegate!;

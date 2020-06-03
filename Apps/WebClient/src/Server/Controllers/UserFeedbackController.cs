@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
@@ -72,7 +71,6 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> CreateUserFeedback([FromBody] UserFeedback userFeedback)
         {
-            Contract.Requires(userFeedback != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
             var isAuthorized = await this.authorizationService

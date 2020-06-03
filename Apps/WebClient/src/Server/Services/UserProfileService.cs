@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text.Json;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
@@ -34,6 +33,9 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
+#pragma warning disable SA1310 // Disable _ in variable name
+        private const string HOST_TEMPLATE_VARIABLE = "host";
+#pragma warning restore SA1310 // Restore warnings
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailDelegate emailDelegate;
@@ -43,10 +45,6 @@ namespace HealthGateway.WebClient.Services
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
-
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string HOST_TEMPLATE_VARIABLE = "host";
-#pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -126,7 +124,6 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
         {
-            Contract.Requires(createProfileRequest != null && hostUri != null);
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
@@ -142,7 +139,7 @@ namespace HealthGateway.WebClient.Services
             }
 
             string hdid = createProfileRequest.Profile.HdId;
-            MessagingVerification emailInvite = null;
+            MessagingVerification emailInvite = new MessagingVerification();
             if (registrationStatus == RegistrationStatus.InviteOnly)
             {
                 if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))

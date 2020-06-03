@@ -18,7 +18,6 @@ namespace HealthGateway.Medication.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;

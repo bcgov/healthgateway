@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Patient.Services
 {
-    using System;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.ServiceModel;
     using System.ServiceModel.Channels;

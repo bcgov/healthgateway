@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Diagnostics.Contracts;
     using System.Text.Json;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;

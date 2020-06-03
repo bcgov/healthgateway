@@ -49,7 +49,7 @@ namespace HealthGateway.Database.Models
         /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
         /// </summary>
         [MaxLength(1344)]
-        public string? Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the entry type code.

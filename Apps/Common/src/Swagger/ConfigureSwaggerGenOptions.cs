@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Swagger
 {
     using System;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Reflection;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;

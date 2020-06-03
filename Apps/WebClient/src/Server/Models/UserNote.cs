@@ -37,12 +37,12 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
-        public string? Title { get; set; } = null!;
+        public string Title { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the text of the note.
         /// </summary>
-        public string? Text { get; set; } = null!;
+        public string Text { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Note timeline datetime.
@@ -79,29 +79,6 @@ namespace HealthGateway.WebClient.Models
         public string UpdatedBy { get; set; } = null!;
 
         /// <summary>
-        /// Constructs a database Note model from a user Node model.
-        /// </summary>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
-        /// <param name="key">The security key.</param>
-        /// <returns>The database user note model.</returns>
-        public Database.Models.Note ToDbModel(ICryptoDelegate cryptoDelegate, string key)
-        {
-            return new Database.Models.Note()
-            {
-                Id = this.Id,
-                HdId = this.HdId,
-                JournalDateTime = this.JournalDateTime,
-                Version = this.Version,
-                CreatedDateTime = this.CreatedDateTime,
-                CreatedBy = this.CreatedBy,
-                UpdatedDateTime = this.UpdatedDateTime,
-                UpdatedBy = this.UpdatedBy,
-                Title = cryptoDelegate.Encrypt(key, this?.Title),
-                Text = cryptoDelegate.Encrypt(key, this?.Text),
-            };
-        }
-
-        /// <summary>
         /// Constructs a UserNote model from a Node database model.
         /// </summary>
         /// <param name="model">The note database model.</param>
@@ -125,8 +102,8 @@ namespace HealthGateway.WebClient.Models
                 CreatedBy = model.CreatedBy,
                 UpdatedDateTime = model.UpdatedDateTime,
                 UpdatedBy = model.UpdatedBy,
-                Title = cryptoDelegate.Decrypt(key, model?.Title),
-                Text = cryptoDelegate.Decrypt(key, model?.Text),
+                Title = cryptoDelegate.Decrypt(key, model.Title),
+                Text = cryptoDelegate.Decrypt(key, model.Text),
             };
         }
 
@@ -146,6 +123,29 @@ namespace HealthGateway.WebClient.Models
             }
 
             return newList;
+        }
+
+        /// <summary>
+        /// Constructs a database Note model from a user Node model.
+        /// </summary>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+        /// <param name="key">The security key.</param>
+        /// <returns>The database user note model.</returns>
+        public Database.Models.Note ToDbModel(ICryptoDelegate cryptoDelegate, string key)
+        {
+            return new Database.Models.Note()
+            {
+                Id = this.Id,
+                HdId = this.HdId,
+                JournalDateTime = this.JournalDateTime,
+                Version = this.Version,
+                CreatedDateTime = this.CreatedDateTime,
+                CreatedBy = this.CreatedBy,
+                UpdatedDateTime = this.UpdatedDateTime,
+                UpdatedBy = this.UpdatedBy,
+                Title = cryptoDelegate.Encrypt(key, this.Title),
+                Text = cryptoDelegate.Encrypt(key, this.Text),
+            };
         }
     }
 }

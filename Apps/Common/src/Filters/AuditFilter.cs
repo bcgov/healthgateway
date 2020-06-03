@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;

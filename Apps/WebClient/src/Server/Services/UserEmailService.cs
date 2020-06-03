@@ -41,7 +41,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserEmailService(ILogger<UserEmailService> logger,
+        public UserEmailService(
+            ILogger<UserEmailService> logger,
             IMessagingVerificationDelegate emailInviteDelegate,
             IProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,

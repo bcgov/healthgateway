@@ -33,12 +33,13 @@ namespace HealthGateway.WebClient.Services
         private readonly INotificationSettingsService notificationSettingsService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserEmailService"/> class.
+        /// Initializes a new instance of the <see cref="UserSMSService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserSMSService(ILogger<UserEmailService> logger,
+        public UserSMSService(
+            ILogger<UserEmailService> logger,
             IProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
         {
@@ -62,6 +63,7 @@ namespace HealthGateway.WebClient.Services
                 this.logger.LogDebug($"Finished updating user sms number");
                 return true;
             }
+
             return false;
         }
 

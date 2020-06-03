@@ -16,7 +16,6 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
@@ -45,7 +44,7 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <param name="betaRequestService">The injected beta request service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>        
+        /// <param name="authorizationService">The injected authorization service.</param>
         public BetaRequestController(
             IBetaRequestService betaRequestService,
             IHttpContextAccessor httpContextAccessor,
@@ -69,8 +68,6 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> CreateBetaRequest([FromBody] BetaRequest betaRequest)
         {
-            Contract.Requires(betaRequest != null);
-
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             AuthorizationResult isAuthorized = await this.authorizationService
@@ -83,7 +80,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
-                .Referer?
+                .Referer
                 .GetLeftPart(UriPartial.Authority);
 
             RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest, referer);
@@ -91,7 +88,7 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Retrieves the latest user queued email
+        /// Retrieves the latest user queued email.
         /// </summary>
         /// <returns>The email for the suer queued.</returns>
         /// <param name="hdid">The user hdid.</param>
@@ -103,7 +100,6 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = "PatientOnly")]
         public async Task<IActionResult> GetBetaRequest(string hdid)
         {
-            Contract.Requires(hdid != null);
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
 

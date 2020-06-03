@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Claims;
     using HealthGateway.Admin.Models;
@@ -96,7 +95,6 @@ namespace HealthGateway.Admin.Services
         public AuthenticationProperties GetAuthenticationProperties(string redirectPath)
         {
             this.logger.LogDebug("Getting Authentication properties with redirectPath={0}", redirectPath);
-            Contract.Requires(redirectPath != null);
 
             AuthenticationProperties authProps = new AuthenticationProperties()
             {

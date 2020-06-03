@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.FileDownload
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net.Http;
     using System.Security.Cryptography;

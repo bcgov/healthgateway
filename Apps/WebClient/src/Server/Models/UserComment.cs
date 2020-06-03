@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the text of the comment.
         /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
         /// </summary>
-        public string? Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the entry type code.
@@ -81,29 +81,6 @@ namespace HealthGateway.WebClient.Models
         public string UpdatedBy { get; set; } = null!;
 
         /// <summary>
-        /// Constructs a database comment model from a user Node model.
-        /// </summary>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
-        /// <param name="key">The security key.</param>
-        /// <returns>The database user comment model.</returns>
-        public Database.Models.Comment ToDbModel(ICryptoDelegate cryptoDelegate, string key)
-        {
-            return new Database.Models.Comment()
-            {
-                Id = this.Id,
-                UserProfileId = this.UserProfileId,
-                EntryTypeCode = this.EntryTypeCode,
-                ParentEntryId = this.ParentEntryId,
-                Version = this.Version,
-                CreatedDateTime = this.CreatedDateTime,
-                CreatedBy = this.CreatedBy,
-                UpdatedDateTime = this.UpdatedDateTime,
-                UpdatedBy = this.UpdatedBy,
-                Text = cryptoDelegate.Encrypt(key, this.Text),
-            };
-        }
-
-        /// <summary>
         /// Constructs a UserComment model from a Node database model.
         /// </summary>
         /// <param name="model">The comment database model.</param>
@@ -128,7 +105,7 @@ namespace HealthGateway.WebClient.Models
                 CreatedBy = model.CreatedBy,
                 UpdatedDateTime = model.UpdatedDateTime,
                 UpdatedBy = model.UpdatedBy,
-                Text = cryptoDelegate.Decrypt(key, model?.Text),
+                Text = cryptoDelegate.Decrypt(key, model.Text),
             };
         }
 
@@ -148,6 +125,29 @@ namespace HealthGateway.WebClient.Models
             }
 
             return newList;
+        }
+
+        /// <summary>
+        /// Constructs a database comment model from a user Node model.
+        /// </summary>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+        /// <param name="key">The security key.</param>
+        /// <returns>The database user comment model.</returns>
+        public Database.Models.Comment ToDbModel(ICryptoDelegate cryptoDelegate, string key)
+        {
+            return new Database.Models.Comment()
+            {
+                Id = this.Id,
+                UserProfileId = this.UserProfileId,
+                EntryTypeCode = this.EntryTypeCode,
+                ParentEntryId = this.ParentEntryId,
+                Version = this.Version,
+                CreatedDateTime = this.CreatedDateTime,
+                CreatedBy = this.CreatedBy,
+                UpdatedDateTime = this.UpdatedDateTime,
+                UpdatedBy = this.UpdatedBy,
+                Text = cryptoDelegate.Encrypt(key, this.Text),
+            };
         }
     }
 }

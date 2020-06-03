@@ -45,14 +45,14 @@ namespace HealthGateway.Database.Models
         /// Title supports 100 characters plus 52 for Encryption and Encoding overhead.
         /// </summary>
         [MaxLength(152)]
-        public string? Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the text of the note.
         /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
         /// </summary>
         [MaxLength(1344)]
-        public string? Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Note timeline datetime.

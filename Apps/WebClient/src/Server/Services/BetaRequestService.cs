@@ -15,9 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -31,11 +29,11 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class BetaRequestService : IBetaRequestService
     {
+#pragma warning disable SA1310 // Disable _ in variable name
+        private const string HOST_TEMPLATE_VARIABLE = "host";
         private readonly ILogger logger;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IEmailQueueService emailQueueService;
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string HOST_TEMPLATE_VARIABLE = "host";
 #pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
@@ -63,8 +61,6 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl)
         {
-            Contract.Requires(betaRequest != null);
-            Contract.Requires(!string.IsNullOrEmpty(betaRequest.HdId));
             this.logger.LogTrace($"Creating a beta request... {JsonConvert.SerializeObject(betaRequest)}");
 
             // If there is a previous request, update it isntead of creating a new one
@@ -110,6 +106,7 @@ namespace HealthGateway.WebClient.Services
                     requestResult.ResultMessage = insertResult.Message;
                     requestResult.ResultStatus = ResultType.Error;
                 }
+
                 return requestResult;
             }
         }

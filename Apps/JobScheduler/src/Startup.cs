@@ -17,7 +17,6 @@
 namespace HealthGateway.JobScheduler
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -126,7 +125,6 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Contract.Requires((app != null) && (env != null));
             this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
             this.startupConfig.UseForwardHeaders(app!);
             this.startupConfig.UseAuth(app!);

@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Models;
@@ -59,8 +58,6 @@ namespace HealthGateway.Medication.Controllers
         [Route("{drugIdentifier}")]
         public RequestResult<MedicationResult> GetMedication(string drugIdentifier)
         {
-            Contract.Requires(drugIdentifier != null);
-
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier!.PadLeft(8, '0');
             Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });

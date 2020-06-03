@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
-    using System.Diagnostics.Contracts;
-
     /// <summary>
     /// Contains sumary information of a medication.
     /// </summary>
