@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient.Controllers
     public class RobotsController : Controller
     {
         private const string Production = "Production";
+        private const string DefaultEnvironment = "Development";
         private readonly IConfiguration configuration;
         private readonly string environment;
 
@@ -34,7 +35,7 @@ namespace HealthGateway.WebClient.Controllers
         public RobotsController(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.environment = this.configuration.GetValue("ASPNETCORE_ENVIRONMENT", Production);
+            this.environment = this.configuration.GetValue("Environment", DefaultEnvironment);
         }
 
         /// <summary>
@@ -42,6 +43,7 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The robots text file.</returns>
         [Route("robots.txt")]
+        [Produces("text/plain")]
         public ActionResult Robots()
         {
             this.ViewBag.Environment = this.environment;
