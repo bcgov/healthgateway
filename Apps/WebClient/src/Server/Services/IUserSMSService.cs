@@ -16,6 +16,8 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The User SMS service.
@@ -29,7 +31,23 @@ namespace HealthGateway.WebClient.Services
         /// <param name="sms">SMS number to be set for the user.</param>
         /// <param name="hostUri">The host uri for referal purposes.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
-        /// <returns>returns true if the SMS number was sucessfully updated.</returns>
-        bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken);
+        /// <returns>returns true if the sms number was sucessfully updated.</returns>
+        Task<bool> UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken);
+
+        /// <summary>
+        /// Validates the sms number that matches the given validation code.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="validationCode">The sms validation code.</param>
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <returns>returns true if the sms invite was found and validated.</returns>
+        bool ValidateSMS(string hdid, string validationCode, string bearerToken);
+
+        /// <summary>
+        /// Retrieves the last invite SMS.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>returns the last SMS invite if found.</returns>
+        MessagingVerification RetrieveLastInvite(string hdid);
     }
 }

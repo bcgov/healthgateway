@@ -67,7 +67,7 @@ namespace HealthGateway.AdminWebClient
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            //To show detail of error and see the problem.
+            // To show detail of error and see the problem.
             IdentityModelEventSource.ShowPII = true;
 
             this.logger.LogDebug("Configure Services...");
@@ -131,7 +131,7 @@ namespace HealthGateway.AdminWebClient
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/ErrorPage");
 
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -204,7 +204,7 @@ namespace HealthGateway.AdminWebClient
                         JwtSecurityToken accessToken = ctx.SecurityToken;
                         if (accessToken != null)
                         {
-                            ClaimsIdentity identity = ctx.Principal.Identity as ClaimsIdentity;
+                            ClaimsIdentity? identity = ctx.Principal.Identity as ClaimsIdentity;
                             if (identity != null)
                             {
                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));

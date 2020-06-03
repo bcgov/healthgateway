@@ -44,7 +44,7 @@ namespace HealthGateway.DrugMaintainer
 
         public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             return new HostBuilder()
                        .ConfigureAppConfiguration((hostingContext, config) =>
                        {

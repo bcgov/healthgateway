@@ -83,21 +83,22 @@
           </span>
         </b-alert>
         <b-alert
-          :show="unverifiedEmail"
+          :show="unverifiedEmail || unverifiedSMS"
           dismissible
           variant="info"
           class="no-print"
         >
-          <h4>Unverified email</h4>
+          <h4>Please complete your profile</h4>
           <span>
-            Your email has not been verified. Please check your inbox or junk
-            folder for an email from Health Gateway. You can also edit your
-            profile or resend the email from the
+            Your email or cell phone number have not been verified. To complete
+            your profile and receive notifications from the Health Gateway,
+            visit the
             <router-link id="profilePageLink" variant="primary" to="/profile">
-              profile page</router-link
-            >.
+              Profile Page.
+            </router-link>
           </span>
         </b-alert>
+
         <div id="pageTitle">
           <h1 id="subject">Health Care Timeline</h1>
           <hr />
@@ -385,6 +386,10 @@ export default class TimelineComponent extends Vue {
 
   private get unverifiedEmail(): boolean {
     return !this.user.verifiedEmail && this.user.hasEmail;
+  }
+
+  private get unverifiedSMS(): boolean {
+    return !this.user.verifiedSMS && this.user.hasSMS;
   }
 
   private get hasNewTermsOfService(): boolean {

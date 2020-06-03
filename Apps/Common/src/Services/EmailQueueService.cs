@@ -139,7 +139,7 @@ namespace HealthGateway.Common.Services
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
             invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.RegistrationTemplate), keyValues);
-
+            invite.EmailId = invite.Email.Id;
             this.QueueNewInviteEmail(invite);
         }
 
@@ -192,6 +192,7 @@ namespace HealthGateway.Common.Services
             }
 
             Email email = new Email();
+            email.Id = Guid.NewGuid();
             email.From = emailTemplate.From;
             email.Priority = emailTemplate.Priority;
             email.Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues);

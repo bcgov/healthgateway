@@ -51,7 +51,6 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
 
-
     /// <summary>
     /// The startup class.
     /// </summary>
@@ -90,7 +89,6 @@ namespace HealthGateway.JobScheduler
                     this.configuration.GetConnectionString("GatewayConnection"),
                     b => b.MigrationsAssembly(nameof(Database))));
 
-
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
@@ -112,7 +110,6 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<ProvincialDrugJob>();
             services.AddTransient<IEmailJob, EmailJob>();
             services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
-
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));

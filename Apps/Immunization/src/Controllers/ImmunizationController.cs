@@ -22,8 +22,8 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
-     using HealthGateway.Common.Models;
-   using HealthGateway.Immunization.Models;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;

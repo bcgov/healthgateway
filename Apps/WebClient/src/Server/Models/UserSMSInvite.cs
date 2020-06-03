@@ -13,33 +13,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.WebClient.Models
 {
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Authentication and Authorization Service.
+    /// Model that provides a user representation of a sms verification invite.
     /// </summary>
-    public interface IAuthenticationService
+    public class UserSMSInvite
     {
         /// <summary>
-        /// Authenticates the request based on the current context.
+        /// Gets or sets a value indicating whether the invite was validated.
         /// </summary>
-        /// <returns>The AuthData containing the token and user information.</returns>
-        AuthenticationData GetAuthenticationData();
+        public bool Validated { get; set; }
 
         /// <summary>
-        /// Clears the authorization data from the context.
+        /// Gets or sets the sms number for the invite.
         /// </summary>
-        /// <returns>The signout confirmation followed by the redirect uri.</returns>
-        SignOutResult Logout();
+        public string? SMSNumber { get; set; }
 
         /// <summary>
-        /// Returns the authentication properties with the populated hint and redirect URL.
+        /// Constructs a UserSMSInvite from a MessagingVerification.
         /// </summary>
-        /// <returns> The AuthenticationProperties.</returns>
-        /// <param name="redirectPath">The URI to redirect to after logon.</param>
-        AuthenticationProperties GetAuthenticationProperties(string redirectPath);
+        /// <returns>The UserSMSInvite model.</returns>
+        public static UserSMSInvite CreateFromDbModel(MessagingVerification model)
+        {
+            return new UserSMSInvite()
+            {
+                Validated = model.Validated,
+                SMSNumber = model.SMSNumber,
+            };
+        }
     }
 }

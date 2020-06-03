@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the associated email that was sent for this verification.
         /// Required if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
-        public Guid EmailId { get; set; }
+        public Guid? EmailId { get; set; }
 
         /// <summary>
         /// Gets or sets the associated email for this verification.

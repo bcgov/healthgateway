@@ -64,7 +64,7 @@ namespace HealthGateway.WebClient.Models
                 Id = model.Id,
                 HdId = model.HdId,
                 Validated = model.Validated,
-                EmailId = model.EmailId,
+                EmailId = model.EmailId!.Value,
                 EmailAddress = model?.Email?.To,
             };
         }

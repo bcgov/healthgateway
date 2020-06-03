@@ -99,7 +99,7 @@ input {
                   id="resendEmail"
                   variant="warning"
                   class="ml-auto"
-                  :disabled="verificationSent"
+                  :disabled="emailVerificationSent"
                   @click="sendUserEmailUpdate()"
                   >Resend Verification
                 </b-button>
@@ -188,6 +188,19 @@ input {
                   :disabled="!isSMSEditable"
                   :state="isValid($v.smsNumber)"
                 />
+                <div
+                  v-if="!smsVerified && !isSMSEditable && smsNumber"
+                  class="ml-3"
+                >
+                  <b-button
+                    id="verifySMS"
+                    variant="warning"
+                    class="ml-3"
+                    @click="verifySMS()"
+                  >
+                    Verify
+                  </b-button>
+                </div>
               </div>
               <b-form-invalid-feedback :state="isValid($v.smsNumber)">
                 Valid sms number is required
@@ -308,31 +321,39 @@ input {
         </b-row>
       </div>
     </div>
+    <VerifySMSComponent
+      ref="verifySMSModal"
+      :sms-number="smsNumber"
+      @submit="onVerifySMSSubmit"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import LoadingComponent from "@/components/loading.vue";
+import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import { Action, Getter } from "vuex-class";
 import {
   required,
   requiredIf,
   sameAs,
+  minLength,
   email,
   not,
-  helpers,
+  helpers
 } from "vuelidate/lib/validators";
 import {
   IUserProfileService,
-  IAuthenticationService,
+  IAuthenticationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { User as OidcUser } from "oidc-client";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserSMSInvite from "@/models/userSMSInvite";
 import UserProfile from "@/models/userProfile";
 import { WebClientConfiguration } from "@/models/configData";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -347,21 +368,25 @@ const authNamespace: string = "auth";
 @Component({
   components: {
     LoadingComponent,
-  },
+    VerifySMSComponent
+  }
 })
 export default class ProfileComponent extends Vue {
   @Getter("oidcIsAuthenticated", {
-    namespace: authNamespace,
+    namespace: authNamespace
   })
   oidcIsAuthenticated!: boolean;
 
   @Action("getUserEmail", { namespace: userNamespace })
   getUserEmail!: ({ hdid }: { hdid: string }) => Promise<UserEmailInvite>;
 
+  @Action("getUserSMS", { namespace: userNamespace })
+  getUserSMS!: ({ hdid }: { hdid: string }) => Promise<UserSMSInvite>;
+
   @Action("updateUserEmail", { namespace: userNamespace })
   updateUserEmail!: ({
     hdid,
-    emailAddress,
+    emailAddress
   }: {
     hdid: string;
     emailAddress: string;
@@ -381,6 +406,9 @@ export default class ProfileComponent extends Vue {
   @Getter("webClient", { namespace: "config" })
   webClientConfig!: WebClientConfiguration;
 
+  @Ref("verifySMSModal")
+  readonly verifySMSModal!: VerifySMSComponent;
+
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
@@ -390,11 +418,13 @@ export default class ProfileComponent extends Vue {
   private emailConfirmation: string = "";
   private isEmailEditable: boolean = false;
   private oidcUser: any = {};
-  private verificationSent: boolean = false;
+  private emailVerificationSent: boolean = false;
 
+  private smsVerified = false;
   private smsNumber: string = "";
   private isSMSEditable: boolean = false;
   private tempSMS: string = "";
+  private invalidSMSVerificationCode: boolean = false;
 
   private tempEmail: string = "";
   private submitStatus: string = "";
@@ -423,10 +453,16 @@ export default class ProfileComponent extends Vue {
     this.isLoading = true;
     var oidcUserPromise = authenticationService.getOidcUserProfile();
     var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
+    var userSMSPromise = this.getUserSMS({ hdid: this.user.hdid });
     var userProfilePromise = this.userProfileService.getProfile(this.user.hdid);
 
-    Promise.all([oidcUserPromise, userEmailPromise, userProfilePromise])
-      .then((results) => {
+    Promise.all([
+      oidcUserPromise,
+      userEmailPromise,
+      userSMSPromise,
+      userProfilePromise
+    ])
+      .then(results => {
         // Load oidc user details
         if (results[0]) {
           this.oidcUser = results[0];
@@ -434,25 +470,31 @@ export default class ProfileComponent extends Vue {
 
         if (results[1]) {
           // Load user email
-          var userEmailInvite = results[1];
-          this.email = userEmailInvite.emailAddress;
-          this.emailVerified = userEmailInvite.validated;
-          this.verificationSent = this.emailVerified;
+          var userEmail = results[1];
+          this.email = userEmail.emailAddress;
+          this.emailVerified = userEmail.emailValidated;
+          this.emailVerificationSent = this.emailVerified;
         }
 
         if (results[2]) {
+          // Load user sms
+          var userSMS = results[2];
+          this.smsNumber = userSMS.smsNumber;
+          this.smsVerified = userSMS.validated;
+        }
+
+        if (results[3]) {
           // Load user profile
-          this.userProfile = results[2];
+          this.userProfile = results[3];
           console.log("User Profile: ", this.userProfile);
           this.lastLoginDateString = moment(
             this.userProfile.lastLoginDateTime
           ).format("lll");
-          this.smsNumber = this.userProfile.smsNumber;
         }
 
         this.isLoading = false;
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("Error loading profile");
         console.log(err);
         this.hasErrors = true;
@@ -473,22 +515,30 @@ export default class ProfileComponent extends Vue {
           return this.isSMSEditable && this.smsNumber !== "";
         }),
         newSMSNumber: not(sameAs("tempSMS")),
-        sms,
+        sms
+      },
+      smsVerificationCode: {
+        required: requiredIf(() => {
+          return (
+            !this.smsVerified && this.smsNumber !== "" && !this.isSMSEditable
+          );
+        }),
+        minLength: minLength(6)
       },
       email: {
         required: requiredIf(() => {
           return this.isEmailEditable && this.email !== "";
         }),
         newEmail: not(sameAs("tempEmail")),
-        email,
+        email
       },
       emailConfirmation: {
         required: requiredIf(() => {
           return this.isEmailEditable && this.emailConfirmation !== "";
         }),
         sameAsEmail: sameAs("email"),
-        email,
-      },
+        email
+      }
     };
   }
 
@@ -596,24 +646,31 @@ export default class ProfileComponent extends Vue {
       }
       this.updateSMS();
     }
-    event.preventDefault();
   }
 
+  private verifySMS(): void {
+    this.verifySMSModal.showModal();
+  }
+
+  private onVerifySMSSubmit(): void {
+    this.getUserSMS({ hdid: this.user.hdid });
+    this.smsVerified = true;
+  }
   private sendUserEmailUpdate(): void {
     this.isLoading = true;
     this.updateUserEmail({
       hdid: this.user.hdid || "",
-      emailAddress: this.email,
+      emailAddress: this.email
     })
       .then(() => {
         console.log("success!");
         this.isEmailEditable = false;
-        this.verificationSent = true;
+        this.emailVerificationSent = true;
         this.emailConfirmation = "";
         this.tempEmail = "";
         this.$v.$reset();
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -631,7 +688,10 @@ export default class ProfileComponent extends Vue {
       .updateSMSNumber(this.user.hdid, this.smsNumber)
       .then(() => {
         this.isSMSEditable = false;
+        this.smsVerified = false;
         this.tempSMS = "";
+        this.getUserSMS({ hdid: this.user.hdid });
+        this.verifySMS();
         this.$v.$reset();
       });
   }
@@ -650,12 +710,12 @@ export default class ProfileComponent extends Vue {
   private recoverAccount(): void {
     this.isLoading = true;
     this.recoverUserAccount({
-      hdid: this.user.hdid,
+      hdid: this.user.hdid
     })
       .then(() => {
         console.log("success!");
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -675,13 +735,13 @@ export default class ProfileComponent extends Vue {
   private closeAccount(): void {
     this.isLoading = true;
     this.closeUserAccount({
-      hdid: this.user.hdid,
+      hdid: this.user.hdid
     })
       .then(() => {
         console.log("success!");
         this.showCloseWarning = false;
       })
-      .catch((err) => {
+      .catch(err => {
         this.hasErrors = true;
         console.log(err);
       })

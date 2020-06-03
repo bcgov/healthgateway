@@ -61,6 +61,7 @@ namespace HealthGateway.Admin.Services
         {
             AdminConfiguration config = new AdminConfiguration();
             this.configuration.GetSection("Admin").Bind(config);
+
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new TimeSpan(0, -1 * offset, 0);
             return this.userProfileDelegate.GetLoggedInUsersCount(ts);
