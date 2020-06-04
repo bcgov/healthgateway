@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System.Net.Mime;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
 
@@ -23,9 +25,13 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     public class RobotsController : Controller
     {
-        private const string Production = "Production";
+        /// <summary>
+        /// The Default Robots.txt content if not overriden using the robots.txt configuration value.
+        /// </summary>
+        public const string DefaultRobotsContent = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
+
         private readonly IConfiguration configuration;
-        private readonly string environment;
+        private readonly string robotsContent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RobotsController"/> class.
@@ -34,7 +40,7 @@ namespace HealthGateway.WebClient.Controllers
         public RobotsController(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.environment = this.configuration.GetValue("ASPNETCORE_ENVIRONMENT", Production);
+            this.robotsContent = this.configuration.GetValue("robots.txt", DefaultRobotsContent);
         }
 
         /// <summary>
@@ -42,16 +48,16 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The robots text file.</returns>
         [Route("robots.txt")]
+        [Produces(MediaTypeNames.Text.Plain)]
         public ActionResult Robots()
         {
-            this.ViewBag.Environment = this.environment;
-            this.Response.ContentType = "text/plain";
-            if (this.ViewBag.Environment == Production)
+            ContentResult result = new ContentResult()
             {
-                return this.View();
-            }
-
-            return this.View("Robots-NonProd");
+                StatusCode = StatusCodes.Status200OK,
+                ContentType = MediaTypeNames.Text.Plain,
+                Content = this.robotsContent,
+            };
+            return result;
         }
     }
 }

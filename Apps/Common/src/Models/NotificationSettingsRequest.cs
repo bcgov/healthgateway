@@ -50,6 +50,7 @@ namespace HealthGateway.Common.Models
         public NotificationSettingsRequest(UserProfile userProfile, string? emailAddress, string? smsNumber)
             : base()
         {
+            this.SubjectHdid = userProfile.HdId;
             this.EmailAddress = emailAddress;
             this.EmailEnabled = !string.IsNullOrWhiteSpace(emailAddress);
             this.SMSNumber = smsNumber;

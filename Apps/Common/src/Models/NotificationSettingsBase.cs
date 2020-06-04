@@ -38,6 +38,7 @@ namespace HealthGateway.Common.Models
         /// <param name="notificationSettings">Initialize values from passed in object.</param>
         public NotificationSettingsBase(NotificationSettingsBase notificationSettings)
         {
+            this.SubjectHdid = notificationSettings.SubjectHdid;
             this.SMSEnabled = notificationSettings.SMSEnabled;
             this.SMSNumber = notificationSettings.SMSNumber;
             this.SMSVerified = notificationSettings.SMSVerified;
@@ -46,6 +47,12 @@ namespace HealthGateway.Common.Models
             this.EmailEnabled = notificationSettings.EmailEnabled;
             this.EmailScope = notificationSettings.EmailScope.ToList();
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating the subject HDID. This is an identifier person this notification is sent to.
+        /// </summary>
+        [JsonPropertyName("subjectHdid")]
+        public string? SubjectHdid { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether SMS notifications are enabled.

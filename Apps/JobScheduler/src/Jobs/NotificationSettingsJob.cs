@@ -19,6 +19,9 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Text.Json;
     using System.Threading.Tasks;
     using Hangfire;
+    using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -32,6 +35,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IConfiguration configuration;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
+        private readonly IAuthenticationDelegate authDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsJob"/> class.
@@ -39,16 +43,18 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="notificationSettingsDelegate">The email delegate to use.</param>
-        public NotificationSettingsJob(IConfiguration configuration, ILogger<NotificationSettingsJob> logger, INotificationSettingsDelegate notificationSettingsDelegate)
+        /// <param name="authDelegate">The OAuth2 authentication service.</param>
+        public NotificationSettingsJob(IConfiguration configuration, ILogger<NotificationSettingsJob> logger, INotificationSettingsDelegate notificationSettingsDelegate, IAuthenticationDelegate authDelegate)
         {
             this.configuration = configuration!;
             this.logger = logger;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
+            this.authDelegate = authDelegate;
         }
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void PushNotificationSettings(string notificationSettingsJSON, string bearerToken)
+        public void PushNotificationSettings(string notificationSettingsJSON)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
             var options = new JsonSerializerOptions
@@ -57,9 +63,12 @@ namespace Healthgateway.JobScheduler.Jobs
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
+
             NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
+            string accessToken = this.authDelegate.AuthenticateAsSystem().AccessToken!;
+
             RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
-                            this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, bearerToken).ConfigureAwait(true)).Result;
+                            this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
             if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
             {
                 throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");

@@ -23,9 +23,9 @@
         <form>
           <b-row>
             <b-col>
-              <label for="verificationCode-input" class="text-center">
-                Enter the verification code sent to
-                <strong>{{ smsNumber }}</strong>
+              <label for="verificationCode-input" class="text-center w-100">
+                Enter the verification code sent to <br />
+                  <strong>{{ formatPhoneNumber(smsNumber) }}</strong>
               </label>
               <b-form-input
                 id="verificationCode-input"
@@ -54,14 +54,15 @@
     <template v-slot:modal-footer>
       <b-row>
         <b-col>
+          Didn't receive a code?
           <b-button
             id="resendSMSVerification"
             variant="link"
-            class="ml-auto"
+            class="ml-0 pl-0"
             :disabled="smsVerificationSent"
             @click="sendUserSMSUpdate()"
           >
-            Didn't receive a code? Resend verification code
+            Resend
           </b-button>
         </b-col>
       </b-row>
@@ -176,6 +177,15 @@ export default class VerifySMSComponent extends Vue {
     if (this.smsVerificationCode.length >= 6) {
       this.verifySMS();
     }
+  }
+
+  private formatPhoneNumber(phoneNumber: string) {
+      var cleaned = ('' + phoneNumber).replace(/\D/g, '')
+      var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+      if (match) {
+        return '(' + match[1] + ') ' + match[2] + '-' + match[3]
+      }
+      return null
   }
 }
 </script>
