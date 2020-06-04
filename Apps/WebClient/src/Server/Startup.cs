@@ -30,12 +30,13 @@ namespace HealthGateway.WebClient
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Rewrite;
-    using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+    using Microsoft.AspNetCore.SpaServices;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using VueCliMiddleware;
 
     /// <summary>
     /// Configures the application during startup.
@@ -104,6 +105,15 @@ namespace HealthGateway.WebClient
                 options.SuppressModelStateInvalidFilter = true;
             });
 
+            // Configure SPA
+            services.AddControllersWithViews();
+
+            // In production, the Vue files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
+
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
             JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
@@ -131,7 +141,44 @@ namespace HealthGateway.WebClient
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
+
+            if (!env.IsDevelopment())
+            {
+                app.UseResponseCompression();
+            }
+
+            app.UseEndpoints(endpoints =>
+            {
+                // Mapping of endpoints goes here:
+
+                //endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                //endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapFallbackToController("Index", "Home");
+
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapToVueCliProxy(
+                        "{*path}",
+                        new SpaOptions { SourcePath = "ClientApp" },
+                        npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
+                        regex: "Compiled successfully",
+                        forceKill: true);
+                }
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+            });
 
             bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
             if (redirectToWWW)
@@ -162,23 +209,25 @@ namespace HealthGateway.WebClient
                 },
             });
 
-            app.UseEndpoints(endpoints =>
+            app.UseSpaStaticFiles();
+
+            /*app.UseEndpoints(endpoints =>
             {
                 // Mapping of endpoints goes here:
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToController("Index", "Home");
-            });
+            });*/
 
-            app.UseSpa(spa =>
+            /*app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "dist";
                 if (env.IsDevelopment())
                 {
                     spa.UseReactDevelopmentServer("dev");
                 }
-            });
+            });*/
         }
     }
 }

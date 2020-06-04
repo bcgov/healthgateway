@@ -8,6 +8,7 @@
     <RootNamespace>HealthGateway.WebClient</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
+    <SpaRoot>ClientApp\</SpaRoot>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,12 +21,14 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.4.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.0" />
+    <PackageReference Include="VueCliMiddleware" Version="3.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -58,6 +61,7 @@
     <Folder Include="Views\DumpHeaders\" />
     <Folder Include="Views\Robots\" />
   </ItemGroup>
+  <!--
   <ItemGroup>
     <None Remove="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png" />
   </ItemGroup>
@@ -65,19 +69,17 @@
     <Content Include="ClientApp\app\assets\images\gov\bcid-logo-rev-en.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
+  </ItemGroup>-->
   <ItemGroup>
     <Compile Remove="Server\Models\NotificationSettings.cs" />
     <Compile Remove="Server\Models\NotificationSettingsConfig.cs" />
-    <Compile Remove="Server\Models\NotificationSettingsBase %28copy%29.cs" />
-    <Compile Remove="Server\Models\NotificationSettingsRequest %28copy%29.cs" />
     <Compile Remove="Server\Constants\NotificationTarget.cs" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
   </Target>
 
-  <Target Name="RunEsLint" AfterTargets="Build">
+  <Target Name="RunEsLint2" AfterTargets="Build2">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
@@ -88,7 +90,7 @@
     <Exec Command="npm run lint" workingDirectory="./ClientApp" />
   </Target>
     
-  <Target Name="NPMInstall" BeforeTargets="Build;DebugRunWebpack" Condition="!Exists('wwwroot\dist') Or !Exists('./ClientApp/node_modules')"> 
+  <Target Name="NPMInstall" BeforeTargets="Build2;DebugRunWebpack2" Condition="!Exists('wwwroot\dist') Or !Exists('./ClientApp/node_modules')"> 
         <Exec Command="npm --version" ContinueOnError="true">
             <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
         </Exec>
@@ -97,7 +99,7 @@
         <Exec Command="npm install" workingDirectory="./ClientApp" />
   </Target>
 
-  <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
+  <Target Name="DebugRunWebpack" BeforeTargets="Build2" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
@@ -111,7 +113,7 @@
     <Exec Command="node node_modules/webpack/bin/webpack.js" workingDirectory="./ClientApp" />
   </Target>
 
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish2">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec Command="npm install" workingDirectory="./ClientApp" />
     <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js -p" workingDirectory="./ClientApp" />
@@ -121,6 +123,37 @@
     <ItemGroup>
       <DistFiles Include="wwwroot\dist\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+  
+  <!--
+
+NEW STUFF
+   
+  -->
+
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>

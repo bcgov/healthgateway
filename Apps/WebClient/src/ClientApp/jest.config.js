@@ -14,7 +14,7 @@ module.exports = {
       "<rootDir>/test/mocks/mediaFileTransformer.js"
   },
   moduleNameMapper: {
-    "@/(.*)$": "<rootDir>/app/$1",
+    "@/(.*)$": "<rootDir>/src/$1",
     "\\.(css)$": "<rootDir>/test/mocks/styleMock.js"
   },
   transformIgnorePatterns: ["/node_modules/"],

@@ -12,7 +12,8 @@
     <script nonce="@nonceString">window.EnvVars = {}; EnvVars.NONCE_ID = '@Html.Raw(nonceString)';</script>
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
+        <!--link rel="stylesheet" href="~/css/app.css" asp-append-version="true" /-->
+        <link rel=preload as=style href="~/css/main.css" asp-append-version="true">
     </environment>
     <environment include="Production">
         <link rel="stylesheet" href="~/dist/vendor.css.gz" asp-append-version="true" />
@@ -51,7 +52,7 @@
 
     @RenderBody()
 
-    <script src="~/dist/vendor.js.gz" asp-append-version="true"></script>
+    
     @RenderSection("scripts", required: false)
 </body>
 </html>

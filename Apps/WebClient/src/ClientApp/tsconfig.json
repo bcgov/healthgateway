@@ -18,12 +18,12 @@
     ],
     "typeRoots": [
       "node_modules/@types",
-      "app/@types"
+      "src/@types"
     ],
     "emitDecoratorMetadata": true,
     "paths": {
       "@/*": [
-        "app/*"
+        "src/*"
       ]
     },
     "lib": [
@@ -35,8 +35,8 @@
     ]
   },
   "include": [
-    "./app/**/*.ts",
-    "./app/**/*.vue",
+    "./src/**/*.ts",
+    "./src/**/*.vue",
     "./test/**/*.ts"
   ],
   "exclude": [
