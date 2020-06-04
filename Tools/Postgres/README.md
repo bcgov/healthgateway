@@ -64,7 +64,7 @@ The script below sets the leader to node 2:
 oc annotate configmaps patroni-postgres-leader leader=patroni-postgres-2 --overwrite=true;
 ```
 
-## Backup
+## Restore Backup
 
 To download the backup to your local computer:
 
