@@ -241,7 +241,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Watch, Ref } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import moment from "moment";
 import { Route } from "vue-router";
 import EventBus from "@/eventbus";

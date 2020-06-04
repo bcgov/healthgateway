@@ -282,7 +282,7 @@ export default class RegistrationInfoComponent extends Vue {
   @Prop() inviteKey?: string;
   @Prop() email?: string;
   @Getter("webClient", { namespace: "config" })
-  webClientConfig: WebClientConfiguration;
+  webClientConfig!: WebClientConfiguration;
 
   mounted() {
     this.isRegistrationInviteOnly =
