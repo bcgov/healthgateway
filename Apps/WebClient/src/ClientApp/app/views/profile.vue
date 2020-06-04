@@ -158,7 +158,7 @@ input {
           </b-row>
           <b-row class="mb-3">
             <b-col>
-              <label for="email">Cell SMS Number (SMS notifications)</label>
+              <label for="email">Cell Number (SMS notifications)</label>
               <b-button
                 v-if="!isSMSEditable"
                 id="editSMS"
@@ -203,10 +203,10 @@ input {
                 </div>
               </div>
               <b-form-invalid-feedback :state="isValid($v.smsNumber)">
-                Valid sms number is required
+                Valid SMS number is required
               </b-form-invalid-feedback>
               <b-form-invalid-feedback :state="$v.smsNumber.newSMSNumber">
-                New sms number must be different from the previous one
+                New SMS number must be different from the previous one
               </b-form-invalid-feedback>
             </b-col>
           </b-row>
@@ -691,7 +691,9 @@ export default class ProfileComponent extends Vue {
         this.smsVerified = false;
         this.tempSMS = "";
         this.getUserSMS({ hdid: this.user.hdid });
-        this.verifySMS();
+        if (this.smsNumber) {
+          this.verifySMS();
+        }
         this.$v.$reset();
       });
   }
