@@ -40,7 +40,9 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
         /// <returns>The wrapped user profile.</returns>
+#pragma warning disable CA1054 // Uri parameters should not be strings
         Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken);
+#pragma warning restore CA1054 // Uri parameters should not be strings
 
         /// <summary>
         /// Closed the user profile.
@@ -49,7 +51,9 @@ namespace HealthGateway.WebClient.Services
         /// <param name="userId">The user id.</param>
         /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
+#pragma warning disable CA1054 // Uri parameters should not be strings
         RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl);
+#pragma warning restore CA1054 // Uri parameters should not be strings
 
         /// <summary>
         /// Recovers the user profile.
@@ -57,7 +61,9 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
+#pragma warning disable CA1054 // Uri parameters should not be strings
         RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl);
+#pragma warning restore CA1054 // Uri parameters should not be strings
 
         /// <summary>
         /// Gets the most recent active terms of service.

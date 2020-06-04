@@ -161,12 +161,17 @@ namespace HealthGateway.WebClient.Services
                 // Fails if...
                 // Email invite not found or
                 // Email invite was already validated or
+                // Email address is not found or
+                // Email's recipient is not found
                 // Email invite must have a blank/null HDID or be the same as the one in the request
                 // Email address doesn't match the invite
-                if (emailInvite == null ||
+                if (
+                    emailInvite == null || (emailInvite != null && (
+                    emailInvite.Email == null ||
+                    emailInvite.Email.To == null ||
                     emailInvite.Validated ||
                     !hdidIsValid ||
-                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
+                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))))
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
@@ -218,7 +223,6 @@ namespace HealthGateway.WebClient.Services
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
                 requestResult.ResultStatus = ResultType.Success;
-
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
@@ -226,7 +230,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+#pragma warning disable CA1054 // Ignore string to URI conversion warning
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl)
+#pragma warning restore CA1054 // Ignore string to URI conversion warning
         {
             this.logger.LogTrace($"Closing user profile... {hdid}");
 
@@ -266,7 +272,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+#pragma warning disable CA1054 // Ignore string to URI conversion warning
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
+#pragma warning restore CA1054 // Ignore string to URI conversion warning
         {
             this.logger.LogTrace($"Recovering user profile... {hdid}");
 

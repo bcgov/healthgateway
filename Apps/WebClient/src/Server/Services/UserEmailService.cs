@@ -92,7 +92,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+#pragma warning disable CA1054 // Ignore string to URI conversion warning
         public bool UpdateUserEmail(string hdid, string email, Uri hostUri, string bearerToken)
+#pragma warning restore CA1054 // Ignore string to URI conversion warning
         {
             this.logger.LogTrace($"Updating user email...");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;

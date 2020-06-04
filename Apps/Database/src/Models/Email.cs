@@ -37,28 +37,28 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(254)]
-        public string? From { get; set; }
+        public string From { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the To address for sending the email.
         /// </summary>
         [Required]
         [MaxLength(254)]
-        public string? To { get; set; }
+        public string To { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Subject line of the email.
         /// </summary>
         [Required]
         [MaxLength(100)]
-        public string? Subject { get; set; }
+        public string Subject { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Body of the email.
         /// </summary>
         [Required]
         [Column(TypeName = "text")]
-        public string? Body { get; set; }
+        public string Body { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Email Format (HTML/Text).
@@ -81,7 +81,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the Date/Time we last tried to send the email.
         /// </summary>
-        public DateTime? LastRetryDateTime { get; set; }
+        public DateTime LastRetryDateTime { get; set; } = new DateTime(0);
 
         /// <summary>
         /// Gets or sets the number of attempts in sending this email.

@@ -861,6 +861,7 @@
             <summary>
             Constructs a UserSMSInvite from a MessagingVerification.
             </summary>
+            <param name="model">The messaging verification model.</param>
             <returns>The UserSMSInvite model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
@@ -1006,7 +1007,7 @@
             </summary>
             <param name="betaRequest">The request to create a beta request.</param>
             <param name="hostUrl">The host url for referal purposes.</param>
-            <returns>The wrapped user profile.</returns>
+            <returns>Whether or not the PUT was successful.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.ICommentService">
             <summary>

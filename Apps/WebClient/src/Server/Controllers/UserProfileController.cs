@@ -267,7 +267,7 @@ namespace HealthGateway.WebClient.Controllers
             string userHdid = user.FindFirst("hdid").Value;
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            if (this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken))
+            if (await this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken).ConfigureAwait(true))
             {
                 return new OkResult();
             }
@@ -465,7 +465,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
+            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken).ConfigureAwait(true);
             return new JsonResult(result);
         }
     }

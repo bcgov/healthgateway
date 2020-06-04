@@ -55,7 +55,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool ValidateSMS(string hdid, string validationCode, string bearerToken)
+        public async Task<bool> ValidateSMS(string hdid, string validationCode, string bearerToken)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
             bool retVal = false;
@@ -75,10 +75,9 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken);
+                await this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken).ConfigureAwait(true);
             }
 
-            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
@@ -112,8 +111,16 @@ namespace HealthGateway.WebClient.Services
                 messagingVerification.ExpireDate = DateTime.MaxValue;
                 this.messageVerificationDelegate.Insert(messagingVerification);
             }
+
             this.logger.LogDebug($"Finished updating user sms");
             return true;
+        }
+
+        /// <inheritdoc />
+        public MessagingVerification RetrieveLastInvite(string hdid)
+        {
+            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            return smsInvite;
         }
 
         private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
@@ -127,13 +134,6 @@ namespace HealthGateway.WebClient.Services
             }
 
             return request;
-        }
-
-        /// <inheritdoc />
-        public MessagingVerification RetrieveLastInvite(string hdid)
-        {
-            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-            return smsInvite;
         }
     }
 }

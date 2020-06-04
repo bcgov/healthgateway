@@ -36,7 +36,9 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="betaRequest">The request to create a beta request.</param>
         /// <param name="hostUrl">The host url for referal purposes.</param>
-        /// <returns>The wrapped user profile.</returns>
+        /// <returns>Whether or not the PUT was successful.</returns>
+#pragma warning disable CA1054 // Ignore string to URI conversion warning
         RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl);
+#pragma warning restore CA1054 // Ignore string to URI conversion warning
     }
 }

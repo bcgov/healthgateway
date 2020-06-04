@@ -59,7 +59,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+#pragma warning disable CA1054 // Ignore string to URI conversion warning
         public RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl)
+#pragma warning restore CA1054 // Ignore string to URI conversion warning
         {
             this.logger.LogTrace($"Creating a beta request... {JsonConvert.SerializeObject(betaRequest)}");
 
