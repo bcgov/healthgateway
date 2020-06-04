@@ -28,7 +28,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// The Default Robots.txt content if not overriden using the robots.txt configuration value.
         /// </summary>
-        public const string DefaultRobotsContent = "# robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
+        public const string DefaultRobotsContent = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
 
         private readonly IConfiguration configuration;
         private readonly string robotsContent;
