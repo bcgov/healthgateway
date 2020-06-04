@@ -25,10 +25,10 @@ namespace HealthGateway.Common.Services
     {
         /// <summary>
         /// Queues pushing the Notification Settings to PHSA using our batch system.
+        /// Will use access_token acquired from system account authenication.
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
-        /// <param name="bearerToken">The bearer token of the authenticated user.</param>
-        void QueueNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken);
+        void QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
 
         /// <summary>
         /// Sends the Notifications Settings to PHSA immediately.
