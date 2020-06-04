@@ -64,29 +64,36 @@ The script below sets the leader to node 2:
 oc annotate configmaps patroni-postgres-leader leader=patroni-postgres-2 --overwrite=true;
 ```
 
-## Restore Backup
+## Restore Backup Script
 
-To download the backup to your local computer:
+Backups are generated daily by the dc "backup" in the production realm and are composed by a SQL script containing the database structure + data.
+
+To restore the backup follow these steps:
+
+1) Connect to openshift using the terminal/bash and set the project to the production one.
+2) Download the backup file to your local computer using the command below:
 
 ``` bash
 oc rsync <backup-pod-name>:/backups/daily/<date> <local-folder>
 ```
 
-Extract backup using gzip:
+This copies the folder from the pod to the local folder.
+
+3) Extract backup script using gzip:
 
 ``` bash
 gzip -d <file-name>
 ```
 
-Connect to the master database pod using port-forward (See 'Connection to the Database').
+4) Connect to the master database pod using port-forward (See 'Connection to the Database').
 
-Manually create the database:
+5) Manually create the database:
 
 ``` bash
 psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
 ```
 
-Execute the backup script:
+6) Execute the script to restore the database:
 
 ``` bash
 psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
