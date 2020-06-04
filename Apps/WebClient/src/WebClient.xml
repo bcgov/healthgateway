@@ -244,6 +244,11 @@
             Dynamic Robots.txt for search engines.
             </summary>
         </member>
+        <member name="F:HealthGateway.WebClient.Controllers.RobotsController.DefaultRobotsContent">
+            <summary>
+            The Default Robots.txt content if not overriden using the robots.txt configuration value.
+            </summary>
+        </member>
         <member name="M:HealthGateway.WebClient.Controllers.RobotsController.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.RobotsController"/> class.

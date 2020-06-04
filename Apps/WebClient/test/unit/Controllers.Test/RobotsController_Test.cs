@@ -16,105 +16,65 @@
 namespace HealthGateway.WebClient.Test.Controllers
 {
     using Xunit;
-    using Moq;
     using DeepEqual.Syntax;
-    using HealthGateway.WebClient.Services;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Controllers;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Authorization;
-    using HealthGateway.Common.AccessManagement.Authorization;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using System;
-    using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Models;
     using System.Collections.Generic;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Configuration;
+    using System.Net.Mime;
 
     public class RobotsControllerTest
     {
         [Fact]
-        public void ShouldGetRobotsTxtProd()
+        public void ShouldGetRobotsCustom()
         {
-            string key = "Environment";
-            string expectedEnvironment = "Production";
-            var myConfiguration = new Dictionary<string, string>
+            ContentResult expectedResult = new ContentResult()
             {
-                {key, expectedEnvironment},
+                StatusCode = StatusCodes.Status200OK,
+                ContentType = MediaTypeNames.Text.Plain,
+                Content = "Custom Content",
             };
 
+            string key = "robots.txt";
+            string robotsContent = expectedResult.Content;
+            var myConfiguration = new Dictionary<string, string>
+            {
+                {key, robotsContent},
+            };
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
             RobotsController controller = new RobotsController(configuration);
-            controller.ControllerContext = new ControllerContext();
-            Mock<HttpResponse> responseMock = new Mock<HttpResponse>();
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.SetupGet(a => a.Response).Returns(responseMock.Object);
-            controller.ControllerContext.HttpContext = httpContextMock.Object;
 
             IActionResult actualResult = controller.Robots();
-            Assert.IsType<ViewResult>(actualResult);
-            string envResult = ((ViewResult)actualResult).ViewData[key].ToString();
-            Assert.True(envResult == expectedEnvironment);
+            Assert.IsType<ContentResult>(actualResult);
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
 
         [Fact]
-        public void ShouldGetRobotsTxtNonProd()
+        public void ShouldGetRobotsTxtDefaultConfig()
         {
-            string key = "Environment";
-            string expectedEnvironment = "Test";
-            var myConfiguration = new Dictionary<string, string>
+            ContentResult expectedResult = new ContentResult()
             {
-                {"Environment", expectedEnvironment},
+                StatusCode = StatusCodes.Status200OK,
+                ContentType = MediaTypeNames.Text.Plain,
+                Content = RobotsController.DefaultRobotsContent,
             };
 
+            var myConfiguration = new Dictionary<string, string>
+            {
+            };
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
             RobotsController controller = new RobotsController(configuration);
-            controller.ControllerContext = new ControllerContext();
-            Mock<HttpResponse> responseMock = new Mock<HttpResponse>();
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.SetupGet(a => a.Response).Returns(responseMock.Object);
-            controller.ControllerContext.HttpContext = httpContextMock.Object;
 
             IActionResult actualResult = controller.Robots();
-            Assert.IsType<ViewResult>(actualResult);
-            string envResult = ((ViewResult)actualResult).ViewData[key].ToString();
-            Assert.True(envResult == expectedEnvironment);
-        }
-
-        [Fact]
-        public void ShouldGetRobotsTxtDefaultConfigNonProd()
-        {
-            string key = "Environment";
-            string expectedEnvironment = "Development";
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
-
-            var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
-                .Build();
-
-            RobotsController controller = new RobotsController(configuration);
-            controller.ControllerContext = new ControllerContext();
-            Mock<HttpResponse> responseMock = new Mock<HttpResponse>();
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.SetupGet(a => a.Response).Returns(responseMock.Object);
-            controller.ControllerContext.HttpContext = httpContextMock.Object;
-
-            IActionResult actualResult = controller.Robots();
-            Assert.IsType<ViewResult>(actualResult);
-            string envResult = ((ViewResult)actualResult).ViewData[key].ToString();
-            Assert.True(envResult == expectedEnvironment);
+            Assert.IsType<ContentResult>(actualResult);
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
     }
 }
