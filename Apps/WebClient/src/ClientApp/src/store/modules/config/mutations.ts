@@ -19,5 +19,5 @@ export const mutations: MutationTree<ConfigState> = {
     state.config = new ExternalConfiguration();
     state.statusMessage = errorMessage;
     state.stateType = StateType.ERROR;
-  }
+  },
 };

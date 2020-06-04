@@ -20,7 +20,7 @@ export default class LoginCallbackComponent extends Vue {
   @Getter("user", { namespace: "user" }) user!: User;
   created() {
     this.oidcSignInCallback()
-      .then(redirectPath => {
+      .then((redirectPath) => {
         console.log(this.user);
         this.checkRegistration({ hdid: this.user.hdid }).then(() => {
           if (this.userIsRegistered) {
@@ -37,7 +37,7 @@ export default class LoginCallbackComponent extends Vue {
           console.log("here");
         });
       })
-      .catch(err => {
+      .catch((err) => {
         // Login failed redirect it back to the login page.
         console.error("LoginCallback Error:", err);
         this.clearStorage();

@@ -17,5 +17,5 @@ export const mutations: MutationTree<MedicationState> = {
     state.error = true;
     state.statusMessage = errorMessage;
     state.stateType = StateType.ERROR;
-  }
+  },
 };

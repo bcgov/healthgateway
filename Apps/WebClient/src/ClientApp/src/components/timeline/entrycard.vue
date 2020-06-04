@@ -60,8 +60,8 @@ import NoteTimelineComponent from "./note.vue";
     MedicationComponent: MedicationTimelineComponent,
     ImmunizationComponent: ImmunizationTimelineComponent,
     LaboratoryComponent: LaboratoryTimelineComponent,
-    NoteComponent: NoteTimelineComponent
-  }
+    NoteComponent: NoteTimelineComponent,
+  },
 })
 export default class EntrycardTimelineComponent extends Vue {
   @Prop() datekey!: string;

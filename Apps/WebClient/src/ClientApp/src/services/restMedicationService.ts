@@ -30,7 +30,7 @@ export class RestMedicationService implements IMedicationService {
     hdid: string,
     protectiveWord?: string
   ): Promise<RequestResult<MedicationStatement[]>> {
-    let headers: Dictionary<string> = {};
+    const headers: Dictionary<string> = {};
     if (protectiveWord) {
       headers["protectiveWord"] = protectiveWord;
     }
@@ -40,10 +40,10 @@ export class RestMedicationService implements IMedicationService {
           `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
           headers
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           resolve(requestResult);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -54,7 +54,7 @@ export class RestMedicationService implements IMedicationService {
     hdid: string,
     protectiveWord?: string
   ): Promise<RequestResult<MedicationStatementHistory[]>> {
-    let headers: Dictionary<string> = {};
+    const headers: Dictionary<string> = {};
     if (protectiveWord) {
       headers["protectiveWord"] = protectiveWord;
     }
@@ -64,10 +64,10 @@ export class RestMedicationService implements IMedicationService {
           `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
           headers
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           resolve(requestResult);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -82,10 +82,10 @@ export class RestMedicationService implements IMedicationService {
         .getWithCors<RequestResult<MedicationResult>>(
           `${this.baseUri}${this.MEDICATION_BASE_URI}/${drugIdentifier}`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -98,10 +98,10 @@ export class RestMedicationService implements IMedicationService {
         .getWithCors<RequestResult<Pharmacy>>(
           `${this.baseUri}${this.PHARMACY_BASE_URI}/${pharmacyId}`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });

@@ -10,7 +10,7 @@ export const state: AuthState = {
   authentication: new AuthenticationData(),
   error: undefined,
   isAuthenticated: false,
-  stateType: StateType.NONE
+  stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
@@ -20,5 +20,5 @@ export const auth: Module<AuthState, RootState> = {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

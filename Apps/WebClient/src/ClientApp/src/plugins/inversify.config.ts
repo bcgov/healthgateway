@@ -15,7 +15,7 @@ import {
   IUserNoteService,
   ICommunicationService,
   IUserCommentService,
-  ILaboratoryService
+  ILaboratoryService,
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
@@ -31,7 +31,7 @@ import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
 
-let container = new Container();
+const container = new Container();
 container
   .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
   .to(RestConfigService)

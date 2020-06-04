@@ -23,10 +23,10 @@ export class RestUserProfileService implements IUserProfileService {
         .getWithCors<RequestResult<UserProfile>>(
           `${this.USER_PROFILE_BASE_URI}/${hdid}`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -40,10 +40,10 @@ export class RestUserProfileService implements IUserProfileService {
           `${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
           createRequest
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -56,10 +56,10 @@ export class RestUserProfileService implements IUserProfileService {
         .delete<RequestResult<UserProfile>>(
           `${this.USER_PROFILE_BASE_URI}/${hdid}`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -72,10 +72,10 @@ export class RestUserProfileService implements IUserProfileService {
         .get<RequestResult<UserProfile>>(
           `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -88,10 +88,10 @@ export class RestUserProfileService implements IUserProfileService {
         .get<RequestResult<TermsOfService>>(
           `${this.USER_PROFILE_BASE_URI}/termsofservice`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(this.FETCH_ERROR + err.toString());
           reject(err);
         });
@@ -99,7 +99,7 @@ export class RestUserProfileService implements IUserProfileService {
   }
 
   public validateEmail(hdid: string, inviteKey: string): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.http
         .get(
           `${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
@@ -107,7 +107,7 @@ export class RestUserProfileService implements IUserProfileService {
         .then(() => {
           return resolve(true);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return resolve(false);
         });
@@ -115,15 +115,15 @@ export class RestUserProfileService implements IUserProfileService {
   }
 
   public getLatestInvite(hdid: string): Promise<UserEmailInvite> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.http
         .get<UserEmailInvite>(
           `${this.USER_PROFILE_BASE_URI}/${hdid}/email/invite/`
         )
-        .then(userEmailInvite => {
+        .then((userEmailInvite) => {
           return resolve(userEmailInvite);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return resolve(err);
         });
@@ -131,8 +131,8 @@ export class RestUserProfileService implements IUserProfileService {
   }
 
   public updateEmail(hdid: string, email: string): Promise<boolean> {
-    return new Promise(resolve => {
-      let headers: Dictionary<string> = {};
+    return new Promise((resolve) => {
+      const headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";
 
       this.http
@@ -144,7 +144,7 @@ export class RestUserProfileService implements IUserProfileService {
         .then(() => {
           return resolve();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return resolve(err);
         });
@@ -155,8 +155,8 @@ export class RestUserProfileService implements IUserProfileService {
     hdid: string,
     phoneNumber: string
   ): Promise<boolean> {
-    return new Promise(resolve => {
-      let headers: Dictionary<string> = {};
+    return new Promise((resolve) => {
+      const headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";
 
       this.http
@@ -168,7 +168,7 @@ export class RestUserProfileService implements IUserProfileService {
         .then(() => {
           return resolve();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return resolve(err);
         });

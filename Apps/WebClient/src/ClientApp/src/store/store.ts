@@ -13,7 +13,7 @@ Vue.use(Vuex);
 
 const storeOptions: StoreOptions<RootState> = {
   state: {
-    version: "1.0.0"
+    version: "1.0.0",
   },
   modules: {
     auth,
@@ -22,8 +22,8 @@ const storeOptions: StoreOptions<RootState> = {
     medication,
     pharmacy,
     laboratory,
-    sidebar
-  }
+    sidebar,
+  },
 };
 
 export default new Vuex.Store<RootState>(storeOptions);

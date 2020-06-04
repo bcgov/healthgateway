@@ -250,7 +250,7 @@ import {
   IMedicationService,
   IImmunizationService,
   ILaboratoryService,
-  IUserNoteService
+  IUserNoteService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -275,7 +275,7 @@ import NoteTimelineComponent from "@/components/timeline/note.vue";
 import {
   LaboratoryOrder,
   LaboratoryResult,
-  LaboratoryReport
+  LaboratoryReport,
 } from "@/models/laboratory";
 
 const namespace: string = "user";
@@ -295,13 +295,13 @@ Component.registerHooks(["beforeRouteLeave"]);
     CovidModalComponent,
     EntryCardComponent: EntryCardTimelineComponent,
     HealthlinkComponent: HealthlinkSidebarComponent,
-    NoteTimelineComponent
-  }
+    NoteTimelineComponent,
+  },
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
   @Action("getOrders", { namespace: "laboratory" }) getLaboratoryOrders!: ({
-    hdid: string
+    hdid: string,
   }: any) => Promise<RequestResult<LaboratoryOrder[]>>;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
 
@@ -343,13 +343,13 @@ export default class TimelineComponent extends Vue {
     this.fetchNotes();
     window.addEventListener("beforeunload", this.onBrowserClose);
     let self = this;
-    EventBus.$on("timelineCreateNote", function() {
+    EventBus.$on("timelineCreateNote", function () {
       self.isAddingNote = true;
     });
-    EventBus.$on("timelinePrintView", function() {
+    EventBus.$on("timelinePrintView", function () {
       self.printRecords();
     });
-    EventBus.$on("idleLogoutWarning", function(isVisible: boolean) {
+    EventBus.$on("idleLogoutWarning", function (isVisible: boolean) {
       self.idleLogoutWarning = isVisible;
     });
   }
@@ -485,7 +485,7 @@ export default class TimelineComponent extends Vue {
     }
 
     promise
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           this.protectiveWordAttempts = 0;
           // Add the medication entries to the timeline list
@@ -507,7 +507,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -534,7 +534,7 @@ export default class TimelineComponent extends Vue {
     this.isImmunizationLoading = true;
     immunizationService
       .getPatientImmunizations(this.user.hdid)
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -550,7 +550,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -565,7 +565,7 @@ export default class TimelineComponent extends Vue {
     );
     this.isLaboratoryLoading = true;
     this.getLaboratoryOrders({ hdid: this.user.hdid })
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the laboratory entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -585,7 +585,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -601,7 +601,7 @@ export default class TimelineComponent extends Vue {
     this.isNoteLoading = true;
     noteService
       .getNotes()
-      .then(results => {
+      .then((results) => {
         if (results.resultStatus == ResultType.Success) {
           // Add the immunization entries to the timeline list
           for (let result of results.resourcePayload) {
@@ -616,7 +616,7 @@ export default class TimelineComponent extends Vue {
           this.hasErrors = true;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.hasErrors = true;
         console.log(err);
       })
@@ -635,7 +635,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardRemoved(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
   }
 
@@ -648,7 +648,7 @@ export default class TimelineComponent extends Vue {
   }
 
   private onCardUpdated(entry: TimelineEntry) {
-    const index = this.timelineEntries.findIndex(e => e.id == entry.id);
+    const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
     this.timelineEntries.splice(index, 1);
     this.timelineEntries.push(entry);
     this.cardEditedId = undefined;
@@ -672,7 +672,7 @@ export default class TimelineComponent extends Vue {
   @Watch("filterText")
   @Watch("filterTypes")
   private applyTimelineFilter() {
-    this.filteredTimelineEntries = this.timelineEntries.filter(entry =>
+    this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
       entry.filterApplies(this.filterText, this.filterTypes)
     );
   }
@@ -712,13 +712,13 @@ export default class TimelineComponent extends Vue {
       groups[date].push(entry);
       return groups;
     }, {});
-    let groupArrays = Object.keys(groups).map(dateKey => {
+    let groupArrays = Object.keys(groups).map((dateKey) => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
         entries: groups[dateKey].sort((a, b) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-        )
+        ),
       };
     });
     return this.sortGroup(groupArrays);

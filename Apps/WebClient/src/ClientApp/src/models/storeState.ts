@@ -9,7 +9,7 @@ export enum StateType {
   NONE,
   INITIALIZED,
   REQUESTED,
-  ERROR
+  ERROR,
 }
 
 export interface RootState {

@@ -18,7 +18,7 @@ nav {
     <!-- Hamburger toggle -->
     <b-navbar-toggle
       v-if="displayMenu"
-      class="mr-1 "
+      class="mr-1"
       target="NONE"
       @click="toggleSidebar"
     ></b-navbar-toggle>
@@ -100,12 +100,12 @@ export default class HeaderComponent extends Vue {
   @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
   @Getter("oidcIsAuthenticated", {
-    namespace: auth
+    namespace: auth,
   })
   oidcIsAuthenticated!: boolean;
 
   @Getter("userIsRegistered", {
-    namespace: user
+    namespace: user,
   })
   userIsRegistered!: boolean;
 

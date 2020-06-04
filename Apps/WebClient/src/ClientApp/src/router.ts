@@ -44,82 +44,82 @@ const routes = [
   {
     path: "/",
     component: LandingComponent,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false },
   },
   {
     path: REGISTRATION_INFO_PATH,
     component: RegistrationInfoComponent,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
-      email: route.query.email
+      email: route.query.email,
     }),
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false },
   },
   {
     path: REGISTRATION_PATH,
     component: RegistrationComponent,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
-      inviteEmail: route.query.email
+      inviteEmail: route.query.email,
     }),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/validateEmail/:inviteKey",
     component: ValidateEmailComponent,
     props: true,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/profile",
     component: ProfileComponent,
-    meta: { requiresRegistration: true, roles: ["user"] }
+    meta: { requiresRegistration: true, roles: ["user"] },
   },
   {
     path: "/timeline",
     component: TimelineComponent,
-    meta: { requiresRegistration: true, roles: ["user"] }
+    meta: { requiresRegistration: true, roles: ["user"] },
   },
   {
     path: "/termsOfService",
     component: TermsOfServiceComponent,
-    meta: { requiresAuth: true, roles: ["user"] }
+    meta: { requiresAuth: true, roles: ["user"] },
   },
   {
     path: "/login",
     component: LoginComponent,
     props: (route: Route) => ({
-      isRetry: route.query.isRetry
+      isRetry: route.query.isRetry,
     }),
-    meta: { requiresAuth: false, roles: ["user"] }
+    meta: { requiresAuth: false, roles: ["user"] },
   },
   {
     path: "/loginCallback",
     component: LoginCallback,
-    meta: { requiresAuth: false, roles: ["user"], routeIsOidcCallback: true }
+    meta: { requiresAuth: false, roles: ["user"], routeIsOidcCallback: true },
   },
   {
     path: "/logout",
     component: LogoutComponent,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false },
   },
   {
     path: "/unauthorized",
     component: UnauthorizedComponent,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false },
   }, // Unauthorized
-  { path: "/*", component: NotFoundComponent } // Not found; Will catch all other paths not covered previously
+  { path: "/*", component: NotFoundComponent }, // Not found; Will catch all other paths not covered previously
 ];
 
 const router = new VueRouter({
   mode: "history",
-  routes
+  routes,
 });
 
 router.beforeEach(async (to, from, next) => {
   console.log(from.fullPath, to.fullPath);
   if (to.meta.requiresAuth || to.meta.requiresRegistration) {
-    store.dispatch("auth/oidcCheckAccess", to).then(isAuthorized => {
+    store.dispatch("auth/oidcCheckAccess", to).then((isAuthorized) => {
       if (!isAuthorized) {
         next({ path: "/login", query: { redirect: to.fullPath } });
       } else {
@@ -127,12 +127,12 @@ router.beforeEach(async (to, from, next) => {
       }
     });
   } else {
-    let userIsAuthenticated: boolean =
+    const userIsAuthenticated: boolean =
       store.getters["auth/oidcIsAuthenticated"];
-    let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+    const userIsRegistered: boolean = store.getters["user/userIsRegistered"];
 
     // If the user is authenticated but not registered, the registration must be completed
-    let isRegistrationPath =
+    const isRegistrationPath =
       to.path.startsWith(REGISTRATION_PATH) ||
       to.path.startsWith(REGISTRATION_INFO_PATH);
     if (
@@ -154,8 +154,8 @@ router.afterEach((to, from) => {
 });
 
 function handleUserIsAuthorized(to: Route, from: Route, next: any) {
-  let userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-  let userIsActive: boolean = store.getters["user/userIsActive"];
+  const userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+  const userIsActive: boolean = store.getters["user/userIsActive"];
 
   // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
   if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {

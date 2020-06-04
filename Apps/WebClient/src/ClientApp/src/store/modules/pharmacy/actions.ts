@@ -18,7 +18,7 @@ const medicationService: IMedicationService = container.get<IMedicationService>(
 export const actions: ActionTree<PharmacyState, RootState> = {
   getPharmacy({ commit, getters }, { pharmacyId }): Promise<Pharmacy> {
     return new Promise((resolve, reject) => {
-      var pharmacy = getters.getStoredPharmacy(pharmacyId);
+      const pharmacy = getters.getStoredPharmacy(pharmacyId);
       if (pharmacy) {
         console.log("Pharmacy found stored, not quering!");
         //console.log("Pharmacy Data: ", requestResult);
@@ -27,16 +27,16 @@ export const actions: ActionTree<PharmacyState, RootState> = {
         console.log("Retrieving Pharmacy info");
         medicationService
           .getPharmacyInfo(pharmacyId)
-          .then(pharmacy => {
+          .then((pharmacy) => {
             //console.log("Pharmacy Data: ", requestResult);
             commit("addPharmacyData", pharmacy);
             resolve(pharmacy);
           })
-          .catch(error => {
+          .catch((error) => {
             handleError(commit, error);
             reject(error);
           });
       }
     });
-  }
+  },
 };

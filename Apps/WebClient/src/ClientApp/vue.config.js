@@ -1,15 +1,17 @@
 const path = require("path");
 const isDevBuild = true;
 const cssLoader = "css-loader";
+const styleLoader = "style-loader";
 const bundleOutputDir = "/dist";
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
     filenameHashing: false,
     css: {
         extract: false,
-      },
+    },
     configureWebpack: {
         optimization: {
-            splitChunks: false
+            splitChunks: false,
         },
         stats: { modules: false },
         context: __dirname,
@@ -24,14 +26,8 @@ module.exports = {
         module: {
             noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
         },
-        devServer: {
-            host: 'localhost',
-            port: 7777,
-          },
     },
-    chainWebpack: config => {
-        config.plugins
-          .delete('split-manifest')
-          .delete('inline-manifest')
-      }
+    chainWebpack: (config) => {
+        config.plugins.delete("split-manifest").delete("inline-manifest");
+    },
 };

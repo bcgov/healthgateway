@@ -23,7 +23,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
       return false;
     }
 
-    var text = (this.title! || "") + (this.text! || "");
+    let text = (this.title! || "") + (this.text! || "");
     text = text.toUpperCase();
     return text.includes(filterText.toUpperCase());
   }

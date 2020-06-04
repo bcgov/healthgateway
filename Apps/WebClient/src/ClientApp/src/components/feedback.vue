@@ -35,7 +35,7 @@
       class="justify-content-center contact-us py-2"
       :class="{
         'bg-danger': hasSubmitted && !isSuccess,
-        'bg-success': hasSubmitted && isSuccess
+        'bg-success': hasSubmitted && isSuccess,
       }"
       :aria-expanded="visible ? 'true' : 'false'"
       aria-controls="collapse"
@@ -192,15 +192,15 @@ import User from "@/models/user";
 import {
   icon,
   library,
-  IconDefinition
+  IconDefinition,
 } from "@fortawesome/fontawesome-svg-core";
 import {
   faComments,
-  faExclamationCircle
+  faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faTimesCircle as farTimesCircle,
-  faCheckCircle
+  faCheckCircle,
 } from "@fortawesome/free-regular-svg-icons";
 library.add(faComments, faExclamationCircle);
 
@@ -278,9 +278,9 @@ export default class FeedbackComponent extends Vue {
 
     this.userFeedbackService
       .submitFeedback({
-        comment: this.comment
+        comment: this.comment,
       })
-      .then(result => {
+      .then((result) => {
         this.isSuccess = result;
       })
       .catch(() => {

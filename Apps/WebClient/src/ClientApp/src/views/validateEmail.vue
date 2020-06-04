@@ -50,7 +50,7 @@ export default class ValidateEmailComponent extends Vue {
   @Prop() inviteKey!: string;
   @Getter("user", { namespace: "user" }) user!: User;
   @Action("checkRegistration", { namespace: "user" }) checkRegistration!: ({
-    hdid: String
+    hdid: String,
   }: any) => Promise<boolean>;
   private isLoading: boolean = false;
   private isSuccess: boolean | null = null;
@@ -63,7 +63,7 @@ export default class ValidateEmailComponent extends Vue {
 
     userProfileService
       .validateEmail(this.user.hdid, this.inviteKey)
-      .then(isValid => {
+      .then((isValid) => {
         this.isSuccess = isValid;
         if (isValid) {
           this.checkRegistration({ hdid: this.user.hdid });

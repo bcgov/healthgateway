@@ -18,10 +18,10 @@ export class RestBetaRequestService implements IBetaRequestService {
     return new Promise((resolve, reject) => {
       this.http
         .get<BetaRequest>(`${this.BETA_REQUEST_BASE_URI}/${hdid}`)
-        .then(betaRequest => {
+        .then((betaRequest) => {
           return resolve(betaRequest);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -30,7 +30,7 @@ export class RestBetaRequestService implements IBetaRequestService {
 
   public putRequest(request: BetaRequest): Promise<BetaRequest> {
     return new Promise((resolve, reject) => {
-      let headers: Dictionary<string> = {};
+      const headers: Dictionary<string> = {};
       headers["Content-Type"] = "application/json; charset=utf-8";
       this.http
         .put<RequestResult<BetaRequest>>(
@@ -38,10 +38,10 @@ export class RestBetaRequestService implements IBetaRequestService {
           JSON.stringify(request),
           headers
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           this.handleResult(requestResult, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });

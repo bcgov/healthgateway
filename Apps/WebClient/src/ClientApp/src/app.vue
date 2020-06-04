@@ -93,7 +93,7 @@ import {
   PaginationNavPlugin,
   TooltipPlugin,
   FormGroupPlugin,
-  FormRadioPlugin
+  FormRadioPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -139,7 +139,7 @@ import {
   faChartBar,
   faCommentAlt,
   faLock,
-  faExclamationTriangle
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,
@@ -172,8 +172,8 @@ import SidebarComponent from "@/components/navmenu/sidebar.vue";
     NavHeader: HeaderComponent,
     NavFooter: FooterComponent,
     NavSidebar: SidebarComponent,
-    IdleComponent
-  }
+    IdleComponent,
+  },
 })
 export default class AppComponent extends Vue {
   @Ref("idleModal") readonly idleModal?: IdleComponent;

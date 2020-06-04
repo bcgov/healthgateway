@@ -52,5 +52,9 @@
       "path": "Laboratory"
     }
   ],
-  "settings": {}
+  "settings": {
+    "eslint.workingDirectories": [
+      {"mode": "auto"}
+    ]
+  }
 }

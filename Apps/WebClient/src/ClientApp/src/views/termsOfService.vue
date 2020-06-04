@@ -58,8 +58,8 @@ import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 @Component({
   components: {
     LoadingComponent,
-    HtmlTextAreaComponent
-  }
+    HtmlTextAreaComponent,
+  },
 })
 export default class TermsOfServiceComponent extends Vue {
   private userProfileService: IUserProfileService;
@@ -80,11 +80,11 @@ export default class TermsOfServiceComponent extends Vue {
     this.isLoading = true;
     this.userProfileService
       .getTermsOfService()
-      .then(result => {
+      .then((result) => {
         console.log(result);
         this.termsOfService = result.content;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.handleError("Please refresh your browser.");
       })

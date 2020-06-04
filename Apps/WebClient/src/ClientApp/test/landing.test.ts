@@ -8,8 +8,8 @@ describe("Landing view", () => {
   const wrapper = shallowMount(LandingComponent, {
     localVue,
     stubs: {
-      "font-awesome-icon": true
-    }
+      "font-awesome-icon": true,
+    },
   });
 
   test("is a Vue instance", () => {

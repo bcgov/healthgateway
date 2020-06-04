@@ -31,7 +31,7 @@ export class RestImmunizationService implements IImmunizationService {
           resourcePayload: [],
           resultMessage: "",
           resultStatus: ResultType.Success,
-          totalResultCount: 0
+          totalResultCount: 0,
         });
         return;
       }
@@ -40,10 +40,10 @@ export class RestImmunizationService implements IImmunizationService {
         .getWithCors<RequestResult<ImmunizationData[]>>(
           `${this.baseUri}${this.IMMS_BASE_URI}/${hdid}`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           resolve(requestResult);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Fetch error: " + err.toString());
           reject(err);
         });

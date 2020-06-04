@@ -10,7 +10,7 @@ export const mutations: MutationTree<AuthState> = {
     Vue.set(state.authentication, "scopes", user.scopes);
     Vue.set(state.authentication, "idToken", user.id_token);
 
-    var isAuthenticated =
+    const isAuthenticated =
       user.id_token === undefined ? false : user.id_token.length > 0;
 
     Vue.set(state, "isAuthenticated", isAuthenticated);
@@ -31,5 +31,5 @@ export const mutations: MutationTree<AuthState> = {
   setOidcError(state: AuthState, error: any) {
     console.log("setOidcError");
     state.error = error && error.message ? error.message : error;
-  }
+  },
 };

@@ -179,7 +179,7 @@ import { State, Action, Getter } from "vuex-class";
 import {
   faEllipsisV,
   faEdit,
-  IconDefinition
+  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserNoteService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -241,9 +241,9 @@ export default class NoteTimelineComponent extends Vue {
         title: this.title,
         journalDateTime: this.date,
         version: this.entry.version,
-        hdid: this.user.hdid
+        hdid: this.user.hdid,
       })
-      .then(result => {
+      .then((result) => {
         this.isEditMode = false;
         this.onNoteUpdated(result);
       })
@@ -262,9 +262,9 @@ export default class NoteTimelineComponent extends Vue {
         text: this.text,
         title: this.title,
         journalDateTime: this.date,
-        hdid: this.user.hdid
+        hdid: this.user.hdid,
       })
-      .then(result => {
+      .then((result) => {
         this.onNoteAdded(result);
       })
       .catch(() => {
@@ -278,9 +278,7 @@ export default class NoteTimelineComponent extends Vue {
   private editNote(): void {
     this.text = this.entry.text;
     this.title = this.entry.title;
-    this.date = moment(this.entry.date)
-      .toISOString()
-      .slice(0, 10);
+    this.date = moment(this.entry.date).toISOString().slice(0, 10);
     this.isEditMode = true;
     this.onEditStarted(this.entry);
   }

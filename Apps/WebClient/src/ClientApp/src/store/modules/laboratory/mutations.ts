@@ -3,7 +3,7 @@ import { LaboratoryState, StateType } from "@/models/storeState";
 import {
   LaboratoryResult,
   LaboratoryReport,
-  LaboratoryOrder
+  LaboratoryOrder,
 } from "@/models/laboratory";
 
 export const mutations: MutationTree<LaboratoryState> = {
@@ -21,5 +21,5 @@ export const mutations: MutationTree<LaboratoryState> = {
     state.error = true;
     state.statusMessage = errorMessage;
     state.stateType = StateType.ERROR;
-  }
+  },
 };

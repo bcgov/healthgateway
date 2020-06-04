@@ -13,7 +13,7 @@ export default class HttpDelegate implements IHttpDelegate {
   public setAuthorizationHeader(accessToken: string): void {
     console.log("ACCESS TOKEN SET");
     Axios.defaults.headers.common = {
-      Authorization: `Bearer ${accessToken}`
+      Authorization: `Bearer ${accessToken}`,
     };
   }
 
@@ -30,14 +30,14 @@ export default class HttpDelegate implements IHttpDelegate {
     headers: Dictionary<string> | undefined = undefined
   ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      let config: AxiosRequestConfig = {
-        headers
+      const config: AxiosRequestConfig = {
+        headers,
       };
       Axios.get(url, config)
-        .then(response => {
+        .then((response) => {
           return resolve(response.data);
         })
-        .catch(err => {
+        .catch((err) => {
           const errorMessage: string = `GET error: ${err.toString()}`;
           console.log(errorMessage);
           return reject(errorMessage);
@@ -50,14 +50,14 @@ export default class HttpDelegate implements IHttpDelegate {
     headers: Dictionary<string> | undefined = undefined
   ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      let config: AxiosRequestConfig = {
-        headers
+      const config: AxiosRequestConfig = {
+        headers,
       };
       Axios.post(url, payload, config)
-        .then(response => {
+        .then((response) => {
           return resolve(response.data);
         })
-        .catch(err => {
+        .catch((err) => {
           const errorMessage: string = `POST error: ${err.toString()}`;
           console.log(errorMessage);
           return reject(errorMessage);
@@ -71,15 +71,15 @@ export default class HttpDelegate implements IHttpDelegate {
     headers: Dictionary<string> | undefined = undefined
   ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      let config: AxiosRequestConfig = {
-        headers
+      const config: AxiosRequestConfig = {
+        headers,
       };
       console.log("Config:", config);
       Axios.put(url, payload, config)
-        .then(response => {
+        .then((response) => {
           return resolve(response.data);
         })
-        .catch(err => {
+        .catch((err) => {
           const errorMessage: string = `PUT error: ${err.toString()}`;
           console.log(errorMessage);
           return reject(errorMessage);
@@ -93,15 +93,15 @@ export default class HttpDelegate implements IHttpDelegate {
     headers: Dictionary<string> | undefined = undefined
   ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      let config: AxiosRequestConfig = {
-        headers
+      const config: AxiosRequestConfig = {
+        headers,
       };
       console.log("Config:", config);
       Axios.patch(url, payload, config)
-        .then(response => {
+        .then((response) => {
           return resolve(response.data);
         })
-        .catch(err => {
+        .catch((err) => {
           const errorMessage: string = `PATCH error: ${err.toString()}`;
           console.log(errorMessage);
           return reject(errorMessage);
@@ -114,16 +114,16 @@ export default class HttpDelegate implements IHttpDelegate {
     headers: Dictionary<string> | undefined = undefined
   ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      let config: AxiosRequestConfig = {
+      const config: AxiosRequestConfig = {
         headers,
-        data: payload
+        data: payload,
       };
       console.log("Config:", config);
       Axios.delete(url, config)
-        .then(response => {
+        .then((response) => {
           return resolve(response.data);
         })
-        .catch(err => {
+        .catch((err) => {
           const errorMessage: string = `DELETE error: ${err.toString()}`;
           console.log(errorMessage);
           return reject(errorMessage);

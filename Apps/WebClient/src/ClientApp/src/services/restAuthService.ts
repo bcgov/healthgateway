@@ -20,7 +20,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     expires: null,
     path: "/",
     secure: false,
-    sameSite: "Strict"
+    sameSite: "Strict",
   });
 
   public initialize(
@@ -38,14 +38,14 @@ export class RestAuthenticationService implements IAuthenticationService {
       post_logout_redirect_uri: config.callbacks["Logout"],
       filterProtocolClaims: true,
       loadUserInfo: false,
-      automaticSilentRenew: true
+      automaticSilentRenew: true,
     };
     console.log("oidc configuration: ", oidcConfig);
     this.http = httpDelegate;
     this.authorityUri = config.authority;
     this.oidcUserManager = new UserManager(oidcConfig);
 
-    this.oidcUserManager.events.addAccessTokenExpiring(function() {
+    this.oidcUserManager.events.addAccessTokenExpiring(function () {
       console.log("Token expiring...");
     });
   }
@@ -55,13 +55,13 @@ export class RestAuthenticationService implements IAuthenticationService {
   }
 
   public getUser(): Promise<OidcUser | null> {
-    return new Promise<OidcUser | null>(resolve => {
+    return new Promise<OidcUser | null>((resolve) => {
       this.oidcUserManager
         .getUser()
-        .then(user => {
+        .then((user) => {
           resolve(user);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           resolve(null);
         });
@@ -84,8 +84,8 @@ export class RestAuthenticationService implements IAuthenticationService {
     sessionStorage.setItem("vuex_oidc_active_route", redirectPath);
     return this.oidcUserManager.signinRedirect({
       extraQueryParams: {
-        kc_idp_hint: idpHint
-      }
+        kc_idp_hint: idpHint,
+      },
     });
   }
 
@@ -106,15 +106,15 @@ export class RestAuthenticationService implements IAuthenticationService {
   }
 
   public checkOidcUserSize(user: OidcUser): number {
-    var key = `user:${this.oidcUserManager.settings.authority}:${this.oidcUserManager.settings.client_id}`;
-    var completString = key + "=" + user.toStorageString();
+    const key = `user:${this.oidcUserManager.settings.authority}:${this.oidcUserManager.settings.client_id}`;
+    const completString = key + "=" + user.toStorageString();
     return this.stringbyteCount(completString);
   }
 
   //TODO: Do we still need this?
   public expireSiteMinderCookie() {
     // This expires the siteminder cookie preventing the app from login in using the cache.
-    var d = new Date();
+    const d = new Date();
     document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
   }
 

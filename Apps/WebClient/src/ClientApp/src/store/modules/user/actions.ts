@@ -25,12 +25,12 @@ export const actions: ActionTree<UserState, RootState> = {
     return new Promise((resolve, reject) => {
       patientService
         .getPatientData(hdid)
-        .then(patientData => {
+        .then((patientData) => {
           console.log("Patient Data: ", patientData);
           commit("setPatientData", patientData);
           resolve(patientData);
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         });
@@ -41,9 +41,9 @@ export const actions: ActionTree<UserState, RootState> = {
     return new Promise((resolve, reject) => {
       userProfileService
         .getProfile(hdid)
-        .then(userProfile => {
+        .then((userProfile) => {
           console.log("User Profile: ", userProfile);
-          var isRegistered: boolean;
+          let isRegistered: boolean;
           if (userProfile) {
             isRegistered = userProfile.acceptedTermsOfService;
           } else {
@@ -56,11 +56,11 @@ export const actions: ActionTree<UserState, RootState> = {
           if (isRegistered) {
             userProfileService
               .getLatestInvite(hdid)
-              .then(userEmailInvite => {
+              .then((userEmailInvite) => {
                 commit("setValidatedEmail", userEmailInvite);
                 resolve(isRegistered);
               })
-              .catch(error => {
+              .catch((error) => {
                 handleError(commit, error);
                 reject(error);
               });
@@ -69,7 +69,7 @@ export const actions: ActionTree<UserState, RootState> = {
             resolve(isRegistered);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         });
@@ -79,11 +79,11 @@ export const actions: ActionTree<UserState, RootState> = {
     return new Promise((resolve, reject) => {
       userProfileService
         .getLatestInvite(hdid)
-        .then(userEmailInvite => {
+        .then((userEmailInvite) => {
           commit("setValidatedEmail", userEmailInvite);
           resolve(userEmailInvite);
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         });
@@ -96,7 +96,7 @@ export const actions: ActionTree<UserState, RootState> = {
         .then(() => {
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         });
@@ -106,11 +106,11 @@ export const actions: ActionTree<UserState, RootState> = {
     return new Promise((resolve, reject) => {
       userProfileService
         .closeAccount(hdid)
-        .then(userProfile => {
+        .then((userProfile) => {
           commit("setProfileUserData", userProfile);
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         });
@@ -120,15 +120,15 @@ export const actions: ActionTree<UserState, RootState> = {
     return new Promise((resolve, reject) => {
       userProfileService
         .recoverAccount(hdid)
-        .then(userProfile => {
+        .then((userProfile) => {
           console.log("User Profile: ", userProfile);
           commit("setProfileUserData", userProfile);
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         });
     });
-  }
+  },
 };

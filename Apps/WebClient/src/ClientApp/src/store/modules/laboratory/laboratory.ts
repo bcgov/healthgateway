@@ -8,7 +8,7 @@ export const state: LaboratoryState = {
   statusMessage: "",
   laboratoryOrders: new Array(),
   error: false,
-  stateType: StateType.NONE
+  stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
@@ -18,5 +18,5 @@ export const laboratory: Module<LaboratoryState, RootState> = {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

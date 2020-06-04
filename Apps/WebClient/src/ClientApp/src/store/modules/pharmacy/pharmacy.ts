@@ -8,7 +8,7 @@ export const state: PharmacyState = {
   statusMessage: "",
   pharmacies: new Array(),
   error: false,
-  stateType: StateType.NONE
+  stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
@@ -18,5 +18,5 @@ export const pharmacy: Module<PharmacyState, RootState> = {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

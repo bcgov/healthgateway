@@ -54,7 +54,7 @@
               <b-row
                 v-if="
                   identityProviders.indexOf(provider) <
-                    identityProviders.length - 1
+                  identityProviders.length - 1
                 "
                 ><b-col>or</b-col>
               </b-row>
@@ -81,15 +81,15 @@ import VueRouter, { Route } from "vue-router";
 import LoadingComponent from "@/components/loading.vue";
 import {
   IdentityProviderConfiguration,
-  ExternalConfiguration
+  ExternalConfiguration,
 } from "@/models/configData";
 
 const namespace: string = "auth";
 
 @Component({
   components: {
-    LoadingComponent
-  }
+    LoadingComponent,
+  },
 })
 export default class LoginComponent extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc: any;
@@ -135,8 +135,8 @@ export default class LoginComponent extends Vue {
     // if the login action returns it means that the user already had credentials.
     this.authenticateOidc({
       idpHint: hint,
-      redirectPath: this.redirectPath
-    }).then(result => {
+      redirectPath: this.redirectPath,
+    }).then((result) => {
       if (this.oidcIsAuthenticated) {
         this.routeHandler.push({ path: this.redirectPath });
       }

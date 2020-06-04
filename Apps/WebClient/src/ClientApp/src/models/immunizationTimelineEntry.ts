@@ -15,7 +15,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
       return false;
     }
 
-    var text =
+    let text =
       (this.immunization.name! || "") +
       (this.immunization.agents.toString() || "");
     text = text.toUpperCase();
@@ -34,7 +34,7 @@ class ImmunizationViewModel {
     this.status = model.status;
     this.occurrenceDateTime = model.occurrenceDateTime;
     this.agents = model.immunizationAgents
-      .map(function(agent) {
+      .map(function (agent) {
         return agent.name;
       })
       .join(",");

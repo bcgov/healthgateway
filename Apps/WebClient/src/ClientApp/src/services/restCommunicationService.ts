@@ -16,10 +16,10 @@ export class RestCommunicationService implements ICommunicationService {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<RequestResult<Communication>>(`${this.BASE_URI}/`)
-        .then(communication => {
+        .then((communication) => {
           return resolve(communication);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });

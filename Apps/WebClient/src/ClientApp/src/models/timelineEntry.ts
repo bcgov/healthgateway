@@ -3,7 +3,7 @@ export enum EntryType {
   Immunization,
   Laboratory,
   Note,
-  NONE
+  NONE,
 }
 
 // The base timeline entry model

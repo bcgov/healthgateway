@@ -9,6 +9,6 @@ export const getters: GetterTree<MedicationState, RootState> = {
     din = din.padStart(8, "0");
     console.log(din);
 
-    return state.medications.find(item => item.din === din);
-  }
+    return state.medications.find((item) => item.din === din);
+  },
 };

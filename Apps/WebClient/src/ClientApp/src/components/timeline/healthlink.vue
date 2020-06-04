@@ -55,8 +55,7 @@ export default class HealthlinkSidebarComponent extends Vue {
   private cardPool: Healthcard[] = [
     {
       title: "COVID-19",
-      description:
-        "View more information about COVID-19.",
+      description: "View more information about COVID-19.",
       imageSrc: CovidImage,
       urlLink: "http://www.bccdc.ca/health-info/diseases-conditions/covid-19",
     },
@@ -83,11 +82,11 @@ export default class HealthlinkSidebarComponent extends Vue {
 
   private rotate(): void {
     if (this.cardIndex !== this.cardPool.length - 1) {
-        this.cardIndex = this.cardIndex + 1;
-      } else {
-        this.cardIndex = 0;
-      }
-      this.currentCard = this.cardPool[this.cardIndex]
+      this.cardIndex = this.cardIndex + 1;
+    } else {
+      this.cardIndex = 0;
+    }
+    this.currentCard = this.cardPool[this.cardIndex];
     setTimeout(this.rotate, this.cardDelay);
   }
 

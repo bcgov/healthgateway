@@ -1,6 +1,6 @@
 export enum PhoneType {
   Fax = "F",
-  Normal = "N"
+  Normal = "N",
 }
 
 // Pharmacy model

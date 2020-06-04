@@ -5,7 +5,7 @@ import { mutations } from "./mutations";
 import { RootState, SidebarState } from "@/models/storeState";
 
 export const state: SidebarState = {
-  isOpen: false
+  isOpen: false,
 };
 
 const namespaced: boolean = true;
@@ -15,5 +15,5 @@ export const sidebar: Module<SidebarState, RootState> = {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

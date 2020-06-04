@@ -9,7 +9,7 @@ export const state: UserState = {
   statusMessage: "",
   user: new User(),
   error: false,
-  stateType: StateType.NONE
+  stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
@@ -19,5 +19,5 @@ export const user: Module<UserState, RootState> = {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

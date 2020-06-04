@@ -1,7 +1,7 @@
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
 import {
   ExternalConfiguration,
-  OpenIdConnectConfiguration
+  OpenIdConnectConfiguration,
 } from "@/models/configData";
 import ImmunizationData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";

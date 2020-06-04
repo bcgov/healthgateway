@@ -29,7 +29,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     this.medication = new MedicationViewModel(model.medicationSumary);
 
     if (model.hasOwnProperty("dispensingPharmacy")) {
-      var historyModel = model as MedicationStatementHistory;
+      const historyModel = model as MedicationStatementHistory;
       this.pharmacy = new PharmacyViewModel(
         historyModel.dispensingPharmacy?.pharmacyId
       );
@@ -51,7 +51,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
       return false;
     }
 
-    var text =
+    let text =
       (this.practitionerSurname! || "") +
       (this.medication.brandName! || "") +
       (this.medication.genericName! || "");
@@ -108,7 +108,7 @@ class MedicationViewModel {
 
   public populateFromModel(model: MedicationResult): void {
     if (model.federalData) {
-      let federalModel = model.federalData;
+      const federalModel = model.federalData;
 
       this.form = federalModel.drugProduct!.form!.pharmaceuticalForm
         ? federalModel.drugProduct!.form!.pharmaceuticalForm
@@ -127,7 +127,7 @@ class MedicationViewModel {
         ? federalModel.drugProduct!.company!.companyName
         : "";
     } else if (model.provincialData) {
-      let provincialModel = model.provincialData;
+      const provincialModel = model.provincialData;
       this.isPin = true;
       this.form = provincialModel.pharmaCareDrug
         ? provincialModel.pharmaCareDrug.dosageForm

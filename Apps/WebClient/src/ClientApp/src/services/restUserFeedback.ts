@@ -18,7 +18,7 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         .then(() => {
           return resolve(true);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Fetch error:" + err.toString());
           reject(err);
         });

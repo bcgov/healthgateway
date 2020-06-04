@@ -4,8 +4,8 @@ import { User as OidcUser, UserSettings } from "oidc-client";
 
 describe("Auth mutations", () => {
   test("Sets oidcAuth authenticated", () => {
-    let state = initialState;
-    let settings: UserSettings = {
+    const state = initialState;
+    const settings: UserSettings = {
       id_token: "id_token",
       session_state: "",
       access_token: "access_token",
@@ -14,10 +14,10 @@ describe("Auth mutations", () => {
       scope: "test_scope_a test_scope_b",
       profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
       expires_at: 0,
-      state: undefined
+      state: undefined,
     };
 
-    let user: OidcUser = new OidcUser(settings);
+    const user: OidcUser = new OidcUser(settings);
 
     // apply mutation
     mutations.setOidcAuth(state, user);
@@ -30,8 +30,8 @@ describe("Auth mutations", () => {
   });
 
   test("Sets oidcAuth not authenticated", () => {
-    let state = initialState;
-    let settings: UserSettings = {
+    const state = initialState;
+    const settings: UserSettings = {
       id_token: "",
       session_state: "",
       access_token: "access_token",
@@ -40,9 +40,9 @@ describe("Auth mutations", () => {
       scope: "test_scope",
       profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
       expires_at: 0,
-      state: undefined
+      state: undefined,
     };
-    let user: OidcUser = new OidcUser(settings);
+    const user: OidcUser = new OidcUser(settings);
 
     // apply mutation
     mutations.setOidcAuth(state, user);
@@ -55,8 +55,8 @@ describe("Auth mutations", () => {
   });
 
   test("Unsets oidc data", () => {
-    let state = initialState;
-    let settings: UserSettings = {
+    const state = initialState;
+    const settings: UserSettings = {
       id_token: "id_token",
       session_state: "",
       access_token: "access_token",
@@ -65,9 +65,9 @@ describe("Auth mutations", () => {
       scope: "test_scope",
       profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
       expires_at: 0,
-      state: undefined
+      state: undefined,
     };
-    let user: OidcUser = new OidcUser(settings);
+    const user: OidcUser = new OidcUser(settings);
 
     // apply mutation
     mutations.setOidcAuth(state, user);
@@ -87,7 +87,7 @@ describe("Auth mutations", () => {
   });
 
   test("Sets oidc isChecked", () => {
-    let state = initialState;
+    const state = initialState;
     // assert result
     expect(state.authentication.isChecked).toBe(false);
 
@@ -97,7 +97,7 @@ describe("Auth mutations", () => {
   });
 
   test("Sets oidc error", () => {
-    let state = initialState;
+    const state = initialState;
 
     const errorMessage: string = "some error string";
 

@@ -7,5 +7,5 @@ export const getters: GetterTree<LaboratoryState, RootState> = {
     state: LaboratoryState
   ) => (): LaboratoryOrder[] => {
     return state.laboratoryOrders;
-  }
+  },
 };

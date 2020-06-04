@@ -14,10 +14,10 @@ export class RestConfigService implements IConfigService {
     return new Promise((resolve, reject) => {
       this.http
         .getWithCors<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
-        .then(result => {
+        .then((result) => {
           return resolve(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Fetch error:" + err.toString());
           reject(err);
         });

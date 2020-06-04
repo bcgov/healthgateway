@@ -101,8 +101,8 @@ label {
               <b-button
                 v-if="
                   !waitlistEdditable &&
-                    waitlistTempEmail &&
-                    !waitlistedSuccessfully
+                  waitlistTempEmail &&
+                  !waitlistedSuccessfully
                 "
                 id="waitlistEditEmail"
                 class="mx-auto"
@@ -174,7 +174,7 @@ label {
           <b-row>
             <b-col
               v-if="waitlistedSuccessfully"
-              class="font-weight-bold text-primary text-center "
+              class="font-weight-bold text-primary text-center"
             >
               Thanks! Your email has been added to the wait list. You should
               receive an email confirmation from Health Gateway shortly.

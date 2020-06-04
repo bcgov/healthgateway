@@ -64,5 +64,5 @@ export const mutations: MutationTree<UserState> = {
     state.error = true;
     state.statusMessage = errorMessage;
     state.stateType = StateType.ERROR;
-  }
+  },
 };

@@ -11,5 +11,5 @@ module.exports = {
     parserOptions: {
         parser: "@typescript-eslint/parser"
     },
-    plugins: ["sonarjs"]
+    plugins: ["sonarjs", "@typescript-eslint"]
 };

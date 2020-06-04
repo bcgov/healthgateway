@@ -9,5 +9,5 @@ export const mutations: MutationTree<SidebarState> = {
   setState(state: SidebarState, isOpen: boolean) {
     console.log("SidebarState:setState");
     state.isOpen = isOpen;
-  }
+  },
 };

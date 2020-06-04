@@ -32,13 +32,13 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     this.reportAvailable = model.reportAvailable;
 
     this.resultList = new Array();
-    model.labResults.forEach(result => {
+    model.labResults.forEach((result) => {
       this.resultList.push(new LaboratoryResultViewModel(result));
     });
 
     this.sortResults();
 
-    let firstResult = this.resultList[0];
+    const firstResult = this.resultList[0];
     this.displayDate = firstResult.collectionDateTime;
 
     this.summaryTestType = firstResult.testType || "";
@@ -51,7 +51,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
       return false;
     }
 
-    var text = (this.summaryTestType! || "") + (this.summaryDescription! || "");
+    let text = (this.summaryTestType! || "") + (this.summaryDescription! || "");
     text = text.toUpperCase();
     return text.includes(filterText.toUpperCase());
   }

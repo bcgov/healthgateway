@@ -25,17 +25,17 @@ export class RestUserNoteService implements IUserNoteService {
           resourcePayload: [],
           resultMessage: "",
           resultStatus: ResultType.Success,
-          totalResultCount: 0
+          totalResultCount: 0,
         });
         return;
       }
 
       this.http
         .getWithCors<RequestResult<UserNote[]>>(`${this.USER_NOTE_BASE_URI}/`)
-        .then(userNotes => {
+        .then((userNotes) => {
           return resolve(userNotes);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -53,10 +53,10 @@ export class RestUserNoteService implements IUserNoteService {
 
       this.http
         .post<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, note)
-        .then(result => {
+        .then((result) => {
           return this.handleResult(result, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -67,10 +67,10 @@ export class RestUserNoteService implements IUserNoteService {
     return new Promise((resolve, reject) => {
       this.http
         .put<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, note)
-        .then(result => {
+        .then((result) => {
           return this.handleResult(result, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -81,10 +81,10 @@ export class RestUserNoteService implements IUserNoteService {
     return new Promise((resolve, reject) => {
       this.http
         .delete<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, note)
-        .then(result => {
+        .then((result) => {
           return this.handleResult(result, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });

@@ -30,10 +30,10 @@ export default class CommunicationComponent extends Vue {
     );
     communicationService
       .getActive()
-      .then(requestResult => {
+      .then((requestResult) => {
         this.communication = requestResult.resourcePayload;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }

@@ -171,8 +171,8 @@ $radius: 15px;
     <MessageModalComponent
       ref="messageModal"
       title="Sensitive Document Download"
-      @submit="getReport"
       message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+      @submit="getReport"
     />
   </b-col>
 </template>
@@ -183,7 +183,7 @@ import { Prop, Component, Ref } from "vue-property-decorator";
 import { State, Action, Getter } from "vuex-class";
 import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import LaboratoryTimelineEntry, {
-  LaboratoryResultViewModel
+  LaboratoryResultViewModel,
 } from "@/models/laboratoryTimelineEntry";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
@@ -200,8 +200,8 @@ library.add(faFileDownload);
 @Component({
   components: {
     MessageModalComponent,
-    CommentSection: CommentSectionComponent
-  }
+    CommentSection: CommentSectionComponent,
+  },
 })
 export default class LaboratoryTimelineComponent extends Vue {
   @Prop() entry!: LaboratoryTimelineEntry;
@@ -244,7 +244,7 @@ export default class LaboratoryTimelineComponent extends Vue {
     this.isLoadingDocument = true;
     this.laboratoryService
       .getReportDocument(this.entry.id)
-      .then(result => {
+      .then((result) => {
         const link = document.createElement("a");
         let dateString = moment(this.entry.displayDate)
           .local()

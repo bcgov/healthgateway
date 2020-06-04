@@ -21,12 +21,12 @@ export const actions: ActionTree<ConfigState, RootState> = {
     return new Promise((resolve, reject) => {
       configService
         .getConfiguration()
-        .then(value => {
+        .then((value) => {
           console.log("Configuration: ", value);
           commit("configurationLoaded", value);
           resolve(value);
         })
-        .catch(error => {
+        .catch((error) => {
           handleError(commit, error);
           reject(error);
         })
@@ -34,5 +34,5 @@ export const actions: ActionTree<ConfigState, RootState> = {
           console.log("Finished initialization");
         });
     });
-  }
+  },
 };

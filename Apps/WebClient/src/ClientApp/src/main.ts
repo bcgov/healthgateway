@@ -28,7 +28,7 @@ import {
   IBetaRequestService,
   IUserNoteService,
   ICommunicationService,
-  IUserCommentService
+  IUserCommentService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -101,11 +101,11 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     eventEmitter: new Vue(),
     idleTime: config.webClient.timeouts!.idle || 300000,
     store,
-    startAtIdle: false
+    startAtIdle: false,
   });
 
   store.dispatch("auth/getOidcUser").then(() => {
-    let user: User = store.getters["user/user"];
+    const user: User = store.getters["user/user"];
     if (user.hdid) {
       store.dispatch("user/checkRegistration", { hdid: user.hdid }).then(() => {
         initializeVue();
@@ -121,6 +121,6 @@ function initializeVue() {
     el: "#app-root",
     store,
     router,
-    render: h => h(App)
+    render: (h) => h(App),
   });
 }

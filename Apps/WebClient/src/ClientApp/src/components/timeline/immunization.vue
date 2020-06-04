@@ -81,8 +81,8 @@ import { faSyringe, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   components: {
-    CommentSection: CommentSectionComponent
-  }
+    CommentSection: CommentSectionComponent,
+  },
 })
 export default class ImmunizationTimelineComponent extends Vue {
   @Prop() entry!: ImmunizationTimelineEntry;

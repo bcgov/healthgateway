@@ -22,16 +22,16 @@ const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
 
 export const actions: ActionTree<AuthState, RootState> = {
   oidcCheckAccess(context, route) {
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>((resolve) => {
       if (routeIsOidcCallback(route)) {
         resolve(true);
         return;
       }
       let hasAccess: boolean = true;
-      let isAuthenticatedInStore =
+      const isAuthenticatedInStore =
         context.state.authentication.idToken !== undefined;
 
-      authService.getUser().then(oidcUser => {
+      authService.getUser().then((oidcUser) => {
         if (!oidcUser || oidcUser.expired) {
           console.log("Could not get the user!");
           context.dispatch("clearStorage");
@@ -55,7 +55,7 @@ export const actions: ActionTree<AuthState, RootState> = {
           console.log("signinRedirect done");
           resolve();
         })
-        .catch(err => {
+        .catch((err) => {
           commit("setOidcError", err);
           reject();
         });
@@ -65,9 +65,9 @@ export const actions: ActionTree<AuthState, RootState> = {
     return new Promise((resolve, reject) => {
       authService
         .signinRedirectCallback()
-        .then(oidcUser => {
+        .then((oidcUser) => {
           // Verify that the user info retrieved by the auth service is not large enough than a cookie can store.
-          var cookieToStoreSize = authService.checkOidcUserSize(oidcUser);
+          const cookieToStoreSize = authService.checkOidcUserSize(oidcUser);
           if (cookieToStoreSize > 4000) {
             console.log("Warning: User info is too big:", cookieToStoreSize);
           }
@@ -76,7 +76,7 @@ export const actions: ActionTree<AuthState, RootState> = {
             resolve(sessionStorage.getItem("vuex_oidc_active_route") || "/");
           });
         })
-        .catch(err => {
+        .catch((err) => {
           context.commit("setOidcError", err);
           context.commit("setOidcAuthIsChecked");
           reject(err);
@@ -86,10 +86,10 @@ export const actions: ActionTree<AuthState, RootState> = {
   authenticateOidcSilent(context) {
     return authService
       .signinSilent()
-      .then(oidcUser => {
+      .then((oidcUser) => {
         context.dispatch("oidcWasAuthenticated", oidcUser);
       })
-      .catch(err => {
+      .catch((err) => {
         context.commit("setOidcError", err);
         context.commit("setOidcAuthIsChecked");
       });
@@ -103,7 +103,7 @@ export const actions: ActionTree<AuthState, RootState> = {
   getOidcUser(context) {
     return authService
       .getUser()
-      .then(oidcUser => {
+      .then((oidcUser) => {
         if (!oidcUser || oidcUser.expired) {
           console.log("User is invalid.");
           context.dispatch("clearStorage");
@@ -128,5 +128,5 @@ export const actions: ActionTree<AuthState, RootState> = {
       context.commit("unsetOidcAuth");
       context.commit("user/clearUserData", null, { root: true });
     });
-  }
+  },
 };

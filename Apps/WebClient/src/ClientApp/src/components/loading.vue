@@ -14,8 +14,8 @@ import { Prop, Component } from "vue-property-decorator";
 
 @Component({
   components: {
-    Loading
-  }
+    Loading,
+  },
 })
 export default class LoadingComponent extends Vue {
   @Prop() isLoading!: boolean;

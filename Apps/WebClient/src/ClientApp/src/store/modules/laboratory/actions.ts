@@ -22,7 +22,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
     { hdid }
   ): Promise<RequestResult<LaboratoryOrder[]>> {
     return new Promise((resolve, reject) => {
-      var laboratoryOrders: LaboratoryOrder[] = getters.getStoredLaboratoryOrders();
+      const laboratoryOrders: LaboratoryOrder[] = getters.getStoredLaboratoryOrders();
       if (laboratoryOrders.length > 0) {
         console.log("Laboratory found stored, not quering!");
         resolve({
@@ -31,21 +31,21 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
           resourcePayload: laboratoryOrders,
           resultMessage: "From storage",
           resultStatus: ResultType.Success,
-          totalResultCount: laboratoryOrders.length
+          totalResultCount: laboratoryOrders.length,
         });
       } else {
         console.log("Retrieving Laboratory Orders");
         laboratoryService
           .getOrders(hdid)
-          .then(laboratoryOrders => {
+          .then((laboratoryOrders) => {
             commit("setLaboratoryOrders", laboratoryOrders);
             resolve(laboratoryOrders);
           })
-          .catch(error => {
+          .catch((error) => {
             handleError(commit, error);
             reject(error);
           });
       }
     });
-  }
+  },
 };

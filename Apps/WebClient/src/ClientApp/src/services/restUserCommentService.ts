@@ -28,7 +28,7 @@ export class RestUserCommentService implements IUserCommentService {
           resourcePayload: [],
           resultMessage: "",
           resultStatus: ResultType.Success,
-          totalResultCount: 0
+          totalResultCount: 0,
         });
         return;
       }
@@ -36,10 +36,10 @@ export class RestUserCommentService implements IUserCommentService {
         .getWithCors<RequestResult<UserComment[]>>(
           `${this.USER_COMMENT_BASE_URI}?parentEntryId=${parentEntryId}`
         )
-        .then(userComments => {
+        .then((userComments) => {
           return resolve(userComments);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -57,11 +57,11 @@ export class RestUserCommentService implements IUserCommentService {
           `${this.USER_COMMENT_BASE_URI}/`,
           comment
         )
-        .then(result => {
+        .then((result) => {
           console.log(result);
           return this.handleResult(result, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -75,10 +75,10 @@ export class RestUserCommentService implements IUserCommentService {
           `${this.USER_COMMENT_BASE_URI}/`,
           comment
         )
-        .then(result => {
+        .then((result) => {
           return this.handleResult(result, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });
@@ -92,10 +92,10 @@ export class RestUserCommentService implements IUserCommentService {
           `${this.USER_COMMENT_BASE_URI}/`,
           comment
         )
-        .then(result => {
+        .then((result) => {
           return this.handleResult(result, resolve, reject);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           return reject(err);
         });

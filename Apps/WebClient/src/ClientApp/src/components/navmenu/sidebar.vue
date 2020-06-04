@@ -199,7 +199,7 @@
             <!-- Note button -->
             <b-row
               v-show="isNoteEnabled"
-              class="align-items-center border rounded-pill p-1 button-container  my-4"
+              class="align-items-center border rounded-pill p-1 button-container my-4"
               :class="{ 'mx-4': isOpen }"
               @click="createNote"
             >
@@ -330,14 +330,14 @@ const sidebar: string = "sidebar";
 
 @Component({
   components: {
-    FeedbackComponent
-  }
+    FeedbackComponent,
+  },
 })
 export default class SidebarComponent extends Vue {
   @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
   @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
   @Getter("oidcIsAuthenticated", {
-    namespace: auth
+    namespace: auth,
   })
   oidcIsAuthenticated!: boolean;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
@@ -380,7 +380,7 @@ export default class SidebarComponent extends Vue {
 
     // Setup the transition listener to avoid text wrapping
     var transition = document.querySelector("#sidebar");
-    transition?.addEventListener("transitionend", function(event: Event) {
+    transition?.addEventListener("transitionend", function (event: Event) {
       let transitionEvent = event as TransitionEvent;
       if (
         transition !== transitionEvent.target ||
@@ -391,7 +391,7 @@ export default class SidebarComponent extends Vue {
 
       var buttonText = document
         .querySelectorAll(".button-title")
-        .forEach(button => {
+        .forEach((button) => {
           if (transition?.classList.contains("collapsed")) {
             button?.classList.add("d-none");
           } else {
@@ -416,7 +416,7 @@ export default class SidebarComponent extends Vue {
   }
 
   private loadName(): void {
-    this.authenticationService.getOidcUserProfile().then(oidcUser => {
+    this.authenticationService.getOidcUserProfile().then((oidcUser) => {
       if (oidcUser) {
         this.name = this.getFullname(oidcUser.given_name, oidcUser.family_name);
       }

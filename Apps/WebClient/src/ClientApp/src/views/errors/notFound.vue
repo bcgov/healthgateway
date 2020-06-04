@@ -12,8 +12,8 @@ import PageError from "@/models/pageError";
 
 @Component({
   components: {
-    ErrorComponent: PageErrorComponent
-  }
+    ErrorComponent: PageErrorComponent,
+  },
 })
 export default class NotFoundComponent extends Vue {
   public errorDescription: PageError = new PageError(

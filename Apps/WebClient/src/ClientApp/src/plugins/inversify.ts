@@ -11,9 +11,9 @@ export const SERVICE_IDENTIFIER = {
   BetaRequestService: Symbol.for("BetaRequestService"),
   UserNoteService: Symbol.for("UserNoteService"),
   CommunicationService: Symbol.for("CommunicationService"),
-  UserCommentService: Symbol.for("UserCommentService")
+  UserCommentService: Symbol.for("UserCommentService"),
 };
 
 export const DELEGATE_IDENTIFIER = {
-  HttpDelegate: Symbol.for("HttpDelegate")
+  HttpDelegate: Symbol.for("HttpDelegate"),
 };

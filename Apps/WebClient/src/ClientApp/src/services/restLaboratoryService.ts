@@ -29,7 +29,7 @@ export class RestLaboratoryService implements ILaboratoryService {
           resourcePayload: [],
           resultMessage: "",
           resultStatus: ResultType.Success,
-          totalResultCount: 0
+          totalResultCount: 0,
         });
         return;
       }
@@ -37,10 +37,10 @@ export class RestLaboratoryService implements ILaboratoryService {
         .getWithCors<RequestResult<LaboratoryOrder[]>>(
           `${this.baseUri}${this.LABORATORY_BASE_URI}/`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           resolve(requestResult);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Fetch error: " + err.toString());
           reject(err);
         });
@@ -58,7 +58,7 @@ export class RestLaboratoryService implements ILaboratoryService {
           resourcePayload: { data: "", encoding: "", mediaType: "" },
           resultMessage: "",
           resultStatus: ResultType.Success,
-          totalResultCount: 0
+          totalResultCount: 0,
         });
         return;
       }
@@ -66,10 +66,10 @@ export class RestLaboratoryService implements ILaboratoryService {
         .getWithCors<RequestResult<LaboratoryReport>>(
           `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report/`
         )
-        .then(requestResult => {
+        .then((requestResult) => {
           resolve(requestResult);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Fetch error: " + err.toString());
           reject(err);
         });
