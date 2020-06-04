@@ -331,7 +331,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Error)
             {
-                this.notificationSettingsService.QueueNotificationSettings(request, bearerToken);
+                this.notificationSettingsService.QueueNotificationSettings(request);
             }
 
             return request;
