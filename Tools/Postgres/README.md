@@ -63,3 +63,32 @@ The script below sets the leader to node 2:
 ``` bash
 oc annotate configmaps patroni-postgres-leader leader=patroni-postgres-2 --overwrite=true;
 ```
+
+## Backup
+
+To download the backup to your local computer:
+
+``` bash
+oc rsync <backup-pod-name>:/backups/daily/<date> <local-folder>
+```
+
+Extract backup using gzip:
+
+``` bash
+gzip -d <file-name>
+```
+
+Connect to the master database pod using port-forward (See 'Connection to the Database').
+
+Manually create the database:
+
+``` bash
+psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
+```
+
+Execute the backup script:
+
+``` bash
+psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
+```
+
