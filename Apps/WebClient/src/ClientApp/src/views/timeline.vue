@@ -88,7 +88,7 @@
           variant="info"
           class="no-print"
         >
-          <h4>Unverified email 2</h4>
+          <h4>Unverified email</h4>
           <span>
             Your email has not been verified. Please check your inbox or junk
             folder for an email from Health Gateway. You can also edit your

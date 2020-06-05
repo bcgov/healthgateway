@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test": "jest --config jest.config.js",
+    "test": "vue-cli-service test:unit",
+    "test2": "jest --config jest.config.js",
     "testClear": "jest --clearCache --config jest.config.js",
     "dev": "webpack --config webpack.config.js --env.prod=0 --watch",
     "prod": "webpack --config webpack.config.js --env.prod=1 --env.min -p",
@@ -22,6 +23,7 @@
     "@vue/cli-plugin-eslint": "^4.4.1",
     "@vue/cli-plugin-typescript": "^4.4.1",
     "@vue/cli-service": "^4.4.1",
+    "@vue/cli-plugin-unit-jest": "^4.4.1",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^1.0.3",
