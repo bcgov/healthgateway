@@ -6,6 +6,7 @@ import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserSMSInvite from "@/models/userSMSInvite";
 
 export const mutations: MutationTree<UserState> = {
   setOidcUserData(state: UserState, oidcUser: OidcUser) {
@@ -48,6 +49,19 @@ export const mutations: MutationTree<UserState> = {
     } else {
       Vue.set(state.user, "hasEmail", false);
       Vue.set(state.user, "verifiedEmail", false);
+    }
+
+    state.error = false;
+    state.statusMessage = "success";
+    state.stateType = StateType.INITIALIZED;
+  },
+  setValidatedSMS(state: UserState, userSMSInvite: UserSMSInvite) {
+    if (userSMSInvite) {
+      Vue.set(state.user, "hasSMS", true);
+      Vue.set(state.user, "verifiedSMS", userSMSInvite.validated);
+    } else {
+      Vue.set(state.user, "hasSMS", false);
+      Vue.set(state.user, "verifiedSMS", false);
     }
 
     state.error = false;

@@ -78,6 +78,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
+            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -88,7 +89,8 @@ namespace HealthGateway.WebClient.Test.Services
                 emailer.Object,
                 legalAgreementDelegateMock.Object,
                 cryptoDelegateMock.Object,
-                notificationServiceMock.Object
+                notificationServiceMock.Object,
+                messageVerificationDelegateMock.Object
             );
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
@@ -97,7 +99,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ShouldInsertUserProfile()
+        public async void ShouldInsertUserProfile()
         {
             UserProfile userProfile = new UserProfile
             {
@@ -132,6 +134,7 @@ namespace HealthGateway.WebClient.Test.Services
             notificationServiceMock.Setup(s => s.SendNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"))
                 .ReturnsAsync(new RequestResult<NotificationSettingsResponse>() { ResultStatus = ResultType.Success });
 
+            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 profileDelegateMock.Object,
@@ -141,17 +144,18 @@ namespace HealthGateway.WebClient.Test.Services
                 emailer.Object,
                 new Mock<ILegalAgreementDelegate>().Object,
                 cryptoDelegateMock.Object,
-                notificationServiceMock.Object);
+                notificationServiceMock.Object,
+                messageVerificationDelegateMock.Object);
 
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"), "bearer_token");
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
         [Fact]
-        public void ShouldQueueNotificationUpdate()
+        public async void ShouldQueueNotificationUpdate()
         {
             UserProfile userProfile = new UserProfile
             {
@@ -185,8 +189,9 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             notificationServiceMock.Setup(s => s.SendNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"))
                 .ReturnsAsync(new RequestResult<NotificationSettingsResponse>() { ResultStatus = ResultType.Error });
-            notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"));
+            notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
+            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -197,10 +202,11 @@ namespace HealthGateway.WebClient.Test.Services
                 emailer.Object,
                 new Mock<ILegalAgreementDelegate>().Object,
                 cryptoDelegateMock.Object,
-                notificationServiceMock.Object);
+                notificationServiceMock.Object,
+                messageVerificationDelegateMock.Object);
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"), "bearer_token");
-            notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"), Times.Once());
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new System.Uri("http://localhost/"), "bearer_token");
+            notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }

@@ -6,6 +6,7 @@ import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
+import UserSMSInvite from "@/models/userSMSInvite";
 
 function handleError(commit: Commit, error: Error) {
   console.log("ERROR:" + error);
@@ -55,7 +56,7 @@ export const actions: ActionTree<UserState, RootState> = {
           // If registered retrieve the invite as well
           if (isRegistered) {
             userProfileService
-              .getLatestInvite(hdid)
+              .getLatestEmailInvite(hdid)
               .then((userEmailInvite) => {
                 commit("setValidatedEmail", userEmailInvite);
                 resolve(isRegistered);
@@ -64,8 +65,20 @@ export const actions: ActionTree<UserState, RootState> = {
                 handleError(commit, error);
                 reject(error);
               });
+
+            userProfileService
+              .getLatestSMSInvite(hdid)
+              .then((userSMSInvite) => {
+                commit("setValidatedSMS", userSMSInvite);
+                resolve(userSMSInvite);
+              })
+              .catch((error) => {
+                handleError(commit, error);
+                reject(error);
+              });
           } else {
             commit("setValidatedEmail", undefined);
+            commit("setValidatedSMS", undefined);
             resolve(isRegistered);
           }
         })
@@ -78,10 +91,24 @@ export const actions: ActionTree<UserState, RootState> = {
   getUserEmail({ commit }, { hdid }): Promise<UserEmailInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .getLatestInvite(hdid)
+        .getLatestEmailInvite(hdid)
         .then((userEmailInvite) => {
           commit("setValidatedEmail", userEmailInvite);
           resolve(userEmailInvite);
+        })
+        .catch((error) => {
+          handleError(commit, error);
+          reject(error);
+        });
+    });
+  },
+  getUserSMS({ commit }, { hdid }): Promise<UserSMSInvite> {
+    return new Promise((resolve, reject) => {
+      userProfileService
+        .getLatestSMSInvite(hdid)
+        .then((userSMSInvite) => {
+          commit("setValidatedSMS", userSMSInvite);
+          resolve(userSMSInvite);
         })
         .catch((error) => {
           handleError(commit, error);

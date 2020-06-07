@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
         /// </summary>
-        public string Token { get; set; } = "";
+        public string Token { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the authenticated user, <see cref="User"/>.

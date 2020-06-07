@@ -47,7 +47,7 @@ namespace HealthGateway.Immunization.Factories
         public IImmunizationFhirDelegate CreateInstance()
         {
             string typeStr = this.configuration.GetValue<string>("ImmunizationDelegate", DefaultInstance);
-            Type type = Type.GetType(typeStr);
+            Type? type = Type.GetType(typeStr);
             IImmunizationFhirDelegate instance = (IImmunizationFhirDelegate)ActivatorUtilities.CreateInstance(this.serviceProvider, type);
             return instance;
         }

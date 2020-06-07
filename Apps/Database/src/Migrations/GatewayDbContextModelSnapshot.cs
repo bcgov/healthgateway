@@ -1748,7 +1748,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("EmailId")
+                    b.Property<Guid?>("EmailId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ExpireDate")
@@ -2627,9 +2627,9 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime?>("LastLoginDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                    b.Property<string>("SMSNumber")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2697,6 +2697,10 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("OperationDateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("SMSNumber")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2884,9 +2888,7 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.HasOne("HealthGateway.Database.Models.Email", "Email")
                         .WithMany()
-                        .HasForeignKey("EmailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmailId");
 
                     b.HasOne("HealthGateway.Database.Models.MessagingVerificationTypeCode", null)
                         .WithMany()

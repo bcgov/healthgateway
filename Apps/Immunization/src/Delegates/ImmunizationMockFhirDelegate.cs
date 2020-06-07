@@ -55,7 +55,7 @@ namespace HealthGateway.Immunization.Delegates
             string filename = @"MockImmunizationResponse.json";
             string msg = File.ReadAllText(filename);
             FhirJsonParser parser = new FhirJsonParser();
-            return parser.Parse<Bundle>(msg);
+            return await System.Threading.Tasks.Task.Run(() => parser.Parse<Bundle>(msg)).ConfigureAwait(true);
         }
     }
 }

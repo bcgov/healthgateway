@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -61,7 +62,9 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the Uri for the signed out redirection.
         /// </summary>
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string? SignedOutRedirectUri { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets whether Https Meta Data is required.

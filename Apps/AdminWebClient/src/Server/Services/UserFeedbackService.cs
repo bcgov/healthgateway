@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Services
         private readonly IFeedbackDelegate feedbackDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BetaRequestService"/> class.
+        /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="feedbackDelegate">The feedeback delegate to interact with the DB.</param>

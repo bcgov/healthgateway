@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
+        public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
             var options = new JsonSerializerOptions
@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Services
                 WriteIndented = true,
             };
             string json = JsonSerializer.Serialize(this.ValidateVerificationCode(notificationSettings), options);
-            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json, bearerToken));
+            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
 
@@ -73,7 +73,7 @@ namespace HealthGateway.Common.Services
 
         private NotificationSettingsRequest ValidateVerificationCode(NotificationSettingsRequest notificationSettings)
         {
-            if (!notificationSettings.SMSVerified && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
+            if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {
                 // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
                 Random generator = new Random();

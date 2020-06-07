@@ -13,25 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+import { Rate } from 'k6/metrics';
 
-namespace HealthGateway.AdminWebClient.Pages
-{
-    public class ErrorModel : PageModel
-    {
-        public string? RequestId { get; set; }
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+export let errorRate = new Rate('errors');
 
-        public void OnGet()
-        {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-        }
-    }
+let TokenEndpointUrl = 'https://sso-dev.pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token';
+
+let auth_form_data = {
+  grant_type: "password",
+  client_id: "healthgateway",
+  audience: "healthgateway",
+  scope: "openid",
+  username: "loadtest_09",
+  password: __ENV.HG_USER_PASSWORD,
+};
+
+export default function () {
+  check(http.post(TokenEndpointUrl, auth_form_data), {
+    'status is 200': r => r.status == 200
+  }) || errorRate.add(1);
+  sleep(1);
 }

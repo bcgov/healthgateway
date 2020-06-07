@@ -56,6 +56,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<IWebHostEnvironment>().Object);
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
+            expected.Id = actual.Id;
             Assert.True(expected.IsDeepEqual(actual));
         }
     }
