@@ -7,9 +7,10 @@
 @section scripts {
     <environment include="Development">
         <script src="~/js/app.js" asp-append-version="true"></script>
+        <script src=~/js/chunk-vendors.js> </script> 
     </environment>
     <environment include="Production">
-        <script src="~/dist/main.bundle.js.gz" asp-append-version="true"></script>
+        <script src="~/app-entry.umd.min.js"></script>
     </environment>
     
 }

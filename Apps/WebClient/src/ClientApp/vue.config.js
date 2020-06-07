@@ -1,17 +1,10 @@
-const path = require("path");
-const isDevBuild = true;
-const bundleOutputDir = "/dist";
+const CompressionPlugin = require("compression-webpack-plugin");
 module.exports = {
-  filenameHashing: false,
-  css: {
-    extract: false,
-  },
-  configureWebpack: {
-    optimization: {
-      splitChunks: false,
-    },
-  },
+  productionSourceMap: false,
   chainWebpack: (config) => {
     config.plugins.delete("split-manifest").delete("inline-manifest");
+    config.plugin("CompressionPlugin").use(CompressionPlugin);
+    // TODO: Only needed while typescrit has errors
+    config.plugins.delete("fork-ts-checker");
   },
 };

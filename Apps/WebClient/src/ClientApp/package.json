@@ -1,18 +1,13 @@
 {
   "name": "web-client",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --silent --target lib --name app-entry src/main.ts --inline-vue",
     "test": "vue-cli-service test:unit",
-    "test2": "jest --config jest.config.js",
-    "testClear": "jest --clearCache --config jest.config.js",
-    "dev": "webpack --config webpack.config.js --env.prod=0 --watch",
-    "prod": "webpack --config webpack.config.js --env.prod=1 --env.min -p",
-    "vendor": "webpack --config webpack.config.vendor.js --env.prod=1 --env.min",
-    "lint": "eslint \"**/*.ts\" \"**/*.vue\"",
-    "lintfix": "eslint --fix \"**/*.ts\" \"**/*.vue\""
+    "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\"",
+    "vue-help": "vue-cli-service help lint"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",

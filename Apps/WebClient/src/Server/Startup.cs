@@ -128,6 +128,8 @@ namespace HealthGateway.WebClient
         {
             Contract.Requires(env != null);
 
+            app.UseSpaStaticFiles();
+
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
@@ -152,11 +154,7 @@ namespace HealthGateway.WebClient
 
             app.UseEndpoints(endpoints =>
             {
-                // Mapping of endpoints goes here:
-
-                //endpoints.MapControllers();
                 endpoints.MapRazorPages();
-                //endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToController("Index", "Home");
 
                 endpoints.MapControllers();
@@ -175,10 +173,10 @@ namespace HealthGateway.WebClient
                 }
             });
 
-            app.UseSpa(spa =>
+            /*app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-            });
+            });*/
 
             bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
             if (redirectToWWW)
@@ -208,26 +206,6 @@ namespace HealthGateway.WebClient
                     }
                 },
             });
-
-            app.UseSpaStaticFiles();
-
-            /*app.UseEndpoints(endpoints =>
-            {
-                // Mapping of endpoints goes here:
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapFallbackToController("Index", "Home");
-            });*/
-
-            /*app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "dist";
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer("dev");
-                }
-            });*/
         }
     }
 }

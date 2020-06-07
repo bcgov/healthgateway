@@ -12,7 +12,7 @@ import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
 import "@/plugins/registerComponentHooks";
 
-const App = () => import(/* webpackChunkName: "app2" */ "./app.vue");
+const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
 import router from "@/router";
 import store from "@/store/store";
 import {

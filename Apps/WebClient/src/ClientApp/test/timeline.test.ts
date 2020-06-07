@@ -56,7 +56,10 @@ const medicationStatements: MedicationStatement[] = [
 
 @injectable()
 class MockMedicationService implements IMedicationService {
-  getPatientMedicationStatementHistory(hdid: string, protectiveWord?: string | undefined): Promise<RequestResult<MedicationStatement[]>> {
+  getPatientMedicationStatementHistory(
+    hdid: string,
+    protectiveWord?: string | undefined
+  ): Promise<RequestResult<MedicationStatement[]>> {
     throw new Error("Method not implemented.");
   }
   initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
