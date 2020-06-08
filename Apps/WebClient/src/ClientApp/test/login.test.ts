@@ -12,20 +12,20 @@ let $router = {};
 let $route = {
   path: "",
   query: {
-    redirect: ""
-  }
+    redirect: "",
+  },
 };
 
 let authGetters = {
-  oidcIsAuthenticated: (): boolean => false
+  oidcIsAuthenticated: (): boolean => false,
 };
 
 let userGetters = {
-  userIsRegistered: (): boolean => false
+  userIsRegistered: (): boolean => false,
 };
 
 let configGetters = {
-  identityProviders: (): IdentityProviderConfiguration[] => []
+  identityProviders: (): IdentityProviderConfiguration[] => [],
 };
 
 function createWrapper(): Wrapper<LoginComponent> {
@@ -33,23 +33,23 @@ function createWrapper(): Wrapper<LoginComponent> {
   localVue.use(Vuex);
   localVue.use(BootstrapVue);
 
-  let customStore = new Vuex.Store({
+  const customStore = new Vuex.Store({
     modules: {
       auth: {
         namespaced: true,
         getters: authGetters,
-        actions: userModule.actions
+        actions: userModule.actions,
       },
       user: {
         namespaced: true,
         getters: userGetters,
-        actions: authModule.actions
+        actions: authModule.actions,
       },
       config: {
         namespaced: true,
-        getters: configGetters
-      }
-    }
+        getters: configGetters,
+      },
+    },
   });
 
   return shallowMount(LoginComponent, {
@@ -57,80 +57,80 @@ function createWrapper(): Wrapper<LoginComponent> {
     store: customStore,
     mocks: {
       $route,
-      $router
+      $router,
     },
     stubs: {
-      "font-awesome-icon": true
-    }
+      "font-awesome-icon": true,
+    },
   });
 }
 
 describe("Login view", () => {
   beforeEach(() => {
     $router = {
-      push: pushMethod
+      push: pushMethod,
     };
 
     $route = {
       path: "/somePath",
       query: {
-        redirect: "/anotherPath"
-      }
+        redirect: "/anotherPath",
+      },
     };
   });
 
   test("is a Vue instance", () => {
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(wrapper.isVueInstance()).toBeTruthy();
   });
 
   test("gets redirect route", () => {
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
   });
 
   test("sets default route if no redirect", () => {
     $route.query.redirect = "";
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe("/timeline");
   });
 
   test("if authenticated but not registered sets router path to registration", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => true
+      oidcIsAuthenticated: (): boolean => true,
     };
     userGetters = {
-      userIsRegistered: (): boolean => false
+      userIsRegistered: (): boolean => false,
     };
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe("/registrationInfo");
     expect(pushMethod).toHaveBeenCalledWith({
-      path: wrapper.vm.$data.redirectPath
+      path: wrapper.vm.$data.redirectPath,
     });
   });
 
   test("if authenticated and registered sets router path", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => true
+      oidcIsAuthenticated: (): boolean => true,
     };
     userGetters = {
-      userIsRegistered: (): boolean => true
+      userIsRegistered: (): boolean => true,
     };
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
     expect(pushMethod).toHaveBeenCalledWith({
-      path: wrapper.vm.$data.redirectPath
+      path: wrapper.vm.$data.redirectPath,
     });
   });
 
   test("if not authenticated does not set router path", () => {
     authGetters = {
-      oidcIsAuthenticated: (): boolean => false
+      oidcIsAuthenticated: (): boolean => false,
     };
     userGetters = {
-      userIsRegistered: (): boolean => false
+      userIsRegistered: (): boolean => false,
     };
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
     expect(pushMethod).not.toHaveBeenCalledTimes(0);
   });
@@ -139,22 +139,22 @@ describe("Login view", () => {
     const bceidProvider: IdentityProviderConfiguration = {
       name: "BC Services Card",
       id: "bceid",
-      icon: "bceidicon"
+      icon: "bceidicon",
     };
     const keycloakProvider: IdentityProviderConfiguration = {
       name: "keycloak",
       id: "keyid",
       icon: "user",
-      disabled: true
+      disabled: true,
     };
 
     configGetters = {
       identityProviders: (): IdentityProviderConfiguration[] => [
         bceidProvider,
-        keycloakProvider
-      ]
+        keycloakProvider,
+      ],
     };
-    let wrapper = createWrapper();
+    const wrapper = createWrapper();
     expect(
       wrapper
         .find(`#${bceidProvider.id}Btn`)

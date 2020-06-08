@@ -17,8 +17,8 @@ describe("NavBar Header Component", () => {
     store,
     router,
     stubs: {
-      "font-awesome-icon": true
-    }
+      "font-awesome-icon": true,
+    },
   });
 
   test("is a Vue instance", () => {
