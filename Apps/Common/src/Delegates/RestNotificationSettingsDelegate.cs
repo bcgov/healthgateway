@@ -139,7 +139,8 @@ namespace HealthGateway.Common.Delegates
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Sending Notification Settings to PHSA...");
+            this.logger.LogDebug($"Sending Notification Settings to PHSA...");
+            this.logger.LogTrace($"Bearer token: {bearerToken}");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -155,6 +156,7 @@ namespace HealthGateway.Common.Delegates
                 };
                 string json = JsonSerializer.Serialize(notificationSettings, options);
                 using HttpContent content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+                this.logger.LogTrace($"Http content: {json}");
                 HttpResponseMessage response = await client.PutAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 switch (response.StatusCode)
