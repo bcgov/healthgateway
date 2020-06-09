@@ -20,6 +20,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Services;
@@ -131,25 +132,31 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             this.Logger.LogDebug("ConfigureAuthorizationServices...");
 
+            // Configuration Authorization Handlers
+            services.AddSingleton<IAuthorizationHandler, PatientAuthorizationHandler>();
+
             // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(PolicyNameConstants.PatientOnly, policy =>
+                options.AddPolicy(PatientPolicy.IsPatient, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("hdid");
+                    policy.Requirements.Add(new PatientRequirement());
                 });
-                options.AddPolicy(PolicyNameConstants.UserIsPatient, policy =>
+                options.AddPolicy(PatientPolicy.HasRead, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new UserIsPatientRequirement());
+                    policy.Requirements.Add(new PatientReadRequirement());
+                });
+                options.AddPolicy(PatientPolicy.HasWrite, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new PatientWriteRequirement());
                 });
             });
-
-            // Configuration Service
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>
