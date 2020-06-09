@@ -24,7 +24,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Authorization;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using System;
@@ -37,7 +36,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     public class UserProfileControllerTest
     {
         [Fact]
-        public async Task ShouldGetUserProfile()
+        public void ShouldGetUserProfile()
         {
             // Setup
             string hdid = "1234567890123456789012345678901234567890123456789012";
@@ -58,11 +57,6 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
-            Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
-            authorizationServiceMock
-                .Setup(s => s.AuthorizeAsync(httpContextAccessorMock.Object.HttpContext.User, hdid, PolicyNameConstants.UserIsPatient))
-                .ReturnsAsync(AuthorizationResult.Success);
-
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.GetUserProfile(hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
@@ -73,45 +67,13 @@ namespace HealthGateway.WebClient.Test.Controllers
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
-                authorizationServiceMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object
             );
-            IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
+            IActionResult actualResult = service.GetUserProfile(hdid);
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
-        }
-
-        [Fact]
-        public async Task ShouldForbidGetUserProfile()
-        {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext.User).Returns(claimsPrincipal);
-
-            Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
-            authorizationServiceMock
-                .Setup(s => s.AuthorizeAsync(claimsPrincipal, hdid, PolicyNameConstants.UserIsPatient))
-                .ReturnsAsync(AuthorizationResult.Failed);
-
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
-
-            UserProfileController service = new UserProfileController(
-                userProfileServiceMock.Object,
-                httpContextAccessorMock.Object,
-                authorizationServiceMock.Object,
-                emailServiceMock.Object,
-                smsServiceMock.Object
-            );
-            IActionResult actualResult = await service.GetUserProfile(hdid).ConfigureAwait(true);
-
-            Assert.IsType<ForbidResult>(actualResult);
         }
 
         [Fact]
@@ -140,11 +102,6 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
-            Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
-            authorizationServiceMock
-                .Setup(s => s.AuthorizeAsync(httpContextAccessorMock.Object.HttpContext.User, hdid, PolicyNameConstants.UserIsPatient))
-                .ReturnsAsync(AuthorizationResult.Success);
-
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).ReturnsAsync(expected);
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
@@ -153,11 +110,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             UserProfileController service = new UserProfileController(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
-                authorizationServiceMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object
             );
-            IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest).ConfigureAwait(true);
+            IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest);
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));

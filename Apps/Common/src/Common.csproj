@@ -59,7 +59,6 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AccessManagement\" />
     <Folder Include="AspNetConfiguration\" />
     <Folder Include="Auditing\" />
     <Folder Include="Constants\" />
