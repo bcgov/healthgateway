@@ -10,7 +10,7 @@ module.exports = {
     config.plugins.delete("split-manifest").delete("inline-manifest");
     config.plugin("CompressionPlugin").use(CompressionPlugin);
     config.optimization.minimizer("terser").tap((args) => {
-      args[0].parallel = 1;
+      args[0].parallel = false;
       return args;
     });
     // TODO: Only needed while typescrit has errors
