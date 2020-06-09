@@ -57,27 +57,31 @@
       </b-col>
     </b-row>
     <template v-slot:modal-footer>
-        <b-row>
-            <b-col v-if="!tooManyRetries">
-                Didn't receive a code?
-                <b-button id="resendSMSVerification"
-                          variant="link"
-                          class="ml-0 pl-0"
-                          :disabled="smsVerificationSent"
-                          @click="sendUserSMSUpdate()">
-                    Resend
-                </b-button>
-            </b-col>
-            <b-col v-if="tooManyRetries">
-                <b-button id="resendSMSVerification"
-                          variant="link"
-                          class="ml-0 pl-0"
-                          :disabled="smsVerificationSent"
-                          @click="sendUserSMSUpdate()">
-                    Send new code
-                </b-button>
-            </b-col>
-        </b-row>
+      <b-row>
+        <b-col v-if="!tooManyRetries">
+          Didn't receive a code?
+          <b-button
+            id="resendSMSVerification"
+            variant="link"
+            class="ml-0 pl-0"
+            :disabled="smsVerificationSent"
+            @click="sendUserSMSUpdate()"
+          >
+            Resend
+          </b-button>
+        </b-col>
+        <b-col v-if="tooManyRetries">
+          <b-button
+            id="resendSMSVerification"
+            variant="link"
+            class="ml-0 pl-0"
+            :disabled="smsVerificationSent"
+            @click="sendUserSMSUpdate()"
+          >
+            Send new code
+          </b-button>
+        </b-col>
+      </b-row>
     </template>
     <LoadingComponent :is-loading="isLoading"></LoadingComponent>
   </b-modal>
@@ -125,10 +129,10 @@ export default class VerifySMSComponent extends Vue {
 
   private getVerification() {
     this.getUserSMS({ hdid: this.user.hdid }).then((result) => {
-        this.tooManyRetries = result && result.tooManyFailedAttempts;
-        if (this.tooManyRetries) {
-            this.error = false;
-        }
+      this.tooManyRetries = result && result.tooManyFailedAttempts;
+      if (this.tooManyRetries) {
+        this.error = false;
+      }
     });
   }
   public showModal() {
