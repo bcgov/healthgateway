@@ -113,9 +113,6 @@ namespace HealthGateway.Medication.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            //Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
-            //authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PatientPolicy.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
-
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
             svcMock
                 .Setup(s => s.GetMedicationStatements(hdid, null))

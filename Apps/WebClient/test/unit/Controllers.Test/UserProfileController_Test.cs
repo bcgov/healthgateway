@@ -57,11 +57,6 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
-            //Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
-            //authorizationServiceMock
-            //    .Setup(s => s.AuthorizeAsync(httpContextAccessorMock.Object.HttpContext.User, hdid, PatientPolicy.UserIsPatient))
-            //    .ReturnsAsync(AuthorizationResult.Success);
-
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.GetUserProfile(hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
@@ -106,11 +101,6 @@ namespace HealthGateway.WebClient.Test.Controllers
             };
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
-
-            //Mock<IAuthorizationService> authorizationServiceMock = new Mock<IAuthorizationService>();
-            //authorizationServiceMock
-            //    .Setup(s => s.AuthorizeAsync(httpContextAccessorMock.Object.HttpContext.User, hdid, PatientPolicy.UserIsPatient))
-            //    .ReturnsAsync(AuthorizationResult.Success);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).ReturnsAsync(expected);
