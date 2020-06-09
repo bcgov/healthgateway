@@ -290,7 +290,7 @@
               <b-row>
                 <b-button
                   id="btnStart"
-                  to="registrationInfo"
+                  :to="isOpenRegistration ? 'registration' : 'registrationInfo'"
                   class="btn btn-primary-landing mx-auto register-button w-100"
                   role="button"
                   >Register</b-button
@@ -459,7 +459,10 @@ import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
 import container from "@/plugins/inversify.config";
+import { Getter } from "vuex-class";
 import CommunicationComponent from "@/components/communication.vue";
+import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
   faPills,
@@ -542,9 +545,16 @@ export default class LandingComponent extends Vue {
   private introBackground: string = Image01;
   private devices: string = Image02;
   private bottomImage: string = Image07;
-
+  private isOpenRegistration: boolean = false;
   private getTileClass(index: number): string {
     return index % 2 == 0 ? "order-md-1" : "order-md-2";
+  }
+  @Getter("webClient", { namespace: "config" })
+  webClientConfig!: WebClientConfiguration;
+
+  mounted() {
+    this.isOpenRegistration =
+      this.webClientConfig.registrationStatus == RegistrationStatus.Open;
   }
 }
 </script>
