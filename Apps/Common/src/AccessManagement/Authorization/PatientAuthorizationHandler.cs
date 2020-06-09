@@ -22,9 +22,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Localization.Internal;
     using Microsoft.Extensions.Logging;
-    using Npgsql.PostgresTypes;
 
     /// <summary>
     /// PatientAuthorizationHandler validates that Patient requirements have been met.
@@ -53,13 +51,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         ///     2) Delegated to access the resource.
         /// </summary>
         /// <param name="context">the AuthorizationHandlerContext context.</param>
-        /// <returns>a Task.</returns>
+        /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
             string? resourceHDID = this.httpContextAccessor.HttpContext.Request.RouteValues[RouteResourceIdentifier] as string;
             foreach (IAuthorizationRequirement requirement in context.PendingRequirements.ToList())
             {
-                this.logger.LogDebug($"Performing authorization check on {nameof(context.Resource)}");
                 if (requirement is PatientReadRequirement || requirement is PatientWriteRequirement)
                 {
                     if (resourceHDID != null)
@@ -88,7 +85,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
                     }
                     else
                     {
-                        this.logger.LogInformation($"nameof(requirement) has been invoked without route resource being specified");
+                        this.logger.LogInformation($"Patient Auth Handler has been invoked without route resource being specified");
                     }
                 }
                 else if (requirement is PatientRequirement)
@@ -101,7 +98,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
                 }
                 else
                 {
-                    this.logger.LogDebug($"{nameof(requirement)} is unknown to {nameof(this.GetType)} ignoring...");
+                    this.logger.LogDebug($"Requirement not known to Patient Auth Handler and will be ignored");
                 }
             }
 
