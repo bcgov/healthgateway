@@ -58,7 +58,7 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void PushNotificationSettings(string notificationSettingsJSON)
         {
-            this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
+            this.logger.LogDebug($"Queueing Notification Settings push to PHSA...");
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -67,13 +67,22 @@ namespace Healthgateway.JobScheduler.Jobs
             };
 
             NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
-            string accessToken = this.authDelegate.AuthenticateAsSystem().AccessToken!;
+            string? accessToken = this.authDelegate.AuthenticateAsSystem().AccessToken;
 
-            RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
-                            this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
-            if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+            if (string.IsNullOrEmpty(accessToken))
             {
-                throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                this.logger.LogError($"Authenticated as System access token is null or emtpy, Error:\n{accessToken}");
+                throw new Exception($"Authenticated as System access token is null or emtpy, Error:\n{accessToken}");
+            }
+            else
+            {
+                RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
+                                this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                {
+                    this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                    throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                }
             }
 
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
