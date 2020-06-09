@@ -22,7 +22,7 @@
       <b-col>
         <form>
           <b-row v-if="tooManyRetries">
-            <b-col>
+            <b-col class="text-center">
               Too many failed attempts.
             </b-col>
           </b-row>
@@ -57,7 +57,7 @@
       </b-col>
     </b-row>
     <template v-slot:modal-footer>
-      <b-row>
+      <b-row class="w-100">
         <b-col v-if="!tooManyRetries">
           Didn't receive a code?
           <b-button
@@ -74,7 +74,7 @@
           <b-button
             id="resendSMSVerification"
             variant="link"
-            class="ml-0 pl-0"
+            class="text-center w-100"
             :disabled="smsVerificationSent"
             @click="sendUserSMSUpdate()"
           >
