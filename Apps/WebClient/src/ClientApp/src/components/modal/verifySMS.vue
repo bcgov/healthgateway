@@ -21,7 +21,20 @@
     <b-row>
       <b-col>
         <form>
-          <b-row>
+          <b-row v-if="tooManyRetries">
+            <b-col>
+              Too many failed attempts.
+              <b-button
+                id="tryAgain"
+                variant="link"
+                class="ml-0 pl-0"
+                @click="sendUserSMSUpdate()"
+              >
+                Try again?
+              </b-button>
+            </b-col>
+          </b-row>
+          <b-row v-if="!tooManyRetries">
             <b-col>
               <label for="verificationCode-input" class="text-center w-100">
                 Enter the verification code sent to <br />
@@ -41,7 +54,7 @@
               />
             </b-col>
           </b-row>
-          <b-row v-if="error">
+          <b-row v-if="error && !tooManyRetries">
             <b-col>
               <span class="text-danger"
                 >Invalid verification code. Try again.</span
@@ -75,11 +88,12 @@
 import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
 import { Emit, Prop, Component, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IUserProfileService } from "@/services/interfaces";
+import UserSMSInvite from "@/models/userSMSInvite";
 
 @Component({
   components: {
@@ -93,15 +107,27 @@ export default class VerifySMSComponent extends Vue {
 
   private userProfileService!: IUserProfileService;
 
+  private tooManyRetries: boolean = false;
   private smsVerificationSent: boolean = false;
   private smsVerificationCode: string = "";
   private isVisible: boolean = false;
   private isLoading: boolean = false;
   private isValid: boolean = false;
+
+  @Action("getUserSMS", { namespace: "user" })
+  getUserSMS!: ({ hdid }: { hdid: string }) => Promise<UserSMSInvite>;
+
   mounted() {
     this.userProfileService = container.get<IUserProfileService>(
       SERVICE_IDENTIFIER.UserProfileService
     );
+    this.getVerification();
+  }
+
+  private getVerification() {
+    this.getUserSMS({ hdid: this.user.hdid }).then((result) => {
+      this.tooManyRetries = result && result.tooManyFailedAttempts;
+    });
   }
   public showModal() {
     this.isVisible = true;
@@ -146,6 +172,7 @@ export default class VerifySMSComponent extends Vue {
     this.userProfileService
       .validateSMS(this.smsVerificationCode)
       .then((result) => {
+        this.getVerification();
         this.error = !result;
         this.smsVerified = result;
         if (!this.error) {
@@ -163,6 +190,7 @@ export default class VerifySMSComponent extends Vue {
     this.userProfileService
       .updateSMSNumber(this.user.hdid, this.smsNumber)
       .then(() => {
+        this.getVerification();
         setTimeout(() => {
           this.smsVerificationSent = false;
         }, 5000);

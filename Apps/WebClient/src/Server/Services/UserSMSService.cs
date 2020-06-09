@@ -30,8 +30,8 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserSMSService : IUserSMSService
     {
-        private const byte VerificationExpiryDays = 5;
-        private const byte MaxVerificationAttempts = 5;
+        private const int VerificationExpiryDays = 5;
+        public const int MaxVerificationAttempts = 5;
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;

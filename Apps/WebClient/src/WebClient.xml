@@ -859,6 +859,11 @@
             Gets or sets the sms number for the invite.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.TooManyFailedAttempts">
+            <summary>
+            Gets or sets a value indicating whether the code had too many verification attempts.
+            </summary>
+        </member>
         <member name="M:HealthGateway.WebClient.Models.UserSMSInvite.CreateFromDbModel(HealthGateway.Database.Models.MessagingVerification)">
             <summary>
             Constructs a UserSMSInvite from a MessagingVerification.

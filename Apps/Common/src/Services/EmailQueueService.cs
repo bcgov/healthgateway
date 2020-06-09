@@ -34,7 +34,7 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class EmailQueueService : IEmailQueueService
     {
-        private const byte VerificationExpiryDays = 5;
+        private const int VerificationExpiryDays = 5;
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";

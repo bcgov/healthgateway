@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Services;
 
     /// <summary>
     /// Model that provides a user representation of a sms verification invite.
@@ -34,6 +35,11 @@ namespace HealthGateway.WebClient.Models
         public string? SMSNumber { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the code had too many verification attempts.
+        /// </summary>
+        public bool TooManyFailedAttempts { get; set; }
+
+        /// <summary>
         /// Constructs a UserSMSInvite from a MessagingVerification.
         /// </summary>
         /// <returns>The UserSMSInvite model.</returns>
@@ -43,6 +49,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Validated = model.Validated,
                 SMSNumber = model.SMSNumber,
+                TooManyFailedAttempts = model.VerificationAttempts > UserSMSService.MaxVerificationAttempts,
             };
         }
     }

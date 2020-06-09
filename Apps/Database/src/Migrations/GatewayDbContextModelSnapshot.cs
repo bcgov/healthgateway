@@ -1783,7 +1783,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<byte>("VerificationAttempts")
-                        .HasColumnType("smallint");
+                        .HasColumnType("integer");
 
                     b.Property<string>("VerificationType")
                         .IsRequired()

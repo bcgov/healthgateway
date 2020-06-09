@@ -27,7 +27,7 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserEmailService : IUserEmailService
     {
-        private const byte MaxVerificationAttempts = 5;
+        private const int MaxVerificationAttempts = 5;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IProfileDelegate profileDelegate;

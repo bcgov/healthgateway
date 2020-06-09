@@ -30,12 +30,12 @@ namespace HealthGateway.Database.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            migrationBuilder.AddColumn<byte>(
+            migrationBuilder.AddColumn<int>(
                 name: "VerificationAttempts",
                 schema: "gateway",
                 table: "MessagingVerification",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (int)0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
