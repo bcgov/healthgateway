@@ -85,5 +85,17 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public DateTime ExpireDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attemped verification count.
+        /// </summary>
+        [Required]
+        public byte VerificationAttempts { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the messageing verification was deleted.
+        /// </summary>
+        [Required]
+        public bool Deleted { get; set; }
     }
 }
