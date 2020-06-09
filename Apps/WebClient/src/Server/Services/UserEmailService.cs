@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserEmailService : IUserEmailService
     {
+        private const byte MaxVerificationAttempts = 5;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IProfileDelegate profileDelegate;
@@ -64,6 +65,8 @@ namespace HealthGateway.WebClient.Services
             if (emailInvite != null &&
                 emailInvite.HdId == hdid &&
                 !emailInvite.Validated &&
+                !emailInvite.Deleted &&
+                emailInvite.VerificationAttempts < MaxVerificationAttempts &&
                 emailInvite.ExpireDate >= DateTime.UtcNow)
             {
                 emailInvite.Validated = true;
@@ -75,6 +78,16 @@ namespace HealthGateway.WebClient.Services
 
                 // Update the notification settings
                 this.UpdateNotificationSettings(userProfile, bearerToken);
+            } else {
+                emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid);
+                if (emailInvite != null &&
+                    !emailInvite.Validated &&
+                    !emailInvite.Deleted &&
+                    emailInvite.ExpireDate >= DateTime.UtcNow)
+                {
+                    emailInvite.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(emailInvite);
+                }
             }
 
             this.logger.LogDebug($"Finished validating email: {JsonConvert.SerializeObject(retVal)}");
@@ -108,6 +121,7 @@ namespace HealthGateway.WebClient.Services
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
                 emailInvite.ExpireDate = DateTime.UtcNow;
+                emailInvite.Deleted = string.IsNullOrEmpty(email);
                 this.messageVerificationDelegate.Update(emailInvite);
             }
 

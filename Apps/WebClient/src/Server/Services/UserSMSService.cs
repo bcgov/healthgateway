@@ -30,6 +30,8 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserSMSService : IUserSMSService
     {
+        private const byte VerificationExpiryDays = 5;
+        private const byte MaxVerificationAttempts = 5;
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -63,6 +65,8 @@ namespace HealthGateway.WebClient.Services
             if (smsInvite != null &&
                 smsInvite.HdId == hdid &&
                 !smsInvite.Validated &&
+                !smsInvite.Deleted &&
+                smsInvite.VerificationAttempts < MaxVerificationAttempts &&
                 smsInvite.SMSValidationCode == validationCode &&
                 smsInvite.ExpireDate >= DateTime.UtcNow)
             {
@@ -75,6 +79,18 @@ namespace HealthGateway.WebClient.Services
 
                 // Update the notification settings
                 this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken);
+            }
+            else
+            {
+                smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                if (smsInvite != null &&
+                    !smsInvite.Validated &&
+                    !smsInvite.Deleted &&
+                    smsInvite.ExpireDate >= DateTime.UtcNow)
+                {
+                    smsInvite.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(smsInvite);
+                }
             }
 
             this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
@@ -97,6 +113,7 @@ namespace HealthGateway.WebClient.Services
             {
                 this.logger.LogInformation($"Expiring old sms validation for user ${hdid}");
                 smsInvite.ExpireDate = DateTime.UtcNow;
+                smsInvite.Deleted = string.IsNullOrEmpty(sms);
                 this.messageVerificationDelegate.Update(smsInvite);
             }
 
@@ -108,7 +125,7 @@ namespace HealthGateway.WebClient.Services
                 messagingVerification.SMSNumber = sms;
                 messagingVerification.SMSValidationCode = notificationRequest.SMSVerificationCode;
                 messagingVerification.VerificationType = MessagingVerificationType.SMS;
-                messagingVerification.ExpireDate = DateTime.MaxValue;
+                messagingVerification.ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays);
                 this.messageVerificationDelegate.Insert(messagingVerification);
             }
 
