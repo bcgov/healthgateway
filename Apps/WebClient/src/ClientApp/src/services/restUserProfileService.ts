@@ -115,10 +115,10 @@ export class RestUserProfileService implements IUserProfileService {
     });
   }
 
-  public validateSMS(digit: string): Promise<boolean> {
+  public validateSMS(hdid: string, digit: string): Promise<boolean> {
     return new Promise((resolve) => {
       this.http
-        .get(`${this.USER_PROFILE_BASE_URI}/sms/validate/${digit}`)
+        .get(`${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`)
         .then(() => {
           return resolve(true);
         })

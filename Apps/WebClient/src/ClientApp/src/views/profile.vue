@@ -82,11 +82,17 @@ input {
                   id="email"
                   v-model="$v.email.$model"
                   type="email"
+                  class="mb-1"
                   :placeholder="
                     isEmailEditable ? 'Your email address' : 'Empty'
                   "
                   :disabled="!isEmailEditable"
-                  :state="isValid($v.email)"
+                  :state="
+                    isValid($v.email) ||
+                    (emailVerified && !isEmailEditable && !!email
+                      ? true
+                      : undefined)
+                  "
                 />
                 <div
                   v-if="!emailVerified && !isEmailEditable && email"
@@ -98,7 +104,7 @@ input {
                   v-if="!emailVerified && !isEmailEditable && email"
                   id="resendEmail"
                   variant="warning"
-                  class="ml-auto"
+                  class="ml-3"
                   :disabled="emailVerificationSent"
                   @click="sendUserEmailUpdate()"
                   >Resend Verification
@@ -183,15 +189,22 @@ input {
                 <b-form-input
                   id="smsNumber"
                   v-model="$v.smsNumber.$model"
-                  type="email"
+                  type="text"
+                  class="mb-1"
                   :placeholder="isSMSEditable ? 'Your SMS number' : 'Empty'"
                   :disabled="!isSMSEditable"
-                  :state="isValid($v.smsNumber)"
+                  :state="
+                    isValid($v.smsNumber) ||
+                    (smsVerified && !isSMSEditable && !!smsNumber
+                      ? true
+                      : undefined)
+                  "
                 />
                 <div
                   v-if="!smsVerified && !isSMSEditable && smsNumber"
                   class="ml-3"
                 >
+                  (Not Verified)
                   <b-button
                     id="verifySMS"
                     variant="warning"
@@ -357,7 +370,10 @@ import UserSMSInvite from "@/models/userSMSInvite";
 import UserProfile from "@/models/userProfile";
 import { WebClientConfiguration } from "@/models/configData";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
 library.add(faExclamationTriangle);
@@ -472,7 +488,7 @@ export default class ProfileComponent extends Vue {
           // Load user email
           var userEmail = results[1];
           this.email = userEmail.emailAddress;
-          this.emailVerified = userEmail.emailValidated;
+          this.emailVerified = userEmail.validated;
           this.emailVerificationSent = this.emailVerified;
         }
 
@@ -750,6 +766,10 @@ export default class ProfileComponent extends Vue {
       .finally(() => {
         this.isLoading = false;
       });
+  }
+
+  private get verifiedIcon(): IconDefinition {
+    return faCheck;
   }
 }
 </script>

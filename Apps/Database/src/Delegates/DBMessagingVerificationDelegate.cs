@@ -94,7 +94,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public MessagingVerification GetLastForUser(string hdid, string messagingVerificationType = MessagingVerificationType.Email)
+        public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
         {
             this.logger.LogTrace($"Getting last messaging verification from DB for user... {hdid}");
             MessagingVerification retVal = this.dbContext
@@ -103,6 +103,11 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => p.HdId == hdid && p.VerificationType == messagingVerificationType)
                 .OrderByDescending(p => p.UpdatedDateTime)
                 .FirstOrDefault();
+
+            if (retVal.Deleted)
+            {
+                return null;
+            }
 
             this.logger.LogDebug($"Finished getting messaging verification from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;

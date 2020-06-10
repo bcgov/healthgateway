@@ -34,6 +34,7 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class EmailQueueService : IEmailQueueService
     {
+        private const int VerificationExpiryDays = 5;
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
@@ -130,7 +131,7 @@ namespace HealthGateway.Common.Services
             MessagingVerification invite = new MessagingVerification();
             invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
-            invite.ExpireDate = DateTime.MaxValue;
+            invite.ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays);
 
             string hostUrl = activationHost.ToString();
             hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash

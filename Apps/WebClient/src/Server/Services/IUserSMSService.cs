@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -47,6 +48,6 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>returns the last SMS invite if found.</returns>
-        MessagingVerification RetrieveLastInvite(string hdid);
+        MessagingVerification? RetrieveLastInvite(string hdid);
     }
 }

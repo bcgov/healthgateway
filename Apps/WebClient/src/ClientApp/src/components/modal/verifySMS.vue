@@ -21,7 +21,12 @@
     <b-row>
       <b-col>
         <form>
-          <b-row>
+          <b-row v-if="tooManyRetries">
+            <b-col class="text-center">
+              Too many failed attempts.
+            </b-col>
+          </b-row>
+          <b-row v-if="!tooManyRetries">
             <b-col>
               <label for="verificationCode-input" class="text-center w-100">
                 Enter the verification code sent to <br />
@@ -33,7 +38,7 @@
                 size="lg"
                 :autofocus="true"
                 class="text-center"
-                :state="!error"
+                :state="error ? false : undefined"
                 max-length="6"
                 :disabled="isLoading"
                 required
@@ -41,7 +46,7 @@
               />
             </b-col>
           </b-row>
-          <b-row v-if="error">
+          <b-row v-if="error && !tooManyRetries">
             <b-col>
               <span class="text-danger"
                 >Invalid verification code. Try again.</span
@@ -52,8 +57,8 @@
       </b-col>
     </b-row>
     <template v-slot:modal-footer>
-      <b-row>
-        <b-col>
+      <b-row class="w-100">
+        <b-col v-if="!tooManyRetries">
           Didn't receive a code?
           <b-button
             id="resendSMSVerification"
@@ -63,6 +68,17 @@
             @click="sendUserSMSUpdate()"
           >
             Resend
+          </b-button>
+        </b-col>
+        <b-col v-if="tooManyRetries">
+          <b-button
+            id="resendSMSVerification"
+            variant="link"
+            class="text-center w-100"
+            :disabled="smsVerificationSent"
+            @click="sendUserSMSUpdate()"
+          >
+            Send new code
           </b-button>
         </b-col>
       </b-row>
@@ -75,11 +91,12 @@
 import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
 import { Emit, Prop, Component, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IUserProfileService } from "@/services/interfaces";
+import UserSMSInvite from "@/models/userSMSInvite";
 
 @Component({
   components: {
@@ -93,15 +110,33 @@ export default class VerifySMSComponent extends Vue {
 
   private userProfileService!: IUserProfileService;
 
+  private tooManyRetries: boolean = false;
   private smsVerificationSent: boolean = false;
   private smsVerificationCode: string = "";
   private isVisible: boolean = false;
   private isLoading: boolean = false;
   private isValid: boolean = false;
+
+  @Action("getUserSMS", { namespace: "user" })
+  getUserSMS!: ({ hdid }: { hdid: string }) => Promise<UserSMSInvite>;
+
   mounted() {
     this.userProfileService = container.get<IUserProfileService>(
       SERVICE_IDENTIFIER.UserProfileService
     );
+    this.getVerification();
+  }
+
+  private getVerification() {
+    this.getUserSMS({ hdid: this.user.hdid }).then((result) => {
+      this.tooManyRetries = result && result.tooManyFailedAttempts;
+      if (this.tooManyRetries) {
+        this.error = false;
+      }
+      if (result.expired) {
+        this.sendUserSMSUpdate();
+      }
+    });
   }
   public showModal() {
     this.isVisible = true;
@@ -144,10 +179,11 @@ export default class VerifySMSComponent extends Vue {
     this.smsVerificationCode = this.smsVerificationCode.replace(/\D/g, "");
     this.isLoading = true;
     this.userProfileService
-      .validateSMS(this.smsVerificationCode)
+      .validateSMS(this.user.hdid, this.smsVerificationCode)
       .then((result) => {
         this.error = !result;
         this.smsVerified = result;
+        this.getVerification();
         if (!this.error) {
           this.handleSubmit();
         }
@@ -163,6 +199,7 @@ export default class VerifySMSComponent extends Vue {
     this.userProfileService
       .updateSMSNumber(this.user.hdid, this.smsNumber)
       .then(() => {
+        this.getVerification();
         setTimeout(() => {
           this.smsVerificationSent = false;
         }, 5000);

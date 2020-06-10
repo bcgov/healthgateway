@@ -359,11 +359,12 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="404">The invite key was not found.</response>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.ValidateSMS(System.String)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.ValidateSMS(System.String,System.String)">
             <summary>
             Validates a sms invite.
             </summary>
             <returns>An empty response.</returns>
+            <param name="hdid">The user hdid.</param>
             <param name="validationCode">The sms invite validation code.</param>
             <response code="200">The sms was validated.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -716,8 +717,8 @@
             <summary>
             Constructs a UserInviteEmail from a EmailInvite.
             </summary>
-            <param name="model">The model object to convert.</param>
-            <returns>The created view model.</returns>
+            <param name="model">The messaging verification database model.</param>
+            <returns>The user email invite model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.UserNote">
             <summary>
@@ -867,11 +868,21 @@
             Gets or sets the sms number for the invite.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.TooManyFailedAttempts">
+            <summary>
+            Gets or sets a value indicating whether the code had too many verification attempts.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.Expired">
+            <summary>
+            Gets or sets a value indicating whether the code is expired.
+            </summary>
+        </member>
         <member name="M:HealthGateway.WebClient.Models.UserSMSInvite.CreateFromDbModel(HealthGateway.Database.Models.MessagingVerification)">
             <summary>
             Constructs a UserSMSInvite from a MessagingVerification.
             </summary>
-            <param name="model">The model object to convert.</param>
+            <param name="model">The database messaging verification model.</param>
             <returns>The UserSMSInvite model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
@@ -1325,6 +1336,11 @@
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserSMSService">
             <inheritdoc />
+        </member>
+        <member name="F:HealthGateway.WebClient.Services.UserSMSService.MaxVerificationAttempts">
+            <summary>
+            The maximum verification attempts.
+            </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserSMSService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserSMSService},HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
             <summary>

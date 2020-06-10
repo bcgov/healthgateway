@@ -46,7 +46,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdid">The users hdid.</param>
         /// <param name="messagingVerificationType">The type to query.</param>
         /// <returns>The  message verification that was fetched.</returns>
-        MessagingVerification GetLastForUser(string hdid, string messagingVerificationType = MessagingVerificationType.Email);
+        MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType);
 
         /// <summary>
         /// Updates a MessageingVerification using a populated model object.

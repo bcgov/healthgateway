@@ -212,19 +212,19 @@ namespace HealthGateway.WebClient.Controllers
         /// Validates a sms invite.
         /// </summary>
         /// <returns>An empty response.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="validationCode">The sms invite validation code.</param>
         /// <response code="200">The sms was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
-        [Route("sms/validate/{validationCode}")]
-        public async Task<IActionResult> ValidateSMS(string validationCode)
+        [Route("{hdid}/sms/validate/{validationCode}")]
+        [Authorize(Policy = PatientPolicy.HasWrite)]
+        public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            if (this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken))
+            if (this.userSMSService.ValidateSMS(hdid, validationCode, bearerToken))
             {
                 return new OkResult();
             }
@@ -248,25 +248,9 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = PatientPolicy.HasRead)]
         public IActionResult GetUserEmailInvite(string hdid)
         {
-            MessagingVerification emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
-
-            // Check expiration and remove fields that contains sensitive information
-            if (emailInvite != null)
-            {
-                if (emailInvite.ExpireDate < DateTime.UtcNow)
-                {
-                    return new JsonResult(null);
-                }
-                else
-                {
-                    UserEmailInvite result = UserEmailInvite.CreateFromDbModel(emailInvite);
-                    return new JsonResult(result);
-                }
-            }
-            else
-            {
-                return new JsonResult(null);
-            }
+            MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
+            UserEmailInvite? result = UserEmailInvite.CreateFromDbModel(emailInvite);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -282,25 +266,9 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = PatientPolicy.HasRead)]
         public IActionResult GetUserSMSInvite(string hdid)
         {
-            MessagingVerification smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
-
-            // Check expiration and remove fields that contains sensitive information
-            if (smsInvite != null)
-            {
-                if (smsInvite.ExpireDate < DateTime.UtcNow)
-                {
-                    return new JsonResult(null);
-                }
-                else
-                {
-                    UserSMSInvite result = UserSMSInvite.CreateFromDbModel(smsInvite);
-                    return new JsonResult(result);
-                }
-            }
-            else
-            {
-                return new JsonResult(null);
-            }
+            MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
+            UserSMSInvite? result = UserSMSInvite.CreateFromDbModel(smsInvite);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -325,7 +293,6 @@ namespace HealthGateway.WebClient.Controllers
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
             bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), bearerToken);
-
             return new JsonResult(result);
         }
 
