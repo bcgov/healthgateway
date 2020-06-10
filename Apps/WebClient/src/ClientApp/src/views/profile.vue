@@ -684,6 +684,7 @@ export default class ProfileComponent extends Vue {
         this.emailVerificationSent = true;
         this.emailConfirmation = "";
         this.tempEmail = "";
+        this.getUserSMS({ hdid: this.user.hdid });
         this.$v.$reset();
       })
       .catch((err) => {
