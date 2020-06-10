@@ -59,7 +59,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> ValidateSMS(string hdid, string validationCode, string bearerToken)
+        public bool ValidateSMS(string hdid, string validationCode, string bearerToken)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
             bool retVal = false;
@@ -81,7 +81,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
 
                 // Update the notification settings
-                await this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken).ConfigureAwait(true);
+                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken);
             }
             else
             {

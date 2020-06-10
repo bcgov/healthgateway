@@ -84,7 +84,7 @@ export interface IUserProfileService {
   getLatestEmailInvite(hdid: string): Promise<UserEmailInvite>;
   getLatestSMSInvite(hdid: string): Promise<UserSMSInvite>;
   validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
-  validateSMS(digit: string): Promise<boolean>;
+  validateSMS(hdid: string, digit: string): Promise<boolean>;
   updateEmail(hdid: string, email: string): Promise<boolean>;
   updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
 }

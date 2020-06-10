@@ -179,7 +179,7 @@ export default class VerifySMSComponent extends Vue {
     this.smsVerificationCode = this.smsVerificationCode.replace(/\D/g, "");
     this.isLoading = true;
     this.userProfileService
-      .validateSMS(this.smsVerificationCode)
+      .validateSMS(this.user.hdid, this.smsVerificationCode)
       .then((result) => {
         this.error = !result;
         this.smsVerified = result;

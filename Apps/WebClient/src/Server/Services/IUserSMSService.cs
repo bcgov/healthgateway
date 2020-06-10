@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -40,7 +41,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="validationCode">The sms validation code.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>returns true if the sms invite was found and validated.</returns>
-        Task<bool> ValidateSMS(string hdid, string validationCode, string bearerToken);
+        bool ValidateSMS(string hdid, string validationCode, string bearerToken);
 
         /// <summary>
         /// Retrieves the last invite SMS.

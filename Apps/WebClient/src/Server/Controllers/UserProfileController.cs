@@ -212,19 +212,19 @@ namespace HealthGateway.WebClient.Controllers
         /// Validates a sms invite.
         /// </summary>
         /// <returns>An empty response.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="validationCode">The sms invite validation code.</param>
         /// <response code="200">The sms was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
-        [Route("sms/validate/{validationCode}")]
-        public async Task<IActionResult> ValidateSMS(string validationCode)
+        [Route("{hdid}/sms/validate/{validationCode}")]
+        [Authorize(Policy = PatientPolicy.HasWrite)]
+        public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            if (await this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken).ConfigureAwait(true))
+            if (this.userSMSService.ValidateSMS(hdid, validationCode, bearerToken))
             {
                 return new OkResult();
             }
@@ -248,7 +248,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = PatientPolicy.HasRead)]
         public IActionResult GetUserEmailInvite(string hdid)
         {
-            MessagingVerification emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
+            MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
             UserEmailInvite? result = UserEmailInvite.CreateFromDbModel(emailInvite);
             return new JsonResult(result);
         }
@@ -266,7 +266,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = PatientPolicy.HasRead)]
         public IActionResult GetUserSMSInvite(string hdid)
         {
-            MessagingVerification smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
+            MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
             UserSMSInvite? result = UserSMSInvite.CreateFromDbModel(smsInvite);
             return new JsonResult(result);
         }
@@ -317,7 +317,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken).ConfigureAwait(true);
+            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
     }
