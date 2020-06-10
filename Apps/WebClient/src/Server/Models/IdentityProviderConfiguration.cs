@@ -23,22 +23,22 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the Id of the Identity Provider.
         /// </summary>
-        public string Id { get; set;  }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the name of the Identity Provider.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Font Awesome Icon that we recommend to use.
         /// </summary>
-        public string Icon { get; set; }
+        public string Icon { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Identity Provider hint.
         /// </summary>
-        public string Hint { get; set; }
+        public string Hint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this identity provider

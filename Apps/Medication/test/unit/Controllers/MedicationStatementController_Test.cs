@@ -70,7 +70,7 @@ namespace HealthGateway.Medication.Test
             Mock<IConfiguration> configMock = new Mock<IConfiguration>();
             configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
 
-            MedicationStatementController controller = new MedicationStatementController(svcMock.Object, httpContextAccessorMock.Object, configMock.Object);
+            MedicationStatementController controller = new MedicationStatementController(configMock.Object, svcMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
@@ -129,7 +129,7 @@ namespace HealthGateway.Medication.Test
             Mock<IConfiguration> configMock = new Mock<IConfiguration>();
             configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
 
-            MedicationStatementController controller = new MedicationStatementController(svcMock.Object, httpContextAccessorMock.Object, configMock.Object);
+            MedicationStatementController controller = new MedicationStatementController(configMock.Object, svcMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);

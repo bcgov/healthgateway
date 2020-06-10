@@ -40,16 +40,6 @@ namespace HealthGateway.Medication.Controllers
         private readonly IMedicationStatementService medicationStatementService;
 
         /// <summary>
-        /// The authorization service.
-        /// </summary>
-        private readonly IAuthorizationService authorizationService;
-
-        /// <summary>
-        /// The httpContextAccessor injected.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
         /// The Configuration injected.
         /// </summary>
         private readonly IConfiguration configuration;
@@ -57,13 +47,11 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
-        /// <param name="medicationStatementService">The injected medication data service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public MedicationStatementController(IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        /// <param name="medicationStatementService">The injected medication data service.</param>
+        public MedicationStatementController(IConfiguration configuration, IMedicationStatementService medicationStatementService)
         {
             this.medicationStatementService = medicationStatementService;
-            this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
         }
 

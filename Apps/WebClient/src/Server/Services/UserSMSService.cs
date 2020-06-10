@@ -42,7 +42,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserSMSService(ILogger<UserSMSService> logger,
+        public UserSMSService(
+            ILogger<UserSMSService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
@@ -82,7 +83,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
+        public bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
@@ -91,7 +92,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
-            NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken).ConfigureAwait(true);
+            NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken);
 
             if (smsInvite != null && smsInvite.ExpireDate >= DateTime.UtcNow)
             {
@@ -116,24 +117,24 @@ namespace HealthGateway.WebClient.Services
             return true;
         }
 
-        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
+        /// <inheritdoc />
+        public MessagingVerification RetrieveLastInvite(string hdid)
+        {
+            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            return smsInvite;
+        }
+
+        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, email, smsNumber);
-            RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
+            RequestResult<NotificationSettingsResponse> response = Task.Run(async () => await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true)).Result;
             if (response.ResultStatus == ResultType.Error)
             {
                 this.notificationSettingsService.QueueNotificationSettings(request);
             }
 
             return request;
-        }
-
-        /// <inheritdoc />
-        public MessagingVerification RetrieveLastInvite(string hdid)
-        {
-            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-            return smsInvite;
         }
     }
 }

@@ -133,9 +133,8 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.Logger.LogDebug("ConfigureAuthorizationServices...");
 
             // Configuration Authorization Handlers
-            services.AddSingleton<IAuthorizationHandler, PatientAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, PatientAuthorizationHandler>();
 
-            // Adding claims check to ensure that user has an hdid as part of its claim
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(PatientPolicy.IsPatient, policy =>

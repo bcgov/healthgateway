@@ -43,7 +43,6 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <param name="commentService">The injected comment service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         public CommentController(
             ICommentService commentService,
             IHttpContextAccessor httpContextAccessor)

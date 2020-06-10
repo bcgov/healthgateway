@@ -16,7 +16,6 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -32,7 +31,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hostUri">The host uri for referal purposes.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>returns true if the sms number was sucessfully updated.</returns>
-        Task<bool> UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken);
+        bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken);
 
         /// <summary>
         /// Validates the sms number that matches the given validation code.

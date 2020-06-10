@@ -37,6 +37,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="betaRequest">The request to create a beta request.</param>
         /// <param name="hostUrl">The host url for referal purposes.</param>
         /// <returns>The wrapped user profile.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
         RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl);
     }
 }

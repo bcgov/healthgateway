@@ -32,6 +32,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
+        /// <param name="nonceService">The NonceService to use.</param>
         public HomeController(INonceService nonceService)
         {
             this.nonceService = nonceService;

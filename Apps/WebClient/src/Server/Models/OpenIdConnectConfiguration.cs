@@ -25,17 +25,17 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the OpenIDConnect Authority.
         /// </summary>
-        public string Authority { get; set; }
+        public string Authority { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the OpenIdConnect Client ID.
         /// </summary>
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the OpenIDConnect Response types.
         /// </summary>
-        public string ResponseType { get; set; }
+        public string ResponseType { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the OpenIDConnect Scopes.
@@ -45,7 +45,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the Callback URIs.
         /// </summary>
-        #pragma warning disable CA2227 //disable read-only Dictionary
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, System.Uri>? Callbacks { get; set; }
     }
 }

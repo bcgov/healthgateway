@@ -35,6 +35,8 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
+        private const string HostTemplateVariable = "host";
+
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly IEmailDelegate emailDelegate;
@@ -45,10 +47,6 @@ namespace HealthGateway.WebClient.Services
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
-
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string HOST_TEMPLATE_VARIABLE = "host";
-#pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -131,7 +129,6 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
         {
-            Contract.Requires(createProfileRequest != null && hostUri != null);
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
@@ -147,7 +144,7 @@ namespace HealthGateway.WebClient.Services
             }
 
             string hdid = createProfileRequest.Profile.HdId;
-            MessagingVerification emailInvite = null;
+            MessagingVerification? emailInvite = null;
             if (registrationStatus == RegistrationStatus.InviteOnly)
             {
                 if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
@@ -164,12 +161,13 @@ namespace HealthGateway.WebClient.Services
                 // Fails if...
                 // Email invite not found or
                 // Email invite was already validated or
+                // Email's recipient is not found
                 // Email invite must have a blank/null HDID or be the same as the one in the request
                 // Email address doesn't match the invite
-                if (emailInvite == null ||
-                    emailInvite.Validated ||
-                    !hdidIsValid ||
-                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
+                if (emailInvite == null || (emailInvite != null &&
+                        (emailInvite.Email == null || emailInvite.Email.To == null ||
+                         emailInvite.Validated || !hdidIsValid ||
+                         !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))))
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultMessage = "Invalid email invite";
@@ -221,7 +219,6 @@ namespace HealthGateway.WebClient.Services
 
                 requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
                 requestResult.ResultStatus = ResultType.Success;
-
             }
 
             this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
@@ -229,6 +226,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl)
         {
             this.logger.LogTrace($"Closing user profile... {hdid}");
@@ -256,7 +254,7 @@ namespace HealthGateway.WebClient.Services
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    keyValues.Add(HostTemplateVariable, hostUrl);
                     this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountClosedTemplate, keyValues);
                 }
 
@@ -269,6 +267,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
         {
             this.logger.LogTrace($"Recovering user profile... {hdid}");
@@ -297,7 +296,7 @@ namespace HealthGateway.WebClient.Services
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    keyValues.Add(HostTemplateVariable, hostUrl);
                     this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate, keyValues);
                 }
 
