@@ -23,15 +23,17 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserSMSService : IUserSMSService
     {
-        private const int VerificationExpiryDays = 5;
+        /// <summary>
+        /// The maximum verification attempts.
+        /// </summary>
         public const int MaxVerificationAttempts = 5;
+        private const int VerificationExpiryDays = 5;
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -44,7 +46,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserSMSService(ILogger<UserSMSService> logger,
+        public UserSMSService(
+            ILogger<UserSMSService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
@@ -56,11 +59,11 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool ValidateSMS(string hdid, string validationCode, string bearerToken)
+        public async Task<bool> ValidateSMS(string hdid, string validationCode, string bearerToken)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
             bool retVal = false;
-            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
             if (smsInvite != null &&
                 smsInvite.HdId == hdid &&
@@ -78,15 +81,13 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken);
+                await this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken).ConfigureAwait(true);
             }
             else
             {
                 smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
                 if (smsInvite != null &&
-                    !smsInvite.Validated &&
-                    !smsInvite.Deleted &&
-                    smsInvite.ExpireDate >= DateTime.UtcNow)
+                    !smsInvite.Validated)
                 {
                     smsInvite.VerificationAttempts++;
                     this.messageVerificationDelegate.Update(smsInvite);
@@ -104,7 +105,7 @@ namespace HealthGateway.WebClient.Services
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SMSNumber = null;
             this.profileDelegate.Update(userProfile);
-            MessagingVerification smsInvite = this.RetrieveLastInvite(hdid);
+            MessagingVerification? smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
             NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken).ConfigureAwait(true);
@@ -133,6 +134,13 @@ namespace HealthGateway.WebClient.Services
             return true;
         }
 
+        /// <inheritdoc />
+        public MessagingVerification? RetrieveLastInvite(string hdid)
+        {
+            MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            return smsInvite;
+        }
+
         private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
@@ -144,13 +152,6 @@ namespace HealthGateway.WebClient.Services
             }
 
             return request;
-        }
-
-        /// <inheritdoc />
-        public MessagingVerification RetrieveLastInvite(string hdid)
-        {
-            MessagingVerification smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-            return smsInvite;
         }
     }
 }

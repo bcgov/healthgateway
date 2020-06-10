@@ -267,7 +267,7 @@ namespace HealthGateway.WebClient.Controllers
             string userHdid = user.FindFirst("hdid").Value;
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            if (this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken))
+            if (await this.userSMSService.ValidateSMS(userHdid, validationCode, bearerToken).ConfigureAwait(true))
             {
                 return new OkResult();
             }
@@ -310,24 +310,8 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             MessagingVerification emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
-
-            // Check expiration and remove fields that contains sensitive information
-            if (emailInvite != null)
-            {
-                if (emailInvite.ExpireDate < DateTime.UtcNow)
-                {
-                    return new JsonResult(null);
-                }
-                else
-                {
-                    UserEmailInvite result = UserEmailInvite.CreateFromDbModel(emailInvite);
-                    return new JsonResult(result);
-                }
-            }
-            else
-            {
-                return new JsonResult(null);
-            }
+            UserEmailInvite? result = UserEmailInvite.CreateFromDbModel(emailInvite);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -362,24 +346,8 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             MessagingVerification smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
-
-            // Check expiration and remove fields that contains sensitive information
-            if (smsInvite != null)
-            {
-                if (smsInvite.ExpireDate < DateTime.UtcNow)
-                {
-                    return new JsonResult(null);
-                }
-                else
-                {
-                    UserSMSInvite result = UserSMSInvite.CreateFromDbModel(smsInvite);
-                    return new JsonResult(result);
-                }
-            }
-            else
-            {
-                return new JsonResult(null);
-            }
+            UserSMSInvite? result = UserSMSInvite.CreateFromDbModel(smsInvite);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -422,7 +390,6 @@ namespace HealthGateway.WebClient.Controllers
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
             bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), bearerToken);
-
             return new JsonResult(result);
         }
 
@@ -465,7 +432,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
+            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken).ConfigureAwait(true);
             return new JsonResult(result);
         }
     }

@@ -40,16 +40,28 @@ namespace HealthGateway.WebClient.Models
         public bool TooManyFailedAttempts { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the code is expired.
+        /// </summary>
+        public bool Expired { get; set; }
+
+        /// <summary>
         /// Constructs a UserSMSInvite from a MessagingVerification.
         /// </summary>
+        /// <param name="model">The database messaging verification model.</param>
         /// <returns>The UserSMSInvite model.</returns>
-        public static UserSMSInvite CreateFromDbModel(MessagingVerification model)
+        public static UserSMSInvite? CreateFromDbModel(MessagingVerification? model)
         {
+            if (model == null)
+            {
+                return null;
+            }
+
             return new UserSMSInvite()
             {
                 Validated = model.Validated,
                 SMSNumber = model.SMSNumber,
                 TooManyFailedAttempts = model.VerificationAttempts > UserSMSService.MaxVerificationAttempts,
+                Expired = model.ExpireDate <= DateTime.UtcNow,
             };
         }
     }

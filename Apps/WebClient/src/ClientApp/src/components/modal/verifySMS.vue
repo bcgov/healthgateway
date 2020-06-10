@@ -38,7 +38,7 @@
                 size="lg"
                 :autofocus="true"
                 class="text-center"
-                :state="!error"
+                :state="error ? false : undefined"
                 max-length="6"
                 :disabled="isLoading"
                 required
@@ -132,6 +132,9 @@ export default class VerifySMSComponent extends Vue {
       this.tooManyRetries = result && result.tooManyFailedAttempts;
       if (this.tooManyRetries) {
         this.error = false;
+      }
+      if (result.expired) {
+        this.sendUserSMSUpdate();
       }
     });
   }
