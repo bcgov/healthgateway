@@ -119,7 +119,7 @@ namespace HealthGateway.WebClient.Services
             // Update the notification settings
             this.UpdateNotificationSettings(userProfile, bearerToken);
 
-            if (emailInvite != null && !emailInvite.Validated && emailInvite.ExpireDate >= DateTime.UtcNow)
+            if (emailInvite != null)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
                 emailInvite.ExpireDate = DateTime.UtcNow;
