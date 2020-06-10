@@ -508,6 +508,16 @@
             should be used.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.NotificationSettingsConfig">
+            <summary>
+            Provides configuration data for the Notifications Settings PHSA API.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettingsConfig.Endpoint">
+            <summary>
+            Gets or sets the PHSA Notification Settings external endpoint.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
             <summary>
             Configuration to be used by external clients for authentication.

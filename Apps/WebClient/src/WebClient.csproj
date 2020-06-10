@@ -9,6 +9,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
     <SpaRoot>ClientApp\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -60,11 +62,6 @@
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
     <Folder Include="Views\Robots\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Server\Models\NotificationSettings.cs" />
-    <Compile Remove="Server\Models\NotificationSettingsConfig.cs" />
-    <Compile Remove="Server\Constants\NotificationTarget.cs" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
