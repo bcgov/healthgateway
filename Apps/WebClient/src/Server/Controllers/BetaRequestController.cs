@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Services;
@@ -38,21 +39,17 @@ namespace HealthGateway.WebClient.Controllers
     {
         private readonly IBetaRequestService betaRequestService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetaRequestController"/> class.
         /// </summary>
         /// <param name="betaRequestService">The injected beta request service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>        
         public BetaRequestController(
             IBetaRequestService betaRequestService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IHttpContextAccessor httpContextAccessor)
         {
             this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
             this.betaRequestService = betaRequestService;
         }
 
@@ -66,32 +63,20 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateBetaRequest([FromBody] BetaRequest betaRequest)
+        [Authorize(Policy = PatientPolicy.IsPatient)]
+        public IActionResult CreateBetaRequest([FromBody] BetaRequest betaRequest)
         {
-            Contract.Requires(betaRequest != null);
-
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, betaRequest.HdId, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer?
-                .GetLeftPart(UriPartial.Authority);
+                .GetLeftPart(UriPartial.Authority) !;
 
             RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest, referer);
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Retrieves the latest user queued email
+        /// Retrieves the latest user queued email.
         /// </summary>
         /// <returns>The email for the suer queued.</returns>
         /// <param name="hdid">The user hdid.</param>
@@ -100,30 +85,10 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetBetaRequest(string hdid)
+        [Authorize(Policy = PatientPolicy.HasRead)]
+        public IActionResult GetBetaRequest(string hdid)
         {
-            Contract.Requires(hdid != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-
-            // Validate that the query parameter matches the user claims
-            if (!hdid.Equals(userHdid, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             BetaRequest result = this.betaRequestService.GetBetaRequest(hdid);
-
             return new JsonResult(result);
         }
     }

@@ -13,34 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
-    using System;
-    using HealthGateway.Database.Models;
-
     /// <summary>
-    /// Object that defines the request for creating a User.
+    /// Claims specific to Health Gateway.
     /// </summary>
-    public class CreateNoteRequest
+    public static class GatewayClaims
     {
         /// <summary>
-        /// Gets or sets the note text.
+        /// Claim authorizing the user as a system.
         /// </summary>
-        public string Text { get; set; } = string.Empty;
+        public const string System = "System";
 
         /// <summary>
-        /// Gets or sets the note title.
+        /// Policy claims requiring an HDID.
         /// </summary>
-        public string Title { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the note date.
-        /// </summary>
-        public DateTime JournalDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user hdid.
-        /// </summary>
-        public string HdId { get; set; } = string.Empty;
+        public const string HDID = "hdid";
     }
 }

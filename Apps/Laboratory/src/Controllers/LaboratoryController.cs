@@ -20,6 +20,7 @@ namespace HealthGateway.Laboratory.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
@@ -53,27 +54,19 @@ namespace HealthGateway.Laboratory.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// Gets or sets the authorization service.
-        /// </summary>
-        private readonly IAuthorizationService authorizationService;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The immunization data service.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
-        /// <param name="authorizationService">The IAuthorizationService.</param>
         public LaboratoryController(
             ILogger<LaboratoryController> logger,
             ILaboratoryService svc,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.service = svc;
             this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -86,7 +79,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = PatientPolicy.IsPatient)]
         public async Task<IActionResult> GetLaboratoryOrders()
         {
             this.logger.LogDebug($"Getting list of laboratory orders... ");
@@ -94,11 +87,6 @@ namespace HealthGateway.Laboratory.Controllers
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string hdid = user.FindFirst("hdid").Value;
             string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
 
             RequestResult<IEnumerable<LaboratoryOrder>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
@@ -118,7 +106,7 @@ namespace HealthGateway.Laboratory.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{reportId}/Report")]
-        [Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = PatientPolicy.IsPatient)]
         public async Task<IActionResult> GetLaboratoryReport(Guid reportId)
         {
             this.logger.LogDebug($"Getting PDF version of Laboratory Report... {1}");
@@ -126,11 +114,6 @@ namespace HealthGateway.Laboratory.Controllers
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string hdid = user.FindFirst("hdid").Value;
             string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
 
             RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");

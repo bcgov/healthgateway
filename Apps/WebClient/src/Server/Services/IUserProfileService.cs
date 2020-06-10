@@ -49,6 +49,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="userId">The user id.</param>
         /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
         RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl);
 
         /// <summary>
@@ -57,6 +58,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
         RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl);
 
         /// <summary>

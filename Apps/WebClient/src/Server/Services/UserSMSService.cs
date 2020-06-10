@@ -99,7 +99,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
+        public bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
@@ -108,7 +108,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification? smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
-            NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken).ConfigureAwait(true);
+            NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken);
 
             if (smsInvite != null && smsInvite.ExpireDate >= DateTime.UtcNow)
             {
@@ -141,11 +141,11 @@ namespace HealthGateway.WebClient.Services
             return smsInvite;
         }
 
-        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
+        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, email, smsNumber);
-            RequestResult<NotificationSettingsResponse> response = await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true);
+            RequestResult<NotificationSettingsResponse> response = Task.Run(async () => await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true)).Result;
             if (response.ResultStatus == ResultType.Error)
             {
                 this.notificationSettingsService.QueueNotificationSettings(request);

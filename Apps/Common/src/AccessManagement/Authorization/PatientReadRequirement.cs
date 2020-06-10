@@ -13,34 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.Common.AccessManagement.Authorization
 {
-    using System;
-    using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// Object that defines the request for creating a User.
+    /// PatientReadRequirement asserts authorization that the user is a Patient (has an HDID) and
+    /// is either the owner of the resource or delegated to perform reads.
     /// </summary>
-    public class CreateNoteRequest
+    public class PatientReadRequirement : IAuthorizationRequirement
     {
-        /// <summary>
-        /// Gets or sets the note text.
-        /// </summary>
-        public string Text { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the note title.
-        /// </summary>
-        public string Title { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the note date.
-        /// </summary>
-        public DateTime JournalDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user hdid.
-        /// </summary>
-        public string HdId { get; set; } = string.Empty;
+        // blank on purpose
     }
 }

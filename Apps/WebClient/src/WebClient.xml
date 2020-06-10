@@ -29,13 +29,12 @@
             Web API to handle requests for beta users.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.#ctor(HealthGateway.WebClient.Services.IBetaRequestService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.#ctor(HealthGateway.WebClient.Services.IBetaRequestService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.BetaRequestController"/> class.
             </summary>
             <param name="betaRequestService">The injected beta request service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>        
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
             <summary>
@@ -50,7 +49,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.GetBetaRequest(System.String)">
             <summary>
-            Retrieves the latest user queued email
+            Retrieves the latest user queued email.
             </summary>
             <returns>The email for the suer queued.</returns>
             <param name="hdid">The user hdid.</param>
@@ -63,13 +62,12 @@
             Web API to handle patient notes interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.CommentController.#ctor(HealthGateway.WebClient.Services.ICommentService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.#ctor(HealthGateway.WebClient.Services.ICommentService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.CommentController"/> class.
             </summary>
             <param name="commentService">The injected comment service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.CommentController.Create(HealthGateway.WebClient.Models.UserComment)">
             <summary>
@@ -168,6 +166,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.HomeController"/> class.
             </summary>
+            <param name="nonceService">The NonceService to use.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.HomeController.Index">
             <summary>
@@ -192,13 +191,12 @@
             Web API to handle patient notes interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.INoteService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.INoteService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.NoteController"/> class.
             </summary>
             <param name="noteService">The injected patient notes service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(HealthGateway.WebClient.Models.UserNote)">
             <summary>
@@ -266,12 +264,11 @@
             Web API to handle user feedback interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.#ctor(HealthGateway.WebClient.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.#ctor(HealthGateway.WebClient.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserFeedbackController"/> class.
             </summary>
             <param name="userFeedbackService">The injected user feedback service.</param>
-            <param name="authorizationService">The injected authorization service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
@@ -291,13 +288,12 @@
             Web API to handle user profile interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService,HealthGateway.WebClient.Services.IUserEmailService,HealthGateway.WebClient.Services.IUserSMSService)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.WebClient.Services.IUserEmailService,HealthGateway.WebClient.Services.IUserSMSService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserProfileController"/> class.
             </summary>
             <param name="userProfileService">The injected user profile service.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>
             <param name="userEmailService">The injected user email service.</param>
             <param name="userSMSService">The injected user sms service.</param>
         </member>
@@ -512,6 +508,16 @@
             should be used.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.NotificationSettingsConfig">
+            <summary>
+            Provides configuration data for the Notifications Settings PHSA API.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettingsConfig.Endpoint">
+            <summary>
+            Gets or sets the PHSA Notification Settings external endpoint.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
             <summary>
             Configuration to be used by external clients for authentication.
@@ -647,14 +653,6 @@
             This is generally set by the baseDbContext.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Models.UserComment.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
-            <summary>
-            Constructs a database comment model from a user Node model.
-            </summary>
-            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
-            <param name="key">The security key.</param>
-            <returns>The database user comment model.</returns>
-        </member>
         <member name="M:HealthGateway.WebClient.Models.UserComment.CreateFromDbModel(HealthGateway.Database.Models.Comment,HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
             <summary>
             Constructs a UserComment model from a Node database model.
@@ -672,6 +670,14 @@
             <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
             <param name="key">The security key.</param>
             <returns>A list of use comments.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserComment.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a database comment model from a user Node model.
+            </summary>
+            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+            <param name="key">The security key.</param>
+            <returns>The database user comment model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.UserEmailInvite">
             <summary>
@@ -772,14 +778,6 @@
             This is generally set by the baseDbContext.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Models.UserNote.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
-            <summary>
-            Constructs a database Note model from a user Node model.
-            </summary>
-            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
-            <param name="key">The security key.</param>
-            <returns>The database user note model.</returns>
-        </member>
         <member name="M:HealthGateway.WebClient.Models.UserNote.CreateFromDbModel(HealthGateway.Database.Models.Note,HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
             <summary>
             Constructs a UserNote model from a Node database model.
@@ -797,6 +795,14 @@
             <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
             <param name="key">The security key.</param>
             <returns>A list of use notes.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserNote.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a database Note model from a user Node model.
+            </summary>
+            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+            <param name="key">The security key.</param>
+            <returns>The database user note model.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Models.UserProfileModel">
             <summary>

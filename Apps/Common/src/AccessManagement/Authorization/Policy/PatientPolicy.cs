@@ -13,34 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
-    using System;
-    using HealthGateway.Database.Models;
-
     /// <summary>
-    /// Object that defines the request for creating a User.
+    /// The set of claims to access Patient data.
     /// </summary>
-    public class CreateNoteRequest
+    public static class PatientPolicy
     {
         /// <summary>
-        /// Gets or sets the note text.
+        /// Policy which requires that the user be a patient (have a HDID).
         /// </summary>
-        public string Text { get; set; } = string.Empty;
+        public const string IsPatient = "patient";
 
         /// <summary>
-        /// Gets or sets the note title.
+        /// Policy which allows the reading of the identified patient.
         /// </summary>
-        public string Title { get; set; } = string.Empty;
+        public const string HasRead = "PatientRead";
 
         /// <summary>
-        /// Gets or sets the note date.
+        /// Policy which allows writing of the identified patient.
         /// </summary>
-        public DateTime JournalDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user hdid.
-        /// </summary>
-        public string HdId { get; set; } = string.Empty;
+        public const string HasWrite = "PatientWrite";
     }
 }

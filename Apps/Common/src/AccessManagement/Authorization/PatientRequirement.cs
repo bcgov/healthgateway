@@ -15,19 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization
 {
-    /// <summary>
-    /// The PolicyNameConstants for authorization policy names.
-    /// </summary>
-    public static class PolicyNameConstants
-    {
-        /// <summary>
-        /// The PatientOnly policy name constant.
-        /// </summary>
-        public static readonly string PatientOnly = "PatientOnly";
+    using Microsoft.AspNetCore.Authorization;
 
-        /// <summary>
-        /// The UserIsPatient policy name constant.
-        /// </summary>
-        public static readonly string UserIsPatient = "UserIsPatient";
+    /// <summary>
+    /// PatientRequirement asserts authorization that the user is a Patient (has an HDID).
+    /// </summary>
+    public class PatientRequirement : IAuthorizationRequirement
+    {
+        // blank on purpose
     }
 }
