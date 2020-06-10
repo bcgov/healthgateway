@@ -31,12 +31,10 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class BetaRequestService : IBetaRequestService
     {
+        private const string HostTemplateVariable = "host";
         private readonly ILogger logger;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IEmailQueueService emailQueueService;
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string HOST_TEMPLATE_VARIABLE = "host";
-#pragma warning restore SA1310 // Restore warnings
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetaRequestService"/> class.
@@ -61,10 +59,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
         public RequestResult<BetaRequest> PutBetaRequest(BetaRequest betaRequest, string hostUrl)
         {
-            Contract.Requires(betaRequest != null);
-            Contract.Requires(!string.IsNullOrEmpty(betaRequest.HdId));
             this.logger.LogTrace($"Creating a beta request... {JsonConvert.SerializeObject(betaRequest)}");
 
             // If there is a previous request, update it isntead of creating a new one
@@ -76,7 +73,7 @@ namespace HealthGateway.WebClient.Services
                 if (insertResult.Status == DBStatusCode.Updated)
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    keyValues.Add(HostTemplateVariable, hostUrl);
                     this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BetaConfirmationTemplate, keyValues);
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
@@ -99,7 +96,7 @@ namespace HealthGateway.WebClient.Services
                 if (insertResult.Status == DBStatusCode.Created)
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
+                    keyValues.Add(HostTemplateVariable, hostUrl);
                     this.emailQueueService.QueueNewEmail(betaRequest.EmailAddress, EmailTemplateName.BetaConfirmationTemplate, keyValues);
                     requestResult.ResourcePayload = insertResult.Payload;
                     requestResult.ResultStatus = ResultType.Success;
@@ -110,6 +107,7 @@ namespace HealthGateway.WebClient.Services
                     requestResult.ResultMessage = insertResult.Message;
                     requestResult.ResultStatus = ResultType.Error;
                 }
+
                 return requestResult;
             }
         }

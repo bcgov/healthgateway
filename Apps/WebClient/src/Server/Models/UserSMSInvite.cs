@@ -36,6 +36,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Constructs a UserSMSInvite from a MessagingVerification.
         /// </summary>
+        /// <param name="model">The model object to convert.</param>
         /// <returns>The UserSMSInvite model.</returns>
         public static UserSMSInvite CreateFromDbModel(MessagingVerification model)
         {

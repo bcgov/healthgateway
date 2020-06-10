@@ -156,7 +156,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = PatientPolicy.HasWrite)]
-        public async Task<IActionResult> RecoverUserProfile(string hdid)
+        public IActionResult RecoverUserProfile(string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
@@ -350,7 +350,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            bool result = await this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken).ConfigureAwait(true);
+            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
     }

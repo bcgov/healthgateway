@@ -64,19 +64,19 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Authorize(Policy = PatientPolicy.IsPatient)]
-        public async Task<IActionResult> CreateBetaRequest([FromBody] BetaRequest betaRequest)
+        public IActionResult CreateBetaRequest([FromBody] BetaRequest betaRequest)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer?
-                .GetLeftPart(UriPartial.Authority);
+                .GetLeftPart(UriPartial.Authority) !;
 
             RequestResult<BetaRequest> result = this.betaRequestService.PutBetaRequest(betaRequest, referer);
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Retrieves the latest user queued email
+        /// Retrieves the latest user queued email.
         /// </summary>
         /// <returns>The email for the suer queued.</returns>
         /// <param name="hdid">The user hdid.</param>

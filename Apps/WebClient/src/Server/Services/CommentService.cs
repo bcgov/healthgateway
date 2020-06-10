@@ -78,6 +78,7 @@ namespace HealthGateway.WebClient.Services
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
+
             // Check that the key has been set
             if (key == null)
             {

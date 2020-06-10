@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the text of the comment.
         /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
         /// </summary>
-        public string? Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the entry type code.
@@ -81,6 +81,48 @@ namespace HealthGateway.WebClient.Models
         public string UpdatedBy { get; set; } = null!;
 
         /// <summary>
+        /// Constructs a UserComment model from a Node database model.
+        /// </summary>
+        /// <param name="model">The comment database model.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+        /// <param name="key">The security key.</param>
+        /// <returns>The user comment model.</returns>
+        public static UserComment CreateFromDbModel(Database.Models.Comment model, ICryptoDelegate cryptoDelegate, string key)
+        {
+            return new UserComment()
+            {
+                Id = model.Id,
+                UserProfileId = model.UserProfileId,
+                EntryTypeCode = model.EntryTypeCode,
+                ParentEntryId = model.ParentEntryId,
+                Version = model.Version,
+                CreatedDateTime = model.CreatedDateTime,
+                CreatedBy = model.CreatedBy,
+                UpdatedDateTime = model.UpdatedDateTime,
+                UpdatedBy = model.UpdatedBy,
+                Text = model.Text != null ? cryptoDelegate.Decrypt(key, model.Text) : string.Empty,
+            };
+        }
+
+        /// <summary>
+        /// Constructs a List of UserComment models from a List of Node database models.
+        /// </summary>
+        /// <param name="models">The list of comment database model.</param>
+        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+        /// <param name="key">The security key.</param>
+        /// <returns>A list of use comments.</returns>
+        public static IEnumerable<UserComment> CreateListFromDbModel(IEnumerable<Database.Models.Comment> models, ICryptoDelegate cryptoDelegate, string key)
+        {
+            List<UserComment> newList = new List<UserComment>();
+            foreach (Database.Models.Comment model in models)
+            {
+                newList.Add(UserComment.CreateFromDbModel(model, cryptoDelegate, key));
+            }
+
+            return newList;
+        }
+
+        /// <summary>
         /// Constructs a database comment model from a user Node model.
         /// </summary>
         /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
@@ -101,53 +143,6 @@ namespace HealthGateway.WebClient.Models
                 UpdatedBy = this.UpdatedBy,
                 Text = cryptoDelegate.Encrypt(key, this.Text),
             };
-        }
-
-        /// <summary>
-        /// Constructs a UserComment model from a Node database model.
-        /// </summary>
-        /// <param name="model">The comment database model.</param>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
-        /// <param name="key">The security key.</param>
-        /// <returns>The user comment model.</returns>
-        public static UserComment CreateFromDbModel(Database.Models.Comment model, ICryptoDelegate cryptoDelegate, string key)
-        {
-            if (model == null)
-            {
-                return null!;
-            }
-
-            return new UserComment()
-            {
-                Id = model.Id,
-                UserProfileId = model.UserProfileId,
-                EntryTypeCode = model.EntryTypeCode,
-                ParentEntryId = model.ParentEntryId,
-                Version = model.Version,
-                CreatedDateTime = model.CreatedDateTime,
-                CreatedBy = model.CreatedBy,
-                UpdatedDateTime = model.UpdatedDateTime,
-                UpdatedBy = model.UpdatedBy,
-                Text = cryptoDelegate.Decrypt(key, model?.Text),
-            };
-        }
-
-        /// <summary>
-        /// Constructs a List of UserComment models from a List of Node database models.
-        /// </summary>
-        /// <param name="models">The list of comment database model.</param>
-        /// <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
-        /// <param name="key">The security key.</param>
-        /// <returns>A list of use comments.</returns>
-        public static IEnumerable<UserComment> CreateListFromDbModel(IEnumerable<Database.Models.Comment> models, ICryptoDelegate cryptoDelegate, string key)
-        {
-            List<UserComment> newList = new List<UserComment>();
-            foreach (Database.Models.Comment model in models)
-            {
-                newList.Add(UserComment.CreateFromDbModel(model, cryptoDelegate, key));
-            }
-
-            return newList;
         }
     }
 }
