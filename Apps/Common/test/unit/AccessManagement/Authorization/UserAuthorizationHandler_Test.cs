@@ -20,7 +20,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authorization.Infrastructure;
     using Microsoft.AspNetCore.Http;
@@ -313,13 +312,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
-
+            string scopes = "system/Patient.read";
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.System,string.Empty),
-                new Claim(PatientClaims.Read, string.Empty),
+                new Claim(GatewayClaims.Scope, scopes),
             };
             ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
@@ -360,13 +358,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
-
+            string scopes = "user/Patient.read";
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(PatientClaims.Patient, hdid),
-                new Claim(PatientClaims.Read, string.Empty),
+                new Claim(GatewayClaims.Scope, scopes),
             };
             ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
@@ -453,13 +451,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
-
+            string scopes = "system/Patient.write";
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.System,string.Empty),
-                new Claim(PatientClaims.Write, string.Empty),
+                new Claim(GatewayClaims.Scope, scopes),
             };
             ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
@@ -500,13 +497,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
-
+            string scopes = "user/Patient.write";
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(PatientClaims.Patient, hdid),
-                new Claim(PatientClaims.Write, string.Empty),
+                new Claim(GatewayClaims.Scope, scopes),
             };
             ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);

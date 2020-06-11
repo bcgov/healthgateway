@@ -29,6 +29,15 @@ namespace HealthGateway.Common.AccessManagement.Authorization
     /// </summary>
     public class PatientAuthorizationHandler : IAuthorizationHandler
     {
+        private const string System = "system";
+        private const string User = "user";
+
+        private const string Wildcard = "*";
+        private const string FhirResource = "Patient";
+
+        private const string Read = "read";
+        private const string Write = "write";
+
         private const string RouteResourceIdentifier = "hdid";
 
         private readonly ILogger<PatientAuthorizationHandler> logger;
@@ -69,14 +78,14 @@ namespace HealthGateway.Common.AccessManagement.Authorization
                         {
                             if (requirement is PatientReadRequirement)
                             {
-                                if (this.IsDelegated(context, resourceHDID, PatientClaims.Read))
+                                if (this.IsDelegated(context, resourceHDID, Read))
                                 {
                                     context.Succeed(requirement);
                                 }
                             }
                             else if (requirement is PatientWriteRequirement)
                             {
-                                if (this.IsDelegated(context, resourceHDID, PatientClaims.Write))
+                                if (this.IsDelegated(context, resourceHDID, Write))
                                 {
                                     context.Succeed(requirement);
                                 }
@@ -103,6 +112,25 @@ namespace HealthGateway.Common.AccessManagement.Authorization
             }
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Generates a list of valid scopes which will be used to determine authorization.
+        /// No validation is done on the parameters.
+        /// </summary>
+        /// <param name="type">The type: System or User.</param>
+        /// <param name="access">The access level read or write.</param>
+        /// <returns>An array of acceptable scopes.</returns>
+        private static string[] GetAcceptedScopes(string type, string access)
+        {
+            string[] acceptedScopes = new string[]
+            {
+                $"{type}/{Wildcard}.{Wildcard}",
+                $"{type}/{Wildcard}.{access}",
+                $"{type}/{FhirResource}.{Wildcard}",
+                $"{type}/{FhirResource}.{access}",
+            };
+            return acceptedScopes;
         }
 
         /// <summary>
@@ -133,24 +161,36 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHDID">The health data resource subject identifier.</param>
-        /// <param name="claim">The claim to validate the user has.</param>
-        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHDID, string claim)
+        /// <param name="access">The access level to validate.</param>
+        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHDID, string access)
         {
             bool retVal = false;
-            bool isSystem = context.User.HasClaim(c => c.Type == GatewayClaims.System);
-            bool hasClaim = context.User.HasClaim(c => c.Type == claim);
-            if (isSystem)
+            if (context.User.HasClaim(c => c.Type == GatewayClaims.Scope))
             {
-                this.logger.LogInformation("Performing Patient system delegation validation.");
-                this.logger.LogInformation($"Returning {hasClaim} for Patient claim {claim} system delegation");
-                retVal = hasClaim;
-            }
-            else
-            {
-                this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
-                this.logger.LogError("user delgation is not implemented, returning not authorized");
+                string scopeclaim = context.User.FindFirstValue(GatewayClaims.Scope);
+                string[] scopes = scopeclaim.Split(' ');
+                this.logger.LogInformation($"Performing system delegation validation for Patient resource {resourceHDID}");
+                string[] systemDelegatedScopes = GetAcceptedScopes(System, access);
+                if (scopes.Intersect(systemDelegatedScopes).Any())
+                {
+                    this.logger.LogInformation($"Authorized system to have {access} access to Patient resource {resourceHDID}");
+                    retVal = true;
+                }
+                else
+                {
+                    this.logger.LogInformation($"Performing user delegation validation for Patient resource {resourceHDID}");
+                    string[] userDelegatedScopes = GetAcceptedScopes(User, access);
+                    if (context.User.HasClaim(c => c.Type == PatientClaims.Patient) && scopes.Intersect(userDelegatedScopes).Any())
+                    {
+                        this.logger.LogError("user delgation is not implemented, returning not authorized");
 
-                // TODO:  Future check needed for patient to patient delegation.
+                        // TODO:  Future check needed for patient to patient delegation.
+                    }
+                    else
+                    {
+                        this.logger.LogWarning($"Patient delgation validation for Patient resource {resourceHDID} failed");
+                    }
+                }
             }
 
             return retVal;

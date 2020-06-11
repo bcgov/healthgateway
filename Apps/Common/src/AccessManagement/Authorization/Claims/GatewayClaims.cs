@@ -21,9 +21,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Policy
     public static class GatewayClaims
     {
         /// <summary>
-        /// Claim authorizing the user as a system.
+        /// Policy claim representing the scopes the user has.
         /// </summary>
-        public const string System = "System";
+        public const string Scope = "scope";
 
         /// <summary>
         /// Policy claims requiring an HDID.
