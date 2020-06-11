@@ -110,7 +110,7 @@ namespace HealthGateway.WebClient.Services
             // Update the notification settings
             NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken);
 
-            if (smsInvite != null && smsInvite.ExpireDate >= DateTime.UtcNow)
+            if (smsInvite != null)
             {
                 this.logger.LogInformation($"Expiring old sms validation for user ${hdid}");
                 smsInvite.ExpireDate = DateTime.UtcNow;
