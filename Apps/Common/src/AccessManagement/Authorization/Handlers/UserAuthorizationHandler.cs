@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
-    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -31,7 +31,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
     {
         private const string RouteResourceIdentifier = "hdid";
 
-        private readonly ILogger<PatientAuthorizationHandler> logger;
+        private readonly ILogger<UserAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        public UserAuthorizationHandler(ILogger<PatientAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
+        public UserAuthorizationHandler(ILogger<UserAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;

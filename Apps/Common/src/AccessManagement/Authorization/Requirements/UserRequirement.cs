@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
 {
     using Microsoft.AspNetCore.Authorization;
 
@@ -25,7 +25,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         /// <summary>
         /// Initializes a new instance of the <see cref="UserRequirement"/> class.
         /// </summary>
-        /// <param name="validateOwnership">If true validates the user HDID matches the resource HDID</param>
+        /// <param name="validateOwnership">If true validates the user HDID matches the resource HDID.</param>
         public UserRequirement(bool validateOwnership)
         {
             this.ValidateOwnership = validateOwnership;

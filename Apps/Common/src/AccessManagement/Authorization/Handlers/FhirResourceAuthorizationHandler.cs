@@ -13,14 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using System.Web;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
-    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Constants;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -134,9 +133,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         {
             bool retVal = false;
             ClaimsPrincipal user = context.User;
-            if (user.HasClaim(c => c.Type == PatientClaims.Patient))
+            if (user.HasClaim(c => c.Type == GatewayClaims.HDID))
             {
-                string userHDID = user.FindFirst(c => c.Type == PatientClaims.Patient).Value;
+                string userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                 retVal = userHDID == resourceHDID;
                 this.logger.LogDebug($"{userHDID} is{(!retVal ? "not " : string.Empty)}the resource owner");
             }
@@ -173,7 +172,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization
                 {
                     this.logger.LogInformation($"Performing user delegation validation for Patient resource {resourceHDID}");
                     string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
-                    if (context.User.HasClaim(c => c.Type == PatientClaims.Patient) && scopes.Intersect(userDelegatedScopes).Any())
+                    if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
                     {
                         this.logger.LogError("user delgation is not implemented, returning not authorized");
 

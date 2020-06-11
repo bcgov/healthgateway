@@ -19,12 +19,12 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Constants;
@@ -135,7 +135,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.Logger.LogDebug("ConfigureAuthorizationServices...");
 
             // Configuration Authorization Handlers
-            services.AddScoped<IAuthorizationHandler, PatientAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
 
             services.AddAuthorization(options =>
