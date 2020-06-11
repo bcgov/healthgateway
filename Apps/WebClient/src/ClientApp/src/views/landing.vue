@@ -98,7 +98,6 @@
         display: block;
         line-height: 40px;
         height: 40px;
-        // vertical-align: middle;
         .icon {
           text-align: center;
           border-radius: 50%;
