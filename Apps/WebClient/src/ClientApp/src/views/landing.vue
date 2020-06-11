@@ -93,6 +93,10 @@
         @media (max-width: 816px) {
           display: none;
         }
+        /* Very large devices */
+        @media (min-width: 2188px) {
+          max-width: 5%;
+        }
       }
       .icon-row {
         display: inline-block;
