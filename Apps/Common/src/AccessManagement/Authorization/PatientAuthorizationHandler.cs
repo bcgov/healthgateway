@@ -170,10 +170,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization
                 string scopeclaim = context.User.FindFirstValue(GatewayClaims.Scope);
                 string[] scopes = scopeclaim.Split(' ');
                 this.logger.LogInformation($"Performing system delegation validation for Patient resource {resourceHDID}");
+                this.logger.LogInformation($"Caller has the following scopes: {scopeclaim}");
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, access);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogInformation($"Authorized system to have {access} access to Patient resource {resourceHDID}");
+                    this.logger.LogInformation($"Authorized caller as system to have {access} access to Patient resource {resourceHDID}");
                     retVal = true;
                 }
                 else
