@@ -11,13 +11,13 @@ jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
     steps:
-      - task: DotNetCoreCLI@2
-        displayName: 'Common - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Common/test/unit/CommonTests.csproj'
-          testRunTitle: 'Common Library Tests'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'Common - Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/Common/test/unit/CommonTests.csproj'
+      #     testRunTitle: 'Common Library Tests'
+      #   continueOnError: true
 
       - script: |
           set -e
@@ -49,13 +49,13 @@ jobs:
         displayName: 'Common - On Fail'
         condition: failed()
 
-      - task: DotNetCoreCLI@2
-        displayName: 'Database - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Database/test/unit/DatabaseTests.csproj'
-          testRunTitle: 'Database Library Tests'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'Database - Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/Database/test/unit/DatabaseTests.csproj'
+      #     testRunTitle: 'Database Library Tests'
+      #   continueOnError: true
 
       - script: |
           set -e
@@ -94,13 +94,13 @@ jobs:
           workingDir: '$(Build.SourcesDirectory)/Apps/WebClient/src/ClientApp'
         continueOnError: true
 
-      - task: DotNetCoreCLI@2
-        displayName: 'WebClient- Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/WebClient/test/unit/WebClientTests.csproj'
-          testRunTitle: 'WebClient'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'WebClient- Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/WebClient/test/unit/WebClientTests.csproj'
+      #     testRunTitle: 'WebClient'
+      #   continueOnError: true
 
       #    npm --prefix src/ClientApp test
       #      /d:sonar.scm.disabled="true" \
@@ -136,14 +136,14 @@ jobs:
         condition: failed()
 
 
-      - task: DotNetCoreCLI@2
-        displayName: 'Medication - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Medication/test/unit/MedicationTests.csproj'
-          testRunTitle: 'Medication Service Tests'
-        enabled: 'true'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'Medication - Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/Medication/test/unit/MedicationTests.csproj'
+      #     testRunTitle: 'Medication Service Tests'
+      #   enabled: 'true'
+      #   continueOnError: true
 
       - script: |
           set -e
@@ -174,13 +174,13 @@ jobs:
         displayName: 'Medication - On Fail'
         condition: failed()
 
-      - task: DotNetCoreCLI@2
-        displayName: 'Patient - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Patient/test/unit/PatientTests.csproj'
-          testRunTitle: 'Patient Service Tests'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'Patient - Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/Patient/test/unit/PatientTests.csproj'
+      #     testRunTitle: 'Patient Service Tests'
+      #   continueOnError: true
 
       - script: |
           set -e
@@ -212,13 +212,13 @@ jobs:
         displayName: 'Patient - On Fail'
         condition: failed()
 
-      - task: DotNetCoreCLI@2
-        displayName: 'Immunization - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Immunization/test/unit/ImmunizationTests.csproj'
-          testRunTitle: 'Immunization Service Tests'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'Immunization - Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/Immunization/test/unit/ImmunizationTests.csproj'
+      #     testRunTitle: 'Immunization Service Tests'
+      #   continueOnError: true
 
       - script: |
           set -e
@@ -250,13 +250,13 @@ jobs:
         condition: failed()
 
 
-      - task: DotNetCoreCLI@2
-        displayName: 'Laboratory - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Laboratory/test/unit/LaboratoryTests.csproj'
-          testRunTitle: 'Laboratory Service Tests'
-        continueOnError: true
+      # - task: DotNetCoreCLI@2
+      #   displayName: 'Laboratory - Run dotnet Tests'
+      #   inputs:
+      #     command: 'test'
+      #     projects: '$(Build.SourcesDirectory)/Apps/Laboratory/test/unit/LaboratoryTests.csproj'
+      #     testRunTitle: 'Laboratory Service Tests'
+      #   continueOnError: true
 
       - script: |
           set -e
