@@ -327,7 +327,7 @@
             <h2>Browse your health records</h2>
           </b-row>
           <b-row>
-            <b-col cols="1" class="icon-wrapper mr-4 px-0">
+            <b-col cols="1" class="icon-wrapper mr-4 px-0 mw-30">
               <div
                 v-for="icon in icons"
                 :key="icon.label"
