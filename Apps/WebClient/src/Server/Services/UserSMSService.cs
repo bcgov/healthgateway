@@ -145,12 +145,7 @@ namespace HealthGateway.WebClient.Services
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, email, smsNumber);
-            RequestResult<NotificationSettingsResponse> response = Task.Run(async () => await this.notificationSettingsService.SendNotificationSettings(request, bearerToken).ConfigureAwait(true)).Result;
-            if (response.ResultStatus == ResultType.Error)
-            {
-                this.notificationSettingsService.QueueNotificationSettings(request);
-            }
-
+            this.notificationSettingsService.QueueNotificationSettings(request);
             return request;
         }
     }

@@ -67,12 +67,12 @@ namespace Healthgateway.JobScheduler.Jobs
             };
 
             NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
-            string? accessToken = this.authDelegate.AuthenticateAsSystem().AccessToken;
+            string? accessToken = this.authDelegate.AuthenticateAsUser().AccessToken;
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                this.logger.LogError($"Authenticated as System access token is null or emtpy, Error:\n{accessToken}");
-                throw new Exception($"Authenticated as System access token is null or emtpy, Error:\n{accessToken}");
+                this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                throw new Exception($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
             }
             else
             {

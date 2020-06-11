@@ -131,8 +131,7 @@ namespace HealthGateway.WebClient.Test.Services
             cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns("abc");
 
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
-            notificationServiceMock.Setup(s => s.SendNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"))
-                .ReturnsAsync(new RequestResult<NotificationSettingsResponse>() { ResultStatus = ResultType.Success });
+            notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
             IUserProfileService service = new UserProfileService(
@@ -187,8 +186,6 @@ namespace HealthGateway.WebClient.Test.Services
             cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns("abc");
 
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
-            notificationServiceMock.Setup(s => s.SendNotificationSettings(It.IsAny<NotificationSettingsRequest>(), "bearer_token"))
-                .ReturnsAsync(new RequestResult<NotificationSettingsResponse>() { ResultStatus = ResultType.Error });
             notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();

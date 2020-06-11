@@ -37,7 +37,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         Uri? TokenUri { get; }
 
         /// <summary>
-        /// Authenticates as a 'system account' concept, using OAuth 2.0 Client Credentials Grant.
+        /// Authenticates as a 'system admin account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
         JWTModel AuthenticateAsSystem();

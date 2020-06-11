@@ -32,7 +32,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        private const string CONFIGSECTIONNAME = @"ClientAuthentication";
+        private const string ConfigSectionName = "ClientAuthentication";
         private readonly ILogger<AuthenticationDelegate> logger;
 
         private readonly IHttpClientService httpClientService;
@@ -50,7 +50,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            IConfigurationSection? configSection = config?.GetSection(CONFIGSECTIONNAME);
+            IConfigurationSection? configSection = config?.GetSection(ConfigSectionName);
 
             this.TokenUri = configSection.GetValue<Uri>(@"TokenUri");
 
