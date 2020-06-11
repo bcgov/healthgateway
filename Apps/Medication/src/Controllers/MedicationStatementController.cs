@@ -67,7 +67,7 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = PatientPolicy.HasRead)]
+        [Authorize(Policy = MedicationPolicy.MedicationStatementRead)]
         public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
         {
             string medicationDataSource = this.configuration.GetSection("MedicationDataSource").Value;

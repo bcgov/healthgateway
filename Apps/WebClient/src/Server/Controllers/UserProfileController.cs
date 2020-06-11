@@ -75,7 +75,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("{hdid}")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
         {
             // Validate that the query parameter matches the post body
@@ -105,7 +105,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}")]
-        [Authorize(Policy = PatientPolicy.HasRead)]
+        [Authorize(Policy = PatientPolicy.Read)]
         public IActionResult GetUserProfile(string hdid)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -129,7 +129,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Route("{hdid}")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public IActionResult CloseUserProfile(string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
@@ -155,7 +155,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/recover")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public IActionResult RecoverUserProfile(string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
@@ -193,7 +193,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
         [Route("{hdid}/email/validate/{inviteKey}")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public async Task<IActionResult> ValidateEmail(string hdid, Guid inviteKey)
         {
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
@@ -219,7 +219,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
         {
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
@@ -245,7 +245,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/email/invite")]
-        [Authorize(Policy = PatientPolicy.HasRead)]
+        [Authorize(Policy = PatientPolicy.Read)]
         public IActionResult GetUserEmailInvite(string hdid)
         {
             MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
@@ -263,7 +263,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/sms/invite")]
-        [Authorize(Policy = PatientPolicy.HasRead)]
+        [Authorize(Policy = PatientPolicy.Read)]
         public IActionResult GetUserSMSInvite(string hdid)
         {
             MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
@@ -282,7 +282,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}/email")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string emailAddress)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
@@ -307,7 +307,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}/sms")]
-        [Authorize(Policy = PatientPolicy.HasWrite)]
+        [Authorize(Policy = UserPolicy.Write)]
         public async Task<IActionResult> UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
             string referer = this.httpContextAccessor.HttpContext.Request

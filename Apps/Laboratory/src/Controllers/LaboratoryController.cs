@@ -79,7 +79,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Authorize(Policy = PatientPolicy.IsPatient)]
+        [Authorize(Policy = UserPolicy.UserOnly)]
         public async Task<IActionResult> GetLaboratoryOrders()
         {
             this.logger.LogDebug($"Getting list of laboratory orders... ");
@@ -106,7 +106,7 @@ namespace HealthGateway.Laboratory.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{reportId}/Report")]
-        [Authorize(Policy = PatientPolicy.IsPatient)]
+        [Authorize(Policy = UserPolicy.UserOnly)]
         public async Task<IActionResult> GetLaboratoryReport(Guid reportId)
         {
             this.logger.LogDebug($"Getting PDF version of Laboratory Report... {1}");

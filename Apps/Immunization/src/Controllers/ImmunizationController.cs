@@ -79,7 +79,7 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = PatientPolicy.HasRead)]
+        [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<IActionResult> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunizations from controller... {hdid}");

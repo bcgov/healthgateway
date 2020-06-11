@@ -61,7 +61,6 @@
   <ItemGroup>
     <Folder Include="AspNetConfiguration\" />
     <Folder Include="Auditing\" />
-    <Folder Include="Constants\" />
     <Folder Include="Delegates\" />
     <Folder Include="FileDownload\" />
     <Folder Include="Filters\" />

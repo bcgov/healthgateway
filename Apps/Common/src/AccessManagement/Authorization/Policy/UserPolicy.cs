@@ -13,16 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
-    using Microsoft.AspNetCore.Authorization;
-
     /// <summary>
-    /// PatientReadRequirement asserts authorization that the user is a Patient (has an HDID) and
-    /// is either the owner of the resource or delegated to perform reads.
+    /// The set of claims to access Patient data.
     /// </summary>
-    public class PatientReadRequirement : IAuthorizationRequirement
+    public static class UserPolicy
     {
-        // blank on purpose
+        /// <summary>
+        /// Policy which specifies that only the user should have access.
+        /// </summary>
+        public const string UserOnly = "UserOnly";
+
+        /// <summary>
+        /// Policy which specifies that the user can read user data.
+        /// </summary>
+        public const string Read = "UserRead";
+
+        /// <summary>
+        /// Policy which specifies that the user can write user data.
+        /// </summary>
+        public const string Write = "UserWrite";
     }
 }

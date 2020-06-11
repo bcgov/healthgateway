@@ -16,18 +16,18 @@
 namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
     /// <summary>
-    /// The set of claims to access Patient data.
+    /// The set of claims to access Laboratory data.
     /// </summary>
-    public static class PatientPolicy
+    public static class LaboratoryPolicy
     {
         /// <summary>
-        /// Policy which allows the reading of the identified patient.
+        /// Policy which allows the reading of the identified Laboratory.
         /// </summary>
-        public const string Read = "PatientRead";
+        public const string Read = "LaboratoryRead";
 
         /// <summary>
-        /// Policy which allows writing of the identified patient.
+        /// Policy which allows writing of the identified Laboratory.
         /// </summary>
-        public const string Write = "PatientWrite";
+        public const string Write = "LaboratoryWrite";
     }
 }

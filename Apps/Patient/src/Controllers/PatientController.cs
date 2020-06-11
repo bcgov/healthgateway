@@ -66,7 +66,7 @@ namespace HealthGateway.PatientService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = PatientPolicy.HasRead)]
+        [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> GetPatient(string hdid)
         {
             Patient result = await this.service.GetPatient(hdid).ConfigureAwait(true);

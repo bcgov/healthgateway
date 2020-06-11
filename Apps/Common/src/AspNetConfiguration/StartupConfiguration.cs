@@ -22,7 +22,9 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Auditing;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Constants;
@@ -134,26 +136,84 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Configuration Authorization Handlers
             services.AddScoped<IAuthorizationHandler, PatientAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(PatientPolicy.IsPatient, policy =>
+                // User Policies
+                options.AddPolicy(UserPolicy.UserOnly, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new PatientRequirement());
+                    policy.Requirements.Add(new UserRequirement(false));
                 });
-                options.AddPolicy(PatientPolicy.HasRead, policy =>
+                options.AddPolicy(UserPolicy.Read, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new PatientReadRequirement());
+                    policy.Requirements.Add(new UserRequirement(true));
                 });
-                options.AddPolicy(PatientPolicy.HasWrite, policy =>
+                options.AddPolicy(UserPolicy.Write, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new PatientWriteRequirement());
+                    policy.Requirements.Add(new UserRequirement(true));
+                });
+
+                // Patient Policies
+                options.AddPolicy(PatientPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Read));
+                });
+                options.AddPolicy(PatientPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Write));
+                });
+
+                // Immunization Policies
+                options.AddPolicy(ImmunizationPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Read));
+                });
+                options.AddPolicy(ImmunizationPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
+                });
+
+                // Laboratory/Observation Policies
+                options.AddPolicy(LaboratoryPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Read));
+                });
+                options.AddPolicy(LaboratoryPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Write));
+                });
+
+                // MedicationStatement Policies
+                options.AddPolicy(MedicationPolicy.MedicationStatementRead, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
+                });
+                options.AddPolicy(MedicationPolicy.MedicationStatementWrite, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
                 });
             });
         }

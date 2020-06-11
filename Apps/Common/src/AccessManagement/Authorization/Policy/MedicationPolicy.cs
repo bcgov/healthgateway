@@ -16,18 +16,18 @@
 namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
     /// <summary>
-    /// The set of claims to access Patient data.
+    /// The set of claims to access Medication data.
     /// </summary>
-    public static class PatientPolicy
+    public static class MedicationPolicy
     {
         /// <summary>
         /// Policy which allows the reading of the identified patient.
         /// </summary>
-        public const string Read = "PatientRead";
+        public const string MedicationStatementRead = "MedicationStatementRead";
 
         /// <summary>
         /// Policy which allows writing of the identified patient.
         /// </summary>
-        public const string Write = "PatientWrite";
+        public const string MedicationStatementWrite = "MedicationStatementWrite";
     }
 }
