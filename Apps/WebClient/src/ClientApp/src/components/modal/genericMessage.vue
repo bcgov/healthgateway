@@ -30,7 +30,7 @@
         <b-col>
           <b-row>
             <b-col>
-              <b-button variant="primary" @click="handleSubmit($event)">
+              <b-button class="mr-2" variant="primary" @click="handleSubmit($event)">
                 Continue
               </b-button>
               <b-button variant="secondary" @click="handleCancel($event)">
