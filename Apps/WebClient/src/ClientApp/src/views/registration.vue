@@ -362,7 +362,9 @@ library.add(faCheck);
   },
 })
 export default class RegistrationComponent extends Vue {
-  @Action("checkRegistration", { namespace: "user" }) checkRegistration;
+  @Action("checkRegistration", { namespace: "user" }) checkRegistration!: ({
+    hdid: String,
+  }: any) => Promise<boolean>;
   @Ref("registrationForm") form!: HTMLFormElement;
   @Getter("webClient", { namespace: "config" })
   webClientConfig: WebClientConfiguration;

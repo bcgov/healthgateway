@@ -15,7 +15,9 @@ import User from "@/models/user";
 export default class LoginCallbackComponent extends Vue {
   @Action("oidcSignInCallback", { namespace: "auth" }) oidcSignInCallback;
   @Action("clearStorage", { namespace: "auth" }) clearStorage;
-  @Action("checkRegistration", { namespace: "user" }) checkRegistration;
+  @Action("checkRegistration", { namespace: "user" }) checkRegistration!: ({
+    hdid: String,
+  }: any) => Promise<boolean>;
   @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
   @Getter("user", { namespace: "user" }) user!: User;
   created() {
