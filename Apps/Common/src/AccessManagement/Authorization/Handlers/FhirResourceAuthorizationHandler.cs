@@ -74,10 +74,14 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                             {
                                 context.Succeed(requirement);
                             }
+                            else
+                            {
+                                this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected");
+                            }
                         }
                         else
                         {
-                            // TODO:  FhirRequirement log
+                            this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected as delegation is disabled");
                         }
                     }
                 }
@@ -137,7 +141,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             {
                 string userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                 retVal = userHDID == resourceHDID;
-                this.logger.LogDebug($"{userHDID} is{(!retVal ? "not " : string.Empty)}the resource owner");
+                this.logger.LogDebug($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
             }
             else
             {

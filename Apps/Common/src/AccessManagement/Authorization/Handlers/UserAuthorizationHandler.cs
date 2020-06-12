@@ -67,7 +67,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         }
 
         /// <summary>
-        /// Check if the authenticated user is a user and optionally the owner of the User resource being accessed.
+        /// Check if the authenticated user has an HDID and optionally the owner of the User resource being accessed.
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHDID">The health data resource subject identifier.</param>
