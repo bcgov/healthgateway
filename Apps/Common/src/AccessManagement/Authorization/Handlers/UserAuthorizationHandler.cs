@@ -47,8 +47,8 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 
         /// <summary>
         /// Asserts that the user accessing the resource (hdid in route) is one of:
-        ///     1) The owner of the resource.
-        ///     2) Delegated to access the resource.
+        ///     1) A HealthGateway user (has an HDID)
+        ///     2) When the requirement requests ownership verification - checks for matching hdids.
         /// </summary>
         /// <param name="context">the AuthorizationHandlerContext context.</param>
         /// <returns>The Authorization Result.</returns>
