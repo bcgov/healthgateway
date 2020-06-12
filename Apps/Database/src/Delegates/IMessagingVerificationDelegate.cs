@@ -37,7 +37,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="inviteKey">The users inviteKey as emailed.</param>
         /// <returns>The message verification that was fetched.</returns>
-        MessagingVerification GetByInviteKey(Guid inviteKey);
+        MessagingVerification? GetByInviteKey(Guid inviteKey);
 
         /// <summary>
         /// Gets the last Messaging Verification for the user base on type and users HDID.

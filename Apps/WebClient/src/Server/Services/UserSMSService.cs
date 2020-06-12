@@ -81,7 +81,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber, bearerToken);
+                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber);
             }
             else
             {
@@ -108,7 +108,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification? smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
-            NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(userProfile, userProfile.Email, sms, bearerToken);
+            NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(userProfile, userProfile.Email, sms);
 
             if (smsInvite != null)
             {
@@ -141,7 +141,7 @@ namespace HealthGateway.WebClient.Services
             return smsInvite;
         }
 
-        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber, string bearerToken)
+        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber)
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, email, smsNumber);

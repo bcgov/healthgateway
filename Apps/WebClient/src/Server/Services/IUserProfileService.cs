@@ -40,7 +40,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken);
+        RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken);
 
         /// <summary>
         /// Closed the user profile.

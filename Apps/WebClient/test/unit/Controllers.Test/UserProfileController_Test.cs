@@ -103,7 +103,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).Returns(expected);
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 

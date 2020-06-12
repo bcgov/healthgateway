@@ -127,7 +127,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
+        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -156,7 +156,7 @@ namespace HealthGateway.WebClient.Services
                 }
 
                 emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
-                bool hdidIsValid = string.IsNullOrEmpty(emailInvite.HdId) || (emailInvite.HdId == createProfileRequest.Profile.HdId);
+                bool hdidIsValid = string.IsNullOrEmpty(emailInvite?.HdId) || (emailInvite?.HdId == createProfileRequest.Profile.HdId);
 
                 // Fails if...
                 // Email invite not found or
@@ -190,7 +190,7 @@ namespace HealthGateway.WebClient.Services
             if (insertResult.Status == DBStatusCode.Created)
             {
                 // Update the notification settings
-                NotificationSettingsRequest notificationRequest = await this.UpdateNotificationSettings(newProfile, requestedSMSNumber, bearerToken).ConfigureAwait(true);
+                NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(newProfile, requestedSMSNumber);
 
                 if (emailInvite != null)
                 {
@@ -323,7 +323,7 @@ namespace HealthGateway.WebClient.Services
             };
         }
 
-        private async Task<NotificationSettingsRequest> UpdateNotificationSettings(UserProfile userProfile, string? smsNumber, string bearerToken)
+        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, smsNumber);
