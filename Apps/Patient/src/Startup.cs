@@ -113,7 +113,23 @@ namespace HealthGateway.Patient
         /// <inheritdoc/>
         public void Dispose()
         {
-            this.clientRegistriesCertificate.Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose(bool disposing) executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// </summary>
+        /// <param name="disposing">Indicates if the method has been called directly or indirectly.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.clientRegistriesCertificate.Dispose();
+            }
         }
     }
 }
