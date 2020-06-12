@@ -95,10 +95,9 @@
         }
       }
       .icon-row {
-        display: inline-block;
+        display: block;
         line-height: 40px;
         height: 40px;
-        vertical-align: middle;
         .icon {
           text-align: center;
           border-radius: 50%;
@@ -327,7 +326,7 @@
             <h2>Browse your health records</h2>
           </b-row>
           <b-row>
-            <b-col cols="1" class="icon-wrapper mr-4 px-0 mw-30">
+            <b-col cols="0" class="icon-wrapper mr-4 px-0">
               <div
                 v-for="icon in icons"
                 :key="icon.label"

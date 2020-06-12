@@ -96,7 +96,7 @@
             <router-link id="profilePageLink" variant="primary" to="/profile">
               Profile Page
             </router-link>
-            .
+            <span>.</span>
           </span>
         </b-alert>
 
