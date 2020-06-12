@@ -35,7 +35,7 @@ namespace HealthGateway.Patient
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
-    public class Startup
+    public class Startup : IDisposable
     {
         private readonly StartupConfiguration startupConfig;
         private readonly EndpointAddress clientRegistriesEndpoint;
@@ -51,6 +51,7 @@ namespace HealthGateway.Patient
             this.startupConfig = new StartupConfiguration(configuration, env);
             IConfigurationSection clientConfiguration = configuration.GetSection("ClientRegistries");
             this.clientRegistriesEndpoint = new EndpointAddress(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
+
             // Load Certificate
             string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
             string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
@@ -107,6 +108,12 @@ namespace HealthGateway.Patient
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseRest(app);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            this.clientRegistriesCertificate.Dispose();
         }
     }
 }

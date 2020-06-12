@@ -16,17 +16,21 @@
 namespace HealthGateway.Patient.Test
 {
     using Xunit;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Services;
     using ServiceReference;
     using Microsoft.Extensions.Configuration;
+    using System.ServiceModel.Dispatcher;
+    using System.ServiceModel.Channels;
 
-
-    public class ClientRegistriesDelegate_Test
+    public class LoggingMessageInspector_Test
     {
         [Fact]
-        public async Task ShouldGetDemographics()
+        public void AfterReceiveReply()
         {
             HCIM_IN_GetDemographicsResponse1 expected = new HCIM_IN_GetDemographicsResponse1();
             IConfiguration config = new ConfigurationBuilder()
@@ -36,15 +40,15 @@ namespace HealthGateway.Patient.Test
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(expected);
             HCIM_IN_GetDemographicsRequest request = new HCIM_IN_GetDemographicsRequest();
 
-            IClientRegistriesDelegate service = new ClientRegistriesDelegate(
-                clientMock.Object
+            IClientMessageInspector service = new LoggingMessageInspector(
+                new Mock<ILogger<LoggingMessageInspector>>().Object
             );
 
+            Message message = Message.CreateMessage(MessageVersion.None, "test", "<Test></Test>");
             // Act
-            HCIM_IN_GetDemographicsResponse1 actual = await service.GetDemographicsAsync(request);
-
+            service.AfterReceiveReply(ref message, null);
             // Verify
-            Assert.Equal(expected, actual);
+            Assert.True(true);
 
         }
     }
