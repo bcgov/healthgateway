@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Services
                 retVal = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile, bearerToken);
+                this.UpdateNotificationSettings(userProfile);
             }
             else
             {
@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Services
             this.profileDelegate.Update(userProfile);
 
             // Update the notification settings
-            this.UpdateNotificationSettings(userProfile, bearerToken);
+            this.UpdateNotificationSettings(userProfile);
 
             if (emailInvite != null)
             {
@@ -137,7 +137,7 @@ namespace HealthGateway.WebClient.Services
             return true;
         }
 
-        private async void UpdateNotificationSettings(UserProfile userProfile, string bearerToken)
+        private void UpdateNotificationSettings(UserProfile userProfile)
         {
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber);

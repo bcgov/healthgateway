@@ -67,10 +67,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public MessagingVerification GetByInviteKey(Guid inviteKey)
+        public MessagingVerification? GetByInviteKey(Guid inviteKey)
         {
             this.logger.LogTrace($"Getting email invite from DB... {inviteKey}");
-            MessagingVerification retVal = this.dbContext
+            MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.InviteKey == inviteKey && p.VerificationType == MessagingVerificationType.Email)
@@ -97,14 +97,14 @@ namespace HealthGateway.Database.Delegates
         public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
         {
             this.logger.LogTrace($"Getting last messaging verification from DB for user... {hdid}");
-            MessagingVerification retVal = this.dbContext
+            MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.HdId == hdid && p.VerificationType == messagingVerificationType)
                 .OrderByDescending(p => p.UpdatedDateTime)
                 .FirstOrDefault();
 
-            if (retVal.Deleted)
+            if (retVal != null && retVal.Deleted)
             {
                 return null;
             }
