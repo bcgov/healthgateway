@@ -172,7 +172,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHDID = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
