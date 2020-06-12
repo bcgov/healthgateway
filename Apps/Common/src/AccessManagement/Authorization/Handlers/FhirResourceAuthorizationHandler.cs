@@ -13,42 +13,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
-    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
+    using HealthGateway.Common.Constants;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// PatientAuthorizationHandler validates that Patient requirements have been met.
+    /// FhirResourceAuthorizationHandler validates that a FhirRequirement has been met.
     /// </summary>
-    public class PatientAuthorizationHandler : IAuthorizationHandler
+    public class FhirResourceAuthorizationHandler : IAuthorizationHandler
     {
         private const string System = "system";
         private const string User = "user";
-
-        private const string Wildcard = "*";
-        private const string FhirResource = "Patient";
-
-        private const string Read = "read";
-        private const string Write = "write";
-
         private const string RouteResourceIdentifier = "hdid";
 
-        private readonly ILogger<PatientAuthorizationHandler> logger;
+        private readonly ILogger<FhirResourceAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PatientAuthorizationHandler"/> class.
+        /// Initializes a new instance of the <see cref="FhirResourceAuthorizationHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        public PatientAuthorizationHandler(ILogger<PatientAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
+        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
@@ -63,51 +57,37 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            string? resourceHDID = this.httpContextAccessor.HttpContext.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (IAuthorizationRequirement requirement in context.PendingRequirements.ToList())
+            foreach (FhirRequirement requirement in context.PendingRequirements.OfType<FhirRequirement>().ToList())
             {
-                if (requirement is PatientReadRequirement || requirement is PatientWriteRequirement)
+                string? resourceHDID = this.GetResourceHDID(requirement);
+                if (resourceHDID != null)
                 {
-                    if (resourceHDID != null)
+                    if (this.IsOwner(context, resourceHDID))
                     {
-                        if (this.IsOwner(context, resourceHDID))
-                        {
-                            context.Succeed(requirement);
-                        }
-                        else
-                        {
-                            if (requirement is PatientReadRequirement)
-                            {
-                                if (this.IsDelegated(context, resourceHDID, Read))
-                                {
-                                    context.Succeed(requirement);
-                                }
-                            }
-                            else if (requirement is PatientWriteRequirement)
-                            {
-                                if (this.IsDelegated(context, resourceHDID, Write))
-                                {
-                                    context.Succeed(requirement);
-                                }
-                            }
-                        }
+                        context.Succeed(requirement);
                     }
                     else
                     {
-                        this.logger.LogInformation($"Patient Auth Handler has been invoked without route resource being specified");
-                    }
-                }
-                else if (requirement is PatientRequirement)
-                {
-                    ClaimsPrincipal user = context.User;
-                    if (user.HasClaim(c => c.Type == PatientClaims.Patient))
-                    {
-                        context.Succeed(requirement);
+                        if (requirement.SupportsDelegation)
+                        {
+                            if (this.IsDelegated(context, resourceHDID, requirement))
+                            {
+                                context.Succeed(requirement);
+                            }
+                            else
+                            {
+                                this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected");
+                            }
+                        }
+                        else
+                        {
+                            this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected as delegation is disabled");
+                        }
                     }
                 }
                 else
                 {
-                    this.logger.LogDebug($"Requirement not known to Patient Auth Handler and will be ignored");
+                    this.logger.LogWarning($"Fhir resource Handler has been invoked without route resource being specified, ignoring");
                 }
             }
 
@@ -119,18 +99,33 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         /// No validation is done on the parameters.
         /// </summary>
         /// <param name="type">The type: System or User.</param>
-        /// <param name="access">The access level read or write.</param>
+        /// <param name="requirement">The requirement to get the resource and access from.</param>
         /// <returns>An array of acceptable scopes.</returns>
-        private static string[] GetAcceptedScopes(string type, string access)
+        private static string[] GetAcceptedScopes(string type, FhirRequirement requirement)
         {
             string[] acceptedScopes = new string[]
             {
-                $"{type}/{Wildcard}.{Wildcard}",
-                $"{type}/{Wildcard}.{access}",
-                $"{type}/{FhirResource}.{Wildcard}",
-                $"{type}/{FhirResource}.{access}",
+                $"{type}/{FhirResource.Wildcard}.{FhirAccessType.Wildcard}",
+                $"{type}/{FhirResource.Wildcard}.{requirement.AccessType}",
+                $"{type}/{requirement.Resource}.{FhirAccessType.Wildcard}",
+                $"{type}/{requirement.Resource}.{requirement.AccessType}",
             };
             return acceptedScopes;
+        }
+
+        private string? GetResourceHDID(FhirRequirement requirement)
+        {
+            string? retVal = null;
+            if (requirement.Lookup == Constants.FhirResourceLookup.Route)
+            {
+                retVal = this.httpContextAccessor.HttpContext.Request.RouteValues[RouteResourceIdentifier] as string;
+            }
+            else if (requirement.Lookup == Constants.FhirResourceLookup.Parameter)
+            {
+                retVal = this.httpContextAccessor.HttpContext.Request.Query[RouteResourceIdentifier];
+            }
+
+            return retVal;
         }
 
         /// <summary>
@@ -142,11 +137,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         {
             bool retVal = false;
             ClaimsPrincipal user = context.User;
-            if (user.HasClaim(c => c.Type == PatientClaims.Patient))
+            if (user.HasClaim(c => c.Type == GatewayClaims.HDID))
             {
-                string userHDID = user.FindFirst(c => c.Type == PatientClaims.Patient).Value;
+                string userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                 retVal = userHDID == resourceHDID;
-                this.logger.LogDebug($"{userHDID} is{(!retVal ? "not " : string.Empty)}the resource owner");
+                this.logger.LogDebug($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
             }
             else
             {
@@ -161,8 +156,8 @@ namespace HealthGateway.Common.AccessManagement.Authorization
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHDID">The health data resource subject identifier.</param>
-        /// <param name="access">The access level to validate.</param>
-        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHDID, string access)
+        /// <param name="requirement">The Fhir requirement to satisfy.</param>
+        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement)
         {
             bool retVal = false;
             if (context.User.HasClaim(c => c.Type == GatewayClaims.Scope))
@@ -171,17 +166,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization
                 string[] scopes = scopeclaim.Split(' ');
                 this.logger.LogInformation($"Performing system delegation validation for Patient resource {resourceHDID}");
                 this.logger.LogInformation($"Caller has the following scopes: {scopeclaim}");
-                string[] systemDelegatedScopes = GetAcceptedScopes(System, access);
+                string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogInformation($"Authorized caller as system to have {access} access to Patient resource {resourceHDID}");
+                    this.logger.LogInformation($"Authorized caller as system to have {requirement.AccessType} access to Patient resource {resourceHDID}");
                     retVal = true;
                 }
                 else
                 {
                     this.logger.LogInformation($"Performing user delegation validation for Patient resource {resourceHDID}");
-                    string[] userDelegatedScopes = GetAcceptedScopes(User, access);
-                    if (context.User.HasClaim(c => c.Type == PatientClaims.Patient) && scopes.Intersect(userDelegatedScopes).Any())
+                    string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
+                    if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
                     {
                         this.logger.LogError("user delgation is not implemented, returning not authorized");
 

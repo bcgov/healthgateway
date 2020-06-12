@@ -13,28 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Claims
+namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
-    using HealthGateway.Common.AccessManagement.Authorization.Policy;
-
     /// <summary>
-    /// The set of claims to access Patient data.
+    /// The set of claims to access Medication data.
     /// </summary>
-    public static class PatientClaims
+    public static class MedicationPolicy
     {
         /// <summary>
-        /// Claim which requires that the user be a patient (have a HDID).
+        /// Policy which allows the reading of the identified patient.
         /// </summary>
-        public const string Patient = GatewayClaims.HDID;
+        public const string MedicationStatementRead = "MedicationStatementRead";
 
         /// <summary>
-        /// Claim which allows the reading of the identified patient.
+        /// Policy which allows writing of the identified patient.
         /// </summary>
-        public const string Read = "patient/Patient.Read";
-
-        /// <summary>
-        /// Claim which allows writing of the identified patient.
-        /// </summary>
-        public const string Write = "patient/Patient.Write";
+        public const string MedicationStatementWrite = "MedicationStatementWrite";
     }
 }

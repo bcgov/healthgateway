@@ -13,21 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Claims
+namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
     /// <summary>
-    /// Claims specific to Health Gateway.
+    /// The set of claims to access Laboratory data.
     /// </summary>
-    public static class GatewayClaims
+    public static class LaboratoryPolicy
     {
         /// <summary>
-        /// Policy claim representing the scopes the user has.
+        /// Policy which allows the reading of the identified Laboratory.
         /// </summary>
-        public const string Scope = "scope";
+        public const string Read = "LaboratoryRead";
 
         /// <summary>
-        /// Policy claims requiring an HDID.
+        /// Policy which allows writing of the identified Laboratory.
         /// </summary>
-        public const string HDID = "hdid";
+        public const string Write = "LaboratoryWrite";
     }
 }
