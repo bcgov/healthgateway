@@ -76,7 +76,7 @@ namespace HealthGateway.Patient.Test
                 };
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegateMock = new Mock<IClientRegistriesDelegate>();
-            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographics>())).ReturnsAsync(
+            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
                     HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse()

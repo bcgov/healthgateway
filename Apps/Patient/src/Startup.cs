@@ -16,8 +16,12 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Patient
 {
+    using System;
+    using System.Security.Cryptography.X509Certificates;
+    using System.ServiceModel;
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
+    using System.ServiceModel.Security;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Services;
@@ -26,6 +30,7 @@ namespace HealthGateway.Patient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using ServiceReference;
 
     /// <summary>
     /// Configures the application during startup.
@@ -33,6 +38,8 @@ namespace HealthGateway.Patient
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly EndpointAddress clientRegistriesEndpoint;
+        private readonly X509Certificate2 clientRegistriesCertificate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -42,6 +49,12 @@ namespace HealthGateway.Patient
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
+            IConfigurationSection clientConfiguration = configuration.GetSection("ClientRegistries");
+            this.clientRegistriesEndpoint = new EndpointAddress(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
+            // Load Certificate
+            string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
+            string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
+            this.clientRegistriesCertificate = new X509Certificate2(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
         }
 
         /// <summary>
@@ -59,6 +72,26 @@ namespace HealthGateway.Patient
 
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
+
+            services.AddTransient<QUPA_AR101102_PortType>(s =>
+            {
+                QUPA_AR101102_PortTypeClient client = new QUPA_AR101102_PortTypeClient(
+                    QUPA_AR101102_PortTypeClient.EndpointConfiguration.QUPA_AR101102_Port,
+                    this.clientRegistriesEndpoint);
+                client.ClientCredentials.ClientCertificate.Certificate = this.clientRegistriesCertificate;
+                client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
+
+                // TODO: - HACK - Remove this once we can get the server certificate to be trusted.
+                client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
+                    new X509ServiceCertificateAuthentication()
+                    {
+                        CertificateValidationMode = X509CertificateValidationMode.None,
+                        RevocationMode = X509RevocationMode.NoCheck,
+                    };
+
+                return client;
+            });
+
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, SoapPatientService>();
         }
