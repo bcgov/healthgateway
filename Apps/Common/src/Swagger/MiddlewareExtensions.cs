@@ -15,12 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
-    using System;
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Builder;
 
     /// <summary>
     /// Extending Swagger services.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class MiddlewareExtensions
     {
         /// <summary>

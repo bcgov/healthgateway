@@ -33,7 +33,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
         private const string ConfigSectionName = "ClientAuthentication";
-        private readonly ILogger<AuthenticationDelegate> logger;
+        private readonly ILogger<IAuthenticationDelegate> logger;
 
         private readonly IHttpClientService httpClientService;
 
@@ -44,7 +44,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="config">The configuration.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         public AuthenticationDelegate(
-            ILogger<AuthenticationDelegate> logger,
+            ILogger<IAuthenticationDelegate> logger,
             IConfiguration config,
             IHttpClientService httpClientService)
         {
@@ -78,11 +78,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <inheritdoc/>
         public JWTModel AuthenticateAsUser()
         {
-            this.logger.LogDebug($"Authenticating Direct Grant as User: {this.TokenRequest.Username!}");
+            this.logger.LogDebug($"Authenticating Direct Grant as User: {this.TokenRequest.Username}");
             Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant();
 
             JWTModel jwtModel = (authenticating.Result as JWTModel) !;
-            this.logger.LogDebug($"Finished authenticating User: {this.TokenRequest.Username!}");
+            this.logger.LogDebug($"Finished authenticating User: {this.TokenRequest.Username}");
 
             return jwtModel;
         }
@@ -96,9 +96,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
                 IEnumerable<KeyValuePair<string, string>> oauthParams = new[]
                 {
-                    new KeyValuePair<string, string>(@"client_id", this.TokenRequest.ClientId!),
-                    new KeyValuePair<string, string>(@"client_secret", this.TokenRequest.ClientSecret!),
-                    new KeyValuePair<string, string>(@"audience", this.TokenRequest.Audience!),
+                    new KeyValuePair<string, string>(@"client_id", this.TokenRequest.ClientId),
+                    new KeyValuePair<string, string>(@"client_secret", this.TokenRequest.ClientSecret),
+                    new KeyValuePair<string, string>(@"audience", this.TokenRequest.Audience),
                     new KeyValuePair<string, string>(@"grant_type", @"client_credentials"),
                 };
                 using var content = new FormUrlEncodedContent(oauthParams);
@@ -129,13 +129,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
                 IEnumerable<KeyValuePair<string, string>> oauthParams = new[]
                 {
-                    new KeyValuePair<string, string>(@"client_id", this.TokenRequest.ClientId!),
-                    new KeyValuePair<string, string>(@"client_secret", this.TokenRequest.ClientSecret!),
+                    new KeyValuePair<string, string>(@"client_id", this.TokenRequest.ClientId),
+                    new KeyValuePair<string, string>(@"client_secret", this.TokenRequest.ClientSecret),
                     new KeyValuePair<string, string>(@"grant_type", @"password"),
-                    new KeyValuePair<string, string>(@"audience", this.TokenRequest.Audience!),
-                    new KeyValuePair<string, string>(@"scope", this.TokenRequest.Scope!),
-                    new KeyValuePair<string, string>(@"username", this.TokenRequest.Username!),
-                    new KeyValuePair<string, string>(@"password", this.TokenRequest.Password!),
+                    new KeyValuePair<string, string>(@"audience", this.TokenRequest.Audience),
+                    new KeyValuePair<string, string>(@"scope", this.TokenRequest.Scope),
+                    new KeyValuePair<string, string>(@"username", this.TokenRequest.Username),
+                    new KeyValuePair<string, string>(@"password", this.TokenRequest.Password),
                 };
 
                 using var content = new FormUrlEncodedContent(oauthParams);

@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace HealthGateway.Common.Services
     /// <summary>
     /// A simple service to queue and send email.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class NotificationSettingsService : INotificationSettingsService
     {
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;

@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -52,6 +53,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// <summary>
     /// The startup configuration class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class StartupConfiguration
     {
         private readonly IWebHostEnvironment environment;

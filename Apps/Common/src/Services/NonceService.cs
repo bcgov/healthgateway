@@ -17,12 +17,14 @@
 namespace HealthGateway.Common.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Security.Cryptography;
     using System.Web;
 
     /// <summary>
     /// Implementation of the <see cref="NonceService"/> with cryptograpgic generation.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class NonceService : INonceService
     {
         private string currentNonce;
