@@ -35,6 +35,7 @@ namespace HealthGateway.Patient
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup : IDisposable
     {
         private readonly StartupConfiguration startupConfig;
