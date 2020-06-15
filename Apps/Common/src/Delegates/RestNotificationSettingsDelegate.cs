@@ -26,7 +26,6 @@ namespace HealthGateway.Common.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Migrations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
