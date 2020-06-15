@@ -35,7 +35,7 @@ export class RestLaboratoryService implements ILaboratoryService {
       }
       this.http
         .getWithCors<RequestResult<LaboratoryOrder[]>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}/`
+          `${this.baseUri}${this.LABORATORY_BASE_URI}?hdid=${hdid}`
         )
         .then((requestResult) => {
           resolve(requestResult);
@@ -48,7 +48,8 @@ export class RestLaboratoryService implements ILaboratoryService {
   }
 
   public getReportDocument(
-    reportId: string
+    reportId: string,
+    hdid: string
   ): Promise<RequestResult<LaboratoryReport>> {
     return new Promise((resolve, reject) => {
       if (!this.isEnabled) {
@@ -64,7 +65,7 @@ export class RestLaboratoryService implements ILaboratoryService {
       }
       this.http
         .getWithCors<RequestResult<LaboratoryReport>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report/`
+          `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
         )
         .then((requestResult) => {
           resolve(requestResult);
