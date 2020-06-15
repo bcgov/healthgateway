@@ -88,7 +88,7 @@ namespace HealthGateway.LaboratoryTests
             LaboratoryController controller = new LaboratoryController(loggerFactory.CreateLogger<LaboratoryController>(),  svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetLaboratoryOrders();
+            IActionResult actual = await controller.GetLaboratoryOrders(hdid);
 
             // Verify
             Assert.IsType<JsonResult>(actual);
@@ -155,7 +155,7 @@ namespace HealthGateway.LaboratoryTests
             LaboratoryController controller = new LaboratoryController(loggerFactory.CreateLogger<LaboratoryController>(), svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetLaboratoryOrders();
+            IActionResult actual = await controller.GetLaboratoryOrders(hdid);
 
             // Verify
             Assert.IsType<JsonResult>(actual);
@@ -219,7 +219,7 @@ namespace HealthGateway.LaboratoryTests
             LaboratoryController controller = new LaboratoryController(loggerFactory.CreateLogger<LaboratoryController>(), svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetLaboratoryReport(guid);
+            IActionResult actual = await controller.GetLaboratoryReport(guid, hdid);
 
             // Verify
             Assert.IsType<JsonResult>(actual);
@@ -287,7 +287,7 @@ namespace HealthGateway.LaboratoryTests
             LaboratoryController controller = new LaboratoryController(loggerFactory.CreateLogger<LaboratoryController>(), svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetLaboratoryReport(guid);
+            IActionResult actual = await controller.GetLaboratoryReport(guid, hdid);
 
             // Verify
             Assert.IsType<JsonResult>(actual);
