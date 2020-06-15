@@ -15,10 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.Swagger;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerOptions>
     {
         private readonly SwaggerSettings settings;

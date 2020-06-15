@@ -13,17 +13,30 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Filters
+namespace HealthGateway.CommonTests.Utils
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using HealthGateway.Common.Utils;
+    using Xunit;
 
-    /// <summary>
-    /// Ignores auditing on the specified controller.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    [AttributeUsage(AttributeTargets.Class)]
-    public class IgnoreAuditAttribute : Attribute
+    public class DateTimeFormatter_Test
     {
+        [Fact]
+        public void ShouldFormat()
+        {
+            DateTime dt = DateTime.ParseExact("20200101", "yyyyMMdd", CultureInfo.InvariantCulture);
+            string expectedDateStr = "2020-01-01";
+            string actualDateStr = DateTimeFormatter.FormatDate(dt);
+            Assert.True(actualDateStr == expectedDateStr);
+        }
+
+        [Fact]
+        public void ShouldNullReturnEmpty()
+        {
+            string result = DateTimeFormatter.FormatDate(null);
+            Assert.True(result == string.Empty );
+        }
     }
 }

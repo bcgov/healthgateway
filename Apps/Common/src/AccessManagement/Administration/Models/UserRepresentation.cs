@@ -17,11 +17,13 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     /// <summary>
     /// Class that represents the user model in the Authorization Server's user accounts.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class UserRepresentation
     {
         /// <summary>
