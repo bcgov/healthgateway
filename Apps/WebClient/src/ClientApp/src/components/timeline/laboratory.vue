@@ -207,6 +207,7 @@ export default class LaboratoryTimelineComponent extends Vue {
   @Prop() entry!: LaboratoryTimelineEntry;
   @Prop() index!: number;
   @Prop() datekey!: string;
+  @Getter("user", { namespace: "user" }) user!: User;
 
   @Ref("messageModal")
   readonly messageModal!: MessageModalComponent;
@@ -243,7 +244,7 @@ export default class LaboratoryTimelineComponent extends Vue {
   private getReport() {
     this.isLoadingDocument = true;
     this.laboratoryService
-      .getReportDocument(this.entry.id)
+        .getReportDocument(this.entry.id, this.user.hdid)
       .then((result) => {
         const link = document.createElement("a");
         let dateString = moment(this.entry.displayDate)
