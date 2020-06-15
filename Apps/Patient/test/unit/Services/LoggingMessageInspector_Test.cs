@@ -25,7 +25,7 @@ namespace HealthGateway.Patient.Test
     public class LoggingMessageInspector_Test
     {
         [Fact]
-        public void AfterReceiveReply()
+        public void ShouldProcessAfterReceiveReply()
         {
             IClientMessageInspector service = new LoggingMessageInspector(
                 new Mock<ILogger<LoggingMessageInspector>>().Object
