@@ -244,7 +244,7 @@ export default class LaboratoryTimelineComponent extends Vue {
   private getReport() {
     this.isLoadingDocument = true;
     this.laboratoryService
-        .getReportDocument(this.entry.id, this.user.hdid)
+      .getReportDocument(this.entry.id, this.user.hdid)
       .then((result) => {
         const link = document.createElement("a");
         let dateString = moment(this.entry.displayDate)
