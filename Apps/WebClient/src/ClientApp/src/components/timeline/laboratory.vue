@@ -179,9 +179,9 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component, Ref } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
-import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { Component, Prop, Ref } from "vue-property-decorator";
+import { Action, Getter, State } from "vuex-class";
+import { IconDefinition, faFlask } from "@fortawesome/free-solid-svg-icons";
 import LaboratoryTimelineEntry, {
   LaboratoryResultViewModel,
 } from "@/models/laboratoryTimelineEntry";
@@ -237,7 +237,7 @@ export default class LaboratoryTimelineComponent extends Vue {
     return moment(date).format("lll");
   }
 
-  private showConfirmationModal(): string {
+  private showConfirmationModal(): void {
     this.messageModal.showModal();
   }
 

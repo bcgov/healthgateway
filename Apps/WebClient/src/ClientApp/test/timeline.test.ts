@@ -1,9 +1,9 @@
-import { createLocalVue, Wrapper, mount } from "@vue/test-utils";
+import { Wrapper, createLocalVue, mount } from "@vue/test-utils";
 import BootstrapVue from "bootstrap-vue";
 import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
-import { IMedicationService, IHttpDelegate } from "@/services/interfaces";
+import { IHttpDelegate, IMedicationService } from "@/services/interfaces";
 import {
   ExternalConfiguration,
   WebClientConfiguration,

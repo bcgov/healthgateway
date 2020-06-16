@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IBetaRequestService } from "@/services/interfaces";
+import { IBetaRequestService, IHttpDelegate } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import BetaRequest from "@/models/betaRequest";
 import { ResultType } from "@/constants/resulttype";
@@ -53,7 +53,6 @@ export class RestBetaRequestService implements IBetaRequestService {
     resolve: any,
     reject: any
   ) {
-    //console.log(requestResult);
     if (requestResult.resultStatus === ResultType.Success) {
       resolve(requestResult.resourcePayload);
     } else {

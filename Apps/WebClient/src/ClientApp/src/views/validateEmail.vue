@@ -36,10 +36,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IUserProfileService } from "@/services/interfaces";
 import { Action, Getter } from "vuex-class";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { IUserProfileService } from "@/services/interfaces";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
@@ -48,10 +48,12 @@ library.add(faTimesCircle);
 @Component
 export default class ValidateEmailComponent extends Vue {
   @Prop() inviteKey!: string;
+
   @Getter("user", { namespace: "user" }) user!: User;
-  @Action("checkRegistration", { namespace: "user" }) checkRegistration!: ({
-    hdid: String,
-  }: any) => Promise<boolean>;
+
+  @Action("checkRegistration", { namespace: "user" })
+  checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+
   private isLoading: boolean = false;
   private isSuccess: boolean | null = null;
 

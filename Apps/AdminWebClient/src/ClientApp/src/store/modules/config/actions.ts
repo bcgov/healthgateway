@@ -12,7 +12,7 @@ function handleError(commit: Commit, error: Error) {
 }
 
 export const actions: ActionTree<ConfigState, RootState> = {
-  initialize({ commit }): Promise<ExternalConfiguration> {
+  initialize(context): Promise<ExternalConfiguration> {
     console.log("Initializing the config store...");
     const configService: IConfigService = container.get(
       SERVICE_IDENTIFIER.ConfigService
@@ -23,11 +23,11 @@ export const actions: ActionTree<ConfigState, RootState> = {
         .getConfiguration()
         .then(value => {
           console.log("Configuration: ", value);
-          commit("configurationLoaded", value);
+          context.commit("configurationLoaded", value);
           resolve(value);
         })
         .catch(error => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         })
         .finally(() => {

@@ -1,9 +1,8 @@
 import { ActionTree } from "vuex";
-import { RootState, AuthState } from "@/models/storeState";
+import { AuthState, RootState } from "@/models/storeState";
 import { Route } from "vue-router";
-
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
 function routeIsOidcCallback(route: Route): boolean {
@@ -21,7 +20,7 @@ const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
 );
 
 export const actions: ActionTree<AuthState, RootState> = {
-  oidcCheckAccess(context, route) {
+  oidcCheckAccess(context, route: Route): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       if (routeIsOidcCallback(route)) {
         resolve(true);
@@ -47,21 +46,24 @@ export const actions: ActionTree<AuthState, RootState> = {
       });
     });
   },
-  authenticateOidc({ commit }, { idpHint, redirectPath }) {
+  authenticateOidc(
+    context,
+    params: { idpHint: string; redirectPath: string }
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       authService
-        .signinRedirect(idpHint, redirectPath)
+        .signinRedirect(params.idpHint, params.redirectPath)
         .then(() => {
           console.log("signinRedirect done");
           resolve();
         })
         .catch((err) => {
-          commit("setOidcError", err);
+          context.commit("setOidcError", err);
           reject();
         });
     });
   },
-  oidcSignInCallback(context) {
+  oidcSignInCallback(context): Promise<string> {
     return new Promise((resolve, reject) => {
       authService
         .signinRedirectCallback()
@@ -83,7 +85,7 @@ export const actions: ActionTree<AuthState, RootState> = {
         });
     });
   },
-  authenticateOidcSilent(context) {
+  authenticateOidcSilent(context): Promise<void> {
     return authService
       .signinSilent()
       .then((oidcUser) => {
@@ -94,13 +96,13 @@ export const actions: ActionTree<AuthState, RootState> = {
         context.commit("setOidcAuthIsChecked");
       });
   },
-  oidcWasAuthenticated(context, oidcUser) {
+  oidcWasAuthenticated(context, oidcUser): void {
     httpDelegate.setAuthorizationHeader(oidcUser.access_token);
     context.commit("setOidcAuth", oidcUser);
     context.commit("user/setOidcUserData", oidcUser, { root: true });
     context.commit("setOidcAuthIsChecked");
   },
-  getOidcUser(context) {
+  getOidcUser(context): Promise<void> {
     return authService
       .getUser()
       .then((oidcUser) => {
@@ -116,12 +118,12 @@ export const actions: ActionTree<AuthState, RootState> = {
         authService.clearStaleState();
       });
   },
-  signOutOidc(context) {
+  signOutOidc(context): void {
     authService.logout().then(() => {
       context.dispatch("clearStorage");
     });
   },
-  clearStorage(context) {
+  clearStorage(context): void {
     authService.clearStaleState();
     authService.removeUser().finally(() => {
       httpDelegate.unsetAuthorizationHeader();

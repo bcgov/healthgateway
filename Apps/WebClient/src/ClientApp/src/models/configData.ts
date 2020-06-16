@@ -24,13 +24,13 @@ export class IdentityProviderConfiguration {
   public name!: string;
 
   // Gets or sets the Font Awesome Icon that we recommend to use.
-  public icon?: string;
+  public icon!: string;
 
   // Gets or sets the Identity Provider hint.
-  public hint?: string;
+  public hint!: string;
 
   // Gets or sets a value indicating whether this identity provider should be used.
-  public disabled?: boolean;
+  public disabled!: boolean;
 }
 
 // Configuration to be used by external clients for authentication.

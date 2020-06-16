@@ -17,20 +17,20 @@ import router from "@/router";
 import store from "@/store/store";
 import {
   IAuthenticationService,
-  IImmunizationService,
-  IPatientService,
-  IMedicationService,
-  ILaboratoryService,
-  IHttpDelegate,
-  IConfigService,
-  IUserProfileService,
-  IUserFeedbackService,
   IBetaRequestService,
-  IUserNoteService,
   ICommunicationService,
+  IConfigService,
+  IHttpDelegate,
+  IImmunizationService,
+  ILaboratoryService,
+  IMedicationService,
+  IPatientService,
   IUserCommentService,
+  IUserFeedbackService,
+  IUserNoteService,
+  IUserProfileService,
 } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";

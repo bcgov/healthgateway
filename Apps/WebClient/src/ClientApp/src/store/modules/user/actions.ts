@@ -22,26 +22,27 @@ const userProfileService: IUserProfileService = container.get<
 >(SERVICE_IDENTIFIER.UserProfileService);
 
 export const actions: ActionTree<UserState, RootState> = {
-  getPatientData({ commit }, { hdid }): Promise<PatientData> {
+  getPatientData(context, params: { hdid: string }): Promise<PatientData> {
     return new Promise((resolve, reject) => {
       patientService
-        .getPatientData(hdid)
+        .getPatientData(params.hdid)
         .then((patientData) => {
           console.log("Patient Data: ", patientData);
-          commit("setPatientData", patientData);
+          context.commit("setPatientData", patientData);
           resolve(patientData);
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
 
-  checkRegistration({ commit }, { hdid }): Promise<boolean> {
+  checkRegistration(context, params: { hdid: string }): Promise<boolean> {
+    console.log(params);
     return new Promise((resolve, reject) => {
       userProfileService
-        .getProfile(hdid)
+        .getProfile(params.hdid)
         .then((userProfile) => {
           console.log("User Profile: ", userProfile);
           let isRegistered: boolean;
@@ -51,109 +52,114 @@ export const actions: ActionTree<UserState, RootState> = {
             isRegistered = false;
           }
 
-          commit("setProfileUserData", userProfile);
+          context.commit("setProfileUserData", userProfile);
 
           // If registered retrieve the invite as well
           if (isRegistered) {
-            userProfileService
-              .getLatestEmailInvite(hdid)
-              .then((userEmailInvite) => {
-                commit("setValidatedEmail", userEmailInvite);
+            var latestEmailPromise = userProfileService.getLatestEmailInvite(
+              params.hdid
+            );
+            var latestSMSPromise = userProfileService.getLatestSMSInvite(
+              params.hdid
+            );
+
+            Promise.all([latestEmailPromise, latestSMSPromise])
+              .then((results) => {
+                // Latest Email invite
+                if (results[0]) {
+                  context.commit("setValidatedEmail", results[0]);
+                }
+                // Latest SMS invite
+                if (results[1]) {
+                  context.commit("setValidatedSMS", results[1]);
+                }
                 resolve(isRegistered);
               })
               .catch((error) => {
-                handleError(commit, error);
-                reject(error);
-              });
-
-            userProfileService
-              .getLatestSMSInvite(hdid)
-              .then((userSMSInvite) => {
-                commit("setValidatedSMS", userSMSInvite);
-                resolve(userSMSInvite);
-              })
-              .catch((error) => {
-                handleError(commit, error);
+                handleError(context.commit, error);
                 reject(error);
               });
           } else {
-            commit("setValidatedEmail", undefined);
-            commit("setValidatedSMS", undefined);
+            context.commit("setValidatedEmail", undefined);
+            context.commit("setValidatedSMS", undefined);
             resolve(isRegistered);
           }
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
-  getUserEmail({ commit }, { hdid }): Promise<UserEmailInvite> {
+  getUserEmail(context, params: { hdid: string }): Promise<UserEmailInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .getLatestEmailInvite(hdid)
+        .getLatestEmailInvite(params.hdid)
         .then((userEmailInvite) => {
-          commit("setValidatedEmail", userEmailInvite);
+          context.commit("setValidatedEmail", userEmailInvite);
           resolve(userEmailInvite);
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
-  getUserSMS({ commit }, { hdid }): Promise<UserSMSInvite> {
+  getUserSMS(context, params: { hdid: string }): Promise<UserSMSInvite> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .getLatestSMSInvite(hdid)
+        .getLatestSMSInvite(params.hdid)
         .then((userSMSInvite) => {
-          commit("setValidatedSMS", userSMSInvite);
+          context.commit("setValidatedSMS", userSMSInvite);
           resolve(userSMSInvite);
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
-  updateUserEmail({ commit }, { hdid, emailAddress }): Promise<void> {
+  updateUserEmail(
+    context,
+    params: { hdid: string; emailAddress: string }
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .updateEmail(hdid, emailAddress)
+        .updateEmail(params.hdid, params.emailAddress)
         .then(() => {
           resolve();
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
-  closeUserAccount({ commit }, { hdid }): Promise<void> {
+  closeUserAccount(context, params: { hdid: string }): Promise<void> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .closeAccount(hdid)
+        .closeAccount(params.hdid)
         .then((userProfile) => {
-          commit("setProfileUserData", userProfile);
+          context.commit("setProfileUserData", userProfile);
           resolve();
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
-  recoverUserAccount({ commit }, { hdid }): Promise<void> {
+  recoverUserAccount(context, params: { hdid: string }): Promise<void> {
     return new Promise((resolve, reject) => {
       userProfileService
-        .recoverAccount(hdid)
+        .recoverAccount(params.hdid)
         .then((userProfile) => {
           console.log("User Profile: ", userProfile);
-          commit("setProfileUserData", userProfile);
+          context.commit("setProfileUserData", userProfile);
           resolve();
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });

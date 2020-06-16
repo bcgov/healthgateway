@@ -3,7 +3,7 @@ import { ActionTree, Commit } from "vuex";
 import { IMedicationService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { RootState, MedicationState } from "@/models/storeState";
+import { MedicationState, RootState } from "@/models/storeState";
 import MedicationResult from "@/models/medicationResult";
 
 function handleError(commit: Commit, error: Error) {
@@ -16,9 +16,9 @@ const medicationService: IMedicationService = container.get<IMedicationService>(
 );
 
 export const actions: ActionTree<MedicationState, RootState> = {
-  getMedication({ commit, getters }, { din }): Promise<MedicationResult> {
+  getMedication(context, params: { din: string }): Promise<MedicationResult> {
     return new Promise((resolve, reject) => {
-      const medicationResult = getters.getStoredMedication(din);
+      const medicationResult = context.getters.getStoredMedication(params.din);
       if (medicationResult) {
         console.log("Medication found stored, not quering!");
         //console.log("Medication Data: ", medicationResult);
@@ -26,14 +26,18 @@ export const actions: ActionTree<MedicationState, RootState> = {
       } else {
         console.log("Retrieving Medication info");
         medicationService
-          .getMedicationInformation(din)
+          .getMedicationInformation(params.din)
           .then((medicationData) => {
             //console.log("Medication Data: ", requestResult);
-            commit("addMedicationData", medicationData);
-            resolve(medicationData);
+            if (medicationData) {
+              context.commit("addMedicationData", medicationData);
+              resolve(medicationData);
+            } else {
+              resolve(undefined);
+            }
           })
           .catch((error) => {
-            handleError(commit, error);
+            handleError(context.commit, error);
             reject(error);
           });
       }

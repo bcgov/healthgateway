@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { StateType, PharmacyState } from "@/models/storeState";
+import { PharmacyState, StateType } from "@/models/storeState";
 import Pharmacy from "@/models/pharmacy";
 
 export const mutations: MutationTree<PharmacyState> = {

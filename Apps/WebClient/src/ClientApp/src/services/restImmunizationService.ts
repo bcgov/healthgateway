@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IImmunizationService, IHttpDelegate } from "@/services/interfaces";
+import { IHttpDelegate, IImmunizationService } from "@/services/interfaces";
 import ImmunizationData from "@/models/immunizationData";
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";

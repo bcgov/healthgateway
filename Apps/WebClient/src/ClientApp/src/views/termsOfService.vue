@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref, Prop } from "vue-property-decorator";
+import { Component, Prop, Ref } from "vue-property-decorator";
 import { IUserProfileService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -62,7 +62,7 @@ import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
   },
 })
 export default class TermsOfServiceComponent extends Vue {
-  private userProfileService: IUserProfileService;
+  private userProfileService!: IUserProfileService;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";

@@ -76,12 +76,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
+import { Action, Getter, State } from "vuex-class";
 import VueRouter, { Route } from "vue-router";
 import LoadingComponent from "@/components/loading.vue";
 import {
-  IdentityProviderConfiguration,
   ExternalConfiguration,
+  IdentityProviderConfiguration,
 } from "@/models/configData";
 
 const namespace: string = "auth";
@@ -92,18 +92,23 @@ const namespace: string = "auth";
   },
 })
 export default class LoginComponent extends Vue {
-  @Action("authenticateOidc", { namespace }) authenticateOidc: any;
+  @Action("authenticateOidc", { namespace }) authenticateOidc!: (params: {
+    idpHint: string;
+    redirectPath: string;
+  }) => Promise<void>;
+
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
   @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
   @Getter("identityProviders", { namespace: "config" })
   identityProviders!: IdentityProviderConfiguration[];
+
   @Prop() isRetry?: boolean;
 
   private isLoading: boolean = true;
   private redirectPath: string = "";
   private routeHandler!: VueRouter;
 
-  mounted() {
+  private mounted() {
     if (this.$route.query.redirect && this.$route.query.redirect !== "") {
       this.redirectPath = this.$route.query.redirect.toString();
     } else {
@@ -136,7 +141,7 @@ export default class LoginComponent extends Vue {
     this.authenticateOidc({
       idpHint: hint,
       redirectPath: this.redirectPath,
-    }).then((result) => {
+    }).then(() => {
       if (this.oidcIsAuthenticated) {
         this.routeHandler.push({ path: this.redirectPath });
       }

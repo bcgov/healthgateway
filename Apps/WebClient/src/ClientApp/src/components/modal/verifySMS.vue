@@ -90,7 +90,7 @@
 <script lang="ts">
 import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
-import { Emit, Prop, Component, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -104,9 +104,12 @@ import UserSMSInvite from "@/models/userSMSInvite";
   },
 })
 export default class VerifySMSComponent extends Vue {
-  error: boolean = false;
   @Prop() smsNumber!: string;
+
   @Getter("user", { namespace: "user" }) user!: User;
+
+  @Action("getUserSMS", { namespace: "user" })
+  getUserSMS!: (params: { hdid: string }) => Promise<UserSMSInvite>;
 
   private userProfileService!: IUserProfileService;
 
@@ -116,11 +119,9 @@ export default class VerifySMSComponent extends Vue {
   private isVisible: boolean = false;
   private isLoading: boolean = false;
   private isValid: boolean = false;
+  public error: boolean = false;
 
-  @Action("getUserSMS", { namespace: "user" })
-  getUserSMS!: ({ hdid }: { hdid: string }) => Promise<UserSMSInvite>;
-
-  mounted() {
+  private mounted() {
     this.userProfileService = container.get<IUserProfileService>(
       SERVICE_IDENTIFIER.UserProfileService
     );
@@ -138,6 +139,7 @@ export default class VerifySMSComponent extends Vue {
       }
     });
   }
+
   public showModal() {
     this.isVisible = true;
   }
@@ -182,7 +184,6 @@ export default class VerifySMSComponent extends Vue {
       .validateSMS(this.user.hdid, this.smsVerificationCode)
       .then((result) => {
         this.error = !result;
-        this.smsVerified = result;
         this.getVerification();
         if (!this.error) {
           this.handleSubmit();
@@ -205,7 +206,6 @@ export default class VerifySMSComponent extends Vue {
         }, 5000);
       })
       .catch((err) => {
-        this.hasErrors = true;
         console.log(err);
       });
   }

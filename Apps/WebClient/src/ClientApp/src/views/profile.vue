@@ -157,7 +157,7 @@ input {
                 variant="primary"
                 class="mx-2 actionButton"
                 :disabled="tempEmail === email"
-                @click="saveEmailEdit()"
+                @click="saveEmailEdit($event)"
                 >Save
               </b-button>
             </b-col>
@@ -349,17 +349,17 @@ import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import { Action, Getter } from "vuex-class";
 import {
+  email,
+  helpers,
+  minLength,
+  not,
   required,
   requiredIf,
   sameAs,
-  minLength,
-  email,
-  not,
-  helpers,
 } from "vuelidate/lib/validators";
 import {
-  IUserProfileService,
   IAuthenticationService,
+  IUserProfileService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -369,7 +369,7 @@ import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import UserProfile from "@/models/userProfile";
 import { WebClientConfiguration } from "@/models/configData";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import {
   faCheck,
   faExclamationTriangle,
@@ -454,9 +454,9 @@ export default class ProfileComponent extends Vue {
 
   private timeForDeletion: number = -1;
 
-  private interval: any;
+  private intervalHandler: number = 0;
 
-  mounted() {
+  private mounted() {
     this.userProfileService = container.get<IUserProfileService>(
       SERVICE_IDENTIFIER.UserProfileService
     );
@@ -518,7 +518,7 @@ export default class ProfileComponent extends Vue {
       });
 
     this.calculateTimeForDeletion();
-    this.interval = setInterval(() => {
+    this.intervalHandler = setInterval(() => {
       this.calculateTimeForDeletion();
     }, 1000);
   }
@@ -599,6 +599,10 @@ export default class ProfileComponent extends Vue {
     return this.pluralize(timeRemaining, "second");
   }
 
+  private get verifiedIcon(): IconDefinition {
+    return faCheck;
+  }
+
   private pluralize(count: number, message: string): string {
     let roundCount = Math.floor(count);
     return roundCount.toString() + " " + message + (roundCount > 1 ? "s" : "");
@@ -634,9 +638,8 @@ export default class ProfileComponent extends Vue {
     this.$v.$reset();
   }
 
-  private saveEmailEdit(event: any): void {
+  private saveEmailEdit(event: Event): void {
     this.$v.$touch();
-    console.log(this.$v);
     if (this.$v.email.$invalid || this.$v.emailConfirmation.$invalid) {
       this.submitStatus = "ERROR";
     } else {
@@ -648,9 +651,8 @@ export default class ProfileComponent extends Vue {
     }
   }
 
-  private saveSMSEdit(event: any): void {
+  private saveSMSEdit(event: Event): void {
     this.$v.$touch();
-    console.log(this.$v);
     if (this.$v.smsNumber.$invalid) {
       this.submitStatus = "ERROR";
     } else {
@@ -765,10 +767,6 @@ export default class ProfileComponent extends Vue {
       .finally(() => {
         this.isLoading = false;
       });
-  }
-
-  private get verifiedIcon(): IconDefinition {
-    return faCheck;
   }
 }
 </script>

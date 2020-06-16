@@ -111,7 +111,12 @@ $radius: 15px;
               />
             </b-col>
             <b-col class="p-0 pl-1 col-lg-5 col-md-5 col-6">
-              <b-form-input id="date" v-model="date" required type="date" />
+              <b-form-input
+                id="date"
+                v-model="dateString"
+                required
+                type="date"
+              />
             </b-col>
           </b-row>
         </b-col>
@@ -174,12 +179,12 @@ $radius: 15px;
 <script lang="ts">
 import Vue from "vue";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { Prop, Component, Emit, PropSync } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
+import { Component, Emit, Prop, PropSync } from "vue-property-decorator";
+import { Action, Getter, State } from "vuex-class";
 import {
-  faEllipsisV,
-  faEdit,
   IconDefinition,
+  faEdit,
+  faEllipsisV,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserNoteService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -197,7 +202,7 @@ export default class NoteTimelineComponent extends Vue {
   private noteService!: IUserNoteService;
   private text: string = "";
   private title: string = "";
-  private date: string = new Date().toISOString().slice(0, 10);
+  private dateString: string = new Date().toISOString().slice(0, 10);
   private detailsVisible = false;
   private hasErrors: boolean = false;
   private isEditMode: boolean = false;
@@ -239,9 +244,9 @@ export default class NoteTimelineComponent extends Vue {
         id: this.entry.id,
         text: this.text,
         title: this.title,
-        journalDateTime: this.date,
-        version: this.entry.version,
-        hdid: this.user.hdid,
+        journalDateTime: new Date(this.dateString),
+        version: this.entry.version as number,
+        hdId: this.user.hdid,
       })
       .then((result) => {
         this.isEditMode = false;
@@ -261,8 +266,9 @@ export default class NoteTimelineComponent extends Vue {
       .createNote({
         text: this.text,
         title: this.title,
-        journalDateTime: this.date,
-        hdid: this.user.hdid,
+        journalDateTime: new Date(this.dateString),
+        hdId: this.user.hdid,
+        version: 0,
       })
       .then((result) => {
         this.onNoteAdded(result);
@@ -278,7 +284,7 @@ export default class NoteTimelineComponent extends Vue {
   private editNote(): void {
     this.text = this.entry.text;
     this.title = this.entry.title;
-    this.date = moment(this.entry.date).toISOString().slice(0, 10);
+    this.dateString = moment(this.entry.date).toISOString().slice(0, 10);
     this.isEditMode = true;
     this.onEditStarted(this.entry);
   }
@@ -286,7 +292,7 @@ export default class NoteTimelineComponent extends Vue {
   private deleteNote(): void {
     this.text = this.entry.id;
     if (confirm("Are you sure you want to delete this note?")) {
-      this.noteService.deleteNote(this.entry);
+      this.noteService.deleteNote(this.entry.toModel());
       this.onNoteDeleted(this.entry);
     }
   }

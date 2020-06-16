@@ -26,17 +26,18 @@ const namespace = "auth";
 
 @Component
 export default class LogoutComponent extends Vue {
-  @Action("signOutOidc", { namespace }) logout: any;
-  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated: boolean;
-  @Getter("webClient", { namespace: "config" }) config: WebClientConfiguration;
+  @Action("signOutOidc", { namespace }) logout!: () => void;
 
-  mounted() {
+  @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
+  @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
+
+  private mounted() {
     if (this.oidcIsAuthenticated) {
       this.logout();
     }
   }
 
-  created() {
+  private created() {
     setTimeout(() => {
       if (this.$route.path == "/logout") {
         this.$router.push({ path: "/" });

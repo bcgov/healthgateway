@@ -1,4 +1,4 @@
-import { mount, createLocalVue, Wrapper, shallowMount } from "@vue/test-utils";
+import { Wrapper, createLocalVue, mount, shallowMount } from "@vue/test-utils";
 import BootstrapVue from "bootstrap-vue";
 import ProfileComponent from "@/views/profile.vue";
 import Vuex from "vuex";

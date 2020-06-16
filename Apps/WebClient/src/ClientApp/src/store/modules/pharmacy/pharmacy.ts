@@ -2,7 +2,7 @@ import { Module } from "vuex";
 import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { RootState, StateType, PharmacyState } from "@/models/storeState";
+import { PharmacyState, RootState, StateType } from "@/models/storeState";
 
 export const state: PharmacyState = {
   statusMessage: "",

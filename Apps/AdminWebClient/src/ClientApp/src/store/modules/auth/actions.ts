@@ -11,7 +11,7 @@ function handleError(commit: Commit, error: Error) {
 }
 
 export const actions: ActionTree<AuthState, RootState> = {
-  initialize({ commit }): any {
+  initialize(context): Promise<void> {
     console.log("Initializing the auth store...");
     const authService: IAuthenticationService = container.get<
       IAuthenticationService
@@ -20,11 +20,11 @@ export const actions: ActionTree<AuthState, RootState> = {
       authService
         .getAuthentication()
         .then(authData => {
-          commit("authenticationLoaded", authData);
+          context.commit("authenticationLoaded", authData);
           resolve();
         })
         .catch(error => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         })
         .finally(() => {
@@ -32,30 +32,30 @@ export const actions: ActionTree<AuthState, RootState> = {
         });
     });
   },
-  login({ commit }, { redirectPath }): Promise<void> {
+  login(context, params:{ redirectPath:string }): Promise<void> {
     const authService: IAuthenticationService = container.get<
       IAuthenticationService
     >(SERVICE_IDENTIFIER.AuthenticationService);
-    commit("authenticationRequest");
+    context.commit("authenticationRequest");
     return new Promise((resolve, reject) => {
       authService
         .getAuthentication()
         .then(authData => {
           if (authData.isAuthenticated) {
-            commit("authenticationLoaded", authData);
+            context.commit("authenticationLoaded", authData);
             console.log(authData.token);
           } else {
-            authService.startLoginFlow(redirectPath);
+            authService.startLoginFlow(params.redirectPath);
           }
           resolve();
         })
         .catch(error => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         });
     });
   },
-  logout({ commit }): any {
+  logout(context): Promise<void> {
     const authService: IAuthenticationService = container.get<
       IAuthenticationService
     >(SERVICE_IDENTIFIER.AuthenticationService);
@@ -63,12 +63,12 @@ export const actions: ActionTree<AuthState, RootState> = {
       authService
         .destroyToken()
         .then(() => {
-          commit("logout");
+          context.commit("logout");
           resolve();
         })
         .catch(error => {
           console.log("ERROR:" + error);
-          commit("authenticationError");
+          context.commit("authenticationError");
           reject(error);
         });
     });

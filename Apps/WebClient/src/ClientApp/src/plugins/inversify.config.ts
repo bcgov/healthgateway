@@ -1,21 +1,21 @@
 import "reflect-metadata";
 import { Container } from "inversify";
 
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
   IAuthenticationService,
-  IImmunizationService,
+  IBetaRequestService,
+  ICommunicationService,
   IConfigService,
   IHttpDelegate,
-  IPatientService,
-  IMedicationService,
-  IUserProfileService,
-  IUserFeedbackService,
-  IBetaRequestService,
-  IUserNoteService,
-  ICommunicationService,
-  IUserCommentService,
+  IImmunizationService,
   ILaboratoryService,
+  IMedicationService,
+  IPatientService,
+  IUserCommentService,
+  IUserFeedbackService,
+  IUserNoteService,
+  IUserProfileService,
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestAuthenticationService } from "@/services/restAuthService";
