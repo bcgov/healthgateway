@@ -58,7 +58,7 @@ namespace HealthGateway.Common.Services
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            string json = JsonSerializer.Serialize(this.ValidateVerificationCode(notificationSettings), options);
+            string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
             BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
@@ -68,12 +68,13 @@ namespace HealthGateway.Common.Services
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
             RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.
-                            SetNotificationSettings(this.ValidateVerificationCode(notificationSettings), bearerToken).ConfigureAwait(true);
+                            SetNotificationSettings(ValidateVerificationCode(notificationSettings), bearerToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
             return retVal;
         }
 
-        private NotificationSettingsRequest ValidateVerificationCode(NotificationSettingsRequest notificationSettings)
+        [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Team decision")]
+        private static NotificationSettingsRequest ValidateVerificationCode(NotificationSettingsRequest notificationSettings)
         {
             if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {

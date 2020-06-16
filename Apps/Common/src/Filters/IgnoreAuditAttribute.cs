@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Filters
     /// </summary>
     [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Class)]
-    public class IgnoreAuditAttribute : Attribute
+    public sealed class IgnoreAuditAttribute : Attribute
     {
     }
 }

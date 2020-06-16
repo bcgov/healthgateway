@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsBase"/> class.
         /// </summary>
-        public NotificationSettingsBase()
+        protected NotificationSettingsBase()
         {
         }
 
@@ -36,7 +36,7 @@ namespace HealthGateway.Common.Models
         /// Initializes a new instance of the <see cref="NotificationSettingsBase"/> class.
         /// </summary>
         /// <param name="notificationSettings">Initialize values from passed in object.</param>
-        public NotificationSettingsBase(NotificationSettingsBase notificationSettings)
+        protected NotificationSettingsBase(NotificationSettingsBase notificationSettings)
         {
             this.SubjectHdid = notificationSettings.SubjectHdid;
             this.SMSEnabled = notificationSettings.SMSEnabled;
