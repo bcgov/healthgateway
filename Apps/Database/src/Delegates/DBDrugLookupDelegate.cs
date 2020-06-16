@@ -63,7 +63,8 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public List<PharmaCareDrug> GetPharmaCareDrugsByDIN(List<string> drugIdentifiers)
         {
-            this.logger.LogTrace($"Getting list of pharmacare drug products from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
+            this.logger.LogDebug($"Getting list of pharmacare drug products from DB");
+            this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
 
             DateTime now = DateTime.UtcNow;
             List<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
@@ -71,7 +72,7 @@ namespace HealthGateway.Database.Delegates
                 .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).FirstOrDefault())
                 .ToList();
 
-            this.logger.LogDebug($"Finished getting list of pharmacare drug products from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogTrace($"Finished getting list of pharmacare drug products from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 

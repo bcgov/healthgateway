@@ -20,6 +20,7 @@ namespace HealthGateway.Medication
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
@@ -81,6 +82,7 @@ namespace HealthGateway.Medication
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HMACHashDelegate>();
+            services.AddSingleton<ITraceService, TimedTraceService>();
 
             // Add parsers
             services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();

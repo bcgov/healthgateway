@@ -71,6 +71,7 @@ namespace HealthGateway.Laboratory
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
+            services.AddSingleton<ITraceService, TimedTraceService>();
         }
 
         /// <summary>
