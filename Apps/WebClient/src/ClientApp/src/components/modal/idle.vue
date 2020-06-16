@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Emit, Component } from "vue-property-decorator";
+import { Component, Emit } from "vue-property-decorator";
 import { Action } from "vuex-class";
 import EventBus from "@/eventbus";
 import User from "@/models/user";
@@ -35,7 +35,7 @@ import User from "@/models/user";
 @Component
 export default class IdleComponent extends Vue {
   @Action("authenticateOidcSilent", { namespace: "auth" })
-  authenticateOidcSilent!: () => Promise<User | null>;
+  authenticateOidcSilent!: () => Promise<void>;
 
   private readonly modalId: string = "idle-modal";
   private totalTime: number = 60;

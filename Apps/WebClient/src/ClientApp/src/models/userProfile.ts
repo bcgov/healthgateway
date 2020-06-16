@@ -12,13 +12,13 @@ export default interface UserProfile {
   smsNumber: string;
 
   // Flag to know if the terms of service have been updated since last login
-  hasTermsOfServiceUpdated: boolean;
+  hasTermsOfServiceUpdated?: boolean;
 
   // Datetime of the user's last login
-  lastLoginDateTime: Date;
+  lastLoginDateTime?: Date;
 
   // Date when the user profile will be deleted
-  closedDateTime: Date | undefined;
+  closedDateTime?: Date;
 }
 
 export interface CreateUserRequest {

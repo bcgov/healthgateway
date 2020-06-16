@@ -3,7 +3,7 @@ import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
-import { LaboratoryReport, LaboratoryOrder } from "@/models//laboratory";
+import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
 
 export enum StateType {
   NONE,

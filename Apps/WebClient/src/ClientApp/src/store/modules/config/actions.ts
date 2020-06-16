@@ -3,7 +3,7 @@ import { ActionTree, Commit } from "vuex";
 import { IConfigService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { RootState, ConfigState } from "@/models/storeState";
+import { ConfigState, RootState } from "@/models/storeState";
 import { ExternalConfiguration } from "@/models/configData";
 
 function handleError(commit: Commit, error: Error) {
@@ -12,7 +12,7 @@ function handleError(commit: Commit, error: Error) {
 }
 
 export const actions: ActionTree<ConfigState, RootState> = {
-  initialize({ commit }): Promise<ExternalConfiguration> {
+  initialize(context): Promise<ExternalConfiguration> {
     console.log("Initializing the config store...");
     const configService: IConfigService = container.get(
       SERVICE_IDENTIFIER.ConfigService
@@ -23,11 +23,11 @@ export const actions: ActionTree<ConfigState, RootState> = {
         .getConfiguration()
         .then((value) => {
           console.log("Configuration: ", value);
-          commit("configurationLoaded", value);
+          context.commit("configurationLoaded", value);
           resolve(value);
         })
         .catch((error) => {
-          handleError(commit, error);
+          handleError(context.commit, error);
           reject(error);
         })
         .finally(() => {

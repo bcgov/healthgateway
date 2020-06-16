@@ -241,16 +241,16 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Watch, Ref } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import moment from "moment";
 import { Route } from "vue-router";
 import EventBus from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
 import {
-  IMedicationService,
   IImmunizationService,
   ILaboratoryService,
+  IMedicationService,
   IUserNoteService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -265,7 +265,7 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import MedicationStatement from "@/models/medicationStatement";
 import UserNote from "@/models/userNote";
 import RequestResult from "@/models/requestResult";
-import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
@@ -275,15 +275,16 @@ import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
 import {
   LaboratoryOrder,
-  LaboratoryResult,
   LaboratoryReport,
+  LaboratoryResult,
 } from "@/models/laboratory";
 
 const namespace: string = "user";
 
 interface DateGroup {
-  date: string;
-  entries: any;
+  key: string;
+  date: Date;
+  entries: TimelineEntry[];
 }
 
 // Register the router hooks with their names
@@ -301,9 +302,10 @@ Component.registerHooks(["beforeRouteLeave"]);
 })
 export default class TimelineComponent extends Vue {
   @Getter("user", { namespace }) user!: User;
-  @Action("getOrders", { namespace: "laboratory" }) getLaboratoryOrders!: ({
-    hdid: string,
-  }: any) => Promise<RequestResult<LaboratoryOrder[]>>;
+  @Action("getOrders", { namespace: "laboratory" })
+  getLaboratoryOrders!: (params: {
+    hdid: string;
+  }) => Promise<RequestResult<LaboratoryOrder[]>>;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
 
   private filterText: string = "";
@@ -706,7 +708,9 @@ export default class TimelineComponent extends Vue {
     if (this.visibleTimelineEntries.length === 0) {
       return [];
     }
-    let groups = this.visibleTimelineEntries.reduce((groups, entry) => {
+    let groups = this.visibleTimelineEntries.reduce<
+      Record<string, TimelineEntry[]>
+    >((groups, entry) => {
       // Get the string version of the date and get the date
       //const date = (entry.date).split("T")[0];
       const date = new Date(entry.date).setHours(0, 0, 0, 0);
@@ -717,11 +721,11 @@ export default class TimelineComponent extends Vue {
       groups[date].push(entry);
       return groups;
     }, {});
-    let groupArrays = Object.keys(groups).map((dateKey) => {
+    let groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
       return {
         key: dateKey,
         date: groups[dateKey][0].date,
-        entries: groups[dateKey].sort((a, b) =>
+        entries: groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
           a.type > b.type ? 1 : a.type < b.type ? -1 : 0
         ),
       };
@@ -729,7 +733,7 @@ export default class TimelineComponent extends Vue {
     return this.sortGroup(groupArrays);
   }
 
-  private sortGroup(groupArrays) {
+  private sortGroup(groupArrays: DateGroup[]) {
     groupArrays.sort((a, b) =>
       a.date > b.date ? -1 : a.date < b.date ? 1 : 0
     );

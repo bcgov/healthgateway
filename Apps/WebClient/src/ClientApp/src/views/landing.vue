@@ -450,6 +450,23 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+import container from "@/plugins/inversify.config";
+import { Getter } from "vuex-class";
+import CommunicationComponent from "@/components/communication.vue";
+import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+  IconDefinition,
+  faClipboard,
+  faExclamationTriangle,
+  faFlask,
+  faPills,
+  faSyringe,
+  faUserMd,
+} from "@fortawesome/free-solid-svg-icons";
+
+// @ts-ignore-start
 import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";
 import Image01 from "@/assets/images/landing/001_Hero-01_Duotone.jpeg";
 import Image02 from "@/assets/images/landing/002_Devices.png";
@@ -458,21 +475,7 @@ import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
 import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
-import container from "@/plugins/inversify.config";
-import { Getter } from "vuex-class";
-import CommunicationComponent from "@/components/communication.vue";
-import { WebClientConfiguration } from "@/models/configData";
-import { RegistrationStatus } from "@/constants/registrationStatus";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-  faPills,
-  faUserMd,
-  faFlask,
-  faSyringe,
-  IconDefinition,
-  faClipboard,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+// @ts-ignore-end
 
 interface Icon {
   label: string;

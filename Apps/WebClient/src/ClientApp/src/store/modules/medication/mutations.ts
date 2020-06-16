@@ -7,6 +7,7 @@ export const mutations: MutationTree<MedicationState> = {
     state: MedicationState,
     medicationResult: MedicationResult
   ) {
+    console.log(medicationResult);
     state.medications.push(medicationResult);
     state.error = false;
     state.statusMessage = "success";

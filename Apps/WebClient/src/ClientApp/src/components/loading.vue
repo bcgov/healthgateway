@@ -10,7 +10,7 @@ import Loading from "vue-loading-overlay";
 // Import stylesheet
 import "vue-loading-overlay/dist/vue-loading.css";
 import Vue from "vue";
-import { Prop, Component } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 
 @Component({
   components: {

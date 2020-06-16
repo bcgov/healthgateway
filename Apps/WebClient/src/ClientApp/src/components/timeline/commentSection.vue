@@ -68,7 +68,7 @@ import Vue from "vue";
 import UserComment from "@/models/userComment";
 import CommentComponent from "@/components/timeline/comment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import { Prop, Component } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 import { IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";

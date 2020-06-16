@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
-import { IMedicationService, IHttpDelegate } from "@/services/interfaces";
+import { IHttpDelegate, IMedicationService } from "@/services/interfaces";
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
 import MedicationStatement from "@/models/medicationStatement";

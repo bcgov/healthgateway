@@ -84,7 +84,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Emit, Prop, Component, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 
 @Component
 export default class ProtectiveWordComponent extends Vue {

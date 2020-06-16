@@ -49,7 +49,7 @@ import Vue from "vue";
 
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 
-import { Prop, Component, Emit } from "vue-property-decorator";
+import { Component, Emit, Prop } from "vue-property-decorator";
 import MedicationTimelineComponent from "./medication.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
 import LaboratoryTimelineComponent from "./laboratory.vue";
@@ -68,7 +68,7 @@ export default class EntrycardTimelineComponent extends Vue {
   @Prop() entry!: TimelineEntry;
   @Prop() index!: number;
 
-  get EntryType(): EntryType {
+  private get EntryType(): typeof EntryType {
     return EntryType;
   }
 

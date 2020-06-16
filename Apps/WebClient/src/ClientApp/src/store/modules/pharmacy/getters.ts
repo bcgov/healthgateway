@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { RootState, PharmacyState } from "@/models/storeState";
+import { PharmacyState, RootState } from "@/models/storeState";
 import Pharmacy from "@/models/pharmacy";
 
 export const getters: GetterTree<PharmacyState, RootState> = {

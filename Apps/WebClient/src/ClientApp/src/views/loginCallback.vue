@@ -7,20 +7,24 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
+import { Action, Getter, State } from "vuex-class";
 import VueRouter, { Route } from "vue-router";
 import User from "@/models/user";
 
 @Component
 export default class LoginCallbackComponent extends Vue {
-  @Action("oidcSignInCallback", { namespace: "auth" }) oidcSignInCallback;
-  @Action("clearStorage", { namespace: "auth" }) clearStorage;
-  @Action("checkRegistration", { namespace: "user" }) checkRegistration!: ({
-    hdid: String,
-  }: any) => Promise<boolean>;
+  @Action("oidcSignInCallback", { namespace: "auth" })
+  oidcSignInCallback!: () => Promise<string>;
+
+  @Action("clearStorage", { namespace: "auth" }) clearStorage!: () => void;
+
+  @Action("checkRegistration", { namespace: "user" })
+  checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+
   @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
   @Getter("user", { namespace: "user" }) user!: User;
-  created() {
+
+  private created() {
     this.oidcSignInCallback()
       .then((redirectPath) => {
         console.log(this.user);
@@ -35,8 +39,7 @@ export default class LoginCallbackComponent extends Vue {
             }
           }
 
-          console.log(redirectPath);
-          console.log("here");
+          console.log("RedirectPath:", redirectPath);
         });
       })
       .catch((err) => {

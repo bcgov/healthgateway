@@ -127,10 +127,10 @@ import Vue from "vue";
 import UserComment from "@/models/userComment";
 import User from "@/models/user";
 import { Getter } from "vuex-class";
-import { Prop, Component, Emit, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import {
-  faEllipsisV,
   IconDefinition,
+  faEllipsisV,
   faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserCommentService } from "@/services/interfaces";
@@ -204,6 +204,8 @@ export default class CommentComponent extends Vue {
         text: this.commentInput,
         parentEntryId: this.comment.parentEntryId,
         userProfileId: this.user.hdid,
+        version: 0,
+        createdDateTime: new Date(),
       })
       .then(() => {
         this.commentInput = "";

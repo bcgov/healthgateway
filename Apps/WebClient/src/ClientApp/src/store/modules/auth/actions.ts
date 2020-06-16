@@ -1,9 +1,8 @@
 import { ActionTree } from "vuex";
-import { RootState, AuthState } from "@/models/storeState";
+import { AuthState, RootState } from "@/models/storeState";
 import { Route } from "vue-router";
-import { User as OidcUser } from "oidc-client";
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
 function routeIsOidcCallback(route: Route): boolean {
@@ -21,7 +20,7 @@ const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
 );
 
 export const actions: ActionTree<AuthState, RootState> = {
-  oidcCheckAccess(context, route): Promise<boolean> {
+  oidcCheckAccess(context, route: Route): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       if (routeIsOidcCallback(route)) {
         resolve(true);
@@ -47,21 +46,24 @@ export const actions: ActionTree<AuthState, RootState> = {
       });
     });
   },
-  authenticateOidc({ commit }, { idpHint:string, redirectPath:string }): Promise<void> {
+  authenticateOidc(
+    context,
+    params: { idpHint: string; redirectPath: string }
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       authService
-        .signinRedirect(idpHint, redirectPath)
+        .signinRedirect(params.idpHint, params.redirectPath)
         .then(() => {
           console.log("signinRedirect done");
           resolve();
         })
         .catch((err) => {
-          commit("setOidcError", err);
+          context.commit("setOidcError", err);
           reject();
         });
     });
   },
-  oidcSignInCallback(context): Promise<string | null> {
+  oidcSignInCallback(context): Promise<string> {
     return new Promise((resolve, reject) => {
       authService
         .signinRedirectCallback()

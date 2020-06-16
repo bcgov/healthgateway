@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { RootState, ConfigState } from "@/models/storeState";
+import { ConfigState, RootState } from "@/models/storeState";
 import {
   IdentityProviderConfiguration,
   OpenIdConnectConfiguration,

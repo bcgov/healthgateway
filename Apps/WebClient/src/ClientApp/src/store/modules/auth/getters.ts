@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { RootState, AuthState } from "@/models/storeState";
+import { AuthState, RootState } from "@/models/storeState";
 
 export const parseJwt = (token: string) => {
   try {
