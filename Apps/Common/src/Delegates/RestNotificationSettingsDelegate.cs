@@ -35,6 +35,7 @@ namespace HealthGateway.Common.Delegates
     public class RestNotificationSettingsDelegate : INotificationSettingsDelegate
     {
         private const string NotificationSettingsConfigSectionKey = "NotificationSettings";
+        private const string SubjectResourceHeader = "patient";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
@@ -142,9 +143,11 @@ namespace HealthGateway.Common.Delegates
             this.logger.LogDebug($"Sending Notification Settings to PHSA...");
             this.logger.LogTrace($"Bearer token: {bearerToken}");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            client.DefaultRequestHeaders.Add(SubjectResourceHeader, notificationSettings.SubjectHdid);
             try
             {
                 Uri endpoint = new Uri(this.nsConfig.Endpoint);
