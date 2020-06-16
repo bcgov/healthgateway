@@ -7,6 +7,7 @@ module.exports = {
     rules: {
         "no-console": "off",
         "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
+        "linebreak-style": ["error", "unix"]
     },
     parserOptions: {
         parser: "@typescript-eslint/parser",
