@@ -5,4 +5,6 @@ export default interface UserSMSInvite {
   smsNumber: string;
   // Gets or sets a value indicating whether the code had too many verification attempts.
   tooManyFailedAttempts: boolean;
+  // Gets or sets a value indicating whether the code is expired.
+  expired: boolean;
 }

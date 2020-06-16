@@ -14,7 +14,7 @@ $border-color: #00000070;
 <script lang="ts">
 import Vue from "vue";
 import PageError from "@/models/pageError";
-import { Prop, Component } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class HtmlTextAreaComponent extends Vue {
@@ -24,7 +24,7 @@ export default class HtmlTextAreaComponent extends Vue {
     this.$el.innerHTML = this.input;
   }
 
-  private updateHTML(e) {
+  private updateHTML(e: any) {
     this.$emit("input", e.target.innerHTML);
   }
 }

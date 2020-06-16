@@ -48,15 +48,15 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Emit, Prop, Component, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 
 @Component
 export default class CovidModalComponent extends Vue {
   @Prop() error!: boolean;
   @Prop({ default: false }) isLoading!: boolean;
 
+  public isVisible: boolean = false;
   private show: boolean = false;
-  private isVisible: boolean = false;
 
   public showModal() {
     this.show = true;

@@ -73,8 +73,8 @@ nav {
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component, Watch } from "vue-property-decorator";
-import { Getter, Action } from "vuex-class";
+import { Component, Prop, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
 import { IAuthenticationService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -96,7 +96,7 @@ const sidebar: string = "sidebar";
 
 @Component
 export default class HeaderComponent extends Vue {
-  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
+  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
   @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
   @Getter("oidcIsAuthenticated", {

@@ -171,7 +171,7 @@
               size="md"
               class="aqua-button px-5 bg-danger mb-4"
               :disabled="isLoading"
-              @click="onSubmit"
+              @click="onSubmit($event)"
               >Try Again</b-button
             >
           </b-col>
@@ -184,23 +184,23 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
-import { Getter, Action } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IUserFeedbackService } from "@/services/interfaces";
 import User from "@/models/user";
 import {
+  IconDefinition,
   icon,
   library,
-  IconDefinition,
 } from "@fortawesome/fontawesome-svg-core";
 import {
   faComments,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  faTimesCircle as farTimesCircle,
   faCheckCircle,
+  faTimesCircle as farTimesCircle,
 } from "@fortawesome/free-regular-svg-icons";
 library.add(faComments, faExclamationCircle);
 
@@ -209,7 +209,7 @@ const user: string = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
-  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar: any;
+  @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
 
   @Getter("isOpen", { namespace: sidebar }) isSidebarOpen!: boolean;
   @Getter("user", { namespace: user }) user!: User;
@@ -273,7 +273,7 @@ export default class FeedbackComponent extends Vue {
     }
   }
 
-  private onSubmit(event: any) {
+  private onSubmit(event: Event) {
     this.isLoading = true;
 
     this.userFeedbackService

@@ -2,7 +2,7 @@ import { Module } from "vuex";
 import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { RootState, StateType, AuthState } from "@/models/storeState";
+import { AuthState, RootState, StateType } from "@/models/storeState";
 import AuthenticationData from "@/models/authenticationData";
 
 export const state: AuthState = {

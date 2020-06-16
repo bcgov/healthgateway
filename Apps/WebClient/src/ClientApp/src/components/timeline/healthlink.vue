@@ -33,9 +33,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+// @ts-ignore-start
 import PhoneImage from "@/assets/images/timeline/811.png";
 import HealthlinkImage from "@/assets/images/timeline/healthlink.png";
 import CovidImage from "@/assets/images/timeline/CovidSidecardImage.png";
+// @ts-ignore-end
 
 interface Healthcard {
   title: string;
@@ -76,7 +78,7 @@ export default class HealthlinkSidebarComponent extends Vue {
   ];
   private cardIndex: number = 1;
 
-  mounted() {
+  private mounted() {
     this.rotate();
   }
 

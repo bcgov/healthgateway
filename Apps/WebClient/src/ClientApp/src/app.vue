@@ -70,30 +70,30 @@ main {
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Watch, Ref } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import Process, { EnvironmentType } from "@/constants/process.ts";
 
 // Load Bootstrap general plugins
 import {
-  LayoutPlugin,
-  NavPlugin,
-  NavbarPlugin,
-  ModalPlugin,
+  AlertPlugin,
   ButtonPlugin,
   CardPlugin,
-  LinkPlugin,
-  FormPlugin,
-  FormInputPlugin,
   FormCheckboxPlugin,
-  FormTextareaPlugin,
-  AlertPlugin,
-  SpinnerPlugin,
-  InputGroupPlugin,
-  PaginationNavPlugin,
-  TooltipPlugin,
   FormGroupPlugin,
+  FormInputPlugin,
+  FormPlugin,
   FormRadioPlugin,
+  FormTextareaPlugin,
+  InputGroupPlugin,
+  LayoutPlugin,
+  LinkPlugin,
+  ModalPlugin,
+  NavPlugin,
+  NavbarPlugin,
+  PaginationNavPlugin,
+  SpinnerPlugin,
+  TooltipPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -122,24 +122,24 @@ config.autoAddCss = false;
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
 import {
+  faAddressCard,
+  faAngleDoubleLeft,
+  faChartBar,
+  faCheckCircle,
+  faChevronDown,
+  faChevronUp,
+  faCommentAlt,
+  faEdit,
+  faEllipsisV,
+  faExclamationTriangle,
+  faFileAlt,
+  faLock,
+  faPrint,
+  faSpinner,
+  faTimesCircle,
   faUser,
   faUserCircle,
-  faAddressCard,
   faUserSecret,
-  faEdit,
-  faChevronUp,
-  faChevronDown,
-  faSpinner,
-  faCheckCircle,
-  faTimesCircle,
-  faEllipsisV,
-  faPrint,
-  faAngleDoubleLeft,
-  faFileAlt,
-  faChartBar,
-  faCommentAlt,
-  faLock,
-  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faUser,

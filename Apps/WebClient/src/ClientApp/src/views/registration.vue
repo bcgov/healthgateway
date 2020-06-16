@@ -324,23 +324,23 @@ label {
 
 <script lang="ts">
 import Vue from "vue";
-import { Getter, Action } from "vuex-class";
-import { Component, Ref, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import { Component, Prop, Ref } from "vue-property-decorator";
 import {
-  IUserProfileService,
   IAuthenticationService,
   IBetaRequestService,
+  IUserProfileService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import {
+  ValidationRule,
+  email,
+  helpers,
   required,
   requiredIf,
   sameAs,
-  email,
-  helpers,
-  ValidationRule,
 } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
@@ -358,10 +358,14 @@ library.add(faCheck);
   },
 })
 export default class RegistrationComponent extends Vue {
-  @Action("checkRegistration", { namespace: "user" }) checkRegistration;
+  @Action("checkRegistration", { namespace: "user" })
+  checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+
   @Ref("registrationForm") form!: HTMLFormElement;
+
   @Getter("webClient", { namespace: "config" })
-  webClientConfig: WebClientConfiguration;
+  webClientConfig!: WebClientConfiguration;
+
   @Prop() inviteKey?: string;
   @Prop() inviteEmail?: string;
 
@@ -374,14 +378,14 @@ export default class RegistrationComponent extends Vue {
   private isSMSNumberChecked: boolean = true;
 
   private oidcUser: any = {};
-  private userProfileService: IUserProfileService;
+  private userProfileService!: IUserProfileService;
   private submitStatus: string = "";
   private loadingUserData: boolean = true;
   private loadingTermsOfService: boolean = true;
   private hasErrors: boolean = false;
   private errorMessage: string = "";
 
-  private betaRequestService: IBetaRequestService;
+  private betaRequestService!: IBetaRequestService;
   private waitlistEdditable = true;
   private waitlistTempEmail: string = "";
   private waitlistEmail: string = "";
@@ -391,7 +395,7 @@ export default class RegistrationComponent extends Vue {
 
   private termsOfService: string = "";
 
-  mounted() {
+  private mounted() {
     this.betaRequestService = container.get(
       SERVICE_IDENTIFIER.BetaRequestService
     );
@@ -476,22 +480,22 @@ export default class RegistrationComponent extends Vue {
     };
   }
 
-  get isLoading(): boolean {
+  private get isLoading(): boolean {
     return this.loadingTermsOfService || this.loadingUserData;
   }
 
-  get fullName(): string {
+  private get fullName(): string {
     return this.oidcUser.given_name + " " + this.oidcUser.family_name;
   }
-  get isRegistrationClosed(): boolean {
+  private get isRegistrationClosed(): boolean {
     return this.webClientConfig.registrationStatus == RegistrationStatus.Closed;
   }
-  get isRegistrationInviteOnly(): boolean {
+  private get isRegistrationInviteOnly(): boolean {
     return (
       this.webClientConfig.registrationStatus == RegistrationStatus.InviteOnly
     );
   }
-  get isPredefinedEmail() {
+  private get isPredefinedEmail() {
     if (this.webClientConfig.registrationStatus != RegistrationStatus.Open) {
       return !!this.inviteEmail;
     }
@@ -519,7 +523,7 @@ export default class RegistrationComponent extends Vue {
     return param.$dirty ? !param.$invalid : undefined;
   }
 
-  private onSubmit(event: any) {
+  private onSubmit(event: Event) {
     this.$v.$touch();
     if (this.$v.$invalid) {
       this.submitStatus = "ERROR";
@@ -569,13 +573,11 @@ export default class RegistrationComponent extends Vue {
 
   private saveWaitlistEdit(): void {
     this.$v.$touch();
-    console.log(this.$v);
+    this.loadingUserData = true;
     if (this.$v.email.$invalid || this.$v.emailConfirmation.$invalid) {
       this.submitStatus = "ERROR";
     } else {
       this.submitStatus = "PENDING";
-
-      console.log(this.email);
 
       let newRequest: BetaRequest = {
         hdid: this.oidcUser.hdid,
@@ -585,7 +587,6 @@ export default class RegistrationComponent extends Vue {
       this.betaRequestService
         .putRequest(newRequest)
         .then((result) => {
-          console.log("success!");
           console.log(result);
           this.waitlistEdditable = false;
           this.waitlistEmailConfirmation = "";
@@ -595,11 +596,11 @@ export default class RegistrationComponent extends Vue {
           this.$v.$reset();
         })
         .catch((err) => {
-          console.log("OH NO!", err);
           this.hasErrors = true;
+          console.log("Error saving new beta request", err);
         })
         .finally(() => {
-          this.isLoading = false;
+          this.loadingUserData = false;
         });
     }
   }

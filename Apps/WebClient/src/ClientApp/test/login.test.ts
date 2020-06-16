@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue, Wrapper } from "@vue/test-utils";
+import { Wrapper, createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import BootstrapVue from "bootstrap-vue";
 import LoginComponent from "@/views/login.vue";
@@ -140,12 +140,15 @@ describe("Login view", () => {
       name: "BC Services Card",
       id: "bceid",
       icon: "bceidicon",
+      hint: "bceid",
+      disabled: false,
     };
     const keycloakProvider: IdentityProviderConfiguration = {
       name: "keycloak",
       id: "keyid",
       icon: "user",
-      disabled: true,
+      hint: "bceid",
+      disabled: false,
     };
 
     configGetters = {

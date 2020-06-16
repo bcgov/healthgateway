@@ -73,11 +73,11 @@ $radius: 15px;
 <script lang="ts">
 import Vue from "vue";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import { Prop, Component } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 import { IUserCommentService } from "@/services/interfaces";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 
-import { faSyringe, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   components: {

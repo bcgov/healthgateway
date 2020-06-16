@@ -1,6 +1,6 @@
 export default interface UserComment {
   // Gets or sets the id.
-  id: string;
+  id?: string;
 
   // Gets or sets the user hdid.
   userProfileId: string;

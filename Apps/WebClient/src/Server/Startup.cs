@@ -169,15 +169,11 @@ namespace HealthGateway.WebClient
                         "{*path}",
                         new SpaOptions { SourcePath = "ClientApp" },
                         npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
+                        port:8585,
                         regex: "Compiled successfully",
                         forceKill: true);
                 }
             });
-
-            /*app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-            });*/
 
             bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
             if (redirectToWWW)

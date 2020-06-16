@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, ICommunicationService } from "@/services/interfaces";
+import { ICommunicationService, IHttpDelegate } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import Communication from "@/models/communication";
 

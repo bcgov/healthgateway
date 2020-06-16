@@ -1,4 +1,4 @@
-import { ActionTree, Commit } from "vuex";
+import { ActionTree } from "vuex";
 
 import { RootState, DrawerState } from "@/models/storeState";
 
@@ -8,7 +8,7 @@ export const actions: ActionTree<DrawerState, RootState> = {
     return true;
   },
 
-  setState({ commit }, { isDrawerOpen }): void {
-    commit("setDrawerState", isDrawerOpen);
+  setState(context, params:{ isDrawerOpen:boolean }): void {
+    context.commit("setDrawerState", params.isDrawerOpen);
   }
 };
