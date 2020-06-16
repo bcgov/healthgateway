@@ -30,6 +30,7 @@ namespace HealthGateway.Medication.Test
     using Xunit;
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Instrumentation;
 
     public class PatientDelegate_Test
     {
@@ -55,6 +56,7 @@ namespace HealthGateway.Medication.Test
 
             IPatientDelegate service = new RestPatientDelegate(
                 new Mock<ILogger<RestPatientDelegate>>().Object,
+                new Mock<ITraceService>().Object,
                 httpMock.Object,
                 configuration);
             string phn = await service.GetPatientPHNAsync(expected.HdId, "Bearer TheTestToken");
@@ -76,6 +78,7 @@ namespace HealthGateway.Medication.Test
             httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
             IPatientDelegate service = new RestPatientDelegate(
                 new Mock<ILogger<RestPatientDelegate>>().Object,
+                new Mock<ITraceService>().Object,
                 httpMock.Object,
                 configuration);
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));

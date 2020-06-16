@@ -17,6 +17,7 @@ namespace HealthGateway.Laboratory
 {
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Builder;
