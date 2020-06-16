@@ -95,6 +95,7 @@
           class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
         >
           <b-button
+            class="mr-2"
             variant="primary"
             :disabled="commentInput === ''"
             @click="onSubmit"

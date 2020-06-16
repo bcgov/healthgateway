@@ -16,10 +16,12 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Ignores auditing on the specified controller.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Class)]
     public class IgnoreAuditAttribute : Attribute
     {

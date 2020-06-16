@@ -15,12 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.OpenApi.Models;
-    using Swashbuckle.AspNetCore.Swagger;
 
     /// <summary>
     /// Swagger Configuration.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class SwaggerSettings
     {
         /// <summary>

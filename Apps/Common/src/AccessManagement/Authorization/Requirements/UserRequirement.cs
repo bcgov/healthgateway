@@ -13,16 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization
+namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
 {
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// PatientWriteRequirement asserts authorization that the user is a Patient (has an HDID) and
-    /// is either the owner of the resource or delegated to perform updates.
+    /// UserRequirement asserts authorization that the user is a Patient (has an HDID).
     /// </summary>
-    public class PatientWriteRequirement : IAuthorizationRequirement
+    public class UserRequirement : IAuthorizationRequirement
     {
-        // blank on purpose
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserRequirement"/> class.
+        /// </summary>
+        /// <param name="validateOwnership">If true validates the user HDID matches the resource HDID.</param>
+        public UserRequirement(bool validateOwnership)
+        {
+            this.ValidateOwnership = validateOwnership;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the ownership of the resource should be confirmed.
+        /// </summary>
+        public bool ValidateOwnership { get; }
     }
 }

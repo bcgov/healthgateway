@@ -649,8 +649,6 @@ export default class ProfileComponent extends Vue {
 
       this.sendUserEmailUpdate();
     }
-
-    event.preventDefault();
   }
 
   private saveSMSEdit(event: Event): void {
@@ -686,6 +684,7 @@ export default class ProfileComponent extends Vue {
         this.emailVerificationSent = true;
         this.emailConfirmation = "";
         this.tempEmail = "";
+        this.getUserEmail({ hdid: this.user.hdid });
         this.$v.$reset();
       })
       .catch((err) => {

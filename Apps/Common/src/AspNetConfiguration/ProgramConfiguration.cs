@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
@@ -23,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// <summary>
     /// The program configuration class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ProgramConfiguration
     {
         private const string EnvironmentPrefix = "HealthGateway_";

@@ -200,15 +200,13 @@ label {
         <b-row class="mb-3">
           <b-col>
             <b-row class="d-flex">
-              <b-col class="d-flex flex-grow-0 pr-0">
+              <b-col class="d-flex pr-0">
                 <b-form-checkbox
                   id="emailCheckbox"
                   v-model="isEmailChecked"
                   @change="onEmailOptout($event)"
                 >
                 </b-form-checkbox>
-              </b-col>
-              <b-col class="d-flex flex-grow-1 px-0">
                 <label class="d-flex" for="email"
                   >Email Notifications <Address></Address>
                 </label>
@@ -246,14 +244,12 @@ label {
         <b-row class="mb-3">
           <b-col>
             <b-row class="d-flex">
-              <b-col class="d-flex flex-grow-0 pr-0">
+              <b-col class="d-flex pr-0">
                 <b-form-checkbox
                   id="smsCheckbox"
                   v-model="isSMSNumberChecked"
                   @change="onSMSOptout($event)"
                 ></b-form-checkbox>
-              </b-col>
-              <b-col class="d-flex flex-grow-1 px-0">
                 <label class="d-flex" for="smsNumber"
                   >SMS Notifications <Address></Address>
                 </label>

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Policy
+namespace HealthGateway.Common.AccessManagement.Authorization.Claims
 {
     /// <summary>
     /// Claims specific to Health Gateway.
@@ -21,9 +21,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Policy
     public static class GatewayClaims
     {
         /// <summary>
-        /// Claim authorizing the user as a system.
+        /// Policy claim representing the scopes the user has.
         /// </summary>
-        public const string System = "System";
+        public const string Scope = "scope";
 
         /// <summary>
         /// Policy claims requiring an HDID.

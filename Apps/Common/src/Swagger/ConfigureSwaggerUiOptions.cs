@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Swagger
 {
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -23,6 +24,7 @@ namespace HealthGateway.Common.Swagger
     using Swashbuckle.AspNetCore.SwaggerUI;
 
     /// <inheritdoc cref="SwaggerUIOptions"/>>
+    [ExcludeFromCodeCoverage]
     public sealed class ConfigureSwaggerUiOptions : IConfigureOptions<SwaggerUIOptions>
     {
         private readonly IApiVersionDescriptionProvider provider;

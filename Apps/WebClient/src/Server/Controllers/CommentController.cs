@@ -60,7 +60,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = PatientPolicy.IsPatient)]
+        [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult Create([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
@@ -88,7 +88,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Authorize(Policy = PatientPolicy.IsPatient)]
+        [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult Update([FromBody] UserComment comment)
         {
             if (comment == null)
@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
-        [Authorize(Policy = PatientPolicy.IsPatient)]
+        [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult Delete([FromBody] UserComment comment)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -140,7 +140,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Authorize(Policy = PatientPolicy.IsPatient)]
+        [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult GetAllForEntry([FromQuery] string parentEntryId)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;

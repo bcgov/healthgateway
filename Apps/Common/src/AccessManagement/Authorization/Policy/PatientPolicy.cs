@@ -21,18 +21,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Policy
     public static class PatientPolicy
     {
         /// <summary>
-        /// Policy which requires that the user be a patient (have a HDID).
-        /// </summary>
-        public const string IsPatient = "patient";
-
-        /// <summary>
         /// Policy which allows the reading of the identified patient.
         /// </summary>
-        public const string HasRead = "PatientRead";
+        public const string Read = "PatientRead";
 
         /// <summary>
         /// Policy which allows writing of the identified patient.
         /// </summary>
-        public const string HasWrite = "PatientWrite";
+        public const string Write = "PatientWrite";
     }
 }

@@ -94,8 +94,9 @@
             your profile and receive notifications from the Health Gateway,
             visit the
             <router-link id="profilePageLink" variant="primary" to="/profile">
-              Profile Page.
+              Profile Page
             </router-link>
+            <span>.</span>
           </span>
         </b-alert>
 
