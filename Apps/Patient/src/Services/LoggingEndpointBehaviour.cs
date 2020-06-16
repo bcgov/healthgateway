@@ -16,6 +16,7 @@
 namespace HealthGateway.Patient.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.ServiceModel.Channels;
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
@@ -23,6 +24,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// Implementation of EndpoingBehaviour for logging purposes.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class LoggingEndpointBehaviour : IEndpointBehavior
     {
         private IClientMessageInspector messageInspector;
