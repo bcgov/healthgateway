@@ -191,7 +191,7 @@ input {
                   v-model="$v.smsNumber.$model"
                   type="text"
                   class="mb-1"
-                  :placeholder="isSMSEditable ? 'Your SMS number' : 'Empty'"
+                  :placeholder="isSMSEditable ? 'Your phone number' : 'Empty'"
                   :disabled="!isSMSEditable"
                   :state="
                     isValid($v.smsNumber) ||
@@ -229,7 +229,7 @@ input {
                 icon="exclamation-triangle"
                 aria-hidden="true"
               ></font-awesome-icon>
-              Removing your SMS number will disable future SMS communications
+              Removing your phone number will disable future SMS communications
               from the Health Gateway
             </b-col>
           </b-row>

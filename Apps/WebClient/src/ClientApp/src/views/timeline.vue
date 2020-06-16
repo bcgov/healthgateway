@@ -93,9 +93,9 @@
             Your email or cell phone number have not been verified. To complete
             your profile and receive notifications from the Health Gateway,
             visit the
-            <router-link id="profilePageLink" variant="primary" to="/profile">
-              Profile Page
-            </router-link>
+            <router-link id="profilePageLink" variant="primary" to="/profile"
+              >Profile Page</router-link
+            >
             <span>.</span>
           </span>
         </b-alert>
