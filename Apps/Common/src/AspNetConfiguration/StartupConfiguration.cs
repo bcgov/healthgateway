@@ -54,6 +54,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// The startup configuration class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public class StartupConfiguration
     {
         private readonly IWebHostEnvironment environment;

@@ -47,15 +47,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
         public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
         {
-#pragma warning disable CA1307 // Specify StringComparison
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)
                 .FirstOrDefault();
-#pragma warning restore CA1307 // Specify StringComparison
 
             return new DBResult<LegalAgreement>()
             {
