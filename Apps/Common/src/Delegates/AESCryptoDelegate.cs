@@ -64,6 +64,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="iv">The base64 encoded initialization vector.</param>
         /// <param name="plainText">The text to encrypt.</param>
         /// <returns>The encrypted text.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default IV", Justification = "Team decision")]
         public string Encrypt(string key, string? iv, string plainText)
         {
             using Aes aes = Aes.Create();

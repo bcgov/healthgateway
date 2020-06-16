@@ -28,6 +28,7 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The database context used by the web client application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public class GatewayDbContext : BaseDbContext
     {
         /// <summary>
