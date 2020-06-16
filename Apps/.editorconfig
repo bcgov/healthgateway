@@ -188,7 +188,7 @@ dotnet_diagnostic.CA1708.severity = warning
 dotnet_diagnostic.CA1710.severity = warning
 
 # CA1711: Identifiers should not have incorrect suffix
-dotnet_diagnostic.CA1711.severity = warning
+dotnet_diagnostic.CA1711.severity = none
 
 # CA1712: Do not prefix enum values with type name
 dotnet_diagnostic.CA1712.severity = warning
