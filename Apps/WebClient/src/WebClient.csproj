@@ -48,12 +48,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="stylecop.json" />
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
+    <None Include="..\..\.editorconfig" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
