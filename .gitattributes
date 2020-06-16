@@ -2,6 +2,3 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
-
-*.vue text eol=lf
-*.ts text eol=lf
