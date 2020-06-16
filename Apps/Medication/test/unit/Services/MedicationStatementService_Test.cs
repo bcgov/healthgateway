@@ -33,6 +33,7 @@ namespace HealthGateway.Medication.Test
     using Microsoft.Extensions.Logging;
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Instrumentation;
 
     public class MedicationService_Test
     {
@@ -87,6 +88,7 @@ namespace HealthGateway.Medication.Test
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
+                new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
@@ -180,6 +182,7 @@ namespace HealthGateway.Medication.Test
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
+                new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
@@ -236,6 +239,7 @@ namespace HealthGateway.Medication.Test
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
+                new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,

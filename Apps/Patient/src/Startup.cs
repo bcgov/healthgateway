@@ -24,15 +24,14 @@ namespace HealthGateway.Patient
     using System.ServiceModel.Dispatcher;
     using System.ServiceModel.Security;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using ServiceReference;
-
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
@@ -97,6 +96,7 @@ namespace HealthGateway.Patient
 
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, SoapPatientService>();
+            services.AddSingleton<ITraceService, TimedTraceService>();
         }
 
         /// <summary>
