@@ -260,7 +260,7 @@ label {
               v-model="$v.smsNumber.$model"
               class="d-flex"
               type="text"
-              placeholder="Your sms number"
+              placeholder="Your phone number"
               :state="isValid($v.smsNumber)"
               :disabled="!isSMSNumberChecked"
             >
