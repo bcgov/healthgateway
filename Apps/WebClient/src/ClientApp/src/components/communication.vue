@@ -7,10 +7,10 @@
 }
 </style>
 <template>
-  <b-row v-if="communication">
+  <b-row v-if="hasCommunication">
     <b-col class="p-0">
       <div class="m-0 py-3 text-center communication">
-        <span>{{ communication.text }}</span>
+        <span>{{ text }}</span>
       </div>
     </b-col>
   </b-row>
@@ -26,10 +26,18 @@ import { ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
-  private communication: Communication | null = null;
+  private communication?: Communication = null;
 
   private mounted() {
     this.fetchCommunication();
+  }
+
+  private get hasCommunication(): boolean {
+    return this.communication != null;
+  }
+
+  private get text(): string {
+    return this.communication?.text;
   }
 
   private fetchCommunication() {
