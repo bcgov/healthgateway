@@ -93,5 +93,17 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished adding Communication in DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Communication>> GetList()
+        {
+            this.logger.LogTrace($"Getting all communication entries...");
+            DBResult<IEnumerable<Communication>> result = new DBResult<IEnumerable<Communication>>();
+            result.Payload = this.dbContext.Communication
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
     }
 }
