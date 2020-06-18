@@ -74,6 +74,13 @@ namespace HealthGateway.Database.Delegates
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
             };
+            if (this.CheckIsOverlappingDate(communication))
+            {
+                this.logger.LogDebug($"Communication date range overlap with existing entry");
+                result.Status = DBStatusCode.Error;
+                return result;
+            }
+
             this.dbContext.Communication.Add(communication);
             if (commit)
             {
@@ -92,6 +99,49 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished adding Communication in DB");
             return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<Communication> Update(Communication communication, bool commit = true)
+        {
+            this.logger.LogTrace($"Updating Communication in DB...");
+            DBResult<Communication> result = new DBResult<Communication>()
+            {
+                Payload = communication,
+                Status = DBStatusCode.Deferred,
+            };
+            if (this.CheckIsOverlappingDate(communication))
+            {
+                this.logger.LogDebug($"Communication date range overlap with existing entry");
+                result.Status = DBStatusCode.Error;
+                return result;
+            }
+
+            this.dbContext.Communication.Update(communication);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished updating Communication in DB");
+            return result;
+        }
+
+        private bool CheckIsOverlappingDate(Communication communication)
+        {
+            return this.dbContext.Communication.Any(c =>
+                communication.EffectiveDateTime < c.ExpiryDateTime &&
+                c.EffectiveDateTime < communication.ExpiryDateTime &&
+                c.Id != communication.Id);
         }
     }
 }
