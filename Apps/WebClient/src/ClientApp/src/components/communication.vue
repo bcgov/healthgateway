@@ -1,9 +1,17 @@
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.communication {
+  background-color: $bcgold;
+  color: black;
+}
+</style>
 <template>
   <b-row v-if="communication">
     <b-col class="p-0">
-      <b-alert :show="true" variant="warning" class="m-0 text-center">
-        <h5>{{ communication.text }}</h5>
-      </b-alert>
+      <div class="m-0 py-3 text-center communication">
+        <span>{{ communication.text }}</span>
+      </div>
     </b-col>
   </b-row>
 </template>
