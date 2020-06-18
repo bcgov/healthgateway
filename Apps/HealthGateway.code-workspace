@@ -55,6 +55,7 @@
   "settings": {
     "eslint.workingDirectories": [
       {"mode": "auto"}
-    ]
+    ],
+    "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
   }
 }
