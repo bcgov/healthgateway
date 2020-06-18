@@ -31,6 +31,7 @@ namespace HealthGateway.CommonTests.Delegates
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using System;
+    using HealthGateway.Common.Instrumentation;
 
     public class RestPatientDelegate_Test
     {
@@ -66,7 +67,11 @@ namespace HealthGateway.CommonTests.Delegates
                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IPatientDelegate patientDelegate = new RestPatientDelegate(logger, mockHttpClientService.Object, this.configuration);
+            IPatientDelegate patientDelegate = new RestPatientDelegate(
+                logger,
+                new Mock<ITraceService>().Object,
+                mockHttpClientService.Object,
+                this.configuration);
             string phn = Task.Run(async () => await patientDelegate.GetPatientPHNAsync("HDID", "Bearer Token")).Result;
             Assert.True(phn == expectedPHN);
         }
@@ -94,8 +99,12 @@ namespace HealthGateway.CommonTests.Delegates
                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IPatientDelegate patientDelegate = new RestPatientDelegate(logger, mockHttpClientService.Object, this.configuration);
-            Assert.ThrowsAsync<AggregateException>( () => Task.Run(async () => await patientDelegate.GetPatientPHNAsync("HDID", "Bearer Token")));            
+            IPatientDelegate patientDelegate = new RestPatientDelegate(
+                logger,
+                new Mock<ITraceService>().Object,
+                mockHttpClientService.Object,
+                this.configuration);
+            Assert.ThrowsAsync<AggregateException>(() => Task.Run(async () => await patientDelegate.GetPatientPHNAsync("HDID", "Bearer Token")));
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
