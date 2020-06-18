@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System.Collections.Generic;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
 
@@ -29,5 +30,10 @@ namespace HealthGateway.Admin.Services
         /// <param name="communication">The communication to add to the backend.</param>
         /// <returns>Returns the added communication wrapped in a RequestResult.</returns>
         RequestResult<Communication> Add(Communication communication);
+
+        /// <summary>
+        /// Gets all communication entries from the database.
+        /// <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
+        RequestResult<IEnumerable<Communication>> GetList();
     }
 }
