@@ -24,12 +24,6 @@ namespace HealthGateway.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             string schema = "gateway";
-            // Delete all records to prevent invalid data.
-            string deleteRecords = @$"
-                DELETE FROM {schema}.""Communication"" WHERE 0=0;";
-
-            migrationBuilder.Sql(deleteRecords);
-
             string constraint = @$"
                 ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)";
 
@@ -39,10 +33,10 @@ namespace HealthGateway.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             string schema = "gateway";
-            string triggerFunction = @$"
+            string constraint = @$"
                 ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range";
 
-            migrationBuilder.Sql(triggerFunction);
+            migrationBuilder.Sql(constraint);
         }
     }
 }
