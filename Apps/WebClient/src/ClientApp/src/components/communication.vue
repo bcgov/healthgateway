@@ -26,7 +26,7 @@ import { ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
-  private communication?: Communication = null;
+  private communication: Communication | null = null;
 
   private mounted() {
     this.fetchCommunication();
