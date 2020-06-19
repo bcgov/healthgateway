@@ -10,7 +10,7 @@
   <b-row v-if="hasCommunication">
     <b-col class="p-0">
       <div class="m-0 py-3 text-center communication">
-        <span>{{ communicationText }}</span>
+        <span>{{ text }}</span>
       </div>
     </b-col>
   </b-row>
@@ -26,14 +26,18 @@ import { ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
-  private communicationText: string = "";
+  private communication?: Communication = null;
 
   private mounted() {
     this.fetchCommunication();
   }
 
+  private get text(): string {
+    return this.communication?.text ?? "";
+  }
+
   private get hasCommunication(): boolean {
-    return !!this.communicationText;
+    return this.communication !== null;
   }
 
   private fetchCommunication() {
@@ -43,7 +47,7 @@ export default class CommunicationComponent extends Vue {
     communicationService
       .getActive()
       .then((requestResult) => {
-        this.communicationText = requestResult.resourcePayload?.text;
+        this.communication = requestResult.resourcePayload;
       })
       .catch((err) => {
         console.log(err);
