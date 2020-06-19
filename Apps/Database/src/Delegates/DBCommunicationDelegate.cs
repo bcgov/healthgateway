@@ -95,7 +95,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IEnumerable<Communication>> GetList()
+        public DBResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace($"Getting all communication entries...");
             DBResult<IEnumerable<Communication>> result = new DBResult<IEnumerable<Communication>>();

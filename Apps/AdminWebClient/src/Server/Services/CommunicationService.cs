@@ -62,10 +62,10 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Communication>> GetList()
+        public RequestResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace($"Getting communication entries...");
-            DBResult<IEnumerable<Communication>> dBResult = this.communicationDelegate.GetList();
+            DBResult<IEnumerable<Communication>> dBResult = this.communicationDelegate.GetAll();
             RequestResult<IEnumerable<Communication>> requestResult = new RequestResult<IEnumerable<Communication>>()
             {
                 ResourcePayload = dBResult.Payload,

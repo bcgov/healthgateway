@@ -42,6 +42,6 @@ namespace HealthGateway.Database.Delegates
         /// Get a list of all past communications.
         /// </summary>
         /// <returns>A list of all communications added, wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Communication>> GetList();
+        DBResult<IEnumerable<Communication>> GetAll();
     }
 }
