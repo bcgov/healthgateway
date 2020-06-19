@@ -74,14 +74,6 @@ namespace HealthGateway.Database.Delegates
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
             };
-            if (this.IsOverlappingDate(communication))
-            {
-                this.logger.LogDebug($"Communication date range overlap with existing entry");
-                result.Message = "Communication Effective and Expiry Dates overlap with existing record";
-                result.Status = DBStatusCode.Error;
-                return result;
-            }
-
             this.dbContext.Communication.Add(communication);
             if (commit)
             {
@@ -111,13 +103,6 @@ namespace HealthGateway.Database.Delegates
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
             };
-            if (this.IsOverlappingDate(communication))
-            {
-                this.logger.LogDebug($"Communication date range overlap with existing entry");
-                result.Status = DBStatusCode.Error;
-                return result;
-            }
-
             this.dbContext.Communication.Update(communication);
             if (commit)
             {
@@ -135,14 +120,6 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished updating Communication in DB");
             return result;
-        }
-
-        private bool IsOverlappingDate(Communication communication)
-        {
-            return this.dbContext.Communication.Any(c =>
-                communication.EffectiveDateTime < c.ExpiryDateTime &&
-                c.EffectiveDateTime < communication.ExpiryDateTime &&
-                c.Id != communication.Id);
         }
     }
 }
