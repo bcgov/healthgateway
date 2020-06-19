@@ -614,7 +614,7 @@
         <member name="T:HealthGateway.Admin.Services.CommunicationService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserFeedbackService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CommunicationService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CommunicationService"/> class.
             </summary>

@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
-        public CommunicationService(ILogger<UserFeedbackService> logger, ICommunicationDelegate communicationDelegate)
+        public CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate)
         {
             this.logger = logger;
             this.communicationDelegate = communicationDelegate;
