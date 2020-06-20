@@ -46,7 +46,7 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 library.add(faTimesCircle);
 
 @Component
-export default class ValidateEmailComponent extends Vue {
+export default class ValidateEmailView extends Vue {
   @Prop() inviteKey!: string;
 
   @Getter("user", { namespace: "user" }) user!: User;
@@ -57,7 +57,7 @@ export default class ValidateEmailComponent extends Vue {
   private isLoading: boolean = false;
   private isSuccess: boolean | null = null;
 
-  mounted() {
+  private mounted() {
     this.isLoading = true;
     const userProfileService: IUserProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService

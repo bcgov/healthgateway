@@ -178,6 +178,7 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
+import EventBus from "@/eventbus";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import { Component, Emit, Prop, PropSync } from "vue-property-decorator";
 import { Action, Getter, State } from "vuex-class";
@@ -208,7 +209,7 @@ export default class NoteTimelineComponent extends Vue {
   private isEditMode: boolean = false;
   private isSaving: boolean = false;
 
-  mounted() {
+  private mounted() {
     this.noteService = container.get<IUserNoteService>(
       SERVICE_IDENTIFIER.UserNoteService
     );
@@ -302,27 +303,28 @@ export default class NoteTimelineComponent extends Vue {
     this.isEditMode = false;
   }
 
-  @Emit()
   public onEditClose(note: NoteTimelineEntry) {
-    return note;
+    if (this.isAddMode) {
+      EventBus.$emit("timelineEntryAddClose", note);
+    } else {
+      EventBus.$emit("timelineEntryEditClose", note);
+    }
   }
 
-  @Emit()
   public onEditStarted(note: NoteTimelineEntry) {
-    return note;
+    EventBus.$emit("timelineEntryEdit", note);
   }
 
-  @Emit()
   public onNoteDeleted(note: NoteTimelineEntry) {
-    return note;
+    EventBus.$emit("timelineEntryDeleted", note);
   }
 
-  @Emit()
-  public onNoteAdded(note: UserNote) {}
+  public onNoteAdded(note: UserNote) {
+    EventBus.$emit("timelineEntryAdded", new NoteTimelineEntry(note));
+  }
 
-  @Emit()
   public onNoteUpdated(note: UserNote) {
-    return new NoteTimelineEntry(note);
+    EventBus.$emit("timelineEntryUpdated", new NoteTimelineEntry(note));
   }
 }
 </script>

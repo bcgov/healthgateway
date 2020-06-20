@@ -12,7 +12,7 @@ import VueRouter, { Route } from "vue-router";
 import User from "@/models/user";
 
 @Component
-export default class LoginCallbackComponent extends Vue {
+export default class LoginCallbackView extends Vue {
   @Action("oidcSignInCallback", { namespace: "auth" })
   oidcSignInCallback!: () => Promise<string>;
 

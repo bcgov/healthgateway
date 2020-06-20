@@ -357,7 +357,7 @@ library.add(faCheck);
     HtmlTextAreaComponent,
   },
 })
-export default class RegistrationComponent extends Vue {
+export default class RegistrationView extends Vue {
   @Action("checkRegistration", { namespace: "user" })
   checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 

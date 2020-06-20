@@ -15,7 +15,7 @@ import PageError from "@/models/pageError";
     ErrorComponent: PageErrorComponent,
   },
 })
-export default class UnauthorizedComponent extends Vue {
+export default class UnauthorizedView extends Vue {
   public errorDescription: PageError = new PageError(
     "401",
     "Unauthorized",
