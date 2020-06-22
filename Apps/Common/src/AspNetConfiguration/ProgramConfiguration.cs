@@ -42,7 +42,10 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.AddConsole();
+                    logging.AddConsole(options =>
+                    {
+                        options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                    });
                 })
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
