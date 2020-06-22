@@ -7,7 +7,7 @@ import { ResultType } from "@/constants/resulttype";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
-  private readonly BASE_URI: string = "v1/api/Communication";
+    private readonly BASE_URI: string = "v1/api/Communication";
   private http!: IHttpDelegate;
 
   public initialize(http: IHttpDelegate): void {
@@ -36,5 +36,31 @@ export class RestCommunicationService implements ICommunicationService {
           return reject(err);
         });
     });
-  }
+    }
+
+    public getBannerList(): Promise<Communication[]> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .get<RequestResult<Communication[]>>(`${this.BASE_URI}`)
+                .then(requestResult => {
+                    this.handleResult(requestResult, resolve, reject);
+                })
+                .catch(err => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    private handleResult(
+        requestResult: RequestResult<any>,
+        resolve: any,
+        reject: any
+    ) {
+        if (requestResult.resultStatus === ResultType.Success) {
+            resolve(requestResult.resourcePayload);
+        } else {
+            reject(requestResult.resultMessage);
+        }
+    }
 }
