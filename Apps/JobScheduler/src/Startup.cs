@@ -101,6 +101,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
+            services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
@@ -156,6 +157,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
+            SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
 
             app.UseStaticFiles(new StaticFileOptions
             {
