@@ -243,7 +243,12 @@ namespace HealthGateway.CommonTests.Services
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             mockMessagingVerificationDelegate.Setup(s => 
                             s.Insert(It.IsAny<MessagingVerification>())).
-                            Callback<MessagingVerification>(emv => emv.Id = expectedEmailId);
+                            Callback<MessagingVerification>(emv => 
+                            {
+                                emv.Id = expectedEmailId;
+                                emv.EmailId = expectedEmailId;
+                                emv.Email.Id = expectedEmailId;
+                            });
             var mockWebHosting = new Mock<IWebHostEnvironment>();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,

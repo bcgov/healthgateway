@@ -155,7 +155,6 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
-            this.emailDelegate.InsertEmail(invite.Email, false);
             this.emailInviteDelegate.Insert(invite);
             this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
             this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
