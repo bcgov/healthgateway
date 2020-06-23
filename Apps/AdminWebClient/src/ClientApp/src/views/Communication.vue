@@ -60,7 +60,7 @@
           <v-col no-gutters>
             <v-data-table
               :headers="tableHeaders"
-              :items="bannerList"
+              :items="communicationList"
               :items-per-page="5"
             >
               <template v-slot:item.effectiveOn="{ item }">
@@ -131,7 +131,7 @@ export default class CommunicationView extends Vue {
     }
   ];
 
-  private bannerList: Communication[] = [];
+  private communicationList: Communication[] = [];
 
   private communicationService!: ICommunicationService;
 
@@ -140,13 +140,13 @@ export default class CommunicationView extends Vue {
       SERVICE_IDENTIFIER.CommunicationService
     );
     this.clearForm();
-    this.loadBannerList();
+    this.loadCommunicationList();
   }
 
-  private loadBannerList() {
+  private loadCommunicationList() {
     // Dummy data for testing banner list
     //  This will need to be disabled when we hook this to the real service via vue service.
-    this.bannerList = [
+    this.communicationList = [
       {
         id: "b1001",
         subject: "banner 1",
@@ -208,10 +208,10 @@ export default class CommunicationView extends Vue {
 
     //Todo for 8213: Enable the following when 8213 update vue service is complete.
     //this.communicationService
-    //    .getBannerList()
+    //    .getCommunicationList()
     //    .then(banners => {
-    //        this.bannerList = [];
-    //        this.bannerList.push(...banners);
+    //        this.communicationList = [];
+    //        this.communicationList.push(...banners);
     //    })
     //    .catch(err => {
     //        this.showFeedback = true;
