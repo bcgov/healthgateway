@@ -1,9 +1,17 @@
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.communication {
+  background-color: $bcgold;
+  color: black;
+}
+</style>
 <template>
-  <b-row v-if="communication">
+  <b-row v-if="hasCommunication">
     <b-col class="p-0">
-      <b-alert :show="true" variant="warning" class="m-0 text-center">
-        <h5>{{ communication.text }}</h5>
-      </b-alert>
+      <div class="m-0 py-3 text-center communication">
+        <span>{{ text }}</span>
+      </div>
     </b-col>
   </b-row>
 </template>
@@ -18,20 +26,31 @@ import { ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
-  private communication: Communication | null = null;
+  private isLoaded: boolean = false;
+  private communication!: Communication;
 
   private mounted() {
     this.fetchCommunication();
   }
 
+  private get hasCommunication(): boolean {
+    return this.isLoaded && this.communication != null;
+  }
+
+  private get text(): string {
+    return this.communication ? this.communication.text : "";
+  }
+
   private fetchCommunication() {
+    let self = this;
     const communicationService: ICommunicationService = container.get(
       SERVICE_IDENTIFIER.CommunicationService
     );
     communicationService
       .getActive()
       .then((requestResult) => {
-        this.communication = requestResult.resourcePayload;
+        self.isLoaded = true;
+        self.communication = requestResult.resourcePayload;
       })
       .catch((err) => {
         console.log(err);
