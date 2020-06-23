@@ -26,28 +26,31 @@ import { ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
-  private communication: Communication | null = null;
+  private isLoaded: boolean = false;
+  private communication!: Communication;
 
   private mounted() {
     this.fetchCommunication();
   }
 
-  private get text(): string {
-    return this.communication?.text ?? "";
+  private get hasCommunication(): boolean {
+    return this.isLoaded && this.communication != null;
   }
 
-  private get hasCommunication(): boolean {
-    return this.communication !== null;
+  private get text(): string {
+    return this.communication ? this.communication.text : "";
   }
 
   private fetchCommunication() {
+    let self = this;
     const communicationService: ICommunicationService = container.get(
       SERVICE_IDENTIFIER.CommunicationService
     );
     communicationService
       .getActive()
       .then((requestResult) => {
-        this.communication = requestResult.resourcePayload;
+        self.isLoaded = true;
+        self.communication = requestResult.resourcePayload;
       })
       .catch((err) => {
         console.log(err);
