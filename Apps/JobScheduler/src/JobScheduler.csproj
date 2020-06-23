@@ -50,7 +50,6 @@
   </ItemGroup>  
   <ItemGroup>
     <Folder Include="Context\" />
-    <Folder Include="Jobs\" />
     <Folder Include="Utils\" />
     <Folder Include="Views\" />
     <Folder Include="Views\DumpHeaders\" />
