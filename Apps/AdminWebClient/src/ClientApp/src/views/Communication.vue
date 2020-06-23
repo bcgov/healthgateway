@@ -1,69 +1,80 @@
 <template>
-    <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <BannerFeedbackComponent :show-feedback.sync="showFeedback"
-                                 :feedback="bannerFeedback"
-                                 class="mt-5"></BannerFeedbackComponent>
-        <v-form ref="form" v-model="valid">
-            <v-row>
-                <v-col md="9">
-                    <v-row>
-                        <v-col>
-                            <v-text-field v-model="subject"
-                                          label="Subject"
-                                          maxlength="100"
-                                          :rules="[v => !!v || 'Subject is required']"
-                                          required></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-textarea v-model="text"
-                                        label="Communication Text"
-                                        maxlength="1000"
-                                        :rules="[v => !!v || 'Text is required']"
-                                        required></v-textarea>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-datetime-picker v-model="effectiveDateTime"
-                                               requried
-                                               label="Effective On"></v-datetime-picker>
-                        </v-col>
-                        <v-col>
-                            <v-datetime-picker v-model="expiryDateTime"
-                                               required
-                                               label="Expires On"></v-datetime-picker>
-                        </v-col>
-                    </v-row>
-                    <v-row justify="end" no-gutters>
-                        <v-btn :disabled="!valid" @click="add()">Add</v-btn>
-                    </v-row>
-                </v-col>
-            </v-row>
-        </v-form>
-
-        <v-row>
-            <v-col md="9">
-                <v-row>
-                    <v-col no-gutters>
-                        <v-data-table :headers="tableHeaders"
-                                      :items="bannerList"
-                                      :items-per-page="5">
-                            <template v-slot:item.effectiveOn="{ item }">
-                                <span>{{ formatDate(item.effectiveDateTime) }}</span>
-                            </template>
-                            <template v-slot:item.expiresOn="{ item }">
-                                <span>{{ formatDate(item.expiryDateTime) }}</span>
-                            </template>
-                        </v-data-table>
-                    </v-col>
-                </v-row>
+  <v-container>
+    <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    <BannerFeedbackComponent
+      :show-feedback.sync="showFeedback"
+      :feedback="bannerFeedback"
+      class="mt-5"
+    ></BannerFeedbackComponent>
+    <v-form ref="form" v-model="valid">
+      <v-row>
+        <v-col md="9">
+          <v-row>
+            <v-col>
+              <v-text-field
+                v-model="subject"
+                label="Subject"
+                maxlength="100"
+                :rules="[v => !!v || 'Subject is required']"
+                required
+              ></v-text-field>
             </v-col>
-        </v-row>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-textarea
+                v-model="text"
+                label="Communication Text"
+                maxlength="1000"
+                :rules="[v => !!v || 'Text is required']"
+                required
+              ></v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-datetime-picker
+                v-model="effectiveDateTime"
+                requried
+                label="Effective On"
+              ></v-datetime-picker>
+            </v-col>
+            <v-col>
+              <v-datetime-picker
+                v-model="expiryDateTime"
+                required
+                label="Expires On"
+              ></v-datetime-picker>
+            </v-col>
+          </v-row>
+          <v-row justify="end" no-gutters>
+            <v-btn :disabled="!valid" @click="add()">Add</v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-form>
 
-    </v-container>
+    <v-row>
+      <v-col md="9">
+        <v-row>
+          <v-col no-gutters>
+            <v-data-table
+              :headers="tableHeaders"
+              :items="bannerList"
+              :items-per-page="5"
+            >
+              <template v-slot:item.effectiveOn="{ item }">
+                <span>{{ formatDate(item.effectiveDateTime) }}</span>
+              </template>
+              <template v-slot:item.expiresOn="{ item }">
+                <span>{{ formatDate(item.expiryDateTime) }}</span>
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -97,30 +108,30 @@ export default class CommunicationView extends Vue {
     message: ""
   };
 
-    private tableHeaders: any[] = [
-        {
-            text: "Subject",
-            value: "subject",
-            width: "30%"
-        },
-        {
-            text: "Effective On",
-            value: "effectiveOn",
-            width: "20%"
-        },
-        {
-            text: "Expires On",
-            value: "expiresOn",
-            width: "20%"
-        },
-        {
-            text: "Text",
-            value: "text",
-            width: "40%"
-        }
-    ];
+  private tableHeaders: any[] = [
+    {
+      text: "Subject",
+      value: "subject",
+      width: "30%"
+    },
+    {
+      text: "Effective On",
+      value: "effectiveOn",
+      width: "20%"
+    },
+    {
+      text: "Expires On",
+      value: "expiresOn",
+      width: "20%"
+    },
+    {
+      text: "Text",
+      value: "text",
+      width: "40%"
+    }
+  ];
 
-    private bannerList: Communication[] = [];
+  private bannerList: Communication[] = [];
 
   private communicationService!: ICommunicationService;
 
@@ -128,47 +139,96 @@ export default class CommunicationView extends Vue {
     this.communicationService = container.get(
       SERVICE_IDENTIFIER.CommunicationService
     );
-      this.clearForm();
-      this.loadBannerList();
+    this.clearForm();
+    this.loadBannerList();
   }
 
-    private loadBannerList() {
+  private loadBannerList() {
+    // Dummy data for testing banner list
+    //  This will need to be disabled when we hook this to the real service via vue service.
+    this.bannerList = [
+      {
+        id: "b1001",
+        subject: "banner 1",
+        text:
+          "B1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-08-05"),
+        expiryDateTime: new Date("2020-08-07")
+      },
+      {
+        id: "b1002",
+        subject: "banner 2",
+        text:
+          "B2 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-06-30"),
+        expiryDateTime: new Date("2020-07-01")
+      },
+      {
+        id: "b1003",
+        subject: "banner 3",
+        text:
+          "B3 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-05-03"),
+        expiryDateTime: new Date("2020-05-28")
+      },
+      {
+        id: "b1004",
+        subject: "banner 4",
+        text:
+          "B4 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-07-30"),
+        expiryDateTime: new Date("2020-08-01")
+      },
+      {
+        id: "b1005",
+        subject: "banner 5",
+        text:
+          "B5 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-06-23"),
+        expiryDateTime: new Date("2020-06-25")
+      },
 
-        // Dummy data for testing banner list
-        //  This will need to be disabled when we hook this to the real service via vue service.
-        this.bannerList = [{ id: 'b1001', subject: 'banner 1', text: 'B1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-08-05'), expiryDateTime: new Date('2020-08-07') },
-            { id: 'b1002', subject: 'banner 2', text: 'B2 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-06-30'), expiryDateTime: new Date('2020-07-01') },
-            { id: 'b1003', subject: 'banner 3', text: 'B3 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-05-03'), expiryDateTime: new Date('2020-05-28') },
-            { id: 'b1004', subject: 'banner 4', text: 'B4 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-07-30'), expiryDateTime: new Date('2020-08-01') },
-            { id: 'b1005', subject: 'banner 5', text: 'B5 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-06-23'), expiryDateTime: new Date('2020-06-25') },
+      {
+        id: "b10012",
+        subject: "banner 1",
+        text:
+          "B1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-06-18"),
+        expiryDateTime: new Date("2020-07-20")
+      },
+      {
+        id: "b10052",
+        subject: "banner 52",
+        text:
+          "B5 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
+        effectiveDateTime: new Date("2020-06-15"),
+        expiryDateTime: new Date("2020-06-17")
+      }
+    ];
 
-            { id: 'b10012', subject: 'banner 1', text: 'B1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-06-18'), expiryDateTime: new Date('2020-07-20') },
-            { id: 'b10052', subject: 'banner 52', text: 'B5 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s', effectiveDateTime: new Date('2020-06-15'), expiryDateTime: new Date('2020-06-17') }
-        ];
+    //Todo for 8213: Enable the following when 8213 update vue service is complete.
+    //this.communicationService
+    //    .getBannerList()
+    //    .then(banners => {
+    //        this.bannerList = [];
+    //        this.bannerList.push(...banners);
+    //    })
+    //    .catch(err => {
+    //        this.showFeedback = true;
+    //        this.bannerFeedback = {
+    //            type: ResultType.Error,
+    //            title: "Error",
+    //            message: "Error loading banners"
+    //        };
+    //    })
+    //    .finally(() => {
+    //        this.isLoading = false;
+    //    });
+  }
 
-        //Todo for 8213: Enable the following when 8213 update vue service is complete.
-        //this.communicationService
-        //    .getBannerList()
-        //    .then(banners => {
-        //        this.bannerList = [];
-        //        this.bannerList.push(...banners); 
-        //    })
-        //    .catch(err => {
-        //        this.showFeedback = true;
-        //        this.bannerFeedback = {
-        //            type: ResultType.Error,
-        //            title: "Error",
-        //            message: "Error loading banners"
-        //        };
-        //    })
-        //    .finally(() => {
-        //        this.isLoading = false;
-        //    });
-    }
-
-    private formatDate(date: Date): string {
-        return new Date(Date.parse(date + "Z")).toLocaleString();
-    }
+  private formatDate(date: Date): string {
+    return new Date(Date.parse(date + "Z")).toLocaleString();
+  }
 
   private clearForm() {
     this.subject = "";
