@@ -208,7 +208,7 @@ export default class CommunicationView extends Vue {
 
     //Todo for 8213: Enable the following when 8213 update vue service is complete.
     //this.communicationService
-    //    .getCommunicationList()
+    //    .getCommunications()
     //    .then(banners => {
     //        this.communicationList = [];
     //        this.communicationList.push(...banners);
