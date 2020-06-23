@@ -17,7 +17,6 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Text.RegularExpressions;
     using Hangfire;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
@@ -44,21 +43,25 @@ namespace HealthGateway.Common.Services
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IWebHostEnvironment enviroment;
         private readonly ILogger logger;
+        private readonly IBackgroundJobClient jobClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
+        /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="emailDelegate">Email delegate to be used.</param>
         /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
         /// <param name="enviroment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
+            IBackgroundJobClient jobClient,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,
             IWebHostEnvironment enviroment)
         {
             this.logger = logger;
+            this.jobClient = jobClient;
             this.emailDelegate = emailDelegate;
             this.emailInviteDelegate = emailInviteDelegate;
             this.enviroment = enviroment;
@@ -95,7 +98,7 @@ namespace HealthGateway.Common.Services
             this.emailDelegate.InsertEmail(email, shouldCommit);
             if (shouldCommit)
             {
-                BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
             }
 
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
@@ -154,7 +157,7 @@ namespace HealthGateway.Common.Services
 
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
             this.emailInviteDelegate.Insert(invite);
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
+            this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
             this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
         }
 
@@ -162,7 +165,7 @@ namespace HealthGateway.Common.Services
         public void QueueInviteEmail(Guid inviteEmailId)
         {
             this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(inviteEmailId)}");
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(inviteEmailId));
+            this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(inviteEmailId));
             this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
         }
 
@@ -193,7 +196,7 @@ namespace HealthGateway.Common.Services
             }
 
             Email email = new Email();
-            email.Id = Guid.NewGuid();
+            email.Id = Guid.NewGuid(); // TODO:  This is suspect
             email.From = emailTemplate.From;
             email.Priority = emailTemplate.Priority;
             email.Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues);

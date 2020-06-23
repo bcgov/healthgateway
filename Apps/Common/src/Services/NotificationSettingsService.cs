@@ -29,22 +29,25 @@ namespace HealthGateway.Common.Services
     /// <summary>
     /// A simple service to queue and send email.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class NotificationSettingsService : INotificationSettingsService
     {
-        private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly ILogger<NotificationSettingsService> logger;
+        private readonly IBackgroundJobClient jobClient;
+        private readonly INotificationSettingsDelegate notificationSettingsDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
+        /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="notificationSettingsDelegate">Notification Settings delegate to be used.</param>
         public NotificationSettingsService(
             ILogger<NotificationSettingsService> logger,
+            IBackgroundJobClient jobClient,
             INotificationSettingsDelegate notificationSettingsDelegate)
         {
             this.logger = logger;
+            this.jobClient = jobClient;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
         }
 
@@ -59,7 +62,7 @@ namespace HealthGateway.Common.Services
                 WriteIndented = true,
             };
             string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
-            BackgroundJob.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
+            this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
 
