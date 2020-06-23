@@ -13,27 +13,17 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace Healthgateway.JobScheduler.Tasks
 {
-    using System.Collections.Generic;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
-
     /// <summary>
-    /// Service that interacts with the Communications database.
+    /// A task that should be invoked only once from the OneTimeJob.
+    /// Any DB access should not commit and should defer to the Job to do so.
     /// </summary>
-    public interface ICommunicationService
+    public interface IOneTimeTask
     {
         /// <summary>
-        /// Adds a Communication to the database.
+        /// Runs the task that needs to be done for the IOneTimeTask.
         /// </summary>
-        /// <param name="communication">The communication to add to the backend.</param>
-        /// <returns>Returns the added communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication> Add(Communication communication);
-
-        /// <summary>
-        /// Gets all communication entries from the database.
-        /// <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<Communication>> GetAll();
+        void Run();
     }
 }

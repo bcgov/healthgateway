@@ -114,13 +114,13 @@ export default class HeaderComponent extends Vue {
 
   private authenticationService!: IAuthenticationService;
 
-  mounted() {
+  private mounted() {
     this.authenticationService = container.get(
       SERVICE_IDENTIFIER.AuthenticationService
     );
   }
 
-  get displayMenu(): boolean {
+  private get displayMenu(): boolean {
     return (
       this.oidcIsAuthenticated && this.userIsRegistered && this.userIsActive
     );

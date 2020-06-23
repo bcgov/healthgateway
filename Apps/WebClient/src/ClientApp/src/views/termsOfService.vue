@@ -61,7 +61,7 @@ import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
     HtmlTextAreaComponent,
   },
 })
-export default class TermsOfServiceComponent extends Vue {
+export default class TermsOfServiceView extends Vue {
   private userProfileService!: IUserProfileService;
   private isLoading: boolean = true;
   private hasErrors: boolean = false;
@@ -69,7 +69,7 @@ export default class TermsOfServiceComponent extends Vue {
 
   private termsOfService: string = "";
 
-  mounted() {
+  private mounted() {
     this.userProfileService = container.get(
       SERVICE_IDENTIFIER.UserProfileService
     );

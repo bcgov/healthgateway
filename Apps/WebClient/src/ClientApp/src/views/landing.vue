@@ -493,7 +493,7 @@ interface Tile {
     CommunicationComponent,
   },
 })
-export default class LandingComponent extends Vue {
+export default class LandingView extends Vue {
   private icons: Icon[] = [
     {
       definition: faPills,
@@ -554,7 +554,7 @@ export default class LandingComponent extends Vue {
   @Getter("webClient", { namespace: "config" })
   webClientConfig!: WebClientConfiguration;
 
-  mounted() {
+  private mounted() {
     this.isOpenRegistration =
       this.webClientConfig.registrationStatus == RegistrationStatus.Open;
   }

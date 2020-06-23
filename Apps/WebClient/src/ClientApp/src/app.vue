@@ -175,7 +175,7 @@ import SidebarComponent from "@/components/navmenu/sidebar.vue";
     IdleComponent,
   },
 })
-export default class AppComponent extends Vue {
+export default class App extends Vue {
   @Ref("idleModal") readonly idleModal?: IdleComponent;
   @Getter("oidcIsAuthenticated", { namespace: "auth" })
   oidcIsAuthenticated?: boolean;

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -37,6 +38,12 @@ namespace HealthGateway.Database.Delegates
         /// <returns>The added communication wrapped in a DBResult.</returns>
         DBResult<Communication> Add(Communication communication, bool commit = true);
 
+        /// <summary>
+        /// Get a list of all past communications.
+        /// </summary>
+        /// <returns>A list of all communications added, wrapped in a DBResult.</returns>
+
+        DBResult<IEnumerable<Communication>> GetAll();
         /// <summary>
         /// Update the given communication.
         /// </summary>
