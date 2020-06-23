@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Services
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
-        private readonly IWebHostEnvironment enviroment;
+        private readonly IWebHostEnvironment environment;
         private readonly ILogger logger;
         private readonly IBackgroundJobClient jobClient;
 
@@ -52,19 +52,19 @@ namespace HealthGateway.Common.Services
         /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="emailDelegate">Email delegate to be used.</param>
         /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
-        /// <param name="enviroment">The injected environment configuration.</param>
+        /// <param name="environment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IBackgroundJobClient jobClient,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,
-            IWebHostEnvironment enviroment)
+            IWebHostEnvironment environment)
         {
             this.logger = logger;
             this.jobClient = jobClient;
             this.emailDelegate = emailDelegate;
             this.emailInviteDelegate = emailInviteDelegate;
-            this.enviroment = enviroment;
+            this.environment = environment;
         }
 
         /// <inheritdoc />
@@ -143,7 +143,6 @@ namespace HealthGateway.Common.Services
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
             invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.RegistrationTemplate), keyValues);
-            invite.EmailId = invite.Email.Id;
             this.QueueNewInviteEmail(invite);
         }
 
@@ -156,6 +155,7 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
+            this.emailDelegate.InsertEmail(invite.Email, false);
             this.emailInviteDelegate.Insert(invite);
             this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
             this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
@@ -192,11 +192,10 @@ namespace HealthGateway.Common.Services
         {
             if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
             {
-                keyValues.Add(ENVIRONMENT_VARIABLE, this.enviroment.IsProduction() ? string.Empty : this.enviroment.EnvironmentName);
+                keyValues.Add(ENVIRONMENT_VARIABLE, this.environment.IsProduction() ? string.Empty : this.environment.EnvironmentName);
             }
 
             Email email = new Email();
-            email.Id = Guid.NewGuid(); // TODO:  This is suspect
             email.From = emailTemplate.From;
             email.Priority = emailTemplate.Priority;
             email.Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues);

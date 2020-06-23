@@ -17,18 +17,16 @@ namespace HealthGateway.CommonTests.Services
 {
     using System;
     using System.Collections.Generic;
-    using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
     using DeepEqual.Syntax;
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
-    using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -223,6 +221,7 @@ namespace HealthGateway.CommonTests.Services
             string bodyPrefix = "Mock Body for";
             string ActivationHost = "https://localhost/action";
             string expectedBody = $"{bodyPrefix} {environment} {ActivationHost}";
+            string expectedHDID = "hdid";
             EmailTemplate emailTemplate = new EmailTemplate()
             {
                 Id = Guid.Parse("93895b38-cc48-47a3-b592-c02691521b28"),
@@ -239,6 +238,8 @@ namespace HealthGateway.CommonTests.Services
             var mockJobclient = new Mock<IBackgroundJobClient>();
             var mockEmailDelegate = new Mock<IEmailDelegate>();
             mockEmailDelegate.Setup(s => s.GetEmailTemplate(It.IsAny<string>())).Returns(emailTemplate);
+            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), false)).
+                                        Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             mockMessagingVerificationDelegate.Setup(s => 
                             s.Insert(It.IsAny<MessagingVerification>())).
@@ -250,15 +251,58 @@ namespace HealthGateway.CommonTests.Services
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
                         mockWebHosting.Object);
-            emailService.QueueNewInviteEmail("hdid", expectedEmail, new Uri($"{ActivationHost}/"));
+            emailService.QueueNewInviteEmail(expectedHDID, expectedEmail, new Uri($"{ActivationHost}/"));
             mockJobclient.Verify(x => x.Create(
                      It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
                      It.IsAny<EnqueuedState>()));
             mockMessagingVerificationDelegate.Verify(x => 
                                 x.Insert(It.Is<MessagingVerification>(emv =>
+                                emv.InviteKey != null &&
+                                emv.HdId == expectedHDID &&
+                                emv.Validated == false &&
+                                emv.Email != null &&
+                                emv.Email.Id == expectedEmailId &&
                                 emv.Email.To == expectedEmail &&
                                 emv.Email.Subject == emailTemplate.Subject &&
                                 emv.Email.Body == expectedBody)));
+        }
+
+        [Fact]
+        public void ThrowsQueueInvite()
+        {
+            var mockLogger = new Mock<ILogger<EmailQueueService>>();
+            var mockJobclient = new Mock<IBackgroundJobClient>();
+            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
+            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            IEmailQueueService emailService = new EmailQueueService(
+                        mockLogger.Object,
+                        mockJobclient.Object,
+                        mockEmailDelegate.Object,
+                        mockMessagingVerificationDelegate.Object,
+                        mockWebHosting.Object);
+            Assert.Throws<ArgumentNullException>(() => emailService.QueueNewInviteEmail(new MessagingVerification()));
+        }
+
+        [Fact]
+        public void ShouldQueueInviteByGuid()
+        {
+            Guid inviteGuid = Guid.NewGuid();
+            var mockLogger = new Mock<ILogger<EmailQueueService>>();
+            var mockJobclient = new Mock<IBackgroundJobClient>();
+            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
+            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            IEmailQueueService emailService = new EmailQueueService(
+                        mockLogger.Object,
+                        mockJobclient.Object,
+                        mockEmailDelegate.Object,
+                        mockMessagingVerificationDelegate.Object,
+                        mockWebHosting.Object);
+            emailService.QueueInviteEmail(inviteGuid);
+            mockJobclient.Verify(x => x.Create(
+                 It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == inviteGuid),
+                 It.IsAny<EnqueuedState>()));
         }
 
         [Fact]
@@ -292,6 +336,61 @@ namespace HealthGateway.CommonTests.Services
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             expected.Id = actual.Id;
             Assert.True(expected.IsDeepEqual(actual));
+        }
+
+        [Fact]
+        public void ShouldProcessTemplateProduction()
+        {
+            string emailTo = "test@test.com";
+            string bodyPrefix = "Mock Body";
+            string environment = "";
+            string expectedBody = $"{bodyPrefix} {environment}";
+            EmailTemplate template = new EmailTemplate()
+            {
+                Subject = "Mock Subject",
+                Body = $"{bodyPrefix} ${{Environment}}",
+                FormatCode = EmailFormat.Text,
+                Priority = EmailPriority.Standard,
+            };
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            mockWebHosting.Setup(s => s.EnvironmentName).Returns(Environments.Production);
+            IEmailQueueService emailService = new EmailQueueService(
+                new Mock<ILogger<EmailQueueService>>().Object,
+                new Mock<IBackgroundJobClient>().Object,
+                new Mock<IEmailDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                mockWebHosting.Object);
+            Email actual = emailService.ProcessTemplate(emailTo, template, d);
+            Assert.True(actual.Body == expectedBody);
+        }
+
+        [Fact]
+        public void ShouldProcessTemplateNonProd()
+        {
+            string emailTo = "test@test.com";
+            string bodyPrefix = "Mock Body";
+            string environment = "mock environment";
+            string expectedBody = $"{bodyPrefix} {environment}";
+            EmailTemplate template = new EmailTemplate()
+            {
+                Subject = "Mock Subject",
+                Body = $"{bodyPrefix} ${{Environment}}",
+                FormatCode = EmailFormat.Text,
+                Priority = EmailPriority.Standard,
+            };
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            // mockWebHosting.Setup(s => s.IsProduction()).Returns(false);
+            mockWebHosting.Setup(s => s.EnvironmentName).Returns(environment);
+            IEmailQueueService emailService = new EmailQueueService(
+                new Mock<ILogger<EmailQueueService>>().Object,
+                new Mock<IBackgroundJobClient>().Object,
+                new Mock<IEmailDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                mockWebHosting.Object);
+            Email actual = emailService.ProcessTemplate(emailTo, template, d);
+            Assert.True(actual.Body == expectedBody);
         }
     }
 }
