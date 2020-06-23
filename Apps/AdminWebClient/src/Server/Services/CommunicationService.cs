@@ -60,5 +60,19 @@ namespace HealthGateway.Admin.Services
             };
             return requestResult;
         }
+
+        /// <inheritdoc />
+        public RequestResult<IEnumerable<Communication>> GetAll()
+        {
+            this.logger.LogTrace($"Getting communication entries...");
+            DBResult<IEnumerable<Communication>> dBResult = this.communicationDelegate.GetAll();
+            RequestResult<IEnumerable<Communication>> requestResult = new RequestResult<IEnumerable<Communication>>()
+            {
+                ResourcePayload = dBResult.Payload,
+                ResultStatus = dBResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultMessage = dBResult.Message,
+            };
+            return requestResult;
+        }
     }
 }

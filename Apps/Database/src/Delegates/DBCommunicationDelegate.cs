@@ -95,6 +95,18 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<IEnumerable<Communication>> GetAll()
+        {
+            this.logger.LogTrace($"Getting all communication entries...");
+            DBResult<IEnumerable<Communication>> result = new DBResult<IEnumerable<Communication>>();
+            result.Payload = this.dbContext.Communication
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
+
+        /// </inheritdoc>
         public DBResult<Communication> Update(Communication communication, bool commit = true)
         {
             this.logger.LogTrace($"Updating Communication in DB...");
