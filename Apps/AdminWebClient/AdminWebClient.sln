@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClientTests", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClient", "src\AdminWebClient.csproj", "{D1A4B196-FA92-4822-8C25-07D53A2903EF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClientTestsFunctional", "test\functional\api\AdminWebClientTestsFunctional.csproj", "{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,18 @@ Global
 		{838a0bd5-3e14-440b-b8b3-86ef086f6d42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{838a0bd5-3e14-440b-b8b3-86ef086f6d42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{838a0bd5-3e14-440b-b8b3-86ef086f6d42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Debug|x64.Build.0 = Debug|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Debug|x86.Build.0 = Debug|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Release|Any CPU.Build.0 = Release|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Release|x64.ActiveCfg = Release|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Release|x64.Build.0 = Release|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Release|x86.ActiveCfg = Release|Any CPU
+		{a7b597db-8dd1-4fcc-becf-e9bffcaf6e4f}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

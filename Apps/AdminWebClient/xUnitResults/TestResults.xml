@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assemblies timestamp="06/23/2020 10:38:06">
+  <assembly name="C:\Users\Sam\Documents\Code\healthgateway\Apps\AdminWebClient\test\unit\bin\Debug\netcoreapp3.1\AdminWebClientTests.dll" run-date="2020-06-23" run-time="10:38:06" total="2" passed="2" failed="0" skipped="0" time="0.210" errors="0">
+    <errors />
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Admin.Test.Services.CommunicationControllerTest" time="0.097">
+      <test name="HealthGateway.Admin.Test.Services.CommunicationControllerTest.ShouldAddCommunication" type="HealthGateway.Admin.Test.Services.CommunicationControllerTest" method="ShouldAddCommunication" time="0.0966432" result="Pass">
+        <traits />
+      </test>
+    </collection>
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for HealthGateway.Admin.Test.Services.CommunicationServiceTest" time="0.113">
+      <test name="HealthGateway.Admin.Test.Services.CommunicationServiceTest.ShouldAddCommunication" type="HealthGateway.Admin.Test.Services.CommunicationServiceTest" method="ShouldAddCommunication" time="0.1133829" result="Pass">
+        <traits />
+      </test>
+    </collection>
+  </assembly>
+</assemblies>
