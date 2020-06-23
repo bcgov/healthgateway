@@ -49,10 +49,9 @@ namespace HealthGateway.Database.Delegates
         public Guid Insert(MessagingVerification messageVerification)
         {
             this.logger.LogTrace($"Inserting message verification to DB... {JsonSerializer.Serialize(messageVerification)}");
-            if (messageVerification.VerificationType == MessagingVerificationType.Email &&
-                (messageVerification.Email == null || messageVerification.EmailId == null))
+            if (messageVerification.VerificationType == MessagingVerificationType.Email && messageVerification.Email == null)
             {
-                throw new ArgumentException("Email/EmailId cannot be null when verification type is Email");
+                throw new ArgumentException("Email cannot be null when verification type is Email");
             }
             else if (messageVerification.VerificationType == MessagingVerificationType.SMS &&
                 (string.IsNullOrWhiteSpace(messageVerification.SMSNumber) || string.IsNullOrWhiteSpace(messageVerification.SMSValidationCode)))
