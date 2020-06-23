@@ -348,7 +348,7 @@ export default class SidebarComponent extends Vue {
   private $bodyElement!: HTMLBodyElement | null;
 
   @Watch("oidcIsAuthenticated")
-  onPropertyChanged() {
+  private onPropertyChanged() {
     // If there is no name in the scope, retrieve it from the service.
     if (this.oidcIsAuthenticated && !this.name) {
       this.loadName();
@@ -356,12 +356,12 @@ export default class SidebarComponent extends Vue {
   }
 
   @Watch("$route")
-  onRouteChanged() {
+  private onRouteChanged() {
     this.clearOverlay();
   }
 
   @Watch("isOpen")
-  onIsOpen(newValue: boolean, oldValue: boolean) {
+  private onIsOpen(newValue: boolean, oldValue: boolean) {
     // Make sure that scroll is disabled when the overlay is active
     if (this.$bodyElement !== null) {
       if (this.isOverlayVisible) {
@@ -370,7 +370,7 @@ export default class SidebarComponent extends Vue {
     }
   }
 
-  mounted() {
+  private mounted() {
     this.authenticationService = container.get(
       SERVICE_IDENTIFIER.AuthenticationService
     );
@@ -407,7 +407,7 @@ export default class SidebarComponent extends Vue {
     this.$bodyElement = document.querySelector("body");
   }
 
-  beforeDestroy() {
+  private beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
   }
 

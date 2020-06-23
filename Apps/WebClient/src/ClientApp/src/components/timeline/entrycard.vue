@@ -36,10 +36,6 @@
       :datekey="datekey"
       :entry="entry"
       :index="index"
-      @on-note-updated="onChange"
-      @on-note-deleted="onRemove"
-      @on-edit-started="onEdit"
-      @on-edit-close="onClose"
     />
   </b-row>
 </template>
