@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Test
             serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationResult>());
 
             List<string> drugIdentifiers = new List<string>() { "000001", "000003", "000003" };
-            List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
+            List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).Distinct().ToList();
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
