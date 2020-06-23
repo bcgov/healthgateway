@@ -223,14 +223,14 @@ export default class FeedbackComponent extends Vue {
   private userFeedbackService!: IUserFeedbackService;
 
   @Watch("isSidebarOpen")
-  onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
+  private onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
     // Make sure it closes if the sidebar is closing and reset state
     if (!newValue) {
       this.resetFeedback();
     }
   }
 
-  mounted() {
+  private mounted() {
     this.userFeedbackService = container.get(
       SERVICE_IDENTIFIER.UserFeedbackService
     );

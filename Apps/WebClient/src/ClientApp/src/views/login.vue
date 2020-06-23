@@ -91,7 +91,7 @@ const namespace: string = "auth";
     LoadingComponent,
   },
 })
-export default class LoginComponent extends Vue {
+export default class LoginView extends Vue {
   @Action("authenticateOidc", { namespace }) authenticateOidc!: (params: {
     idpHint: string;
     redirectPath: string;

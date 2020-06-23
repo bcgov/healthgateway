@@ -267,7 +267,7 @@ import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
 import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
 
 @Component
-export default class RegistrationInfoComponent extends Vue {
+export default class RegistrationInfoView extends Vue {
   @Prop() inviteKey?: string;
   @Prop() email?: string;
   @Getter("webClient", { namespace: "config" })

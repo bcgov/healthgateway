@@ -57,5 +57,18 @@ namespace HealthGateway.Admin.Controllers
         {
             return new JsonResult(this.communicationService.Add(communication));
         }
+
+        /// <summary>
+        /// Gets all communication entries from the backend.
+        /// </summary>
+        /// <returns>The list of all communication entries.</returns>
+        /// <response code="200">Returns the communication json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return new JsonResult(this.communicationService.GetAll());
+        }
     }
 }

@@ -6,33 +6,33 @@ import store from "./store/store";
 import { SnowplowWindow } from "@/plugins/extensions";
 declare let window: SnowplowWindow;
 
-const ProfileComponent = () =>
+const ProfileView = () =>
   import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
-const LandingComponent = () =>
+const LandingView = () =>
   import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
-const NotFoundComponent = () =>
+const NotFoundView = () =>
   import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
-const LoginComponent = () =>
+const LoginView = () =>
   import(/* webpackChunkName: "login" */ "@/views/login.vue");
-const LogoutComponent = () =>
+const LogoutView = () =>
   import(/* webpackChunkName: "logout" */ "@/views/logout.vue");
-const UnauthorizedComponent = () =>
+const UnauthorizedView = () =>
   import(
     /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
   );
-const LoginCallback = () =>
+const LoginCallbackView = () =>
   import(/* webpackChunkName: "loginCallback" */ "@/views/loginCallback.vue");
-const RegistrationComponent = () =>
+const RegistrationView = () =>
   import(/* webpackChunkName: "registration" */ "@/views/registration.vue");
-const RegistrationInfoComponent = () =>
+const RegistrationInfoView = () =>
   import(
     /* webpackChunkName: "registrationInfo" */ "@/views/registrationInfo.vue"
   );
-const TimelineComponent = () =>
+const TimelineView = () =>
   import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
-const ValidateEmailComponent = () =>
+const ValidateEmailView = () =>
   import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
-const TermsOfServiceComponent = () =>
+const TermsOfServiceView = () =>
   import(/* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue");
 
 Vue.use(VueRouter);
@@ -43,12 +43,12 @@ const REGISTRATION_INFO_PATH = "/registrationInfo";
 const routes = [
   {
     path: "/",
-    component: LandingComponent,
+    component: LandingView,
     meta: { requiresAuth: false },
   },
   {
     path: REGISTRATION_INFO_PATH,
-    component: RegistrationInfoComponent,
+    component: RegistrationInfoView,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
       email: route.query.email,
@@ -57,7 +57,7 @@ const routes = [
   },
   {
     path: REGISTRATION_PATH,
-    component: RegistrationComponent,
+    component: RegistrationView,
     props: (route: Route) => ({
       inviteKey: route.query.inviteKey,
       inviteEmail: route.query.email,
@@ -66,28 +66,28 @@ const routes = [
   },
   {
     path: "/validateEmail/:inviteKey",
-    component: ValidateEmailComponent,
+    component: ValidateEmailView,
     props: true,
     meta: { requiresAuth: true },
   },
   {
     path: "/profile",
-    component: ProfileComponent,
+    component: ProfileView,
     meta: { requiresRegistration: true, roles: ["user"] },
   },
   {
     path: "/timeline",
-    component: TimelineComponent,
+    component: TimelineView,
     meta: { requiresRegistration: true, roles: ["user"] },
   },
   {
     path: "/termsOfService",
-    component: TermsOfServiceComponent,
+    component: TermsOfServiceView,
     meta: { requiresAuth: true, roles: ["user"] },
   },
   {
     path: "/login",
-    component: LoginComponent,
+    component: LoginView,
     props: (route: Route) => ({
       isRetry: route.query.isRetry,
     }),
@@ -95,20 +95,20 @@ const routes = [
   },
   {
     path: "/loginCallback",
-    component: LoginCallback,
+    component: LoginCallbackView,
     meta: { requiresAuth: false, roles: ["user"], routeIsOidcCallback: true },
   },
   {
     path: "/logout",
-    component: LogoutComponent,
+    component: LogoutView,
     meta: { requiresAuth: false },
   },
   {
     path: "/unauthorized",
-    component: UnauthorizedComponent,
+    component: UnauthorizedView,
     meta: { requiresAuth: false },
   }, // Unauthorized
-  { path: "/*", component: NotFoundComponent }, // Not found; Will catch all other paths not covered previously
+  { path: "/*", component: NotFoundView }, // Not found; Will catch all other paths not covered previously
 ];
 
 const router = new VueRouter({

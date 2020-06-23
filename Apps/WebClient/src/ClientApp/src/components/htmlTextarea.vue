@@ -20,7 +20,7 @@ import { Component, Prop } from "vue-property-decorator";
 export default class HtmlTextAreaComponent extends Vue {
   @Prop() input!: string;
 
-  mounted() {
+  private mounted() {
     this.$el.innerHTML = this.input;
   }
 

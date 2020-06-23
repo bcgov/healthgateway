@@ -387,7 +387,7 @@ const authNamespace: string = "auth";
     VerifySMSComponent,
   },
 })
-export default class ProfileComponent extends Vue {
+export default class ProfileView extends Vue {
   @Getter("oidcIsAuthenticated", {
     namespace: authNamespace,
   })
