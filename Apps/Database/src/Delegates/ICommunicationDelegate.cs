@@ -36,5 +36,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The added communication wrapped in a DBResult.</returns>
         DBResult<Communication> Add(Communication communication, bool commit = true);
+
+        /// <summary>
+        /// Update the given communication.
+        /// </summary>
+        /// <param name="communication">The communication to be updated in the database.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <returns>The updated communication wrapped in a DBResult.</returns>
+        DBResult<Communication> Update(Communication communication, bool commit = true);
     }
 }

@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Wrapper\" />
-    <Folder Include="Assets\Legal\" />
     <Folder Include="Models\Cacheable\" />
   </ItemGroup>
 
@@ -54,6 +53,7 @@
     <EmbeddedResource Include="Assets\docs\EmailInviteTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailWaitlistTemplate.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20200511.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />
     <EmbeddedResource Include="Assets\docs\EmailUpdatedTermsofService.html" />
     <EmbeddedResource Include="Assets\docs\EmailAccountRemoved.html" />
@@ -64,6 +64,7 @@
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
     <None Remove="Assets\Legal\TermsOfService.20200317.html" />
+    <None Remove="Assets\Legal\TermsOfService.20200511.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
