@@ -24,6 +24,7 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Constants;
@@ -42,6 +43,7 @@ namespace HealthGateway.Medication.Services
         private const int MaxLengthProtectiveWord = 8;
         private const int MinLengthProtectiveWord = 6;
         private readonly ILogger logger;
+        private readonly ITraceService traceService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientDelegate patientDelegate;
         private readonly IHNClientDelegate hnClientDelegate;
@@ -52,6 +54,7 @@ namespace HealthGateway.Medication.Services
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
         /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
@@ -59,6 +62,7 @@ namespace HealthGateway.Medication.Services
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
+            ITraceService traceService,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientService,
             IHNClientDelegate hnClientDelegate,
@@ -66,6 +70,7 @@ namespace HealthGateway.Medication.Services
             IMedStatementDelegate medicationStatementDelegate)
         {
             this.logger = logger;
+            this.traceService = traceService;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientService;
             this.hnClientDelegate = hnClientDelegate;
@@ -76,6 +81,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
         {
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             this.logger.LogTrace($"Getting list of medication statements... {hdid}");
             HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
             if (hnClientMedicationResult.Result == ResultType.Success)
@@ -110,7 +116,10 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public async Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
         {
-            this.logger.LogTrace($"Getting history of medication statements... {hdid}");
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
+            this.logger.LogDebug("Getting history of medication statements");
+            this.logger.LogTrace($"User hdid: {hdid}");
+
             RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>();
             var validationResult = ValidateProtectiveWord(protectiveWord);
             bool okProtectiveWord = validationResult.Item1;
@@ -154,7 +163,8 @@ namespace HealthGateway.Medication.Services
                 result.ResultStatus = ResultType.Protected;
                 result.ResultMessage = validationResult.Item2!;
             }
-            this.logger.LogInformation($"Finished getting history of medication statements...{hdid}");
+
+            this.logger.LogDebug($"Finished getting history of medication statements");
             return result;
         }
 
@@ -193,8 +203,9 @@ namespace HealthGateway.Medication.Services
 
         private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string? protectiveWord)
         {
-            HNMessage<List<MedicationStatement>> retMessage = null;
-            var validationResult = ValidateProtectiveWord(protectiveWord);
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
+            HNMessage<List<MedicationStatement>> retMessage;
+            Tuple<bool, string?> validationResult = ValidateProtectiveWord(protectiveWord);
             bool okProtectiveWord = validationResult.Item1;
             if (okProtectiveWord)
             {
@@ -222,6 +233,7 @@ namespace HealthGateway.Medication.Services
 
         private void PopulateBrandName(List<MedicationSumary> medSummaries)
         {
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
             Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);

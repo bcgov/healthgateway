@@ -16,12 +16,12 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
-    using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
@@ -33,6 +33,7 @@ namespace HealthGateway.Common.Delegates
     public class RestPatientDelegate : IPatientDelegate
     {
         private readonly ILogger logger;
+        private readonly ITraceService traceService;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
 
@@ -40,14 +41,17 @@ namespace HealthGateway.Common.Delegates
         /// Initializes a new instance of the <see cref="RestPatientDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpClientService">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestPatientDelegate(
             ILogger<RestPatientDelegate> logger,
+            ITraceService traceService,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
             this.logger = logger;
+            this.traceService = traceService;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
         }
@@ -68,10 +72,10 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<Patient> GetPatientAsync(string hdid, string authorization)
         {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            Patient? patient = null;
-            this.logger.LogTrace($"Getting patient... {hdid}");
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
+
+            this.logger.LogDebug($"GetPatientAsync: Getting patient information {hdid}");
+
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add("Authorization", authorization);
@@ -82,25 +86,22 @@ namespace HealthGateway.Common.Delegates
             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
-                patient = JsonSerializer.Deserialize<Patient>(payload);
+                Patient patient = JsonSerializer.Deserialize<Patient>(payload);
+                if (string.IsNullOrEmpty(patient.PersonalHealthNumber))
+                {
+                    this.logger.LogDebug($"Finished getting patient. {hdid}, PHN not found");
+                }
+                else
+                {
+                    this.logger.LogDebug($"Finished getting patient. {hdid}, {patient.PersonalHealthNumber.Substring(0, 3)}, Time Elapsed");
+                }
+                return patient;
             }
             else
             {
                 this.logger.LogError($"Error getting patient. {hdid}, {payload}");
                 throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
             }
-
-            timer.Stop();
-            if (string.IsNullOrEmpty(patient.PersonalHealthNumber))
-            {
-                this.logger.LogDebug($"Finished getting patient. {hdid}, PHN not found, Time Elapsed: {timer.Elapsed}");
-            }
-            else
-            {
-                this.logger.LogDebug($"Finished getting patient. {hdid}, {patient.PersonalHealthNumber.Substring(0, 3)}, Time Elapsed: {timer.Elapsed}");
-            }
-
-            return patient;
         }
     }
 }

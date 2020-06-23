@@ -35,6 +35,7 @@ namespace HealthGateway.Medication.Test
     using Xunit;
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Instrumentation;
 
     public class HNClientDelegate_Test
     {
@@ -75,6 +76,7 @@ namespace HealthGateway.Medication.Test
 
             IHNClientDelegate hnclientDelegate = new RestHNClientDelegate(
                 new Mock<ILogger<RestHNClientDelegate>>().Object,
+                new Mock<ITraceService>().Object,
                 medicationParserMock.Object,
                 pharmacyParserMock.Object,
                 httpMock.Object,
@@ -121,6 +123,7 @@ namespace HealthGateway.Medication.Test
 
             IHNClientDelegate hnclientDelegate = new RestHNClientDelegate(
                 new Mock<ILogger<RestHNClientDelegate>>().Object,
+                new Mock<ITraceService>().Object,
                 medicationParserMock.Object,
                 pharmacyParserMock.Object,
                 httpMock.Object,
