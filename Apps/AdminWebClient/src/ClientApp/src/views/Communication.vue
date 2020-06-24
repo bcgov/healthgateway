@@ -144,22 +144,23 @@ export default class CommunicationView extends Vue {
     this.loadCommunicationList();
   }
 
-  private sortCommunicationListByEffectiveDate(isDescending: boolean) {
+  private sortCommunicationsByDate(isDescending: boolean, columnName: string) {
     this.communicationList.sort((a, b) => {
-      if (a.effectiveDateTime > b.effectiveDateTime) {
-        return isDescending ? -1 : 1;
-      } else if (a.effectiveDateTime < b.effectiveDateTime) {
-        return isDescending ? 1 : -1;
+      let first!: Date;
+      let second!: Date;
+      if (columnName === "effectiveDateTime") {
+        first = a.effectiveDateTime;
+        second = b.effectiveDateTime;
+      } else if (columnName === "expiryDateTime") {
+        first = a.expiryDateTime;
+        second = b.expiryDateTime;
+      } else {
+        return 0;
       }
-      return 0;
-    });
-  }
 
-  private sortCommunicationListByExpiryDate(isDescending: boolean) {
-    this.communicationList.sort((a, b) => {
-      if (a.expiryDateTime > b.expiryDateTime) {
+      if (first > second) {
         return isDescending ? -1 : 1;
-      } else if (a.expiryDateTime < b.expiryDateTime) {
+      } else if (first < second) {
         return isDescending ? 1 : -1;
       }
       return 0;
@@ -174,16 +175,12 @@ export default class CommunicationView extends Vue {
     // items: 'Communication' items
     // index: Enabled sort headers value. (black arrow status).
     // isDescending: Whether enabled sort headers is desc
-    if (index === undefined) {
+    if (index === undefined || index.length === 0) {
       index = ["effectiveDateTime"];
       isDescending = [true];
     }
+    this.sortCommunicationsByDate(isDescending[0], index[0]);
 
-    if (index[0] === "effectiveDateTime") {
-      this.sortCommunicationListByEffectiveDate(isDescending[0]);
-    } else if (index[0] === "expiryDateTime") {
-      this.sortCommunicationListByExpiryDate(isDescending[0]);
-    }
     return this.communicationList;
   }
 
@@ -250,8 +247,6 @@ export default class CommunicationView extends Vue {
         expiryDateTime: new Date("2020-06-17")
       }
     ];
-
-    this.customSort(this.communicationList, ["effectiveDateTime"], [false]);
 
     //Todo for 8213: Enable the following when 8213 update vue service is complete.
     //this.communicationService
