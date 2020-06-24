@@ -47,6 +47,14 @@
           </h1>
         </v-card>
       </v-col>
+      <v-col class="col-lg-3 col-md-6 col-sm-12">
+        <v-card class="text-center">
+          <h3>Users With Notes</h3>
+          <h1>
+            {{ usersWithNotesCount }}
+          </h1>
+        </v-card>
+      </v-col>
     </v-row>
   </v-layout>
 </template>
@@ -61,6 +69,7 @@ export default class Dashboard extends Vue {
   private unregisteredInvitedUserCount: number = 0;
   private loggedInUsersCount: number = 0;
   private waitlistedUserCount: number = 0;
+  private usersWithNotesCount: number = 0;
   private dashboardService!: IDashboardService;
 
   mounted() {
@@ -69,6 +78,7 @@ export default class Dashboard extends Vue {
     this.getLoggedInUsersCount();
     this.getUnregisteredInvitedUserCount();
     this.getWaitlistedUserCount();
+    this.getUsersWithNotesCount();
   }
 
   private getRegisteredUserCount() {
@@ -92,6 +102,12 @@ export default class Dashboard extends Vue {
   private getUnregisteredInvitedUserCount() {
     this.dashboardService.getUnregisteredInvitedUsersCount().then(count => {
       this.unregisteredInvitedUserCount = count;
+    });
+  }
+
+  private getUsersWithNotesCount() {
+    this.dashboardService.getUsersWithNotesCount().then(count => {
+      this.usersWithNotesCount = count;
     });
   }
 }

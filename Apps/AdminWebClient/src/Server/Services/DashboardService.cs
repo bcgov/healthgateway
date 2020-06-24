@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
-    using System.Runtime.InteropServices;
     using HealthGateway.Admin.Models;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
@@ -24,6 +23,7 @@ namespace HealthGateway.Admin.Services
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
+        private readonly INoteDelegate noteDelegate;
         private readonly IProfileDelegate userProfileDelegate;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IConfiguration configuration;
@@ -31,14 +31,17 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
+        /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
         /// <param name="config">The configuration provider.</param>
         public DashboardService(
+            INoteDelegate noteDelegate,
             IProfileDelegate userProfileDelegate,
             IBetaRequestDelegate betaRequestDelegate,
             IConfiguration config)
         {
+            this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.betaRequestDelegate = betaRequestDelegate;
             this.configuration = config;
@@ -71,6 +74,12 @@ namespace HealthGateway.Admin.Services
         public int GetWaitlistUserCount()
         {
             return this.betaRequestDelegate.GetWaitlistCount();
+        }
+
+        /// <inheritdoc />
+        public int GetUsersWithNotesCount()
+        {
+            return this.noteDelegate.GetUsersWithNotesCount();
         }
     }
 }

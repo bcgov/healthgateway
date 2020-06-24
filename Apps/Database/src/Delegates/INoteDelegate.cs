@@ -72,5 +72,11 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
         DBResult<Note> DeleteNote(Note note, bool commit = true);
+
+        /// <summary>
+        /// Returns the count of users that have notes on their timeline.
+        /// </summary>
+        /// <returns>The count of users.</returns>
+        int GetUsersWithNotesCount();
     }
 }
