@@ -193,11 +193,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetUsersWithNotesCount()
+        public int GetUsersWithNotesCount(int minNotes)
         {
             return this.dbContext.Note
-                    .Select(p => p.HdId)
-                    .Distinct()
+                .Select(n => n.HdId)
+                    .GroupBy(key => key)
+                    .Where(w => w.Count() >= minNotes)
                     .Count();
         }
     }

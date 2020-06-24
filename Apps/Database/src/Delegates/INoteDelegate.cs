@@ -76,7 +76,8 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Returns the count of users that have notes on their timeline.
         /// </summary>
+        /// <param name="minNotes">The minimum number of notes to count.</param>
         /// <returns>The count of users.</returns>
-        int GetUsersWithNotesCount();
+        int GetUsersWithNotesCount(int minNotes);
     }
 }

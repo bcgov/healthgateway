@@ -289,6 +289,11 @@
             Gets or sets the windows timezone id.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.MinimumNotesCount">
+            <summary>
+            Gets or sets the minimum number of notes to be counted.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.AdminEmail">
             <summary>
             Model that provides a user representation of the Email model.

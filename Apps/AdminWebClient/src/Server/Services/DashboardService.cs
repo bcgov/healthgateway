@@ -27,6 +27,7 @@ namespace HealthGateway.Admin.Services
         private readonly IProfileDelegate userProfileDelegate;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IConfiguration configuration;
+        private readonly AdminConfiguration adminConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
@@ -45,6 +46,8 @@ namespace HealthGateway.Admin.Services
             this.userProfileDelegate = userProfileDelegate;
             this.betaRequestDelegate = betaRequestDelegate;
             this.configuration = config;
+            this.adminConfiguration = new AdminConfiguration();
+            this.configuration.GetSection("Admin").Bind(this.adminConfiguration);
         }
 
         /// <inheritdoc />
@@ -62,9 +65,6 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public int GetTodayLoggedInUsersCount(int offset)
         {
-            AdminConfiguration config = new AdminConfiguration();
-            this.configuration.GetSection("Admin").Bind(config);
-
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new TimeSpan(0, -1 * offset, 0);
             return this.userProfileDelegate.GetLoggedInUsersCount(ts);
@@ -79,7 +79,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public int GetUsersWithNotesCount()
         {
-            return this.noteDelegate.GetUsersWithNotesCount();
+            return this.noteDelegate.GetUsersWithNotesCount(this.adminConfiguration.MinimumNotesCount);
         }
     }
 }
