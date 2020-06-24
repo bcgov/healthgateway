@@ -42,7 +42,7 @@ let users = [
   { username: "loadtest_10", password: passwd, hdid: null, token: null, refresh: null, expires: null },
   { username: "loadtest_11", password: passwd, hdid: null, token: null, refresh: null, expires: null },
   { username: "loadtest_12", password: passwd, hdid: null, token: null, refresh: null, expires: null },
-//  { username: "loadtest_13", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+  //  { username: "loadtest_13", password: passwd, hdid: null, token: null, refresh: null, expires: null },
   { username: "loadtest_14", password: passwd, hdid: null, token: null, refresh: null, expires: null },
   { username: "loadtest_15", password: passwd, hdid: null, token: null, refresh: null, expires: null },
   { username: "loadtest_20", password: passwd, hdid: null, token: null, refresh: null, expires: null },
@@ -62,7 +62,7 @@ function parseJwt(jwt) {
 };
 
 function getExpiresTime(seconds) {
-  return (Date.now() + seconds*1000);
+  return (Date.now() + seconds * 1000);
 }
 
 function parseHdid(accessToken) {
@@ -86,11 +86,18 @@ function authenticateUser(user) {
   console.log("Authenticating username: " + auth_form_data.username);
   var res = http.post(TokenEndpointUrl, auth_form_data);
   var res_json = JSON.parse(res.body);
-  user.token = res_json["access_token"];
-  user.refresh = res_json["refresh_token"];
-  var seconds = res_json["expires_in"];
-  user.expires = getExpiresTime(seconds);
-  user.hdid = parseHdid(user.token);
+  var error = res_json["error"];
+  if (error == null) {
+    user.token = res_json["access_token"];
+    user.refresh = res_json["refresh_token"];
+    var seconds = res_json["expires_in"];
+    user.expires = getExpiresTime(seconds);
+    user.hdid = parseHdid(user.token);
+    console.log("hdid=" + user.hdid);
+  }
+  else {
+    console.log("Authentication Error = " + error);
+  }
 }
 
 function refreshUser(user) {
@@ -134,8 +141,8 @@ export default function () {
   };
 
 
-  group('Timeline flow', function() {
-    group('Medication', function() {
+  group('Timeline flow', function () {
+    group('Medication', function () {
       console.log("Medications for username: " + user.username);
 
       let r = http.get(MedicationServiceUrl + "/" + user.hdid, params);
@@ -151,7 +158,7 @@ export default function () {
       }) || errorRate.add(1);
 
     });
-    group('Laboratory', function() {
+    group('Laboratory', function () {
       console.log("Laboratory for username: " + user.username);
 
       let res = http.get(LaboratoryServiceUrl, params);
