@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Utils
         }
 
         /// <summary>
-        /// Replaces any occurences of {$key} in the string with the value.
+        /// Replaces any occurences of ${key} in the string with the value.
         /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
         /// </summary>
         /// <param name="inStr">The string to scan and replace.</param>
