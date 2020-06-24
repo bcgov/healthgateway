@@ -61,12 +61,13 @@
             <v-data-table
               :headers="tableHeaders"
               :items="communicationList"
+              :custom-sort="customSort"
               :items-per-page="5"
             >
-              <template v-slot:item.effectiveOn="{ item }">
+              <template v-slot:item.effectiveDateTime="{ item }">
                 <span>{{ formatDate(item.effectiveDateTime) }}</span>
               </template>
-              <template v-slot:item.expiresOn="{ item }">
+              <template v-slot:item.expiryDateTime="{ item }">
                 <span>{{ formatDate(item.expiryDateTime) }}</span>
               </template>
             </v-data-table>
@@ -116,12 +117,12 @@ export default class CommunicationView extends Vue {
     },
     {
       text: "Effective On",
-      value: "effectiveOn",
+      value: "effectiveDateTime",
       width: "20%"
     },
     {
       text: "Expires On",
-      value: "expiresOn",
+      value: "expiryDateTime",
       width: "20%"
     },
     {
@@ -143,7 +144,51 @@ export default class CommunicationView extends Vue {
     this.loadCommunicationList();
   }
 
+  private sortCommunicationListByEffectiveDate(isDescending: boolean) {
+    this.communicationList.sort((a, b) => {
+      if (a.effectiveDateTime > b.effectiveDateTime) {
+        return isDescending ? -1 : 1;
+      } else if (a.effectiveDateTime < b.effectiveDateTime) {
+        return isDescending ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  private sortCommunicationListByExpiryDate(isDescending: boolean) {
+    this.communicationList.sort((a, b) => {
+      if (a.expiryDateTime > b.expiryDateTime) {
+        return isDescending ? -1 : 1;
+      } else if (a.expiryDateTime < b.expiryDateTime) {
+        return isDescending ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  private customSort(
+    items: Communication[],
+    index: any[],
+    isDescending: boolean[]
+  ) {
+    // items: 'Communication' items
+    // index: Enabled sort headers value. (black arrow status).
+    // isDescending: Whether enabled sort headers is desc
+    if (index === undefined) {
+      index = ["effectiveDateTime"];
+      isDescending = [true];
+    }
+
+    if (index[0] === "effectiveDateTime") {
+      this.sortCommunicationListByEffectiveDate(isDescending[0]);
+    } else if (index[0] === "expiryDateTime") {
+      this.sortCommunicationListByExpiryDate(isDescending[0]);
+    }
+    return this.communicationList;
+  }
+
   private loadCommunicationList() {
+    console.log("retrieving communications...");
     // Dummy data for testing banner list
     //  This will need to be disabled when we hook this to the real service via vue service.
     this.communicationList = [
@@ -205,6 +250,8 @@ export default class CommunicationView extends Vue {
         expiryDateTime: new Date("2020-06-17")
       }
     ];
+
+    this.customSort(this.communicationList, ["effectiveDateTime"], [false]);
 
     //Todo for 8213: Enable the following when 8213 update vue service is complete.
     //this.communicationService
