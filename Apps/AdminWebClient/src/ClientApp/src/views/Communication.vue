@@ -113,22 +113,26 @@ export default class CommunicationView extends Vue {
     {
       text: "Subject",
       value: "subject",
-      width: "30%"
+      width: "30%",
+      sortable: false
     },
     {
       text: "Effective On",
       value: "effectiveDateTime",
-      width: "20%"
+      width: "20%",
+      sortable: true
     },
     {
       text: "Expires On",
       value: "expiryDateTime",
-      width: "20%"
+      width: "20%",
+      sortable: true
     },
     {
       text: "Text",
       value: "text",
-      width: "40%"
+      width: "40%",
+      sortable: false
     }
   ];
 
@@ -186,86 +190,22 @@ export default class CommunicationView extends Vue {
 
   private loadCommunicationList() {
     console.log("retrieving communications...");
-    // Dummy data for testing banner list
-    //  This will need to be disabled when we hook this to the real service via vue service.
-    this.communicationList = [
-      {
-        id: "b1001",
-        subject: "banner 1",
-        text:
-          "B1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-08-05"),
-        expiryDateTime: new Date("2020-08-07")
-      },
-      {
-        id: "b1002",
-        subject: "banner 2",
-        text:
-          "B2 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-06-30"),
-        expiryDateTime: new Date("2020-07-01")
-      },
-      {
-        id: "b1003",
-        subject: "banner 3",
-        text:
-          "B3 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-05-03"),
-        expiryDateTime: new Date("2020-05-28")
-      },
-      {
-        id: "b1004",
-        subject: "banner 4",
-        text:
-          "B4 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-07-30"),
-        expiryDateTime: new Date("2020-08-01")
-      },
-      {
-        id: "b1005",
-        subject: "banner 5",
-        text:
-          "B5 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-06-23"),
-        expiryDateTime: new Date("2020-06-25")
-      },
-
-      {
-        id: "b10012",
-        subject: "banner 1",
-        text:
-          "B1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-06-18"),
-        expiryDateTime: new Date("2020-07-20")
-      },
-      {
-        id: "b10052",
-        subject: "banner 52",
-        text:
-          "B5 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum s",
-        effectiveDateTime: new Date("2020-06-15"),
-        expiryDateTime: new Date("2020-06-17")
-      }
-    ];
-
-    //Todo for 8213: Enable the following when 8213 update vue service is complete.
-    //this.communicationService
-    //    .getCommunications()
-    //    .then(banners => {
-    //        this.communicationList = [];
-    //        this.communicationList.push(...banners);
-    //    })
-    //    .catch(err => {
-    //        this.showFeedback = true;
-    //        this.bannerFeedback = {
-    //            type: ResultType.Error,
-    //            title: "Error",
-    //            message: "Error loading banners"
-    //        };
-    //    })
-    //    .finally(() => {
-    //        this.isLoading = false;
-    //    });
+    this.communicationService
+      .getCommunications()
+      .then(banners => {
+        this.communicationList = banners;
+      })
+      .catch(err => {
+        this.showFeedback = true;
+        this.bannerFeedback = {
+          type: ResultType.Error,
+          title: "Error",
+          message: "Error loading banners"
+        };
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
   }
 
   private formatDate(date: Date): string {
