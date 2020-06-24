@@ -37,4 +37,30 @@ export class RestCommunicationService implements ICommunicationService {
         });
     });
   }
+
+  public getCommunications(): Promise<Communication[]> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get<RequestResult<Communication[]>>(`${this.BASE_URI}`)
+        .then(requestResult => {
+          this.handleResult(requestResult, resolve, reject);
+        })
+        .catch(err => {
+          console.log(err);
+          return reject(err);
+        });
+    });
+  }
+
+  private handleResult(
+    requestResult: RequestResult<any>,
+    resolve: any,
+    reject: any
+  ) {
+    if (requestResult.resultStatus === ResultType.Success) {
+      resolve(requestResult.resourcePayload);
+    } else {
+      reject(requestResult.resultMessage);
+    }
+  }
 }

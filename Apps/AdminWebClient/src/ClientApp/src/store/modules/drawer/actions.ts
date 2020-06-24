@@ -8,7 +8,7 @@ export const actions: ActionTree<DrawerState, RootState> = {
     return true;
   },
 
-  setState(context, params:{ isDrawerOpen:boolean }): void {
+  setState(context, params: { isDrawerOpen: boolean }): void {
     context.commit("setDrawerState", params.isDrawerOpen);
   }
 };
