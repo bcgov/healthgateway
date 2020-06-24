@@ -33,6 +33,7 @@ namespace HealthGateway.Admin.Services
 
         /// <summary>
         /// Gets all communication entries from the database.
+        /// </summary>
         /// <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
         RequestResult<IEnumerable<Communication>> GetAll();
     }

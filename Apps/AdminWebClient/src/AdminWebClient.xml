@@ -749,7 +749,12 @@
             <param name="communication">The communication to add to the backend.</param>
             <returns>Returns the added communication wrapped in a RequestResult.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:HealthGateway.Admin.Services.ICommunicationService.GetAll" -->
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.GetAll">
+            <summary>
+            Gets all communication entries from the database.
+            </summary>
+            <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Services.IConfigurationService">
             <summary>
             Admin configuration.

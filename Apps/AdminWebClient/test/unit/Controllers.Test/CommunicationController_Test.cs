@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Test.Services
         [Fact]
         public void ShouldAddCommunication()
         {
-            // Sample communication to test
+            // Sample communications to test
             Communication comm = new Communication()
             {
                 Text = "Test communication",
@@ -66,6 +66,49 @@ namespace HealthGateway.Admin.Test.Services
 
             // Test if controller adds communication properly
             IActionResult actualResult = controller.Add(comm);
+            Assert.IsType<JsonResult>(actualResult);
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
+        }
+
+        [Fact]
+        public void ShouldGetCommunications()
+        {
+            // Sample communications to test
+            List<Communication> commsList = new List<Communication>();
+            commsList.Add(new Communication()
+            {
+                Text = "Test communication",
+                Subject = "Testing communication",
+                EffectiveDateTime = new DateTime(2020, 04, 04),
+                ExpiryDateTime = new DateTime(2020, 05, 13)
+            });
+
+            commsList.Add(new Communication()
+            {
+                Text = "Test communication 2",
+                Subject = "Testing communication 2",
+                EffectiveDateTime = new DateTime(2021, 04, 04),
+                ExpiryDateTime = new DateTime(2021, 05, 13)
+            });
+
+            List<Communication> refCommsList = commsList;
+
+            RequestResult<IEnumerable<Communication>> expected = new RequestResult<IEnumerable<Communication>>
+            {
+                ResourcePayload = commsList,
+                ResultStatus = Common.Constants.ResultType.Success
+            };
+
+            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            mockCommunicationService.Setup(s => s.GetAll()).Returns(expected);
+
+            // Initialize controller
+            CommunicationController controller = new CommunicationController(
+                mockCommunicationService.Object
+            );
+
+            // Test if controller gets communications properly
+            IActionResult actualResult = controller.GetAll();
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
         }

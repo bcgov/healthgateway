@@ -67,5 +67,48 @@ namespace HealthGateway.Admin.Test.Services
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
         }
+
+        [Fact]
+        public void ShouldGetCommunications()
+        {
+            // Sample communication to test
+            List<Communication> commsList = new List<Communication>();
+            commsList.Add(new Communication()
+            {
+                Text = "Test communication",
+                Subject = "Testing communication",
+                EffectiveDateTime = new DateTime(2020, 04, 04),
+                ExpiryDateTime = new DateTime(2020, 05, 13)
+            });
+
+            commsList.Add(new Communication()
+            {
+                Text = "Test communication 2",
+                Subject = "Testing communication 2",
+                EffectiveDateTime = new DateTime(2021, 04, 04),
+                ExpiryDateTime = new DateTime(2021, 05, 13)
+            });
+
+            List<Communication> refCommsList = commsList;
+
+            DBResult<IEnumerable<Communication>> commsDBResult = new DBResult<IEnumerable<Communication>>
+            {
+                Payload = commsList,
+                Status = Database.Constants.DBStatusCode.Read
+            };
+
+            Mock<ICommunicationDelegate> commsDelegateMock = new Mock<ICommunicationDelegate>();
+            commsDelegateMock.Setup(s => s.GetAll()).Returns(commsDBResult);
+
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                commsDelegateMock.Object
+            );
+
+            RequestResult<IEnumerable<Communication>> actualResult = service.GetAll();
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(refCommsList));
+        }
     }
 }
