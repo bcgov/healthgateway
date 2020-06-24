@@ -23,9 +23,14 @@ export let errorRate = new Rate('errors');
 
 let environment = (__ENV.HG_ENV != undefined) ? __ENV.HG_ENV : 'dev';
 
-let TokenEndpointUrl = "https://sso-" + environment + ".pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
-let MedicationServiceUrl = "https://" + environment + ".healthgateway.gov.bc.ca/api/medicationservice/v1/api/MedicationStatement";
-let LaboratoryServiceUrl = "https://" + environment + ".healthgateway.gov.bc.ca/api/laboratoryservice/v1/api/Laboratory";
+const https = "https://";
+
+let baseUrl = https + environment + ".healthgateway.gov.bc.ca";
+
+let TokenEndpointUrl = https + "sso-" + environment + ".pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
+let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
+let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 
 let passwd = __ENV.HG_PASSWORD;
 
@@ -77,7 +82,7 @@ function authenticateUser(user) {
     grant_type: "password",
     client_id: "healthgateway",
     audience: "healthgateway",
-    scope: "openid",
+    scope: "openid PL PN patient/Observation.read patient/Laboratory.read",
     username: user.username,
     password: user.password,
   };
@@ -86,8 +91,7 @@ function authenticateUser(user) {
   console.log("Authenticating username: " + auth_form_data.username);
   var res = http.post(TokenEndpointUrl, auth_form_data);
   var res_json = JSON.parse(res.body);
-  var error = res_json["error"];
-  if (error == null) {
+  if (res.status == 200) {
     user.token = res_json["access_token"];
     user.refresh = res_json["refresh_token"];
     var seconds = res_json["expires_in"];
@@ -96,7 +100,7 @@ function authenticateUser(user) {
     console.log("hdid=" + user.hdid);
   }
   else {
-    console.log("Authentication Error = " + error);
+    console.log("Authentication Error = " + res_json["error"]);
   }
 }
 
@@ -111,10 +115,15 @@ function refreshUser(user) {
   console.log("Getting Refresh Token for username: " + user.username);
   var res = http.post(TokenEndpointUrl, refresh_form_data);
   var res_json = JSON.parse(res.body);
-  user.token = res_json["access_token"];
-  user.refresh = res_json["refresh_token"];
-  var seconds = res_json["expires_in"];
-  user.expires = getExpiresTime(seconds);
+  if (res.status == 200) {
+    user.token = res_json["access_token"];
+    user.refresh = res_json["refresh_token"];
+    var seconds = res_json["expires_in"];
+    user.expires = getExpiresTime(seconds);
+  }
+  else {
+    console.log("Error = " + res_json["error"]);
+  }
 }
 
 export default function () {
@@ -161,7 +170,7 @@ export default function () {
     group('Laboratory', function () {
       console.log("Laboratory for username: " + user.username);
 
-      let res = http.get(LaboratoryServiceUrl, params);
+      let res = http.get(LaboratoryServiceUrl + "?hdid=" + user.hdid, params);
 
       if (res.status != 200) console.log("Http Eror Code: " + res.status);
 
