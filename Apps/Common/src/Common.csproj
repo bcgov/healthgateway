@@ -2,6 +2,7 @@
 
   <PropertyGroup>    
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ProjectGuid>{8660083F-F582-47C6-BC98-6DCF0F4AC851}</ProjectGuid>
     <RootNamespace>HealthGateway.Common</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>

@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ProjectGuid>{838a0bd5-3e14-440b-b8b3-86ef086f6d42}</ProjectGuid>
     <IsPackable>false</IsPackable>
     <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>

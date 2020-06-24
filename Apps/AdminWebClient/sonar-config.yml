@@ -7,5 +7,4 @@ properties:
 test-runners:
   - xunit
 paths:
-  jest: src/ClientApp
-  xunit: test/unit/AdminWebClientTests.csproj
+  xunit: ./test/unit/AdminWebClientTests.csproj
