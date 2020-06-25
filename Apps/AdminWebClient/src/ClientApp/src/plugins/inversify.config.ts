@@ -20,7 +20,7 @@ import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 import { DashboardService } from "@/services/dashboardService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
-import { MockCommunicationService } from '@/services/mockCommunicationService';
+import { MockCommunicationService } from "@/services/mockCommunicationService";
 
 let container = new Container();
 container

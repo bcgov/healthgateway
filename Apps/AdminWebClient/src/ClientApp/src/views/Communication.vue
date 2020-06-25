@@ -6,71 +6,104 @@
       :feedback="bannerFeedback"
       class="mt-5"
     ></BannerFeedbackComponent>
-    <v-form ref="form" v-model="valid">
-      <v-row>
-        <v-col md="9">
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model="subject"
-                label="Subject"
-                maxlength="100"
-                :rules="[v => !!v || 'Subject is required']"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-textarea
-                v-model="text"
-                label="Communication Text"
-                maxlength="1000"
-                :rules="[v => !!v || 'Text is required']"
-                required
-              ></v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-datetime-picker
-                v-model="effectiveDateTime"
-                requried
-                label="Effective On"
-              ></v-datetime-picker>
-            </v-col>
-            <v-col>
-              <v-datetime-picker
-                v-model="expiryDateTime"
-                required
-                label="Expires On"
-              ></v-datetime-picker>
-            </v-col>
-          </v-row>
-          <v-row justify="end" no-gutters>
-            <v-btn :disabled="!valid" @click="add()">Add</v-btn>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-form>
-
     <v-row>
-      <v-col md="9">
+      <v-col>
         <v-row>
           <v-col no-gutters>
-            <v-data-table
-              :headers="tableHeaders"
-              :items="communicationList"
-              :custom-sort="customSort"
-              :items-per-page="5"
-            >
-              <template v-slot:item.effectiveDateTime="{ item }">
-                <span>{{ formatDate(item.effectiveDateTime) }}</span>
-              </template>
-              <template v-slot:item.expiryDateTime="{ item }">
-                <span>{{ formatDate(item.expiryDateTime) }}</span>
-              </template>
-            </v-data-table>
+            <template>
+              <v-data-table
+                :headers="headers"
+                :items="communicationList"
+                class="elevation-1"
+              >
+                <template v-slot:item.effectiveDateTime="{ item }">
+                  <span>{{ formatDate(item.effectiveDateTime) }}</span>
+                </template>
+                <template v-slot:item.expiryDateTime="{ item }">
+                  <span>{{ formatDate(item.expiryDateTime) }}</span>
+                </template>
+                <template v-slot:top>
+                  <v-toolbar dark>
+                    <v-toolbar-title>Communications</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-dialog v-model="dialog" max-width="500px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn color="primary" dark v-bind="attrs" v-on="on"
+                          >New Communication</v-btn
+                        >
+                      </template>
+                      <v-card dark>
+                        <v-card-title>
+                          <span class="headline">{{ formTitle }}</span>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-form ref="form" lazy-validation>
+                            <v-row>
+                              <v-col>
+                                <v-datetime-picker
+                                  v-model="editedItem.effectiveDateTime"
+                                  requried
+                                  label="Effective On"
+                                ></v-datetime-picker>
+                              </v-col>
+                              <v-col>
+                                <v-datetime-picker
+                                  v-model="editedItem.expiryDateTime"
+                                  required
+                                  label="Expires On"
+                                ></v-datetime-picker>
+                              </v-col>
+                            </v-row>
+                            <v-row>
+                              <v-col>
+                                <v-text-field
+                                  v-model="editedItem.subject"
+                                  label="Subject"
+                                  maxlength="100"
+                                  :rules="[(v) => !!v || 'Subject is required']"
+                                  validate-on-blur
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
+                            <v-row>
+                              <v-col>
+                                <v-textarea
+                                  v-model="editedItem.text"
+                                  label="Message"
+                                  maxlength="1000"
+                                  :rules="[(v) => !!v || 'Text is required']"
+                                  validate-on-blur
+                                  required
+                                ></v-textarea>
+                              </v-col>
+                            </v-row>
+                          </v-form>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="blue darken-1" text @click="close()"
+                            >Cancel</v-btn
+                          >
+                          <v-btn color="blue darken-1" text @click="save()"
+                            >Save</v-btn
+                          >
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-toolbar>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn @click="editItem(item)">
+                    <font-awesome-icon icon="edit" size="1x">
+                    </font-awesome-icon>
+                  </v-btn>
+                </template>
+                <template v-slot:no-data>
+                  <span>Nothing to show here.</span>
+                </template>
+              </v-data-table>
+            </template>
           </v-col>
         </v-row>
       </v-col>
@@ -79,7 +112,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import LoadingComponent from "@/components/core/Loading.vue";
@@ -88,64 +121,119 @@ import BannerFeedback from "@/models/bannerFeedback";
 import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
+import { faWater } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   components: {
     LoadingComponent,
-    BannerFeedbackComponent
-  }
+    BannerFeedbackComponent,
+  },
 })
 export default class CommunicationView extends Vue {
-  private valid: boolean = false;
-  private subject: string = "";
-  private text: string = "";
-  private effectiveDateTime: Date = new Date();
-  private expiryDateTime: Date = new Date();
   private isLoading: boolean = false;
   private showFeedback: boolean = false;
+  private communicationList: Communication[] = [];
+  private communicationService!: ICommunicationService;
   private bannerFeedback: BannerFeedback = {
     type: ResultType.NONE,
     title: "",
-    message: ""
+    message: "",
+  };
+  private dialog: boolean = false;
+  private editedIndex: number = -1;
+
+  @Watch("dialog")
+  private onDialogChange(val: any) {
+    val || this.close();
+  }
+
+  private get formTitle(): string {
+    return this.editedIndex === -1 ? "New Item" : "Edit Item";
+  }
+
+  private editedItem: Communication = {
+    id: "-1",
+    text: "",
+    subject: "",
+    effectiveDateTime: new Date(),
+    expiryDateTime: new Date(),
   };
 
-  private tableHeaders: any[] = [
+  private defaultItem: Communication = {
+    id: "-1",
+    text: "",
+    subject: "",
+    effectiveDateTime: new Date(),
+    expiryDateTime: new Date(),
+  };
+
+  private headers: any[] = [
     {
       text: "Subject",
       value: "subject",
-      width: "30%",
-      sortable: false
+      align: "start",
+      width: "20%",
+      sortable: false,
     },
     {
       text: "Effective On",
       value: "effectiveDateTime",
-      width: "20%",
-      sortable: true
     },
     {
       text: "Expires On",
       value: "expiryDateTime",
-      width: "20%",
-      sortable: true
     },
     {
       text: "Text",
       value: "text",
-      width: "40%",
-      sortable: false
-    }
+      sortable: false,
+    },
+    {
+      text: "Actions",
+      value: "actions",
+      sortable: false,
+    },
   ];
 
-  private communicationList: Communication[] = [];
-
-  private communicationService!: ICommunicationService;
-
-  mounted() {
+  private mounted() {
     this.communicationService = container.get(
       SERVICE_IDENTIFIER.CommunicationService
     );
-    this.clearForm();
     this.loadCommunicationList();
+  }
+
+  private formatDate(date: Date): string {
+    return new Date(Date.parse(date + "Z")).toLocaleString();
+  }
+
+  private close() {
+    this.dialog = false;
+    this.$nextTick(() => {
+      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedIndex = -1;
+      (this.$refs.form as Vue & {
+        resetValidation: () => any;
+      }).resetValidation();
+    });
+  }
+
+  private save() {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+      if (this.editedIndex > -1) {
+        // Assign (this.editedItem) to item at this.editedIndex
+        // this.communicationService.update(this.communicationList[this.editedIndex], this.editedItem);
+      } else {
+        // Add new item (this.editedItem)
+        // this.communicationService.add(this.editedItem);
+      }
+      this.close();
+    }
+  }
+
+  private editItem(item: Communication) {
+    this.editedIndex = this.communicationList.indexOf(item);
+    this.editedItem = Object.assign({}, item);
+    this.dialog = true;
   }
 
   private sortCommunicationsByDate(isDescending: boolean, columnName: string) {
@@ -192,15 +280,15 @@ export default class CommunicationView extends Vue {
     console.log("retrieving communications...");
     this.communicationService
       .getCommunications()
-      .then(banners => {
+      .then((banners: Communication[]) => {
         this.communicationList = banners;
       })
-      .catch(err => {
+      .catch((err: any) => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Error loading banners"
+          message: "Error loading banners",
         };
       })
       .finally(() => {
@@ -208,43 +296,29 @@ export default class CommunicationView extends Vue {
       });
   }
 
-  private formatDate(date: Date): string {
-    return new Date(Date.parse(date + "Z")).toLocaleString();
-  }
-
-  private clearForm() {
-    this.subject = "";
-    this.text = "";
-    this.effectiveDateTime = new Date();
-    this.expiryDateTime = new Date();
-    this.expiryDateTime.setDate(this.effectiveDateTime.getDate() + 1);
-  }
-
   private add(): void {
     this.isLoading = true;
-
     this.communicationService
       .add({
-        subject: this.subject,
-        text: this.text,
-        effectiveDateTime: this.effectiveDateTime,
-        expiryDateTime: this.expiryDateTime
+        subject: "",
+        text: "",
+        effectiveDateTime: new Date(), // change this
+        expiryDateTime: new Date(), // change this
       })
       .then(() => {
-        this.clearForm();
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Success,
           title: "Success",
-          message: "Communication Added."
+          message: "Communication Added.",
         };
       })
-      .catch(err => {
+      .catch((err: any) => {
         this.showFeedback = true;
         this.bannerFeedback = {
           type: ResultType.Error,
           title: "Error",
-          message: "Add communication failed, please try again"
+          message: "Add communication failed, please try again",
         };
       })
       .finally(() => {

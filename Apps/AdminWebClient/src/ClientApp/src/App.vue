@@ -1,13 +1,10 @@
 <template>
   <v-app id="healthGatewayAdmin">
     <ToolbarComponent />
-
     <MainNavbar title="HealthGateway Admin" />
-
-    <v-content>
+    <v-main>
       <router-view />
-    </v-content>
-
+    </v-main>
     <Footer />
   </v-app>
 </template>
@@ -18,6 +15,10 @@ import Footer from "@/components/core/Footer.vue";
 import ToolbarComponent from "@/components/core/Toolbar.vue";
 
 import { Component, Vue } from "vue-property-decorator";
+import { config, library } from "@fortawesome/fontawesome-svg-core";
+
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+library.add(faEdit);
 
 @Component({
   components: { MainNavbar, Footer, ToolbarComponent }
