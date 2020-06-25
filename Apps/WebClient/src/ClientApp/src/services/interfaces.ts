@@ -123,6 +123,7 @@ export interface IUserCommentService {
 
 export interface ICommunicationService {
   initialize(http: IHttpDelegate): void;
+  add(): Promise<RequestResult<Communication>>;
   getActive(): Promise<RequestResult<Communication>>;
 }
 
