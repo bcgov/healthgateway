@@ -346,14 +346,14 @@ export default class CommunicationView extends Vue {
             });
     }
 
-    private add(): void {
+    private add(comm: Communication): void {
         this.isLoading = true;
         this.communicationService
             .add({
-                subject: "",
-                text: "",
-                effectiveDateTime: new Date(), // change this
-                expiryDateTime: new Date() // change this
+                subject: comm.subject,
+                text: comm.text,
+                effectiveDateTime: comm.effectiveDateTime,
+                expiryDateTime: comm.expiryDateTime
             })
             .then(() => {
                 this.showFeedback = true;
