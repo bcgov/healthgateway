@@ -1,7 +1,7 @@
 ﻿<template>
-    <div class="vld-parent">
-        <loading :active.sync="isLoading" :is-full-page="true"></loading>
-    </div>
+  <div class="vld-parent">
+    <loading :active.sync="isLoading" :is-full-page="true"></loading>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,11 +13,11 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component({
-    components: {
-        Loading,
-    },
+  components: {
+    Loading,
+  },
 })
 export default class LoadingComponent extends Vue {
-    @Prop() isLoading!: boolean;
+  @Prop() isLoading!: boolean;
 }
 </script>

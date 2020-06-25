@@ -6,18 +6,18 @@ import { RootState, StateType, UserState } from "@/models/storeState";
 import User from "@/models/user";
 
 export const state: UserState = {
-    statusMessage: "",
-    user: new User(),
-    error: false,
-    stateType: StateType.NONE,
+  statusMessage: "",
+  user: new User(),
+  error: false,
+  stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
 
 export const user: Module<UserState, RootState> = {
-    namespaced,
-    state,
-    getters,
-    actions,
-    mutations,
+  namespaced,
+  state,
+  getters,
+  actions,
+  mutations,
 };

@@ -1,54 +1,51 @@
 ﻿<style lang="scss" scoped>
 .modal-footer {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 </style>
 
 <template>
-    <b-modal
-        id="generic-message"
-        v-model="isVisible"
-        :title="title"
-        header-bg-variant="primary"
-        header-text-variant="light"
-        footer-class="modal-footer"
-        centered
-    >
-        <b-row>
+  <b-modal
+    id="generic-message"
+    v-model="isVisible"
+    :title="title"
+    header-bg-variant="primary"
+    header-text-variant="light"
+    footer-class="modal-footer"
+    centered
+  >
+    <b-row>
+      <b-col>
+        <form @submit.stop.prevent="handleSubmit">
+          <b-row>
             <b-col>
-                <form @submit.stop.prevent="handleSubmit">
-                    <b-row>
-                        <b-col>
-                            <span>{{ message }}</span>
-                        </b-col>
-                    </b-row>
-                </form>
+              <span>{{ message }}</span>
             </b-col>
-        </b-row>
-        <template v-slot:modal-footer>
-            <b-row>
-                <b-col>
-                    <b-row>
-                        <b-col>
-                            <b-button
-                                class="mr-2"
-                                variant="primary"
-                                @click="handleSubmit($event)"
-                            >
-                                Continue
-                            </b-button>
-                            <b-button
-                                variant="secondary"
-                                @click="handleCancel($event)"
-                            >
-                                Cancel
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-        </template>
-    </b-modal>
+          </b-row>
+        </form>
+      </b-col>
+    </b-row>
+    <template v-slot:modal-footer>
+      <b-row>
+        <b-col>
+          <b-row>
+            <b-col>
+              <b-button
+                class="mr-2"
+                variant="primary"
+                @click="handleSubmit($event)"
+              >
+                Continue
+              </b-button>
+              <b-button variant="secondary" @click="handleCancel($event)">
+                Cancel
+              </b-button>
+            </b-col>
+          </b-row>
+        </b-col>
+      </b-row>
+    </template>
+  </b-modal>
 </template>
 
 <script lang="ts">
@@ -57,57 +54,57 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 
 @Component
 export default class MessageModalComponent extends Vue {
-    @Prop() error!: boolean;
-    @Prop({ default: false }) isLoading!: boolean;
+  @Prop() error!: boolean;
+  @Prop({ default: false }) isLoading!: boolean;
 
-    @Prop({ default: "Info" }) private title!: string;
-    @Prop({ default: "Message" }) private message!: string;
-    private isVisible: boolean = false;
+  @Prop({ default: "Info" }) private title!: string;
+  @Prop({ default: "Message" }) private message!: string;
+  private isVisible: boolean = false;
 
-    public showModal() {
-        this.isVisible = true;
-    }
+  public showModal() {
+    this.isVisible = true;
+  }
 
-    public hideModal() {
-        this.isVisible = false;
-    }
+  public hideModal() {
+    this.isVisible = false;
+  }
 
-    @Emit()
-    private submit() {
-        this.isVisible = false;
-        return;
-    }
+  @Emit()
+  private submit() {
+    this.isVisible = false;
+    return;
+  }
 
-    @Emit()
-    private cancel() {
-        this.hideModal();
-        return;
-    }
+  @Emit()
+  private cancel() {
+    this.hideModal();
+    return;
+  }
 
-    private handleSubmit(bvModalEvt: Event) {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
+  private handleSubmit(bvModalEvt: Event) {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
 
-        // Trigger submit handler
-        this.submit();
+    // Trigger submit handler
+    this.submit();
 
-        // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
-    }
+    // Hide the modal manually
+    this.$nextTick(() => {
+      this.hideModal();
+    });
+  }
 
-    private handleCancel(bvModalEvt: Event) {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
+  private handleCancel(bvModalEvt: Event) {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
 
-        // Trigger cancel handler
-        this.cancel();
+    // Trigger cancel handler
+    this.cancel();
 
-        // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
-    }
+    // Hide the modal manually
+    this.$nextTick(() => {
+      this.hideModal();
+    });
+  }
 }
 </script>
