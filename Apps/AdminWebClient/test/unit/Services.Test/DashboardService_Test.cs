@@ -39,16 +39,14 @@ namespace HealthGateway.Admin.Test.Services
         {
             int expected = 10;
             Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
-            noteDelegateMock.Setup(s => s.GetUsersWithNotesCount(0)).Returns(expected);
+            noteDelegateMock.Setup(s => s.GetUsersWithNotesCount(2)).Returns(expected);
 
-            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
-            configMock.Setup(s => s.GetSection("Admin")).Returns((IConfigurationSection)new AdminConfiguration());
             // Set up service
             IDashboardService service = new DashboardService(
                 noteDelegateMock.Object,
                 null,
                 null,
-                configMock.Object
+                new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build()
             );
 
             int actualResult = service.GetUsersWithNotesCount();
