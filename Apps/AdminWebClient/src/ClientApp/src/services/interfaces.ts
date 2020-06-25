@@ -43,6 +43,7 @@ export interface IDashboardService {
   getUnregisteredInvitedUsersCount(): Promise<number>;
   getLoggedInUsersCount(): Promise<number>;
   getWaitlistedUsersCount(): Promise<number>;
+  getUsersWithNotesCount(): Promise<number>;
 }
 
 export interface ICommunicationService {
