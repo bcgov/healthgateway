@@ -2,70 +2,70 @@
 @import "@/assets/scss/_variables.scss";
 
 @media print {
-  .navbar {
-    display: flex !important;
-  }
+    .navbar {
+        display: flex !important;
+    }
 
-  .no-print,
-  .no-print * {
-    display: none !important;
-  }
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
 }
 
 html {
-  height: 100vh;
+    height: 100vh;
 }
 
 body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 main {
-  padding-bottom: 0px;
-  padding-top: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
 }
 
 #app-root {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 
 .fill-height {
-  margin: 0px;
-  min-height: 100vh;
+    margin: 0px;
+    min-height: 100vh;
 }
 
 .devBanner {
-  z-index: $z_top_layer;
+    z-index: $z_top_layer;
 }
 </style>
 
 <template>
-  <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-    <div v-if="!isProduction" class="devBanner">
-      <div class="text-center bg-warning small">
-        Non-production environment:
-        <b>{{ host }}</b>
-      </div>
+    <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
+        <div v-if="!isProduction" class="devBanner">
+            <div class="text-center bg-warning small">
+                Non-production environment:
+                <b>{{ host }}</b>
+            </div>
+        </div>
+
+        <header>
+            <NavHeader />
+        </header>
+        <b-row class="p-0 m-0">
+            <NavSidebar class="no-print" />
+
+            <main class="col fill-height">
+                <router-view></router-view>
+                <IdleComponent ref="idleModal" />
+            </main>
+        </b-row>
+
+        <footer class="footer no-print">
+            <NavFooter />
+        </footer>
     </div>
-
-    <header>
-      <NavHeader />
-    </header>
-    <b-row class="p-0 m-0">
-      <NavSidebar class="no-print" />
-
-      <main class="col fill-height">
-        <router-view></router-view>
-        <IdleComponent ref="idleModal" />
-      </main>
-    </b-row>
-
-    <footer class="footer no-print">
-      <NavFooter />
-    </footer>
-  </div>
 </template>
 
 <script lang="ts">
@@ -76,24 +76,24 @@ import Process, { EnvironmentType } from "@/constants/process.ts";
 
 // Load Bootstrap general plugins
 import {
-  AlertPlugin,
-  ButtonPlugin,
-  CardPlugin,
-  FormCheckboxPlugin,
-  FormGroupPlugin,
-  FormInputPlugin,
-  FormPlugin,
-  FormRadioPlugin,
-  FormTextareaPlugin,
-  InputGroupPlugin,
-  LayoutPlugin,
-  LinkPlugin,
-  ModalPlugin,
-  NavPlugin,
-  NavbarPlugin,
-  PaginationNavPlugin,
-  SpinnerPlugin,
-  TooltipPlugin,
+    AlertPlugin,
+    ButtonPlugin,
+    CardPlugin,
+    FormCheckboxPlugin,
+    FormGroupPlugin,
+    FormInputPlugin,
+    FormPlugin,
+    FormRadioPlugin,
+    FormTextareaPlugin,
+    InputGroupPlugin,
+    LayoutPlugin,
+    LinkPlugin,
+    ModalPlugin,
+    NavPlugin,
+    NavbarPlugin,
+    PaginationNavPlugin,
+    SpinnerPlugin,
+    TooltipPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -122,44 +122,44 @@ config.autoAddCss = false;
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
 import {
-  faAddressCard,
-  faAngleDoubleLeft,
-  faChartBar,
-  faCheckCircle,
-  faChevronDown,
-  faChevronUp,
-  faCommentAlt,
-  faEdit,
-  faEllipsisV,
-  faExclamationTriangle,
-  faFileAlt,
-  faLock,
-  faPrint,
-  faSpinner,
-  faTimesCircle,
-  faUser,
-  faUserCircle,
-  faUserSecret,
+    faAddressCard,
+    faAngleDoubleLeft,
+    faChartBar,
+    faCheckCircle,
+    faChevronDown,
+    faChevronUp,
+    faCommentAlt,
+    faEdit,
+    faEllipsisV,
+    faExclamationTriangle,
+    faFileAlt,
+    faLock,
+    faPrint,
+    faSpinner,
+    faTimesCircle,
+    faUser,
+    faUserCircle,
+    faUserSecret,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
-  faUser,
-  faUserCircle,
-  faAddressCard,
-  faUserSecret,
-  faEdit,
-  faChevronUp,
-  faChevronDown,
-  faSpinner,
-  faCheckCircle,
-  faTimesCircle,
-  faEllipsisV,
-  faPrint,
-  faAngleDoubleLeft,
-  faFileAlt,
-  faChartBar,
-  faCommentAlt,
-  faLock,
-  faExclamationTriangle
+    faUser,
+    faUserCircle,
+    faAddressCard,
+    faUserSecret,
+    faEdit,
+    faChevronUp,
+    faChevronDown,
+    faSpinner,
+    faCheckCircle,
+    faTimesCircle,
+    faEllipsisV,
+    faPrint,
+    faAngleDoubleLeft,
+    faFileAlt,
+    faChartBar,
+    faCommentAlt,
+    faLock,
+    faExclamationTriangle
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
@@ -168,35 +168,35 @@ import FooterComponent from "@/components/navmenu/navFooter.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
 
 @Component({
-  components: {
-    NavHeader: HeaderComponent,
-    NavFooter: FooterComponent,
-    NavSidebar: SidebarComponent,
-    IdleComponent,
-  },
+    components: {
+        NavHeader: HeaderComponent,
+        NavFooter: FooterComponent,
+        NavSidebar: SidebarComponent,
+        IdleComponent,
+    },
 })
 export default class App extends Vue {
-  @Ref("idleModal") readonly idleModal?: IdleComponent;
-  @Getter("oidcIsAuthenticated", { namespace: "auth" })
-  oidcIsAuthenticated?: boolean;
+    @Ref("idleModal") readonly idleModal?: IdleComponent;
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated?: boolean;
 
-  private readonly host: string = window.location.hostname.toLocaleUpperCase();
-  private readonly isProduction: boolean =
-    Process.NODE_ENV == EnvironmentType.production &&
-    (this.host.startsWith("HEALTHGATEWAY") ||
-      this.host.startsWith("WWW.HEALTHGATEWAY"));
+    private readonly host: string = window.location.hostname.toLocaleUpperCase();
+    private readonly isProduction: boolean =
+        Process.NODE_ENV == EnvironmentType.production &&
+        (this.host.startsWith("HEALTHGATEWAY") ||
+            this.host.startsWith("WWW.HEALTHGATEWAY"));
 
-  constructor() {
-    super();
-    console.log("Node ENV", Process.NODE_ENV);
-    console.log("host", this.host);
-  }
-
-  @Watch("isAppIdle")
-  public onIsAppIdleChanged(idle: boolean) {
-    if (idle && this.oidcIsAuthenticated) {
-      this.idleModal?.show();
+    constructor() {
+        super();
+        console.log("Node ENV", Process.NODE_ENV);
+        console.log("host", this.host);
     }
-  }
+
+    @Watch("isAppIdle")
+    public onIsAppIdleChanged(idle: boolean) {
+        if (idle && this.oidcIsAuthenticated) {
+            this.idleModal?.show();
+        }
+    }
 }
 </script>

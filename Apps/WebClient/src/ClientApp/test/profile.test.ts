@@ -128,9 +128,9 @@ function createWrapper(): Wrapper<ProfileComponent> {
 }*/
 
 describe("Dummy Test", () => {
-  test("has header element with static text", () => {
-    expect(true).toBe(true);
-  });
+    test("has header element with static text", () => {
+        expect(true).toBe(true);
+    });
 });
 
 /*describe("Home view", () => {

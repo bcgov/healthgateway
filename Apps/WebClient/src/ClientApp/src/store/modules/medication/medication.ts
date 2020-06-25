@@ -5,18 +5,18 @@ import { mutations } from "./mutations";
 import { MedicationState, RootState, StateType } from "@/models/storeState";
 
 export const state: MedicationState = {
-  statusMessage: "",
-  medications: new Array(),
-  error: false,
-  stateType: StateType.NONE,
+    statusMessage: "",
+    medications: new Array(),
+    error: false,
+    stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
 
 export const medication: Module<MedicationState, RootState> = {
-  namespaced,
-  state,
-  getters,
-  actions,
-  mutations,
+    namespaced,
+    state,
+    getters,
+    actions,
+    mutations,
 };
