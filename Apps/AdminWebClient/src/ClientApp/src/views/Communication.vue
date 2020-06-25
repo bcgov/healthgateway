@@ -279,8 +279,8 @@ export default class CommunicationView extends Vue {
   private loadCommunicationList() {
     console.log("retrieving communications...");
     this.communicationService
-      .getCommunications()
-      .then((banners: Communication[]) => {
+      .getAll()
+      .then(banners => {
         this.communicationList = banners;
       })
       .catch((err: any) => {
@@ -312,6 +312,8 @@ export default class CommunicationView extends Vue {
           title: "Success",
           message: "Communication Added.",
         };
+
+        this.loadCommunicationList();
       })
       .catch((err: any) => {
         this.showFeedback = true;

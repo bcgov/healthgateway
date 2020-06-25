@@ -47,5 +47,10 @@ namespace HealthGateway.Admin.Models
         /// Gets or sets the windows timezone id.
         /// </summary>
         public string WindowsTimeZoneId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the minimum number of notes to be counted.
+        /// </summary>
+        public int MinimumNotesCount { get; set; } = 2;
     }
 }

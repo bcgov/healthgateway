@@ -20,7 +20,6 @@ import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 import { DashboardService } from "@/services/dashboardService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
-import { MockCommunicationService } from "@/services/mockCommunicationService";
 
 let container = new Container();
 container
@@ -49,7 +48,7 @@ container
   .inSingletonScope();
 container
   .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)
-  .to(MockCommunicationService)
+  .to(RestCommunicationService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)
