@@ -16,7 +16,6 @@
     height: 100%;
     z-index: $z_sidebar;
     position: static;
-
     display: flex;
     flex-direction: column;
 }
@@ -76,6 +75,7 @@
     color: white !important;
     caret-color: white !important;
 }
+
 #sidebar a:hover {
     text-decoration: underline;
 }
@@ -83,7 +83,6 @@
 .overlay {
     display: block;
     opacity: 1;
-
     position: fixed;
     /* full screen */
     width: 100vw;
@@ -134,7 +133,6 @@
 #sidebar .sidebar-footer {
     width: 100%;
     flex-shrink: 0;
-
     position: sticky;
     bottom: 0rem;
     align-self: flex-end;
