@@ -1,4 +1,4 @@
 export default interface UserFeedback {
-    // Gets or sets the comment.
-    comment: string;
+  // Gets or sets the comment.
+  comment: string;
 }

@@ -1,4 +1,4 @@
 export interface TermsOfService {
-    updateDateTime: Date;
-    content: string;
+  updateDateTime: Date;
+  content: string;
 }

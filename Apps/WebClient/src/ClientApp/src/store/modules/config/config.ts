@@ -6,18 +6,18 @@ import { ConfigState, RootState, StateType } from "@/models/storeState";
 import { ExternalConfiguration } from "@/models/configData";
 
 export const state: ConfigState = {
-    statusMessage: "",
-    config: new ExternalConfiguration(),
-    error: false,
-    stateType: StateType.NONE,
+  statusMessage: "",
+  config: new ExternalConfiguration(),
+  error: false,
+  stateType: StateType.NONE,
 };
 
 const namespaced: boolean = true;
 
 export const config: Module<ConfigState, RootState> = {
-    namespaced,
-    state,
-    getters,
-    actions,
-    mutations,
+  namespaced,
+  state,
+  getters,
+  actions,
+  mutations,
 };

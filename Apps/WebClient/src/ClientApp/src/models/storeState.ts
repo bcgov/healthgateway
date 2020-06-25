@@ -6,59 +6,59 @@ import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
 
 export enum StateType {
-    NONE,
-    INITIALIZED,
-    REQUESTED,
-    ERROR,
+  NONE,
+  INITIALIZED,
+  REQUESTED,
+  ERROR,
 }
 
 export interface RootState {
-    version: string;
+  version: string;
 }
 
 export interface AuthState {
-    authentication: AuthenticationData;
-    isAuthenticated: boolean;
-    statusMessage: string;
-    error: any;
-    stateType: StateType;
+  authentication: AuthenticationData;
+  isAuthenticated: boolean;
+  statusMessage: string;
+  error: any;
+  stateType: StateType;
 }
 
 export interface ConfigState {
-    config: ExternalConfiguration;
-    statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+  config: ExternalConfiguration;
+  statusMessage: string;
+  error: boolean;
+  stateType: StateType;
 }
 
 export interface UserState {
-    user: User;
-    statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+  user: User;
+  statusMessage: string;
+  error: boolean;
+  stateType: StateType;
 }
 
 export interface MedicationState {
-    medications: MedicationResult[];
-    statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+  medications: MedicationResult[];
+  statusMessage: string;
+  error: boolean;
+  stateType: StateType;
 }
 
 export interface PharmacyState {
-    pharmacies: Pharmacy[];
-    statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+  pharmacies: Pharmacy[];
+  statusMessage: string;
+  error: boolean;
+  stateType: StateType;
 }
 
 export interface LaboratoryState {
-    laboratoryOrders: LaboratoryOrder[];
-    statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+  laboratoryOrders: LaboratoryOrder[];
+  statusMessage: string;
+  error: boolean;
+  stateType: StateType;
 }
 
 export interface SidebarState {
-    isOpen: boolean;
+  isOpen: boolean;
 }
