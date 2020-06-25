@@ -7,73 +7,76 @@ import { ResultType } from "@/constants/resulttype";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
-  private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
-  private baseUri: string = "";
-  private http!: IHttpDelegate;
-  private isEnabled: boolean = false;
+    private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
+    private baseUri: string = "";
+    private http!: IHttpDelegate;
+    private isEnabled: boolean = false;
 
-  constructor() {}
+    constructor() {}
 
-  public initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
-    this.baseUri = config.serviceEndpoints["Laboratory"];
-    this.http = http;
-    this.isEnabled = config.webClient.modules["Laboratory"];
-  }
+    public initialize(
+        config: ExternalConfiguration,
+        http: IHttpDelegate
+    ): void {
+        this.baseUri = config.serviceEndpoints["Laboratory"];
+        this.http = http;
+        this.isEnabled = config.webClient.modules["Laboratory"];
+    }
 
-  public getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
-    return new Promise((resolve, reject) => {
-      if (!this.isEnabled) {
-        resolve({
-          pageIndex: 0,
-          pageSize: 0,
-          resourcePayload: [],
-          resultMessage: "",
-          resultStatus: ResultType.Success,
-          totalResultCount: 0,
+    public getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: [],
+                    resultMessage: "",
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .getWithCors<RequestResult<LaboratoryOrder[]>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}?hdid=${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    console.log("Fetch error: " + err.toString());
+                    reject(err);
+                });
         });
-        return;
-      }
-      this.http
-        .getWithCors<RequestResult<LaboratoryOrder[]>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}?hdid=${hdid}`
-        )
-        .then((requestResult) => {
-          resolve(requestResult);
-        })
-        .catch((err) => {
-          console.log("Fetch error: " + err.toString());
-          reject(err);
-        });
-    });
-  }
+    }
 
-  public getReportDocument(
-    reportId: string,
-    hdid: string
-  ): Promise<RequestResult<LaboratoryReport>> {
-    return new Promise((resolve, reject) => {
-      if (!this.isEnabled) {
-        resolve({
-          pageIndex: 0,
-          pageSize: 0,
-          resourcePayload: { data: "", encoding: "", mediaType: "" },
-          resultMessage: "",
-          resultStatus: ResultType.Success,
-          totalResultCount: 0,
+    public getReportDocument(
+        reportId: string,
+        hdid: string
+    ): Promise<RequestResult<LaboratoryReport>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: { data: "", encoding: "", mediaType: "" },
+                    resultMessage: "",
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .getWithCors<RequestResult<LaboratoryReport>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    console.log("Fetch error: " + err.toString());
+                    reject(err);
+                });
         });
-        return;
-      }
-      this.http
-        .getWithCors<RequestResult<LaboratoryReport>>(
-          `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
-        )
-        .then((requestResult) => {
-          resolve(requestResult);
-        })
-        .catch((err) => {
-          console.log("Fetch error: " + err.toString());
-          reject(err);
-        });
-    });
-  }
+    }
 }
