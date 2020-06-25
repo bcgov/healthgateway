@@ -1,58 +1,58 @@
 <style lang="scss" scoped>
 .v-list-item {
-  border-radius: 4px;
+    border-radius: 4px;
 }
 </style>
 
 <template>
-  <v-navigation-drawer
-    v-if="isAuthorized"
-    id="app-drawer"
-    v-model="isOpen"
-    app
-    dark
-    mobile-breakpoint="959"
-    width="260"
-  >
-    <v-img
-      :src="image"
-      height="100%"
-      width="100%"
-      gradient="to top right, rgba(25,32,72,.3), rgba(25,32,72,.9)"
+    <v-navigation-drawer
+        v-if="isAuthorized"
+        id="app-drawer"
+        v-model="isOpen"
+        app
+        dark
+        mobile-breakpoint="959"
+        width="260"
     >
-      <v-layout class="fill-height">
-        <v-list width="260">
-          <v-list-item>
-            <v-list-item-avatar color="white">
-              <v-img :src="logo" height="34" contain />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title class="title">
-                HealthGateway
-              </v-list-item-title>
+        <v-img
+            :src="image"
+            height="100%"
+            width="100%"
+            gradient="to top right, rgba(25,32,72,.3), rgba(25,32,72,.9)"
+        >
+            <v-layout class="fill-height">
+                <v-list width="260">
+                    <v-list-item>
+                        <v-list-item-avatar color="white">
+                            <v-img :src="logo" height="34" contain />
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                            <v-list-item-title class="title">
+                                HealthGateway
+                            </v-list-item-title>
 
-              <v-list-item-subtitle>
-                Admin
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-divider />
-          <v-list-item
-            v-for="(item, i) in items"
-            :key="i"
-            :to="item.to"
-            :active-class="color"
-            class="ma-3"
-          >
-            <v-list-item-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-action>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item>
-        </v-list>
-      </v-layout>
-    </v-img>
-  </v-navigation-drawer>
+                            <v-list-item-subtitle>
+                                Admin
+                            </v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item
+                        v-for="(item, i) in items"
+                        :key="i"
+                        :to="item.to"
+                        :active-class="color"
+                        class="ma-3"
+                    >
+                        <v-list-item-action>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-title v-text="item.title" />
+                    </v-list-item>
+                </v-list>
+            </v-layout>
+        </v-img>
+    </v-navigation-drawer>
 </template>
 
 <script lang="ts">
@@ -61,62 +61,62 @@ import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
 @Component
 export default class MainNavbar extends Vue {
-  @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
-    isDrawerOpen
-  }: any) => void;
-  @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
-  @Getter("isAuthorized", { namespace: "auth" })
-  private isAuthorized!: boolean;
+    @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
+        isDrawerOpen
+    }: any) => void;
+    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+    @Getter("isAuthorized", { namespace: "auth" })
+    private isAuthorized!: boolean;
 
-  private isOpen: boolean = true;
-  private drawer: boolean = false;
+    private isOpen: boolean = true;
+    private drawer: boolean = false;
 
-  private color: string = "success";
+    private color: string = "success";
 
-  private logo: string = "favicon.ico";
-  private image: string = "./assets/images/background.jpg";
+    private logo: string = "favicon.ico";
+    private image: string = "./assets/images/background.jpg";
 
-  private items = [
-    {
-      title: "Dashboard",
-      icon: "view_quilt",
-      to: "/"
-    },
-    {
-      title: "JobScheduler",
-      icon: "schedule",
-      to: "/job-scheduler"
-    },
-    {
-      title: "Beta Invites",
-      icon: "account_box",
-      to: "/beta-invites"
-    },
-    {
-      title: "Resend Emails",
-      icon: "email",
-      to: "/admin-email"
-    },
-    {
-      title: "Communications",
-      icon: "email",
-      to: "/communication"
-    },
-    { title: "Feedback Review", icon: "comment", to: "/user-feedback" }
-  ];
+    private items = [
+        {
+            title: "Dashboard",
+            icon: "view_quilt",
+            to: "/"
+        },
+        {
+            title: "JobScheduler",
+            icon: "schedule",
+            to: "/job-scheduler"
+        },
+        {
+            title: "Beta Invites",
+            icon: "account_box",
+            to: "/beta-invites"
+        },
+        {
+            title: "Resend Emails",
+            icon: "email",
+            to: "/admin-email"
+        },
+        {
+            title: "Communications",
+            icon: "email",
+            to: "/communication"
+        },
+        { title: "Feedback Review", icon: "comment", to: "/user-feedback" }
+    ];
 
-  mounted() {
-    this.isOpen = this.isDrawerOpen;
-  }
+    mounted() {
+        this.isOpen = this.isDrawerOpen;
+    }
 
-  @Watch("isOpen")
-  public onDrawerChange(state: boolean) {
-    this.setDrawerState({ isDrawerOpen: state });
-  }
+    @Watch("isOpen")
+    public onDrawerChange(state: boolean) {
+        this.setDrawerState({ isDrawerOpen: state });
+    }
 
-  @Watch("isDrawerOpen")
-  public onStateDrawerChange(state: boolean) {
-    this.isOpen = state;
-  }
+    @Watch("isDrawerOpen")
+    public onStateDrawerChange(state: boolean) {
+        this.isOpen = state;
+    }
 }
 </script>

@@ -67,6 +67,7 @@
                                                                         editedItem.effectiveDateTime
                                                                     "
                                                                     requried
+                                                                    :date-picker-props="{}"
                                                                     label="Effective On"
                                                                 ></v-datetime-picker>
                                                             </v-col>
@@ -169,11 +170,13 @@ import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";
+import { extend, ValidationProvider } from "vee-validate";
 
 @Component({
     components: {
         LoadingComponent,
-        BannerFeedbackComponent
+        BannerFeedbackComponent,
+        ValidationProvider
     }
 })
 export default class CommunicationView extends Vue {

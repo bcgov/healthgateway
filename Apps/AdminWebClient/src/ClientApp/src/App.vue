@@ -1,12 +1,12 @@
 <template>
-  <v-app id="healthGatewayAdmin">
-    <ToolbarComponent />
-    <MainNavbar title="HealthGateway Admin" />
-    <v-main>
-      <router-view />
-    </v-main>
-    <Footer />
-  </v-app>
+    <v-app id="healthGatewayAdmin">
+        <ToolbarComponent />
+        <MainNavbar title="HealthGateway Admin" />
+        <v-main>
+            <router-view />
+        </v-main>
+        <Footer />
+    </v-app>
 </template>
 
 <script lang="ts">
@@ -21,7 +21,7 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 library.add(faEdit);
 
 @Component({
-  components: { MainNavbar, Footer, ToolbarComponent }
+    components: { MainNavbar, Footer, ToolbarComponent }
 })
 export default class App extends Vue {}
 </script>
