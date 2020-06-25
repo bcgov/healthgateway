@@ -423,7 +423,7 @@ export default class TimelineView extends Vue {
           this.sortEntries();
           this.applyTimelineFilter();
         } else if (results.resultStatus == ResultType.Protected) {
-          if (this.covidModal.isVisible) {
+          if (!this.covidModal.show) {
             this.protectiveWordModal.showModal();
           }
           this.protectiveWordAttempts++;
