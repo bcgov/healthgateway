@@ -278,7 +278,9 @@ export default class CommunicationView extends Vue {
 
     private editItem(item: Communication) {
         this.editedIndex = this.communicationList.indexOf(item);
-        this.editedItem = Object.assign({}, item);
+        this.editedItem = item;
+        this.editedItem.effectiveDateTime = new Date(item.effectiveDateTime);
+        this.editedItem.expiryDateTime = new Date(item.expiryDateTime);
         this.dialog = true;
     }
 
