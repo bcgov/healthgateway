@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ProjectGuid>{45D9118F-76B1-4D72-BE8C-B589F5AE0CC8}</ProjectGuid>
     <RootNamespace>HealthGateway.Database</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>

@@ -191,5 +191,15 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished deleting Note in DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public int GetUsersWithNotesCount(int minNotes)
+        {
+            return this.dbContext.Note
+                .Select(n => n.HdId)
+                    .GroupBy(key => key)
+                    .Where(w => w.Count() >= minNotes)
+                    .Count();
+        }
     }
 }

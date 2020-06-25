@@ -32,7 +32,7 @@ export const actions: ActionTree<AuthState, RootState> = {
         });
     });
   },
-  login(context, params:{ redirectPath:string }): Promise<void> {
+  login(context, params: { redirectPath: string }): Promise<void> {
     const authService: IAuthenticationService = container.get<
       IAuthenticationService
     >(SERVICE_IDENTIFIER.AuthenticationService);

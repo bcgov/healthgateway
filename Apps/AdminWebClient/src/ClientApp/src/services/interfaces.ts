@@ -43,11 +43,13 @@ export interface IDashboardService {
   getUnregisteredInvitedUsersCount(): Promise<number>;
   getLoggedInUsersCount(): Promise<number>;
   getWaitlistedUsersCount(): Promise<number>;
+  getUsersWithNotesCount(): Promise<number>;
 }
 
 export interface ICommunicationService {
   initialize(http: IHttpDelegate): void;
   add(communication: Communication): Promise<void>;
+  getCommunications(): Promise<Communication[]>;
 }
 
 export interface IHttpDelegate {

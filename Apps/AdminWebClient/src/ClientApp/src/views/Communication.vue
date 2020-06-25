@@ -53,6 +53,28 @@
         </v-col>
       </v-row>
     </v-form>
+
+    <v-row>
+      <v-col md="9">
+        <v-row>
+          <v-col no-gutters>
+            <v-data-table
+              :headers="tableHeaders"
+              :items="communicationList"
+              :custom-sort="customSort"
+              :items-per-page="5"
+            >
+              <template v-slot:item.effectiveDateTime="{ item }">
+                <span>{{ formatDate(item.effectiveDateTime) }}</span>
+              </template>
+              <template v-slot:item.expiryDateTime="{ item }">
+                <span>{{ formatDate(item.expiryDateTime) }}</span>
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -63,6 +85,7 @@ import container from "@/plugins/inversify.config";
 import LoadingComponent from "@/components/core/Loading.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
+import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 
@@ -86,6 +109,35 @@ export default class CommunicationView extends Vue {
     message: ""
   };
 
+  private tableHeaders: any[] = [
+    {
+      text: "Subject",
+      value: "subject",
+      width: "30%",
+      sortable: false
+    },
+    {
+      text: "Effective On",
+      value: "effectiveDateTime",
+      width: "20%",
+      sortable: true
+    },
+    {
+      text: "Expires On",
+      value: "expiryDateTime",
+      width: "20%",
+      sortable: true
+    },
+    {
+      text: "Text",
+      value: "text",
+      width: "40%",
+      sortable: false
+    }
+  ];
+
+  private communicationList: Communication[] = [];
+
   private communicationService!: ICommunicationService;
 
   mounted() {
@@ -93,6 +145,71 @@ export default class CommunicationView extends Vue {
       SERVICE_IDENTIFIER.CommunicationService
     );
     this.clearForm();
+    this.loadCommunicationList();
+  }
+
+  private sortCommunicationsByDate(isDescending: boolean, columnName: string) {
+    this.communicationList.sort((a, b) => {
+      let first!: Date;
+      let second!: Date;
+      if (columnName === "effectiveDateTime") {
+        first = a.effectiveDateTime;
+        second = b.effectiveDateTime;
+      } else if (columnName === "expiryDateTime") {
+        first = a.expiryDateTime;
+        second = b.expiryDateTime;
+      } else {
+        return 0;
+      }
+
+      if (first > second) {
+        return isDescending ? -1 : 1;
+      } else if (first < second) {
+        return isDescending ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  private customSort(
+    items: Communication[],
+    index: any[],
+    isDescending: boolean[]
+  ) {
+    // items: 'Communication' items
+    // index: Enabled sort headers value. (black arrow status).
+    // isDescending: Whether enabled sort headers is desc
+    if (index === undefined || index.length === 0) {
+      index = ["effectiveDateTime"];
+      isDescending = [true];
+    }
+    this.sortCommunicationsByDate(isDescending[0], index[0]);
+
+    return this.communicationList;
+  }
+
+  private loadCommunicationList() {
+    console.log("retrieving communications...");
+    this.communicationService
+      .getCommunications()
+      .then(banners => {
+        this.communicationList = banners;
+      })
+      .catch(err => {
+        this.showFeedback = true;
+        this.bannerFeedback = {
+          type: ResultType.Error,
+          title: "Error",
+          message: "Error loading banners"
+        };
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  }
+
+  private formatDate(date: Date): string {
+    return new Date(Date.parse(date + "Z")).toLocaleString();
   }
 
   private clearForm() {
