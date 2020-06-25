@@ -49,7 +49,7 @@ export interface IDashboardService {
 export interface ICommunicationService {
   initialize(http: IHttpDelegate): void;
   add(communication: Communication): Promise<void>;
-  getCommunications(): Promise<Communication[]>;
+  getAll(): Promise<Communication[]>;
 }
 
 export interface IHttpDelegate {
