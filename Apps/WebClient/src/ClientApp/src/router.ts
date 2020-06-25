@@ -7,33 +7,35 @@ import { SnowplowWindow } from "@/plugins/extensions";
 declare let window: SnowplowWindow;
 
 const ProfileView = () =>
-  import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
+    import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
-  import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
+    import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
 const NotFoundView = () =>
-  import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
+    import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
 const LoginView = () =>
-  import(/* webpackChunkName: "login" */ "@/views/login.vue");
+    import(/* webpackChunkName: "login" */ "@/views/login.vue");
 const LogoutView = () =>
-  import(/* webpackChunkName: "logout" */ "@/views/logout.vue");
+    import(/* webpackChunkName: "logout" */ "@/views/logout.vue");
 const UnauthorizedView = () =>
-  import(
-    /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
-  );
+    import(
+        /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
+    );
 const LoginCallbackView = () =>
-  import(/* webpackChunkName: "loginCallback" */ "@/views/loginCallback.vue");
+    import(/* webpackChunkName: "loginCallback" */ "@/views/loginCallback.vue");
 const RegistrationView = () =>
-  import(/* webpackChunkName: "registration" */ "@/views/registration.vue");
+    import(/* webpackChunkName: "registration" */ "@/views/registration.vue");
 const RegistrationInfoView = () =>
-  import(
-    /* webpackChunkName: "registrationInfo" */ "@/views/registrationInfo.vue"
-  );
+    import(
+        /* webpackChunkName: "registrationInfo" */ "@/views/registrationInfo.vue"
+    );
 const TimelineView = () =>
-  import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
+    import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
 const ValidateEmailView = () =>
-  import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
+    import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
 const TermsOfServiceView = () =>
-  import(/* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue");
+    import(
+        /* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue"
+    );
 
 Vue.use(VueRouter);
 
@@ -41,137 +43,142 @@ const REGISTRATION_PATH = "/registration";
 const REGISTRATION_INFO_PATH = "/registrationInfo";
 
 const routes = [
-  {
-    path: "/",
-    component: LandingView,
-    meta: { requiresAuth: false },
-  },
-  {
-    path: REGISTRATION_INFO_PATH,
-    component: RegistrationInfoView,
-    props: (route: Route) => ({
-      inviteKey: route.query.inviteKey,
-      email: route.query.email,
-    }),
-    meta: { requiresAuth: false },
-  },
-  {
-    path: REGISTRATION_PATH,
-    component: RegistrationView,
-    props: (route: Route) => ({
-      inviteKey: route.query.inviteKey,
-      inviteEmail: route.query.email,
-    }),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/validateEmail/:inviteKey",
-    component: ValidateEmailView,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/profile",
-    component: ProfileView,
-    meta: { requiresRegistration: true, roles: ["user"] },
-  },
-  {
-    path: "/timeline",
-    component: TimelineView,
-    meta: { requiresRegistration: true, roles: ["user"] },
-  },
-  {
-    path: "/termsOfService",
-    component: TermsOfServiceView,
-    meta: { requiresAuth: true, roles: ["user"] },
-  },
-  {
-    path: "/login",
-    component: LoginView,
-    props: (route: Route) => ({
-      isRetry: route.query.isRetry,
-    }),
-    meta: { requiresAuth: false, roles: ["user"] },
-  },
-  {
-    path: "/loginCallback",
-    component: LoginCallbackView,
-    meta: { requiresAuth: false, roles: ["user"], routeIsOidcCallback: true },
-  },
-  {
-    path: "/logout",
-    component: LogoutView,
-    meta: { requiresAuth: false },
-  },
-  {
-    path: "/unauthorized",
-    component: UnauthorizedView,
-    meta: { requiresAuth: false },
-  }, // Unauthorized
-  { path: "/*", component: NotFoundView }, // Not found; Will catch all other paths not covered previously
+    {
+        path: "/",
+        component: LandingView,
+        meta: { requiresAuth: false },
+    },
+    {
+        path: REGISTRATION_INFO_PATH,
+        component: RegistrationInfoView,
+        props: (route: Route) => ({
+            inviteKey: route.query.inviteKey,
+            email: route.query.email,
+        }),
+        meta: { requiresAuth: false },
+    },
+    {
+        path: REGISTRATION_PATH,
+        component: RegistrationView,
+        props: (route: Route) => ({
+            inviteKey: route.query.inviteKey,
+            inviteEmail: route.query.email,
+        }),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: "/validateEmail/:inviteKey",
+        component: ValidateEmailView,
+        props: true,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: "/profile",
+        component: ProfileView,
+        meta: { requiresRegistration: true, roles: ["user"] },
+    },
+    {
+        path: "/timeline",
+        component: TimelineView,
+        meta: { requiresRegistration: true, roles: ["user"] },
+    },
+    {
+        path: "/termsOfService",
+        component: TermsOfServiceView,
+        meta: { requiresAuth: true, roles: ["user"] },
+    },
+    {
+        path: "/login",
+        component: LoginView,
+        props: (route: Route) => ({
+            isRetry: route.query.isRetry,
+        }),
+        meta: { requiresAuth: false, roles: ["user"] },
+    },
+    {
+        path: "/loginCallback",
+        component: LoginCallbackView,
+        meta: {
+            requiresAuth: false,
+            roles: ["user"],
+            routeIsOidcCallback: true,
+        },
+    },
+    {
+        path: "/logout",
+        component: LogoutView,
+        meta: { requiresAuth: false },
+    },
+    {
+        path: "/unauthorized",
+        component: UnauthorizedView,
+        meta: { requiresAuth: false },
+    }, // Unauthorized
+    { path: "/*", component: NotFoundView }, // Not found; Will catch all other paths not covered previously
 ];
 
 const router = new VueRouter({
-  mode: "history",
-  routes,
+    mode: "history",
+    routes,
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(from.fullPath, to.fullPath);
-  if (to.meta.requiresAuth || to.meta.requiresRegistration) {
-    store.dispatch("auth/oidcCheckAccess", to).then((isAuthorized) => {
-      if (!isAuthorized) {
-        next({ path: "/login", query: { redirect: to.fullPath } });
-      } else {
-        handleUserIsAuthorized(to, from, next);
-      }
-    });
-  } else {
-    const userIsAuthenticated: boolean =
-      store.getters["auth/oidcIsAuthenticated"];
-    const userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-
-    // If the user is authenticated but not registered, the registration must be completed
-    const isRegistrationPath =
-      to.path.startsWith(REGISTRATION_PATH) ||
-      to.path.startsWith(REGISTRATION_INFO_PATH);
-    if (
-      userIsAuthenticated &&
-      !userIsRegistered &&
-      !to.meta.routeIsOidcCallback &&
-      !to.path.startsWith("/logout") &&
-      !isRegistrationPath
-    ) {
-      next({ path: REGISTRATION_PATH });
+    console.log(from.fullPath, to.fullPath);
+    if (to.meta.requiresAuth || to.meta.requiresRegistration) {
+        store.dispatch("auth/oidcCheckAccess", to).then((isAuthorized) => {
+            if (!isAuthorized) {
+                next({ path: "/login", query: { redirect: to.fullPath } });
+            } else {
+                handleUserIsAuthorized(to, from, next);
+            }
+        });
     } else {
-      next();
+        const userIsAuthenticated: boolean =
+            store.getters["auth/oidcIsAuthenticated"];
+        const userIsRegistered: boolean =
+            store.getters["user/userIsRegistered"];
+
+        // If the user is authenticated but not registered, the registration must be completed
+        const isRegistrationPath =
+            to.path.startsWith(REGISTRATION_PATH) ||
+            to.path.startsWith(REGISTRATION_INFO_PATH);
+        if (
+            userIsAuthenticated &&
+            !userIsRegistered &&
+            !to.meta.routeIsOidcCallback &&
+            !to.path.startsWith("/logout") &&
+            !isRegistrationPath
+        ) {
+            next({ path: REGISTRATION_PATH });
+        } else {
+            next();
+        }
     }
-  }
 });
 
 router.afterEach((to, from) => {
-  window.snowplow("trackPageView");
+    window.snowplow("trackPageView");
 });
 
 function handleUserIsAuthorized(to: Route, from: Route, next: any) {
-  const userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-  const userIsActive: boolean = store.getters["user/userIsActive"];
+    const userIsRegistered: boolean = store.getters["user/userIsRegistered"];
+    const userIsActive: boolean = store.getters["user/userIsActive"];
 
-  // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
-  if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
-    next({ path: "/timeline", replace: true });
-  } else if (
-    userIsRegistered &&
-    !userIsActive &&
-    !to.path.startsWith("/termsOfService") &&
-    !to.path.startsWith("/profile")
-  ) {
-    next({ path: "/profile" });
-  } else if (to.meta.requiresRegistration && !userIsRegistered) {
-    next({ path: REGISTRATION_PATH });
-  } else {
-    next();
-  }
+    // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
+    if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
+        next({ path: "/timeline", replace: true });
+    } else if (
+        userIsRegistered &&
+        !userIsActive &&
+        !to.path.startsWith("/termsOfService") &&
+        !to.path.startsWith("/profile")
+    ) {
+        next({ path: "/profile" });
+    } else if (to.meta.requiresRegistration && !userIsRegistered) {
+        next({ path: REGISTRATION_PATH });
+    } else {
+        next();
+    }
 }
 
 export default router;
