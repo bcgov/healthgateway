@@ -6,22 +6,22 @@ import Vuex from "vuex";
 import store from "@/store/store";
 
 describe("NavBar Header Component", () => {
-  const localVue = createLocalVue();
-  localVue.use(VueRouter);
-  localVue.use(boostrapVue);
-  localVue.use(Vuex);
-  const router = new VueRouter();
+    const localVue = createLocalVue();
+    localVue.use(VueRouter);
+    localVue.use(boostrapVue);
+    localVue.use(Vuex);
+    const router = new VueRouter();
 
-  const wrapper = shallowMount(HeaderComponent, {
-    localVue,
-    store,
-    router,
-    stubs: {
-      "font-awesome-icon": true,
-    },
-  });
+    const wrapper = shallowMount(HeaderComponent, {
+        localVue,
+        store,
+        router,
+        stubs: {
+            "font-awesome-icon": true,
+        },
+    });
 
-  test("is a Vue instance", () => {
-    expect(wrapper.isVueInstance()).toBeTruthy();
-  });
+    test("is a Vue instance", () => {
+        expect(wrapper.isVueInstance()).toBeTruthy();
+    });
 });
