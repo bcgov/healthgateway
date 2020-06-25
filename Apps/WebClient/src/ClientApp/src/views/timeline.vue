@@ -244,7 +244,8 @@ export default class TimelineView extends Vue {
   getLaboratoryOrders!: (params: {
     hdid: string;
   }) => Promise<RequestResult<LaboratoryOrder[]>>;
-  @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
+  @Getter("webClient", { namespace: "config" })
+  config!: WebClientConfiguration;
 
   private filterText: string = "";
   private timelineEntries: TimelineEntry[] = [];

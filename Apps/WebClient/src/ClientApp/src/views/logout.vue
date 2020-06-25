@@ -29,7 +29,8 @@ export default class LogoutView extends Vue {
   @Action("signOutOidc", { namespace }) logout!: () => void;
 
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
-  @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
+  @Getter("webClient", { namespace: "config" })
+  config!: WebClientConfiguration;
 
   private mounted() {
     if (this.oidcIsAuthenticated) {

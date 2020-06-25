@@ -12,7 +12,14 @@ describe("Auth mutations", () => {
       refresh_token: "refresh_token",
       token_type: "",
       scope: "test_scope_a test_scope_b",
-      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
+      profile: {
+        name: "User Name",
+        iss: "",
+        sub: "",
+        aud: "",
+        exp: 0,
+        iat: 0,
+      },
       expires_at: 0,
       state: undefined,
     };
@@ -38,7 +45,14 @@ describe("Auth mutations", () => {
       refresh_token: "refresh_token",
       token_type: "",
       scope: "test_scope",
-      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
+      profile: {
+        name: "User Name",
+        iss: "",
+        sub: "",
+        aud: "",
+        exp: 0,
+        iat: 0,
+      },
       expires_at: 0,
       state: undefined,
     };
@@ -63,7 +77,14 @@ describe("Auth mutations", () => {
       refresh_token: "refresh_token",
       token_type: "",
       scope: "test_scope",
-      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
+      profile: {
+        name: "User Name",
+        iss: "",
+        sub: "",
+        aud: "",
+        exp: 0,
+        iat: 0,
+      },
       expires_at: 0,
       state: undefined,
     };

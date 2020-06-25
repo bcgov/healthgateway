@@ -98,7 +98,8 @@ export default class LoginView extends Vue {
   }) => Promise<void>;
 
   @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
-  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
+  @Getter("userIsRegistered", { namespace: "user" })
+  userIsRegistered!: boolean;
   @Getter("identityProviders", { namespace: "config" })
   identityProviders!: IdentityProviderConfiguration[];
 

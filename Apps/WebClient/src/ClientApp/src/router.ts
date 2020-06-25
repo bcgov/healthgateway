@@ -96,7 +96,11 @@ const routes = [
   {
     path: "/loginCallback",
     component: LoginCallbackView,
-    meta: { requiresAuth: false, roles: ["user"], routeIsOidcCallback: true },
+    meta: {
+      requiresAuth: false,
+      roles: ["user"],
+      routeIsOidcCallback: true,
+    },
   },
   {
     path: "/logout",

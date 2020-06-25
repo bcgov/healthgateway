@@ -21,7 +21,8 @@ export default class LoginCallbackView extends Vue {
   @Action("checkRegistration", { namespace: "user" })
   checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 
-  @Getter("userIsRegistered", { namespace: "user" }) userIsRegistered!: boolean;
+  @Getter("userIsRegistered", { namespace: "user" })
+  userIsRegistered!: boolean;
   @Getter("user", { namespace: "user" }) user!: User;
 
   private created() {
@@ -46,7 +47,10 @@ export default class LoginCallbackView extends Vue {
         // Login failed redirect it back to the login page.
         console.error("LoginCallback Error:", err);
         this.clearStorage();
-        this.$router.push({ path: "/login", query: { isRetry: "true" } });
+        this.$router.push({
+          path: "/login",
+          query: { isRetry: "true" },
+        });
       });
   }
 }

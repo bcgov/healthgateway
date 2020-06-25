@@ -127,9 +127,13 @@ $radius: 15px;
                     {{ entry.orderingProviders }}
                   </div>
                   <div>
-                    <strong>Reporting Lab:</strong> {{ entry.reportingLab }}
+                    <strong>Reporting Lab:</strong>
+                    {{ entry.reportingLab }}
                   </div>
-                  <div><strong>Location:</strong> {{ entry.location }}</div>
+                  <div>
+                    <strong>Location:</strong>
+                    {{ entry.location }}
+                  </div>
                 </div>
 
                 <div class="detailSection">
@@ -139,12 +143,17 @@ $radius: 15px;
                     :key="result.id"
                     class="border p-1"
                   >
-                    <div><strong>Test Type:</strong> {{ result.testType }}</div>
                     <div>
-                      <strong>Out Of Range:</strong> {{ result.outOfRange }}
+                      <strong>Test Type:</strong>
+                      {{ result.testType }}
                     </div>
                     <div>
-                      <strong>Test Status:</strong> {{ result.testStatus }}
+                      <strong>Out Of Range:</strong>
+                      {{ result.outOfRange }}
+                    </div>
+                    <div>
+                      <strong>Test Status:</strong>
+                      {{ result.testStatus }}
                     </div>
                     <div class="my-2">
                       <strong>Result Description:</strong>

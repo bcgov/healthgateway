@@ -29,7 +29,9 @@ export class RestAuthenticationService implements IAuthenticationService {
   ): void {
     const oidcConfig = {
       userStore: new WebStorageStateStore({ store: this.cookieStorage }),
-      stateStore: new WebStorageStateStore({ store: window.localStorage }),
+      stateStore: new WebStorageStateStore({
+        store: window.localStorage,
+      }),
       authority: config.authority,
       client_id: config.clientId,
       redirect_uri: config.callbacks["Logon"],

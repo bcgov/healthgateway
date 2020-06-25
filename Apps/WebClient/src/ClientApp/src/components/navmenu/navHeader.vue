@@ -62,7 +62,8 @@ nav {
         class="nav-link"
         to="/logout"
       >
-        <font-awesome-icon icon="sign-out-alt"></font-awesome-icon> Logout
+        <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
+        Logout
       </router-link>
       <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
         <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login

@@ -21,7 +21,9 @@
       <b-col>
         <b-alert :show="hasErrors" dismissible variant="danger">
           <h4>Error</h4>
-          <p>An unexpected error occured while processing the request:</p>
+          <p>
+            An unexpected error occured while processing the request:
+          </p>
           <span>{{ errorMessage }}</span>
         </b-alert>
       </b-col>
