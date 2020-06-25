@@ -49,7 +49,7 @@ container
   .inSingletonScope();
 container
   .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)
-  .to(MockCommunicationService)
+    .to(RestCommunicationService)
   .inSingletonScope();
 container
   .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

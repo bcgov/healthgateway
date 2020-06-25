@@ -64,7 +64,7 @@ export class MockCommunicationService implements ICommunicationService {
     }
   ];
 
-  getCommunications(): Promise<Communication[]> {
+  getAll(): Promise<Communication[]> {
     return new Promise(resolve => {
       resolve(this.mockComms);
     });

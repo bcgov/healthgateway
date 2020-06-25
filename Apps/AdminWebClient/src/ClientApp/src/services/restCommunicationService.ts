@@ -38,7 +38,7 @@ export class RestCommunicationService implements ICommunicationService {
     });
   }
 
-  public getCommunications(): Promise<Communication[]> {
+    public getAll(): Promise<Communication[]> {
     return new Promise((resolve, reject) => {
       this.http
         .get<RequestResult<Communication[]>>(`${this.BASE_URI}`)
