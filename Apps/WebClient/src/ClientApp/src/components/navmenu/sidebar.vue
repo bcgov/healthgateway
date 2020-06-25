@@ -142,7 +142,7 @@
 </style>
 
 <template>
-  <div v-show="oidcIsAuthenticated" class="wrapper">
+  <div v-show="oidcIsAuthenticated && userIsRegistered" class="wrapper">
     <!-- Sidebar -->
     <nav id="sidebar" :class="{ collapsed: !isOpen }">
       <b-row class="row-container m-0 p-0">
@@ -326,6 +326,7 @@ import { faStream } from "@fortawesome/free-solid-svg-icons";
 library.add(faStream);
 
 const auth: string = "auth";
+const user: string = "user";
 const sidebar: string = "sidebar";
 
 @Component({
@@ -340,6 +341,10 @@ export default class SidebarComponent extends Vue {
     namespace: auth,
   })
   oidcIsAuthenticated!: boolean;
+  @Getter("userIsRegistered", {
+    namespace: user,
+  })
+  userIsRegistered!: boolean;
   @Getter("webClient", { namespace: "config" }) config!: WebClientConfiguration;
 
   private authenticationService!: IAuthenticationService;
