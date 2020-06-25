@@ -67,7 +67,6 @@
                                                                         editedItem.effectiveDateTime
                                                                     "
                                                                     requried
-                                                                    :date-picker-props="{}"
                                                                     label="Effective On"
                                                                 ></v-datetime-picker>
                                                             </v-col>
