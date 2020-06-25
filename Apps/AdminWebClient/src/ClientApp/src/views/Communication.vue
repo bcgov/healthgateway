@@ -270,8 +270,7 @@ export default class CommunicationView extends Vue {
                 // Assign (this.editedItem) to item at this.editedIndex
                 // this.communicationService.update(this.communicationList[this.editedIndex], this.editedItem);
             } else {
-                // Add new item (this.editedItem)
-                this.communicationService.add(this.editedItem);
+                this.add(this.editedItem);
             }
             this.close();
         }
@@ -330,7 +329,7 @@ export default class CommunicationView extends Vue {
         console.log("retrieving communications...");
         this.communicationService
             .getAll()
-            .then(banners => {
+            .then((banners: Communication[]) => {
                 this.communicationList = banners;
             })
             .catch((err: any) => {

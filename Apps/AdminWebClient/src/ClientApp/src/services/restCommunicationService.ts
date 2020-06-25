@@ -26,7 +26,6 @@ export class RestCommunicationService implements ICommunicationService {
                 )
                 .then(requestResult => {
                     if (requestResult.resultStatus == ResultType.Success) {
-                        this.getAll();
                         return resolve();
                     } else {
                         return reject(requestResult.resultMessage);
