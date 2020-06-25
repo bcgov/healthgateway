@@ -12,18 +12,18 @@ import { sidebar } from "./modules/sidebar/sidebar";
 Vue.use(Vuex);
 
 const storeOptions: StoreOptions<RootState> = {
-  state: {
-    version: "1.0.0",
-  },
-  modules: {
-    auth,
-    config,
-    user,
-    medication,
-    pharmacy,
-    laboratory,
-    sidebar,
-  },
+    state: {
+        version: "1.0.0",
+    },
+    modules: {
+        auth,
+        config,
+        user,
+        medication,
+        pharmacy,
+        laboratory,
+        sidebar,
+    },
 };
 
 export default new Vuex.Store<RootState>(storeOptions);
