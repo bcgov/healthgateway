@@ -1,15 +1,15 @@
 <template>
-  <v-app id="healthGatewayAdmin">
-    <ToolbarComponent />
+    <v-app id="healthGatewayAdmin">
+        <ToolbarComponent />
 
-    <MainNavbar title="HealthGateway Admin" />
+        <MainNavbar title="HealthGateway Admin" />
 
-    <v-content>
-      <router-view />
-    </v-content>
+        <v-content>
+            <router-view />
+        </v-content>
 
-    <Footer />
-  </v-app>
+        <Footer />
+    </v-app>
 </template>
 
 <script lang="ts">
@@ -20,7 +20,7 @@ import ToolbarComponent from "@/components/core/Toolbar.vue";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { MainNavbar, Footer, ToolbarComponent }
+    components: { MainNavbar, Footer, ToolbarComponent }
 })
 export default class App extends Vue {}
 </script>
