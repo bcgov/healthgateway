@@ -26,12 +26,6 @@ steps:
     command: 'install'
     workingDir: '$(App.Home)/src/ClientApp'
 
-- script: |
-   set -e
-   dotnet tool install -g dotnet-reportgenerator-globaltool
-   reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-  displayName: Create Code Coverage Report
-
 - task: DotNetCoreCLI@2
   displayName: Run dotnet Tests
   inputs:
@@ -39,6 +33,12 @@ steps:
     projects: '$(App.Home)/test/unit/WebClientTests.csproj'
     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     testRunTitle: 'WebClient'
+
+- script: |
+    set -e
+    dotnet tool install -g dotnet-reportgenerator-globaltool
+    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+  displayName: Create Code Coverage Report
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish Code Coverage'
