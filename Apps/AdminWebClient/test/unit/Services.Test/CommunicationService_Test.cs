@@ -110,5 +110,107 @@ namespace HealthGateway.Admin.Test.Services
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(refCommsList));
         }
+
+        [Fact]
+        public void ShouldUpdateCommunication()
+        {
+            // Sample communication to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 07)
+            };
+
+            RequestResult<Communication> actualResult = UpdateCommunication(comm, DBStatusCode.Updated);
+
+            // Check result
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
+        }
+
+        [Fact]
+        public void ShouldUpdateCommunicationWithDBError()
+        {
+            // Sample communication to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 07)
+            };
+
+            RequestResult<Communication> actualResult = UpdateCommunication(comm, DBStatusCode.Error);
+
+            // Check result
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
+        }
+
+        [Fact]
+        public void ShouldEffectiveDateBeforeExpiryDateWhenUpdateCommunication()
+        {
+            // Sample communication to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 03) // Effective Date is after Expiry Date.
+            };
+
+            RequestResult<Communication> actualResult = UpdateCommunication(comm, DBStatusCode.Updated);
+
+            // Check result
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal("Effective Date should be before Expiry Date.", actualResult.ResultMessage);
+        }
+
+        private RequestResult<Communication>  AddCommunication(Communication comm)
+        {
+            // Set up delegate
+            DBResult<Communication> insertResult = new DBResult<Communication>
+            {
+                Payload = comm,
+                Status = DBStatusCode.Created
+            };
+
+            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
+            communicationDelegateMock.Setup(s => s.Add(It.Is<Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
+
+            // Set up service
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                communicationDelegateMock.Object
+            );
+
+            return service.Add(comm);
+        }
+
+        private RequestResult<Communication> UpdateCommunication(Communication comm, DBStatusCode dbStatusCode)
+        {
+            // Set up delegate
+            DBResult<Communication> insertResult = new DBResult<Communication>
+            {
+                Payload = comm,
+                Status = dbStatusCode
+            };
+
+            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
+            communicationDelegateMock.Setup(s => s.Update(It.Is<Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
+
+            // Set up service
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                communicationDelegateMock.Object
+            );
+
+            return service.Update(comm);
+        }
     }
 }

@@ -112,6 +112,40 @@ namespace HealthGateway.Admin.Test.Services
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
         }
+
+
+        [Fact]
+        public void ShouldUpdateCommunication()
+        {
+            // Sample communications to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 07)
+            };
+
+            RequestResult<Communication> expected = new RequestResult<Communication>
+            {
+                ResourcePayload = comm,
+                ResultStatus = Common.Constants.ResultType.Success
+            };
+
+            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            mockCommunicationService.Setup(s => s.Update(It.Is<Communication>(x => x.Text == comm.Text))).Returns(expected);
+
+            // Initialize controller
+            CommunicationController controller = new CommunicationController(
+                mockCommunicationService.Object
+            );
+
+            // Test if controller adds communication properly
+            IActionResult actualResult = controller.Update(comm);
+            Assert.IsType<JsonResult>(actualResult);
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
+        }
     }
 
 }
