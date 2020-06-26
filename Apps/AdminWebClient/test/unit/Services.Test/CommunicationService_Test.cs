@@ -33,8 +33,7 @@ namespace HealthGateway.Admin.Test.Services
 
     public class CommunicationServiceTest
     {
-        [Fact]
-        public void ShouldAddCommunication()
+        private void ShouldAddCommunicationWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode)
         {
             // Sample communication to test
             Communication comm = new Communication()
@@ -49,7 +48,7 @@ namespace HealthGateway.Admin.Test.Services
             DBResult<Communication> insertResult = new DBResult<Communication>
             {
                 Payload = comm,
-                Status = DBStatusCode.Created
+                Status = dBStatusCode
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
@@ -62,14 +61,25 @@ namespace HealthGateway.Admin.Test.Services
             );
 
             RequestResult<Communication> actualResult = service.Add(comm);
-            
+
             // Check result
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
         }
 
         [Fact]
-        public void ShouldGetCommunications()
+        public void ShouldAddCommunication()
+        {
+            ShouldAddCommunicationWithSpecifiedDBStatusCode(DBStatusCode.Created);
+        }
+
+        [Fact]
+        public void AddCommunicationShouldReturnDBError()
+        {
+            ShouldAddCommunicationWithSpecifiedDBStatusCode(DBStatusCode.Error);
+        }
+
+        private void ShouldGetCommunicationsWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode)
         {
             // Sample communication to test
             List<Communication> commsList = new List<Communication>();
@@ -94,7 +104,7 @@ namespace HealthGateway.Admin.Test.Services
             DBResult<IEnumerable<Communication>> commsDBResult = new DBResult<IEnumerable<Communication>>
             {
                 Payload = commsList,
-                Status = Database.Constants.DBStatusCode.Read
+                Status = dBStatusCode
             };
 
             Mock<ICommunicationDelegate> commsDelegateMock = new Mock<ICommunicationDelegate>();
@@ -109,6 +119,18 @@ namespace HealthGateway.Admin.Test.Services
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(refCommsList));
+        }
+
+        [Fact]
+        public void ShouldGetCommunications()
+        {
+            ShouldGetCommunicationsWithSpecifiedDBStatusCode(DBStatusCode.Read);
+        }
+
+        [Fact]
+        public void GetCommunicationsShouldReturnDBError()
+        {
+            ShouldGetCommunicationsWithSpecifiedDBStatusCode(DBStatusCode.Error);
         }
 
         [Fact]
