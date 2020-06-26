@@ -1,3 +1,8 @@
+<style scoped lang="scss">
+.error-message {
+    color: #ff5252 !important;
+}
+</style>
 <template>
     <v-container>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
@@ -62,40 +67,58 @@
                                                     >
                                                         <v-row>
                                                             <v-col>
-                                                                <v-datetime-picker
-                                                                    v-model="
-                                                                        editedItem.effectiveDateTime
-                                                                    "
+                                                                <ValidationProvider
+                                                                    v-slot="{
+                                                                        errors
+                                                                    }"
                                                                     :rules="
-                                                                        datePickerRules(
+                                                                        dateTimeRules(
                                                                             editedItem.effectiveDateTime,
                                                                             editedItem.expiryDateTime
                                                                         )
                                                                     "
-                                                                    requried
-                                                                    :date-picker-props="
-                                                                        pickerProps
-                                                                    "
-                                                                    label="Effective On"
-                                                                ></v-datetime-picker>
+                                                                >
+                                                                    <v-datetime-picker
+                                                                        v-model="
+                                                                            editedItem.effectiveDateTime
+                                                                        "
+                                                                        requried
+                                                                        label="Effective On"
+                                                                    ></v-datetime-picker>
+                                                                    <span
+                                                                        class="error-message"
+                                                                        >{{
+                                                                            errors[0]
+                                                                        }}</span
+                                                                    >
+                                                                </ValidationProvider>
                                                             </v-col>
                                                             <v-col>
-                                                                <v-datetime-picker
-                                                                    v-model="
-                                                                        editedItem.expiryDateTime
-                                                                    "
+                                                                <ValidationProvider
+                                                                    v-slot="{
+                                                                        errors
+                                                                    }"
                                                                     :rules="
-                                                                        datePickerRules(
+                                                                        dateTimeRules(
                                                                             editedItem.effectiveDateTime,
                                                                             editedItem.expiryDateTime
                                                                         )
                                                                     "
-                                                                    required
-                                                                    :date-picker-props="
-                                                                        pickerProps
-                                                                    "
-                                                                    label="Expires On"
-                                                                ></v-datetime-picker>
+                                                                >
+                                                                    <v-datetime-picker
+                                                                        v-model="
+                                                                            editedItem.expiryDateTime
+                                                                        "
+                                                                        required
+                                                                        label="Expires On"
+                                                                    ></v-datetime-picker>
+                                                                    <span
+                                                                        class="error-message"
+                                                                        >{{
+                                                                            errors[0]
+                                                                        }}</span
+                                                                    >
+                                                                </ValidationProvider>
                                                             </v-col>
                                                         </v-row>
                                                         <v-row>
@@ -187,12 +210,25 @@ import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";
+import { ValidationProvider, extend, validate } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
 import moment from "moment";
+
+extend("dateValid", {
+    validate(value: any, args: any) {
+        if (moment(args.effective).isBefore(moment(args.expiry))) {
+            return true;
+        }
+        return "Effective date cannot occur after expiry date.";
+    },
+    params: ["effective", "expiry"]
+});
 
 @Component({
     components: {
         LoadingComponent,
-        BannerFeedbackComponent
+        BannerFeedbackComponent,
+        ValidationProvider
     }
 })
 export default class CommunicationView extends Vue {
@@ -207,24 +243,18 @@ export default class CommunicationView extends Vue {
     };
     private dialog: boolean = false;
     private editedIndex: number = -1;
-    private pickerProps: any = {
-        "error-message": "Not allowed!"
-    };
 
     @Watch("dialog")
     private onDialogChange(val: any) {
         val || this.close();
     }
 
-    private datePickerRules(effective: Date, expiry: Date) {
-        if (moment(expiry).isBefore(moment(effective))) {
-            console.log("Not allowed");
-            return "Expiry date cannot occur before effective date.";
-        }
-    }
-
     private get formTitle(): string {
         return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    }
+
+    private dateTimeRules(effective: Date, expiry: Date) {
+        return "dateValid:" + effective.toString() + "," + expiry.toString();
     }
 
     private editedItem: Communication = {
@@ -284,6 +314,12 @@ export default class CommunicationView extends Vue {
         return new Date(Date.parse(date + "Z")).toLocaleString();
     }
 
+    private dateTimeValid(): boolean {
+        return moment(this.editedItem.effectiveDateTime).isBefore(
+            moment(this.editedItem.expiryDateTime)
+        );
+    }
+
     private close() {
         this.dialog = false;
         this.$nextTick(() => {
@@ -296,7 +332,10 @@ export default class CommunicationView extends Vue {
     }
 
     private save() {
-        if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+        if (
+            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+            this.dateTimeValid()
+        ) {
             if (this.editedIndex > -1) {
                 // Assign (this.editedItem) to item at this.editedIndex
                 // this.communicationService.update(this.communicationList[this.editedIndex], this.editedItem);
