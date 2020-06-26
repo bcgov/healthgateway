@@ -219,7 +219,7 @@ extend("dateValid", {
         if (moment(args.effective).isBefore(moment(args.expiry))) {
             return true;
         }
-        return "Effective date cannot occur after expiry date.";
+        return "Effective date must occur before expiry date.";
     },
     params: ["effective", "expiry"]
 });
@@ -243,6 +243,13 @@ export default class CommunicationView extends Vue {
     };
     private dialog: boolean = false;
     private editedIndex: number = -1;
+
+    private mounted() {
+        this.communicationService = container.get(
+            SERVICE_IDENTIFIER.CommunicationService
+        );
+        this.loadCommunicationList();
+    }
 
     @Watch("dialog")
     private onDialogChange(val: any) {
@@ -272,7 +279,9 @@ export default class CommunicationView extends Vue {
         text: "",
         subject: "",
         effectiveDateTime: new Date(),
-        expiryDateTime: new Date()
+        expiryDateTime: moment(new Date())
+            .add(1, "days")
+            .toDate()
     };
 
     private headers: any[] = [
@@ -302,13 +311,6 @@ export default class CommunicationView extends Vue {
             sortable: false
         }
     ];
-
-    private mounted() {
-        this.communicationService = container.get(
-            SERVICE_IDENTIFIER.CommunicationService
-        );
-        this.loadCommunicationList();
-    }
 
     private formatDate(date: Date): string {
         return new Date(Date.parse(date + "Z")).toLocaleString();
