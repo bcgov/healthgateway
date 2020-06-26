@@ -46,7 +46,6 @@ steps:
     pathToSources: '$(App.Home)/src'
     reportDirectory: '$(App.Home)/CodeCoverage'  
 
-
 - task: DotNetCoreCLI@2
   displayName: Publish dotnet code
   inputs:
