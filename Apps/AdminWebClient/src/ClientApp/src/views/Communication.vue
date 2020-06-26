@@ -66,7 +66,16 @@
                                                                     v-model="
                                                                         editedItem.effectiveDateTime
                                                                     "
+                                                                    :rules="
+                                                                        datePickerRules(
+                                                                            editedItem.effectiveDateTime,
+                                                                            editedItem.expiryDateTime
+                                                                        )
+                                                                    "
                                                                     requried
+                                                                    :date-picker-props="
+                                                                        pickerProps
+                                                                    "
                                                                     label="Effective On"
                                                                 ></v-datetime-picker>
                                                             </v-col>
@@ -75,7 +84,16 @@
                                                                     v-model="
                                                                         editedItem.expiryDateTime
                                                                     "
+                                                                    :rules="
+                                                                        datePickerRules(
+                                                                            editedItem.effectiveDateTime,
+                                                                            editedItem.expiryDateTime
+                                                                        )
+                                                                    "
                                                                     required
+                                                                    :date-picker-props="
+                                                                        pickerProps
+                                                                    "
                                                                     label="Expires On"
                                                                 ></v-datetime-picker>
                                                             </v-col>
@@ -169,6 +187,7 @@ import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
 
 @Component({
     components: {
@@ -188,10 +207,20 @@ export default class CommunicationView extends Vue {
     };
     private dialog: boolean = false;
     private editedIndex: number = -1;
+    private pickerProps: any = {
+        "error-message": "Not allowed!"
+    };
 
     @Watch("dialog")
     private onDialogChange(val: any) {
         val || this.close();
+    }
+
+    private datePickerRules(effective: Date, expiry: Date) {
+        if (moment(expiry).isBefore(moment(effective))) {
+            console.log("Not allowed");
+            return "Expiry date cannot occur before effective date.";
+        }
     }
 
     private get formTitle(): string {
@@ -202,8 +231,10 @@ export default class CommunicationView extends Vue {
         id: "-1",
         text: "",
         subject: "",
-        effectiveDateTime: new Date(),
-        expiryDateTime: new Date()
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date())
+            .add(1, "days")
+            .toDate()
     };
 
     private defaultItem: Communication = {
