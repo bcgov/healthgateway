@@ -14,4 +14,7 @@ export default interface Communication {
 
     // Gets or sets the expiry date.
     expiryDateTime: Date;
+
+    // The communication version number.
+    version: number;
 }

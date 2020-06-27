@@ -268,6 +268,7 @@ export default class CommunicationView extends Vue {
         id: "-1",
         text: "",
         subject: "",
+        version: 0,
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
@@ -278,6 +279,7 @@ export default class CommunicationView extends Vue {
         id: "-1",
         text: "",
         subject: "",
+        version: 0,
         effectiveDateTime: new Date(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
@@ -425,6 +427,7 @@ export default class CommunicationView extends Vue {
             .add({
                 subject: comm.subject,
                 text: comm.text,
+                version: 0,
                 effectiveDateTime: comm.effectiveDateTime,
                 expiryDateTime: comm.expiryDateTime
             })
@@ -458,6 +461,7 @@ export default class CommunicationView extends Vue {
                 id: comm.id,
                 subject: comm.subject,
                 text: comm.text,
+                version: comm.version,
                 effectiveDateTime: comm.effectiveDateTime,
                 expiryDateTime: comm.expiryDateTime
             })
