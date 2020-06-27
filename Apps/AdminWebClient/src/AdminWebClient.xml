@@ -112,6 +112,16 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Update(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Updates a given communication to the backend.
+            </summary>
+            <returns>The updated communication wrapped in a RequestResult.</returns>
+            <param name="communication">The communication to be updated.</param>
+            <response code="200">Returns the communication json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="M:HealthGateway.Admin.Controllers.CommunicationController.GetAll">
             <summary>
             Gets all communication entries from the backend.
@@ -647,6 +657,9 @@
         <member name="M:HealthGateway.Admin.Services.CommunicationService.Add(HealthGateway.Database.Models.Communication)">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Update(HealthGateway.Database.Models.Communication)">
+            <inheritdoc />
+        </member>
         <member name="M:HealthGateway.Admin.Services.CommunicationService.GetAll">
             <inheritdoc />
         </member>
@@ -766,6 +779,13 @@
             </summary>
             <param name="communication">The communication to add to the backend.</param>
             <returns>Returns the added communication wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Update(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Updates a Communication to the database.
+            </summary>
+            <param name="communication">The communication to update to the backend.</param>
+            <returns>Returns the updated communication wrapped in a RequestResult.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Services.ICommunicationService.GetAll">
             <summary>
