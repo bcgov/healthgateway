@@ -455,6 +455,7 @@ export default class CommunicationView extends Vue {
         this.isLoading = true;
         this.communicationService
             .update({
+                id: comm.id,
                 subject: comm.subject,
                 text: comm.text,
                 effectiveDateTime: comm.effectiveDateTime,

@@ -106,7 +106,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// </inheritdoc>
+        /// <inheritdoc />
         public DBResult<Communication> Update(Communication communication, bool commit = true)
         {
             this.logger.LogTrace($"Updating Communication in DB...");
