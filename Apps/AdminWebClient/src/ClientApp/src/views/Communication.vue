@@ -340,7 +340,7 @@ export default class CommunicationView extends Vue {
         ) {
             if (this.editedIndex > -1) {
                 // Assign (this.editedItem) to item at this.editedIndex
-                // this.communicationService.update(this.communicationList[this.editedIndex], this.editedItem);
+                this.update(this.editedItem);
             } else {
                 this.add(this.editedItem);
             }
@@ -444,6 +444,37 @@ export default class CommunicationView extends Vue {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Add communication failed, please try again"
+                };
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    private update(comm: Communication): void {
+        this.isLoading = true;
+        this.communicationService
+            .update({
+                subject: comm.subject,
+                text: comm.text,
+                effectiveDateTime: comm.effectiveDateTime,
+                expiryDateTime: comm.expiryDateTime
+            })
+            .then(() => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Success,
+                    title: "Success",
+                    message: "Communication Updated."
+                };
+                this.loadCommunicationList();
+            })
+            .catch((err: any) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error updating communication. Please try again."
                 };
             })
             .finally(() => {
