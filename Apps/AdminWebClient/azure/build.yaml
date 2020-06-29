@@ -30,6 +30,28 @@ steps:
     workingDir: '$(App.Home)/src/ClientApp'
 
 - task: DotNetCoreCLI@2
+  displayName: Run dotnet Tests
+  inputs:
+    command: 'test'
+    projects: '$(App.Home)/test/unit/AdminWebClientTests.csproj'
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    testRunTitle: 'AdminWebClient'
+  
+- script: |
+    set -e
+    dotnet tool install -g dotnet-reportgenerator-globaltool
+    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+  displayName: Create Code Coverage Report    
+      
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
+    pathToSources: '$(App.Home)/src'
+    reportDirectory: '$(App.Home)/CodeCoverage'  
+
+- task: DotNetCoreCLI@2
   displayName: Publish Admin WebClient
   inputs:
     modifyOutputPath: false

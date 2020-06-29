@@ -371,7 +371,7 @@
                                     <span>{{ icon.label }}</span>
                                 </b-col>
                                 <b-col
-                                    v-if="icon.label === 'Lab Tests'"
+                                    v-if="false && icon.label === 'Lab Tests'"
                                     cols="0"
                                     class="covid-container ml-2 px-2"
                                 >
@@ -525,7 +525,7 @@ export default class LandingView extends Vue {
         {
             definition: faFlask,
             label: "Lab Tests",
-            active: true,
+            active: false,
         },
         {
             definition: faSyringe,
