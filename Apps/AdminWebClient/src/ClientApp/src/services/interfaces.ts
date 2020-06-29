@@ -49,6 +49,7 @@ export interface IDashboardService {
 export interface ICommunicationService {
     initialize(http: IHttpDelegate): void;
     add(communication: Communication): Promise<void>;
+    update(communication: Communication): Promise<void>;
     getAll(): Promise<Communication[]>;
 }
 

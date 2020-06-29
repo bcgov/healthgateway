@@ -52,6 +52,23 @@ export class RestCommunicationService implements ICommunicationService {
         });
     }
 
+    public update(communication: Communication): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .put<RequestResult<Communication>>(
+                    `${this.BASE_URI}/`,
+                    communication
+                )
+                .then(result => {
+                    return this.handleResult(result, resolve, reject);
+                })
+                .catch(err => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
     private handleResult(
         requestResult: RequestResult<any>,
         resolve: any,

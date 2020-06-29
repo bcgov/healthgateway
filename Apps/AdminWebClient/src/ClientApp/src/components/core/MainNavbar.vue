@@ -11,7 +11,7 @@
         v-model="isOpen"
         app
         dark
-        mobile-break-point="959"
+        mobile-breakpoint="959"
         width="260"
     >
         <v-img
