@@ -113,6 +113,7 @@ jobs:
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
+          npm --prefix src/ClientApp test
           dotnet sonarscanner begin \
             /d:sonar.verbose=false \
             /k:"webclient_dev" \
