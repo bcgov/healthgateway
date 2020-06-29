@@ -52,12 +52,12 @@ export class RestCommunicationService implements ICommunicationService {
         });
     }
 
-    public update(communiucation: Communication): Promise<void> {
+    public update(communication: Communication): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<Communication>>(
                     `${this.BASE_URI}/`,
-                    communiucation
+                    communication
                 )
                 .then(result => {
                     return this.handleResult(result, resolve, reject);
