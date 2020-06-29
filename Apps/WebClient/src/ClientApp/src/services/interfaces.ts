@@ -122,8 +122,8 @@ export interface IUserCommentService {
 }
 
 export interface ICommunicationService {
-  initialize(http: IHttpDelegate): void;
-  getActive(): Promise<RequestResult<Communication>>;
+    initialize(http: IHttpDelegate): void;
+    getActive(): Promise<RequestResult<Communication>>;
 }
 
 export interface IHttpDelegate {
