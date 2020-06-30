@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Update(Communication communication)
         {
-            if (this.ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            if (ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
             {
                 this.logger.LogTrace($"Updating communication... {JsonConvert.SerializeObject(communication)}");
 
@@ -87,16 +87,6 @@ namespace HealthGateway.Admin.Services
             }
         }
 
-        private bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)
-        {
-            if (effectiveDate > expiryDate) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-
         /// <inheritdoc />
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
@@ -109,6 +99,18 @@ namespace HealthGateway.Admin.Services
                 ResultMessage = dBResult.Message,
             };
             return requestResult;
+        }
+
+        private static bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)
+        {
+            if (effectiveDate > expiryDate)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }
