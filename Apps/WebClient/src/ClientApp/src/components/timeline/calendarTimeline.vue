@@ -8,12 +8,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
 import moment from "moment";
-import EventBus from "@/eventbus";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
-import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import CalendarComponent from "@/components/calendar/calendar.vue";
 
 @Component({
@@ -24,13 +21,6 @@ import CalendarComponent from "@/components/calendar/calendar.vue";
 export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop() private totalEntries!: number;
-
-    private windowWidth: number = 0;
-    private currentPage: number = 1;
-    private hasErrors: boolean = false;
-    private visibleTimelineEntries: TimelineEntry[] = [];
-
-    private filterTypes: string[] = [];
 
     private linkGen(pageNum: number) {
         return `?page=${pageNum}`;
@@ -76,10 +66,6 @@ export default class CalendarTimelineComponent extends Vue {
             a.date > b.date ? -1 : a.date < b.date ? 1 : 0
         );
         return groupArrays;
-    }
-
-    private getVisibleCount(): number {
-        return this.visibleTimelineEntries.length;
     }
 }
 </script>
