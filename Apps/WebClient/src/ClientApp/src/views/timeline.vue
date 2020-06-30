@@ -38,11 +38,9 @@
     <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row class="my-3 fluid justify-content-md-center">
-            <b-col class="col-12 col-md-1 col-lg-1 column-wrapper no-print">
-            </b-col>
             <b-col
                 id="timeline"
-                class="col-12 col-md-8 col-lg-6 column-wrapper"
+                class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
                 <b-alert
                     :show="hasErrors"
@@ -166,7 +164,11 @@
                         <NoteTimelineComponent :is-add-mode="true" />
                     </b-col>
                 </b-row>
-                <LinearTimeline
+                <!--LinearTimeline
+                    :timeline-entries="filteredTimelineEntries"
+                    :total-entries="getTotalCount()"
+                /-->
+                <CalendarTimeline
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 />
@@ -231,6 +233,7 @@ import {
     LaboratoryResult,
 } from "@/models/laboratory";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
+import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 
 const namespace: string = "user";
 
@@ -246,6 +249,7 @@ Component.registerHooks(["beforeRouteLeave"]);
         HealthlinkComponent: HealthlinkSidebarComponent,
         NoteTimelineComponent,
         LinearTimeline: LinearTimelineComponent,
+        CalendarTimeline: CalendarTimelineComponent,
     },
 })
 export default class TimelineView extends Vue {

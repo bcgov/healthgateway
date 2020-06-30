@@ -92,6 +92,7 @@
     "reflect-metadata": "^0.1.13",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
+    "vue-fullcalendar": "^1.0.9",
     "vue-loading-overlay": "^3.3.2",
     "vue-property-decorator": "^8.4.2",
     "vue-router": "^3.3.2",
