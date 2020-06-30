@@ -1686,7 +1686,7 @@ namespace HealthGateway.Database.Migrations
                             Id = new Guid("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2020, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            EffectiveDate = new DateTime(2020, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2020, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LegalAgreementCode = "ToS",
                             LegalText = @"<p><strong>HealthGateway Terms of Service</strong></p>
 <p>

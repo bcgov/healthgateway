@@ -4,70 +4,82 @@
 :not(.collapsed) > .when-closed {
     display: none;
 }
+
+.commentSection {
+    padding-left: 0px;
+    padding-right: 0px;
+}
 </style>
 <template>
-    <div>
-        <b-row class="pt-2">
-            <b-col>
-                <div v-if="hasComments" class="d-flex flex-row-reverse">
-                    <b-btn
-                        v-b-toggle="'entryComments-' + parentEntry.id"
-                        variant="link"
-                        class="px-0 py-2"
-                        @click="toggleComments()"
-                    >
-                        <span class="when-opened">
-                            <font-awesome-icon
-                                icon="chevron-up"
-                                aria-hidden="true"
-                            ></font-awesome-icon
-                        ></span>
-                        <span class="when-closed">
-                            <font-awesome-icon
-                                icon="chevron-down"
-                                aria-hidden="true"
-                            ></font-awesome-icon
-                        ></span>
-                        <span>
-                            {{
-                                comments.length > 1
-                                    ? comments.length + " comments"
-                                    : "1 comment"
-                            }}</span
-                        >
-                    </b-btn>
-                </div>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <Comment
-                    :comment="newComment"
-                    @on-comment-added="onAdd"
-                ></Comment>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-collapse :id="'entryComments-' + parentEntry.id">
-                    <div v-if="!isLoadingComments">
-                        <div v-for="comment in comments" :key="comment.id">
-                            <Comment
-                                :comment="comment"
-                                @needs-update="needsUpdate"
-                            ></Comment>
+    <b-row>
+        <b-col class="commentSection">
+            <div>
+                <b-row class="pt-2">
+                    <b-col>
+                        <div v-if="hasComments" class="d-flex flex-row-reverse">
+                            <b-btn
+                                v-b-toggle="'entryComments-' + parentEntry.id"
+                                variant="link"
+                                class="px-0 py-2"
+                                @click="toggleComments()"
+                            >
+                                <span class="when-opened">
+                                    <font-awesome-icon
+                                        icon="chevron-up"
+                                        aria-hidden="true"
+                                    ></font-awesome-icon
+                                ></span>
+                                <span class="when-closed">
+                                    <font-awesome-icon
+                                        icon="chevron-down"
+                                        aria-hidden="true"
+                                    ></font-awesome-icon
+                                ></span>
+                                <span>
+                                    {{
+                                        comments.length > 1
+                                            ? comments.length + " comments"
+                                            : "1 comment"
+                                    }}</span
+                                >
+                            </b-btn>
                         </div>
-                    </div>
-                    <div v-else>
-                        <div class="d-flex align-items-center">
-                            <strong>Loading...</strong>
-                            <b-spinner class="ml-5"></b-spinner>
-                        </div>
-                    </div>
-                </b-collapse>
-            </b-col>
-        </b-row>
-    </div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <Comment
+                            :comment="newComment"
+                            @on-comment-added="onAdd"
+                        ></Comment>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-collapse :id="'entryComments-' + parentEntry.id">
+                            <div v-if="!isLoadingComments">
+                                <div
+                                    v-for="comment in comments"
+                                    :key="comment.id"
+                                >
+                                    <Comment
+                                        :comment="comment"
+                                        @needs-update="needsUpdate"
+                                    ></Comment>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div class="d-flex align-items-center">
+                                    <strong>Loading...</strong>
+                                    <b-spinner class="ml-5"></b-spinner>
+                                </div>
+                            </div>
+                        </b-collapse>
+                    </b-col>
+                </b-row>
+            </div>
+        </b-col>
+    </b-row>
 </template>
 <script lang="ts">
 import Vue from "vue";

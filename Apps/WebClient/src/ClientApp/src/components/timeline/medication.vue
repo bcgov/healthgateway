@@ -194,9 +194,9 @@ $radius: 15px;
                         </b-collapse>
                     </b-col>
                 </b-row>
-                <CommentSection :parent-entry="entry"></CommentSection>
             </b-col>
         </b-row>
+        <CommentSection :parent-entry="entry"></CommentSection>
     </b-col>
 </template>
 

@@ -18,6 +18,9 @@ import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
+import { LaboratoryOrder } from "@/models/laboratory";
+import { LaboratoryState } from "@/models/storeState";
+import Router from "vue-router";
 
 const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
@@ -30,6 +33,7 @@ yesterday.setDate(today.getDate() - 1);
 const medicationStatements: MedicationStatement[] = [
     {
         medicationSumary: {
+            din: "1233",
             brandName: "brand_name_A",
             genericName: "generic_name_A",
         },
@@ -38,6 +42,7 @@ const medicationStatements: MedicationStatement[] = [
     },
     {
         medicationSumary: {
+            din: "1234",
             brandName: "brand_name_B",
             genericName: "generic_name_B",
         },
@@ -46,6 +51,7 @@ const medicationStatements: MedicationStatement[] = [
     },
     {
         medicationSumary: {
+            din: "1235",
             brandName: "brand_name_C",
             genericName: "generic_name_C",
         },
@@ -115,6 +121,32 @@ let userGetters = {
     },
 };
 
+let laboratoryActions = {
+    getOrders(
+        context: any,
+        params: { hdid: string }
+    ): Promise<RequestResult<LaboratoryOrder[]>> {
+        return new Promise((resolve, reject) => {
+            resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultMessage: "From storage",
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        });
+    },
+};
+
+let laboratoryGetters = {
+    getStoredLaboratoryOrders: (
+        state: LaboratoryState
+    ) => (): LaboratoryOrder[] => {
+        return [];
+    },
+};
+
 const configGetters = {
     webClient: (): WebClientConfiguration => {
         return {
@@ -127,7 +159,7 @@ function createWrapper(): Wrapper<TimelineComponent> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(BootstrapVue);
-
+    localVue.use(Router);
     const customStore = new Vuex.Store({
         modules: {
             user: {
@@ -138,6 +170,11 @@ function createWrapper(): Wrapper<TimelineComponent> {
             config: {
                 namespaced: true,
                 getters: configGetters,
+            },
+            laboratory: {
+                namespaced: true,
+                getters: laboratoryGetters,
+                actions: laboratoryActions,
             },
         },
     });
@@ -168,7 +205,7 @@ describe("Timeline view", () => {
 
     test("is a Vue instance", () => {
         const wrapper = createWrapper();
-        expect(wrapper.isVueInstance()).toBeTruthy();
+        expect(wrapper).toBeTruthy();
     });
 
     test("has header element with static text", () => {

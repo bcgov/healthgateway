@@ -141,7 +141,7 @@ describe("Dummy Test", () => {
 
   test("is a Vue instance", () => {
     let wrapper = createWrapper();
-    expect(wrapper.isVueInstance()).toBeTruthy();
+    expect(wrapper).toBeTruthy();
   });
 
   test("has header element with static text", () => {

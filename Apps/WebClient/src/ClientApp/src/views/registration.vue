@@ -219,8 +219,8 @@ label {
                                     @change="onEmailOptout($event)"
                                 >
                                 </b-form-checkbox>
-                                <label class="d-flex" for="email"
-                                    >Email Notifications <Address></Address>
+                                <label class="d-flex" for="email">
+                                    Email Notifications <Address></Address>
                                 </label>
                             </b-col>
                         </b-row>
@@ -255,35 +255,37 @@ label {
                     </b-col>
                 </b-row>
                 <!-- SMS section -->
-                <b-row class="mb-3">
-                    <b-col>
-                        <b-row class="d-flex">
-                            <b-col class="d-flex pr-0">
-                                <b-form-checkbox
-                                    id="smsCheckbox"
-                                    v-model="isSMSNumberChecked"
-                                    @change="onSMSOptout($event)"
-                                ></b-form-checkbox>
-                                <label class="d-flex" for="smsNumber"
-                                    >SMS Notifications <Address></Address>
-                                </label>
-                            </b-col>
-                        </b-row>
-                        <b-form-input
-                            id="smsNumber"
-                            v-model="$v.smsNumber.$model"
-                            class="d-flex"
-                            type="text"
-                            placeholder="Your phone number"
-                            :state="isValid($v.smsNumber)"
-                            :disabled="!isSMSNumberChecked"
-                        >
-                        </b-form-input>
-                        <b-form-invalid-feedback :state="isValid($v.smsNumber)">
-                            Valid sms number is required
-                        </b-form-invalid-feedback>
-                    </b-col>
-                </b-row>
+                <!--
+    <b-row class="mb-3">
+        <b-col>
+            <b-row class="d-flex">
+                <b-col class="d-flex pr-0">
+                    <b-form-checkbox
+                        id="smsCheckbox"
+                        v-model="isSMSNumberChecked"
+                        @change="onSMSOptout($event)"
+                    ></b-form-checkbox>
+                    <label class="d-flex" for="smsNumber"
+                        >SMS Notifications <Address></Address>
+                    </label>
+                </b-col>
+            </b-row>
+            <b-form-input
+                id="smsNumber"
+                v-model="$v.smsNumber.$model"
+                class="d-flex"
+                type="text"
+                placeholder="Your phone number"
+                :state="isValid($v.smsNumber)"
+                :disabled="!isSMSNumberChecked"
+            >
+            </b-form-input>
+            <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+                Valid sms number is required
+            </b-form-invalid-feedback>
+        </b-col>
+    </b-row>
+                        -->
                 <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
                     <b-col class="font-weight-bold text-primary">
                         <font-awesome-icon
@@ -389,7 +391,7 @@ export default class RegistrationView extends Vue {
     private smsNumber: string = "";
 
     private isEmailChecked: boolean = true;
-    private isSMSNumberChecked: boolean = true;
+    private isSMSNumberChecked: boolean = false;
 
     private oidcUser: any = {};
     private userProfileService!: IUserProfileService;

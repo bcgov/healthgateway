@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,13 @@ namespace HealthGateway.Admin.Services
         /// <param name="communication">The communication to add to the backend.</param>
         /// <returns>Returns the added communication wrapped in a RequestResult.</returns>
         RequestResult<Communication> Add(Communication communication);
+
+        /// <summary>
+        /// Updates a Communication to the database.
+        /// </summary>
+        /// <param name="communication">The communication to update to the backend.</param>
+        /// <returns>Returns the updated communication wrapped in a RequestResult.</returns>
+        RequestResult<Communication> Update(Communication communication);
 
         /// <summary>
         /// Gets all communication entries from the database.

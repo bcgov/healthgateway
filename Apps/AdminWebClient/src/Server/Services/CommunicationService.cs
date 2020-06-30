@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,6 +59,42 @@ namespace HealthGateway.Admin.Services
                 ResultMessage = dbResult.Message,
             };
             return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Communication> Update(Communication communication)
+        {
+            if (this.ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            {
+                this.logger.LogTrace($"Updating communication... {JsonConvert.SerializeObject(communication)}");
+
+                DBResult<Communication> dbResult = this.communicationDelegate.Update(communication);
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = dbResult.Payload,
+                    ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                    ResultMessage = dbResult.Message,
+                };
+            }
+            else
+            {
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = null,
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Effective Date should be before Expiry Date.",
+                };
+            }
+        }
+
+        private bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)
+        {
+            if (effectiveDate > expiryDate) {
+                return false;
+            }
+            else {
+                return true;
+            }
         }
 
         /// <inheritdoc />

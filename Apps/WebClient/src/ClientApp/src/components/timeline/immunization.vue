@@ -59,12 +59,7 @@ $radius: 15px;
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>
-        <b-row class="my-2">
-            <b-col class="leftPane"></b-col>
-            <b-col>
-                <CommentSection :parent-entry="entry"></CommentSection>
-            </b-col>
-        </b-row>
+        <CommentSection :parent-entry="entry"></CommentSection>
     </b-col>
 </template>
 

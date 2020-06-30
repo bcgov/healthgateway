@@ -99,7 +99,7 @@ class PharmacyViewModel {
 
 class MedicationViewModel {
     public din: string;
-    public brandName?: string;
+    public brandName: string;
     public genericName?: string;
     public quantity?: number;
     public form?: string;

@@ -5,15 +5,15 @@ import { mutations } from "./mutations";
 import { DrawerState, RootState } from "@/models/storeState";
 
 export const state: DrawerState = {
-  isOpen: true
+    isOpen: true
 };
 
 const namespaced: boolean = true;
 
 export const drawer: Module<DrawerState, RootState> = {
-  namespaced,
-  state,
-  getters,
-  actions,
-  mutations
+    namespaced,
+    state,
+    getters,
+    actions,
+    mutations
 };
