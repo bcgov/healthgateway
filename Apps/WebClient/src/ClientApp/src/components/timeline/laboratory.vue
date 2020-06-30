@@ -40,8 +40,8 @@ $radius: 15px;
 }
 
 .commentSection {
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .commentButton {

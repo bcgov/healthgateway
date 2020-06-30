@@ -3,7 +3,7 @@
 
 .comment-body {
     background-color: $lightGrey;
-    border-radius: 10px;
+    border-radius: 0px 0px 10px 10px;
 }
 
 .editing {
@@ -70,7 +70,7 @@
                     </b-dropdown>
                 </div>
             </b-row>
-            <b-row v-if="inputShowing" class="comment-body p-2 my-1">
+            <b-row v-if="inputShowing" class="comment-body p-2">
                 <b-col
                     v-if="isNewComment"
                     cols="auto"
