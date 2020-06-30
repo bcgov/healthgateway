@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,8 +76,8 @@ namespace HealthGateway.Admin.Services
                 ResourcePayload = dbEmail.Payload.Select(e =>
                 {
                     MessagingVerification emailInvite = emailInvites.FirstOrDefault(ei =>
-                        e.To!.Equals(ei.Email?.To, System.StringComparison.CurrentCultureIgnoreCase));
-                    string inviteStatus = this.GetEmailInviteStatus(emailInvite);
+                    e.To == ei.Email?.To);
+                    string inviteStatus = GetEmailInviteStatus(emailInvite);
                     return AdminEmail.CreateFromDbModel(e, inviteStatus);
                 }),
                 PageIndex = pageIndex,
@@ -89,7 +89,7 @@ namespace HealthGateway.Admin.Services
             return result;
         }
 
-        private string GetEmailInviteStatus(MessagingVerification emailInvite)
+        private static string GetEmailInviteStatus(MessagingVerification emailInvite)
         {
             if (emailInvite == null)
             {
