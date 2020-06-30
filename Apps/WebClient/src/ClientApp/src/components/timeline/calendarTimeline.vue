@@ -22,14 +22,6 @@ export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop() private totalEntries!: number;
 
-    private linkGen(pageNum: number) {
-        return `?page=${pageNum}`;
-    }
-
-    private getHeadingDate(date: Date): string {
-        return moment(date).format("ll");
-    }
-
     private get dateGroups(): DateGroup[] {
         if (this.timelineEntries.length === 0) {
             return [];
