@@ -40,11 +40,6 @@ $radius: 15px;
     margin-top: 15px;
 }
 
-.commentSection {
-    padding-left: 0px;
-    padding-right: 0px;
-}
-
 .commentButton {
     border-radius: $radius;
 }
@@ -201,11 +196,7 @@ $radius: 15px;
                 </b-row>
             </b-col>
         </b-row>
-        <b-row>
-            <b-col class="commentSection">
-                <CommentSection :parent-entry="entry"></CommentSection>
-            </b-col>
-        </b-row>
+        <CommentSection :parent-entry="entry"></CommentSection>
     </b-col>
 </template>
 
