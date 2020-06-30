@@ -40,6 +40,11 @@ $radius: 15px;
     margin-top: 15px;
 }
 
+.commentSection {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
@@ -59,8 +64,7 @@ $radius: 15px;
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>
-        <b-row class="my-2">
-            <b-col class="leftPane"></b-col>
+        <b-row class="commentSection">
             <b-col>
                 <CommentSection :parent-entry="entry"></CommentSection>
             </b-col>
