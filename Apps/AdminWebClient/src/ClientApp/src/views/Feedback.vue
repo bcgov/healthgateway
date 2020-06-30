@@ -13,7 +13,10 @@
                         <v-data-table
                             :headers="tableHeaders"
                             :items="feedbackList"
-                            :items-per-page="5"
+                            :items-per-page="50"
+                            :footer-props="{
+                                'items-per-page-options': [25, 50, 100, -1]
+                            }"
                         >
                             <template v-slot:item.createdDateTime="{ item }">
                                 <span>{{
