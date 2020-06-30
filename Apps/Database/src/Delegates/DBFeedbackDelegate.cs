@@ -109,7 +109,7 @@ namespace HealthGateway.Database.Delegates
                     Version = x.Version,
                     Email = x.UserProfile != null && x.UserProfile.Email != null ? x.UserProfile.Email : string.Empty,
                 })
-                .OrderBy(f => f.CreatedDateTime).ToList();
+                .OrderByDescending(f => f.CreatedDateTime).ToList();
             DBResult<List<UserFeedbackAdmin>> result = new DBResult<List<UserFeedbackAdmin>>();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
