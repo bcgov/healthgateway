@@ -481,10 +481,6 @@ import {
     IconDefinition,
     faClipboard,
     faExclamationTriangle,
-    faFlask,
-    faPills,
-    faSyringe,
-    faUserMd,
 } from "@fortawesome/free-solid-svg-icons";
 
 // @ts-ignore-start
@@ -500,7 +496,7 @@ import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
 
 interface Icon {
     label: string;
-    definition: IconDefinition;
+    definition: string;
     active: boolean;
 }
 
@@ -518,22 +514,22 @@ interface Tile {
 export default class LandingView extends Vue {
     private icons: Icon[] = [
         {
-            definition: faPills,
+            definition: "pills",
             label: "Medications",
             active: true,
         },
         {
-            definition: faFlask,
+            definition: "flask",
             label: "Lab Tests",
             active: false,
         },
         {
-            definition: faSyringe,
+            definition: "syringe",
             label: "Immunizations",
             active: false,
         },
         {
-            definition: faUserMd,
+            definition: "user-md",
             label: "Consultations",
             active: false,
         },

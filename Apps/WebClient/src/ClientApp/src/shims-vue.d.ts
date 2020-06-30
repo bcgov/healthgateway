@@ -21,3 +21,5 @@ declare module "*.jpeg" {
 declare module "idle-vue";
 declare module "vuelidate";
 declare module "vue-loading-overlay";
+declare module "vue-fullcalendar";
+declare module "vue-content-placeholders";

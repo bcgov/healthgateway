@@ -33,6 +33,7 @@ yesterday.setDate(today.getDate() - 1);
 const medicationStatements: MedicationStatement[] = [
     {
         medicationSumary: {
+            din: "1233",
             brandName: "brand_name_A",
             genericName: "generic_name_A",
         },
@@ -41,6 +42,7 @@ const medicationStatements: MedicationStatement[] = [
     },
     {
         medicationSumary: {
+            din: "1234",
             brandName: "brand_name_B",
             genericName: "generic_name_B",
         },
@@ -49,6 +51,7 @@ const medicationStatements: MedicationStatement[] = [
     },
     {
         medicationSumary: {
+            din: "1235",
             brandName: "brand_name_C",
             genericName: "generic_name_C",
         },

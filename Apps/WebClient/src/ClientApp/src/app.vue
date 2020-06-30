@@ -128,6 +128,8 @@ import {
     faCheckCircle,
     faChevronDown,
     faChevronUp,
+    faChevronLeft,
+    faChevronRight,
     faCommentAlt,
     faEdit,
     faEllipsisV,
@@ -140,6 +142,10 @@ import {
     faUser,
     faUserCircle,
     faUserSecret,
+    faFlask,
+    faPills,
+    faSyringe,
+    faUserMd,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
     faUser,
@@ -149,6 +155,8 @@ library.add(
     faEdit,
     faChevronUp,
     faChevronDown,
+    faChevronLeft,
+    faChevronRight,
     faSpinner,
     faCheckCircle,
     faTimesCircle,
@@ -159,7 +167,11 @@ library.add(
     faChartBar,
     faCommentAlt,
     faLock,
-    faExclamationTriangle
+    faExclamationTriangle,
+    faFlask,
+    faPills,
+    faSyringe,
+    faUserMd
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

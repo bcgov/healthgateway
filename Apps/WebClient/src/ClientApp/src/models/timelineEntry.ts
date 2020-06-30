@@ -6,6 +6,12 @@ export enum EntryType {
     NONE,
 }
 
+export interface DateGroup {
+    key: string;
+    date: Date;
+    entries: TimelineEntry[];
+}
+
 // The base timeline entry model
 export default abstract class TimelineEntry {
     public readonly id: string;
