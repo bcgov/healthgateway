@@ -13,7 +13,7 @@ export const state: LaboratoryState = {
 
 const namespaced: boolean = true;
 
-export const laboratory: Module<LaboratoryState, RootState> = {
+export const laboratoryModule: Module<LaboratoryState, RootState> = {
     namespaced,
     state,
     getters,
