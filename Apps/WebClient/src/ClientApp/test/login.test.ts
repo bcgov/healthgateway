@@ -81,7 +81,7 @@ describe("Login view", () => {
 
     test("is a Vue instance", () => {
         const wrapper = createWrapper();
-        expect(wrapper.isVueInstance()).toBeTruthy();
+        expect(wrapper).toBeTruthy();
     });
 
     test("gets redirect route", () => {
@@ -168,10 +168,6 @@ describe("Login view", () => {
             bceidProvider.name
         );
         expect(
-            wrapper.find(`#${bceidProvider.id}Btn`).attributes("disabled")
-        ).toBe(bceidProvider.disabled);
-
-        expect(
             wrapper
                 .find(`#${keycloakProvider.id}Btn`)
                 .find(`[icon="${keycloakProvider.icon}" ]`)
@@ -180,10 +176,6 @@ describe("Login view", () => {
         expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(
             keycloakProvider.name
         );
-        expect(
-            wrapper.find(`#${keycloakProvider.id}Btn`).attributes("disabled")
-        ).toBe(`${keycloakProvider.disabled}`);
-
         expect(
             wrapper.find(`#loginPicker`).findAll("[type=button]").length
         ).toBe(2);

@@ -12,9 +12,41 @@ describe("NavBar Header Component", () => {
     localVue.use(Vuex);
     const router = new VueRouter();
 
+    const customStore = new Vuex.Store({
+        modules: {
+            sidebar: {
+                namespaced: true,
+                getters: {
+                    isOpen: () => {
+                        return true;
+                    },
+                },
+            },
+            auth: {
+                namespaced: true,
+                getters: {
+                    oidcIsAuthenticated: () => {
+                        return true;
+                    },
+                },
+            },
+            user: {
+                namespaced: true,
+                getters: {
+                    userIsRegistered: () => {
+                        return true;
+                    },
+                    userIsActive: () => {
+                        return true;
+                    },
+                },
+            },
+        },
+    });
+
     const wrapper = shallowMount(HeaderComponent, {
         localVue,
-        store,
+        store: customStore,
         router,
         stubs: {
             "font-awesome-icon": true,
@@ -22,6 +54,6 @@ describe("NavBar Header Component", () => {
     });
 
     test("is a Vue instance", () => {
-        expect(wrapper.isVueInstance()).toBeTruthy();
+        expect(wrapper).toBeTruthy();
     });
 });
