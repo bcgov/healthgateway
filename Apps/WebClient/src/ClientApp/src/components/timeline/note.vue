@@ -176,18 +176,19 @@ $radius: 15px;
                         <b-col class="d-flex flex-row-reverse">
                             <div>
                                 <b-btn
+                                    variant="primary"
+                                    type="submit"
+                                    class="mr-2"
+                                    :disabled="isSaving"
+                                >
+                                    <span>Save</span>
+                                </b-btn>
+                                <b-btn
                                     variant="light"
                                     type="reset"
                                     :disabled="isSaving"
                                 >
                                     <span>Cancel</span>
-                                </b-btn>
-                                <b-btn
-                                    variant="primary"
-                                    type="submit"
-                                    :disabled="isSaving"
-                                >
-                                    <span>Save</span>
                                 </b-btn>
                             </div>
                         </b-col>
