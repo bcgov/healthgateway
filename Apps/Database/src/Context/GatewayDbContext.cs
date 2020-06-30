@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -568,7 +568,7 @@ namespace HealthGateway.Database.Context
                     Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
                     LegalAgreementCode = AgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200511.html"),
-                    EffectiveDate = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    EffectiveDate = DateTime.ParseExact("07/31/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     UpdatedBy = UserId.DefaultUser,
