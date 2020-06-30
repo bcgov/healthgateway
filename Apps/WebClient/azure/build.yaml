@@ -29,6 +29,13 @@ steps:
     command: 'install'
     workingDir: '$(App.Home)/src/ClientApp'
 
+- task: Npm@1
+  displayName: Run jest Tests
+  inputs:
+    command: 'custom'
+    customCommand: 'test'
+    workingDir: '$(App.Home)/src/ClientApp'
+
 - task: DotNetCoreCLI@2
   displayName: Run dotnet Tests
   inputs:
