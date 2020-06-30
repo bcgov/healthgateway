@@ -1,15 +1,15 @@
 // Medication model
-export default class MedicationSumary {
+export default interface MedicationSumary {
     // Drug Identification Number for the medication.
-    public din?: string;
+    din: string;
     // Brand name of the medication.
-    public brandName?: string;
+    brandName: string;
     // Common or generic name of the medication.
-    public genericName?: string;
+    genericName: string;
     // Max quantity for the medication statement.
-    public maxDailyDosage?: number;
+    maxDailyDosage?: number;
     // Quantity for the medication statement.
-    public quantity?: number;
+    quantity?: number;
     // Drug medication discontinued date, if applicable.
-    public drugDiscontinuedDate?: Date;
+    drugDiscontinuedDate?: Date;
 }

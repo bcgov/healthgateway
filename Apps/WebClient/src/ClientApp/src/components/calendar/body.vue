@@ -115,9 +115,34 @@
                                 class="event-item"
                                 @click="eventClick(event, $event)"
                             >
-                                <div class="icon" :class="getBackground(event)">
+                                <div
+                                    :id="'event-' + event.id"
+                                    class="icon"
+                                    :class="getBackground(event)"
+                                >
                                     <font-awesome-icon :icon="getIcon(event)" />
                                 </div>
+                                <b-tooltip
+                                    variant="secondary"
+                                    placement="right-bottom"
+                                    fallback-placement="clockwise"
+                                    :target="'event-' + event.id"
+                                    triggers="hover"
+                                >
+                                    <strong>
+                                        {{ getTypeName(event.type) }}
+                                    </strong>
+                                    <ul class="text-left pl-3">
+                                        <li
+                                            v-for="entry in event.entries"
+                                            :key="entry.id"
+                                        >
+                                            {{
+                                                getEntryText(entry, event.type)
+                                            }}
+                                        </li>
+                                    </ul>
+                                </b-tooltip>
                             </b-col>
                         </b-row>
                     </b-col>
@@ -132,6 +157,10 @@ import { Component, Prop, Ref } from "vue-property-decorator";
 import DateUtil from "@/utility/dateUtil";
 import moment from "moment";
 import TimelineEntry, { EntryType, DateGroup } from "@/models/timelineEntry";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 
 interface CalendarWeek {
     id: string;
@@ -149,6 +178,7 @@ interface CalendarDay {
 }
 
 interface CalendarEntry {
+    id: string;
     type: EntryType;
     cellIndex: number;
     entries: TimelineEntry[];
@@ -162,16 +192,17 @@ export default class CalendarBodyComponent extends Vue {
     @Prop() monthNames!: string[];
     @Prop() firstDay!: number;
 
-    private isLismit: boolean = true;
     private eventLimit: number = 4;
-    private selectDay: any = {};
+
+    private isHovering: boolean = false;
+    private hoveringEvent: CalendarEntry | null = null;
 
     private get currentDates() {
         return this.getCalendar();
     }
 
     private getCalendar(): CalendarWeek[] {
-        let now = new Date(); // today
+        let now = new Date();
         let current = new Date(this.currentDate);
 
         let startDate = DateUtil.getMonthFirstDate(current);
@@ -183,11 +214,14 @@ export default class CalendarBodyComponent extends Vue {
         let calendar: CalendarWeek[] = [];
 
         for (let perWeek = 0; perWeek < 6; perWeek++) {
-            let week: CalendarWeek = { id: startDate.toString(), days: [] };
+            let week: CalendarWeek = {
+                id: startDate.getTime().toString(),
+                days: [],
+            };
 
             for (let perDay = 0; perDay < 7; perDay++) {
                 week.days.push({
-                    id: startDate.toString() + perDay,
+                    id: startDate.getTime().toString() + "-" + perDay,
                     monthDay: startDate.getDate(),
                     isToday: now.toDateString() == startDate.toDateString(),
                     isCurMonth: startDate.getMonth() == current.getMonth(),
@@ -234,6 +268,7 @@ export default class CalendarBodyComponent extends Vue {
         let groupArrays = Object.keys(groups).map<CalendarEntry>((typeKey) => {
             index++;
             return {
+                id: date.getTime().toString() + "-type-" + typeKey,
                 cellIndex: index,
                 type: Number(typeKey),
                 entries: groups[
@@ -267,14 +302,11 @@ export default class CalendarBodyComponent extends Vue {
     private getBackground(event: CalendarEntry) {
         if (event.type == EntryType.Medication) {
             return "medication";
-        }
-        if (event.type == EntryType.Immunization) {
+        } else if (event.type == EntryType.Immunization) {
             return "immunization";
-        }
-        if (event.type == EntryType.Laboratory) {
+        } else if (event.type == EntryType.Laboratory) {
             return "laboratory";
-        }
-        if (event.type == EntryType.Note) {
+        } else if (event.type == EntryType.Note) {
             return "note";
         }
 
@@ -282,10 +314,26 @@ export default class CalendarBodyComponent extends Vue {
     }
 
     private eventClick(event: CalendarEntry, jsEvent: Event) {
-        console.log("cellIndex", event.cellIndex);
-        console.log("cellIndex", jsEvent);
         jsEvent.stopPropagation();
         this.$emit("eventClick", event, jsEvent);
+    }
+
+    private getTypeName(type: EntryType): string {
+        return EntryType[type];
+    }
+
+    private getEntryText(entry: TimelineEntry, type: EntryType): string {
+        if (type == EntryType.Medication) {
+            return (entry as MedicationTimelineEntry).medication.brandName;
+        } else if (type == EntryType.Immunization) {
+            return (entry as ImmunizationTimelineEntry).immunization.name;
+        } else if (type == EntryType.Laboratory) {
+            return (entry as LaboratoryTimelineEntry).summaryTestType;
+        } else if (type == EntryType.Note) {
+            return (entry as NoteTimelineEntry).title;
+        }
+
+        return "N/A";
     }
 }
 </script>

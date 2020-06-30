@@ -1,21 +1,21 @@
 import MedicationSumary from "./medicationSumary";
 
 // Medication statement model
-export default class MedicationStatement {
+export default interface MedicationStatement {
     // The prescription identifier for this statment.
-    public prescriptionIdentifier?: string;
+    prescriptionIdentifier?: string;
     // Medication statement prescription status.
-    public prescriptionStatus?: string;
+    prescriptionStatus?: string;
     // Date the medication statement was dispensed.
-    public dispensedDate!: Date;
+    dispensedDate: Date;
     // Surname of the Practitioner who issued the medication statement.
-    public practitionerSurname?: string;
+    practitionerSurname?: string;
     // Drug medication discontinued date, if applicable.
-    public directions?: string;
+    directions?: string;
     // Date the medication statement was entered.
-    public dateEntered?: Date;
+    dateEntered?: Date;
     // The medication of this MedicationStatement.
-    public medicationSumary: MedicationSumary = new MedicationSumary();
+    medicationSumary: MedicationSumary;
     // The pharmacy where the medication was filled.
-    public pharmacyId?: string;
+    pharmacyId?: string;
 }

@@ -24,7 +24,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 }
 
 class ImmunizationViewModel {
-    public name?: string;
+    public name: string;
     public status?: string;
     public agents: string;
     public occurrenceDateTime: Date;

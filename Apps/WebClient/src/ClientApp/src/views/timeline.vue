@@ -33,6 +33,28 @@
     border-color: $primary;
     color: $primary;
 }
+
+.view-selector {
+    .btn-outline-primary {
+        font-size: 1em;
+        background-color: white;
+    }
+    .btn-outline-primary:focus {
+        color: white;
+        background-color: $primary;
+    }
+    .btn-outline-primary:hover {
+        color: white;
+        background-color: $primary;
+    }
+    .month-view-btn {
+        border-radius: 5px 0px 0px 5px;
+        border-right: 0px;
+    }
+    .list-view-btn {
+        border-radius: 0px 5px 5px 0px;
+    }
+}
 </style>
 <template>
     <div>
@@ -164,14 +186,56 @@
                         <NoteTimelineComponent :is-add-mode="true" />
                     </b-col>
                 </b-row>
-                <!--LinearTimeline
-                    :timeline-entries="filteredTimelineEntries"
-                    :total-entries="getTotalCount()"
-                /-->
-                <CalendarTimeline
+                <b-row class="view-selector justify-content-end">
+                    <b-col cols="auto" class="pr-0">
+                        <b-btn
+                            class="month-view-btn btn-outline-primary px-2 m-0"
+                            :class="{ active: !isListView }"
+                            @click.stop="toggleMonthView"
+                        >
+                            Month
+                        </b-btn>
+                    </b-col>
+                    <b-col cols="auto" class="pl-0">
+                        <b-btn
+                            class="list-view-btn btn-outline-primary px-2 m-0"
+                            :class="{ active: isListView }"
+                            @click.stop="toggleListView"
+                        >
+                            List
+                        </b-btn>
+                    </b-col>
+                </b-row>
+                <LinearTimeline
+                    v-show="isListView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 />
+                <CalendarTimeline
+                    v-show="!isListView && !isLoading"
+                    :timeline-entries="filteredTimelineEntries"
+                    :total-entries="getTotalCount()"
+                />
+                <b-row v-if="isLoading">
+                    <b-col>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="1" />
+                        </content-placeholders>
+                        <br />
+                        <div class="px-2">
+                            <content-placeholders>
+                                <content-placeholders-heading :img="true" />
+                                <content-placeholders-text :lines="3" />
+                            </content-placeholders>
+                            <br />
+                            <br />
+                            <content-placeholders>
+                                <content-placeholders-heading :img="true" />
+                                <content-placeholders-img />
+                            </content-placeholders>
+                        </div>
+                    </b-col>
+                </b-row>
             </b-col>
             <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
                 <HealthlinkComponent />
@@ -277,6 +341,8 @@ export default class TimelineView extends Vue {
         "You have unsaved changes. Are you sure you want to leave?";
 
     private filterTypes: string[] = [];
+
+    private isListView: boolean = true;
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
@@ -636,6 +702,13 @@ export default class TimelineView extends Vue {
         this.timelineEntries.sort((a, b) =>
             a.date > b.date ? -1 : a.date < b.date ? 1 : 0
         );
+    }
+
+    private toggleListView() {
+        this.isListView = true;
+    }
+    private toggleMonthView() {
+        this.isListView = false;
     }
 
     private printRecords() {

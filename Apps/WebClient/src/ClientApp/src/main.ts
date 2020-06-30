@@ -10,6 +10,7 @@ import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
+import VueContentPlaceholders from "vue-content-placeholders";
 import "@/plugins/registerComponentHooks";
 
 const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
@@ -39,6 +40,7 @@ Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);
+Vue.use(VueContentPlaceholders);
 
 const httpDelegate: IHttpDelegate = container.get(
     DELEGATE_IDENTIFIER.HttpDelegate
