@@ -156,7 +156,7 @@
                             name="notesFilter"
                             value="Note"
                         >
-                            Notes
+                            My Notes
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
