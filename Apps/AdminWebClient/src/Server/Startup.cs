@@ -143,6 +143,8 @@ namespace HealthGateway.AdminWebClient
                 app.UseResponseCompression();
             }
 
+            bool debugerAttached = System.Diagnostics.Debugger.IsAttached;
+
             app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
@@ -150,12 +152,12 @@ namespace HealthGateway.AdminWebClient
                         name: "default",
                         pattern: "{controller}/{action=Index}/{id?}");
 
-                    if (env.IsDevelopment())
+                    if (env.IsDevelopment() && debugerAttached)
                     {
                         endpoints.MapToVueCliProxy(
                             "{*path}",
                             new SpaOptions { SourcePath = "ClientApp" },
-                            npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
+                            npmScript: "serve",
                             regex: "Compiled successfully",
                             forceKill: true);
                     }
@@ -164,6 +166,11 @@ namespace HealthGateway.AdminWebClient
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
+                if (env.IsDevelopment() && !debugerAttached)
+                {
+                    // change this to whatever webpack dev server says it's running on
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+                }
             });
         }
 
