@@ -101,9 +101,9 @@ export default class CalendarComponent extends Vue {
     }
 
     private dispatchEvent() {
-        this.title = moment(this.currentDate).format(this.titleFormat);
         let startDate = DateUtil.getMonthFirstDate(this.headerDate);
         this.$emit("update:currentDate", startDate);
+        this.title = moment(startDate).format(this.titleFormat);
     }
 }
 </script>
