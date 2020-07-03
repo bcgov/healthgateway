@@ -76,6 +76,12 @@ export default class CalendarComponent extends Vue {
     @Prop() titleFormat!: string;
 
     private headerDate: Date = new Date();
+    private leftIcon: string = "chevron-left";
+    private rightIcon: string = "chevron-right";
+
+    public get title(): string {
+        return moment(this.currentDate).format(this.titleFormat);
+    }
 
     @Watch("currentDate")
     public onCurrentDateChange(currentDate: Date) {
@@ -85,10 +91,6 @@ export default class CalendarComponent extends Vue {
     private created() {
         this.dispatchEvent();
     }
-
-    private title: string = "";
-    private leftIcon: string = "chevron-left";
-    private rightIcon: string = "chevron-right";
 
     private previousMonth() {
         this.headerDate = DateUtil.changeMonth(this.currentDate, -1);
@@ -103,7 +105,6 @@ export default class CalendarComponent extends Vue {
     private dispatchEvent() {
         let startDate = DateUtil.getMonthFirstDate(this.headerDate);
         this.$emit("update:currentDate", startDate);
-        this.title = moment(startDate).format(this.titleFormat);
     }
 }
 </script>
