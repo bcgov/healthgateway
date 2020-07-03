@@ -19,6 +19,7 @@
                             <v-data-table
                                 :headers="headers"
                                 :items="communicationList"
+                                :custom-sort="customSort"
                                 class="elevation-1"
                             >
                                 <template
