@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,7 @@ namespace HealthGateway.WebClient.Services
 
         private readonly ILogger logger;
         private readonly IProfileDelegate profileDelegate;
+        private readonly IPreferenceDelegate preferenceDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
@@ -53,6 +54,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="preferenceDelegate">The preference delegate to interact with the DB.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
         /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="configuration">The configuration service.</param>
@@ -64,6 +66,7 @@ namespace HealthGateway.WebClient.Services
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IProfileDelegate profileDelegate,
+            IPreferenceDelegate preferenceDelegate,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,
             IConfigurationService configuration,
@@ -75,6 +78,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
+            this.preferenceDelegate = preferenceDelegate;
             this.emailDelegate = emailDelegate;
             this.emailInviteDelegate = emailInviteDelegate;
             this.configurationService = configuration;
@@ -321,6 +325,41 @@ namespace HealthGateway.WebClient.Services
                 ResultMessage = retVal.Message,
                 ResourcePayload = TermsOfServiceModel.CreateFromDbModel(retVal.Payload),
             };
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel preference)
+        {
+            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(preference)}");
+
+            UserPreference userPreferenceDBModel = preference.ToDbModel();
+
+            DBResult<UserPreference> dbUserPreference = this.preferenceDelegate.InsertUserPreference(userPreferenceDBModel);
+            this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
+
+            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbUserPreference.Payload),
+                ResultStatus = dbUserPreference.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultMessage = dbUserPreference.Message,
+            };
+            return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserPreferenceModel> GetUserPreference(string hdid)
+        {
+            this.logger.LogTrace($"Getting user preference... {hdid}");
+            DBResult<UserPreference> dbUserPreference = this.preferenceDelegate.GetUserPreference(hdid);
+            this.logger.LogDebug($"Finished getting user preference. {JsonSerializer.Serialize(dbUserPreference)}");
+
+            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbUserPreference.Payload),
+                ResultStatus = dbUserPreference.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultMessage = dbUserPreference.Message,
+            };
+            return result;
         }
 
         private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
