@@ -90,7 +90,7 @@ namespace HealthGateway.WebClient.Test.Services
                 emailInviteDelegateMock.Object,
                 configServiceMock.Object,
                 emailer.Object,
-                new Mock<ILegalAgreementDelegate>().Object,
+                legalAgreementDelegateMock.Object,
                 cryptoDelegateMock.Object,
                 notificationServiceMock.Object,
                 messageVerificationDelegateMock.Object);
