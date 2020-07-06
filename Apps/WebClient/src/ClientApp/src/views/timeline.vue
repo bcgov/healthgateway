@@ -678,7 +678,6 @@ export default class TimelineView extends Vue {
     }
 
     private onProtectiveWordSubmit(value: string) {
-        console.log("theValue:", value);
         this.fetchMedicationStatements(value);
     }
 
