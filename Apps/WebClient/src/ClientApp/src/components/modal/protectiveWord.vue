@@ -120,7 +120,7 @@ export default class ProtectiveWordComponent extends Vue {
     private submit() {
         this.show = false;
         this.isVisible = false;
-        return;
+        return this.protectiveWord;
     }
 
     @Emit()
