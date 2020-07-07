@@ -38,7 +38,7 @@ namespace HealthGateway.WebClient.Services
         private const string HostTemplateVariable = "host";
 
         private readonly ILogger logger;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly IPreferenceDelegate preferenceDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             IPreferenceDelegate preferenceDelegate,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,

@@ -93,7 +93,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
 

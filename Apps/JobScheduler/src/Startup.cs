@@ -96,7 +96,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
             services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
-            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
