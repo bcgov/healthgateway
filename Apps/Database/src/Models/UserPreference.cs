@@ -21,7 +21,7 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class UserPreference : AuditableEntity
+    public class UserPreference
     {
         /// <summary>
         /// Gets or sets the user preference id.
