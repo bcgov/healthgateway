@@ -137,6 +137,23 @@
     bottom: 0rem;
     align-self: flex-end;
 }
+
+.popover{
+    background-color: #454749;
+    color: white;
+}
+
+#pop-over-close{
+    float: right;
+    padding-top: 0px;
+    background-color: #454749;
+    color: white;
+    border: none;
+}
+
+#popover-content{
+    color: white;
+}
 </style>
 
 <template>
@@ -213,7 +230,8 @@
                             @click="createNote"
                         >
                             <b-col
-                                title="Add a Note"
+                                id="add-a-note-btn"
+                                title="Add a Note todo"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
@@ -221,6 +239,12 @@
                                     class="button-icon"
                                     size="2x"
                                 />
+                                <b-popover :show.sync="showPopover" ref="popover" target="add-a-note-btn" class="popover">
+                                    <div id="pop-over-close">
+                                        <b-button @click="dismissNoteNotification">x</b-button>
+                                    </div>
+                                    <div id="popover-content">Add Notes to track your important health events e.g. Broke ankle in Cuba</div>
+                                </b-popover>
                             </b-col>
                             <b-col
                                 v-if="isOpen"
@@ -365,12 +389,14 @@ import { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
+import { BPopover } from 'bootstrap-vue';
 library.add(faStream);
 
 const auth: string = "auth";
 const user: string = "user";
 const sidebar: string = "sidebar";
 
+Vue.component('b-popover', BPopover);
 @Component({
     components: {
         FeedbackComponent,
@@ -394,6 +420,7 @@ export default class SidebarComponent extends Vue {
     private name: string = "";
     private windowWidth: number = 0;
     private $bodyElement!: HTMLBodyElement | null;
+    private showPopover: boolean = true;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -487,6 +514,14 @@ export default class SidebarComponent extends Vue {
     private createNote() {
         this.clearOverlay();
         EventBus.$emit("timelineCreateNote");
+    }
+
+    private dismissNoteNotification() {
+        debugger;
+        console.log("Dismissing Note Notification...");
+        this.showPopover = false;
+        this.clearOverlay();
+        EventBus.$emit("dismissNoteNotification");
     }
 
     private printView() {
