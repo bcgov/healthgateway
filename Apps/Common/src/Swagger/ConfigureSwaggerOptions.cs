@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Swagger
         {
             if (options != null)
             {
-                options.RouteTemplate = this.settings.RoutePrefixWithSlash + "{documentName}/swagger.json";
+                options.RouteTemplate = this.settings.RouteTemplatePrefix + "/{documentName}/swagger.json";
                 if (!string.IsNullOrEmpty(this.settings.BasePath))
                 {
                     options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>

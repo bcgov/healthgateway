@@ -60,8 +60,6 @@ namespace HealthGateway.Common.Swagger
                         options.SwaggerEndpoint(
                             $"/{this.settings.RoutePrefixWithSlash}{description.GroupName}/swagger.json",
                             description.GroupName.ToUpperInvariant());
-
-                        options.RoutePrefix = this.settings.RoutePrefix;
                     });
             }
         }

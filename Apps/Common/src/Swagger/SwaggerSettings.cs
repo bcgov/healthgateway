@@ -40,6 +40,11 @@ namespace HealthGateway.Common.Swagger
         public string? RoutePrefix { get; set; }
 
         /// <summary>
+        /// Gets or sets RoutePrefix.
+        /// </summary>
+        public string? RouteTemplatePrefix { get; set; } = "swagger";
+
+        /// <summary>
         /// Gets or sets BasePath.
         /// </summary>
         public string? BasePath { get; set; }
