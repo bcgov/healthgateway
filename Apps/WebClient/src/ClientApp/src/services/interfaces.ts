@@ -20,6 +20,7 @@ import UserNote from "@/models/userNote";
 import Communication from "@/models/communication";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
+import UserPreference from "../models/userPreference";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -90,6 +91,10 @@ export interface IUserProfileService {
     validateSMS(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
     updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
+    getUserPreference(hdid: string): Promise<UserPreference>;
+    createUserPreference(
+        userPreference: UserPreference
+    ): Promise<UserPreference>;
 }
 
 export interface IUserFeedbackService {

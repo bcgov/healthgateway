@@ -187,11 +187,6 @@
     align-self: flex-end;
 }
 
-.popover {
-    background-color: #454749;
-    color: white;
-}
-
 .popover-body {
     padding-right: 0px !important;
 }
@@ -199,13 +194,17 @@
 #pop-over-close {
     float: right;
     padding-top: 0px;
-    background-color: #454749;
-    color: white;
+    color: black;
     border: none;
+    background-color: transparent;
 }
 
 #popover-content {
-    color: white;
+    color: black;
+}
+
+#auto-click-show-popover-btn {
+    display: none;
 }
 </style>
 
@@ -316,9 +315,9 @@
                             :class="{ selected: isTimeline }"
                         >
                             <b-col
+                                v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
-                                v-show="isOpen"
                             ></b-col>
                             <b-col
                                 title="Timeline"
@@ -343,13 +342,14 @@
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
+                            id="add-a-note-row"
                             class="align-items-center border rounded-pill p-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
                         >
                             <b-col
                                 id="add-a-note-btn"
-                                title="Add a Note"
+                                title="Add a Note todo"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
@@ -357,25 +357,6 @@
                                     class="button-icon sub-menu"
                                     size="2x"
                                 />
-                                <b-popover
-                                    ref="popover"
-                                    :show.sync="showPopover"
-                                    :disabled.sync="disabledPopover"
-                                    target="add-a-note-btn"
-                                    class="popover"
-                                >
-                                    <div>
-                                        <b-button
-                                            id="pop-over-close"
-                                            @click="dismissNoteNotification"
-                                            >x</b-button
-                                        >
-                                    </div>
-                                    <div id="popover-content">
-                                        Add Notes to track your important health
-                                        events e.g. Broke ankle in Cuba
-                                    </div>
-                                </b-popover>
                             </b-col>
                             <b-col
                                 v-if="isOpen"
@@ -383,9 +364,17 @@
                                 class="button-title sub-menu d-none"
                             >
                                 <span>Add a Note</span>
+                                <button
+                                    id="auto-click-show-popover-btn"
+                                    ref="showPopoverBtnRef"
+                                    v-el:showPopoverBtn
+                                    type="button"
+                                    @click="autoShowPopover"
+                                >
+                                    .
+                                </button>
                             </b-col>
                         </b-row>
-
                         <!-- Print Button -->
                         <b-row
                             class="align-items-center border rounded-pill py-2 button-container my-4"
@@ -409,6 +398,28 @@
                         </b-row>
                     </div>
                     <br />
+                    <div v-show="isTimeline">
+                        <b-popover
+                            ref="popover"
+                            :show.sync="showPopover"
+                            :disabled.sync="disabledPopover"
+                            target="add-a-note-row"
+                            class="popover"
+                            variant="dark"
+                        >
+                            <div>
+                                <b-button
+                                    id="pop-over-close"
+                                    @click="dismissNoteNotification"
+                                    >x</b-button
+                                >
+                            </div>
+                            <div id="popover-content">
+                                Add Notes to track your important health events
+                                e.g. Broke ankle in Cuba
+                            </div>
+                        </b-popover>
+                    </div>
                 </b-col>
             </b-row>
 
@@ -448,7 +459,10 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { IAuthenticationService } from "@/services/interfaces";
+import {
+    IAuthenticationService,
+    IUserProfileService,
+} from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
@@ -488,14 +502,16 @@ export default class SidebarComponent extends Vue {
     private name: string = "";
     private windowWidth: number = 0;
     private $bodyElement!: HTMLBodyElement | null;
-    private showPopover: boolean = true;
+    private userProfileService!: IUserProfileService;
+    private hdid: string = "";
+    private showPopover: boolean = false;
     private disabledPopover: boolean = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
         // If there is no name in the scope, retrieve it from the service.
         if (this.oidcIsAuthenticated && !this.name) {
-            this.loadName();
+            this.loadUserProfile();
         }
     }
 
@@ -518,8 +534,11 @@ export default class SidebarComponent extends Vue {
         this.authenticationService = container.get(
             SERVICE_IDENTIFIER.AuthenticationService
         );
+        this.userProfileService = container.get(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
         if (this.oidcIsAuthenticated) {
-            this.loadName();
+            this.loadUserProfile();
         }
 
         // Setup the transition listener to avoid text wrapping
@@ -556,18 +575,42 @@ export default class SidebarComponent extends Vue {
     }
 
     private toggleOpen() {
+        debugger;
         this.toggleSidebar();
     }
 
-    private loadName(): void {
+    private loadUserProfile(): void {
         this.authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
                 this.name = this.getFullname(
                     oidcUser.given_name,
                     oidcUser.family_name
                 );
+                this.hdid = oidcUser.hdid;
+                this.loadUserPreference();
             }
         });
+    }
+
+    private loadUserPreference(): void {
+        this.userProfileService
+            .getUserPreference(this.hdid)
+            .then((userPreference) => {
+                if (userPreference) {
+                    if (userPreference.dismissedMyNotePopover === true) {
+                        this.showPopover = false;
+                        this.disabledPopover = true;
+                    } else {
+                        this.disabledPopover = false;
+                        this.showPopover = true;
+                        // this.$refs.showPopoverBtnRef.$el.click();
+                    }
+                }
+            });
+    }
+
+    private autoShowPopover(): void {
+        console.log("show Popover");
     }
 
     private getFullname(firstName: string, lastName: string): string {
@@ -586,12 +629,25 @@ export default class SidebarComponent extends Vue {
     }
 
     private dismissNoteNotification() {
-        debugger;
         console.log("Dismissing Note Notification...");
-        this.showPopover = false;
-        this.disabledPopover = true;
+        this.userProfileService
+            .createUserPreference({
+                hdId: this.hdid,
+                dismissedMyNotePopover: true,
+            })
+            .then((userPreference) => {
+                if (userPreference) {
+                    if (userPreference.dismissedMyNotePopover === true) {
+                        this.showPopover = false;
+                        this.disabledPopover = true;
+                    } else {
+                        this.disabledPopover = false;
+                        this.showPopover = true;
+                    }
+                }
+            });
         this.clearOverlay();
-        EventBus.$emit("dismissNoteNotification");
+        // EventBus.$emit("dismissNoteNotification");
     }
 
     private printView() {
