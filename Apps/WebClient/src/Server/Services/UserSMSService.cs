@@ -35,7 +35,7 @@ namespace HealthGateway.WebClient.Services
         public const int MaxVerificationAttempts = 5;
         private const int VerificationExpiryDays = 5;
         private readonly ILogger logger;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
 
@@ -49,7 +49,7 @@ namespace HealthGateway.WebClient.Services
         public UserSMSService(
             ILogger<UserSMSService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
         {
             this.logger = logger;

@@ -44,7 +44,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ILogger<NotifyUpdatedLegalAgreementsJob> logger;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
@@ -65,7 +65,7 @@ namespace Healthgateway.JobScheduler.Jobs
             ILogger<NotifyUpdatedLegalAgreementsJob> logger,
             IApplicationSettingsDelegate applicationSettingsDelegate,
             ILegalAgreementDelegate legalAgreementDelegate,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             GatewayDbContext dbContext)
         {

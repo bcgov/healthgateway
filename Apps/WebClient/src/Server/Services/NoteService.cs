@@ -33,7 +33,7 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="noteDelegate">Injected Note delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
+        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;

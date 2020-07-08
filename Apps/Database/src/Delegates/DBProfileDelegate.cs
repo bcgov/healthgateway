@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
-    public class DBProfileDelegate : IProfileDelegate
+    public class DBProfileDelegate : IUserProfileDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;

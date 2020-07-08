@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,5 +66,19 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <returns>The wrapped terms of service.</returns>
         RequestResult<TermsOfServiceModel> GetActiveTermsOfService();
+
+        /// <summary>
+        /// Creates a User Preference in the backend.
+        /// </summary>
+        /// <param name="userPreference">The userPreference to create.</param>
+        /// <returns>A userPreference wrapped in a RequestResult.</returns>
+        RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreference);
+
+        /// <summary>
+        /// Gets the user preference model.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>The wrappeed user reference.</returns>
+        RequestResult<UserPreferenceModel> GetUserPreference(string hdid);
     }
 }

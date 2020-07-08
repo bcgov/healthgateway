@@ -32,7 +32,7 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly ICommentDelegate commentDelegate;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="commentDelegate">Injected Comment delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
+        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.commentDelegate = commentDelegate;
