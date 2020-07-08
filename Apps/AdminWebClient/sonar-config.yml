@@ -1,0 +1,10 @@
+properties:
+  sonar.coverage.exclusions: '**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs'
+  sonar.cs.opencover.reportsPaths: '**/coverage.opencover.xml'
+  sonar.cs.xunit.reportsPaths: '**/xUnitResults/results.xml'
+  sonar.test.inclusions: '**/*.test.ts'
+  sonar.scm.disabled: 'true'
+test-runners:
+  - xunit
+paths:
+  xunit: ./test/unit/AdminWebClientTests.csproj

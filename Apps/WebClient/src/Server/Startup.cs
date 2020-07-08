@@ -88,7 +88,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
 
             // Add delegates
-            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
@@ -153,6 +153,8 @@ namespace HealthGateway.WebClient
                 app.UseResponseCompression();
             }
 
+            bool debugerAttached = System.Diagnostics.Debugger.IsAttached;
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
@@ -163,15 +165,25 @@ namespace HealthGateway.WebClient
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
 
-                if (env.IsDevelopment())
+                if (env.IsDevelopment() && debugerAttached)
                 {
                     endpoints.MapToVueCliProxy(
                         "{*path}",
                         new SpaOptions { SourcePath = "ClientApp" },
-                        npmScript: System.Diagnostics.Debugger.IsAttached ? "serve" : null,
+                        npmScript: "serve",
                         port:8585,
                         regex: "Compiled successfully",
                         forceKill: true);
+                }
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+                if (env.IsDevelopment() && !debugerAttached)
+                {
+                    // change this to whatever webpack dev server says it's running on
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
                 }
             });
 

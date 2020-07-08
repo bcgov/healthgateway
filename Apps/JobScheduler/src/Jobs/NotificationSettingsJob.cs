@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,10 +34,14 @@ namespace Healthgateway.JobScheduler.Jobs
     public class NotificationSettingsJob : INotificationSettingsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
+        private const string JobConfigKey = "NotificationSettings";
+        private const string JobEnabledKey = "Enabled";
+
         private readonly IConfiguration configuration;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly IAuthenticationDelegate authDelegate;
+        private readonly bool jobEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsJob"/> class.
@@ -52,6 +56,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger = logger;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
             this.authDelegate = authDelegate;
+            this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, false);
         }
 
         /// <inheritdoc />
@@ -59,30 +64,37 @@ namespace Healthgateway.JobScheduler.Jobs
         public void PushNotificationSettings(string notificationSettingsJSON)
         {
             this.logger.LogDebug($"Queueing Notification Settings push to PHSA...");
-            var options = new JsonSerializerOptions
+            if (this.jobEnabled)
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    WriteIndented = true,
+                };
 
-            NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
-            string? accessToken = this.authDelegate.AuthenticateAsUser().AccessToken;
+                NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
+                string? accessToken = this.authDelegate.AuthenticateAsUser().AccessToken;
 
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
-                throw new Exception($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                    throw new Exception($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                }
+                else
+                {
+                    RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
+                                    this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                    if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                    {
+                        this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                        throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                    }
+                }
             }
             else
             {
-                RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
-                                this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
-                if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
-                {
-                    this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
-                    throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
-                }
+                this.logger.LogInformation("Job has been disabled by configuration");
             }
 
             this.logger.LogDebug($"Finished queueing Notification Settings push.");

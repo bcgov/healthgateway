@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
-        public CommunicationService(ILogger<UserFeedbackService> logger, ICommunicationDelegate communicationDelegate)
+        public CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate)
         {
             this.logger = logger;
             this.communicationDelegate = communicationDelegate;
@@ -62,6 +62,32 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
+        public RequestResult<Communication> Update(Communication communication)
+        {
+            if (ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            {
+                this.logger.LogTrace($"Updating communication... {JsonConvert.SerializeObject(communication)}");
+
+                DBResult<Communication> dbResult = this.communicationDelegate.Update(communication);
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = dbResult.Payload,
+                    ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                    ResultMessage = dbResult.Message,
+                };
+            }
+            else
+            {
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = null,
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Effective Date should be before Expiry Date.",
+                };
+            }
+        }
+
+        /// <inheritdoc />
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace($"Getting communication entries...");
@@ -73,6 +99,18 @@ namespace HealthGateway.Admin.Services
                 ResultMessage = dBResult.Message,
             };
             return requestResult;
+        }
+
+        private static bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)
+        {
+            if (effectiveDate > expiryDate)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

@@ -1,28 +1,28 @@
 export enum PhoneType {
-  Fax = "F",
-  Normal = "N",
+    Fax = "F",
+    Normal = "N",
 }
 
 // Pharmacy model
-export default class Pharmacy {
-  // Pharmacy id.
-  public pharmacyId?: string;
-  // Name.
-  public name?: string;
-  // Address line 1.
-  public addressLine1?: string;
-  // Address line 2.
-  public addressLine2?: string;
-  // City.
-  public city?: string;
-  // Province.
-  public province?: string;
-  // Postal code.
-  public postalCode?: string;
-  // Country code.
-  public countryCode?: string;
-  // Phone type.
-  public phoneType?: PhoneType;
-  // Phone number.
-  public phoneNumber?: string;
+export default interface Pharmacy {
+    // Pharmacy id.
+    pharmacyId?: string;
+    // Name.
+    name?: string;
+    // Address line 1.
+    addressLine1?: string;
+    // Address line 2.
+    addressLine2?: string;
+    // City.
+    city?: string;
+    // Province.
+    province?: string;
+    // Postal code.
+    postalCode?: string;
+    // Country code.
+    countryCode?: string;
+    // Phone type.
+    phoneType?: PhoneType;
+    // Phone number.
+    phoneNumber?: string;
 }

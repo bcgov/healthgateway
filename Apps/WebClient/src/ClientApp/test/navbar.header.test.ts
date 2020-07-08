@@ -6,22 +6,54 @@ import Vuex from "vuex";
 import store from "@/store/store";
 
 describe("NavBar Header Component", () => {
-  const localVue = createLocalVue();
-  localVue.use(VueRouter);
-  localVue.use(boostrapVue);
-  localVue.use(Vuex);
-  const router = new VueRouter();
+    const localVue = createLocalVue();
+    localVue.use(VueRouter);
+    localVue.use(boostrapVue);
+    localVue.use(Vuex);
+    const router = new VueRouter();
 
-  const wrapper = shallowMount(HeaderComponent, {
-    localVue,
-    store,
-    router,
-    stubs: {
-      "font-awesome-icon": true,
-    },
-  });
+    const customStore = new Vuex.Store({
+        modules: {
+            sidebar: {
+                namespaced: true,
+                getters: {
+                    isOpen: () => {
+                        return true;
+                    },
+                },
+            },
+            auth: {
+                namespaced: true,
+                getters: {
+                    oidcIsAuthenticated: () => {
+                        return true;
+                    },
+                },
+            },
+            user: {
+                namespaced: true,
+                getters: {
+                    userIsRegistered: () => {
+                        return true;
+                    },
+                    userIsActive: () => {
+                        return true;
+                    },
+                },
+            },
+        },
+    });
 
-  test("is a Vue instance", () => {
-    expect(wrapper.isVueInstance()).toBeTruthy();
-  });
+    const wrapper = shallowMount(HeaderComponent, {
+        localVue,
+        store: customStore,
+        router,
+        stubs: {
+            "font-awesome-icon": true,
+        },
+    });
+
+    test("is a Vue instance", () => {
+        expect(wrapper).toBeTruthy();
+    });
 });

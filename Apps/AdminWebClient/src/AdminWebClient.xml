@@ -112,6 +112,16 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Update(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Updates a given communication to the backend.
+            </summary>
+            <returns>The updated communication wrapped in a RequestResult.</returns>
+            <param name="communication">The communication to be updated.</param>
+            <response code="200">Returns the communication json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="M:HealthGateway.Admin.Controllers.CommunicationController.GetAll">
             <summary>
             Gets all communication entries from the backend.
@@ -183,6 +193,15 @@
             </summary>
             <returns>The count of waitlisted users.</returns>
             <response code="200">Returns the count of waitlisted users.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetUsersWithNotesCount">
+            <summary>
+            Retrieves the count of users with notes on their timeline.
+            </summary>
+            <returns>The count of users with notes.</returns>
+            <response code="200">Returns the count of users with notes.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
@@ -278,6 +297,11 @@
         <member name="P:HealthGateway.Admin.Models.AdminConfiguration.WindowsTimeZoneId">
             <summary>
             Gets or sets the windows timezone id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminConfiguration.MinimumNotesCount">
+            <summary>
+            Gets or sets the minimum number of notes to be counted.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.AdminEmail">
@@ -623,7 +647,7 @@
         <member name="T:HealthGateway.Admin.Services.CommunicationService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.UserFeedbackService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CommunicationService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CommunicationService"/> class.
             </summary>
@@ -631,6 +655,9 @@
             <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.CommunicationService.Add(HealthGateway.Database.Models.Communication)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Update(HealthGateway.Database.Models.Communication)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.CommunicationService.GetAll">
@@ -657,10 +684,11 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
+            <param name="noteDelegate">The note delegate to interact with the DB.</param>
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
             <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
             <param name="config">The configuration provider.</param>
@@ -675,6 +703,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetWaitlistUserCount">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetUsersWithNotesCount">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.EmailAdminService">
@@ -749,7 +780,19 @@
             <param name="communication">The communication to add to the backend.</param>
             <returns>Returns the added communication wrapped in a RequestResult.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:HealthGateway.Admin.Services.ICommunicationService.GetAll" -->
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Update(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Updates a Communication to the database.
+            </summary>
+            <param name="communication">The communication to update to the backend.</param>
+            <returns>Returns the updated communication wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.GetAll">
+            <summary>
+            Gets all communication entries from the database.
+            </summary>
+            <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Services.IConfigurationService">
             <summary>
             Admin configuration.
@@ -790,6 +833,12 @@
             Retrieves the count of waitlisted users.
             </summary>
             <returns>The count of users waiting for an invite.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetUsersWithNotesCount">
+            <summary>
+            Retrieves the count of users with notes on their timeline.
+            </summary>
+            <returns>The count of users with notes.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IEmailAdminService">
             <summary>

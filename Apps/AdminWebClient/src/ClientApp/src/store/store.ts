@@ -8,14 +8,14 @@ import { drawer } from "./modules/drawer/drawer";
 Vue.use(Vuex);
 
 const storeOptions: StoreOptions<RootState> = {
-  state: {
-    version: "1.0.0" // a simple property
-  },
-  modules: {
-    config,
-    auth,
-    drawer
-  }
+    state: {
+        version: "1.0.0" // a simple property
+    },
+    modules: {
+        config,
+        auth,
+        drawer
+    }
 };
 
 export default new Vuex.Store<RootState>(storeOptions);

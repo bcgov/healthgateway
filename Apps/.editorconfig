@@ -1,4 +1,14 @@
-﻿# NOTE: Requires **VS2019 16.3** or later
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+tab_width = 4
+trim_trailing_whitespace = true
+charset = utf-8
+
+# NOTE: Requires **VS2019 16.3** or later
 
 # All Rules Enabled with default severity
 # Description: All Rules are enabled with default severity. Rules with IsEnabledByDefault = false are force enabled with default severity.

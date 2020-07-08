@@ -45,7 +45,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
@@ -103,7 +103,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
@@ -151,7 +151,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
@@ -200,7 +200,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
@@ -248,7 +248,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
@@ -284,7 +284,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
@@ -320,7 +320,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()
@@ -356,7 +356,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
             };
 
-            Mock<IProfileDelegate> profileDelegateMock = new Mock<IProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(profileDBResult);
 
             UserComment userComment = new UserComment()

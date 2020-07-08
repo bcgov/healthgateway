@@ -44,5 +44,11 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <returns>The count of users waiting for an invite.</returns>
         int GetWaitlistUserCount();
+
+        /// <summary>
+        /// Retrieves the count of users with notes on their timeline.
+        /// </summary>
+        /// <returns>The count of users with notes.</returns>
+        int GetUsersWithNotesCount();
     }
 }

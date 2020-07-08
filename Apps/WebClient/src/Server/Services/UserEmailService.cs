@@ -31,7 +31,7 @@ namespace HealthGateway.WebClient.Services
         private const int MaxVerificationAttempts = 5;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
 
@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient.Services
         public UserEmailService(
             ILogger<UserEmailService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService)
         {

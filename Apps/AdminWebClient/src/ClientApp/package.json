@@ -9,11 +9,16 @@
     "lintfix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.29",
+    "@fortawesome/free-solid-svg-icons": "^5.13.1",
+    "@fortawesome/vue-fontawesome": "^0.1.10",
     "core-js": "^3.4.7",
     "date-fns": "^2.8.1",
     "inversify": "^5.0.1",
+    "moment": "^2.27.0",
     "reflect-metadata": "^0.1.13",
     "register-service-worker": "^1.6.2",
+    "vee-validate": "^3.3.5",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0",
     "vue-meta": "^2.3.2",
