@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -319,6 +319,49 @@ namespace HealthGateway.WebClient.Controllers
 
             bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Gets the user preference.
+        /// </summary>
+        /// <returns>The user preference model wrapped in a request result.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">Returns the user preference json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/userpreference")]
+        [Authorize(Policy = UserPolicy.Read)]
+        public IActionResult GetUserPreference(string hdid)
+        {
+            RequestResult<UserPreferenceModel> result = this.userProfileService.GetUserPreference(hdid);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Posts a user preference json to be inserted into the database.
+        /// </summary>
+        /// <returns>The http status.</returns>
+        /// <param name="userPreference">The user preference model.</param>
+        /// <response code="200">The user preference record was saved.</response>
+        /// <response code="400">The user preference object is invalid.</response>
+        /// <response code="409">The user preference was already inserted.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPost]
+        [Route("{hdid}/userpreference")]
+        [Authorize(Policy = UserPolicy.Write)]
+        public IActionResult CreateUserPreference(UserPreferenceModel userPreference)
+        {
+            if (userPreference == null)
+            {
+                return new BadRequestResult();
+            }
+            else
+            {
+                RequestResult<UserPreferenceModel> result = this.userProfileService.CreateUserPreference(userPreference);
+                return new JsonResult(result);
+            }
         }
     }
 }

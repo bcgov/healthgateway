@@ -64,7 +64,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -122,7 +122,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -178,7 +178,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -240,7 +240,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
 
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
             preferenceDelegateMock.Setup(s => s.InsertUserPreference(It.Is<UserPreference>(x => x.DismissedMyNotePopover == dbUserPreference.DismissedMyNotePopover))).Returns(insertResult);
 
             IUserProfileService service = new UserProfileService(
@@ -288,7 +288,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
 
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
             preferenceDelegateMock.Setup(s => s.GetUserPreference(hdid)).Returns(readResult);
 
             IUserProfileService service = new UserProfileService(

@@ -39,7 +39,7 @@ namespace HealthGateway.WebClient.Services
 
         private readonly ILogger logger;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IPreferenceDelegate preferenceDelegate;
+        private readonly IUserPreferenceDelegate preferenceDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
@@ -66,7 +66,7 @@ namespace HealthGateway.WebClient.Services
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IUserProfileDelegate profileDelegate,
-            IPreferenceDelegate preferenceDelegate,
+            IUserPreferenceDelegate preferenceDelegate,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,
             IConfigurationService configuration,
@@ -328,11 +328,11 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel preference)
+        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreference)
         {
-            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(preference)}");
+            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(userPreference)}");
 
-            UserPreference userPreferenceDBModel = preference.ToDbModel();
+            UserPreference userPreferenceDBModel = userPreference.ToDbModel();
 
             DBResult<UserPreference> dbUserPreference = this.preferenceDelegate.InsertUserPreference(userPreferenceDBModel);
             this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
