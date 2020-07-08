@@ -12,15 +12,14 @@ The HealthGateway project has three realms assigned to it for Dev, Test and prod
 
 ### Test and Demo Keycloak
 
-<https://sso-tes.pathfinder.gov.bc.ca/auth/realms/ff09qn3f>
+<https://sso-test.pathfinder.gov.bc.ca/auth/realms/ff09qn3f>
 
 ### Production Keycloak
 
 <https://sso.pathfinder.gov.bc.ca/auth/realms/ff09qn3f>
 
-## Configurations
 
-### Realm Settings
+## Realm Settings
 
 Realm settings establish the basic realm ID, in our case a license-plate style realm id is assigned by the Keycloak administrators.  The fact that it is enabled, and that we will use User-Managed Access (UMA Compliant) for delegating access to resources whether person-to-person, or person-to-client app.
 
@@ -37,25 +36,45 @@ OpenID endpoint discovery URL is an important end point for discovering the usef
 | ------ | ------|
 |OpenID Endpoint Configuration | <https://sso-dev.pathfinder.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration> |
 
-### Clients
+## Clients
 
 Aside from the Keycloak built-in clients, such as 'account', 'admin-cli', we add the following clients for HealthGateway:
 
-| healthgateway | This is the main web client application. It uses OIDC to authenticate the user. It is an SPA responsive design web application |
-| healthgateway-admin | This is the administrative web application used by staff. It requires an IDIR account to gain access. |
-| medication-service | This represents the HealthGateway medication service resource server. We use this client to ensure that only it can access the PharmaNet HNSecure endpoints. This can be deprecated after deploying the ODR service connection |
-| phsa-cdc | This is a new client that represents the PHSA client application to access HealthGateway services, particularly our Patient information service. It was added to support COVID-19 lab results access. |
+| Client ID | Access Type | Consent Required | Direct Access Grant | Service Accounts | Description |
+| ------- | ------ | ------ | ------ | ------ | ------ |
+| healthgateway | public | OFF | OFF | OFF | This is the main web client application. It uses OIDC to authenticate the user. It is an SPA responsive design web application |
+| healthgateway-admin | confidential | OFF | ON | ON |  This is the administrative web application used by staff. It requires an IDIR account to gain access. |
+| phsa-cdc | confidential | OFF | ON | ON | This is a new client that represents the PHSA client application to access HealthGateway services, particularly our Patient information service. It was added to support COVID-19 lab results access. |
 
 
 We also add new clients for trusted third-party applications to be consented by the citizen to access the resources on their behalf. This is not yet supported, but is planned, further empowering citizens of BC to make use of additional health services by conveniently allowing applications to access their health records for them.
 
 
 
-### Client Scopes
+## Client Scopes
+Client Scopes determine what resource owner claims can be asked for. For example, if a client is assigned the scope 'patient/Patient.read', and HL7 FHIR type scope, and 'Requires Consent' is turned off for that client, then that client can call resources that require the presence of that scope in the access_token.
 
-### Roles
+When a scope is optional, it just means that the client must explicitely request it as part of the OAuth2 flow that gathers the access_token, i.e. code flow with OIDC, as an example.
 
-### Identity Providers
+Clients, such as those listed above, can only request or be assigned scopes that are defined in this section of the configuration.
+
+The scopes below listed below are only those that are not OpenID Connect built-in, but have been added and configured.
+
+| Scope Name | Description | Display on Consent Screen | Mapper |
+| ------ | -------- | ---------- | ------ |
+| audience | Resolves the audience of the client | OFF | audience-resolve |
+| patient/Immunization.read | HL7 FHIR scope to read a specific patient's immunization records | ON | n/a |
+| patient/Laboratory.read | HL7 FJIR-inspired scope to read a patient's Laboratory records | ON | n/a |
+| patient/MedicationDispense.read | HL7 FHIR scope to read a patient's Medication History | ON | n/a |
+| patient/Patient.read | HL7 FHIR scope to read patient demongraphics record | ON | n/a |
+
+
+
+
+
+## Roles
+
+## Identity Providers
 
 
 
