@@ -96,7 +96,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = model.Id,
                 HdId = model.HdId,
-                JournalDateTime = DateTime.SpecifyKind(model.JournalDateTime, DateTimeKind.Unspecified),
+                JournalDateTime = model.JournalDateTime,
                 Version = model.Version,
                 CreatedDateTime = model.CreatedDateTime,
                 CreatedBy = model.CreatedBy,
