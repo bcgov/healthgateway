@@ -138,12 +138,16 @@
     align-self: flex-end;
 }
 
-.popover{
+.popover {
     background-color: #454749;
     color: white;
 }
 
-#pop-over-close{
+.popover-body {
+    padding-right: 0px !important;
+}
+
+#pop-over-close {
     float: right;
     padding-top: 0px;
     background-color: #454749;
@@ -151,7 +155,7 @@
     border: none;
 }
 
-#popover-content{
+#popover-content {
     color: white;
 }
 </style>
@@ -231,7 +235,7 @@
                         >
                             <b-col
                                 id="add-a-note-btn"
-                                title="Add a Note todo"
+                                title="Add a Note"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
@@ -239,11 +243,24 @@
                                     class="button-icon"
                                     size="2x"
                                 />
-                                <b-popover :show.sync="showPopover" ref="popover" target="add-a-note-btn" class="popover">
-                                    <div id="pop-over-close">
-                                        <b-button @click="dismissNoteNotification">x</b-button>
+                                <b-popover
+                                    ref="popover"
+                                    :show.sync="showPopover"
+                                    :disabled.sync="disabledPopover"
+                                    target="add-a-note-btn"
+                                    class="popover"
+                                >
+                                    <div>
+                                        <b-button
+                                            id="pop-over-close"
+                                            @click="dismissNoteNotification"
+                                            >x</b-button
+                                        >
                                     </div>
-                                    <div id="popover-content">Add Notes to track your important health events e.g. Broke ankle in Cuba</div>
+                                    <div id="popover-content">
+                                        Add Notes to track your important health
+                                        events e.g. Broke ankle in Cuba
+                                    </div>
                                 </b-popover>
                             </b-col>
                             <b-col
@@ -389,14 +406,14 @@ import { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
-import { BPopover } from 'bootstrap-vue';
+import { BPopover } from "bootstrap-vue";
 library.add(faStream);
 
 const auth: string = "auth";
 const user: string = "user";
 const sidebar: string = "sidebar";
 
-Vue.component('b-popover', BPopover);
+Vue.component("b-popover", BPopover);
 @Component({
     components: {
         FeedbackComponent,
@@ -421,6 +438,7 @@ export default class SidebarComponent extends Vue {
     private windowWidth: number = 0;
     private $bodyElement!: HTMLBodyElement | null;
     private showPopover: boolean = true;
+    private disabledPopover: boolean = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -520,6 +538,7 @@ export default class SidebarComponent extends Vue {
         debugger;
         console.log("Dismissing Note Notification...");
         this.showPopover = false;
+        this.disabledPopover = true;
         this.clearOverlay();
         EventBus.$emit("dismissNoteNotification");
     }
