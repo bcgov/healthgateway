@@ -407,17 +407,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures the app to to use content security policies.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
-        /// <param name="nonceService">Service that provides nonce utilities.</param>
-        public void UseContentSecurityPolicy(IApplicationBuilder app, INonceService nonceService)
+        public void UseContentSecurityPolicy(IApplicationBuilder app)
         {
             IConfigurationSection cspSection = this.configuration.GetSection("ContentSecurityPolicy");
             string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
             string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
             string scriptSrc = cspSection.GetValue<string>("script-src", string.Empty);
-            string nonce = nonceService.GetCurrentNonce();
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-{nonce}' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data: 'nonce-{nonce}'; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data:; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
                 await next().ConfigureAwait(true);
             });
         }

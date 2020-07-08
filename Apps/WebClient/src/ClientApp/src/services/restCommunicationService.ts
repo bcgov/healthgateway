@@ -5,7 +5,7 @@ import Communication from "@/models/communication";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
-    private readonly BASE_URI: string = "v1/api/Communication";
+    private readonly BASE_URI: string = "/v1/api/Communication";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {

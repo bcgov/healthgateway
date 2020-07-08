@@ -82,7 +82,6 @@ namespace HealthGateway.WebClient
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<ICommentService, CommentService>();
-            services.AddSingleton<INonceService, NonceService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
@@ -123,8 +122,7 @@ namespace HealthGateway.WebClient
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        /// <param name="nonceService">Service that provides nonce utilities.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, INonceService nonceService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Contract.Requires(env != null);
 
@@ -133,7 +131,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseContentSecurityPolicy(app, nonceService);
+            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
 
             if (env.IsDevelopment())
@@ -158,8 +156,6 @@ namespace HealthGateway.WebClient
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapFallbackToController("Index", "Home");
-
                 endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     name: "default",

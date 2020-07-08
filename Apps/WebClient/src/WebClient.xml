@@ -157,35 +157,6 @@
             </summary>
             <returns>The default view.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Controllers.HomeController">
-            <summary>
-            HomeController for Vue WebClient app.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.HomeController.#ctor(HealthGateway.Common.Services.INonceService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.HomeController"/> class.
-            </summary>
-            <param name="nonceService">The NonceService to use.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.HomeController.Index">
-            <summary>
-            The default page for the home controller.
-            </summary>
-            <returns>The default view.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.HomeController.Logo">
-            <summary>
-            The bc gov logo image.
-            </summary>
-            <returns>The logo image.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.HomeController.Error">
-            <summary>
-            The default page for error.
-            </summary>
-            <returns>The default view.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Controllers.NoteController">
             <summary>
             Web API to handle patient notes interactions.
@@ -1378,13 +1349,12 @@
             </summary>
             <param name="services">The injected services provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,HealthGateway.Common.Services.INonceService)">
+        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
             </summary>
             <param name="app">The application builder.</param>
             <param name="env">The hosting environment.</param>
-            <param name="nonceService">Service that provides nonce utilities.</param>
         </member>
     </members>
 </doc>

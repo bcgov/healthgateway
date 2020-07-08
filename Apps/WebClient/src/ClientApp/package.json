@@ -4,10 +4,10 @@
   "version": "0.2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name app-entry src/main.ts --inline-vue",
+    "build": "vue-cli-service build",
     "test": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\"",
-    "vue-help": "vue-cli-service help lint"
+    "vue-help": "vue-cli-service help"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",

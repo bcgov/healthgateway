@@ -9,7 +9,7 @@ import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 
 function handleError(commit: Commit, error: Error) {
-    console.log("ERROR:" + error);
+    console.log("UserProfile ERROR:" + error);
     commit("userError");
 }
 
