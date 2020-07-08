@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Services
     public class DashboardService : IDashboardService
     {
         private readonly INoteDelegate noteDelegate;
-        private readonly IProfileDelegate userProfileDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IConfiguration configuration;
         private readonly AdminConfiguration adminConfiguration;
@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Services
         /// <param name="config">The configuration provider.</param>
         public DashboardService(
             INoteDelegate noteDelegate,
-            IProfileDelegate userProfileDelegate,
+            IUserProfileDelegate userProfileDelegate,
             IBetaRequestDelegate betaRequestDelegate,
             IConfiguration config)
         {

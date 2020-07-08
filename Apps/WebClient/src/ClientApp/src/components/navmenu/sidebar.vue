@@ -18,6 +18,11 @@
     position: static;
     display: flex;
     flex-direction: column;
+    /* Small devices */
+    @media (max-width: 767px) {
+        min-width: 185px;
+        max-width: 185px;
+    }
 }
 
 #sidebar.collapsed {
@@ -31,6 +36,29 @@
     border-radius: 0px !important;
 }
 
+#sidebar .button-container {
+    margin-right: 0em;
+    &.sub-menu {
+        margin-left: 5em;
+        margin-right: 2em;
+        @media (max-width: 767px) {
+            margin-left: 3em;
+            margin-right: 0.5em;
+        }
+    }
+    &.selected {
+        background-color: $lightBlue;
+        .button-spacer {
+            background-color: $aquaBlue !important;
+        }
+    }
+}
+
+#sidebar .button-spacer {
+    width: 100%;
+    height: 100%;
+}
+
 #sidebar .button-container:hover {
     text-decoration: underline;
     cursor: pointer;
@@ -40,6 +68,15 @@
 #sidebar .button-icon {
     display: inline-block;
     margin: auto !important;
+    &.sub-menu {
+        font-size: 1.3em;
+    }
+    @media (max-width: 767px) {
+        font-size: 1.5em;
+        &.sub-menu {
+            font-size: 1em;
+        }
+    }
 }
 
 #sidebar .button-title {
@@ -48,12 +85,24 @@
     text-align: left;
     margin: 0px;
     padding: 0px;
+    &.sub-menu {
+        font-size: 1em;
+    }
+    @media (max-width: 767px) {
+        font-size: 1.1em;
+        &.sub-menu {
+            font-size: 0.8em;
+        }
+    }
 }
 
 #sidebar .name-wrapper {
     height: 70px;
     display: flex;
     align-items: center;
+    @media (max-width: 767px) {
+        height: 55px;
+    }
 }
 
 #sidebar hr {
@@ -167,17 +216,17 @@
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Profile Button -->
-                    <router-link
-                        v-show="!isProfile"
-                        id="menuBtnProfile"
-                        to="/profile"
-                        class="my-4"
-                    >
+                    <router-link id="menuBtnProfile" to="/profile" class="my-4">
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ 'm-4': isOpen }"
+                            :class="{ selected: isProfile }"
                         >
-                            <b-col title="Profile" :class="{ 'col-4': isOpen }">
+                            <b-col
+                                v-show="isOpen"
+                                class="button-spacer"
+                                cols="1"
+                            ></b-col>
+                            <b-col title="Profile" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
                                     icon="user-circle"
                                     class="button-icon"
@@ -186,51 +235,116 @@
                             </b-col>
                             <b-col
                                 v-if="isOpen"
-                                cols="8"
+                                cols="7"
                                 class="button-title d-none"
                             >
                                 {{ name }}
                             </b-col>
                         </b-row>
                     </router-link>
+                    <div v-show="isProfile && isOpen">
+                        <!-- Terms of Service button -->
+                        <router-link
+                            id="termsOfService"
+                            variant="primary"
+                            to="/termsOfService"
+                            class="p-0"
+                        >
+                            <b-row
+                                class="align-items-center border rounded-pill p-2 button-container my-4"
+                                :class="{ 'sub-menu': isOpen }"
+                            >
+                                <b-col
+                                    title="Terms of Service"
+                                    :class="{ 'col-4': isOpen }"
+                                >
+                                    <font-awesome-icon
+                                        icon="file-alt"
+                                        class="button-icon sub-menu"
+                                        size="2x"
+                                    />
+                                </b-col>
+                                <b-col
+                                    v-if="isOpen"
+                                    cols="8"
+                                    class="button-title sub-menu d-none"
+                                >
+                                    <span>Terms of Service</span>
+                                </b-col>
+                            </b-row>
+                        </router-link>
+
+                        <!-- Release Notes Button -->
+                        <b-link
+                            id="releaseNotes"
+                            variant="primary"
+                            href="https://github.com/bcgov/healthgateway/wiki"
+                            target="_blank"
+                        >
+                            <b-row
+                                class="align-items-center border rounded-pill p-2 button-container my-4"
+                                :class="{ 'sub-menu': isOpen }"
+                            >
+                                <b-col
+                                    title="Release Notes"
+                                    :class="{ 'col-4': isOpen }"
+                                >
+                                    <font-awesome-icon
+                                        icon="chart-bar"
+                                        class="button-icon sub-menu m-auto"
+                                        size="2x"
+                                    />
+                                </b-col>
+                                <b-col
+                                    v-if="isOpen"
+                                    cols="8"
+                                    class="button-title sub-menu d-none"
+                                >
+                                    <span>Release Notes</span>
+                                </b-col>
+                            </b-row>
+                        </b-link>
+                    </div>
                     <!-- Timeline button -->
                     <router-link
-                        v-show="!isTimeline"
                         id="menuBtnTimeline"
                         to="/timeline"
                         class="my-4"
                     >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ 'mx-4': isOpen }"
+                            :class="{ selected: isTimeline }"
                         >
                             <b-col
+                                cols="1"
+                                class="button-spacer"
+                                v-show="isOpen"
+                            ></b-col>
+                            <b-col
                                 title="Timeline"
-                                :class="{ 'col-4': isOpen }"
+                                :class="{ 'col-3': isOpen }"
                             >
                                 <font-awesome-icon
-                                    icon="stream"
+                                    icon="clipboard-list"
                                     class="button-icon"
                                     size="3x"
                                 />
                             </b-col>
                             <b-col
                                 v-if="isOpen"
-                                cols="8"
+                                cols="7"
                                 class="button-title d-none"
                             >
                                 <span>Timeline</span>
                             </b-col>
                         </b-row>
                     </router-link>
-                    <hr class="mb-3 mt-0 p-2" />
-
-                    <div v-show="isTimeline">
+                    <div v-show="isTimeline && isOpen">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
-                            class="align-items-center border rounded-pill p-1 button-container my-4"
-                            :class="{ 'mx-4': isOpen }"
+                            class="align-items-center border rounded-pill p-2 button-container my-4"
+                            :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
                         >
                             <b-col
@@ -240,7 +354,7 @@
                             >
                                 <font-awesome-icon
                                     icon="edit"
-                                    class="button-icon"
+                                    class="button-icon sub-menu"
                                     size="2x"
                                 />
                                 <b-popover
@@ -266,7 +380,7 @@
                             <b-col
                                 v-if="isOpen"
                                 cols="8"
-                                class="button-title d-none"
+                                class="button-title sub-menu d-none"
                             >
                                 <span>Add a Note</span>
                             </b-col>
@@ -274,88 +388,25 @@
 
                         <!-- Print Button -->
                         <b-row
-                            class="align-items-center border rounded-pill p-1 button-container my-4"
-                            :class="{ 'mx-4': isOpen }"
+                            class="align-items-center border rounded-pill py-2 button-container my-4"
+                            :class="{ 'sub-menu': isOpen }"
                             @click="printView"
                         >
                             <b-col title="Print" :class="{ 'col-4': isOpen }">
                                 <font-awesome-icon
                                     icon="print"
-                                    class="button-icon m-auto"
+                                    class="button-icon sub-menu m-auto"
                                     size="2x"
                                 />
                             </b-col>
                             <b-col
                                 v-if="isOpen"
                                 cols="8"
-                                class="button-title d-none"
+                                class="button-title sub-menu d-none"
                             >
                                 <span>Print</span>
                             </b-col>
                         </b-row>
-                    </div>
-                    <div v-show="isProfile">
-                        <!-- Terms of Service button -->
-                        <router-link
-                            id="termsOfService"
-                            variant="primary"
-                            to="/termsOfService"
-                            class="p-0"
-                        >
-                            <b-row
-                                class="align-items-center border rounded-pill p-1 button-container my-4"
-                                :class="{ 'mx-4': isOpen }"
-                            >
-                                <b-col
-                                    title="Terms of Service"
-                                    :class="{ 'col-4': isOpen }"
-                                >
-                                    <font-awesome-icon
-                                        icon="file-alt"
-                                        class="button-icon"
-                                        size="2x"
-                                    />
-                                </b-col>
-                                <b-col
-                                    v-if="isOpen"
-                                    cols="8"
-                                    class="button-title d-none"
-                                >
-                                    <span>Terms of Service</span>
-                                </b-col>
-                            </b-row>
-                        </router-link>
-
-                        <!-- Release Notes Button -->
-                        <b-link
-                            id="releaseNotes"
-                            variant="primary"
-                            href="https://github.com/bcgov/healthgateway/wiki"
-                            target="_blank"
-                        >
-                            <b-row
-                                class="align-items-center border rounded-pill p-1 button-container my-4"
-                                :class="{ 'mx-4': isOpen }"
-                            >
-                                <b-col
-                                    title="Release Notes"
-                                    :class="{ 'col-4': isOpen }"
-                                >
-                                    <font-awesome-icon
-                                        icon="chart-bar"
-                                        class="button-icon m-auto"
-                                        size="2x"
-                                    />
-                                </b-col>
-                                <b-col
-                                    v-if="isOpen"
-                                    cols="8"
-                                    class="button-title d-none"
-                                >
-                                    <span>Release Notes</span>
-                                </b-col>
-                            </b-row>
-                        </b-link>
                     </div>
                     <br />
                 </b-col>

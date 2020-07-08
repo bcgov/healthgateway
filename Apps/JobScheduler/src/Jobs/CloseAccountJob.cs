@@ -43,7 +43,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
         private readonly IConfiguration configuration;
         private readonly ILogger<CloseAccountJob> logger;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
 
         private readonly IAuthenticationDelegate authDelegate;
@@ -69,7 +69,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public CloseAccountJob(
             IConfiguration configuration,
             ILogger<CloseAccountJob> logger,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             IAuthenticationDelegate authDelegate,
             IUserAdminDelegate userAdminDelegate,

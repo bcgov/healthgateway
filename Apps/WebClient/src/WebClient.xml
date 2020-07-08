@@ -805,6 +805,39 @@
             <param name="key">The security key.</param>
             <returns>The database user note model.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.UserPreferenceModel">
+            <summary>
+            Model that provides a user representation of an user preference database model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.Id">
+            <summary>
+            Gets or sets the id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.HdId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.DismissedMyNotePopover">
+            <summary>
+            Gets or sets a value indicating whether the user dismissed my note popover.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserPreferenceModel.CreateFromDbModel(HealthGateway.Database.Models.UserPreference)">
+            <summary>
+            Constructs a UserPreference model from a UserPreference database model.
+            </summary>
+            <param name="model">The user preference database model.</param>
+            <returns>The user preference model.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserPreferenceModel.ToDbModel">
+            <summary>
+            Constructs a database UserPreference model from a UserPreference model.
+            </summary>
+            <returns>The database user note model.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.UserProfileModel">
             <summary>
             Model that provides a user representation of an user profile database model.
@@ -1211,6 +1244,20 @@
             </summary>
             <returns>The wrapped terms of service.</returns>
         </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserPreference(HealthGateway.WebClient.Models.UserPreferenceModel)">
+            <summary>
+            Creates a User Preference in the backend.
+            </summary>
+            <param name="userPreference">The userPreference to create.</param>
+            <returns>A userPreference wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserPreference(System.String)">
+            <summary>
+            Gets the user preference model.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <returns>The wrappeed user reference.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserSMSService">
             <summary>
             The User SMS service.
@@ -1304,12 +1351,13 @@
         <member name="T:HealthGateway.WebClient.Services.UserProfileService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate,HealthGateway.Common.Services.INotificationSettingsService,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IPreferenceDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate,HealthGateway.Common.Services.INotificationSettingsService,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="preferenceDelegate">The preference delegate to interact with the DB.</param>
             <param name="emailDelegate">The email delegate to interact with the DB.</param>
             <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
             <param name="configuration">The configuration service.</param>
@@ -1332,6 +1380,12 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetActiveTermsOfService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserPreference(HealthGateway.WebClient.Models.UserPreferenceModel)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserPreference(System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserSMSService">

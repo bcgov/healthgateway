@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Operations to be performed in the DB for the Profile.
     /// </summary>
-    public interface IProfileDelegate
+    public interface IUserProfileDelegate
     {
         /// <summary>
         /// Creates a UserProfile object in the database.
