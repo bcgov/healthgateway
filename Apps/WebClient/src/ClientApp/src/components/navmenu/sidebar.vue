@@ -610,9 +610,10 @@ export default class SidebarComponent extends Vue {
     }
 
     private clearOverlay() {
-        console.log("clearing overlay...");
         if (this.isOverlayVisible) {
             this.toggleSidebar();
+        } else {
+            this.hideShowPopoverOnAddANoteRow(); // preventing issue to not showing popover when login
         }
     }
 
