@@ -163,7 +163,6 @@ export const actions: ActionTree<UserState, RootState> = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
-        debugger;
         return new Promise((resolve, reject) => {
             userProfileService
                 .createUserPreference(params.userPreference)
