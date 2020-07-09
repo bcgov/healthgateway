@@ -10,7 +10,7 @@ import UserSMSInvite from "@/models/userSMSInvite";
 import UserPreference from "@/models/userPreference";
 
 function handleError(commit: Commit, error: Error) {
-    console.log("ERROR:" + error);
+    console.log("UserProfile ERROR:" + error);
     commit("userError");
 }
 

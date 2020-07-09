@@ -1,6 +1,4 @@
 import "core-js/stable";
-// Setup the nonce attribute for Content Security Policy
-import "@/create-nonce";
 
 import Vue from "vue";
 import VueRouter from "vue-router";
