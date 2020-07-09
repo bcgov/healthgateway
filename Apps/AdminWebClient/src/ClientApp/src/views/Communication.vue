@@ -1,8 +1,3 @@
-<style scoped lang="scss">
-.error-message {
-    color: #ff5252 !important;
-}
-</style>
 <template>
     <v-container>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
@@ -12,16 +7,21 @@
             class="mt-5"
         ></BannerFeedbackComponent>
         <v-row>
-            <v-col>
-                <v-row>
-                    <v-col no-gutters>
-                        <CommunicationTable
-                            @is-finished-loading="isFinishedLoading"
-                            @should-show-feedback="shouldShowFeedback"
-                            @banner-feedback-info="bannerFeedbackInfo"
-                        />
-                    </v-col>
-                </v-row>
+            <v-col no-gutters>
+                <CommunicationTable
+                    @is-finished-loading="isFinishedLoading"
+                    @should-show-feedback="shouldShowFeedback"
+                    @banner-feedback-info="bannerFeedbackInfo"
+                />
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col no-gutters>
+                <EmailCommunication
+                    @is-finished-loading="isFinishedLoading"
+                    @should-show-feedback="shouldShowFeedback"
+                    @banner-feedback-info="bannerFeedbackInfo"
+                />
             </v-col>
         </v-row>
     </v-container>

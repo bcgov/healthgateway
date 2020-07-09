@@ -1,3 +1,8 @@
+<style scoped lang="scss">
+.error-message {
+    color: #ff5252 !important;
+}
+</style>
 <template>
     <v-data-table
         :headers="headers"
