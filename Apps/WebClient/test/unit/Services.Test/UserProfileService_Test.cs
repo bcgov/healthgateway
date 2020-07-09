@@ -31,6 +31,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Common.Constants;
+    using System.Collections.Generic;
 
     public class UserProfileServiceTest
     {
@@ -97,7 +98,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
@@ -210,7 +211,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
@@ -220,16 +221,18 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                DismissedMyNotePopover = true,
+                Key = "DismissedMyNotePopover",
+                Value = "True"
             };
-
-            DBResult<UserPreference> insertResult = new DBResult<UserPreference>
+            List<UserPreference> dbUserPreferenceList = new List<UserPreference>();
+            dbUserPreferenceList.Add(dbUserPreference);
+            DBResult<IEnumerable<UserPreference>> insertResult = new DBResult<IEnumerable<UserPreference>>
             {
-                Payload = dbUserPreference,
-                Status = DBStatusCode.Created
+                Payload = dbUserPreferenceList,
+                Status = DBStatusCode.Updated
             };
 
-            UserPreferenceModel expected = UserPreferenceModel.CreateFromDbModel(dbUserPreference);
+            UserPreferenceModel expected = UserPreferenceModel.CreateFromDbModel(dbUserPreferenceList);
 
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
@@ -239,9 +242,8 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
-
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.InsertUserPreference(It.Is<UserPreference>(x => x.DismissedMyNotePopover == dbUserPreference.DismissedMyNotePopover))).Returns(insertResult);
+            preferenceDelegateMock.Setup(s => s.SaveUserPreferences(hdid, It.IsAny<IEnumerable<UserPreference>>(), true)).Returns(insertResult);
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -258,7 +260,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<UserPreferenceModel> actualResult = service.CreateUserPreference(expected);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
@@ -268,16 +270,18 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                DismissedMyNotePopover = true,
+                Key = "DismissedMyNotePopover",
+                Value = "True"
             };
-
-            DBResult<UserPreference> readResult = new DBResult<UserPreference>
+            List<UserPreference> dbUserPreferenceList = new List<UserPreference>();
+            dbUserPreferenceList.Add(dbUserPreference);
+            DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
             {
-                Payload = dbUserPreference,
+                Payload = dbUserPreferenceList,
                 Status = DBStatusCode.Read
             };
 
-            UserPreferenceModel expected = UserPreferenceModel.CreateFromDbModel(dbUserPreference);
+            UserPreferenceModel expected = UserPreferenceModel.CreateFromDbModel(dbUserPreferenceList);
 
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
@@ -287,9 +291,8 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
-
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.GetUserPreference(hdid)).Returns(readResult);
+            preferenceDelegateMock.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -306,7 +309,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<UserPreferenceModel> actualResult = service.GetUserPreference(hdid);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
     }

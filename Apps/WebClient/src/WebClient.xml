@@ -781,11 +781,6 @@
             Model that provides a user representation of an user preference database model.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.Id">
-            <summary>
-            Gets or sets the id.
-            </summary>
-        </member>
         <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.HdId">
             <summary>
             Gets or sets the user hdid.
@@ -796,7 +791,7 @@
             Gets or sets a value indicating whether the user dismissed my note popover.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Models.UserPreferenceModel.CreateFromDbModel(HealthGateway.Database.Models.UserPreference)">
+        <member name="M:HealthGateway.WebClient.Models.UserPreferenceModel.CreateFromDbModel(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.UserPreference})">
             <summary>
             Constructs a UserPreference model from a UserPreference database model.
             </summary>
@@ -1327,8 +1322,8 @@
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
-            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-            <param name="preferenceDelegate">The preference delegate to interact with the DB.</param>
+            <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
             <param name="emailDelegate">The email delegate to interact with the DB.</param>
             <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
             <param name="configuration">The configuration service.</param>

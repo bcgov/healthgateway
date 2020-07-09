@@ -16,17 +16,14 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Model that provides a user representation of an user preference database model.
     /// </summary>
     public class UserPreferenceModel
     {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
@@ -42,18 +39,18 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         /// <param name="model">The user preference database model.</param>
         /// <returns>The user preference model.</returns>
-        public static UserPreferenceModel CreateFromDbModel(Database.Models.UserPreference model)
+        public static UserPreferenceModel CreateFromDbModel(IEnumerable<Database.Models.UserPreference> model)
         {
-            if (model == null)
+            if (model == null || !model.Any())
             {
                 return null!;
             }
 
+            IDictionary<string, string> dict = model.ToDictionary(k => k.Key, v => v.Value);
             return new UserPreferenceModel()
             {
-                Id = model.Id,
-                HdId = model.HdId,
-                DismissedMyNotePopover = model.DismissedMyNotePopover,
+                HdId = model.FirstOrDefault().HdId,
+                DismissedMyNotePopover = bool.Parse(dict[nameof(DismissedMyNotePopover)]),
             };
         }
 
@@ -61,14 +58,17 @@ namespace HealthGateway.WebClient.Models
         /// Constructs a database UserPreference model from a UserPreference model.
         /// </summary>
         /// <returns>The database user note model.</returns>
-        public Database.Models.UserPreference ToDbModel()
+        public IEnumerable<Database.Models.UserPreference> ToDbModel()
         {
-            return new Database.Models.UserPreference()
-            {
-                Id = this.Id,
-                HdId = this.HdId,
-                DismissedMyNotePopover = this.DismissedMyNotePopover,
-            };
+            List<Database.Models.UserPreference> model = new List<Database.Models.UserPreference>();
+            model.Add(new Database.Models.UserPreference()
+                {
+                    HdId = this.HdId,
+                    Key = nameof(this.DismissedMyNotePopover),
+                    Value = this.DismissedMyNotePopover.ToString(),
+                });
+
+            return model;
         }
     }
 }
