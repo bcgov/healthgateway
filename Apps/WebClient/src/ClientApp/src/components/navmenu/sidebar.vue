@@ -203,8 +203,8 @@
     color: black;
 }
 
-#auto-click-show-popover-btn {
-    display: none;
+#action-side-menu {
+    display: inline !important;
 }
 </style>
 
@@ -337,7 +337,7 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline && isOpen">
+                    <div v-show="isTimeline && isOpen" id="action-side-menu">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
@@ -363,15 +363,6 @@
                                 class="button-title sub-menu d-none"
                             >
                                 <span>Add a Note</span>
-                                <button
-                                    id="auto-click-show-popover-btn"
-                                    ref="showPopoverBtnRef"
-                                    v-el:showPopoverBtn
-                                    type="button"
-                                    @click="autoShowPopover"
-                                >
-                                    .
-                                </button>
                             </b-col>
                         </b-row>
                         <!-- Print Button -->
@@ -400,10 +391,8 @@
                     <div v-show="isTimeline">
                         <b-popover
                             ref="popover"
-                            :show.sync="showPopover"
-                            :disabled.sync="disabledPopover"
                             triggers="manual"
-                            target="menuBtnTimeline"
+                            target="add-a-note-row"
                             class="popover"
                             variant="dark"
                         >
@@ -504,8 +493,7 @@ export default class SidebarComponent extends Vue {
     private $bodyElement!: HTMLBodyElement | null;
     private userProfileService!: IUserProfileService;
     private hdid: string = "";
-    private showPopover: boolean = false;
-    private disabledPopover: boolean = false;
+    private dismissedMyNotePopover: boolean = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -575,8 +563,8 @@ export default class SidebarComponent extends Vue {
     }
 
     private toggleOpen() {
-        debugger;
         this.toggleSidebar();
+        this.hideShowPopoverOnAddANoteRow();
     }
 
     private loadUserProfile(): void {
@@ -592,6 +580,14 @@ export default class SidebarComponent extends Vue {
         });
     }
 
+    private hideShowPopoverOnAddANoteRow(): void {
+        if (this.dismissedMyNotePopover === true) {
+            (this.$refs.popover as Vue).$emit("close");
+        } else {
+            (this.$refs.popover as Vue).$emit("open");
+        }
+    }
+
     private loadUserPreference(): void {
         console.log(
             "Loading user preference (including dismissedMyNotePopover)..."
@@ -600,21 +596,11 @@ export default class SidebarComponent extends Vue {
             .getUserPreference(this.hdid)
             .then((userPreference) => {
                 if (userPreference) {
-                    if (userPreference.dismissedMyNotePopover === true) {
-                        this.showPopover = false;
-                        this.disabledPopover = true;
-                    } else {
-                        this.disabledPopover = false;
-                        this.showPopover = true;
-                        debugger;
-                        (this.$refs.popover as Vue).$emit("open");
-                    }
+                    this.dismissedMyNotePopover =
+                        userPreference.dismissedMyNotePopover;
+                    this.hideShowPopoverOnAddANoteRow();
                 }
             });
-    }
-
-    private autoShowPopover(): void {
-        console.log("show Popover");
     }
 
     private getFullname(firstName: string, lastName: string): string {
@@ -641,17 +627,11 @@ export default class SidebarComponent extends Vue {
             })
             .then((userPreference) => {
                 if (userPreference) {
-                    if (userPreference.dismissedMyNotePopover === true) {
-                        this.showPopover = false;
-                        this.disabledPopover = true;
-                    } else {
-                        this.disabledPopover = false;
-                        this.showPopover = true;
-                    }
+                    this.dismissedMyNotePopover =
+                        userPreference.dismissedMyNotePopover;
+                    this.hideShowPopoverOnAddANoteRow();
                 }
             });
-        this.clearOverlay();
-        // EventBus.$emit("dismissNoteNotification");
     }
 
     private printView() {
