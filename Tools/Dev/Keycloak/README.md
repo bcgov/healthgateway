@@ -45,7 +45,7 @@ Aside from the Keycloak built-in clients, such as 'account', 'admin-cli', we add
 | healthgateway-admin | confidential | OFF | ON | ON |  This is the administrative web application used by staff. It requires an IDIR account to gain access. |
 | phsa-cdc | confidential | OFF | ON | ON | This is a new client that represents the PHSA client application to access HealthGateway services, particularly our Patient information service. It was added to support COVID-19 lab results access. |
 
-We also add new clients for trusted third-party applications to be consented by the citizen to access the resources on their behalf. This is not yet supported, but is planned, further empowering citizens of BC to make use of additional health services by conveniently allowing applications to access their health records for them.
+> We also add new clients for trusted third-party applications to be consented by the citizen to access the resources on their behalf. This is not yet supported, but is planned, further empowering citizens of BC to make use of additional health services by conveniently allowing applications to access their health records for them.
 
 ## Client Scopes
 
@@ -78,6 +78,20 @@ The following terse scopes were put in place for our integration with PHSA for C
 | SN | system-level client access to read/update any user's notification settings | OFF | n/a
 
 ## Realm Roles
+
+The following are realm-level roles, and default roles for OAuth2 and UMA.
+
+| Role Name | Composite | Description |
+| ------ | ------ | ------ |
+| access_hnclient | False | Full access to HL7v2 message API through HNClient proxy. Only the medication-service client. |
+| access_patient | False | Provides acces to Patient data|
+| AdminUser | False | Administrator user role of the Health Gateway solution. Grants access to the admin dashboard and related functions. |
+| HangfireUser | False | The role a user must be in to access the HealthGateway JobScheduler Dashboard, an implementation of Hangfire. |
+
+### Notes
+
+- 'access_hnclient' will be deprecated in a future release as we have deprecated our access to PharmaNet via HNSecure private network, as it is nearing end of life.
+- 'access_patient' may be replaced by system/*.* once we have fixed our issue hitting the 4k Cookie size limit when creating JWTs.
 
 ## Identity Providers
 
