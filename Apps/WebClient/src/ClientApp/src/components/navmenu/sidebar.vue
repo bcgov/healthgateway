@@ -595,28 +595,31 @@ export default class SidebarComponent extends Vue {
     private hideShowPopoverOnAddANoteRow(): void {
         if (this.dismissedMyNotePopover === true) {
             (this.$refs.popover as Vue).$emit("close");
-        } else {
-            (this.$refs.popover as Vue).$emit("open");
         }
-        if (this.isMobile) {
-            setTimeout(function () {
-                console.log("moving popover's position for mobile...");
-                let bvPopoverContainer = document.getElementById(
-                    "__bv_popover_71__"
-                );
-                if (!bvPopoverContainer) {
-                    bvPopoverContainer = document.getElementById(
-                        "__bv_popover_35__"
-                    );
-                }
-                if (bvPopoverContainer) {
-                    bvPopoverContainer.setAttribute(
-                        "style",
-                        "position: absolute; transform: translate3d(185px, 243px, 0px); top: 0px; left: 0px; will-change: transform;"
-                    );
-                }
-            }, 200);
-        }
+
+        // Disable Popover feature for rework
+        // else {
+        //     (this.$refs.popover as Vue).$emit("open");
+        //     if (this.isMobile) {
+        //         setTimeout(function () {
+        //             console.log("moving popover's position for mobile...");
+        //             let bvPopoverContainer = document.getElementById(
+        //                 "__bv_popover_71__"
+        //             );
+        //             if (!bvPopoverContainer) {
+        //                 bvPopoverContainer = document.getElementById(
+        //                     "__bv_popover_35__"
+        //                 );
+        //             }
+        //             if (bvPopoverContainer) {
+        //                 bvPopoverContainer.setAttribute(
+        //                     "style",
+        //                     "position: absolute; transform: translate3d(185px, 243px, 0px); top: 0px; left: 0px; will-change: transform;"
+        //                 );
+        //             }
+        //         }, 200);
+        //     }
+        // }
     }
 
     private loadUserProfile(): void {
