@@ -35,7 +35,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user dismissed my note popover.
         /// </summary>
-        public bool DismissedMyNotePopover { get; set; }
+        public bool TutorialPopover { get; set; }
 
         /// <summary>
         /// Constructs a UserPreference model from a UserPreference database model.
@@ -53,7 +53,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = model.Id,
                 HdId = model.HdId,
-                DismissedMyNotePopover = model.DismissedMyNotePopover,
+                TutorialPopover = model.TutorialPopover,
             };
         }
 
@@ -67,7 +67,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = this.Id,
                 HdId = this.HdId,
-                DismissedMyNotePopover = this.DismissedMyNotePopover,
+                TutorialPopover = this.TutorialPopover,
             };
         }
     }

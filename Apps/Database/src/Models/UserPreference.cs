@@ -40,6 +40,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user dismissed the note popover.
         /// </summary>
-        public bool DismissedMyNotePopover { get; set; }
+        public bool TutorialPopover { get; set; }
     }
 }

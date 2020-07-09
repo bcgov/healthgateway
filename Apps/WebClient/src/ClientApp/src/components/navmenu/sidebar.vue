@@ -496,7 +496,7 @@ export default class SidebarComponent extends Vue {
     private $bodyElement!: HTMLBodyElement | null;
     private userProfileService!: IUserProfileService;
     private hdid: string = "";
-    private dismissedMyNotePopover: boolean = false;
+    private TutorialPopover: boolean = false;
     private isMobile: boolean = false;
 
     @Watch("oidcIsAuthenticated")
@@ -519,7 +519,7 @@ export default class SidebarComponent extends Vue {
             if (this.isOverlayVisible) {
                 this.$bodyElement.style.position = "fixed";
                 // Wait a bit for the sidemenu expanded then display popover
-                if (this.dismissedMyNotePopover !== true) {
+                if (this.TutorialPopover !== true) {
                     const that = this;
                     that.isMobile = true;
                     setTimeout(function () {
@@ -593,7 +593,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private hideShowPopoverOnAddANoteRow(): void {
-        if (this.dismissedMyNotePopover === true) {
+        if (this.TutorialPopover === true) {
             (this.$refs.popover as Vue).$emit("close");
         }
 
@@ -625,8 +625,8 @@ export default class SidebarComponent extends Vue {
     private loadUserProfile(): void {
         this.userProfileService.getProfile(this.hdid).then((userProfile) => {
             if (userProfile && userProfile.userPreference) {
-                this.dismissedMyNotePopover =
-                    userProfile.userPreference.dismissedMyNotePopover;
+                this.TutorialPopover =
+                    userProfile.userPreference.TutorialPopover;
                 this.hideShowPopoverOnAddANoteRow();
             }
         });
@@ -654,12 +654,12 @@ export default class SidebarComponent extends Vue {
         this.userProfileService
             .createUserPreference({
                 hdId: this.hdid,
-                dismissedMyNotePopover: true,
+                TutorialPopover: true,
             })
             .then((userPreference) => {
                 if (userPreference) {
-                    this.dismissedMyNotePopover =
-                        userPreference.dismissedMyNotePopover;
+                    this.TutorialPopover =
+                        userPreference.TutorialPopover;
                     this.hideShowPopoverOnAddANoteRow();
                 }
             });

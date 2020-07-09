@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                DismissedMyNotePopover = true,
+                TutorialPopover = true,
             };
             DBResult<UserPreference> readResult = new DBResult<UserPreference>
             {
@@ -232,7 +232,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                DismissedMyNotePopover = true,
+                TutorialPopover = true,
             };
 
             DBResult<UserPreference> insertResult = new DBResult<UserPreference>
@@ -253,7 +253,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
 
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.InsertUserPreference(It.Is<UserPreference>(x => x.DismissedMyNotePopover == dbUserPreference.DismissedMyNotePopover))).Returns(insertResult);
+            preferenceDelegateMock.Setup(s => s.InsertUserPreference(It.Is<UserPreference>(x => x.TutorialPopover == dbUserPreference.TutorialPopover))).Returns(insertResult);
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -280,7 +280,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                DismissedMyNotePopover = true,
+                TutorialPopover = true,
             };
 
             DBResult<UserPreference> readResult = new DBResult<UserPreference>

@@ -61,7 +61,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = new UserPreference()
                 {
                     HdId = hdid,
-                    DismissedMyNotePopover = false,
+                    TutorialPopover = false,
                     Id = Guid.NewGuid(),
                 },
                 Status = DBStatusCode.Read,
