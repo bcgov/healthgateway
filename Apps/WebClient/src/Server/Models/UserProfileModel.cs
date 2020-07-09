@@ -59,6 +59,11 @@ namespace HealthGateway.WebClient.Models
         public DateTime? ClosedDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the user preference.
+        /// </summary>
+        public UserPreferenceModel? UserPreference { get; set; }
+
+        /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
         /// </summary>
         /// <param name="model">The user profile database model.</param>

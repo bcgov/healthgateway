@@ -7,7 +7,7 @@ import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
-import UserPreference from "../../../models/userPreference";
+import UserPreference from "@/models/userPreference";
 
 function handleError(commit: Commit, error: Error) {
     console.log("ERROR:" + error);

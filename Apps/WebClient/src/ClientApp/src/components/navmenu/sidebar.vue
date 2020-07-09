@@ -188,7 +188,7 @@
 }
 
 .popover-body {
-    padding-right: 0px !important;
+    padding: 0.5px 0px 0.5px 0px !important;
 }
 
 #pop-over-close {
@@ -388,12 +388,14 @@
                         </b-row>
                     </div>
                     <br />
-                    <div v-show="isTimeline">
+                    <div>
                         <b-popover
                             ref="popover"
                             triggers="manual"
                             target="add-a-note-row"
                             class="popover"
+                            fallback-placement="clockwise"
+                            placement="right"
                             variant="dark"
                         >
                             <div>
@@ -460,14 +462,12 @@ import { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
-import { BPopover } from "bootstrap-vue";
 library.add(faStream);
 
 const auth: string = "auth";
 const user: string = "user";
 const sidebar: string = "sidebar";
 
-Vue.component("b-popover", BPopover);
 @Component({
     components: {
         FeedbackComponent,
@@ -514,6 +514,14 @@ export default class SidebarComponent extends Vue {
         if (this.$bodyElement !== null) {
             if (this.isOverlayVisible) {
                 this.$bodyElement.style.position = "fixed";
+                // Wait a bit for the sidemenu expanded then display popover
+                if (this.dismissedMyNotePopover !== true) {
+                    const that = this;
+                    setTimeout(function () {
+                        console.log("Diplaying popover...");
+                        that.hideShowPopoverOnAddANoteRow();
+                    }, 400);
+                }
             } else this.$bodyElement.style.removeProperty("position");
         }
     }
@@ -526,7 +534,7 @@ export default class SidebarComponent extends Vue {
             SERVICE_IDENTIFIER.UserProfileService
         );
         if (this.oidcIsAuthenticated) {
-            this.loadUserProfile();
+            this.loadUserOidcProfile();
         }
 
         // Setup the transition listener to avoid text wrapping
@@ -564,10 +572,9 @@ export default class SidebarComponent extends Vue {
 
     private toggleOpen() {
         this.toggleSidebar();
-        this.hideShowPopoverOnAddANoteRow();
     }
 
-    private loadUserProfile(): void {
+    private loadUserOidcProfile(): void {
         this.authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
                 this.name = this.getFullname(
@@ -575,7 +582,7 @@ export default class SidebarComponent extends Vue {
                     oidcUser.family_name
                 );
                 this.hdid = oidcUser.hdid;
-                this.loadUserPreference();
+                this.loadUserProfile();
             }
         });
     }
@@ -588,19 +595,14 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private loadUserPreference(): void {
-        console.log(
-            "Loading user preference (including dismissedMyNotePopover)..."
-        );
-        this.userProfileService
-            .getUserPreference(this.hdid)
-            .then((userPreference) => {
-                if (userPreference) {
-                    this.dismissedMyNotePopover =
-                        userPreference.dismissedMyNotePopover;
-                    this.hideShowPopoverOnAddANoteRow();
-                }
-            });
+    private loadUserProfile(): void {
+        this.userProfileService.getProfile(this.hdid).then((userProfile) => {
+            if (userProfile && userProfile.userPreference) {
+                this.dismissedMyNotePopover =
+                    userProfile.userPreference.dismissedMyNotePopover;
+                this.hideShowPopoverOnAddANoteRow();
+            }
+        });
     }
 
     private getFullname(firstName: string, lastName: string): string {
@@ -608,6 +610,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private clearOverlay() {
+        console.log("clearing overlay...");
         if (this.isOverlayVisible) {
             this.toggleSidebar();
         }

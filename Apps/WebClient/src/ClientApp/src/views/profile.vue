@@ -432,7 +432,7 @@ import {
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import UserPreference from "../models/userPreference";
+import UserPreference from "@/models/userPreference";
 
 library.add(faExclamationTriangle);
 

@@ -116,6 +116,13 @@ namespace HealthGateway.WebClient.Controllers
                 .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
+
+            if (result.ResourcePayload != null)
+            {
+                RequestResult<UserPreferenceModel> userPreference = this.userProfileService.GetUserPreference(hdid);
+                result.ResourcePayload.UserPreference = userPreference.ResourcePayload;
+            }
+
             return new JsonResult(result);
         }
 

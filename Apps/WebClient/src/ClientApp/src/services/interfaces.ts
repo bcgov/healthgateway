@@ -5,6 +5,7 @@ import {
 } from "@/models/configData";
 import ImmunizationData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";
+import UserPreference from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserComment from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
@@ -20,7 +21,6 @@ import UserNote from "@/models/userNote";
 import Communication from "@/models/communication";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
-import UserPreference from "../models/userPreference";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
