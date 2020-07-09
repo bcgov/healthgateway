@@ -236,9 +236,8 @@
                                 v-if="isOpen"
                                 cols="7"
                                 class="button-title d-none"
+                                >{{ name }}</b-col
                             >
-                                {{ name }}
-                            </b-col>
                         </b-row>
                     </router-link>
                     <div v-show="isProfile && isOpen">
@@ -403,7 +402,8 @@
                             ref="popover"
                             :show.sync="showPopover"
                             :disabled.sync="disabledPopover"
-                            target="add-a-note-row"
+                            triggers="manual"
+                            target="menuBtnTimeline"
                             class="popover"
                             variant="dark"
                         >
@@ -430,7 +430,7 @@
                         class="align-items-center my-4"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
-                        <b-col class="" :class="{ 'ml-auto col-4': isOpen }">
+                        <b-col class :class="{ 'ml-auto col-4': isOpen }">
                             <font-awesome-icon
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"
@@ -593,6 +593,9 @@ export default class SidebarComponent extends Vue {
     }
 
     private loadUserPreference(): void {
+        console.log(
+            "Loading user preference (including dismissedMyNotePopover)..."
+        );
         this.userProfileService
             .getUserPreference(this.hdid)
             .then((userPreference) => {
@@ -603,7 +606,8 @@ export default class SidebarComponent extends Vue {
                     } else {
                         this.disabledPopover = false;
                         this.showPopover = true;
-                        // this.$refs.showPopoverBtnRef.$el.click();
+                        debugger;
+                        (this.$refs.popover as Vue).$emit("open");
                     }
                 }
             });
