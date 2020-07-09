@@ -23,7 +23,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Delegate that performs operations for the UserPreference model.
     /// </summary>
-    public interface IPreferenceDelegate
+    public interface IUserPreferenceDelegate
     {
         /// <summary>
         /// Creates a UserPreference object in the database.
@@ -31,14 +31,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="preference">The preference to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<UserPreference> InsertUserPreference(UserPreference preference);
-
-        /// <summary>
-        /// Updates the UserPreference object in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will overridden by our framework.
-        /// </summary>
-        /// <param name="preference">The feedback to update.</param>
-        void UpdateUserFeedback(UserPreference preference);
 
         /// <summary>
         /// Fetches the UserPreference from the database.
