@@ -1,15 +1,8 @@
 const CompressionPlugin = require("compression-webpack-plugin");
 module.exports = {
-  productionSourceMap: false,
-  configureWebpack: {
-    output: {
-      libraryExport: "default",
+    productionSourceMap: false,
+    chainWebpack: (config) => {
+        config.plugins.delete("split-manifest").delete("inline-manifest");
+        config.plugin("CompressionPlugin").use(CompressionPlugin);
     },
-  },
-  chainWebpack: (config) => {
-    config.plugins.delete("split-manifest").delete("inline-manifest");
-    config.plugin("CompressionPlugin").use(CompressionPlugin);
-
-    //config.plugins.delete("fork-ts-checker");
-  },
 };

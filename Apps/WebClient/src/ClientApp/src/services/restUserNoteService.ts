@@ -7,7 +7,7 @@ import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
-    private readonly USER_NOTE_BASE_URI: string = "v1/api/Note";
+    private readonly USER_NOTE_BASE_URI: string = "/v1/api/Note";
     private http!: IHttpDelegate;
     private isEnabled: boolean = false;
 

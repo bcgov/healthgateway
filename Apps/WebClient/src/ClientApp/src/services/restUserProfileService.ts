@@ -11,7 +11,7 @@ import { Dictionary } from "vue-router/types/router";
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
     private readonly FETCH_ERROR: string = "Fetch error:";
-    private readonly USER_PROFILE_BASE_URI: string = "v1/api/UserProfile";
+    private readonly USER_PROFILE_BASE_URI: string = "/v1/api/UserProfile";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {

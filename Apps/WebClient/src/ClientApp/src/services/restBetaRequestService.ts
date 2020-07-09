@@ -7,7 +7,7 @@ import RequestResult from "@/models/requestResult";
 
 @injectable()
 export class RestBetaRequestService implements IBetaRequestService {
-    private readonly BETA_REQUEST_BASE_URI: string = "v1/api/BetaRequest";
+    private readonly BETA_REQUEST_BASE_URI: string = "/v1/api/BetaRequest";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {

@@ -4,7 +4,7 @@ import UserFeedback from "@/models/userFeedback";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
-    private readonly USER_FEEDBACK_BASE_URI: string = "v1/api/UserFeedback";
+    private readonly USER_FEEDBACK_BASE_URI: string = "/v1/api/UserFeedback";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {
