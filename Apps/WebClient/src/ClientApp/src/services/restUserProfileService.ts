@@ -210,7 +210,6 @@ export class RestUserProfileService implements IUserProfileService {
 
     public getUserPreference(hdid: string): Promise<UserPreference> {
         return new Promise((resolve, reject) => {
-            debugger;
             this.http
                 .get<RequestResult<UserPreference>>(
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/userpreference/`
