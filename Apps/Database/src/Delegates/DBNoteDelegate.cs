@@ -93,6 +93,7 @@ namespace HealthGateway.Database.Delegates
                 {
                     this.dbContext.SaveChanges();
                     result.Status = DBStatusCode.Created;
+                    result.Payload = this.GetNote(note.Id).Payload;
                 }
                 catch (DbUpdateException e)
                 {
