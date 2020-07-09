@@ -39,7 +39,7 @@ namespace HealthGateway.WebClient.Services
 
         private readonly ILogger logger;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IPreferenceDelegate preferenceDelegate;
+        private readonly IUserPreferenceDelegate preferenceDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
@@ -66,7 +66,7 @@ namespace HealthGateway.WebClient.Services
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IUserProfileDelegate profileDelegate,
-            IPreferenceDelegate preferenceDelegate,
+            IUserPreferenceDelegate preferenceDelegate,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,
             IConfigurationService configuration,

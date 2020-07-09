@@ -85,6 +85,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
+            services.AddTransient<IUserPreferenceDelegate , DBUserPreferenceDelegate>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
