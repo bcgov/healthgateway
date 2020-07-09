@@ -364,6 +364,32 @@
                             >
                                 <span>Add a Note</span>
                             </b-col>
+                            <b-col>
+                                <div>
+                                    <b-popover
+                                        ref="popover"
+                                        triggers="manual"
+                                        target="add-a-note-row"
+                                        class="popover"
+                                        fallback-placement="counterclockwise"
+                                        placement="right"
+                                        variant="dark"
+                                    >
+                                        <div>
+                                            <b-button
+                                                id="pop-over-close"
+                                                @click="dismissNoteNotification"
+                                                >x</b-button
+                                            >
+                                        </div>
+                                        <div id="popover-content">
+                                            Add Notes to track your important
+                                            health events e.g. Broke ankle in
+                                            Cuba
+                                        </div>
+                                    </b-popover>
+                                </div>
+                            </b-col>
                         </b-row>
                         <!-- Print Button -->
                         <b-row
@@ -388,29 +414,6 @@
                         </b-row>
                     </div>
                     <br />
-                    <div>
-                        <b-popover
-                            ref="popover"
-                            triggers="manual"
-                            target="add-a-note-row"
-                            class="popover"
-                            fallback-placement="clockwise"
-                            placement="right"
-                            variant="dark"
-                        >
-                            <div>
-                                <b-button
-                                    id="pop-over-close"
-                                    @click="dismissNoteNotification"
-                                    >x</b-button
-                                >
-                            </div>
-                            <div id="popover-content">
-                                Add Notes to track your important health events
-                                e.g. Broke ankle in Cuba
-                            </div>
-                        </b-popover>
-                    </div>
                 </b-col>
             </b-row>
 
@@ -494,6 +497,7 @@ export default class SidebarComponent extends Vue {
     private userProfileService!: IUserProfileService;
     private hdid: string = "";
     private dismissedMyNotePopover: boolean = false;
+    private isMobile: boolean = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -517,8 +521,9 @@ export default class SidebarComponent extends Vue {
                 // Wait a bit for the sidemenu expanded then display popover
                 if (this.dismissedMyNotePopover !== true) {
                     const that = this;
+                    that.isMobile = true;
                     setTimeout(function () {
-                        console.log("Diplaying popover...");
+                        console.log("Diplaying popover for mobile...");
                         that.hideShowPopoverOnAddANoteRow();
                     }, 400);
                 }
@@ -592,6 +597,25 @@ export default class SidebarComponent extends Vue {
             (this.$refs.popover as Vue).$emit("close");
         } else {
             (this.$refs.popover as Vue).$emit("open");
+        }
+        if (this.isMobile) {
+            setTimeout(function () {
+                console.log("moving popover's position for mobile...");
+                let bvPopoverContainer = document.getElementById(
+                    "__bv_popover_71__"
+                );
+                if (!bvPopoverContainer) {
+                    bvPopoverContainer = document.getElementById(
+                        "__bv_popover_35__"
+                    );
+                }
+                if (bvPopoverContainer) {
+                    bvPopoverContainer.setAttribute(
+                        "style",
+                        "position: absolute; transform: translate3d(185px, 243px, 0px); top: 0px; left: 0px; will-change: transform;"
+                    );
+                }
+            }, 200);
         }
     }
 
