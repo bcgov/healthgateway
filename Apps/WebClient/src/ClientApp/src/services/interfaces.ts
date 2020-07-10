@@ -5,6 +5,7 @@ import {
 } from "@/models/configData";
 import ImmunizationData from "@/models/immunizationData";
 import PatientData from "@/models/patientData";
+import UserPreference from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserComment from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
@@ -90,6 +91,10 @@ export interface IUserProfileService {
     validateSMS(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
     updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
+    getUserPreference(hdid: string): Promise<UserPreference>;
+    createUserPreference(
+        userPreference: UserPreference
+    ): Promise<UserPreference>;
 }
 
 export interface IUserFeedbackService {

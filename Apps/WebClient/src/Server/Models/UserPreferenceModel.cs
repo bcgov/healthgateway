@@ -32,7 +32,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user dismissed my note popover.
         /// </summary>
-        public bool DisableTutorialPopover { get; set; }
+        public bool TutorialPopover { get; set; }
 
         /// <summary>
         /// Constructs a UserPreference model from a UserPreference database model.

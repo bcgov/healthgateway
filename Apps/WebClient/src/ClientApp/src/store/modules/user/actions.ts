@@ -7,6 +7,7 @@ import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
+import UserPreference from "@/models/userPreference";
 
 function handleError(commit: Commit, error: Error) {
     console.log("UserProfile ERROR:" + error);
@@ -37,7 +38,6 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
         console.log(params);
         return new Promise((resolve, reject) => {
@@ -132,6 +132,40 @@ export const actions: ActionTree<UserState, RootState> = {
         return new Promise((resolve, reject) => {
             userProfileService
                 .updateEmail(params.hdid, params.emailAddress)
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
+    getUserPreference(
+        context,
+        params: { hdid: string }
+    ): Promise<UserPreference> {
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .getUserPreference(params.hdid)
+                .then((userPreference) => {
+                    console.log("User Preference Data: ", userPreference);
+                    context.commit("setUserPreference", userPreference);
+                    resolve(userPreference);
+                })
+                .catch((error) => {
+                    handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
+    updateUserPreference(
+        context,
+        params: { userPreference: UserPreference }
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .createUserPreference(params.userPreference)
                 .then(() => {
                     resolve();
                 })

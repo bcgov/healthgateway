@@ -2,9 +2,9 @@
     <v-app id="healthGatewayAdmin">
         <ToolbarComponent />
         <MainNavbar title="HealthGateway Admin" />
-        <v-main>
+        <v-content>
             <router-view />
-        </v-main>
+        </v-content>
         <Footer />
     </v-app>
 </template>

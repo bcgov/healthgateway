@@ -65,7 +65,19 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
+
+            UserPreference dbUserPreference = new UserPreference
+            {
+                HdId = hdid,
+                TutorialPopover = true,
+            };
+            DBResult<UserPreference> readResult = new DBResult<UserPreference>
+            {
+                Payload = dbUserPreference,
+                Status = DBStatusCode.Read
+            };
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
+            preferenceDelegateMock.Setup(s => s.GetUserPreference(hdid)).Returns(readResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -216,7 +228,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ShouldInsertPreference()
+        public void ShouldInsertUserPreference()
         {
             UserPreference dbUserPreference = new UserPreference
             {
@@ -265,7 +277,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ShouldGetPreference()
+        public void ShouldGetUserPreference()
         {
             UserPreference dbUserPreference = new UserPreference
             {
