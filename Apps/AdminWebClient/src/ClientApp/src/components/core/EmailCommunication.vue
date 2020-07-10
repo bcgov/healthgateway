@@ -13,7 +13,7 @@
         >
         <v-spacer></v-spacer>
         <v-card-text>
-            <v-form class="px-5" ref="form" lazy-validation>
+            <v-form ref="form" class="px-5" lazy-validation>
                 <!-- Subject and priority -->
                 <v-row>
                     <v-col class="d-flex pt-0" cols="9">
@@ -38,25 +38,12 @@
                 </v-row>
                 <v-row>
                     <v-col>
-                        <ValidationProvider
-                            mode="eager"
-                            v-slot="{
-                                errors
-                            }"
-                            :rules="htmlRules(content)"
-                        >
-                            <TiptapVuetify
-                                :toolbar-attributes="{ color: 'gray' }"
-                                v-model="content"
-                                placeholder="Write the email content here..."
-                                :extensions="extensions"
-                            />
-                            <div class="mt-2">
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
-                            </div>
-                        </ValidationProvider>
+                        <TiptapVuetify
+                            v-model="content"
+                            :toolbar-attributes="{ color: 'gray' }"
+                            placeholder="Write the email content here..."
+                            :extensions="extensions"
+                        />
                     </v-col>
                 </v-row>
             </v-form>
@@ -93,23 +80,9 @@ import {
 } from "tiptap-vuetify";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
-import { ValidationProvider, extend, validate } from "vee-validate";
-import { required } from "vee-validate/dist/rules";
-import moment from "moment";
-
-extend("htmlRules", {
-    validate(value: any, args: any) {
-        if (args.content.replace(/(<([^>]+)>)/gi, "") !== "") {
-            return true;
-        }
-        return "Email body content is required.";
-    },
-    params: ["content"]
-});
 
 @Component({
     components: {
-        ValidationProvider,
         TiptapVuetify
     }
 })
@@ -131,6 +104,7 @@ export default class EmailCommunication extends Vue {
         Link,
         Underline,
         Strike,
+        Bold,
         Italic,
         ListItem,
         BulletList,
@@ -150,26 +124,19 @@ export default class EmailCommunication extends Vue {
     ];
     private content: string = "<p></p>";
 
-    private htmlRules(htmlBody: string): string {
-        return "htmlRules:" + htmlBody;
-    }
-
-    private emitResult() {
-        this.isFinishedLoading();
-        this.bannerFeedbackInfo();
-        this.shouldShowFeedback();
-    }
-
     private contentValid(): boolean {
-        return this.content.replace(/(<([^>]+)>)/gi) !== "" ? true : false;
+        return this.content.replace("<[^>]*>", "") !== "" ? true : false;
     }
 
     private send() {
+        this.isLoading = true;
+        this.isFinishedLoading();
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
         ) {
-            // Send to backend
+            // NETWORK REQUEST GOES HERE!
+            // Temp data below.
             this.showFeedback = true;
             this.bannerFeedback = {
                 type: ResultType.Success,
@@ -182,6 +149,8 @@ export default class EmailCommunication extends Vue {
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
+            this.isLoading = false;
+            this.emitResult();
         }
     }
 
@@ -192,6 +161,12 @@ export default class EmailCommunication extends Vue {
         this.subject = "";
         this.priority = "";
         this.content = "<p></p>";
+    }
+
+    private emitResult() {
+        this.isFinishedLoading();
+        this.bannerFeedbackInfo();
+        this.shouldShowFeedback();
     }
 
     @Emit()

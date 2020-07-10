@@ -23,7 +23,7 @@
                 <v-dialog v-model="dialog" max-width="500px">
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn color="primary" dark v-bind="attrs" v-on="on"
-                            >New Communication</v-btn
+                            >New Banner Communication</v-btn
                         >
                     </template>
                     <v-card dark>
@@ -356,6 +356,7 @@ export default class CommunicationTable extends Vue {
 
     private add(comm: Communication): void {
         this.isLoading = true;
+        this.isFinishedLoading();
         this.communicationService
             .add({
                 subject: comm.subject,
@@ -390,6 +391,7 @@ export default class CommunicationTable extends Vue {
 
     private update(comm: Communication): void {
         this.isLoading = true;
+        this.isFinishedLoading();
         this.communicationService
             .update({
                 id: comm.id,
