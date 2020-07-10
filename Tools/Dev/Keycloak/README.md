@@ -66,6 +66,9 @@ The scopes below listed below are only those that are not OpenID Connect built-i
 | patient/Patient.read | HL7 FHIR scope to read patient demongraphics record | ON | n/a |
 | system/Immunization.read | HL7 FHIR scope to read any patient's immunization records | OFF | n/a |
 
+> As we add more services, we will introduce new resource scopes following HL7 FHIR and SMART on FHIR as much as is practicable.
+
+
 ### Temporary Scopes
 
 The following terse scopes were put in place for our integration with PHSA for COVID-19 Lab test results and for notification settings (SMS, Email). These were to workaround the issue of the Keycloak openid JWT tipping past the 4K Cookie size limit when using the wordy HL7 FHIR scopes. The plan is to refactor our code to overcome the 4K cookie size limit by chunking the JWT across multiple cookies.  These scopes will go away in a future release.
