@@ -6,6 +6,7 @@ import { ResultType } from "@/constants/resulttype";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
+import UserPreference from "@/models/userPreference";
 import { Dictionary } from "vue-router/types/router";
 
 @injectable()
@@ -203,6 +204,41 @@ export class RestUserProfileService implements IUserProfileService {
                 .catch((err) => {
                     console.log(err);
                     return resolve(err);
+                });
+        });
+    }
+
+    public getUserPreference(hdid: string): Promise<UserPreference> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .get<RequestResult<UserPreference>>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/userpreference/`
+                )
+                .then((requestResult) => {
+                    this.handleResult(requestResult, resolve, reject);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return resolve(err);
+                });
+        });
+    }
+
+    public createUserPreference(
+        userPreference: UserPreference
+    ): Promise<UserPreference> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .post<RequestResult<UserPreference>>(
+                    `${this.USER_PROFILE_BASE_URI}/${userPreference.hdId}/userpreference`,
+                    userPreference
+                )
+                .then((requestResult) => {
+                    this.handleResult(requestResult, resolve, reject);
+                })
+                .catch((err) => {
+                    console.log(this.FETCH_ERROR + err.toString());
+                    reject(err);
                 });
         });
     }

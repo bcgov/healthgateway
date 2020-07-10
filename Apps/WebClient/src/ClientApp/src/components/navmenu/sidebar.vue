@@ -186,6 +186,26 @@
     bottom: 0rem;
     align-self: flex-end;
 }
+
+.popover-body {
+    padding: 0.5px 0px 0.5px 0px !important;
+}
+
+#pop-over-close {
+    float: right;
+    padding-top: 0px;
+    color: black;
+    border: none;
+    background-color: transparent;
+}
+
+#popover-content {
+    color: black;
+}
+
+#action-side-menu {
+    display: inline !important;
+}
 </style>
 
 <template>
@@ -216,9 +236,8 @@
                                 v-if="isOpen"
                                 cols="7"
                                 class="button-title d-none"
+                                >{{ name }}</b-col
                             >
-                                {{ name }}
-                            </b-col>
                         </b-row>
                     </router-link>
                     <div v-show="isProfile && isOpen">
@@ -295,9 +314,9 @@
                             :class="{ selected: isTimeline }"
                         >
                             <b-col
+                                v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
-                                v-show="isOpen"
                             ></b-col>
                             <b-col
                                 title="Timeline"
@@ -318,16 +337,18 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline && isOpen">
+                    <div v-show="isTimeline && isOpen" id="action-side-menu">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
+                            id="add-a-note-row"
                             class="align-items-center border rounded-pill p-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
                         >
                             <b-col
-                                title="Add a Note"
+                                id="add-a-note-btn"
+                                title="Add a Note todo"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
@@ -343,8 +364,33 @@
                             >
                                 <span>Add a Note</span>
                             </b-col>
+                            <b-col>
+                                <div>
+                                    <b-popover
+                                        ref="popover"
+                                        triggers="manual"
+                                        target="add-a-note-row"
+                                        class="popover"
+                                        fallback-placement="counterclockwise"
+                                        placement="right"
+                                        variant="dark"
+                                    >
+                                        <div>
+                                            <b-button
+                                                id="pop-over-close"
+                                                @click="dismissNoteNotification"
+                                                >x</b-button
+                                            >
+                                        </div>
+                                        <div id="popover-content">
+                                            Add Notes to track your important
+                                            health events e.g. Broke ankle in
+                                            Cuba
+                                        </div>
+                                    </b-popover>
+                                </div>
+                            </b-col>
                         </b-row>
-
                         <!-- Print Button -->
                         <b-row
                             class="align-items-center border rounded-pill py-2 button-container my-4"
@@ -378,7 +424,7 @@
                         class="align-items-center my-4"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
-                        <b-col class="" :class="{ 'ml-auto col-4': isOpen }">
+                        <b-col class :class="{ 'ml-auto col-4': isOpen }">
                             <font-awesome-icon
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"
@@ -407,7 +453,10 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { IAuthenticationService } from "@/services/interfaces";
+import {
+    IAuthenticationService,
+    IUserProfileService,
+} from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
@@ -445,12 +494,16 @@ export default class SidebarComponent extends Vue {
     private name: string = "";
     private windowWidth: number = 0;
     private $bodyElement!: HTMLBodyElement | null;
+    private userProfileService!: IUserProfileService;
+    private hdid: string = "";
+    private TutorialPopover: boolean = false;
+    private isMobile: boolean = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
         // If there is no name in the scope, retrieve it from the service.
         if (this.oidcIsAuthenticated && !this.name) {
-            this.loadName();
+            this.loadUserProfile();
         }
     }
 
@@ -465,6 +518,15 @@ export default class SidebarComponent extends Vue {
         if (this.$bodyElement !== null) {
             if (this.isOverlayVisible) {
                 this.$bodyElement.style.position = "fixed";
+                // Wait a bit for the sidemenu expanded then display popover
+                if (this.TutorialPopover !== true) {
+                    const that = this;
+                    that.isMobile = true;
+                    setTimeout(function () {
+                        console.log("Diplaying popover for mobile...");
+                        that.hideShowPopoverOnAddANoteRow();
+                    }, 400);
+                }
             } else this.$bodyElement.style.removeProperty("position");
         }
     }
@@ -473,8 +535,11 @@ export default class SidebarComponent extends Vue {
         this.authenticationService = container.get(
             SERVICE_IDENTIFIER.AuthenticationService
         );
+        this.userProfileService = container.get(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
         if (this.oidcIsAuthenticated) {
-            this.loadName();
+            this.loadUserOidcProfile();
         }
 
         // Setup the transition listener to avoid text wrapping
@@ -514,13 +579,55 @@ export default class SidebarComponent extends Vue {
         this.toggleSidebar();
     }
 
-    private loadName(): void {
+    private loadUserOidcProfile(): void {
         this.authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
                 this.name = this.getFullname(
                     oidcUser.given_name,
                     oidcUser.family_name
                 );
+                this.hdid = oidcUser.hdid;
+                this.loadUserProfile();
+            }
+        });
+    }
+
+    private hideShowPopoverOnAddANoteRow(): void {
+        if (this.TutorialPopover === true) {
+            (this.$refs.popover as Vue).$emit("close");
+        }
+
+        // Disable Popover feature for rework
+        // else {
+        //     (this.$refs.popover as Vue).$emit("open");
+        //     if (this.isMobile) {
+        //         setTimeout(function () {
+        //             console.log("moving popover's position for mobile...");
+        //             let bvPopoverContainer = document.getElementById(
+        //                 "__bv_popover_71__"
+        //             );
+        //             if (!bvPopoverContainer) {
+        //                 bvPopoverContainer = document.getElementById(
+        //                     "__bv_popover_35__"
+        //                 );
+        //             }
+        //             if (bvPopoverContainer) {
+        //                 bvPopoverContainer.setAttribute(
+        //                     "style",
+        //                     "position: absolute; transform: translate3d(185px, 243px, 0px); top: 0px; left: 0px; will-change: transform;"
+        //                 );
+        //             }
+        //         }, 200);
+        //     }
+        // }
+    }
+
+    private loadUserProfile(): void {
+        this.userProfileService.getProfile(this.hdid).then((userProfile) => {
+            if (userProfile && userProfile.userPreference) {
+                this.TutorialPopover =
+                    userProfile.userPreference.TutorialPopover;
+                this.hideShowPopoverOnAddANoteRow();
             }
         });
     }
@@ -532,12 +639,30 @@ export default class SidebarComponent extends Vue {
     private clearOverlay() {
         if (this.isOverlayVisible) {
             this.toggleSidebar();
+        } else {
+            this.hideShowPopoverOnAddANoteRow(); // preventing issue to not showing popover when login
         }
     }
 
     private createNote() {
         this.clearOverlay();
         EventBus.$emit("timelineCreateNote");
+    }
+
+    private dismissNoteNotification() {
+        console.log("Dismissing Note Notification...");
+        this.userProfileService
+            .createUserPreference({
+                hdId: this.hdid,
+                TutorialPopover: true,
+            })
+            .then((userPreference) => {
+                if (userPreference) {
+                    this.TutorialPopover =
+                        userPreference.TutorialPopover;
+                    this.hideShowPopoverOnAddANoteRow();
+                }
+            });
     }
 
     private printView() {

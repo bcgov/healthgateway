@@ -48,9 +48,7 @@ nav {
                 to="/timeline"
                 class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0"
             >
-                <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">
-                    HealthGateway
-                </h4>
+                <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">HealthGateway</h4>
             </router-link>
         </b-navbar-brand>
 
@@ -62,11 +60,11 @@ nav {
                 class="nav-link"
                 to="/logout"
             >
-                <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
-                Logout
+                <font-awesome-icon icon="sign-out-alt"></font-awesome-icon
+                >Logout
             </router-link>
             <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
-                <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
+                <font-awesome-icon icon="sign-in-alt"></font-awesome-icon>Login
             </router-link>
         </b-navbar-nav>
     </b-navbar>

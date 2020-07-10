@@ -328,11 +328,11 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel preference)
+        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreference)
         {
-            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(preference)}");
+            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(userPreference)}");
 
-            UserPreference userPreferenceDBModel = preference.ToDbModel();
+            UserPreference userPreferenceDBModel = userPreference.ToDbModel();
 
             DBResult<UserPreference> dbUserPreference = this.preferenceDelegate.InsertUserPreference(userPreferenceDBModel);
             this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbUserPreference)}");

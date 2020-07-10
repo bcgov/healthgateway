@@ -16,15 +16,10 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -66,7 +61,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = new UserPreference()
                 {
                     HdId = hdid,
-                    DismissedMyNotePopover = false,
+                    TutorialPopover = false,
                     Id = Guid.NewGuid(),
                 },
                 Status = DBStatusCode.Read,
