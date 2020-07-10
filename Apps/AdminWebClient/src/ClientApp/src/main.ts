@@ -23,10 +23,16 @@ import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import container from "@/plugins/inversify.config";
 import ExternalConfiguration from "@/models/externalConfiguration";
+import { TiptapVuetifyPlugin } from "tiptap-vuetify";
+import "tiptap-vuetify/dist/main.css";
 
 Vue.config.productionTip = false;
 
 Vue.use(DatetimePicker);
+Vue.use(TiptapVuetifyPlugin, {
+    vuetify,
+    iconsGroup: "md"
+});
 Vue.filter("date", dateFilter);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
