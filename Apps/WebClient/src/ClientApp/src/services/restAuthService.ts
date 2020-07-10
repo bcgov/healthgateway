@@ -6,6 +6,7 @@ import { UserManager, WebStorageStateStore } from "oidc-client";
 import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { CookieStorage } from "cookie-storage";
+import { FragmentedStorage } from "@/utility/fragmentStorage";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
@@ -16,20 +17,23 @@ export class RestAuthenticationService implements IAuthenticationService {
     private authorityUri = "";
     private http!: IHttpDelegate;
 
-    private cookieStorage: CookieStorage = new CookieStorage({
-        domain: null,
-        expires: null,
-        path: "/",
-        secure: false,
-        sameSite: "Strict",
-    });
-
     public initialize(
         config: OpenIdConnectConfiguration,
         httpDelegate: IHttpDelegate
     ): void {
         const oidcConfig = {
-            userStore: new WebStorageStateStore({ store: this.cookieStorage }),
+            userStore: new WebStorageStateStore({
+                store: new FragmentedStorage(
+                    new CookieStorage({
+                        domain: null,
+                        expires: null,
+                        path: "/",
+                        secure: false,
+                        sameSite: "Strict",
+                    }),
+                    2000
+                ),
+            }),
             stateStore: new WebStorageStateStore({
                 store: window.localStorage,
             }),
