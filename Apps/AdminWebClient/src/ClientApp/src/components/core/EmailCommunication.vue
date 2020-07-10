@@ -2,9 +2,6 @@
 .card-title {
     background-color: #272727;
 }
-.error-message {
-    color: #ff5252 !important;
-}
 </style>
 <template>
     <v-card dark>
@@ -36,6 +33,7 @@
                         ></v-select>
                     </v-col>
                 </v-row>
+                <!-- WYSIWYG Editor -->
                 <v-row>
                     <v-col>
                         <TiptapVuetify
@@ -48,9 +46,9 @@
                 </v-row>
             </v-form>
         </v-card-text>
+        <!-- Buttons -->
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel()">Cancel</v-btn>
             <v-btn color="blue darken-1" text @click="send()">Send</v-btn>
         </v-card-actions>
     </v-card>
@@ -152,15 +150,6 @@ export default class EmailCommunication extends Vue {
             this.isLoading = false;
             this.emitResult();
         }
-    }
-
-    private cancel() {
-        (this.$refs.form as Vue & {
-            resetValidation: () => any;
-        }).resetValidation();
-        this.subject = "";
-        this.priority = "";
-        this.content = "<p></p>";
     }
 
     private emitResult() {
