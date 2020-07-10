@@ -295,9 +295,9 @@
                             :class="{ selected: isTimeline }"
                         >
                             <b-col
+                                v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
-                                v-show="isOpen"
                             ></b-col>
                             <b-col
                                 title="Timeline"
