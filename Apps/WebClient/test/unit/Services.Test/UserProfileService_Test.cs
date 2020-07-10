@@ -221,7 +221,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                Key = "DismissedMyNotePopover",
+                Preference = "DisableTutorialPopover",
                 Value = "True"
             };
             List<UserPreference> dbUserPreferenceList = new List<UserPreference>();
@@ -270,7 +270,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                Key = "DismissedMyNotePopover",
+                Preference = "DisableTutorialPopover",
                 Value = "True"
             };
             List<UserPreference> dbUserPreferenceList = new List<UserPreference>();

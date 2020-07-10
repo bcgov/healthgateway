@@ -173,7 +173,7 @@ namespace HealthGateway.Database.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserPreference>()
-                .HasKey(c => new { c.HdId, c.Key });
+                .HasKey(c => new { c.HdId, c.Preference });
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Delegates
 
             foreach (UserPreference newPreference in newPreferences)
             {
-                UserPreference preference = preferences.Payload.FirstOrDefault(p => p.Key == newPreference.Key);
+                UserPreference preference = preferences.Payload.FirstOrDefault(p => p.Preference == newPreference.Preference);
                 if (preference != null)
                 {
                     preference.UpdatedBy = newPreference.UpdatedBy;
@@ -74,7 +74,7 @@ namespace HealthGateway.Database.Delegates
 
             foreach (UserPreference preference in preferences.Payload)
             {
-                if (!newPreferences.Any(p => p.Key == preference.Key))
+                if (!newPreferences.Any(p => p.Preference == preference.Preference))
                 {
                     this.dbContext.UserPreference.Remove(preference);
                 }

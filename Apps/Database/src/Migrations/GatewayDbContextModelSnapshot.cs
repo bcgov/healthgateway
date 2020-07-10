@@ -2728,7 +2728,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(52)")
                         .HasMaxLength(52);
 
-                    b.Property<string>("Key")
+                    b.Property<string>("Preference")
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedBy")
@@ -2757,7 +2757,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin")
                         .HasColumnType("xid");
 
-                    b.HasKey("HdId", "Key");
+                    b.HasKey("HdId", "Preference");
 
                     b.ToTable("UserPreference");
                 });

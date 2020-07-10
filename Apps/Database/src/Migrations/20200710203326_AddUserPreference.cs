@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     UserProfileId = table.Column<string>(maxLength: 52, nullable: false),
-                    Key = table.Column<string>(nullable: false),
+                    Preference = table.Column<string>(nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserPreference", x => new { x.UserProfileId, x.Key });
+                    table.PrimaryKey("PK_UserPreference", x => new { x.UserProfileId, x.Preference });
                 });
         }
 

@@ -35,7 +35,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the preference key.
         /// </summary>
         [Key]
-        public string Key { get; set; } = null!;
+        public string Preference { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the preference value.

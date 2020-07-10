@@ -32,7 +32,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user dismissed my note popover.
         /// </summary>
-        public bool DismissedMyNotePopover { get; set; }
+        public bool DisableTutorialPopover { get; set; }
 
         /// <summary>
         /// Constructs a UserPreference model from a UserPreference database model.
@@ -46,11 +46,11 @@ namespace HealthGateway.WebClient.Models
                 return null!;
             }
 
-            IDictionary<string, string> dict = model.ToDictionary(k => k.Key, v => v.Value);
+            IDictionary<string, string> dict = model.ToDictionary(k => k.Preference, v => v.Value);
             return new UserPreferenceModel()
             {
                 HdId = model.FirstOrDefault().HdId,
-                DismissedMyNotePopover = bool.Parse(dict[nameof(DismissedMyNotePopover)]),
+                DisableTutorialPopover = bool.Parse(dict[nameof(DisableTutorialPopover)]),
             };
         }
 
@@ -64,8 +64,8 @@ namespace HealthGateway.WebClient.Models
             model.Add(new Database.Models.UserPreference()
                 {
                     HdId = this.HdId,
-                    Key = nameof(this.DismissedMyNotePopover),
-                    Value = this.DismissedMyNotePopover.ToString(),
+                    Preference = nameof(this.DisableTutorialPopover),
+                    Value = this.DisableTutorialPopover.ToString(),
                 });
 
             return model;
