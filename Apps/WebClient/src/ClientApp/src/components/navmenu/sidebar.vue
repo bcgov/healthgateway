@@ -240,7 +240,7 @@
                             >
                         </b-row>
                     </router-link>
-                    <div v-show="isProfile && isOpen">
+                    <div v-if="isProfile">
                         <!-- Terms of Service button -->
                         <router-link
                             id="termsOfService"
@@ -337,12 +337,12 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline && isOpen" id="action-side-menu">
+                    <div v-if="isTimeline" id="action-side-menu">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
                             id="add-a-note-row"
-                            class="align-items-center border rounded-pill p-2 button-container my-4"
+                            class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
                         >
@@ -353,7 +353,7 @@
                             >
                                 <font-awesome-icon
                                     icon="edit"
-                                    class="button-icon sub-menu"
+                                    class="button-icon sub-menu m-auto"
                                     size="2x"
                                 />
                             </b-col>
@@ -364,7 +364,7 @@
                             >
                                 <span>Add a Note</span>
                             </b-col>
-                            <b-col>
+                            <b-col cols="0">
                                 <div>
                                     <b-popover
                                         ref="popover"
@@ -658,8 +658,7 @@ export default class SidebarComponent extends Vue {
             })
             .then((userPreference) => {
                 if (userPreference) {
-                    this.TutorialPopover =
-                        userPreference.TutorialPopover;
+                    this.TutorialPopover = userPreference.TutorialPopover;
                     this.hideShowPopoverOnAddANoteRow();
                 }
             });
