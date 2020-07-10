@@ -240,7 +240,7 @@
                             >
                         </b-row>
                     </router-link>
-                    <div v-show="isProfile && isOpen">
+                    <div v-if="isProfile">
                         <!-- Terms of Service button -->
                         <router-link
                             id="termsOfService"
@@ -337,7 +337,7 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline && isOpen" id="action-side-menu">
+                    <div v-if="isTimeline" id="action-side-menu">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
