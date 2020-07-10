@@ -72,7 +72,7 @@ The scopes below listed below are only those that are not OpenID Connect built-i
 
 ### Temporary Scopes
 
-The following terse scopes were put in place for our integration with PHSA for COVID-19 Lab test results and for notification settings (SMS, Email). These were to workaround the issue of the Keycloak openid JWT tipping past the 4K Cookie size limit when using the wordy HL7 FHIR scopes. The plan is to refactor our code to overcome the 4K cookie size limit by chunking the JWT across multiple cookies.  These scopes will go away in a future release.
+The following shortened scope names were put in place for our integration with PHSA for COVID-19 Lab test results and for notification settings (SMS, Email). These were to workaround the issue of the Keycloak openid JWT tipping past the 4K Cookie size limit when using the wordy HL7 FHIR scopes. The plan is to refactor our code to overcome the 4K cookie size limit by chunking the JWT across multiple cookies.  These scopes will go away in a future release.
 
 | Scope Name | Description | Display on Consent Screen | Mapper |
 | ------ | -------- | ---------- | ------ |
@@ -108,7 +108,7 @@ For site administrators we support government Active Directory (IDIR domain) and
 | BC Services Card | oidc | True | True | False |
 | IDIR | keycloak-oidc | True | False | False |
 
-> Since we do not use the built-in user login theme templates for our primary web application, and we do not use the BC Services Card to logon to the Keycloak console we have Hidden the choice of BC Services Card from the default Keycloak login. Instead, the application has its own logon buttons and look and feel and passes the Identity Provider choice as a 'hint' to Keycloak during the openid login flow.
+> Since we do not use the built-in Keycloak user login themed templates for our primary web application and we do not use the BC Services Card to logon to the Keycloak console we have Hidden the choice of BC Services Card from the default Keycloak login. Instead, the Health Gatway web application has its own logon buttons with its own look and feel and passes the Identity Provider choice as a 'hint' to Keycloak during the openid connect login flow.
 
 
 ## Detailed Client Configurations
@@ -117,6 +117,10 @@ The following section details the client configurations. It also provides an arc
 
 ### Settings
 
+| Client ID | Name | Consent Required | Protocol | Access Type | Standard Flow | Implicit Flow | Direct Access Grant | Authorization Enabled (UMA) | 
+| ------ | ------ | ------ | ------ | ------ | ------ | ----- | ------ | ------ |
+| healthgateway | Health Gateway Web Client {env} | OFF | openid-connect | public | ON | OFF | OFF | OFF |
+| healthgateway-admin | 
 ### Roles
 
 ### Client Scopes
