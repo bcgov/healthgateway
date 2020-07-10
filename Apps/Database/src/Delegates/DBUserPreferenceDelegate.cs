@@ -16,10 +16,13 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />

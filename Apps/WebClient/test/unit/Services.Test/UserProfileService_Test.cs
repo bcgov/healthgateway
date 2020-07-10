@@ -69,15 +69,18 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                TutorialPopover = true,
+                Preference = "TutorialPopover",
+                Value = true.ToString(),
             };
-            DBResult<UserPreference> readResult = new DBResult<UserPreference>
+            List<UserPreference> userPreferences = new List<UserPreference>();
+            userPreferences.Add(dbUserPreference);
+            DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
             {
-                Payload = dbUserPreference,
+                Payload = userPreferences,
                 Status = DBStatusCode.Read
             };
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.GetUserPreference(hdid)).Returns(readResult);
+            preferenceDelegateMock.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -233,8 +236,8 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                Preference = "DisableTutorialPopover",
-                Value = "True"
+                Preference = "TutorialPopover",
+                Value = true.ToString(),
             };
             List<UserPreference> dbUserPreferenceList = new List<UserPreference>();
             dbUserPreferenceList.Add(dbUserPreference);
@@ -282,7 +285,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserPreference dbUserPreference = new UserPreference
             {
                 HdId = hdid,
-                Preference = "DisableTutorialPopover",
+                Preference = "TutorialPopover",
                 Value = "True"
             };
             List<UserPreference> dbUserPreferenceList = new List<UserPreference>();

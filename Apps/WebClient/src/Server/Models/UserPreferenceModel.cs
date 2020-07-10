@@ -50,7 +50,7 @@ namespace HealthGateway.WebClient.Models
             return new UserPreferenceModel()
             {
                 HdId = model.FirstOrDefault().HdId,
-                DisableTutorialPopover = bool.Parse(dict[nameof(DisableTutorialPopover)]),
+                TutorialPopover = bool.Parse(dict[nameof(TutorialPopover)]),
             };
         }
 
@@ -64,8 +64,8 @@ namespace HealthGateway.WebClient.Models
             model.Add(new Database.Models.UserPreference()
                 {
                     HdId = this.HdId,
-                    Preference = nameof(this.DisableTutorialPopover),
-                    Value = this.DisableTutorialPopover.ToString(),
+                    Preference = nameof(this.TutorialPopover),
+                    Value = this.TutorialPopover.ToString(),
                 });
 
             return model;

@@ -808,7 +808,7 @@
             Gets or sets the user hdid.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.DisableTutorialPopover">
+        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.TutorialPopover">
             <summary>
             Gets or sets a value indicating whether the user dismissed my note popover.
             </summary>
