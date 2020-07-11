@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,6 +89,17 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished inserting email to DB. {JsonSerializer.Serialize(email)}");
             return email.Id;
+        }
+
+        /// <inheritdoc />
+        public Guid InsertBatchEmail(Email email, bool shouldCommit = true)
+        {
+            this.logger.LogTrace($"Inserting batch email to DB... {email}");
+            email.To = EmailTo.UndisclosedRecipients;
+            var retValue = this.InsertEmail(email, shouldCommit);
+
+            this.logger.LogDebug($"Finished inserting batch email to DB. {JsonSerializer.Serialize(email)}");
+            return retValue;
         }
 
         /// <inheritdoc />

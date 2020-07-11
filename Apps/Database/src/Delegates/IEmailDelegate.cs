@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,6 +58,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <returns>Returns the guid of the saved email.</returns>
         Guid InsertEmail(Email email, bool shouldCommit = true);
+
+        /// <summary>
+        /// Inserts an batch email using a populated Email object.
+        /// </summary>
+        /// <param name="email">The populated batch email to save.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        /// <returns>Returns the guid of the saved email.</returns>
+        Guid InsertBatchEmail(Email email, bool shouldCommit = true);
 
         /// <summary>
         /// Updates an email using a populated Email object.
