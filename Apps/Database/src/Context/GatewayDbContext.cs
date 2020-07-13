@@ -645,7 +645,7 @@ namespace HealthGateway.Database.Context
                 new CommunicationStatusCode
                 {
                     StatusCode = CommunicationStatus.New,
-                    Description = "A newly created Communication",
+                    Description = "A newly created Comm",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
@@ -654,7 +654,7 @@ namespace HealthGateway.Database.Context
                 new CommunicationStatusCode
                 {
                     StatusCode = CommunicationStatus.Pending,
-                    Description = "A Communication pending batch pickup",
+                    Description = "A Comm pending batch pickup",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
@@ -663,7 +663,7 @@ namespace HealthGateway.Database.Context
                 new CommunicationStatusCode
                 {
                     StatusCode = CommunicationStatus.Processed,
-                    Description = "A Communication which has been sent",
+                    Description = "A Comm which has been sent",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
@@ -672,7 +672,7 @@ namespace HealthGateway.Database.Context
                 new CommunicationStatusCode
                 {
                     StatusCode = CommunicationStatus.Error,
-                    Description = "A Communication that will not be sent",
+                    Description = "A Comm that will not be sent",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
