@@ -92,17 +92,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public Guid InsertBatchEmail(Email email, bool shouldCommit = true)
-        {
-            this.logger.LogTrace($"Inserting batch email to DB... {email}");
-            email.To = EmailTo.UndisclosedRecipients;
-            var retValue = this.InsertEmail(email, shouldCommit);
-
-            this.logger.LogDebug($"Finished inserting batch email to DB. {JsonSerializer.Serialize(email)}");
-            return retValue;
-        }
-
-        /// <inheritdoc />
         public void UpdateEmail(Email email)
         {
             this.logger.LogTrace($"Updating email in DB... {email}");

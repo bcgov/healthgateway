@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A system Communication.
@@ -55,5 +56,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public DateTime ExpiryDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the state of the Communication (Draft, Pending ...).
+        /// </summary>
+        [MaxLength(10)]
+        public string CommunicationStatusCode { get; set; } = CommunicationStatus.New;
     }
 }

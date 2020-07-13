@@ -171,6 +171,12 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.VerificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Communication>()
+                .HasOne<CommunicationStatusCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.StatusCode)
+                .HasForeignKey(k => k.CommunicationStatusCode);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -178,6 +184,7 @@ namespace HealthGateway.Database.Context
             this.SeedLegalAgreements(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
             this.SeedMessagingVerifications(modelBuilder);
+            this.SeedCommunication(modelBuilder);
         }
 
         /// <summary>
@@ -617,6 +624,51 @@ namespace HealthGateway.Database.Context
                 {
                     MessagingVerificationCode = MessagingVerificationType.SMS,
                     Description = "SMS Verification Type Code",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Communication codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedCommunication(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CommunicationStatusCode>().HasData(
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.New,
+                    Description = "A newly created Communication",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Pending,
+                    Description = "A Communication pending batch pickup",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Processed,
+                    Description = "A Communication which has been sent",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Error,
+                    Description = "A Communication that will not be sent",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
