@@ -59,6 +59,7 @@ namespace HealthGateway.Database.Context
         public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; } = null!;
         public DbSet<FileDownload> FileDownload { get; set; } = null!;
         public DbSet<UserProfile> UserProfile { get; set; } = null!;
+        public DbSet<UserPreference> UserPreference { get; set; } = null!;
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
         public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
         public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
@@ -170,6 +171,9 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.MessagingVerificationCode)
                 .HasForeignKey(k => k.VerificationType)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserPreference>()
+                .HasKey(c => new { c.HdId, c.Preference });
 
             modelBuilder.Entity<Communication>()
                 .HasOne<CommunicationStatusCode>()
