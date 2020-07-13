@@ -62,5 +62,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(10)]
         public string CommunicationStatusCode { get; set; } = CommunicationStatus.New;
+
+        /// <summary>
+        /// Gets or sets the priority of the email communication.
+        /// The lower the value the lower the priority.
+        /// </summary>
+        public int Priority { get; set; } = EmailPriority.Standard;
     }
 }
