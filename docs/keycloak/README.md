@@ -64,8 +64,10 @@ The scopes below listed below are only those that are not OpenID Connect built-i
 | patient/Immunization.read | HL7 FHIR scope to read a specific patient's immunization records | ON | n/a |
 | patient/Laboratory.read | HL7 FJIR-inspired scope to read a patient's Laboratory records | ON | n/a |
 | patient/MedicationDispense.read | HL7 FHIR scope to read a patient's Medication History | ON | n/a |
-| patient/Patient.read | HL7 FHIR scope to read patient demongraphics record | ON | n/a |
-| system/Immunization.read | HL7 FHIR scope to read any patient's immunization records | OFF | n/a |
+| patient/Observation.read | HL7 FHIR scope to read patient observations  | ON | n/a |
+| patient/Patient.read | HL7 FHIR scope to read patient demographics record | ON | n/a |
+| system/Patient.read | HL7 FHIR scope to read any patient's immunization records | OFF | n/a |
+| system/*.read | HL7 FHIR wildcard scope allowing read access to any patient's records | OFF | n/a |
 
 > As we add more services, we will introduce new resource scopes following HL7 FHIR and SMART on FHIR as much as is practicable.
 
@@ -74,8 +76,11 @@ The scopes below listed below are only those that are not OpenID Connect built-i
 
 The following shortened scope names were put in place for our integration with PHSA for COVID-19 Lab test results and for notification settings (SMS, Email). These were to workaround the issue of the Keycloak openid JWT tipping past the 4K Cookie size limit when using the wordy HL7 FHIR scopes. The plan is to refactor our code to overcome the 4K cookie size limit by chunking the JWT across multiple cookies.  These scopes will go away in a future release.
 
+> In addition, we will be removing access_hnclient scope as the HNSecure network is no longer used to access medication statements.
+
 | Scope Name | Description | Display on Consent Screen | Mapper |
 | ------ | -------- | ---------- | ------ |
+| access_hnclient | scope to allow only the medication service to access HNClient proxy |
 | PL | scope to read the authenticated patient's Laboratory records | OFF | n/a |
 | PN | scope to access/modify authenticated patient's notification settings | OFF | n/a |
 | SL | system-level client access to read anyone's Lab records | OFF | n/a |
@@ -110,6 +115,20 @@ For site administrators we support government Active Directory (IDIR domain) and
 
 > Since we do not use the built-in Keycloak user login themed templates for our primary web application and we do not use the BC Services Card to logon to the Keycloak console we have Hidden the choice of BC Services Card from the default Keycloak login. Instead, the Health Gatway web application has its own logon buttons with its own look and feel and passes the Identity Provider choice as a 'hint' to Keycloak during the openid connect login flow.
 
+## User Federation
+
+No user federation is configured.
+
+## Authentication
+
+| Auth Type | Requirement |
+| ------ | ------ |
+| Cookie | Alternative |
+| Kerberos | Disabled |
+| IdP Redirector | Alternative |
+| Forms | Alternative, with Required password and optional OTP |
+
+------------
 
 ## Detailed Client Configurations
 
@@ -117,14 +136,57 @@ The following section details the client configurations. It also provides an arc
 
 ### Settings
 
-| Client ID | Name | Consent Required | Protocol | Access Type | Standard Flow | Implicit Flow | Direct Access Grant | Authorization Enabled (UMA) | 
-| ------ | ------ | ------ | ------ | ------ | ------ | ----- | ------ | ------ |
-| healthgateway | Health Gateway Web Client {env} | OFF | openid-connect | public | ON | OFF | OFF | OFF |
-| healthgateway-admin | 
+| Client ID | Description | Consent Required | Protocol | Access Type | Standard Flow | Implicit Flow | Direct Access Grant | Service Accounts Enabled | Authorization Enabled (UMA) | Credentials |
+| ------ | ------ | ------ | ------ | ------ | ------ | ----- | ------ | ------ | ----- | ---- |
+| healthgateway | Health Gateway Web Client {env} | OFF | openid-connect | public | ON | OFF | OFF | OFF | OFF | N/A |
+| healthgateway-admin | Health Gateway Administration web application | OFF | openid-connect | confidential | ON | OFF | ON | ON | OFF | Client Id and Secret |
+| phsa-cdc | PHSA CDC Lab Report Services | OFF | openid-connect | confidential | ON | OFF | ON | ON | OFF | Client Id and Secret |
+
 ### Roles
 
-### Client Scopes
+| Client ID | Roles |
+| ------ | ------ |
+| healthgateway | No client roles |
+| healthgateway-admin | No client roles |
+| phsa-cdc | No client roles |
 
-### Mappers
+### Client Scopes Assigned
+
+| Client ID | Assigned Client Scopes | Assigned Optional Client Scopes |
+| ------ | ------ | ----- |
+| healthgateway | web-origins, audience|
+| healthgateway-admin | web-origins, audience, email, profile, roles, SL, SN | offline_access |
+| phsa-cdc | web-origins, audience, system/Patient.read, profile, PL, PN | offline_access |
+
+### Custom Mappers
+
+> Here, we only show the non-built-in mappers that were added.
+
+Client ID | Mapper Name | Category | Type | Priority | Mapper Value/Setting | Add to ID Token | Add to access token | add to userinfo |
+| ------ | ------ | ----- | ---- | ----- | ----- | ----- | ----- | ----- | ----- |
+| healthgateway | hdid | Token mapper | User Attribute | 0 | hdid | ON | ON  | ON |
+| healthgateway | health-gateway-audience | Token Mapper | Audience | 0 | healthgateway | OFF | ON | N/A |
+| healthgateway | given name | Token maper | User Property | 0 | firstName | OFF |  OFF |  ON |
+| healthgateway | family name | Token maper | User Property | 0 | lastName | OFF |  OFF |  ON |
+| healthgateway-admin | realm roles | Token Mapper | User Realm Role | 0 | user_realm_roles | ON | ON | ON |
+| healthgateway-admin | admin-audience-mapper | Token Mapper | Audience | 0 | healthgateway-admin | OFF | ON | N/A |
+| phsa-cdc | hdid | Token mapper | User Attribute | 0 | hdid | ON | ON  | ON |
+| phsa-cdc | healthgateway-audience-mapper | Token Mapper | Audience | 0 | healthgateway | OFF | ON | N/A |
 
 ### Scope
+
+| Client ID | Assigned Roles |
+| ------ | ------ |
+| healthgateway | offline_access, uma_authorization |
+| healthgateway-admin | AdminUser, HangfireUser, offline_access |
+| phsa-cdc | offline_access |
+
+### Service Account Roles
+
+> Applies only to clients with Service Accounts enabled
+
+| Client ID | Assigned Roles |
+| ------ | ------ |
+| healthgateway | N/A |
+| healthgateway-admin | AdminUser, HangfireUser, offline_access, uma_authorization |
+| phsa-cdc | offline_access, uma_authorization |
