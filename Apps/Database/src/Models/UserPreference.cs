@@ -21,14 +21,8 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class UserPreference
+    public class UserPreference : AuditableEntity
     {
-        /// <summary>
-        /// Gets or sets the user preference id.
-        /// </summary>
-        [Column("UserPreferenceId")]
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
@@ -38,8 +32,14 @@ namespace HealthGateway.Database.Models
         public string HdId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user dismissed the note popover.
+        /// Gets or sets the preference key.
         /// </summary>
-        public bool TutorialPopover { get; set; }
+        [Key]
+        public string Preference { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the preference value.
+        /// </summary>
+        public string Value { get; set; } = null!;
     }
 }

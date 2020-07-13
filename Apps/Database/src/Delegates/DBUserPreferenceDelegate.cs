@@ -16,10 +16,13 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -42,30 +45,71 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserPreference> InsertUserPreference(UserPreference preference)
+        public DBResult<IEnumerable<UserPreference>> SaveUserPreferences(string hdid, IEnumerable<UserPreference> newPreferences, bool commit = true)
         {
-            // Todo: Tiago to implement code here
-            return new DBResult<UserPreference>()
+            DBResult<IEnumerable<UserPreference>> preferences = this.GetUserPreferences(hdid);
+            DBResult<IEnumerable<UserPreference>> result = new DBResult<IEnumerable<UserPreference>>();
+            List<UserPreference> payload = new List<UserPreference>();
+            result.Status = DBStatusCode.Deferred;
+            result.Payload = payload;
+
+            foreach (UserPreference newPreference in newPreferences)
             {
-                Payload = preference,
-                Status = DBStatusCode.Created,
-            };
+                UserPreference preference = preferences.Payload.FirstOrDefault(p => p.Preference == newPreference.Preference);
+                if (preference != null)
+                {
+                    preference.UpdatedBy = newPreference.UpdatedBy;
+                    preference.UpdatedDateTime = DateTime.UtcNow;
+                    preference.Value = newPreference.Value;
+                    payload.Add(preference);
+                }
+                else
+                {
+                    this.dbContext.UserPreference.Add(newPreference);
+                    payload.Add(newPreference);
+                }
+            }
+
+            foreach (UserPreference preference in preferences.Payload)
+            {
+                if (!newPreferences.Any(p => p.Preference == preference.Preference))
+                {
+                    this.dbContext.UserPreference.Remove(preference);
+                }
+            }
+
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    this.logger.LogError($"Unable to update UserPreference to DB {e}");
+                    result.Status = DBStatusCode.Error;
+                    result.Message = e.Message;
+                }
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public DBResult<UserPreference> GetUserPreference(string hdid)
+        public DBResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid)
         {
-            // Todo: Tiago to implement code here
-            return new DBResult<UserPreference>()
-            {
-                Payload = new UserPreference()
-                {
-                    HdId = hdid,
-                    TutorialPopover = false,
-                    Id = Guid.NewGuid(),
-                },
-                Status = DBStatusCode.Read,
-            };
+            DBResult<IEnumerable<UserPreference>> result = new DBResult<IEnumerable<UserPreference>>();
+            result.Payload = this.dbContext.UserPreference
+                                .Where(p => p.HdId == hdid)
+                                .ToList();
+            result.Status = DBStatusCode.Read;
+            return result;
         }
     }
 }
