@@ -684,7 +684,7 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>

@@ -49,6 +49,13 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Add(Communication communication)
         {
+            if (/* is email */ false) {
+                if (communication.Text.Length == 0 || communication.Subject.Length == 0 || communication.EffectiveDateTime < DateTime.Now)
+                {
+                    throw new ArgumentException("One of: Email Subject, Email Content or Email Scheduled DateTime is invalid.");
+                }
+            }
+
             this.logger.LogTrace($"Adding communication... {JsonConvert.SerializeObject(communication)}");
 
             DBResult<Communication> dbResult = this.communicationDelegate.Add(communication);
