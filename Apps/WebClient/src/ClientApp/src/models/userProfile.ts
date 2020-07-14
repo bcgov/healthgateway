@@ -1,4 +1,4 @@
-import UserPreference from "@/models/userPreference";
+import { Dictionary } from "vue-router/types/router";
 
 export default interface UserProfile {
     // The user hdid.
@@ -23,7 +23,7 @@ export default interface UserProfile {
     closedDateTime?: Date;
 
     // The User Preference
-    userPreference?: UserPreference;
+    preferences: Dictionary<string>;
 }
 
 export interface CreateUserRequest {

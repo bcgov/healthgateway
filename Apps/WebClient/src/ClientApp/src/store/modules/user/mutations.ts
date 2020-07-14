@@ -37,6 +37,7 @@ export const mutations: MutationTree<UserState> = {
             "closedDateTime",
             userProfile ? userProfile.closedDateTime : undefined
         );
+        Vue.set(state.user, "preferences", userProfile.preferences);
         console.log(state.user);
         state.error = false;
         state.statusMessage = "success";
@@ -64,6 +65,16 @@ export const mutations: MutationTree<UserState> = {
             Vue.set(state.user, "verifiedSMS", false);
         }
 
+        state.error = false;
+        state.statusMessage = "success";
+        state.stateType = StateType.INITIALIZED;
+    },
+    setUserPreference(
+        state: UserState,
+        preference: { name: string; value: string }
+    ) {
+        console.log(preference.name, preference.value);
+        state.user.preferences[preference.name] = preference.value;
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
