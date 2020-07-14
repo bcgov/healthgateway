@@ -132,7 +132,7 @@ import {
     faSyringe,
 } from "@fortawesome/free-solid-svg-icons";
 
-@Component()
+@Component
 export default class TimelineLoadingComponent extends Vue {
     private step: number = 0;
     private get ellipsis(): string {
@@ -172,13 +172,13 @@ export default class TimelineLoadingComponent extends Vue {
     }
 
     private resetAnimation(elementId: string): boolean {
-        var el: HTMLElement = document.getElementById(elementId);
+        var el: HTMLElement | null = document.getElementById(elementId);
         if (el == null) {
             return false;
         }
         el.style.animation = "none";
         el.offsetHeight; /* trigger reflow */
-        el.style.animation = null;
+        el.style.animation = "";
         return true;
     }
 }
