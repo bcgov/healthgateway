@@ -54,8 +54,7 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .FirstOrDefault(c =>
-                    DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime);
+                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Email || (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
 
             if (result.Payload != null)
             {

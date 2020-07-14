@@ -176,6 +176,12 @@ namespace HealthGateway.Database.Context
                 .HasKey(c => new { c.HdId, c.Preference });
 
             modelBuilder.Entity<Communication>()
+                .HasOne<CommunicationTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.StatusCode)
+                .HasForeignKey(k => k.CommunicationTypeCode);
+
+            modelBuilder.Entity<Communication>()
                 .HasOne<CommunicationStatusCode>()
                 .WithMany()
                 .HasPrincipalKey(k => k.StatusCode)
@@ -636,11 +642,31 @@ namespace HealthGateway.Database.Context
         }
 
         /// <summary>
-        /// Seeds the Communication codes.
+        /// Seeds the Communication Status and Communication Type codes.
         /// </summary>
         /// <param name="modelBuilder">The passed in model builder.</param>
         private void SeedCommunication(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CommunicationTypeCode>().HasData(
+                new CommunicationTypeCode
+                {
+                    StatusCode = CommunicationType.Banner,
+                    Description = "Banner communication type",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationTypeCode
+                {
+                    StatusCode = CommunicationType.Email,
+                    Description = "Email communication type",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+
             modelBuilder.Entity<CommunicationStatusCode>().HasData(
                 new CommunicationStatusCode
                 {

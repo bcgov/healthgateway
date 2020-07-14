@@ -58,6 +58,12 @@ namespace HealthGateway.Database.Models
         public DateTime ExpiryDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the Communication (Banner vs Email).
+        /// </summary>
+        [MaxLength(10)]
+        public string CommunicationTypeCode { get; set; } = CommunicationType.Banner;
+
+        /// <summary>
         /// Gets or sets the state of the Communication (Draft, Pending ...).
         /// </summary>
         [MaxLength(10)]
