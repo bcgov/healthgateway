@@ -51,5 +51,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The updated communication wrapped in a DBResult.</returns>
         DBResult<Communication> Update(Communication communication, bool commit = true);
+
+        /// <summary>
+        /// Gets the communications from the DB.
+        /// </summary>
+        /// <param name="communicationType">The Communication Type to be retrieved from the database.</param>
+        /// <param name="communicationStatusCode">The CSommunication Status Code to be retrieved from the database.</param>
+        /// <returns>The list of communications.</returns>
+        List<Communication> GetCommunicationsByTypeAndStatusCode(string communicationType, string communicationStatusCode);
     }
 }

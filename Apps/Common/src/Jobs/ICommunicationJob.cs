@@ -13,16 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Jobs
 {
+    using System;
+
     /// <summary>
-    /// Represents the To of emails.
+    /// A Job to send/retry sending (email) communications.
     /// </summary>
-    public static class EmailTo
+    public interface ICommunicationJob
     {
         /// <summary>
-        /// Constant value to represent undisclosed-recipients of the To field of the email.
+        /// Attempts to send email communications.
         /// </summary>
-        public const string UndisclosedRecipients = "undisclosed-recipients";
+        void SendEmailCommunications();
     }
 }
