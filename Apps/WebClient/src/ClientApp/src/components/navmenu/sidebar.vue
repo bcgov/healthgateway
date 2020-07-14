@@ -191,7 +191,7 @@
     padding: 0.5px 0px 0.5px 0px !important;
 }
 
-#pop-over-close {
+.pop-over-close {
     float: right;
     padding-top: 0px;
     color: black;
@@ -199,11 +199,19 @@
     background-color: transparent;
 }
 
-#popover-content {
+.popover-content {
+    max-width: 20rem;
     color: black;
 }
 
-#action-side-menu {
+/* Small Devices*/
+@media (max-width: 470px) {
+    .popover-content {
+        max-width: 8rem;
+    }
+}
+
+.action-side-menu {
     display: inline !important;
 }
 </style>
@@ -337,7 +345,7 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-if="isTimeline" id="action-side-menu">
+                    <div v-if="isTimeline" class="action-side-menu">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
@@ -364,33 +372,30 @@
                             >
                                 <span>Add a Note</span>
                             </b-col>
-                            <b-col cols="0">
-                                <div>
-                                    <b-popover
-                                        ref="popover"
-                                        triggers="manual"
-                                        target="add-a-note-row"
-                                        class="popover"
-                                        fallback-placement="counterclockwise"
-                                        placement="right"
-                                        variant="dark"
-                                    >
-                                        <div>
-                                            <b-button
-                                                id="pop-over-close"
-                                                @click="dismissNoteNotification"
-                                                >x</b-button
-                                            >
-                                        </div>
-                                        <div id="popover-content">
-                                            Add Notes to track your important
-                                            health events e.g. Broke ankle in
-                                            Cuba
-                                        </div>
-                                    </b-popover>
-                                </div>
-                            </b-col>
                         </b-row>
+                        <b-popover
+                            ref="popover"
+                            triggers="manual"
+                            :show.sync="showTutorialPopover"
+                            target="add-a-note-row"
+                            class="popover"
+                            fallback-placement="clockwise"
+                            placement="right"
+                            variant="dark"
+                            boundary="viewport"
+                        >
+                            <div>
+                                <b-button
+                                    class="pop-over-close"
+                                    @click="dismissTutorial"
+                                    >x</b-button
+                                >
+                            </div>
+                            <div class="popover-content">
+                                Add Notes to track your important health events
+                                e.g. Broke ankle in Cuba
+                            </div>
+                        </b-popover>
                         <!-- Print Button -->
                         <b-row
                             class="align-items-center border rounded-pill py-2 button-container my-4"
@@ -453,10 +458,7 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import {
-    IAuthenticationService,
-    IUserProfileService,
-} from "@/services/interfaces";
+import { IAuthenticationService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
@@ -465,6 +467,7 @@ import { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
+import User from "@/models/user";
 library.add(faStream);
 
 const auth: string = "auth";
@@ -477,33 +480,45 @@ const sidebar: string = "sidebar";
     },
 })
 export default class SidebarComponent extends Vue {
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        hdid: string;
+        name: string;
+        value: string;
+    }) => void;
+
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+
     @Getter("oidcIsAuthenticated", {
         namespace: auth,
     })
     oidcIsAuthenticated!: boolean;
+
     @Getter("userIsRegistered", {
         namespace: user,
     })
     userIsRegistered!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    private eventBus = EventBus;
 
     private authenticationService!: IAuthenticationService;
     private name: string = "";
     private windowWidth: number = 0;
-    private $bodyElement!: HTMLBodyElement | null;
-    private userProfileService!: IUserProfileService;
-    private hdid: string = "";
-    private TutorialPopover: boolean = false;
-    private isMobile: boolean = false;
+
+    private isTutorialEnabled: boolean = true;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
         // If there is no name in the scope, retrieve it from the service.
         if (this.oidcIsAuthenticated && !this.name) {
-            this.loadUserProfile();
+            this.loadName();
         }
     }
 
@@ -514,33 +529,18 @@ export default class SidebarComponent extends Vue {
 
     @Watch("isOpen")
     private onIsOpen(newValue: boolean, oldValue: boolean) {
-        // Make sure that scroll is disabled when the overlay is active
-        if (this.$bodyElement !== null) {
-            if (this.isOverlayVisible) {
-                this.$bodyElement.style.position = "fixed";
-                // Wait a bit for the sidemenu expanded then display popover
-                if (this.TutorialPopover !== true) {
-                    const that = this;
-                    that.isMobile = true;
-                    setTimeout(function () {
-                        console.log("Diplaying popover for mobile...");
-                        that.hideShowPopoverOnAddANoteRow();
-                    }, 400);
-                }
-            } else this.$bodyElement.style.removeProperty("position");
-        }
+        this.isTutorialEnabled = false;
     }
 
     private mounted() {
         this.authenticationService = container.get(
             SERVICE_IDENTIFIER.AuthenticationService
         );
-        this.userProfileService = container.get(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
         if (this.oidcIsAuthenticated) {
-            this.loadUserOidcProfile();
+            this.loadName();
         }
+
+        var self = this;
 
         // Setup the transition listener to avoid text wrapping
         var transition = document.querySelector("#sidebar");
@@ -552,6 +552,8 @@ export default class SidebarComponent extends Vue {
             ) {
                 return;
             }
+
+            self.isTutorialEnabled = true;
 
             var buttonText = document
                 .querySelectorAll(".button-title")
@@ -568,7 +570,6 @@ export default class SidebarComponent extends Vue {
             window.addEventListener("resize", this.onResize);
         });
         this.windowWidth = window.innerWidth;
-        this.$bodyElement = document.querySelector("body");
     }
 
     private beforeDestroy() {
@@ -579,55 +580,13 @@ export default class SidebarComponent extends Vue {
         this.toggleSidebar();
     }
 
-    private loadUserOidcProfile(): void {
+    private loadName(): void {
         this.authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
                 this.name = this.getFullname(
                     oidcUser.given_name,
                     oidcUser.family_name
                 );
-                this.hdid = oidcUser.hdid;
-                this.loadUserProfile();
-            }
-        });
-    }
-
-    private hideShowPopoverOnAddANoteRow(): void {
-        if (this.TutorialPopover === true) {
-            (this.$refs.popover as Vue).$emit("close");
-        }
-
-        // Disable Popover feature for rework
-        // else {
-        //     (this.$refs.popover as Vue).$emit("open");
-        //     if (this.isMobile) {
-        //         setTimeout(function () {
-        //             console.log("moving popover's position for mobile...");
-        //             let bvPopoverContainer = document.getElementById(
-        //                 "__bv_popover_71__"
-        //             );
-        //             if (!bvPopoverContainer) {
-        //                 bvPopoverContainer = document.getElementById(
-        //                     "__bv_popover_35__"
-        //                 );
-        //             }
-        //             if (bvPopoverContainer) {
-        //                 bvPopoverContainer.setAttribute(
-        //                     "style",
-        //                     "position: absolute; transform: translate3d(185px, 243px, 0px); top: 0px; left: 0px; will-change: transform;"
-        //                 );
-        //             }
-        //         }, 200);
-        //     }
-        // }
-    }
-
-    private loadUserProfile(): void {
-        this.userProfileService.getProfile(this.hdid).then((userProfile) => {
-            if (userProfile && userProfile.userPreference) {
-                this.TutorialPopover =
-                    userProfile.userPreference.TutorialPopover;
-                this.hideShowPopoverOnAddANoteRow();
             }
         });
     }
@@ -639,42 +598,56 @@ export default class SidebarComponent extends Vue {
     private clearOverlay() {
         if (this.isOverlayVisible) {
             this.toggleSidebar();
-        } else {
-            this.hideShowPopoverOnAddANoteRow(); // preventing issue to not showing popover when login
         }
     }
 
     private createNote() {
         this.clearOverlay();
-        EventBus.$emit("timelineCreateNote");
+        this.eventBus.$emit("timelineCreateNote");
     }
 
-    private dismissNoteNotification() {
-        console.log("Dismissing Note Notification...");
-        this.userProfileService
-            .createUserPreference({
-                hdId: this.hdid,
-                TutorialPopover: true,
-            })
-            .then((userPreference) => {
-                if (userPreference) {
-                    this.TutorialPopover = userPreference.TutorialPopover;
-                    this.hideShowPopoverOnAddANoteRow();
-                }
-            });
+    private dismissTutorial() {
+        console.log("Dismissing tutorial...");
+        this.updateUserPreference({
+            hdid: this.user.hdid,
+            name: "tutorialPopover",
+            value: "false",
+        });
     }
 
     private printView() {
         this.clearOverlay();
-        EventBus.$emit("timelinePrintView");
+        this.eventBus.$emit("timelinePrintView");
     }
 
     private onResize() {
         this.windowWidth = window.innerWidth;
     }
 
+    private get showTutorialPopover(): boolean {
+        if (this.isMobileWidth) {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true" &&
+                this.isOpen
+            );
+        } else {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true"
+            );
+        }
+    }
+    private set showTutorialPopover(value: boolean) {
+        this.isTutorialEnabled = value;
+    }
+
     private get isOverlayVisible() {
-        return this.isOpen && this.windowWidth < 768;
+        return this.isOpen && this.isMobileWidth;
+    }
+
+    private get isMobileWidth(): boolean {
+        return this.windowWidth < 768;
     }
 
     private get isTimeline(): boolean {

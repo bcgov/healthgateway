@@ -153,7 +153,7 @@ namespace HealthGateway.WebClient
                 app.UseResponseCompression();
             }
 
-            bool debugerAttached = System.Diagnostics.Debugger.IsAttached;
+            bool debugerAttached = false;
 
             app.UseEndpoints(endpoints =>
             {

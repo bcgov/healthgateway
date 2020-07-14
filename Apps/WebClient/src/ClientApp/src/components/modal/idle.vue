@@ -42,6 +42,7 @@ export default class IdleComponent extends Vue {
     private visible: boolean = false;
     private timerHandle?: number;
     private timeoutHandle?: number;
+    private eventBus = EventBus;
 
     @Emit()
     public show() {
@@ -50,7 +51,7 @@ export default class IdleComponent extends Vue {
             var self = this;
             this.timerHandle = setInterval(() => self.countdown(), 1000);
             this.timeoutHandle = setTimeout(() => {
-                EventBus.$emit("idleLogoutWarning", true);
+                this.eventBus.$emit("idleLogoutWarning", true);
                 self.logout();
             }, 1000 * 60);
         }
@@ -69,7 +70,7 @@ export default class IdleComponent extends Vue {
         this.totalTime = 60;
         clearTimeout(this.timeoutHandle);
         clearInterval(this.timerHandle);
-        EventBus.$emit("idleLogoutWarning", false);
+        this.eventBus.$emit("idleLogoutWarning", false);
     }
 
     private countdown() {

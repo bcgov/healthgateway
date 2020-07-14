@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Diagnostics.Contracts;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -38,8 +39,8 @@ namespace HealthGateway.WebClient.Services
         private const string HostTemplateVariable = "host";
 
         private readonly ILogger logger;
-        private readonly IUserProfileDelegate profileDelegate;
-        private readonly IUserPreferenceDelegate preferenceDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IUserPreferenceDelegate userPreferenceDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly IConfigurationService configurationService;
@@ -53,8 +54,8 @@ namespace HealthGateway.WebClient.Services
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="preferenceDelegate">The preference delegate to interact with the DB.</param>
+        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
         /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         /// <param name="configuration">The configuration service.</param>
@@ -65,8 +66,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
-            IUserProfileDelegate profileDelegate,
-            IUserPreferenceDelegate preferenceDelegate,
+            IUserProfileDelegate userProfileDelegate,
+            IUserPreferenceDelegate userPreferenceDelegate,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate,
             IConfigurationService configuration,
@@ -77,8 +78,8 @@ namespace HealthGateway.WebClient.Services
             IMessagingVerificationDelegate messageVerificationDelegate)
         {
             this.logger = logger;
-            this.profileDelegate = profileDelegate;
-            this.preferenceDelegate = preferenceDelegate;
+            this.userProfileDelegate = userProfileDelegate;
+            this.userPreferenceDelegate = userPreferenceDelegate;
             this.emailDelegate = emailDelegate;
             this.emailInviteDelegate = emailInviteDelegate;
             this.configurationService = configuration;
@@ -93,7 +94,7 @@ namespace HealthGateway.WebClient.Services
         public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
-            DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
+            DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
 
             if (retVal.Status == DBStatusCode.NotFound)
@@ -111,7 +112,7 @@ namespace HealthGateway.WebClient.Services
             {
                 this.logger.LogTrace($"Updating user last login... {hdid}");
                 retVal.Payload.LastLoginDateTime = lastLogin;
-                DBResult<UserProfile> updateResult = this.profileDelegate.Update(retVal.Payload);
+                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(retVal.Payload);
                 this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
             }
 
@@ -189,7 +190,7 @@ namespace HealthGateway.WebClient.Services
             newProfile.UpdatedBy = hdid;
             newProfile.EncryptionKey = this.cryptoDelegate.GenerateKey();
 
-            DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(newProfile);
+            DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 
             if (insertResult.Status == DBStatusCode.Created)
             {
@@ -239,7 +240,7 @@ namespace HealthGateway.WebClient.Services
 
             RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
 
-            DBResult<UserProfile> retrieveResult = this.profileDelegate.GetUserProfile(hdid);
+            DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
             if (retrieveResult.Status == DBStatusCode.Read)
             {
@@ -254,7 +255,7 @@ namespace HealthGateway.WebClient.Services
 
                 profile.ClosedDateTime = DateTime.Now;
                 profile.IdentityManagementId = userId;
-                DBResult<UserProfile> updateResult = this.profileDelegate.Update(profile);
+                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
@@ -280,7 +281,7 @@ namespace HealthGateway.WebClient.Services
 
             RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
 
-            DBResult<UserProfile> retrieveResult = this.profileDelegate.GetUserProfile(hdid);
+            DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
             if (retrieveResult.Status == DBStatusCode.Read)
             {
@@ -296,7 +297,7 @@ namespace HealthGateway.WebClient.Services
                 // Remove values set for deletion
                 profile.ClosedDateTime = null;
                 profile.IdentityManagementId = null;
-                DBResult<UserProfile> updateResult = this.profileDelegate.Update(profile);
+                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     Dictionary<string, string> keyValues = new Dictionary<string, string>();
@@ -328,38 +329,33 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreference)
+        public bool UpdateUserPreference(string hdid, string name, string value)
         {
-            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(userPreference)}");
+            this.logger.LogTrace($"Updating user preference... {name}");
 
-            UserPreference userPreferenceDBModel = userPreference.ToDbModel();
+            IEnumerable<UserPreference> userPreferenceDBModel = new List<UserPreference>() { new UserPreference() { HdId = hdid, Preference = name, Value = value } };
 
-            DBResult<UserPreference> dbUserPreference = this.preferenceDelegate.InsertUserPreference(userPreferenceDBModel);
-            this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
-
-            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
-            {
-                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbUserPreference.Payload),
-                ResultStatus = dbUserPreference.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbUserPreference.Message,
-            };
-            return result;
+            DBResult<IEnumerable<UserPreference>> dbUserPreference = this.userPreferenceDelegate.SaveUserPreferences(hdid, userPreferenceDBModel);
+            this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
+            return dbUserPreference.Status == DBStatusCode.Updated || dbUserPreference.Status == DBStatusCode.Created;
         }
 
         /// <inheritdoc />
-        public RequestResult<UserPreferenceModel> GetUserPreference(string hdid)
+        public RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid)
         {
             this.logger.LogTrace($"Getting user preference... {hdid}");
-            DBResult<UserPreference> dbUserPreference = this.preferenceDelegate.GetUserPreference(hdid);
-            this.logger.LogDebug($"Finished getting user preference. {JsonSerializer.Serialize(dbUserPreference)}");
+            DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
 
-            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+
+            RequestResult<Dictionary<string, string>> requestResult = new RequestResult<Dictionary<string, string>>()
             {
-                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbUserPreference.Payload),
-                ResultStatus = dbUserPreference.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbUserPreference.Message,
+                ResourcePayload = dbResult.Payload.ToDictionary(x => x.Preference, x => x.Value),
+                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultMessage = dbResult.Message,
             };
-            return result;
+
+            this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");
+            return requestResult;
         }
 
         private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)

@@ -15,6 +15,9 @@ export default interface Communication {
     // Gets or sets the expiry date.
     expiryDateTime: Date;
 
+    // Gets or sets the email communication priority
+    priority?: string;
+
     // The communication version number.
     version: number;
 }
