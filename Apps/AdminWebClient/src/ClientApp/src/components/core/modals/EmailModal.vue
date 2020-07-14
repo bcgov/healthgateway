@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" persistent max-width="1000px">
         <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Email Communication</v-btn
@@ -11,84 +11,48 @@
             </v-card-title>
             <v-card-text>
                 <v-form ref="form" lazy-validation>
+                    <!-- Subject and priority -->
                     <v-row>
-                        <v-col>
-                            <ValidationProvider
-                                v-slot="{
-                                    errors
-                                }"
-                                :rules="
-                                    dateTimeRules(
-                                        editedItem.effectiveDateTime,
-                                        editedItem.expiryDateTime
-                                    )
-                                "
-                            >
-                                <v-datetime-picker
-                                    v-model="editedItem.effectiveDateTime"
-                                    requried
-                                    label="Effective On"
-                                ></v-datetime-picker>
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
-                            </ValidationProvider>
-                        </v-col>
-                        <v-col>
-                            <ValidationProvider
-                                v-slot="{
-                                    errors
-                                }"
-                                :rules="
-                                    dateTimeRules(
-                                        editedItem.effectiveDateTime,
-                                        editedItem.expiryDateTime
-                                    )
-                                "
-                            >
-                                <v-datetime-picker
-                                    v-model="editedItem.expiryDateTime"
-                                    required
-                                    label="Expires On"
-                                ></v-datetime-picker>
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
-                            </ValidationProvider>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
+                        <v-col cols="9">
                             <v-text-field
-                                v-model="editedItem.subject"
+                                v-model="subject"
                                 label="Subject"
-                                maxlength="100"
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
                             ></v-text-field>
                         </v-col>
-                    </v-row>
-                    <v-row>
                         <v-col>
-                            <v-textarea
-                                v-model="editedItem.text"
-                                label="Message"
-                                maxlength="1000"
-                                :rules="[v => !!v || 'Text is required']"
+                            <v-select
+                                v-model="priority"
+                                :items="priorityItems"
+                                label="Priority"
+                                :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
                                 required
-                            ></v-textarea>
+                            ></v-select>
+                        </v-col>
+                    </v-row>
+                    <!-- WYSIWYG Editor -->
+                    <v-row>
+                        <v-col>
+                            <TiptapVuetify
+                                v-model="content"
+                                :toolbar-attributes="{ color: 'gray' }"
+                                placeholder="Write the email content here..."
+                                :extensions="extensions"
+                            />
                         </v-col>
                     </v-row>
                 </v-form>
             </v-card-text>
+            <!-- Buttons -->
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="close()"
                     >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="save()">Save</v-btn>
+                <v-btn color="blue darken-1" text @click="send()">Send</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -98,26 +62,57 @@ import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
 import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
-import { ValidationProvider, extend, validate } from "vee-validate";
-import { required, email } from "vee-validate/dist/rules";
 import moment from "moment";
+import {
+    TiptapVuetify,
+    Heading,
+    Bold,
+    Italic,
+    Strike,
+    Underline,
+    Code,
+    Paragraph,
+    BulletList,
+    OrderedList,
+    ListItem,
+    Link,
+    Blockquote,
+    HardBreak,
+    History
+} from "tiptap-vuetify";
 
-extend("dateValid", {
-    validate(value: any, args: any) {
-        if (moment(args.effective).isBefore(moment(args.expiry))) {
-            return true;
-        }
-        return "Effective date must occur before expiry date.";
-    },
-    params: ["effective", "expiry"]
-});
 @Component({
     components: {
-        ValidationProvider
+        TiptapVuetify
     }
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
+    private priorityItems = ["Urgent", "Medium", "Low"];
+    private extensions: any = [
+        History,
+        Blockquote,
+        Link,
+        Underline,
+        Strike,
+        Bold,
+        Italic,
+        ListItem,
+        BulletList,
+        OrderedList,
+        [
+            Heading,
+            {
+                options: {
+                    levels: [1, 2, 3, 4]
+                }
+            }
+        ],
+        Bold,
+        Code,
+        Paragraph,
+        HardBreak
+    ];
 
     @Prop() editedItem!: Communication;
     @Prop() editedIndex!: number;
@@ -133,33 +128,9 @@ export default class EmailModal extends Vue {
         return this.editedIndex === -1 ? "New Item" : "Edit Item";
     }
 
-    private dateTimeRules(effective: Date, expiry: Date) {
-        return "dateValid:" + effective.toString() + "," + expiry.toString();
-    }
-
-    private dateTimeValid(): boolean {
-        return moment(this.editedItem.effectiveDateTime).isBefore(
-            moment(this.editedItem.expiryDateTime)
-        );
-    }
-
     @Watch("dialog")
     private onDialogChange(val: any) {
         val || this.close();
-    }
-
-    private save() {
-        if (
-            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
-            this.dateTimeValid()
-        ) {
-            if (this.editedIndex > -1) {
-                this.emitUpdate(this.editedItem);
-            } else {
-                this.emitAdd(this.editedItem);
-            }
-            this.close();
-        }
     }
 
     private close() {
@@ -173,7 +144,7 @@ export default class EmailModal extends Vue {
     }
 
     @Emit()
-    private emitAdd(communication: Communication) {
+    private emitSend(communication: Communication) {
         return communication;
     }
 

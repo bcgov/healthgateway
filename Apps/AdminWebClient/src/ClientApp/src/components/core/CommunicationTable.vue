@@ -29,7 +29,7 @@
                 <v-spacer></v-spacer>
                 <BannerModal
                     v-if="tab == 0"
-                    :edited-item="editedItem"
+                    :edited-item="editedBanner"
                     :edited-index="editedIndex"
                     @emit-add="add"
                     @emit-update="update"
@@ -37,11 +37,11 @@
                 />
                 <EmailModal
                     v-if="tab == 1"
-                    :edited-item="editedItem"
+                    :edited-item="editedEmail"
                     :edited-index="editedIndex"
-                    @emit-add="add"
+                    @emit-send="sendEmail"
                     @emit-update="update"
-                    @emit-close="close"
+                    @emit-close="closeEmailModal"
                 />
             </v-toolbar>
         </template>
@@ -89,7 +89,7 @@ export default class CommunicationTable extends Vue {
     // 0: Banners, 1: Emails
     private tab: number = 0;
     private editedIndex: number = -1;
-    private editedItem: Communication = {
+    private editedBanner: Communication = {
         id: "-1",
         text: "",
         subject: "",
@@ -100,7 +100,17 @@ export default class CommunicationTable extends Vue {
             .toDate()
     };
 
-    private defaultItem: Communication = {
+    private editedEmail: Communication = {
+        id: "-1",
+        subject: "",
+        text: "<p></p>",
+        priority: "",
+        effectiveDateTime: new Date(),
+        expiryDateTime: new Date(),
+        version: 0
+    };
+
+    private defaultBanner: Communication = {
         id: "-1",
         text: "",
         subject: "",
@@ -109,6 +119,16 @@ export default class CommunicationTable extends Vue {
         expiryDateTime: moment(new Date())
             .add(1, "days")
             .toDate()
+    };
+
+    private defaultEmail: Communication = {
+        id: "-1",
+        subject: "",
+        text: "<p></p>",
+        priority: "",
+        effectiveDateTime: new Date(),
+        expiryDateTime: new Date(),
+        version: 0
     };
 
     private mounted() {
@@ -195,11 +215,17 @@ export default class CommunicationTable extends Vue {
         return new Date(Date.parse(date + "Z")).toLocaleString();
     }
 
-    private editItem(item: Communication) {
+    private editBanner(item: Communication) {
         this.editedIndex = this.communicationList.indexOf(item);
-        this.editedItem = item;
-        this.editedItem.effectiveDateTime = new Date(item.effectiveDateTime);
-        this.editedItem.expiryDateTime = new Date(item.expiryDateTime);
+        this.editedBanner = item;
+        this.editedBanner.effectiveDateTime = new Date(item.effectiveDateTime);
+        this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+    }
+
+    private editEmail(item: Communication) {
+        this.editedIndex = this.communicationList.indexOf(item);
+        this.editedEmail = item;
+        this.editedEmail.effectiveDateTime = new Date(item.effectiveDateTime);
     }
 
     private sortCommunicationsByDate(
@@ -343,8 +369,38 @@ export default class CommunicationTable extends Vue {
     }
 
     private close() {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedBanner = Object.assign({}, this.defaultBanner);
+        this.editedEmail = Object.assign({}, this.defaultEmail);
         this.editedIndex = -1;
+    }
+
+    private contentValid(): boolean {
+        return this.editedEmail.text.replace("<[^>]*>", "") !== ""
+            ? true
+            : false;
+    }
+
+    private sendEmail(comm: Communication) {
+        this.isLoading = true;
+        this.isFinishedLoading();
+        if (
+            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+            this.contentValid()
+        ) {
+            // NETWORK REQUEST GOES HERE!
+            // Temp data below.
+            this.showFeedback = true;
+            this.bannerFeedback = {
+                type: ResultType.Success,
+                title: "Success",
+                message: "Email sent."
+            };
+            (this.$refs.form as Vue & {
+                resetValidation: () => any;
+            }).resetValidation();
+            this.isLoading = false;
+            this.emitResult();
+        }
     }
 
     private emitResult() {
