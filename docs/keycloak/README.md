@@ -128,6 +128,18 @@ No user federation is configured.
 | IdP Redirector | Alternative |
 | Forms | Alternative, with Required password and optional OTP |
 
+## Groups
+
+Two groups: Citizens and Realm Administrator
+
+## Users
+
+> For our load testing, we have provisioned password-based authentication for test users to allow our K6 load and stress test scripts to login as differing accounts. This applies to TEST environment only, with some added to DEV environment.
+
+Usernames for K6: loadtest_01 to loadtest_13
+
+Each of these users borrows an HDID manually set as a user-attribute 'hdid' for these test users, and borrowed from the BC Services Cards Test accounts.
+
 ------------
 
 ## Detailed Client Configurations
