@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -61,7 +62,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user preference.
         /// </summary>
-        public UserPreferenceModel? UserPreference { get; set; }
+        public Dictionary<string, string> Preferences { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
