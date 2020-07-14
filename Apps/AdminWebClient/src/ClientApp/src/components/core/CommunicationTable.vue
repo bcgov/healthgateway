@@ -32,7 +32,7 @@
                     :edited-item="editedBanner"
                     :edited-index="editedIndex"
                     @emit-add="add"
-                    @emit-update="update"
+                    @emit-update="updateBanner"
                     @emit-close="close"
                 />
                 <EmailModal
@@ -45,7 +45,7 @@
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn @click="editItem(item)">
+            <v-btn @click="editBanner(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
         </template>
@@ -88,6 +88,7 @@ export default class CommunicationTable extends Vue {
     // 0: Banners, 1: Emails
     private tab: number = 0;
     private editedIndex: number = -1;
+    private headers: any[] = [];
     private editedBanner: Communication = {
         id: "-1",
         text: "",
@@ -150,8 +151,6 @@ export default class CommunicationTable extends Vue {
             this.headers = this.emailHeaders;
         }
     }
-
-    private headers: any[] = [];
 
     private bannerHeaders: any[] = [
         {
@@ -219,12 +218,6 @@ export default class CommunicationTable extends Vue {
         this.editedBanner = item;
         this.editedBanner.effectiveDateTime = new Date(item.effectiveDateTime);
         this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
-    }
-
-    private editEmail(item: Communication) {
-        this.editedIndex = this.communicationList.indexOf(item);
-        this.editedEmail = item;
-        this.editedEmail.effectiveDateTime = new Date(item.effectiveDateTime);
     }
 
     private sortCommunicationsByDate(
@@ -332,7 +325,7 @@ export default class CommunicationTable extends Vue {
             });
     }
 
-    private update(comm: Communication): void {
+    private updateBanner(comm: Communication): void {
         this.isLoading = true;
         this.isFinishedLoading();
         this.communicationService
@@ -373,29 +366,14 @@ export default class CommunicationTable extends Vue {
         this.editedIndex = -1;
     }
 
-    private contentValid(): boolean {
-        return this.editedEmail.text.replace("<[^>]*>", "") !== ""
-            ? true
-            : false;
-    }
-
     private sendEmail(comm: Communication) {
-        if (
-            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
-            this.contentValid()
-        ) {
-            // NETWORK REQUEST GOES HERE!
-            // Temp data below.
-            this.showFeedback = true;
-            this.bannerFeedback = {
-                type: ResultType.Success,
-                title: "Success",
-                message: "Email sent."
-            };
-            (this.$refs.form as Vue & {
-                resetValidation: () => any;
-            }).resetValidation();
-        }
+        // NETWORK REQUEST GOES HERE!
+        this.showFeedback = true;
+        this.bannerFeedback = {
+            type: ResultType.Success,
+            title: "Success",
+            message: "Email sent."
+        };
     }
 
     private emitResult() {

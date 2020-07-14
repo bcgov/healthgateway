@@ -15,7 +15,7 @@
                     <v-row>
                         <v-col cols="9">
                             <v-text-field
-                                v-model="subject"
+                                v-model="editedItem.subject"
                                 label="Subject"
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
@@ -24,7 +24,7 @@
                         </v-col>
                         <v-col>
                             <v-select
-                                v-model="priority"
+                                v-model="editedItem.priority"
                                 :items="priorityItems"
                                 label="Priority"
                                 :rules="[v => !!v || 'Priority is required']"
@@ -37,7 +37,7 @@
                     <v-row>
                         <v-col>
                             <TiptapVuetify
-                                v-model="content"
+                                v-model="editedItem.text"
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the email content here..."
                                 :extensions="extensions"
@@ -145,10 +145,24 @@ export default class EmailModal extends Vue {
         });
     }
 
+    private contentValid(): boolean {
+        return this.editedItem.text.replace("<[^>]*>", "") !== ""
+            ? true
+            : false;
+    }
+
     @Emit()
     private emitSend(communication: Communication) {
-        this.close();
-        return communication;
+        if (
+            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+            this.contentValid()
+        ) {
+            this.close();
+            (this.$refs.form as Vue & {
+                resetValidation: () => any;
+            }).resetValidation();
+            return communication;
+        }
     }
 
     @Emit()
