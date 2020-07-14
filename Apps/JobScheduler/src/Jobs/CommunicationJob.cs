@@ -86,7 +86,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
-                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now\n{e.ToString()}");
+                        this.logger.LogWarning($"Error while sending - skipping for now\n{e.ToString()}");
                     }
 #pragma warning restore CA1031 // Restore warnings.
                 }
