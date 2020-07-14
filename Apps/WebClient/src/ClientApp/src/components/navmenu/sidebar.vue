@@ -506,6 +506,8 @@ export default class SidebarComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    private eventBus = EventBus;
+
     private authenticationService!: IAuthenticationService;
     private name: string = "";
     private windowWidth: number = 0;
@@ -601,7 +603,7 @@ export default class SidebarComponent extends Vue {
 
     private createNote() {
         this.clearOverlay();
-        EventBus.$emit("timelineCreateNote");
+        this.eventBus.$emit("timelineCreateNote");
     }
 
     private dismissTutorial() {
@@ -615,7 +617,7 @@ export default class SidebarComponent extends Vue {
 
     private printView() {
         this.clearOverlay();
-        EventBus.$emit("timelinePrintView");
+        this.eventBus.$emit("timelinePrintView");
     }
 
     private onResize() {
