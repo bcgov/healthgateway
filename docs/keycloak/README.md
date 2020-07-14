@@ -1,11 +1,11 @@
 
 # HealthGateway KeyCloak Configuration Guide
 
-The HealthGateway uses Keycloak, an OAuth2 compliant authorization server to control access to its protected resources. It connects the user via OIDC to external Identity Providers, in particular the BC Services Card identity and authentication service.   For administrators Keycloak also uses government employee's Active Directory services. 
+The HealthGateway uses Keycloak, an OAuth2 compliant authorization server to control access to its protected resources. It connects the user via OIDC to external Identity Providers, in particular the BC Services Card identity and authentication service.   For administrators Keycloak also uses government employee's Active Directory services.
 
 ## Environments
 
-The HealthGateway project has three realms assigned to it for Dev, Test and production. Each environment is configured separately:
+The HealthGateway project has three realms assigned to it for Dev, Test and Production. Each environment is configured separately:
 
 ### Development Keycloak
 
