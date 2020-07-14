@@ -60,6 +60,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.GetUserProfile(hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
+            userProfileServiceMock.Setup(s => s.GetUserPreferences(hdid)).Returns(new RequestResult<Dictionary<string, string>>() { ResourcePayload = new Dictionary<string, string>() { } });
 
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
@@ -152,7 +153,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);
-                
+
             httpContextAccessorMock
                 .Setup(x => x.HttpContext.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);

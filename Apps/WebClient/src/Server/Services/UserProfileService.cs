@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Diagnostics.Contracts;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -328,38 +329,33 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreference)
+        public bool UpdateUserPreference(string hdid, string name, string value)
         {
-            this.logger.LogTrace($"Creating user preference... {JsonSerializer.Serialize(userPreference)}");
+            this.logger.LogTrace($"Updating user preference... {name}");
 
-            IEnumerable<UserPreference> userPreferenceDBModel = userPreference.ToDbModel();
+            IEnumerable<UserPreference> userPreferenceDBModel = new List<UserPreference>() { new UserPreference() { HdId = hdid, Preference = name, Value = value } };
 
-            DBResult<IEnumerable<UserPreference>> dbUserPreference = this.userPreferenceDelegate.SaveUserPreferences(userPreference.HdId, userPreferenceDBModel);
-            this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
-
-            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
-            {
-                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbUserPreference.Payload),
-                ResultStatus = dbUserPreference.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbUserPreference.Message,
-            };
-            return result;
+            DBResult<IEnumerable<UserPreference>> dbUserPreference = this.userPreferenceDelegate.SaveUserPreferences(hdid, userPreferenceDBModel);
+            this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
+            return dbUserPreference.Status == DBStatusCode.Updated || dbUserPreference.Status == DBStatusCode.Created;
         }
 
         /// <inheritdoc />
-        public RequestResult<UserPreferenceModel> GetUserPreference(string hdid)
+        public RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid)
         {
             this.logger.LogTrace($"Getting user preference... {hdid}");
-            DBResult<IEnumerable<UserPreference>> dbUserPreference = this.userPreferenceDelegate.GetUserPreferences(hdid);
-            this.logger.LogDebug($"Finished getting user preference. {JsonSerializer.Serialize(dbUserPreference)}");
+            DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
 
-            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+
+            RequestResult<Dictionary<string, string>> requestResult = new RequestResult<Dictionary<string, string>>()
             {
-                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbUserPreference.Payload),
-                ResultStatus = dbUserPreference.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbUserPreference.Message,
+                ResourcePayload = dbResult.Payload.ToDictionary(x => x.Preference, x => x.Value),
+                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultMessage = dbResult.Message,
             };
-            return result;
+
+            this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");
+            return requestResult;
         }
 
         private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)

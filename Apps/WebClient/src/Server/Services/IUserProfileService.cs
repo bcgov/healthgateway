@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
@@ -72,13 +73,13 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="userPreference">The userPreference to create.</param>
         /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreference);
+        bool UpdateUserPreference(string hdid, string name, string value);
 
         /// <summary>
         /// Gets the user preference model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrappeed user reference.</returns>
-        RequestResult<UserPreferenceModel> GetUserPreference(string hdid);
+        RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid);
     }
 }
