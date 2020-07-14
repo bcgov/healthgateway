@@ -58,7 +58,7 @@
 </style>
 <template>
     <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
         <b-row class="my-3 fluid justify-content-md-center">
             <b-col
                 id="timeline"
@@ -285,7 +285,7 @@ import UserNote from "@/models/userNote";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import LoadingComponent from "@/components/loading.vue";
+import TimelineLoadingComponent from "@/components/timelineLoading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
@@ -306,7 +306,7 @@ Component.registerHooks(["beforeRouteLeave"]);
 
 @Component({
     components: {
-        LoadingComponent,
+        TimelineLoadingComponent,
         ProtectiveWordComponent,
         CovidModalComponent,
         EntryCardComponent: EntryCardTimelineComponent,
