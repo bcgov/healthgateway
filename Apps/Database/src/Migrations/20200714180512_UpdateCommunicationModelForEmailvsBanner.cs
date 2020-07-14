@@ -3,10 +3,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HealthGateway.Database.Migrations
 {
-    public partial class CommunicationTypeEmailvsBanner : Migration
+    public partial class UpdateCommunicationModelForEmailvsBanner : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "CommunicationStatusCode",
+                schema: "gateway",
+                table: "Communication",
+                maxLength: 10,
+                nullable: false,
+                defaultValue: "");
+
             migrationBuilder.AddColumn<string>(
                 name: "CommunicationTypeCode",
                 schema: "gateway",
@@ -14,6 +22,31 @@ namespace HealthGateway.Database.Migrations
                 maxLength: 10,
                 nullable: false,
                 defaultValue: "");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Priority",
+                schema: "gateway",
+                table: "Communication",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.CreateTable(
+                name: "CommunicationStatusCode",
+                schema: "gateway",
+                columns: table => new
+                {
+                    StatusCode = table.Column<string>(maxLength: 10, nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(nullable: false),
+                    xmin = table.Column<uint>(type: "xid", nullable: false),
+                    Description = table.Column<string>(maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommunicationStatusCode", x => x.StatusCode);
+                });
 
             migrationBuilder.CreateTable(
                 name: "CommunicationTypeCode",
@@ -31,6 +64,18 @@ namespace HealthGateway.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CommunicationTypeCode", x => x.StatusCode);
+                });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
+                table: "CommunicationStatusCode",
+                columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[,]
+                {
+                    { "New", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A newly created Communication", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { "Pending", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A Communication pending batch pickup", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { "Processed", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A Communication which has been sent", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { "Error", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A Communication that will not be sent", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -475,10 +520,26 @@ namespace HealthGateway.Database.Migrations
 </p>");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Communication_CommunicationStatusCode",
+                schema: "gateway",
+                table: "Communication",
+                column: "CommunicationStatusCode");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Communication_CommunicationTypeCode",
                 schema: "gateway",
                 table: "Communication",
                 column: "CommunicationTypeCode");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Communication_CommunicationStatusCode_CommunicationStatusCo~",
+                schema: "gateway",
+                table: "Communication",
+                column: "CommunicationStatusCode",
+                principalSchema: "gateway",
+                principalTable: "CommunicationStatusCode",
+                principalColumn: "StatusCode",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Communication_CommunicationTypeCode_CommunicationTypeCode",
@@ -494,13 +555,27 @@ namespace HealthGateway.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_Communication_CommunicationStatusCode_CommunicationStatusCo~",
+                schema: "gateway",
+                table: "Communication");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Communication_CommunicationTypeCode_CommunicationTypeCode",
                 schema: "gateway",
                 table: "Communication");
 
             migrationBuilder.DropTable(
+                name: "CommunicationStatusCode",
+                schema: "gateway");
+
+            migrationBuilder.DropTable(
                 name: "CommunicationTypeCode",
                 schema: "gateway");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Communication_CommunicationStatusCode",
+                schema: "gateway",
+                table: "Communication");
 
             migrationBuilder.DropIndex(
                 name: "IX_Communication_CommunicationTypeCode",
@@ -508,7 +583,17 @@ namespace HealthGateway.Database.Migrations
                 table: "Communication");
 
             migrationBuilder.DropColumn(
+                name: "CommunicationStatusCode",
+                schema: "gateway",
+                table: "Communication");
+
+            migrationBuilder.DropColumn(
                 name: "CommunicationTypeCode",
+                schema: "gateway",
+                table: "Communication");
+
+            migrationBuilder.DropColumn(
+                name: "Priority",
                 schema: "gateway",
                 table: "Communication");
 
