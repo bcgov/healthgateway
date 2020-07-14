@@ -130,7 +130,7 @@ export default class BannerModal extends Vue {
     }
 
     private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Item" : "Edit Item";
+        return this.editedIndex === -1 ? "New Banner Post" : "Edit Banner Post";
     }
 
     private dateTimeRules(effective: Date, expiry: Date) {

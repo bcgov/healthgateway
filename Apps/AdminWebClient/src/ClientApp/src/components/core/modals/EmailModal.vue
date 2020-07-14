@@ -52,7 +52,9 @@
                 <v-btn color="blue darken-1" text @click="close()"
                     >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="send()">Send</v-btn>
+                <v-btn color="blue darken-1" text @click="emitSend()"
+                    >Send</v-btn
+                >
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -125,7 +127,7 @@ export default class EmailModal extends Vue {
     }
 
     private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Item" : "Edit Item";
+        return this.editedIndex === -1 ? "New Email" : "Edit Email";
     }
 
     @Watch("dialog")
@@ -145,11 +147,7 @@ export default class EmailModal extends Vue {
 
     @Emit()
     private emitSend(communication: Communication) {
-        return communication;
-    }
-
-    @Emit()
-    private emitUpdate(communication: Communication) {
+        this.close();
         return communication;
     }
 

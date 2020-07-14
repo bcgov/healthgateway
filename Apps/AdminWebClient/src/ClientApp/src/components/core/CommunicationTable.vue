@@ -40,8 +40,7 @@
                     :edited-item="editedEmail"
                     :edited-index="editedIndex"
                     @emit-send="sendEmail"
-                    @emit-update="update"
-                    @emit-close="closeEmailModal"
+                    @emit-close="close"
                 />
             </v-toolbar>
         </template>
@@ -381,8 +380,6 @@ export default class CommunicationTable extends Vue {
     }
 
     private sendEmail(comm: Communication) {
-        this.isLoading = true;
-        this.isFinishedLoading();
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
@@ -398,8 +395,6 @@ export default class CommunicationTable extends Vue {
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
-            this.isLoading = false;
-            this.emitResult();
         }
     }
 
