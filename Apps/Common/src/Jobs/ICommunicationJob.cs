@@ -25,6 +25,6 @@ namespace HealthGateway.Common.Jobs
         /// <summary>
         /// Attempts to send email communications.
         /// </summary>
-        void SendEmailCommunications();
+        void CreateCommunicationEmailsForNewCommunication();
     }
 }

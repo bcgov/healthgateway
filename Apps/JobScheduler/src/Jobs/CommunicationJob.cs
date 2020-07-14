@@ -37,6 +37,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IConfiguration configuration;
         private readonly ILogger<CommunicationJob> logger;
         private readonly ICommunicationDelegate communicationDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly string host;
         private readonly int port;
@@ -49,13 +50,15 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="communicationDelegate">The communication delegate to use.</param>
+        /// <param name="userProfileDelegate">The user Profile delegate to use.</param>
         /// <param name="emailDelegate">The email delegate to use.</param>
-        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, IEmailDelegate emailDelegate)
+        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, IUserProfileDelegate userProfileDelegate, IEmailDelegate emailDelegate)
         {
             Contract.Requires((configuration != null) && (emailDelegate != null));
             this.configuration = configuration!;
             this.logger = logger;
             this.communicationDelegate = communicationDelegate!;
+            this.userProfileDelegate = userProfileDelegate!;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");
             this.host = section.GetValue<string>("Host");
@@ -68,14 +71,14 @@ namespace Healthgateway.JobScheduler.Jobs
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendEmailCommunications()
+        public void CreateCommunicationEmailsForNewCommunication()
         {
-            this.logger.LogDebug($"Sending email communications... Looking for up to {this.retryFetchSize} emails to send");
+            this.logger.LogDebug($"Creating emails & communication emails...");
             List<Communication> communications = this.communicationDelegate.GetCommunicationsByTypeAndStatusCode(CommunicationType.Email, CommunicationStatus.New);
 
             if (communications.Count > 0)
             {
-                this.logger.LogInformation($"Found {communications.Count} communications to send");
+                this.logger.LogInformation($"Found {communications.Count} communications which are in New status.");
                 foreach (Communication comm in communications)
                 {
 #pragma warning disable CA1031 //We want to catch exception.

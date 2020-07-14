@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -25,39 +26,19 @@ namespace HealthGateway.Database.Delegates
     public interface ICommunicationEmailDelegate
     {
         /// <summary>
-        /// Gets the active communication from the DB.
+        /// Add the given communication email.
         /// </summary>
-        /// <returns>The Communication wrapped in a DBResult.</returns>
-        DBResult<Communication> GetActive();
-
-        /// <summary>
-        /// Add the given communication.
-        /// </summary>
-        /// <param name="communication">The communication to be added to the database.</param>
+        /// <param name="communicationEmail">The communication email to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>The added communication wrapped in a DBResult.</returns>
-        DBResult<Communication> Add(Communication communication, bool commit = true);
+        /// <returns>The added communication email wrapped in a DBResult.</returns>
+        DBResult<CommunicationEmail> Add(CommunicationEmail communicationEmail, bool commit = true);
 
         /// <summary>
-        /// Get a list of all past communications.
+        /// Get a list of communication emails which are linked to a specific communication.
         /// </summary>
-        /// <returns>A list of all communications added, wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Communication>> GetAll();
-
-        /// <summary>
-        /// Update the given communication.
-        /// </summary>
-        /// <param name="communication">The communication to be updated in the database.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>The updated communication wrapped in a DBResult.</returns>
-        DBResult<Communication> Update(Communication communication, bool commit = true);
-
-        /// <summary>
-        /// Gets the communications from the DB.
-        /// </summary>
-        /// <param name="communicationType">The Communication Type to be retrieved from the database.</param>
-        /// <param name="communicationStatusCode">The CSommunication Status Code to be retrieved from the database.</param>
-        /// <returns>The list of communications.</returns>
-        List<Communication> GetCommunicationsByTypeAndStatusCode(string communicationType, string communicationStatusCode);
+        /// <param name="communicationId">The communication id for filtering communication emails.</param>
+        /// <param name="userProfileIDs">The list of user profile IDs for filtering communication emails.</param>
+        /// <returns>A list of communication emails of the specified Communication, wrapped in a DBResult.</returns>
+        List<CommunicationEmail> GetCommunicationEmailsByCommunicationIdAndUserIDs(Guid communicationId, List<Guid> userProfileIDs);
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -182,6 +182,24 @@ namespace HealthGateway.Database.Delegates
                 .Count(u => u.LastLoginDateTime.HasValue &&
                u.LastLoginDateTime.Value >= queryStartTime &&
                u.LastLoginDateTime.Value < queryEndTime);
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<List<UserProfile>> GetAllUserProfilesCreatedOnOrAfter(DateTime createdOnOrAfter, int page = 0, int pagesize = 500)
+        {
+            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            int offset = page * pagesize;
+            result.Payload = this.dbContext.UserProfile
+                                .Where(p => (p.LastLoginDateTime == null ||
+                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                             p.ClosedDateTime == null &&
+                                             !string.IsNullOrWhiteSpace(p.Email))
+                                .OrderBy(o => o.CreatedDateTime)
+                                .Skip(offset)
+                                .Take(pagesize)
+                                .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
     }
