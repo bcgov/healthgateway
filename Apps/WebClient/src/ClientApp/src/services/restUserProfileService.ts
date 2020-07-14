@@ -11,7 +11,7 @@ import { Dictionary } from "vue-router/types/router";
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
     private readonly FETCH_ERROR: string = "Fetch error:";
-    private readonly USER_PROFILE_BASE_URI: string = "v1/api/UserProfile";
+    private readonly USER_PROFILE_BASE_URI: string = "/v1/api/UserProfile";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {
@@ -203,6 +203,30 @@ export class RestUserProfileService implements IUserProfileService {
                 .catch((err) => {
                     console.log(err);
                     return resolve(err);
+                });
+        });
+    }
+
+    public updateUserPreference(
+        hdid: string,
+        preference: string,
+        value: string
+    ): Promise<boolean> {
+        let headers: Dictionary<string> = {};
+        headers["Content-Type"] = "application/json; charset=utf-8";
+        return new Promise((resolve, reject) => {
+            this.http
+                .put<boolean>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference/${preference}`,
+                    JSON.stringify(value),
+                    headers
+                )
+                .then((result) => {
+                    resolve(result);
+                })
+                .catch((err) => {
+                    console.log(this.FETCH_ERROR + err.toString());
+                    reject(err);
                 });
         });
     }

@@ -23,28 +23,22 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Delegate that performs operations for the UserPreference model.
     /// </summary>
-    public interface IPreferenceDelegate
+    public interface IUserPreferenceDelegate
     {
         /// <summary>
-        /// Creates a UserPreference object in the database.
+        /// Saves a UserPreference object in the database.
         /// </summary>
-        /// <param name="preference">The preference to create.</param>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="newPreferences">The preferences to be saved.</param>
+        /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserPreference> InsertUserPreference(UserPreference preference);
-
-        /// <summary>
-        /// Updates the UserPreference object in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will overridden by our framework.
-        /// </summary>
-        /// <param name="preference">The feedback to update.</param>
-        void UpdateUserFeedback(UserPreference preference);
+        DBResult<IEnumerable<UserPreference>> SaveUserPreferences(string hdid, IEnumerable<UserPreference> newPreferences, bool commit = true);
 
         /// <summary>
         /// Fetches the UserPreference from the database.
         /// </summary>
         /// <param name="hdid">The unique user profile key to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserPreference> GetUserPreference(string hdid);
+        DBResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid);
     }
 }

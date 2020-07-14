@@ -47,13 +47,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Note> GetNote(Guid noteId)
+        public DBResult<Note> GetNote(Guid noteId, string hdid)
         {
             DBResult<Note> result = new DBResult<Note>()
             {
                 Status = DBStatusCode.NotFound,
             };
-            result.Payload = this.dbContext.Note.Find(noteId);
+            result.Payload = this.dbContext.Note.Find(noteId, hdid);
             if (result.Payload != null)
             {
                 result.Status = DBStatusCode.Read;
@@ -93,6 +93,10 @@ namespace HealthGateway.Database.Delegates
                 {
                     this.dbContext.SaveChanges();
                     result.Status = DBStatusCode.Created;
+
+                    // Forces the refresh from the database.
+                    this.dbContext.Entry(note).State = EntityState.Detached;
+                    result.Payload = this.dbContext.Note.Find(note.Id, note.HdId);
                 }
                 catch (DbUpdateException e)
                 {

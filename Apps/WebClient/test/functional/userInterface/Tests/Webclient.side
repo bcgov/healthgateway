@@ -3839,6 +3839,144 @@
       "targets": [],
       "value": ""
     }]
+  }, {
+    "id": "91ee17d2-a248-4d46-a29b-96b1566abd22",
+    "name": "Timeline - Calendar View",
+    "commands": [{
+      "id": "d63676f4-500a-42c7-a7ec-6133e4a7fbcd",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b783bd52-8953-475d-82aa-8ba923ddaf80",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "a3a285f1-a521-47ff-b747-60c1fdc815ba",
+      "comment": "",
+      "command": "waitForElementNotVisible",
+      "target": "css=.vld-icon > svg",
+      "targets": [
+        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
+        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
+      ],
+      "value": "30000"
+    }, {
+      "id": "6d3efcda-d10f-4a9b-bd87-1d7eb01fef06",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.month-view-btn",
+      "targets": [
+        ["css=.month-view-btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[5]/div/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Month')]", "xpath:innerText"]
+      ],
+      "value": "Month"
+    }, {
+      "id": "868fa02b-1815-4e65-b4c1-9ac9fdd69e15",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'July 2020')]", "xpath:innerText"]
+      ],
+      "value": "July 2020"
+    }, {
+      "id": "b034e1d2-44a5-4226-b37f-5f6c53341cb2",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.fa-chevron-left > path",
+      "targets": [
+        ["css=.fa-chevron-left > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "50797141-891b-4080-b5e1-c9009c25e964",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'June 2020')]", "xpath:innerText"]
+      ],
+      "value": "June 2020"
+    }, {
+      "id": "8e6da6a2-a7ae-46c0-936c-08faffbcfc68",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.right-button",
+      "targets": [
+        ["css=.right-button", "css:finder"],
+        ["xpath=(//button[@type='button'])[46]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[7]/div/div/div[2]/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "bd05e13e-f44c-42e5-896c-52020cace38f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'July 2020')]", "xpath:innerText"]
+      ],
+      "value": "July 2020"
+    }, {
+      "id": "000d9105-f8db-48c4-b86c-a1b04e85dbe6",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=#event-1593846000000-type-3 path",
+      "targets": [],
+      "value": "Note"
+    }, {
+      "id": "cdde66d0-dfc0-400c-92eb-1b5343dbb267",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.list-view-btn",
+      "targets": [
+        ["css=.list-view-btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[5]/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'List')]", "xpath:innerText"]
+      ],
+      "value": "List"
+    }, {
+      "id": "03b1ab53-47df-4b85-af1e-0ee646ec06cf",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[6]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jul 5, 2020"
+    }, {
+      "id": "2c0a2465-a9fd-4116-9ba3-3279677e7ee8",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -3867,7 +4005,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa"]
+    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

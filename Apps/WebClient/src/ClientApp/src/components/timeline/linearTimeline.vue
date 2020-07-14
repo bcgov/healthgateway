@@ -27,7 +27,14 @@
         <div id="timeData">
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
                 <b-col cols="auto">
-                    <div class="date">{{ getHeadingDate(dateGroup.date) }}</div>
+                    <div
+                        :id="dateGroup.key"
+                        :ref="dateGroup.key"
+                        class="date"
+                        tabindex="1"
+                    >
+                        {{ getHeadingDate(dateGroup.date) }}
+                    </div>
                 </b-col>
                 <b-col>
                     <hr class="dateBreakLine" />
@@ -80,7 +87,7 @@ interface DateGroup {
 })
 export default class LinearTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
-    @Prop() private totalEntries: number = 0;
+    @Prop({ default: 0 }) private totalEntries!: number;
 
     private windowWidth: number = 0;
     private currentPage: number = 1;
@@ -88,8 +95,14 @@ export default class LinearTimelineComponent extends Vue {
     private visibleTimelineEntries: TimelineEntry[] = [];
 
     private filterTypes: string[] = [];
+    private eventBus = EventBus;
 
     private created() {
+        let self = this;
+        this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
+            self.setPageFromDate(eventDate);
+        });
+
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
     }
@@ -197,6 +210,21 @@ export default class LinearTimelineComponent extends Vue {
 
     private getVisibleCount(): number {
         return this.visibleTimelineEntries.length;
+    }
+
+    private setPageFromDate(eventDate: Date) {
+        let index = this.timelineEntries.findIndex(
+            (entry) => entry.date === eventDate
+        );
+        this.currentPage = Math.floor(index / this.numberOfEntriesPerPage) + 1;
+
+        let self = this;
+        // Wait for next render cycle until the pages have been calculated and displayed
+        this.$nextTick().then(function () {
+            const date = new Date(eventDate).setHours(0, 0, 0, 0);
+            let container: HTMLElement[] = self.$refs[date] as HTMLElement[];
+            container[0].focus();
+        });
     }
 }
 </script>

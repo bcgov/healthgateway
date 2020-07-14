@@ -31,6 +31,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Common.Constants;
+    using System.Collections.Generic;
 
     public class UserProfileServiceTest
     {
@@ -64,7 +65,22 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+
+            UserPreference dbUserPreference = new UserPreference
+            {
+                HdId = hdid,
+                Preference = "TutorialPopover",
+                Value = true.ToString(),
+            };
+            List<UserPreference> userPreferences = new List<UserPreference>();
+            userPreferences.Add(dbUserPreference);
+            DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
+            {
+                Payload = userPreferences,
+                Status = DBStatusCode.Read
+            };
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
+            preferenceDelegateMock.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -97,7 +113,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
@@ -122,7 +138,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -178,7 +194,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
@@ -210,103 +226,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
-        }
-
-        [Fact]
-        public void ShouldInsertPreference()
-        {
-            UserPreference dbUserPreference = new UserPreference
-            {
-                HdId = hdid,
-                DismissedMyNotePopover = true,
-            };
-
-            DBResult<UserPreference> insertResult = new DBResult<UserPreference>
-            {
-                Payload = dbUserPreference,
-                Status = DBStatusCode.Created
-            };
-
-            UserPreferenceModel expected = UserPreferenceModel.CreateFromDbModel(dbUserPreference);
-
-            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
-            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
-            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
-            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
-
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.InsertUserPreference(It.Is<UserPreference>(x => x.DismissedMyNotePopover == dbUserPreference.DismissedMyNotePopover))).Returns(insertResult);
-
-            IUserProfileService service = new UserProfileService(
-                new Mock<ILogger<UserProfileService>>().Object,
-                profileDelegateMock.Object,
-                preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                new Mock<ILegalAgreementDelegate>().Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
-                messageVerificationDelegateMock.Object);
-
-            RequestResult<UserPreferenceModel> actualResult = service.CreateUserPreference(expected);
-
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
-        }
-
-        [Fact]
-        public void ShouldGetPreference()
-        {
-            UserPreference dbUserPreference = new UserPreference
-            {
-                HdId = hdid,
-                DismissedMyNotePopover = true,
-            };
-
-            DBResult<UserPreference> readResult = new DBResult<UserPreference>
-            {
-                Payload = dbUserPreference,
-                Status = DBStatusCode.Read
-            };
-
-            UserPreferenceModel expected = UserPreferenceModel.CreateFromDbModel(dbUserPreference);
-
-            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
-            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
-            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
-            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
-
-            Mock<IPreferenceDelegate> preferenceDelegateMock = new Mock<IPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.GetUserPreference(hdid)).Returns(readResult);
-
-            IUserProfileService service = new UserProfileService(
-                new Mock<ILogger<UserProfileService>>().Object,
-                profileDelegateMock.Object,
-                preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                new Mock<ILegalAgreementDelegate>().Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
-                messageVerificationDelegateMock.Object);
-
-            RequestResult<UserPreferenceModel> actualResult = service.GetUserPreference(hdid);
-
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
     }

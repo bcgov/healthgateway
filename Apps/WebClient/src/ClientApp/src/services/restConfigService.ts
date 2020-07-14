@@ -4,7 +4,7 @@ import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
 export class RestConfigService implements IConfigService {
-    private readonly CONFIG_BASE_URI: string = "v1/api/configuration";
+    private readonly CONFIG_BASE_URI: string = "/v1/api/configuration";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {

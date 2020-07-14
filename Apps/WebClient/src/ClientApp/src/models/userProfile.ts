@@ -1,3 +1,5 @@
+import { Dictionary } from "vue-router/types/router";
+
 export default interface UserProfile {
     // The user hdid.
     hdid: string;
@@ -19,6 +21,9 @@ export default interface UserProfile {
 
     // Date when the user profile will be deleted
     closedDateTime?: Date;
+
+    // The User Preference
+    preferences: Dictionary<string>;
 }
 
 export interface CreateUserRequest {

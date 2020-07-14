@@ -58,7 +58,7 @@
 </style>
 <template>
     <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
         <b-row class="my-3 fluid justify-content-md-center">
             <b-col
                 id="timeline"
@@ -285,7 +285,7 @@ import UserNote from "@/models/userNote";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import LoadingComponent from "@/components/loading.vue";
+import TimelineLoadingComponent from "@/components/timelineLoading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
@@ -306,7 +306,7 @@ Component.registerHooks(["beforeRouteLeave"]);
 
 @Component({
     components: {
-        LoadingComponent,
+        TimelineLoadingComponent,
         ProtectiveWordComponent,
         CovidModalComponent,
         EntryCardComponent: EntryCardTimelineComponent,
@@ -343,6 +343,7 @@ export default class TimelineView extends Vue {
     private filterTypes: string[] = [];
 
     private isListView: boolean = true;
+    private eventBus = EventBus;
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
@@ -357,33 +358,46 @@ export default class TimelineView extends Vue {
         this.fetchNotes();
         window.addEventListener("beforeunload", this.onBrowserClose);
         let self = this;
-        EventBus.$on("timelineCreateNote", function () {
+        this.eventBus.$on("timelineCreateNote", function () {
             self.isAddingNote = true;
         });
-        EventBus.$on("timelinePrintView", function () {
+        this.eventBus.$on("timelinePrintView", function () {
             self.printRecords();
         });
-        EventBus.$on("idleLogoutWarning", function (isVisible: boolean) {
+        this.eventBus.$on("idleLogoutWarning", function (isVisible: boolean) {
             self.idleLogoutWarning = isVisible;
         });
 
-        EventBus.$on("timelineEntryAdded", function (entry: TimelineEntry) {
+        this.eventBus.$on("timelineEntryAdded", function (
+            entry: TimelineEntry
+        ) {
             self.onEntryAdded(entry);
         });
-        EventBus.$on("timelineEntryEdit", function (entry: TimelineEntry) {
+        this.eventBus.$on("timelineEntryEdit", function (entry: TimelineEntry) {
             self.onEntryEdit(entry);
         });
-        EventBus.$on("timelineEntryUpdated", function (entry: TimelineEntry) {
+        this.eventBus.$on("timelineEntryUpdated", function (
+            entry: TimelineEntry
+        ) {
             self.onEntryUpdated(entry);
         });
-        EventBus.$on("timelineEntryDeleted", function (entry: TimelineEntry) {
+        this.eventBus.$on("timelineEntryDeleted", function (
+            entry: TimelineEntry
+        ) {
             self.onEntryDeleted(entry);
         });
-        EventBus.$on("timelineEntryAddClose", function (entry: TimelineEntry) {
+        this.eventBus.$on("timelineEntryAddClose", function (
+            entry: TimelineEntry
+        ) {
             self.onEntryAddClose(entry);
         });
-        EventBus.$on("timelineEntryEditClose", function (entry: TimelineEntry) {
+        this.eventBus.$on("timelineEntryEditClose", function (
+            entry: TimelineEntry
+        ) {
             self.onEntryEditClose(entry);
+        });
+        this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
+            self.isListView = true;
         });
     }
 

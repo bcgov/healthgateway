@@ -29,8 +29,9 @@ namespace HealthGateway.Database.Delegates
         /// Gets a note from the DB using the noteId.
         /// </summary>
         /// <param name="noteId">The Note ID to retrieve.</param>
+        /// <param name="hdid">The user hdid.</param>
         /// <returns>The note wrapped in a DBResult.</returns>
-        DBResult<Note> GetNote(Guid noteId);
+        DBResult<Note> GetNote(Guid noteId, string hdid);
 
         /// <summary>
         /// Gets a list of notes ordered by the journal datetime for the given HdId.

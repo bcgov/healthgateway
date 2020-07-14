@@ -8,7 +8,7 @@ import { ExternalConfiguration } from "@/models/configData";
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
     NOT_IMPLENTED: string = "Method not implemented.";
-    private readonly USER_COMMENT_BASE_URI: string = "v1/api/Comment";
+    private readonly USER_COMMENT_BASE_URI: string = "/v1/api/Comment";
     private http!: IHttpDelegate;
     private isEnabled: boolean = false;
 

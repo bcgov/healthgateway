@@ -9,7 +9,7 @@ import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 
 function handleError(commit: Commit, error: Error) {
-    console.log("ERROR:" + error);
+    console.log("UserProfile ERROR:" + error);
     commit("userError");
 }
 
@@ -37,7 +37,6 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
         console.log(params);
         return new Promise((resolve, reject) => {
@@ -48,6 +47,13 @@ export const actions: ActionTree<UserState, RootState> = {
                     let isRegistered: boolean;
                     if (userProfile) {
                         isRegistered = userProfile.acceptedTermsOfService;
+                        // If there are no preferences, set the default popover state
+                        if (
+                            userProfile.preferences["tutorialPopover"] ===
+                            undefined
+                        ) {
+                            userProfile.preferences["tutorialPopover"] = "true";
+                        }
                     } else {
                         isRegistered = false;
                     }
@@ -133,6 +139,28 @@ export const actions: ActionTree<UserState, RootState> = {
             userProfileService
                 .updateEmail(params.hdid, params.emailAddress)
                 .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
+    updateUserPreference(
+        context,
+        params: { hdid: string; name: string; value: string }
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .updateUserPreference(params.hdid, params.name, params.value)
+                .then((result) => {
+                    if (result) {
+                        context.commit("setUserPreference", {
+                            name: params.name,
+                            value: params.value,
+                        });
+                    }
                     resolve();
                 })
                 .catch((error) => {

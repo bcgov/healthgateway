@@ -240,6 +240,7 @@ export default class NoteTimelineComponent extends Vue {
     private hasErrors: boolean = false;
     private isEditMode: boolean = false;
     private isSaving: boolean = false;
+    private eventBus = EventBus;
 
     private mounted() {
         this.noteService = container.get<IUserNoteService>(
@@ -337,26 +338,29 @@ export default class NoteTimelineComponent extends Vue {
 
     public onEditClose(note: NoteTimelineEntry) {
         if (this.isAddMode) {
-            EventBus.$emit("timelineEntryAddClose", note);
+            this.eventBus.$emit("timelineEntryAddClose", note);
         } else {
-            EventBus.$emit("timelineEntryEditClose", note);
+            this.eventBus.$emit("timelineEntryEditClose", note);
         }
     }
 
     public onEditStarted(note: NoteTimelineEntry) {
-        EventBus.$emit("timelineEntryEdit", note);
+        this.eventBus.$emit("timelineEntryEdit", note);
     }
 
     public onNoteDeleted(note: NoteTimelineEntry) {
-        EventBus.$emit("timelineEntryDeleted", note);
+        this.eventBus.$emit("timelineEntryDeleted", note);
     }
 
     public onNoteAdded(note: UserNote) {
-        EventBus.$emit("timelineEntryAdded", new NoteTimelineEntry(note));
+        this.eventBus.$emit("timelineEntryAdded", new NoteTimelineEntry(note));
     }
 
     public onNoteUpdated(note: UserNote) {
-        EventBus.$emit("timelineEntryUpdated", new NoteTimelineEntry(note));
+        this.eventBus.$emit(
+            "timelineEntryUpdated",
+            new NoteTimelineEntry(note)
+        );
     }
 }
 </script>

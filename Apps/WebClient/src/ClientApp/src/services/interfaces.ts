@@ -90,6 +90,11 @@ export interface IUserProfileService {
     validateSMS(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
     updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
+    updateUserPreference(
+        hdid: string,
+        preference: string,
+        value: string
+    ): Promise<boolean>;
 }
 
 export interface IUserFeedbackService {

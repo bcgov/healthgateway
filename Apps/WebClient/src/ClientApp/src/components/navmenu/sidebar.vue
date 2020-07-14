@@ -186,6 +186,34 @@
     bottom: 0rem;
     align-self: flex-end;
 }
+
+.popover-body {
+    padding: 0.5px 0px 0.5px 0px !important;
+}
+
+.pop-over-close {
+    float: right;
+    padding-top: 0px;
+    color: black;
+    border: none;
+    background-color: transparent;
+}
+
+.popover-content {
+    max-width: 20rem;
+    color: black;
+}
+
+/* Small Devices*/
+@media (max-width: 470px) {
+    .popover-content {
+        max-width: 8rem;
+    }
+}
+
+.action-side-menu {
+    display: inline !important;
+}
 </style>
 
 <template>
@@ -216,12 +244,11 @@
                                 v-if="isOpen"
                                 cols="7"
                                 class="button-title d-none"
+                                >{{ name }}</b-col
                             >
-                                {{ name }}
-                            </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isProfile && isOpen">
+                    <div v-if="isProfile">
                         <!-- Terms of Service button -->
                         <router-link
                             id="termsOfService"
@@ -295,9 +322,9 @@
                             :class="{ selected: isTimeline }"
                         >
                             <b-col
+                                v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
-                                v-show="isOpen"
                             ></b-col>
                             <b-col
                                 title="Timeline"
@@ -318,21 +345,23 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline && isOpen">
+                    <div v-if="isTimeline" class="action-side-menu">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
-                            class="align-items-center border rounded-pill p-2 button-container my-4"
+                            id="add-a-note-row"
+                            class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
                         >
                             <b-col
-                                title="Add a Note"
+                                id="add-a-note-btn"
+                                title="Add a Note todo"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
                                     icon="edit"
-                                    class="button-icon sub-menu"
+                                    class="button-icon sub-menu m-auto"
                                     size="2x"
                                 />
                             </b-col>
@@ -344,7 +373,29 @@
                                 <span>Add a Note</span>
                             </b-col>
                         </b-row>
-
+                        <b-popover
+                            ref="popover"
+                            triggers="manual"
+                            :show.sync="showTutorialPopover"
+                            target="add-a-note-row"
+                            class="popover"
+                            fallback-placement="clockwise"
+                            placement="right"
+                            variant="dark"
+                            boundary="viewport"
+                        >
+                            <div>
+                                <b-button
+                                    class="pop-over-close"
+                                    @click="dismissTutorial"
+                                    >x</b-button
+                                >
+                            </div>
+                            <div class="popover-content">
+                                Add Notes to track your important health events
+                                e.g. Broke ankle in Cuba
+                            </div>
+                        </b-popover>
                         <!-- Print Button -->
                         <b-row
                             class="align-items-center border rounded-pill py-2 button-container my-4"
@@ -378,7 +429,7 @@
                         class="align-items-center my-4"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
-                        <b-col class="" :class="{ 'ml-auto col-4': isOpen }">
+                        <b-col class :class="{ 'ml-auto col-4': isOpen }">
                             <font-awesome-icon
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"
@@ -416,6 +467,7 @@ import { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
+import User from "@/models/user";
 library.add(faStream);
 
 const auth: string = "auth";
@@ -428,23 +480,39 @@ const sidebar: string = "sidebar";
     },
 })
 export default class SidebarComponent extends Vue {
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        hdid: string;
+        name: string;
+        value: string;
+    }) => void;
+
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+
     @Getter("oidcIsAuthenticated", {
         namespace: auth,
     })
     oidcIsAuthenticated!: boolean;
+
     @Getter("userIsRegistered", {
         namespace: user,
     })
     userIsRegistered!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    private eventBus = EventBus;
 
     private authenticationService!: IAuthenticationService;
     private name: string = "";
     private windowWidth: number = 0;
-    private $bodyElement!: HTMLBodyElement | null;
+
+    private isTutorialEnabled: boolean = true;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -461,12 +529,7 @@ export default class SidebarComponent extends Vue {
 
     @Watch("isOpen")
     private onIsOpen(newValue: boolean, oldValue: boolean) {
-        // Make sure that scroll is disabled when the overlay is active
-        if (this.$bodyElement !== null) {
-            if (this.isOverlayVisible) {
-                this.$bodyElement.style.position = "fixed";
-            } else this.$bodyElement.style.removeProperty("position");
-        }
+        this.isTutorialEnabled = false;
     }
 
     private mounted() {
@@ -476,6 +539,8 @@ export default class SidebarComponent extends Vue {
         if (this.oidcIsAuthenticated) {
             this.loadName();
         }
+
+        var self = this;
 
         // Setup the transition listener to avoid text wrapping
         var transition = document.querySelector("#sidebar");
@@ -487,6 +552,8 @@ export default class SidebarComponent extends Vue {
             ) {
                 return;
             }
+
+            self.isTutorialEnabled = true;
 
             var buttonText = document
                 .querySelectorAll(".button-title")
@@ -503,7 +570,6 @@ export default class SidebarComponent extends Vue {
             window.addEventListener("resize", this.onResize);
         });
         this.windowWidth = window.innerWidth;
-        this.$bodyElement = document.querySelector("body");
     }
 
     private beforeDestroy() {
@@ -537,20 +603,51 @@ export default class SidebarComponent extends Vue {
 
     private createNote() {
         this.clearOverlay();
-        EventBus.$emit("timelineCreateNote");
+        this.eventBus.$emit("timelineCreateNote");
+    }
+
+    private dismissTutorial() {
+        console.log("Dismissing tutorial...");
+        this.updateUserPreference({
+            hdid: this.user.hdid,
+            name: "tutorialPopover",
+            value: "false",
+        });
     }
 
     private printView() {
         this.clearOverlay();
-        EventBus.$emit("timelinePrintView");
+        this.eventBus.$emit("timelinePrintView");
     }
 
     private onResize() {
         this.windowWidth = window.innerWidth;
     }
 
+    private get showTutorialPopover(): boolean {
+        if (this.isMobileWidth) {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true" &&
+                this.isOpen
+            );
+        } else {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true"
+            );
+        }
+    }
+    private set showTutorialPopover(value: boolean) {
+        this.isTutorialEnabled = value;
+    }
+
     private get isOverlayVisible() {
-        return this.isOpen && this.windowWidth < 768;
+        return this.isOpen && this.isMobileWidth;
+    }
+
+    private get isMobileWidth(): boolean {
+        return this.windowWidth < 768;
     }
 
     private get isTimeline(): boolean {
