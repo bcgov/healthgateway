@@ -563,6 +563,7 @@ export default class RegistrationView extends Vue {
                         acceptedTermsOfService: this.accepted,
                         email: this.email || "",
                         smsNumber: this.smsNumber || "",
+                        preferences: {},
                     },
                     inviteCode: this.inviteKey || "",
                 })

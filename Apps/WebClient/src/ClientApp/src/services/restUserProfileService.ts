@@ -6,7 +6,6 @@ import { ResultType } from "@/constants/resulttype";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
-import UserPreference from "@/models/userPreference";
 import { Dictionary } from "vue-router/types/router";
 
 @injectable()
@@ -208,33 +207,22 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    public getUserPreference(hdid: string): Promise<UserPreference> {
+    public updateUserPreference(
+        hdid: string,
+        preference: string,
+        value: string
+    ): Promise<boolean> {
+        let headers: Dictionary<string> = {};
+        headers["Content-Type"] = "application/json; charset=utf-8";
         return new Promise((resolve, reject) => {
             this.http
-                .get<RequestResult<UserPreference>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/userpreference/`
+                .put<boolean>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference/${preference}`,
+                    JSON.stringify(value),
+                    headers
                 )
-                .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    return resolve(err);
-                });
-        });
-    }
-
-    public createUserPreference(
-        userPreference: UserPreference
-    ): Promise<UserPreference> {
-        return new Promise((resolve, reject) => {
-            this.http
-                .post<RequestResult<UserPreference>>(
-                    `${this.USER_PROFILE_BASE_URI}/${userPreference.hdId}/userpreference`,
-                    userPreference
-                )
-                .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                .then((result) => {
+                    resolve(result);
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
