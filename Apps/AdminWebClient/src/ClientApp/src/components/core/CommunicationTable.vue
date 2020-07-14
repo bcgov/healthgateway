@@ -18,116 +18,34 @@
         </template>
         <template v-slot:top>
             <v-toolbar dark>
-                <v-toolbar-title>Communications</v-toolbar-title>
+                <v-tabs v-model="tab" dark>
+                    <v-tab>
+                        Banner Posts
+                    </v-tab>
+                    <v-tab>
+                        Emails
+                    </v-tab>
+                </v-tabs>
                 <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn color="primary" dark v-bind="attrs" v-on="on"
-                            >New Banner Communication</v-btn
-                        >
-                    </template>
-                    <v-card dark>
-                        <v-card-title>
-                            <span class="headline">{{ formTitle }}</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <v-form ref="form" lazy-validation>
-                                <v-row>
-                                    <v-col>
-                                        <ValidationProvider
-                                            v-slot="{
-                                                errors
-                                            }"
-                                            :rules="
-                                                dateTimeRules(
-                                                    editedItem.effectiveDateTime,
-                                                    editedItem.expiryDateTime
-                                                )
-                                            "
-                                        >
-                                            <v-datetime-picker
-                                                v-model="
-                                                    editedItem.effectiveDateTime
-                                                "
-                                                requried
-                                                label="Effective On"
-                                            ></v-datetime-picker>
-                                            <span class="error-message">{{
-                                                errors[0]
-                                            }}</span>
-                                        </ValidationProvider>
-                                    </v-col>
-                                    <v-col>
-                                        <ValidationProvider
-                                            v-slot="{
-                                                errors
-                                            }"
-                                            :rules="
-                                                dateTimeRules(
-                                                    editedItem.effectiveDateTime,
-                                                    editedItem.expiryDateTime
-                                                )
-                                            "
-                                        >
-                                            <v-datetime-picker
-                                                v-model="
-                                                    editedItem.expiryDateTime
-                                                "
-                                                required
-                                                label="Expires On"
-                                            ></v-datetime-picker>
-                                            <span class="error-message">{{
-                                                errors[0]
-                                            }}</span>
-                                        </ValidationProvider>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col>
-                                        <v-text-field
-                                            v-model="editedItem.subject"
-                                            label="Subject"
-                                            maxlength="100"
-                                            :rules="[
-                                                v =>
-                                                    !!v || 'Subject is required'
-                                            ]"
-                                            validate-on-blur
-                                            required
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col>
-                                        <v-textarea
-                                            v-model="editedItem.text"
-                                            label="Message"
-                                            maxlength="1000"
-                                            :rules="[
-                                                v => !!v || 'Text is required'
-                                            ]"
-                                            validate-on-blur
-                                            required
-                                        ></v-textarea>
-                                    </v-col>
-                                </v-row>
-                            </v-form>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" text @click="close()"
-                                >Cancel</v-btn
-                            >
-                            <v-btn color="blue darken-1" text @click="save()"
-                                >Save</v-btn
-                            >
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
+                <BannerModal
+                    v-if="tab == 0"
+                    :edited-item="editedBanner"
+                    :edited-index="editedIndex"
+                    @emit-add="add"
+                    @emit-update="updateBanner"
+                    @emit-close="close"
+                />
+                <EmailModal
+                    v-if="tab == 1"
+                    :edited-item="editedEmail"
+                    :edited-index="editedIndex"
+                    @emit-send="sendEmail"
+                    @emit-close="close"
+                />
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn @click="editItem(item)">
+            <v-btn @click="editBanner(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
         </template>
@@ -142,33 +60,24 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
 import Communication from "@/models/communication";
+import BannerModal from "@/components/core/modals/BannerModal.vue";
+import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";
-import { ValidationProvider, extend, validate } from "vee-validate";
-import { required } from "vee-validate/dist/rules";
 import moment from "moment";
-
-extend("dateValid", {
-    validate(value: any, args: any) {
-        if (moment(args.effective).isBefore(moment(args.expiry))) {
-            return true;
-        }
-        return "Effective date must occur before expiry date.";
-    },
-    params: ["effective", "expiry"]
-});
 
 @Component({
     components: {
-        ValidationProvider
+        BannerModal,
+        EmailModal
     }
 })
 export default class CommunicationTable extends Vue {
     private communicationList: Communication[] = [];
+    private bannerList: Communication[] = [];
+    private emailList: Communication[] = [];
     private communicationService!: ICommunicationService;
-    private editedIndex: number = -1;
-    private dialog: boolean = false;
     private isLoading: boolean = false;
     private showFeedback: boolean = false;
     private bannerFeedback: BannerFeedback = {
@@ -176,28 +85,11 @@ export default class CommunicationTable extends Vue {
         title: "",
         message: ""
     };
-
-    private mounted() {
-        this.communicationService = container.get(
-            SERVICE_IDENTIFIER.CommunicationService
-        );
-        this.loadCommunicationList();
-    }
-
-    @Watch("dialog")
-    private onDialogChange(val: any) {
-        val || this.close();
-    }
-
-    private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    }
-
-    private dateTimeRules(effective: Date, expiry: Date) {
-        return "dateValid:" + effective.toString() + "," + expiry.toString();
-    }
-
-    private editedItem: Communication = {
+    // 0: Banners, 1: Emails
+    private tab: number = 0;
+    private editedIndex: number = -1;
+    private headers: any[] = [];
+    private editedBanner: Communication = {
         id: "-1",
         text: "",
         subject: "",
@@ -208,7 +100,17 @@ export default class CommunicationTable extends Vue {
             .toDate()
     };
 
-    private defaultItem: Communication = {
+    private editedEmail: Communication = {
+        id: "-1",
+        subject: "",
+        text: "<p></p>",
+        priority: "",
+        effectiveDateTime: new Date(),
+        expiryDateTime: new Date(),
+        version: 0
+    };
+
+    private defaultBanner: Communication = {
         id: "-1",
         text: "",
         subject: "",
@@ -219,7 +121,38 @@ export default class CommunicationTable extends Vue {
             .toDate()
     };
 
-    private headers: any[] = [
+    private defaultEmail: Communication = {
+        id: "-1",
+        subject: "",
+        text: "<p></p>",
+        priority: "",
+        effectiveDateTime: new Date(),
+        expiryDateTime: new Date(),
+        version: 0
+    };
+
+    private mounted() {
+        this.communicationService = container.get(
+            SERVICE_IDENTIFIER.CommunicationService
+        );
+        this.headers = this.bannerHeaders;
+        this.loadCommunicationList();
+    }
+
+    @Watch("tab")
+    private onTabChange(val: any) {
+        if (!val) {
+            // Banners
+            this.communicationList = this.bannerList;
+            this.headers = this.bannerHeaders;
+        } else {
+            // Emails
+            this.communicationList = this.emailList;
+            this.headers = this.emailHeaders;
+        }
+    }
+
+    private bannerHeaders: any[] = [
         {
             text: "Subject",
             value: "subject",
@@ -247,48 +180,44 @@ export default class CommunicationTable extends Vue {
         }
     ];
 
+    private emailHeaders: any[] = [
+        {
+            text: "Subject",
+            value: "subject",
+            align: "start",
+            width: "20%",
+            sortable: false
+        },
+        {
+            text: "Email Content",
+            width: "20%",
+            value: "text",
+            sortable: false
+        },
+        {
+            text: "Scheduled For",
+            value: "effectiveDateTime"
+        },
+        {
+            text: "Priority",
+            value: "priority"
+        },
+        {
+            text: "Actions",
+            value: "actions",
+            sortable: false
+        }
+    ];
+
     private formatDate(date: Date): string {
         return new Date(Date.parse(date + "Z")).toLocaleString();
     }
 
-    private dateTimeValid(): boolean {
-        return moment(this.editedItem.effectiveDateTime).isBefore(
-            moment(this.editedItem.expiryDateTime)
-        );
-    }
-
-    private close() {
-        this.dialog = false;
-        this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem);
-            this.editedIndex = -1;
-            (this.$refs.form as Vue & {
-                resetValidation: () => any;
-            }).resetValidation();
-        });
-    }
-
-    private save() {
-        if (
-            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
-            this.dateTimeValid()
-        ) {
-            if (this.editedIndex > -1) {
-                // Assign (this.editedItem) to item at this.editedIndex
-                this.update(this.editedItem);
-            } else {
-                this.add(this.editedItem);
-            }
-            this.close();
-        }
-    }
-
-    private editItem(item: Communication) {
+    private editBanner(item: Communication) {
         this.editedIndex = this.communicationList.indexOf(item);
-        this.editedItem = item;
-        this.editedItem.effectiveDateTime = new Date(item.effectiveDateTime);
-        this.editedItem.expiryDateTime = new Date(item.expiryDateTime);
-        this.dialog = true;
+        this.editedBanner = item;
+        this.editedBanner.effectiveDateTime = new Date(item.effectiveDateTime);
+        this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
     }
 
     private sortCommunicationsByDate(
@@ -339,7 +268,7 @@ export default class CommunicationTable extends Vue {
         this.communicationService
             .getAll()
             .then((banners: Communication[]) => {
-                this.communicationList = banners;
+                this.parseComms(banners);
             })
             .catch((err: any) => {
                 this.showFeedback = true;
@@ -352,6 +281,13 @@ export default class CommunicationTable extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    private parseComms(communication: Communication[]) {
+        // this.bannerList = communication.filter((comm: Communication) => comm.type === "banner");
+        // this.emailList = communication.filter((comm: Communication) => comm.type === "email");
+        this.bannerList = communication;
+        this.communicationList = this.bannerList;
     }
 
     private add(comm: Communication): void {
@@ -389,7 +325,7 @@ export default class CommunicationTable extends Vue {
             });
     }
 
-    private update(comm: Communication): void {
+    private updateBanner(comm: Communication): void {
         this.isLoading = true;
         this.isFinishedLoading();
         this.communicationService
@@ -422,6 +358,22 @@ export default class CommunicationTable extends Vue {
                 this.isLoading = false;
                 this.emitResult();
             });
+    }
+
+    private close() {
+        this.editedBanner = Object.assign({}, this.defaultBanner);
+        this.editedEmail = Object.assign({}, this.defaultEmail);
+        this.editedIndex = -1;
+    }
+
+    private sendEmail(comm: Communication) {
+        // NETWORK REQUEST GOES HERE!
+        this.showFeedback = true;
+        this.bannerFeedback = {
+            type: ResultType.Success,
+            title: "Success",
+            message: "Email sent."
+        };
     }
 
     private emitResult() {

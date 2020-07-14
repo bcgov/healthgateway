@@ -161,6 +161,7 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import EventBus from "@/eventbus";
 
 interface CalendarWeek {
     id: string;
@@ -196,6 +197,7 @@ export default class CalendarBodyComponent extends Vue {
 
     private isHovering: boolean = false;
     private hoveringEvent: CalendarEntry | null = null;
+    private eventBus = EventBus;
 
     private get currentDates() {
         return this.getCalendar();
@@ -239,6 +241,8 @@ export default class CalendarBodyComponent extends Vue {
     }
 
     private slotEvents(date: Date): CalendarEntry[] {
+        //TODO: It should do this computation once instead of every single time
+
         // find all events start from this date
         let cellIndexArr = [];
 
@@ -315,7 +319,7 @@ export default class CalendarBodyComponent extends Vue {
 
     private eventClick(event: CalendarEntry, jsEvent: Event) {
         jsEvent.stopPropagation();
-        this.$emit("eventClick", event, jsEvent);
+        this.eventBus.$emit("calendarDateEventClick", event.entries[0].date);
     }
 
     private getTypeName(type: EntryType): string {

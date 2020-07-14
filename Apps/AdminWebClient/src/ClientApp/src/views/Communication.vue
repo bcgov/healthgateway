@@ -15,15 +15,6 @@
                 />
             </v-col>
         </v-row>
-        <v-row>
-            <v-col no-gutters>
-                <EmailCommunication
-                    @is-finished-loading="isFinishedLoading"
-                    @should-show-feedback="shouldShowFeedback"
-                    @banner-feedback-info="bannerFeedbackInfo"
-                />
-            </v-col>
-        </v-row>
     </v-container>
 </template>
 
@@ -35,7 +26,6 @@ import LoadingComponent from "@/components/core/Loading.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import CommunicationTable from "../components/core/CommunicationTable.vue";
-import EmailCommunication from "@/components/core/EmailCommunication.vue";
 import Communication from "@/models/communication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
@@ -47,8 +37,7 @@ import moment from "moment";
     components: {
         LoadingComponent,
         BannerFeedbackComponent,
-        CommunicationTable,
-        EmailCommunication
+        CommunicationTable
     }
 })
 export default class CommunicationView extends Vue {
