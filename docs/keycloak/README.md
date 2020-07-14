@@ -174,8 +174,8 @@ The following section details the client configurations. It also provides an arc
 
 > Here, we only show the non-built-in mappers that were added.
 
-Client ID | Mapper Name | Category | Type | Priority | Mapper Value/Setting | Add to ID Token | Add to access token | add to userinfo |
-| ------ | ------ | ----- | ---- | ----- | ----- | ----- | ----- | ----- | ----- |
+| Client ID | Mapper Name | Category | Type | Priority | Mapper Value/Setting | Add to ID Token | Add to access token | Add to userinfo |
+| ------ | ------ | ----- | ---- | ----- | ----- | ----- | ----- | ----- |
 | healthgateway | hdid | Token mapper | User Attribute | 0 | hdid | ON | ON  | ON |
 | healthgateway | health-gateway-audience | Token Mapper | Audience | 0 | healthgateway | OFF | ON | N/A |
 | healthgateway | given name | Token maper | User Property | 0 | firstName | OFF |  OFF |  ON |
