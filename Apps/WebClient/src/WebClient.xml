@@ -383,25 +383,15 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetUserPreference(System.String)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserPreference(System.String,System.String,System.String)">
             <summary>
-            Gets the user preference.
-            </summary>
-            <returns>The user preference model wrapped in a request result.</returns>
-            <param name="hdid">The user hdid.</param>
-            <response code="200">Returns the user preference json.</response>
-            <response code="401">the client must authenticate itself to get the requested response.</response>
-            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserPreference(HealthGateway.WebClient.Models.UserPreferenceModel)">
-            <summary>
-            Posts a user preference json to be inserted into the database.
+            Updates a user preference.
             </summary>
             <returns>The http status.</returns>
-            <param name="userPreference">The user preference model.</param>
+            <param name="hdid">The user hdid.</param>
+            <param name="name">The preference name.</param>
+            <param name="value">The preference value.</param>
             <response code="200">The user preference record was saved.</response>
-            <response code="400">The user preference object is invalid.</response>
-            <response code="409">The user preference was already inserted.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
@@ -798,34 +788,6 @@
             <param name="key">The security key.</param>
             <returns>The database user note model.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.UserPreferenceModel">
-            <summary>
-            Model that provides a user representation of an user preference database model.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.HdId">
-            <summary>
-            Gets or sets the user hdid.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.UserPreferenceModel.TutorialPopover">
-            <summary>
-            Gets or sets a value indicating whether the user dismissed my note popover.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Models.UserPreferenceModel.CreateFromDbModel(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.UserPreference})">
-            <summary>
-            Constructs a UserPreference model from a UserPreference database model.
-            </summary>
-            <param name="model">The user preference database model.</param>
-            <returns>The user preference model.</returns>
-        </member>
-        <member name="M:HealthGateway.WebClient.Models.UserPreferenceModel.ToDbModel">
-            <summary>
-            Constructs a database UserPreference model from a UserPreference model.
-            </summary>
-            <returns>The database user note model.</returns>
-        </member>
         <member name="T:HealthGateway.WebClient.Models.UserProfileModel">
             <summary>
             Model that provides a user representation of an user profile database model.
@@ -867,7 +829,7 @@
             After an account has been closed for n amount of days the row is physically deleted.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.UserPreference">
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.Preferences">
             <summary>
             Gets or sets the user preference.
             </summary>
@@ -1237,14 +1199,14 @@
             </summary>
             <returns>The wrapped terms of service.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserPreference(HealthGateway.WebClient.Models.UserPreferenceModel)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.UpdateUserPreference(System.String,System.String,System.String)">
             <summary>
             Creates a User Preference in the backend.
             </summary>
             <param name="userPreference">The userPreference to create.</param>
             <returns>A userPreference wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserPreference(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserPreferences(System.String)">
             <summary>
             Gets the user preference model.
             </summary>
@@ -1375,10 +1337,10 @@
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetActiveTermsOfService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserPreference(HealthGateway.WebClient.Models.UserPreferenceModel)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.UpdateUserPreference(System.String,System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserPreference(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserPreferences(System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserSMSService">

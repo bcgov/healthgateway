@@ -432,7 +432,6 @@ import {
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import UserPreference from "@/models/userPreference";
 
 library.add(faExclamationTriangle);
 
@@ -464,16 +463,6 @@ export default class ProfileView extends Vue {
     }: {
         hdid: string;
         emailAddress: string;
-    }) => Promise<void>;
-
-    @Action("getUserPreference", { namespace: userNamespace })
-    getUserPreference!: ({ hdid }: { hdid: string }) => Promise<UserPreference>;
-
-    @Action("updateUserPreference", { namespace: userNamespace })
-    updateUserPreference!: ({
-        userPreference,
-    }: {
-        userPreference: UserPreference;
     }) => Promise<void>;
 
     @Action("closeUserAccount", { namespace: userNamespace })
@@ -514,7 +503,6 @@ export default class ProfileView extends Vue {
     private submitStatus: string = "";
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
-    private userPreference!: UserPreference;
 
     private lastLoginDateString: string = "";
     private plannedDeletionDateTime: Date = new Date();
@@ -539,9 +527,6 @@ export default class ProfileView extends Vue {
         var oidcUserPromise = authenticationService.getOidcUserProfile();
         var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
         var userSMSPromise = this.getUserSMS({ hdid: this.user.hdid });
-        var userPreferencePromise = this.getUserPreference({
-            hdid: this.user.hdid,
-        });
         var userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );
@@ -551,7 +536,6 @@ export default class ProfileView extends Vue {
             userEmailPromise,
             userSMSPromise,
             userProfilePromise,
-            userPreferencePromise,
         ])
             .then((results) => {
                 // Load oidc user details
@@ -581,12 +565,6 @@ export default class ProfileView extends Vue {
                     this.lastLoginDateString = moment(
                         this.userProfile.lastLoginDateTime
                     ).format("lll");
-                }
-
-                if (results[4]) {
-                    // Load user profile
-                    this.userPreference = results[4];
-                    console.log("User Preference: ", this.userPreference);
                 }
 
                 this.isLoading = false;

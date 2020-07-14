@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -119,8 +120,8 @@ namespace HealthGateway.WebClient.Controllers
 
             if (result.ResourcePayload != null)
             {
-                RequestResult<UserPreferenceModel> userPreference = this.userProfileService.GetUserPreference(hdid);
-                result.ResourcePayload.UserPreference = userPreference?.ResourcePayload;
+                RequestResult<Dictionary<string, string>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
+                result.ResourcePayload.Preferences = userPreferences.ResourcePayload != null ? userPreferences.ResourcePayload : new Dictionary<string, string>();
             }
 
             return new JsonResult(result);
@@ -329,44 +330,27 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Gets the user preference.
-        /// </summary>
-        /// <returns>The user preference model wrapped in a request result.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user preference json.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("{hdid}/userpreference")]
-        [Authorize(Policy = UserPolicy.Read)]
-        public IActionResult GetUserPreference(string hdid)
-        {
-            RequestResult<UserPreferenceModel> result = this.userProfileService.GetUserPreference(hdid);
-            return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Posts a user preference json to be inserted into the database.
+        /// Updates a user preference.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="userPreference">The user preference model.</param>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="name">The preference name.</param>
+        /// <param name="value">The preference value.</param>
         /// <response code="200">The user preference record was saved.</response>
-        /// <response code="400">The user preference object is invalid.</response>
-        /// <response code="409">The user preference was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPost]
-        [Route("{hdid}/userpreference")]
+        [HttpPut]
+        [Route("{hdid}/preference/{name}")]
         [Authorize(Policy = UserPolicy.Write)]
-        public IActionResult CreateUserPreference(UserPreferenceModel userPreference)
+        public IActionResult UpdateUserPreference(string hdid, string name, [FromBody] string value)
         {
-            if (userPreference == null)
+            if (name == null)
             {
                 return new BadRequestResult();
             }
             else
             {
-                RequestResult<UserPreferenceModel> result = this.userProfileService.CreateUserPreference(userPreference);
+                bool result = this.userProfileService.UpdateUserPreference(hdid, name, value);
                 return new JsonResult(result);
             }
         }
