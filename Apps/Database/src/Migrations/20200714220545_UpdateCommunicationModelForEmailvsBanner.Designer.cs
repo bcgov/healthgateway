@@ -27,7 +27,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200714180512_UpdateCommunicationModelForEmailvsBanner")]
+    [Migration("20200714220545_UpdateCommunicationModelForEmailvsBanner")]
     partial class UpdateCommunicationModelForEmailvsBanner
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

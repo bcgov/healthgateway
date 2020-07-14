@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Migrations
                 table: "Communication",
                 maxLength: 10,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: "New");
 
             migrationBuilder.AddColumn<string>(
                 name: "CommunicationTypeCode",
@@ -38,14 +38,14 @@ namespace HealthGateway.Database.Migrations
                 table: "Communication",
                 maxLength: 10,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: "Banner");
 
             migrationBuilder.AddColumn<int>(
                 name: "Priority",
                 schema: "gateway",
                 table: "Communication",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 10);
 
             migrationBuilder.CreateTable(
                 name: "CommunicationStatusCode",
