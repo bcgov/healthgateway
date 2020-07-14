@@ -7,7 +7,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(254, 254, 254, 0.8);
+    background-color: rgba(254, 254, 254, 0.5);
     display: table;
     transition: opacity 0.3s ease;
 }
