@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Update(Communication communication)
         {
-            if (communication.CommunicationTypeCode == CommunicationType.Email || ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            if (ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
             {
                 this.logger.LogTrace($"Updating communication... {JsonConvert.SerializeObject(communication)}");
 

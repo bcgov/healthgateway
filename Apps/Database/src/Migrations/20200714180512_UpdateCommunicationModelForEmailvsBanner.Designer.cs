@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200714000919_CommunicationTypeEmailvsBanner")]
-    partial class CommunicationTypeEmailvsBanner
+    [Migration("20200714180512_UpdateCommunicationModelForEmailvsBanner")]
+    partial class UpdateCommunicationModelForEmailvsBanner
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -520,8 +520,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(30)")
-                        .HasMaxLength(30);
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -547,7 +547,7 @@ namespace HealthGateway.Database.Migrations
                             StatusCode = "New",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A newly created Comm",
+                            Description = "A newly created Communication",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -557,7 +557,7 @@ namespace HealthGateway.Database.Migrations
                             StatusCode = "Pending",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A Comm pending batch pickup",
+                            Description = "A Communication pending batch pickup",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -567,7 +567,7 @@ namespace HealthGateway.Database.Migrations
                             StatusCode = "Processed",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A Comm which has been sent",
+                            Description = "A Communication which has been sent",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -577,7 +577,7 @@ namespace HealthGateway.Database.Migrations
                             StatusCode = "Error",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A Comm that will not be sent",
+                            Description = "A Communication that will not be sent",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
