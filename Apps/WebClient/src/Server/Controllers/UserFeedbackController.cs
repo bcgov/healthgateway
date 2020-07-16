@@ -18,7 +18,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Diagnostics.Contracts;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -37,25 +37,19 @@ namespace HealthGateway.WebClient.Controllers
     public class UserFeedbackController
     {
         private readonly IUserFeedbackService userFeedbackService;
-
         private readonly IHttpContextAccessor httpContextAccessor;
-
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
         /// </summary>
         /// <param name="userFeedbackService">The injected user feedback service.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserFeedbackController(
             IUserFeedbackService userFeedbackService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IHttpContextAccessor httpContextAccessor)
         {
             this.userFeedbackService = userFeedbackService;
             this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -69,27 +63,17 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateUserFeedback([FromBody] UserFeedback userFeedback)
+        [Authorize(Policy = UserPolicy.UserOnly)]
+        public IActionResult CreateUserFeedback([FromBody] UserFeedback userFeedback)
         {
-            Contract.Requires(userFeedback != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             if (userFeedback == null)
             {
                 return new BadRequestResult();
             }
             else
             {
+                ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+                string userHdid = user.FindFirst("hdid").Value;
                 userFeedback.UserProfileId = userHdid;
                 userFeedback.CreatedBy = userHdid;
                 userFeedback.UpdatedBy = userHdid;

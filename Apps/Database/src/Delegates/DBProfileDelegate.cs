@@ -24,10 +24,11 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
-    public class DBProfileDelegate : IProfileDelegate
+    public class DBProfileDelegate : IUserProfileDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
@@ -54,6 +55,7 @@ namespace HealthGateway.Database.Delegates
             try
             {
                 this.dbContext.SaveChanges();
+                result.Payload = profile;
                 result.Status = DBStatusCode.Created;
             }
             catch (DbUpdateException e)
@@ -163,18 +165,23 @@ namespace HealthGateway.Database.Delegates
         {
             int result = this.dbContext.BetaRequest
                 .Count(b =>
-                    this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId) &&
+                    this.dbContext.MessagingVerification.Any(e => e.HdId == b.HdId) &&
                     !this.dbContext.UserProfile.Any(u => u.HdId == b.HdId && u.AcceptedTermsOfService));
             return result;
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount(DateTime startDate)
+        public int GetLoggedInUsersCount(TimeSpan offset)
         {
+            DateTime now = DateTime.UtcNow;
+            DateTime clientTime = DateTime.SpecifyKind(now.Add(offset), DateTimeKind.Unspecified);
+            DateTimeOffset clientStartDate = new DateTimeOffset(clientTime.Date, offset);
+            DateTime queryStartTime = clientStartDate.UtcDateTime;
+            DateTime queryEndTime = now;
             int result = this.dbContext.UserProfile
                 .Count(u => u.LastLoginDateTime.HasValue &&
-               u.LastLoginDateTime.Value >= startDate.ToUniversalTime() &&
-               u.LastLoginDateTime.Value < startDate.AddDays(1).ToUniversalTime());
+               u.LastLoginDateTime.Value >= queryStartTime &&
+               u.LastLoginDateTime.Value < queryEndTime);
             return result;
         }
     }

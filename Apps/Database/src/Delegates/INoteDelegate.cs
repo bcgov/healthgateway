@@ -29,8 +29,9 @@ namespace HealthGateway.Database.Delegates
         /// Gets a note from the DB using the noteId.
         /// </summary>
         /// <param name="noteId">The Note ID to retrieve.</param>
+        /// <param name="hdid">The user hdid.</param>
         /// <returns>The note wrapped in a DBResult.</returns>
-        DBResult<Note> GetNote(Guid noteId);
+        DBResult<Note> GetNote(Guid noteId, string hdid);
 
         /// <summary>
         /// Gets a list of notes ordered by the journal datetime for the given HdId.
@@ -72,5 +73,12 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
         DBResult<Note> DeleteNote(Note note, bool commit = true);
+
+        /// <summary>
+        /// Returns the count of users that have notes on their timeline.
+        /// </summary>
+        /// <param name="minNotes">The minimum number of notes to count.</param>
+        /// <returns>The count of users.</returns>
+        int GetUsersWithNotesCount(int minNotes);
     }
 }

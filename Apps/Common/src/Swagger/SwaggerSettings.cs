@@ -15,12 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.OpenApi.Models;
-    using Swashbuckle.AspNetCore.Swagger;
 
     /// <summary>
     /// Swagger Configuration.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class SwaggerSettings
     {
         /// <summary>
@@ -37,6 +38,16 @@ namespace HealthGateway.Common.Swagger
         /// Gets or sets RoutePrefix.
         /// </summary>
         public string? RoutePrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets RoutePrefix.
+        /// </summary>
+        public string? RouteTemplatePrefix { get; set; } = "swagger";
+
+        /// <summary>
+        /// Gets or sets BasePath.
+        /// </summary>
+        public string? BasePath { get; set; }
 
         /// <summary>
         /// Gets Route Prefix with tailing slash.

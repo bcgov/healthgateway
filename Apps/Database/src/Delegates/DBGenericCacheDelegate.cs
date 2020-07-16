@@ -95,7 +95,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<GenericCache> GetCacheObject(string hdid, string domain)
+        public DBResult<GenericCache> GetCacheObject(string hdid, string typeName)
         {
             DBResult<GenericCache> result = new DBResult<GenericCache>()
             {
@@ -103,7 +103,7 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.GenericCache
                                     .Where(p => p.HdId == hdid &&
-                                                p.Domain == domain &&
+                                                p.Domain == typeName &&
                                                 p.ExpiryDateTime >= DateTime.UtcNow)
                                     .OrderByDescending(o => o.CreatedDateTime)
                                     .FirstOrDefault();

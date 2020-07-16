@@ -45,9 +45,13 @@
       "path": "WebClient"
     },
     {
-      "name": "Dolphin",
-      "path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
+      "path": "Laboratory"
     }
   ],
-  "settings": {}
+  "settings": {
+    "eslint.workingDirectories": [
+      {"mode": "auto"}
+    ],
+    "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+  }
 }

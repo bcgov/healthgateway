@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A system Communication.
@@ -55,5 +56,23 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public DateTime ExpiryDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the Communication (Banner vs Email).
+        /// </summary>
+        [MaxLength(10)]
+        public string CommunicationTypeCode { get; set; } = CommunicationType.Banner;
+
+        /// <summary>
+        /// Gets or sets the state of the Communication (Draft, Pending ...).
+        /// </summary>
+        [MaxLength(10)]
+        public string CommunicationStatusCode { get; set; } = CommunicationStatus.New;
+
+        /// <summary>
+        /// Gets or sets the priority of the email communication.
+        /// The lower the value the lower the priority.
+        /// </summary>
+        public int Priority { get; set; } = EmailPriority.Standard;
     }
 }

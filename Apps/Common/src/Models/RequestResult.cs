@@ -27,7 +27,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
-        public T ResourcePayload { get; set; } = null!;
+        public T? ResourcePayload { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.

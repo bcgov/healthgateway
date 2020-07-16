@@ -13,10 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
 namespace HealthGateway.Common.Utils
 {
-    using System;
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
 
@@ -42,7 +40,7 @@ namespace HealthGateway.Common.Utils
         }
 
         /// <summary>
-        /// Replaces any occurences of {$key} in the string with the value.
+        /// Replaces any occurences of ${key} in the string with the value.
         /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
         /// </summary>
         /// <param name="inStr">The string to scan and replace.</param>

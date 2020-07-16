@@ -28,6 +28,6 @@ namespace HealthGateway.Patient.Delegates
         /// </summary>
         /// <param name="request">The get demographics request.</param>
         /// <returns>The patient get demographics response.</returns>
-        Task<HCIM_IN_GetDemographicsResponse1> GetDemographicsAsync(HCIM_IN_GetDemographics request);
+        Task<HCIM_IN_GetDemographicsResponse1> GetDemographicsAsync(HCIM_IN_GetDemographicsRequest request);
     }
 }

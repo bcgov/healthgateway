@@ -2,72 +2,64 @@ name: PR$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/WebClient
-  App.Name: webclient
+    App.Home: $(Build.SourcesDirectory)/Apps/WebClient
+    App.Name: webclient
 
 pool:
-  name: 'HealthGateway'
+    name: "HealthGateway"
 
 trigger: none
 
 pr:
-  branches:
-   include:
-   - dev  
-  paths:
-   include:
-   - Apps/WebClient
-   - Apps/Common
-   
+    branches:
+        include:
+            - dev
+    paths:
+        include:
+            - Apps/WebClient
+            - Apps/Common
+
 steps:
-- task: Npm@1
-  displayName: Install NPM Packages
-  inputs:
-    command: 'install'
-    workingDir: '$(App.Home)/src/ClientApp'
+    - task: Npm@1
+      displayName: Install NPM Packages
+      inputs:
+          command: "install"
+          workingDir: "$(App.Home)/src/ClientApp"
 
-# - task: DotNetCoreCLI@2
-#   displayName: Run dotnet Tests
-#   inputs:
-#     command: 'test'
-#     projects: '$(App.Home)/test/test.csproj'
-#     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-#     testRunTitle: 'WebClient'
+    - task: Npm@1
+      displayName: Run jest Tests
+      inputs:
+          command: "custom"
+          customCommand: "test"
+          workingDir: "$(App.Home)/src/ClientApp"
 
-# - script: |
-#    set -e
-#    dotnet tool install -g dotnet-reportgenerator-globaltool
-#    reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-#   displayName: Create Code Coverage Report
+    - task: DotNetCoreCLI@2
+      displayName: Run dotnet Tests
+      inputs:
+          command: "test"
+          projects: "$(App.Home)/test/unit/WebClientTests.csproj"
+          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+          testRunTitle: "WebClient"
 
-#- task: DotNetCoreCLI@2
-#   displayName: Run dotnet Tests
-#   inputs:
-#     command: 'test'
-#     projects: '$(App.Home)/test/unit/WebClientTests.csproj'
-#     testRunTitle: 'WebClient'
+    - script: |
+          set -e
+          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      displayName: Create Code Coverage Report
 
-# - task: DotNetCoreCLI@2
-#   displayName: Run dotnet Tests
-#   inputs:
-#     command: 'test'
-#     projects: '$(App.Home)/test/test.csproj'
-#     testRunTitle: 'WebClient'
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publish Code Coverage"
+      inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+          pathToSources: "$(App.Home)/src"
+          reportDirectory: "$(App.Home)/CodeCoverage"
 
-# - task: PublishCodeCoverageResults@1
-#   displayName: 'Publish Code Coverage'
-#   inputs:
-#     codeCoverageTool: Cobertura
-#     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
-#     pathToSources: '$(App.Home)/src'
-#     reportDirectory: '$(App.Home)/CodeCoverage'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Publish dotnet Code'
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+    - task: DotNetCoreCLI@2
+      displayName: "Publish dotnet Code"
+      inputs:
+          modifyOutputPath: false
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(App.Home)/src"
+          arguments: "-o $(Build.BinariesDirectory)"
+          zipAfterPublish: false

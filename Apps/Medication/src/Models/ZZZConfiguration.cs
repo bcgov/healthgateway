@@ -23,11 +23,11 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets practitioner id.
         /// </summary>
-        public string PractitionerId { get; set; }
+        public string PractitionerId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets practitioner id reference.
         /// </summary>
-        public string PractitionerIdRef { get; set; }
+        public string PractitionerIdRef { get; set; } = string.Empty;
     }
 }

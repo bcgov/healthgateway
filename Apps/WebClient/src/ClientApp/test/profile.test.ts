@@ -1,4 +1,4 @@
-import { mount, createLocalVue, Wrapper, shallowMount } from "@vue/test-utils";
+import { Wrapper, createLocalVue, mount, shallowMount } from "@vue/test-utils";
 import BootstrapVue from "bootstrap-vue";
 import ProfileComponent from "@/views/profile.vue";
 import Vuex from "vuex";
@@ -128,9 +128,9 @@ function createWrapper(): Wrapper<ProfileComponent> {
 }*/
 
 describe("Dummy Test", () => {
-  test("has header element with static text", () => {
-    expect(true).toBe(true);
-  });
+    test("has header element with static text", () => {
+        expect(true).toBe(true);
+    });
 });
 
 /*describe("Home view", () => {
@@ -141,7 +141,7 @@ describe("Dummy Test", () => {
 
   test("is a Vue instance", () => {
     let wrapper = createWrapper();
-    expect(wrapper.isVueInstance()).toBeTruthy();
+    expect(wrapper).toBeTruthy();
   });
 
   test("has header element with static text", () => {

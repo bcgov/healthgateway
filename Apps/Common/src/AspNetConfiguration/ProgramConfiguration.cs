@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
@@ -23,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// <summary>
     /// The program configuration class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ProgramConfiguration
     {
         private const string EnvironmentPrefix = "HealthGateway_";
@@ -40,7 +42,10 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.AddConsole();
+                    logging.AddConsole(options =>
+                    {
+                        options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                    });
                 })
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {

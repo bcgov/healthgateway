@@ -126,8 +126,8 @@ namespace HealthGateway.Medication.Parsers
             zzz.AddNewField(transactionId); // Transaction ID
             zzz.AddNewField(string.Empty); // Response Status (Empty)
             zzz.AddNewField(formattedTraceId); // Trace Number
-            zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerIdRef); // Practitioner ID Reference
-            zzz.AddNewField(this.ClientConfig.ZZZ.PractitionerId); // Practitioner ID
+            zzz.AddNewField(this.ClientConfig.ZZZ!.PractitionerIdRef); // Practitioner ID Reference
+            zzz.AddNewField(this.ClientConfig.ZZZ!.PractitionerId); // Practitioner ID
             zzz.AddNewField(string.Empty); // Transaction Segment Count
             zzz.AddNewField(string.Empty); // Transaction Text
             zzz.AddNewField(string.IsNullOrEmpty(protectiveWord) ? string.Empty : protectiveWord); // Current Patient Keyword
@@ -152,10 +152,10 @@ namespace HealthGateway.Medication.Parsers
             // ZCA - Claims Standard Message Header
             Segment zca = new Segment(HNClientConfiguration.SEGMENT_ZCA, this.Encoding);
             zca.AddNewField(id); // BIN
-            zca.AddNewField(this.ClientConfig.ZCA.CPHAVersionNumber); // CPHA Version Number
-            zca.AddNewField(this.ClientConfig.ZCA.TransactionCode); // Transaction Code
-            zca.AddNewField(this.ClientConfig.ZCA.SoftwareId); // Provider Software ID
-            zca.AddNewField(this.ClientConfig.ZCA.SoftwareVersion); // Provider Software Version
+            zca.AddNewField(this.ClientConfig.ZCA!.CPHAVersionNumber); // CPHA Version Number
+            zca.AddNewField(this.ClientConfig.ZCA!.TransactionCode); // Transaction Code
+            zca.AddNewField(this.ClientConfig.ZCA!.SoftwareId); // Provider Software ID
+            zca.AddNewField(this.ClientConfig.ZCA!.SoftwareVersion); // Provider Software Version
             message.AddNewSegment(zca);
         }
 
@@ -175,7 +175,7 @@ namespace HealthGateway.Medication.Parsers
 
             // ZCB - Provider Information
             Segment zcb = new Segment(HNClientConfiguration.SEGMENT_ZCB, this.Encoding);
-            zcb.AddNewField(this.ClientConfig.ZCB.PharmacyId); // Pharmacy ID Code
+            zcb.AddNewField(this.ClientConfig.ZCB!.PharmacyId); // Pharmacy ID Code
             zcb.AddNewField(this.GetLocalDate()); // Provider Transaction Date
             zcb.AddNewField(formattedTraceId); // Trace Number
             message.AddNewSegment(zcb);

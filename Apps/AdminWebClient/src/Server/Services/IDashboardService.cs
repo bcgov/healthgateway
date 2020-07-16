@@ -35,13 +35,20 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Retrieves the count of logged in users in the current day.
         /// </summary>
+        /// <param name="offset">The offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
-        int GetTodayLoggedInUsersCount();
+        int GetTodayLoggedInUsersCount(int offset);
 
         /// <summary>
         /// Retrieves the count of waitlisted users.
         /// </summary>
         /// <returns>The count of users waiting for an invite.</returns>
         int GetWaitlistUserCount();
+
+        /// <summary>
+        /// Retrieves the count of users with notes on their timeline.
+        /// </summary>
+        /// <returns>The count of users with notes.</returns>
+        int GetUsersWithNotesCount();
     }
 }

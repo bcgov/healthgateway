@@ -15,12 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
-    using HealthGateway.Common.Filters;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
@@ -39,22 +37,18 @@ namespace HealthGateway.WebClient.Controllers
     {
         private readonly ICommentService commentService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentController"/> class.
         /// </summary>
         /// <param name="commentService">The injected comment service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         public CommentController(
             ICommentService commentService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IHttpContextAccessor httpContextAccessor)
         {
             this.commentService = commentService;
             this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -66,19 +60,12 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Create([FromBody] UserComment comment)
+        [Authorize(Policy = UserPolicy.UserOnly)]
+        public IActionResult Create([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
 
             if (comment == null)
             {
@@ -101,25 +88,16 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Update([FromBody] UserComment comment)
+        [Authorize(Policy = UserPolicy.UserOnly)]
+        public IActionResult Update([FromBody] UserComment comment)
         {
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             if (comment == null)
             {
                 return new BadRequestResult();
             }
 
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
             if (comment.UserProfileId != userHdid)
             {
                 return new ForbidResult();
@@ -139,16 +117,12 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Delete([FromBody] UserComment comment)
+        [Authorize(Policy = UserPolicy.UserOnly)]
+        public IActionResult Delete([FromBody] UserComment comment)
         {
-            // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
+            if (comment.UserProfileId != userHdid)
             {
                 return new ForbidResult();
             }
@@ -166,18 +140,11 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAllForEntry([FromQuery] string parentEntryId)
+        [Authorize(Policy = UserPolicy.UserOnly)]
+        public IActionResult GetAllForEntry([FromQuery] string parentEntryId)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(userHdid, parentEntryId);
             return new JsonResult(result);
         }

@@ -32,7 +32,7 @@ namespace HealthGateway.Database.Context
         /// Initializes a new instance of the <see cref="BaseDbContext"/> class.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public BaseDbContext(DbContextOptions options)
+        protected BaseDbContext(DbContextOptions options)
             : base(options)
         {
         }

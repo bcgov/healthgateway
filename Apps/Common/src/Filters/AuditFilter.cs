@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
@@ -25,6 +25,7 @@ namespace HealthGateway.Common.Filters
     /// <summary>
     /// The audit middleware class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuditFilter : IAsyncActionFilter
     {
         private readonly IAuditLogger auditService;

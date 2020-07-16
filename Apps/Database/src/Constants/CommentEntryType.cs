@@ -29,5 +29,10 @@ namespace HealthGateway.Database.Constants
         /// The code representing Immunization.
         /// </summary>
         public const string Immunization = "Imm";
+
+        /// <summary>
+        /// The code representing Laboratory.
+        /// </summary>
+        public const string Laboratory = "Lab";
     }
 }

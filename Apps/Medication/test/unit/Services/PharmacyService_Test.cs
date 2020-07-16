@@ -17,7 +17,6 @@ namespace HealthGateway.Medication.Test
 {
     using System.Security.Claims;
     using System.Security.Principal;
-    using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Delegates;

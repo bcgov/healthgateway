@@ -17,13 +17,12 @@ namespace HealthGateway.Immunization.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
-     using HealthGateway.Common.Models;
-   using HealthGateway.Immunization.Models;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -53,27 +52,19 @@ namespace HealthGateway.Immunization.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// Gets or sets the authorization service.
-        /// </summary>
-        private readonly IAuthorizationService authorizationService;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The immunization data service.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
-        /// <param name="authorizationService">The IAuthorizationService.</param>
         public ImmunizationController(
             ILogger<ImmunizationController> logger,
             IImmunizationService svc,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.service = svc;
             this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -88,20 +79,11 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<IActionResult> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunizations from controller... {hdid}");
-
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             List<ImmunizationView> immunizations = (await this.service.GetImmunizations(hdid).ConfigureAwait(true)).ToList();
-
             RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
             {
                 ResourcePayload = immunizations,
@@ -112,7 +94,6 @@ namespace HealthGateway.Immunization.Controllers
             };
 
             this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
-
             return new JsonResult(result);
         }
     }

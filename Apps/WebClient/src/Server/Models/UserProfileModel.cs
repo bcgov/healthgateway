@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -38,6 +39,11 @@ namespace HealthGateway.WebClient.Models
         public string? Email { get; set; }
 
         /// <summary>
+        /// Gets or sets the user SMS number.
+        /// </summary>
+        public string? SMSNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the user needs to be notified about new terms of service.
         /// </summary>
         public bool HasTermsOfServiceUpdated { get; set; }
@@ -52,6 +58,11 @@ namespace HealthGateway.WebClient.Models
         /// After an account has been closed for n amount of days the row is physically deleted.
         /// </summary>
         public DateTime? ClosedDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user preference.
+        /// </summary>
+        public Dictionary<string, string> Preferences { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
@@ -70,6 +81,7 @@ namespace HealthGateway.WebClient.Models
                 HdId = model.HdId,
                 AcceptedTermsOfService = model.AcceptedTermsOfService,
                 Email = model.Email,
+                SMSNumber = model.SMSNumber,
                 LastLoginDateTime = model.LastLoginDateTime,
                 ClosedDateTime = model.ClosedDateTime,
             };

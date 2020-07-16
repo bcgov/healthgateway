@@ -23,22 +23,22 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the patient PHN.
         /// </summary>
-        public string Phn { get; set; }
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the pharmacy id.
         /// </summary>
-        public string PharmacyId { get; set; }
+        public string PharmacyId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the requester Id.
         /// </summary>
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the requester ip address.
         /// </summary>
-        public string IpAddress { get; set; }
+        public string IpAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the transaction trace Id.
@@ -48,6 +48,6 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the patient protective word.
         /// </summary>
-        public string ProtectiveWord { get; set; }
+        public string ProtectiveWord { get; set; } = string.Empty;
     }
 }

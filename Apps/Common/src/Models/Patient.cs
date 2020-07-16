@@ -33,6 +33,7 @@ namespace HealthGateway.Common.Models
             this.PersonalHealthNumber = string.Empty;
             this.FirstName = string.Empty;
             this.LastName = string.Empty;
+            this.EmailAddress = string.Empty;
         }
 
         /// <summary>
@@ -43,13 +44,15 @@ namespace HealthGateway.Common.Models
         /// <param name="firstName">The patient first name.</param>
         /// <param name="lastName">The patient last name.</param>
         /// <param name="birthDate">The date of birth for the patient.</param>
-        public Patient(string hdid, string phn, string firstName, string lastName, DateTime birthDate)
+        /// <param name="email">The patient email.</param>
+        public Patient(string hdid, string phn, string firstName, string lastName, DateTime birthDate, string email)
         {
             this.HdId = hdid;
             this.PersonalHealthNumber = phn;
             this.FirstName = firstName;
             this.LastName = lastName;
             this.Birthdate = birthDate;
+            this.EmailAddress = email;
         }
 
         /// <summary>
@@ -81,5 +84,11 @@ namespace HealthGateway.Common.Models
         /// </summary>
         [JsonPropertyName("birthdate")]
         public DateTime Birthdate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the patients email.
+        /// </summary>
+        [JsonPropertyName("email")]
+        public string EmailAddress { get; set; }
     }
 }

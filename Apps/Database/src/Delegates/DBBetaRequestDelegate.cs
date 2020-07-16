@@ -107,7 +107,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Getting pending beta requests from DB...");
             DBResult<List<BetaRequest>> result = new DBResult<List<BetaRequest>>();
-            List<BetaRequest> betaRequests = this.dbContext.BetaRequest.Where(b => !this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId)).ToList();
+            List<BetaRequest> betaRequests = this.dbContext.BetaRequest.Where(b => !this.dbContext.MessagingVerification.Any(e => e.HdId == b.HdId)).ToList();
             result.Payload = betaRequests;
             result.Status = betaRequests != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting pending beta request from DB. {JsonSerializer.Serialize(result)}");
@@ -118,7 +118,7 @@ namespace HealthGateway.Database.Delegates
         public int GetWaitlistCount()
         {
             int result = this.dbContext.BetaRequest
-                .Count(b => !this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId));
+                .Count(b => !this.dbContext.MessagingVerification.Any(e => e.HdId == b.HdId));
             return result;
         }
     }

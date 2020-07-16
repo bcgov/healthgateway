@@ -38,12 +38,6 @@ namespace HealthGateway.Medication.Models.ODR
         [JsonPropertyName("totalRecords")]
         public int Records { get; set; }
 
-        ///// <summary>
-        ///// Gets or sets the page number of the data currently being returned.
-        ///// </summary>
-        //[JsonPropertyName("pageNumber")]
-        //public int PageNumber { get; set; }
-
         /// <summary>
         /// Gets or sets the Total Pages available.
         /// </summary>
@@ -56,6 +50,5 @@ namespace HealthGateway.Medication.Models.ODR
         /// </summary>
         [JsonPropertyName("records")]
         public IEnumerable<MedicationResult>? Results { get; set; }
-
     }
 }

@@ -33,6 +33,7 @@ namespace HealthGateway.Medication.Test
     using Microsoft.Extensions.Logging;
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Instrumentation;
 
     public class MedicationService_Test
     {
@@ -87,6 +88,7 @@ namespace HealthGateway.Medication.Test
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
+                new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
@@ -180,6 +182,7 @@ namespace HealthGateway.Medication.Test
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
+                new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
@@ -226,7 +229,7 @@ namespace HealthGateway.Medication.Test
             patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
             Mock<IHNClientDelegate> hnClientDelegateMock = new Mock<IHNClientDelegate>();
-            hnClientDelegateMock.Setup(s => s.GetMedicationStatementsAsync(phn, null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
+            hnClientDelegateMock.Setup(s => s.GetMedicationStatementsAsync(phn, string.Empty, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<List<MedicationStatement>>(new List<MedicationStatement>()));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
@@ -236,6 +239,7 @@ namespace HealthGateway.Medication.Test
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
+                new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 hnClientDelegateMock.Object,
@@ -243,7 +247,7 @@ namespace HealthGateway.Medication.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, null);
+            RequestResult<List<MedicationStatement>> actual = await service.GetMedicationStatements(hdid, null).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual.ResourcePayload.Count == 0);

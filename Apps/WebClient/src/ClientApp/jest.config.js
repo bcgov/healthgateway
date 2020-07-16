@@ -11,11 +11,11 @@ module.exports = {
     ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$":
       "jest-transform-stub",
     "^.+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp|html)$":
-      "<rootDir>/test/mocks/mediaFileTransformer.js"
+      "<rootDir>/test/mocks/mediaFileTransformer.js",
   },
   moduleNameMapper: {
-    "@/(.*)$": "<rootDir>/app/$1",
-    "\\.(css)$": "<rootDir>/test/mocks/styleMock.js"
+    "@/(.*)$": "<rootDir>/src/$1",
+    "\\.(css)$": "<rootDir>/test/mocks/styleMock.js",
   },
   transformIgnorePatterns: ["/node_modules/"],
   collectCoverage: true,
@@ -27,6 +27,6 @@ module.exports = {
   coverageDirectory: "<rootDir>/../../sonar_reports/jest.out",
   testMatch: ["**/test/**/*.test.(ts)|**/__tests__/*.(ts)"],
   globals: {
-    _NODE_ENV: "development"
-  }
+    _NODE_ENV: "development",
+  },
 };
