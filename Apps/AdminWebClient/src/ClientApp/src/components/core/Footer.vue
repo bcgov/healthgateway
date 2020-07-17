@@ -1,14 +1,14 @@
 <template>
-  <v-footer app dark paddless>
-    <v-row no-gutters>
-      <v-col>
-        <div class="py-2 white--text">
-          {{ new Date().getFullYear() }}
-          <strong>&copy;&nbsp;Province of British Columbia.</strong>
-        </div>
-      </v-col>
-    </v-row>
-  </v-footer>
+    <v-footer app dark paddless>
+        <v-row no-gutters>
+            <v-col>
+                <div class="py-2 white--text">
+                    {{ new Date().getFullYear() }}
+                    <strong>&copy;&nbsp;Province of British Columbia.</strong>
+                </div>
+            </v-col>
+        </v-row>
+    </v-footer>
 </template>
 
 <script lang="ts">

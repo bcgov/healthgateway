@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The database context used by the web client application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public class GatewayDbContext : BaseDbContext
     {
         /// <summary>
@@ -53,11 +54,12 @@ namespace HealthGateway.Database.Context
         public DbSet<TherapeuticClass> TherapeuticClass { get; set; } = null!;
         public DbSet<VeterinarySpecies> VeterinarySpecies { get; set; } = null!;
         public DbSet<Email> Email { get; set; } = null!;
-        public DbSet<EmailInvite> EmailInvite { get; set; } = null!;
+        public DbSet<MessagingVerification> MessagingVerification { get; set; } = null!;
         public DbSet<EmailTemplate> EmailTemplate { get; set; } = null!;
         public DbSet<PharmaCareDrug> PharmaCareDrug { get; set; } = null!;
         public DbSet<FileDownload> FileDownload { get; set; } = null!;
         public DbSet<UserProfile> UserProfile { get; set; } = null!;
+        public DbSet<UserPreference> UserPreference { get; set; } = null!;
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
         public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
         public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
@@ -162,12 +164,37 @@ namespace HealthGateway.Database.Context
                     .HasPrincipalKey(k => k.HdId)
                     .HasForeignKey(k => k.HdId);
 
+            // Create Foreign keys for Messaging Verifications
+            modelBuilder.Entity<MessagingVerification>()
+                .HasOne<MessagingVerificationTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.MessagingVerificationCode)
+                .HasForeignKey(k => k.VerificationType)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserPreference>()
+                .HasKey(c => new { c.HdId, c.Preference });
+
+            modelBuilder.Entity<Communication>()
+                .HasOne<CommunicationTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.StatusCode)
+                .HasForeignKey(k => k.CommunicationTypeCode);
+
+            modelBuilder.Entity<Communication>()
+                .HasOne<CommunicationStatusCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.StatusCode)
+                .HasForeignKey(k => k.CommunicationStatusCode);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
             this.SeedAuditTransactionResults(modelBuilder);
             this.SeedLegalAgreements(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
+            this.SeedMessagingVerifications(modelBuilder);
+            this.SeedCommunication(modelBuilder);
         }
 
         /// <summary>
@@ -312,6 +339,15 @@ namespace HealthGateway.Database.Context
                 {
                     ProgramCode = ApplicationType.Medication,
                     Description = "Medication Service",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
+                    ProgramCode = ApplicationType.Laboratory,
+                    Description = "Laboratory Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
@@ -543,6 +579,17 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                },
+                new LegalAgreement // Updated Terms of Service for Lab/Covid Update
+                {
+                    Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
+                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200511.html"),
+                    EffectiveDate = DateTime.ParseExact("07/31/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                 });
         }
 
@@ -560,6 +607,98 @@ namespace HealthGateway.Database.Context
                     Component = "NotifyUpdatedLegalAgreementsJob",
                     Key = "ToS-Last-Checked",
                     Value = this.DefaultSeedDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Messaging Verification Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedMessagingVerifications(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MessagingVerificationTypeCode>().HasData(
+                new MessagingVerificationTypeCode
+                {
+                    MessagingVerificationCode = MessagingVerificationType.Email,
+                    Description = "Email Verification Type Code",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new MessagingVerificationTypeCode
+                {
+                    MessagingVerificationCode = MessagingVerificationType.SMS,
+                    Description = "SMS Verification Type Code",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Communication Status and Communication Type codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedCommunication(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CommunicationTypeCode>().HasData(
+                new CommunicationTypeCode
+                {
+                    StatusCode = CommunicationType.Banner,
+                    Description = "Banner communication type",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationTypeCode
+                {
+                    StatusCode = CommunicationType.Email,
+                    Description = "Email communication type",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+
+            modelBuilder.Entity<CommunicationStatusCode>().HasData(
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.New,
+                    Description = "A newly created Communication",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Pending,
+                    Description = "A Communication pending batch pickup",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Processed,
+                    Description = "A Communication which has been sent",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Error,
+                    Description = "A Communication that will not be sent",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

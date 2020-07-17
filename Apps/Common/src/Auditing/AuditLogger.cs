@@ -77,8 +77,8 @@ namespace HealthGateway.Common.Auditing
             Claim hdidClaim = claimsIdentity.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
             string? hdid = hdidClaim?.Value;
 
-            auditEvent.ApplicationType = this.GetApplicationType();
-            auditEvent.TransactionResultCode = this.GetTransactionResultType(context.Response.StatusCode);
+            auditEvent.ApplicationType = GetApplicationType();
+            auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
             auditEvent.ApplicationSubject = hdid;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;
@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="statusCode">The http context status code.</param>
         /// <returns>The mapped transaction result.</returns>
-        private string GetTransactionResultType(int statusCode)
+        private static string GetTransactionResultType(int statusCode)
         {
             // Success codes (1xx, 2xx, 3xx)
             if (statusCode < 400)
@@ -126,7 +126,7 @@ namespace HealthGateway.Common.Auditing
         /// Gets the current audit application type from the assembly name.
         /// </summary>
         /// <returns>The mapped application type.</returns>
-        private string GetApplicationType()
+        private static string GetApplicationType()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly() !.GetName();
             switch (assemblyName.Name)
@@ -145,6 +145,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Medication;
                 case "AdminWebClient":
                     return ApplicationType.AdminWebClient;
+                case "Laboratory":
+                    return ApplicationType.Laboratory;
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }

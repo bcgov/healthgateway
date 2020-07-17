@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Represents a text message template.
@@ -80,6 +81,6 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(4)]
-        public string? FormatCode { get; set; }
+        public string FormatCode { get; set; } = EmailFormat.Text;
     }
 }

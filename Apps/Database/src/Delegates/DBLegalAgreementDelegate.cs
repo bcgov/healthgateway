@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -46,6 +47,8 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
         public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
         {
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement

@@ -2,36 +2,57 @@ name: PR$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/AdminWebClient
-  App.Name: adminwebclient
+    App.Home: $(Build.SourcesDirectory)/Apps/AdminWebClient
+    App.Name: adminwebclient
 
 pool:
-  name: 'HealthGateway'
+    name: "HealthGateway"
 
 trigger: none
 
 pr:
-  branches:
-   include:
-   - dev  
-  paths:
-   include:
-   - Apps/AdminWebClient
-   - Apps/Common
-   
-steps:
-- task: Npm@1
-  displayName: Install NPM Packages
-  inputs:
-    command: 'install'
-    workingDir: '$(App.Home)/src/ClientApp'
+    branches:
+        include:
+            - dev
+    paths:
+        include:
+            - Apps/AdminWebClient
+            - Apps/Common
 
-- task: DotNetCoreCLI@2
-  displayName: 'Publish Admin WebClient'
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+steps:
+    - task: Npm@1
+      displayName: Install NPM Packages
+      inputs:
+          command: "install"
+          workingDir: "$(App.Home)/src/ClientApp"
+
+    - task: DotNetCoreCLI@2
+      displayName: Run dotnet Tests
+      inputs:
+          command: "test"
+          projects: "$(App.Home)/test/unit/AdminWebClientTests.csproj"
+          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+          testRunTitle: "AdminWebClient"
+
+    - script: |
+          set -e
+          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      displayName: Create Code Coverage Report
+
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publish Code Coverage"
+      inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+          pathToSources: "$(App.Home)/src"
+          reportDirectory: "$(App.Home)/CodeCoverage"
+
+    - task: DotNetCoreCLI@2
+      displayName: "Publish Admin WebClient"
+      inputs:
+          modifyOutputPath: false
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(App.Home)/src"
+          arguments: "-o $(Build.BinariesDirectory)"
+          zipAfterPublish: false

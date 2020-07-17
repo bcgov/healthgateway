@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
-    using System.Runtime.InteropServices;
     using HealthGateway.Admin.Models;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
@@ -24,24 +23,31 @@ namespace HealthGateway.Admin.Services
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
-        private readonly IProfileDelegate userProfileDelegate;
+        private readonly INoteDelegate noteDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IConfiguration configuration;
+        private readonly AdminConfiguration adminConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
+        /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
         /// <param name="config">The configuration provider.</param>
         public DashboardService(
-            IProfileDelegate userProfileDelegate,
+            INoteDelegate noteDelegate,
+            IUserProfileDelegate userProfileDelegate,
             IBetaRequestDelegate betaRequestDelegate,
             IConfiguration config)
         {
+            this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.betaRequestDelegate = betaRequestDelegate;
             this.configuration = config;
+            this.adminConfiguration = new AdminConfiguration();
+            this.configuration.GetSection("Admin").Bind(this.adminConfiguration);
         }
 
         /// <inheritdoc />
@@ -57,21 +63,23 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetTodayLoggedInUsersCount()
+        public int GetTodayLoggedInUsersCount(int offset)
         {
-            AdminConfiguration config = new AdminConfiguration();
-            this.configuration.GetSection("Admin").Bind(config);
-            string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                config.WindowsTimeZoneId : config.UnixTimeZoneId;
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
-            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Today.ToUniversalTime(), tz);
-            return this.userProfileDelegate.GetLoggedInUsersCount(startDate);
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new TimeSpan(0, -1 * offset, 0);
+            return this.userProfileDelegate.GetLoggedInUsersCount(ts);
         }
 
         /// <inheritdoc />
         public int GetWaitlistUserCount()
         {
             return this.betaRequestDelegate.GetWaitlistCount();
+        }
+
+        /// <inheritdoc />
+        public int GetUsersWithNotesCount()
+        {
+            return this.noteDelegate.GetUsersWithNotesCount(this.adminConfiguration.MinimumNotesCount);
         }
     }
 }

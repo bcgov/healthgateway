@@ -16,11 +16,15 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Handlers;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Auditing;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
@@ -49,6 +53,8 @@ namespace HealthGateway.Common.AspNetConfiguration
     /// <summary>
     /// The startup configuration class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public class StartupConfiguration
     {
         private readonly IWebHostEnvironment environment;
@@ -131,25 +137,88 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             this.Logger.LogDebug("ConfigureAuthorizationServices...");
 
-            // Adding claims check to ensure that user has an hdid as part of its claim
+            // Configuration Authorization Handlers
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
+
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(PolicyNameConstants.PatientOnly, policy =>
+                // User Policies
+                options.AddPolicy(UserPolicy.UserOnly, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("hdid");
+                    policy.Requirements.Add(new UserRequirement(false));
                 });
-                options.AddPolicy(PolicyNameConstants.UserIsPatient, policy =>
+                options.AddPolicy(UserPolicy.Read, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new UserIsPatientRequirement());
+                    policy.Requirements.Add(new UserRequirement(true));
+                });
+                options.AddPolicy(UserPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new UserRequirement(true));
+                });
+
+                // Patient Policies
+                options.AddPolicy(PatientPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Read));
+                });
+                options.AddPolicy(PatientPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Write));
+                });
+
+                // Immunization Policies
+                options.AddPolicy(ImmunizationPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Read));
+                });
+                options.AddPolicy(ImmunizationPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
+                });
+
+                // Laboratory/Observation Policies
+                options.AddPolicy(LaboratoryPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Read, FhirResourceLookup.Parameter));
+                });
+                options.AddPolicy(LaboratoryPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Write));
+                });
+
+                // MedicationStatement Policies
+                options.AddPolicy(MedicationPolicy.MedicationStatementRead, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
+                });
+                options.AddPolicy(MedicationPolicy.MedicationStatementWrite, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
                 });
             });
-
-            // Configuration Service
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         /// <summary>
@@ -338,18 +407,16 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures the app to to use content security policies.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
-        /// <param name="nonceService">Service that provides nonce utilities.</param>
-        public void UseContentSecurityPolicy(IApplicationBuilder app, INonceService nonceService)
+        public void UseContentSecurityPolicy(IApplicationBuilder app)
         {
             IConfigurationSection cspSection = this.configuration.GetSection("ContentSecurityPolicy");
             string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
             string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
             string scriptSrc = cspSection.GetValue<string>("script-src", string.Empty);
-            string nonce = nonceService.GetCurrentNonce();
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'none'; script-src 'self' 'unsafe-eval' 'nonce-{nonce}' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data: 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
-                await next();
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data:; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
+                await next().ConfigureAwait(true);
             });
         }
 

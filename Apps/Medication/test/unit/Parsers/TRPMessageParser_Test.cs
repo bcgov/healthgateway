@@ -114,7 +114,7 @@ namespace HealthGateway.Medication.Test
                 PrescriptionStatus = 'F',
                 PrescriptionIdentifier = "5790",
                 MedicationSumary = new MedicationSumary(){
-                    BrandName = null,
+                    BrandName = string.Empty,
                     DIN = "123456",
                     MaxDailyDosage = 1.555f,
                     DrugDiscontinuedDate = null,

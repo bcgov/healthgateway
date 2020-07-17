@@ -23,7 +23,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the ID of the user.
         /// </summary>
-        public string Id { get; set; } = "";
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the common name of the user.

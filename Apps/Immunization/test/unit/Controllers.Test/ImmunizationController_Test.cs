@@ -44,9 +44,6 @@ namespace HealthGateway.Immunization.Test.Controller
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
-            authzMock.Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hdid, PolicyNameConstants.UserIsPatient)).ReturnsAsync(AuthorizationResult.Success);
-
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
 
             List<ImmunizationView> immunizations = new List<ImmunizationView>();
@@ -60,8 +57,7 @@ namespace HealthGateway.Immunization.Test.Controller
             ImmunizationController controller = new ImmunizationController(
                 new Mock<ILogger<ImmunizationController>>().Object,
                 svcMock.Object,
-                httpContextAccessorMock.Object,
-                authzMock.Object);
+                httpContextAccessorMock.Object);
 
             // Act
             JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);

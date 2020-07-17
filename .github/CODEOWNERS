@@ -1,0 +1,12 @@
+/Apps/AdminWebClient/ @FuriousLlama
+/Apps/Common/ @sslaws @FuriousLlama @tiagograf-AOT
+/Apps/DBMaintainer/ @sslaws
+/Apps/Database/ @sslaws @FuriousLlama
+/Apps/HNClient/ @sslaws
+/Apps/Immunization/ @FuriousLlama
+/Apps/JobScheduler/ @sslaws
+/Apps/Laboratory/ @tiagograf-AOT
+/Apps/Medication/ @tiagograf-AOT
+/Apps/ODRProxy/ @sslaws
+/Apps/Patient/ @tiagograf-AOT
+/Apps/WebClient/ @FuriousLlama

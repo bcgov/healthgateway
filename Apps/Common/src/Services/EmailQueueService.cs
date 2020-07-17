@@ -17,7 +17,6 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Text.RegularExpressions;
     using Hangfire;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
@@ -34,33 +33,38 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class EmailQueueService : IEmailQueueService
     {
+        private const int VerificationExpiryDays = 5;
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
         private const string ENVIRONMENT_VARIABLE = "Environment";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
-        private readonly IEmailInviteDelegate emailInviteDelegate;
-        private readonly IWebHostEnvironment enviroment;
+        private readonly IMessagingVerificationDelegate emailInviteDelegate;
+        private readonly IWebHostEnvironment environment;
         private readonly ILogger logger;
+        private readonly IBackgroundJobClient jobClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
+        /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="emailDelegate">Email delegate to be used.</param>
         /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
-        /// <param name="enviroment">The injected environment configuration.</param>
+        /// <param name="environment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
+            IBackgroundJobClient jobClient,
             IEmailDelegate emailDelegate,
-            IEmailInviteDelegate emailInviteDelegate,
-            IWebHostEnvironment enviroment)
+            IMessagingVerificationDelegate emailInviteDelegate,
+            IWebHostEnvironment environment)
         {
             this.logger = logger;
+            this.jobClient = jobClient;
             this.emailDelegate = emailDelegate;
             this.emailInviteDelegate = emailInviteDelegate;
-            this.enviroment = enviroment;
+            this.environment = environment;
         }
 
         /// <inheritdoc />
@@ -87,14 +91,14 @@ namespace HealthGateway.Common.Services
         {
             if (string.IsNullOrWhiteSpace(email.To))
             {
-                throw new ArgumentNullException(nameof(email.To), "Email To cannot be null or whitespace");
+                throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
             this.emailDelegate.InsertEmail(email, shouldCommit);
             if (shouldCommit)
             {
-                BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
             }
 
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
@@ -127,10 +131,10 @@ namespace HealthGateway.Common.Services
         public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
-            EmailInvite invite = new EmailInvite();
+            MessagingVerification invite = new MessagingVerification();
             invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
-            invite.ExpireDate = DateTime.MaxValue;
+            invite.ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays);
 
             string hostUrl = activationHost.ToString();
             hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash
@@ -138,22 +142,21 @@ namespace HealthGateway.Common.Services
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
 
-            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.REGISTRATION_TEMPLATE), keyValues);
-
+            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.RegistrationTemplate), keyValues);
             this.QueueNewInviteEmail(invite);
         }
 
         /// <inheritdoc />
-        public void QueueNewInviteEmail(EmailInvite invite)
+        public void QueueNewInviteEmail(MessagingVerification invite)
         {
             if (invite.Email == null || string.IsNullOrWhiteSpace(invite.Email.To))
             {
-                throw new ArgumentNullException(nameof(invite.Email), "Invite Email To cannot be null or whitespace");
+                throw new ArgumentNullException(nameof(invite), "Invite Email To cannot be null or whitespace");
             }
 
             this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
             this.emailInviteDelegate.Insert(invite);
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
+            this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
             this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
         }
 
@@ -161,7 +164,7 @@ namespace HealthGateway.Common.Services
         public void QueueInviteEmail(Guid inviteEmailId)
         {
             this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(inviteEmailId)}");
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(inviteEmailId));
+            this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(inviteEmailId));
             this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
         }
 
@@ -188,7 +191,7 @@ namespace HealthGateway.Common.Services
         {
             if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
             {
-                keyValues.Add(ENVIRONMENT_VARIABLE, this.enviroment.IsProduction() ? string.Empty : this.enviroment.EnvironmentName);
+                keyValues.Add(ENVIRONMENT_VARIABLE, this.environment.IsProduction() ? string.Empty : this.environment.EnvironmentName);
             }
 
             Email email = new Email();

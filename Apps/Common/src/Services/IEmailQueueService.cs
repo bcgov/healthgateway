@@ -86,7 +86,7 @@ namespace HealthGateway.Common.Services
         /// A new invite email will be added to the database.
         /// </summary>
         /// <param name="invite">The populated invite with associated email to send.</param>
-        void QueueNewInviteEmail(EmailInvite invite);
+        void QueueNewInviteEmail(MessagingVerification invite);
 
         /// <summary>
         /// Queues an email to be sent.

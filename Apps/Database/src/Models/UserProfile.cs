@@ -45,6 +45,12 @@ namespace HealthGateway.Database.Models
         public string? Email { get; set; }
 
         /// <summary>
+        /// Gets or sets the user SMS number.
+        /// </summary>
+        [MaxLength(10)]
+        public string? SMSNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets the Closed datetime of the account.
         /// After an account has been closed for n amount of days the row is physically deleted.
         /// </summary>

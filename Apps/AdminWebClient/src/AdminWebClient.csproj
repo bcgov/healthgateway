@@ -10,6 +10,7 @@
     <RootNamespace>HealthGateway.Admin</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
+    <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,8 +24,8 @@
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.0" />
     <PackageReference Include="UAParser" Version="3.1.43" />
     <PackageReference Include="VueCliMiddleware" Version="3.1.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.6.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -40,6 +41,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
+      <Value>$(MSBuildProjectFullPath)/Server</Value>
+    </SonarQubeSetting>
   </ItemGroup>
 
   <ItemGroup>

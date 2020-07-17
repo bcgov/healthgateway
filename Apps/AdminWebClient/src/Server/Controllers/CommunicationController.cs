@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +56,33 @@ namespace HealthGateway.Admin.Controllers
         public IActionResult Add(Communication communication)
         {
             return new JsonResult(this.communicationService.Add(communication));
+        }
+
+        /// <summary>
+        /// Updates a given communication to the backend.
+        /// </summary>
+        /// <returns>The updated communication wrapped in a RequestResult.</returns>
+        /// <param name="communication">The communication to be updated.</param>
+        /// <response code="200">Returns the communication json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        public IActionResult Update(Communication communication)
+        {
+            return new JsonResult(this.communicationService.Update(communication));
+        }
+
+        /// <summary>
+        /// Gets all communication entries from the backend.
+        /// </summary>
+        /// <returns>The list of all communication entries.</returns>
+        /// <response code="200">Returns the communication json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return new JsonResult(this.communicationService.GetAll());
         }
     }
 }

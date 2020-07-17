@@ -1,17 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>HealthGateway.Database</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
+    <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DocumentationFile>bin\Debug\netcoreapp3.1\Database.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -30,17 +31,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="stylecop.json" />
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
+    <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Wrapper\" />
-    <Folder Include="Assets\Legal\" />
     <Folder Include="Models\Cacheable\" />
   </ItemGroup>
 
@@ -54,6 +53,7 @@
     <EmbeddedResource Include="Assets\docs\EmailInviteTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailWaitlistTemplate.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20200511.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />
     <EmbeddedResource Include="Assets\docs\EmailUpdatedTermsofService.html" />
     <EmbeddedResource Include="Assets\docs\EmailAccountRemoved.html" />
@@ -64,5 +64,9 @@
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
     <None Remove="Assets\Legal\TermsOfService.20200317.html" />
+    <None Remove="Assets\Legal\TermsOfService.20200511.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" />
   </ItemGroup>
 </Project>

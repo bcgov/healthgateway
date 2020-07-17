@@ -54,8 +54,7 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .FirstOrDefault(c =>
-                    DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime);
+                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Email || (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
 
             if (result.Payload != null)
             {
@@ -91,6 +90,46 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogDebug($"Finished adding Communication in DB");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Communication>> GetAll()
+        {
+            this.logger.LogTrace($"Getting all communication entries...");
+            DBResult<IEnumerable<Communication>> result = new DBResult<IEnumerable<Communication>>();
+            result.Payload = this.dbContext.Communication
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<Communication> Update(Communication communication, bool commit = true)
+        {
+            this.logger.LogTrace($"Updating Communication in DB...");
+            DBResult<Communication> result = new DBResult<Communication>()
+            {
+                Payload = communication,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.Communication.Update(communication);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished updating Communication in DB");
             return result;
         }
     }

@@ -58,7 +58,7 @@ namespace HealthGateway.Patient.Services
             Patient retVal;
 
             // Create request
-            HCIM_IN_GetDemographics request = this.CreateRequest(hdid);
+            HCIM_IN_GetDemographicsRequest request = this.CreateRequest(hdid);
 
             // Perform the request
             HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesDelegate.GetDemographicsAsync(request).ConfigureAwait(true);
@@ -105,17 +105,17 @@ namespace HealthGateway.Patient.Services
             string delimiter = " ";
             string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
             string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-            string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)).extension;
+            string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).extension;
             string? dobStr = ((TS)retrievedPerson.identifiedPerson.birthTime).value; // yyyyMMdd
             DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-            retVal = new Patient(hdid, phn, givenNames, lastNames, dob);
+            retVal = new Patient(hdid, phn, givenNames, lastNames, dob, string.Empty);
 
             timer.Stop();
             this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(retVal)} Time Elapsed: {timer.Elapsed}");
             return retVal;
         }
 
-        private HCIM_IN_GetDemographics CreateRequest(string hdid)
+        private HCIM_IN_GetDemographicsRequest CreateRequest(string hdid)
         {
             HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
             request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture) };
@@ -155,7 +155,7 @@ namespace HealthGateway.Patient.Services
             request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
             request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = "2.16.840.1.113883.3.51.1.1.6", extension = hdid, assigningAuthorityName = "LCTZ_IAS" };
 
-            return request;
+            return new HCIM_IN_GetDemographicsRequest(request);
         }
     }
 }

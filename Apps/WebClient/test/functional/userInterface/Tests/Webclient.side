@@ -594,8 +594,8 @@
     }, {
       "id": "62bd6f44-36ac-456a-a529-7d042a1ed44f",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -682,14 +682,9 @@
     }, {
       "id": "d9da2318-7e9f-463f-b238-cb2a0e8461ba",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "d74b95b9-eb06-4723-a53a-e2306e2b137a",
@@ -744,27 +739,43 @@
     }, {
       "id": "ea2e120a-899b-4698-a3d8-9de6c448e7c6",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
+      "id": "c332c9e0-63f1-4378-8e41-b684d8ea0e34",
+      "comment": "",
+      "command": "click",
+      "target": "id=notesFilter",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1bd080af-897e-4044-af26-53545aa3fe91",
+      "comment": "",
+      "command": "click",
+      "target": "id=laboratoryFilter",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ac505e0a-28b7-4286-bf89-73ac87f3fa33",
+      "comment": "",
+      "command": "click",
+      "target": "id=immunizationFilter",
+      "targets": [],
+      "value": ""
+    }, {
       "id": "2ce1d32c-9626-4afa-8a70-e731972d700f",
       "comment": "",
-      "command": "assertText",
+      "command": "//assertText",
       "target": "css=.row > .btn",
-      "targets": [
-        ["css=.row > .btn", "css:finder"],
-        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
-        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div/button", "xpath:position"]
-      ],
+      "targets": [],
       "value": "Date (Newest)"
     }, {
       "id": "fcacfb86-1967-490b-9e1e-a14ff42fd62f",
       "comment": "",
       "command": "waitForElementPresent",
-      "target": "css=.row:nth-child(3) .date",
+      "target": "css=.row:nth-child(1) .date",
       "targets": [
         ["css=.row:nth-child(3) .date", "css:finder"],
         ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
@@ -775,7 +786,7 @@
       "id": "1d9a9e74-d6ba-433a-afcd-9e6565424627",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(3) .date",
+      "target": "css=.row:nth-child(1) .date",
       "targets": [
         ["css=.row:nth-child(3) .date", "css:finder"],
         ["xpath=//div[@id='timeData']/div[3]/div/div", "xpath:idRelative"],
@@ -786,7 +797,7 @@
       "id": "3a036fc4-6f16-4c30-ab83-5c2ba06a0ad5",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(3) > .row .entryTitle",
+      "target": "css=.row:nth-child(1) > .row .entryTitle",
       "targets": [
         ["css=.row:nth-child(3) > .row .entryTitle", "css:finder"],
         ["xpath=//div[@id='timeData']/div[3]/div[3]/div/div/div[2]", "xpath:idRelative"],
@@ -797,7 +808,7 @@
       "id": "e9d35420-6d19-4bab-a6fc-5c57ad0f7886",
       "comment": "",
       "command": "click",
-      "target": "css=.row:nth-child(3) > .row span:nth-child(3)",
+      "target": "css=.row:nth-child(1) > .row span:nth-child(3)",
       "targets": [
         ["css=.row:nth-child(3) > .row span:nth-child(3)", "css:finder"],
         ["xpath=//div[@id='timeData']/div[3]/div[3]/div/div[2]/div[2]/div[2]/div/button/span[3]", "xpath:idRelative"],
@@ -822,7 +833,7 @@
         ["xpath=//div[@id='entryDetails-0-1577692800000']/div/div/div", "xpath:idRelative"],
         ["xpath=//div[2]/div[2]/div[2]/div/div/div/div/div", "xpath:position"]
       ],
-      "value": "Practitioner: LQBU"
+      "value": "Practitioner: PZVVPS"
     }, {
       "id": "ec1b15cc-5107-4ed0-b908-fb8e095e522b",
       "comment": "",
@@ -860,7 +871,7 @@
     }, {
       "id": "94384e52-d53a-4681-9339-f726b05d0780",
       "comment": "",
-      "command": "close",
+      "command": "//close",
       "target": "",
       "targets": [],
       "value": ""
@@ -881,10 +892,12 @@
       "command": "click",
       "target": "id=menuBtnLogin",
       "targets": [
+        ["id=menuBtnLogin", "id"],
         ["linkText=Login", "linkText"],
-        ["css=.ml-auto > .nav-link", "css:finder"],
+        ["css=#menuBtnLogin", "css:finder"],
         ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
+        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/a", "xpath:idRelative"],
         ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
         ["xpath=//ul/a", "xpath:position"],
         ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
@@ -986,8 +999,8 @@
     }, {
       "id": "793d5b06-30a3-4d72-92b4-37cef1b2a3d9",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -1106,49 +1119,69 @@
     }, {
       "id": "65d48656-2a78-4d0e-b579-5be5729fa1c1",
       "comment": "",
-      "command": "storeXpathCount",
-      "target": "xpath=//li[@id='menuBtndUser']",
-      "targets": [],
+      "command": "storeText",
+      "target": "id=menuBtnLogin",
+      "targets": [
+        ["id=menuBtnLogin", "id"],
+        ["linkText=Logout", "linkText"],
+        ["css=#menuBtnLogin", "css:finder"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//ul/a", "xpath:position"],
+        ["xpath=//a[contains(.,' Logout')]", "xpath:innerText"]
+      ],
       "value": "loggedin"
+    }, {
+      "id": "434e00f0-f048-4426-9d21-3db1dd557f79",
+      "comment": "",
+      "command": "echo",
+      "target": "${loggedin}",
+      "targets": [],
+      "value": ""
     }, {
       "id": "a567eef1-45a3-4c63-b95b-a9f3e11857cf",
       "comment": "",
       "command": "if",
-      "target": "${loggedin} > 0",
+      "target": "${loggedin} == \"Logout\"",
       "targets": [],
       "value": ""
     }, {
       "id": "1553708d-65a9-4805-bd82-71718f8d7e64",
       "comment": "",
-      "command": "click",
+      "command": "//click",
       "target": "id=menuBtndUser__BV_button_",
-      "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//li[@id='menuBtndUser']/ul/li/a/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//a/a", "xpath:position"]
-      ],
+      "targets": [],
       "value": ""
     }, {
       "id": "20bed1ce-40a1-416e-8964-9db200734ff9",
       "comment": "",
       "command": "click",
-      "target": "id=menuBtnLogout",
+      "target": "id=menuBtnLogin",
       "targets": [
         ["id=menuBtnLogin", "id"],
-        ["linkText=Login", "linkText"],
+        ["linkText=Logout", "linkText"],
         ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
         ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='nav-collapse']/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
         ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
+        ["xpath=//a[contains(.,' Logout')]", "xpath:innerText"]
       ],
       "value": ""
+    }, {
+      "id": "96603320-5cec-470e-89c1-bf971b9cc352",
+      "comment": "",
+      "command": "waitForElementVisible",
+      "target": "css=.shadow-lg",
+      "targets": [
+        ["css=.shadow-lg", "css:finder"],
+        ["xpath=//div[@id='app-root']/div[2]/main/div/div/div", "xpath:idRelative"],
+        ["xpath=//main/div/div/div", "xpath:position"]
+      ],
+      "value": "30000"
     }, {
       "id": "65c0274c-8b1f-4510-bae3-0b31fd1ee350",
       "comment": "",
@@ -1657,14 +1690,9 @@
     }, {
       "id": "f0b06508-9066-4109-bb51-de956146d5cc",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "bfc4a309-9c77-43e5-9bff-3630a321e445",
@@ -2142,22 +2170,38 @@
     }, {
       "id": "1080cd19-81d9-4684-a3e2-0d0c45948fec",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
       "id": "b463ba78-4820-40ce-9a58-fa3a83ff12ad",
       "comment": "",
-      "command": "assertText",
+      "command": "//assertText",
       "target": "css=.row > .btn",
-      "targets": [
-        ["css=.row > .btn", "css:finder"],
-        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
-        ["xpath=//div[@id='listControlls']/div/div[2]/div/button", "xpath:idRelative"],
-        ["xpath=//div/button", "xpath:position"]
-      ],
+      "targets": [],
       "value": "Date (Newest)"
+    }, {
+      "id": "65c8f862-c6ea-438d-92eb-614efe6b06a7",
+      "comment": "",
+      "command": "click",
+      "target": "id=notesFilter",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a535ba1f-4c5f-498c-9b36-cd9c693f0fd1",
+      "comment": "",
+      "command": "click",
+      "target": "id=laboratoryFilter",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2e81a00d-032c-49fc-87b7-fc54b772a633",
+      "comment": "",
+      "command": "click",
+      "target": "id=medicationFilter",
+      "targets": [],
+      "value": ""
     }, {
       "id": "ae3049b5-0599-4b65-abb5-d1001a775b9d",
       "comment": "",
@@ -2173,7 +2217,7 @@
       "id": "a745a52c-b73f-4b78-9b59-8d7ee3d86c2e",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(2) > .col-auto > .date",
+      "target": "css=.row:nth-child(1) > .col-auto > .date",
       "targets": [
         ["css=.row:nth-child(2) > .col-auto > .date", "css:finder"],
         ["xpath=//div[@id='timeData']/div[2]/div/div", "xpath:idRelative"],
@@ -2184,7 +2228,7 @@
       "id": "d1ac4e1a-2650-4708-a6a0-a0aaff0c54d2",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(2) > .row .entryTitle",
+      "target": "css=.row:nth-child(1) > .row .entryTitle",
       "targets": [
         ["css=.row:nth-child(2) > .row .entryTitle", "css:finder"],
         ["xpath=//div[@id='timeData']/div[2]/div[3]/div/div/div[2]", "xpath:idRelative"],
@@ -2195,7 +2239,7 @@
       "id": "451d1fe1-a700-4128-8afe-385595ee68cc",
       "comment": "",
       "command": "assertText",
-      "target": "css=.row:nth-child(2) > .row > .timelineCard .col .col",
+      "target": "css=.row:nth-child(1) > .row > .timelineCard .col .col",
       "targets": [
         ["css=.row:nth-child(2) > .row > .timelineCard .col .col", "css:finder"],
         ["xpath=//div[@id='timeData']/div[2]/div[3]/div/div[2]/div[2]/div/div", "xpath:idRelative"],
@@ -2205,7 +2249,7 @@
     }, {
       "id": "98c790b4-1e83-49e4-9c35-f17b922680d3",
       "comment": "",
-      "command": "close",
+      "command": "//close",
       "target": "",
       "targets": [],
       "value": ""
@@ -2412,8 +2456,8 @@
     }, {
       "id": "02bf800d-869e-470a-abee-c01ebc9f9a54",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -2632,14 +2676,9 @@
     }, {
       "id": "2bec0642-6ebe-4839-854f-b8d3fb5fe6ff",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "64395a39-1980-4e46-ae91-5b17bf09513b",
@@ -2705,8 +2744,8 @@
     }, {
       "id": "2f729b40-895c-4e69-ac29-149aad9a6f4c",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -2801,14 +2840,9 @@
     }, {
       "id": "f176063b-6354-4ac2-b245-a3554a03bc39",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "ee714a00-57a8-490a-9fca-b06aeb4f557f",
@@ -2965,14 +2999,9 @@
     }, {
       "id": "890927f0-b343-4e6a-a72b-2a0813f05c88",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "419dc99a-bee4-4a37-a99b-f0fef21c2804",
@@ -3131,14 +3160,9 @@
     }, {
       "id": "671d15a2-30fa-4ae0-94df-53c44abd6dc4",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "f8b1d6f8-0a15-424b-9b6c-8d52a5cca598",
@@ -3215,8 +3239,8 @@
     }, {
       "id": "ab472848-467b-474f-a661-6ed1ce3fd60c",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -3389,6 +3413,535 @@
       "targets": [],
       "value": ""
     }]
+  }, {
+    "id": "9dd5fa10-e355-40b8-9c8e-6742226a7a6f",
+    "name": "Timeline - Comments",
+    "commands": [{
+      "id": "623e7ab3-6da0-49c9-ad23-645fa3abdfc5",
+      "comment": "",
+      "command": "//run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "73b64dc4-71ba-4527-bb2d-9922c5919337",
+      "comment": "",
+      "command": "run",
+      "target": "Timeline - Covid Modal Closed",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "0e3578cf-1f0a-48f5-b96c-e2d66f04a902",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "d44d7e2c-fc6a-4af5-90ad-72b5d7dde347",
+      "comment": "Uncheck Notes filter",
+      "command": "click",
+      "target": "id=notesFilter",
+      "targets": [
+        ["css=.col:nth-child(4) > .custom-control", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[4]/div", "xpath:idRelative"],
+        ["xpath=//div[4]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "1647bab7-25da-42b9-a1ab-816c8b2dbdcc",
+      "comment": "",
+      "command": "assertNotChecked",
+      "target": "id=notesFilter",
+      "targets": [
+        ["css=.col:nth-child(4) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[4]/div/label", "xpath:idRelative"],
+        ["xpath=//div[4]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Notes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "df19dc67-b2e7-4fab-b371-1e0615cb1db8",
+      "comment": "Assert comment edit box exist",
+      "command": "assertEditable",
+      "target": "xpath=//textarea[contains(@placeholder, 'Add a private comment')][1]",
+      "targets": [
+        ["id=__BVID__137", "id"],
+        ["css=#\\__BVID__137", "css:finder"],
+        ["xpath=//textarea[@id='__BVID__137']", "xpath:attributes"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/div[2]/div[2]/div[3]/div[2]/div/div/div/div/div[2]/form/textarea", "xpath:idRelative"],
+        ["xpath=//form/textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4ec8b1d3-82e1-4227-9b5c-677426e13eb8",
+      "comment": "",
+      "command": "store",
+      "target": "A new Selenium test comment",
+      "targets": [],
+      "value": "CommentText"
+    }, {
+      "id": "8505c765-3468-436f-81e0-7498fe1a1128",
+      "comment": "Type new comment",
+      "command": "type",
+      "target": "xpath=//textarea[contains(@placeholder, 'Add a private comment')][1]",
+      "targets": [],
+      "value": "${CommentText}"
+    }, {
+      "id": "6000e42a-6917-4e76-a5be-062bfea8d2e8",
+      "comment": "Click comment save",
+      "command": "click",
+      "target": "xpath=//div[contains(@class, 'comment-body')]//button",
+      "targets": [
+        ["css=.col-3", "css:finder"],
+        ["xpath=//div[@id='app-root']/div[2]/main/div/div[2]/div[3]", "xpath:idRelative"],
+        ["xpath=//main/div/div[2]/div[3]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a978848e-7bf5-46a5-ad37-a2c61e5bcaf4",
+      "comment": "",
+      "command": "pause",
+      "target": "1000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4db98ac4-1b9c-4d34-839c-ccdeed9981b3",
+      "comment": "Click comment menu button",
+      "command": "click",
+      "target": "xpath=//div[contains(@class, 'collapse show')][1]//div[contains(@class, 'comment-body')]//button",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "17966f89-3e4a-49bb-aeae-01334eb88431",
+      "comment": "Click comment edit button",
+      "command": "click",
+      "target": "xpath=//a[contains(@role,'menuitem')]",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5a8ae96e-698e-4241-9602-5602041b7f30",
+      "comment": "",
+      "command": "store",
+      "target": "A Selenium edited comment",
+      "targets": [],
+      "value": "CommentTextEdited"
+    }, {
+      "id": "5f3ad093-216c-465c-9648-85076ff4cff3",
+      "comment": "Type edited comment",
+      "command": "type",
+      "target": "xpath=//textarea[contains(@placeholder, 'Editing a comment')][1]",
+      "targets": [],
+      "value": "${CommentTextEdited}"
+    }, {
+      "id": "b78bc7b1-5cc8-4a5f-a7ce-c717817a8788",
+      "comment": "Click comment Save",
+      "command": "click",
+      "target": "xpath=//div[contains(@class, 'collapse show')][1]//div[contains(@class, 'comment-body')]//button",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a29abbbc-e88f-4cc2-abfb-9735940fd2e7",
+      "comment": "",
+      "command": "pause",
+      "target": "1000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f2f8abe0-bc31-4aab-99f6-456a356638eb",
+      "comment": "Click comment menu",
+      "command": "click",
+      "target": "xpath=//div[contains(@class, 'collapse show')][1]//div[contains(@class, 'comment-body')]//button",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "74ca5327-f16e-41a2-b7ec-3bd6607e3e78",
+      "comment": "",
+      "command": "chooseOkOnNextConfirmation",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5a28eb88-8a0e-4f5b-bc95-19a7a94a029e",
+      "comment": "Click Delete comment",
+      "command": "click",
+      "target": "xpath=//li[2]/a[contains(@role,'menuitem')]",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "7c635cea-abd6-4328-9c4f-687abd18d022",
+    "name": "Timeline - Covid Modal Accepted",
+    "commands": [{
+      "id": "bb13616c-10b7-4a1a-a998-45eea29ef9f7",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c5175800-bb52-4727-a4a5-de70c02a3d60",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "57a3720f-88f9-4111-a159-8f98f99fcf76",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=covid-modal___BV_modal_title_",
+      "targets": [
+        ["id=covid-modal___BV_modal_title_", "id"],
+        ["css=#covid-modal___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='covid-modal___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='covid-modal___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'COVID-19')]", "xpath:innerText"]
+      ],
+      "value": "COVID-19"
+    }, {
+      "id": "aeb1b06a-1e7c-4998-9887-22bf5e64d601",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-outline-primary",
+      "targets": [
+        ["css=.btn-outline-primary", "css:finder"],
+        ["xpath=(//button[@type='button'])[60]", "xpath:attributes"],
+        ["xpath=//footer[@id='covid-modal___BV_modal_footer_']/div/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//footer/div/div/div/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'View Result')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1d92d48b-ca9b-4dee-afe1-4ae955f7d18e",
+      "comment": "",
+      "command": "pause",
+      "target": "1000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c240a7ef-cee8-44a7-be35-8d7b05cab44e",
+      "comment": "",
+      "command": "assertNotChecked",
+      "target": "id=medicationFilter",
+      "targets": [
+        ["css=.col:nth-child(1) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div/div/label", "xpath:idRelative"],
+        ["xpath=//label", "xpath:position"],
+        ["xpath=//label[contains(.,'Medications')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f2acc64a-78fe-4d48-b34c-30b46ba1a022",
+      "comment": "",
+      "command": "assertNotChecked",
+      "target": "id=immunizationFilter",
+      "targets": [
+        ["css=.col:nth-child(2) > .custom-control > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[2]/div/label", "xpath:idRelative"],
+        ["xpath=//div[2]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "28fea7f9-d6f4-497c-8b07-30a0b431984d",
+      "comment": "",
+      "command": "assertChecked",
+      "target": "id=laboratoryFilter",
+      "targets": [
+        ["css=.col:nth-child(3) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[3]/div/label", "xpath:idRelative"],
+        ["xpath=//div[3]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Laboratory')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "20f7e441-aff0-4430-90c1-79572103d209",
+      "comment": "",
+      "command": "assertNotChecked",
+      "target": "id=notesFilter",
+      "targets": [
+        ["css=.col:nth-child(4) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[4]/div/label", "xpath:idRelative"],
+        ["xpath=//div[4]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Notes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "edb59545-605b-49d2-8ff4-a0da6bcaa072",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.col-auto:nth-child(1) > strong",
+      "targets": [
+        ["css=.col-auto:nth-child(1) > strong", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div[3]/div/div/div[2]/div/div/strong", "xpath:idRelative"],
+        ["xpath=//strong", "xpath:position"],
+        ["xpath=//strong[contains(.,'COVID19')]", "xpath:innerText"]
+      ],
+      "value": "COVID19"
+    }]
+  }, {
+    "id": "e08c1732-f184-4ba8-a171-f01a42b838aa",
+    "name": "Timeline - Covid Modal Closed",
+    "commands": [{
+      "id": "0e8488bf-b087-49c4-91ed-a7e0e6421cb5",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "96c9b263-00dd-48bd-be9e-8e9746222303",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "6911679d-53f2-49a1-832f-ef3b7dfe408c",
+      "comment": "",
+      "command": "storeXpathCount",
+      "target": "xpath=//*[contains(@id, 'covid-modal___BV_modal_title_')]",
+      "targets": [],
+      "value": "covid-modal-count"
+    }, {
+      "id": "436de7a1-1faf-4e5f-915a-2a09619d52d8",
+      "comment": "",
+      "command": "echo",
+      "target": "${covid-modal-count}",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6a3d22df-861b-479b-9b23-6df5fe89d025",
+      "comment": "",
+      "command": "if",
+      "target": "${covid-modal-count} > 0",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "53fa8069-6e98-48e8-8c09-fa50e9e06f14",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=covid-modal___BV_modal_title_",
+      "targets": [
+        ["id=covid-modal___BV_modal_title_", "id"],
+        ["css=#covid-modal___BV_modal_title_", "css:finder"],
+        ["xpath=//h5[@id='covid-modal___BV_modal_title_']", "xpath:attributes"],
+        ["xpath=//header[@id='covid-modal___BV_modal_header_']/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'COVID-19')]", "xpath:innerText"]
+      ],
+      "value": "COVID-19"
+    }, {
+      "id": "ab03e149-2eb6-4e0a-8a94-1c8a82f6736a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.close",
+      "targets": [
+        ["css=.close", "css:finder"],
+        ["xpath=(//button[@type='button'])[59]", "xpath:attributes"],
+        ["xpath=//header[@id='covid-modal___BV_modal_header_']/button", "xpath:idRelative"],
+        ["xpath=//header/button", "xpath:position"],
+        ["xpath=//button[contains(.,'×')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4809096c-9d17-4fe7-b243-b0e247902718",
+      "comment": "",
+      "command": "pause",
+      "target": "1000",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b8293fdb-99ec-48b8-8e46-1e63c996707a",
+      "comment": "",
+      "command": "assertChecked",
+      "target": "id=medicationFilter",
+      "targets": [
+        ["css=.col:nth-child(1) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div/div/label", "xpath:idRelative"],
+        ["xpath=//label", "xpath:position"],
+        ["xpath=//label[contains(.,'Medications')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8c49c7bd-5f27-463e-adbf-cdd36dcdb143",
+      "comment": "",
+      "command": "assertChecked",
+      "target": "id=immunizationFilter",
+      "targets": [
+        ["css=.col:nth-child(2) > .custom-control > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[2]/div/label", "xpath:idRelative"],
+        ["xpath=//div[2]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Immunizations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f93644fb-7327-4bb6-991d-e6ce094f8fa0",
+      "comment": "",
+      "command": "assertChecked",
+      "target": "id=laboratoryFilter",
+      "targets": [
+        ["css=.col:nth-child(3) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[3]/div/label", "xpath:idRelative"],
+        ["xpath=//div[3]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Laboratory')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "62c494eb-3a8d-4f0c-8580-a93c1da83383",
+      "comment": "",
+      "command": "assertChecked",
+      "target": "id=notesFilter",
+      "targets": [
+        ["css=.col:nth-child(4) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[3]/div[4]/div/label", "xpath:idRelative"],
+        ["xpath=//div[4]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Notes')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c380ecfd-72cf-4ecd-88a9-a60e1e6d71bc",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "91ee17d2-a248-4d46-a29b-96b1566abd22",
+    "name": "Timeline - Calendar View",
+    "commands": [{
+      "id": "d63676f4-500a-42c7-a7ec-6133e4a7fbcd",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b783bd52-8953-475d-82aa-8ba923ddaf80",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "a3a285f1-a521-47ff-b747-60c1fdc815ba",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "6d3efcda-d10f-4a9b-bd87-1d7eb01fef06",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.month-view-btn",
+      "targets": [
+        ["css=.month-view-btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[5]/div/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Month')]", "xpath:innerText"]
+      ],
+      "value": "Month"
+    }, {
+      "id": "868fa02b-1815-4e65-b4c1-9ac9fdd69e15",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'July 2020')]", "xpath:innerText"]
+      ],
+      "value": "July 2020"
+    }, {
+      "id": "b034e1d2-44a5-4226-b37f-5f6c53341cb2",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.fa-chevron-left > path",
+      "targets": [
+        ["css=.fa-chevron-left > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "50797141-891b-4080-b5e1-c9009c25e964",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'June 2020')]", "xpath:innerText"]
+      ],
+      "value": "June 2020"
+    }, {
+      "id": "8e6da6a2-a7ae-46c0-936c-08faffbcfc68",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.right-button",
+      "targets": [
+        ["css=.right-button", "css:finder"],
+        ["xpath=(//button[@type='button'])[46]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[7]/div/div/div[2]/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "bd05e13e-f44c-42e5-896c-52020cace38f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.title",
+      "targets": [
+        ["css=.title", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'July 2020')]", "xpath:innerText"]
+      ],
+      "value": "July 2020"
+    }, {
+      "id": "000d9105-f8db-48c4-b86c-a1b04e85dbe6",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=#event-1593846000000-type-3 path",
+      "targets": [],
+      "value": "Note"
+    }, {
+      "id": "cdde66d0-dfc0-400c-92eb-1b5343dbb267",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.list-view-btn",
+      "targets": [
+        ["css=.list-view-btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[5]/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'List')]", "xpath:innerText"]
+      ],
+      "value": "List"
+    }, {
+      "id": "03b1ab53-47df-4b85-af1e-0ee646ec06cf",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.row:nth-child(1) .date",
+      "targets": [
+        ["css=.row:nth-child(1) .date", "css:finder"],
+        ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
+        ["xpath=//div[6]/div[2]/div/div/div", "xpath:position"]
+      ],
+      "value": "Jul 5, 2020"
+    }, {
+      "id": "2c0a2465-a9fd-4116-9ba3-3279677e7ee8",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -3417,7 +3970,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["31429eb6-c2c4-4282-8512-9f77cc9488c2", "938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041"]
+    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

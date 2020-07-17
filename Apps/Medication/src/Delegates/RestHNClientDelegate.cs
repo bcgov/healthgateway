@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -40,6 +41,7 @@ namespace HealthGateway.Medication.Delegates
     public class RestHNClientDelegate : IHNClientDelegate
     {
         private readonly ILogger logger;
+        private readonly ITraceService traceService;
         private readonly IHNMessageParser<List<MedicationStatement>> medicationParser;
         private readonly IHNMessageParser<Pharmacy> pharmacyParser;
         private readonly IHttpClientService httpClientService;
@@ -51,6 +53,7 @@ namespace HealthGateway.Medication.Delegates
         /// Initializes a new instance of the <see cref="RestHNClientDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="medicationParser">The injected medication hn parser.</param>
         /// <param name="pharmacyParser">The injected pharmacy hn parser.</param>
         /// <param name="httpClientService">The injected http client service.</param>
@@ -59,6 +62,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="sequenceDelegate">The injected sequence delegate.</param>
         public RestHNClientDelegate(
             ILogger<RestHNClientDelegate> logger,
+            ITraceService traceService,
             IHNMessageParser<List<MedicationStatement>> medicationParser,
             IHNMessageParser<Pharmacy> pharmacyParser,
             IHttpClientService httpClientService,
@@ -67,6 +71,7 @@ namespace HealthGateway.Medication.Delegates
             ISequenceDelegate sequenceDelegate)
         {
             this.logger = logger;
+            this.traceService = traceService;
             this.medicationParser = medicationParser;
             this.pharmacyParser = pharmacyParser;
             this.httpClientService = httpClientService;
@@ -78,9 +83,7 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public async Task<HNMessage<List<MedicationStatement>>> GetMedicationStatementsAsync(string phn, string protectiveWord, string userId, string ipAddress)
         {
-            Contract.Requires(phn != null);
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             this.logger.LogTrace($"Getting medication statements... {phn!.Substring(0, 3)}");
 
             JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
@@ -90,7 +93,7 @@ namespace HealthGateway.Medication.Delegates
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url")!);
+                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url") !);
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
@@ -107,7 +110,15 @@ namespace HealthGateway.Medication.Delegates
                 if (response.IsSuccessStatusCode)
                 {
                     HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    retVal = this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    if (responseMessage != null && responseMessage.Message != null)
+                    {
+                        retVal = this.medicationParser.ParseResponseMessage(responseMessage.Message);
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Parsed payload is null or not valid: {payload}");
+                        retVal = new HNMessage<List<MedicationStatement>>(Common.Constants.ResultType.Error, $"Unable to parse response");
+                    }
                 }
                 else
                 {
@@ -116,14 +127,14 @@ namespace HealthGateway.Medication.Delegates
                 }
             }
 
-            timer.Stop();
-            this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting medication statements. {phn.Substring(0, 3)}, {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<HNMessage<Pharmacy>> GetPharmacyAsync(string pharmacyId, string userId, string ipAddress)
         {
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             this.logger.LogTrace($"Getting pharmacy... {pharmacyId}");
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -135,7 +146,7 @@ namespace HealthGateway.Medication.Delegates
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url")!);
+                client.BaseAddress = new Uri(this.configService.GetSection("HNClient")?.GetValue<string>("Url") !);
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtModel.AccessToken);
 
                 long traceId = this.sequenceDelegate.GetNextValueForSequence(Sequence.PHARMANET_TRACE);
@@ -151,7 +162,15 @@ namespace HealthGateway.Medication.Delegates
                 if (response.IsSuccessStatusCode)
                 {
                     HNMessage<string> responseMessage = JsonConvert.DeserializeObject<HNMessage<string>>(payload);
-                    retVal = this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
+                    if (responseMessage != null && responseMessage.Message != null)
+                    {
+                        retVal = this.pharmacyParser.ParseResponseMessage(responseMessage.Message);
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Parsed payload is null or not valid: {payload}");
+                        retVal = new HNMessage<Pharmacy>(Common.Constants.ResultType.Error, $"Unable to parse response");
+                    }
                 }
                 else
                 {
@@ -160,8 +179,7 @@ namespace HealthGateway.Medication.Delegates
                 }
             }
 
-            timer.Stop();
-            this.logger.LogDebug($"Finished getting pharmacy. {JsonConvert.SerializeObject(retVal)}, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting pharmacy. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
         }
     }

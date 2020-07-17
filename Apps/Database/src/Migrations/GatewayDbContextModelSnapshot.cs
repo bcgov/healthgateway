@@ -404,8 +404,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("ParentEntryId")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasColumnType("character varying(36)")
+                        .HasMaxLength(36);
 
                     b.Property<string>("Text")
                         .HasColumnType("character varying(1344)")
@@ -444,6 +444,16 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("CommunicationId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CommunicationStatusCode")
+                        .IsRequired()
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CommunicationTypeCode")
+                        .IsRequired()
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("character varying(60)")
@@ -457,6 +467,9 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("ExpiryDateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Subject")
                         .HasColumnType("character varying(1000)")
@@ -482,7 +495,151 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommunicationStatusCode");
+
+                    b.HasIndex("CommunicationTypeCode");
+
                     b.ToTable("Communication");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationStatusCode", b =>
+                {
+                    b.Property<string>("StatusCode")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("StatusCode");
+
+                    b.ToTable("CommunicationStatusCode");
+
+                    b.HasData(
+                        new
+                        {
+                            StatusCode = "New",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A newly created Communication",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "Pending",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A Communication pending batch pickup",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "Processed",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A Communication which has been sent",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "Error",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A Communication that will not be sent",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        });
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationTypeCode", b =>
+                {
+                    b.Property<string>("StatusCode")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("character varying(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("StatusCode");
+
+                    b.ToTable("CommunicationTypeCode");
+
+                    b.HasData(
+                        new
+                        {
+                            StatusCode = "Banner",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Banner communication type",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "Email",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Email communication type",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        });
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
@@ -822,58 +979,6 @@ namespace HealthGateway.Database.Migrations
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         });
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.EmailInvite", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailInviteId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("EmailId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ExpireDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("HdId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<Guid>("InviteKey")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("Validated")
-                        .HasColumnType("boolean");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmailId");
-
-                    b.ToTable("EmailInvite");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailStatusCode", b =>
@@ -1732,6 +1837,129 @@ namespace HealthGateway.Database.Migrations
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2020, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2020, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2020, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LegalAgreementCode = "ToS",
+                            LegalText = @"<p><strong>HealthGateway Terms of Service</strong></p>
+<p>
+    Use of the Health Gateway service (the <strong>""Service""</strong>) is governed by the following terms and
+    conditions. Please read these terms and conditions carefully, as by using the Service you will
+    be deemed to have agreed to them. If you do not agree with these terms and conditions,
+    please do not use the Service.
+</p>
+<p>
+<p><strong>1. The Health Gateway Service</strong></p>
+<p>
+    The Service provides residents of British Columbia with access to their health information
+    (<strong>""Health Information""</strong>).  It allows users to, in one place, view their Health Information from
+    various Provincial health information systems, empowering patients and their families to manage their health care.
+</p>
+<p><strong>2. Your use of the Service</strong></p>
+<p>
+    You may only access your own Health Information using the Service.
+</p>
+<p>
+    If you choose to share the Health Information accessed through this Service with others (e.g.
+    with a family member or caregiver), you are responsible for all the actions they take with
+    respect to the use of your Health Information.
+</p>
+<p>
+    You must follow any additional terms and conditions made available to you in relation to the
+    Service.
+</p>
+<p>
+    Do not misuse the Service, for example by trying to access or use it using a method other
+    than the interface and instructions we provide.  You may use the Service only as permitted
+    by law.  We may suspend or stop providing the Service to you if you do not comply with
+    these terms and conditions, or if we are investigating a suspected misuse of the Service.
+</p>
+<p>
+    Using the Service does not give you ownership of any intellectual property rights in the
+    Service or the content you access.  Don’t remove, obscure, or alter any legal notices
+    displayed in connection with the Service.
+</p>
+<p>
+    We may stop providing the Service to you, or may add or create new limits on the Service,
+    for any reason and at any time.
+</p>
+<p><strong>3. Service is not a comprehensive health record or medical advice</strong></p>
+<p>
+    The Health Information accessed through this Service is not a comprehensive record of your health care in BC.
+</p>
+<p>
+    This Service is not intended to provide you with medical advice or replace the care provided 
+    by qualified health care professionals. If you have questions or concerns about your health, 
+    please contact your care provider.
+</p>
+<p><strong>4. Privacy Notice</strong></p>
+<p>
+    Your personal information will be collected by the Health Gateway (Ministry of Health) and 
+    Service BC under the authority of section 26(c) of the Freedom of Information and Protection 
+    of Privacy Act for the purpose of providing access to your health records. Your personal 
+    information such as name, email and cell phone number will be shared with other public 
+    health service agencies to query your health information and notify you of updates. Your 
+    personal information will not be used or disclosed for any other purposes.
+</p>
+<p>
+    The Service’s notes and comments features allow you to enter your own notes to provide 
+    more information related to your health care. Use of these features is entirely voluntary. Any 
+    notes will be stored in the Health Gateway until you choose to delete your account or 
+    remove specific notes. Any notes that you create can only be accessed by you securely using 
+    your BC Services Card.
+</p>
+<p>
+    If you have any questions about our collection or use of personal information, please direct 
+    your inquiries to the Health Gateway team:
+</p>
+<p>
+    <i>
+        Nino Samson<br />
+        Product Owner, Health Gateway<br />
+        Telephone: <a href=""tel:778-974-2712"">778-974-2712</a><br />
+        Email: <a href=""mailto:nino.samson@gov.bc.ca"">nino.samson@gov.bc.ca</a><br />
+        Address: 1483 Douglas Street; PO BOX 9635 STN PROV GOVT, Victoria BC<br />
+    </i>
+</p>
+<p><strong>5. Warranty Disclaimer</strong></p>
+<p>
+    The Service and all of the information it contains are provided ""as is"" without warranty of 
+    any kind, whether express or implied. All implied warranties, including, without limitation, 
+    implied warranties of merchantability, fitness for a particular purpose, and non-infringement, 
+    are hereby expressly disclaimed.
+</p>
+<p><strong>6. Limitation of Liabilities</strong></p>
+<p>
+    Under no circumstances will the Government of British Columbia be liable to any person or 
+    business entity for any direct, indirect, special, incidental, consequential, or other damages 
+    based on any use of the Service or any website or system to which this Service may be linked, 
+    including, without limitation, any lost profits, business interruption, or loss of programs or 
+    information, even if the Government of British Columbia has been specifically advised of the 
+    possibility of such damages.
+</p>
+<p><strong>7. About these Terms and Conditions</strong></p>
+<p>
+    We may modify these terms of service, or any additional terms that apply to the Service, at 
+    any time, for example to reflect changes to the law or changes to the Service.  You should 
+    review these terms of service regularly.  Changes to these terms of service will be effective 
+    immediately after they are posted.  If you do not agree to any changes to these terms, you 
+    should discontinue your use of the Service immediately.
+</p>
+<p>
+    If there is any conflict between these terms of service and any additional terms of service, 
+    the additional terms of service will prevail.
+</p>
+<p>
+    These terms of service are governed by and to be construed in accordance with the laws of 
+    British Columbia and the federal laws of Canada applicable therein.
+</p>",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2020, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
                         });
                 });
 
@@ -1779,6 +2007,138 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Terms of Service",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        });
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("MessagingVerificationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("EmailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpireDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("HdId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<Guid>("InviteKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SMSNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SMSValidationCode")
+                        .HasColumnType("character varying(6)")
+                        .HasMaxLength(6);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Validated")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("VerificationAttempts")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VerificationType")
+                        .IsRequired()
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("VerificationType");
+
+                    b.ToTable("MessagingVerification");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerificationTypeCode", b =>
+                {
+                    b.Property<string>("MessagingVerificationCode")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("MessagingVerificationCode");
+
+                    b.ToTable("MessagingVerificationTypeCode");
+
+                    b.HasData(
+                        new
+                        {
+                            MessagingVerificationCode = "Email",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Email Verification Type Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            MessagingVerificationCode = "SMS",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "SMS Verification Type Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -2217,6 +2577,16 @@ namespace HealthGateway.Database.Migrations
                         },
                         new
                         {
+                            ProgramCode = "LAB",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Laboratory Service",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
                             ProgramCode = "ADMIN",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -2508,6 +2878,47 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("UserFeedback");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserPreference", b =>
+                {
+                    b.Property<string>("HdId")
+                        .HasColumnName("UserProfileId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("Preference")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("HdId", "Preference");
+
+                    b.ToTable("UserPreference");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
                     b.Property<string>("HdId")
@@ -2542,6 +2953,10 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime?>("LastLoginDateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("SMSNumber")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2609,6 +3024,10 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("OperationDateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("SMSNumber")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2723,6 +3142,21 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.Communication", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.CommunicationStatusCode", null)
+                        .WithMany()
+                        .HasForeignKey("CommunicationStatusCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.CommunicationTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("CommunicationTypeCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
@@ -2752,15 +3186,6 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.EmailFormatCode", null)
                         .WithMany()
                         .HasForeignKey("FormatCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.EmailInvite", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
-                        .WithMany()
-                        .HasForeignKey("EmailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2797,6 +3222,19 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.LegalAgreementTypeCode", null)
                         .WithMany()
                         .HasForeignKey("LegalAgreementCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerification", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId");
+
+                    b.HasOne("HealthGateway.Database.Models.MessagingVerificationTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationType")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

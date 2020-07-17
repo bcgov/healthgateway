@@ -18,8 +18,8 @@ namespace HealthGateway.WebClient.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -33,7 +33,7 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="noteDelegate">Injected Note delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
+        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
@@ -160,17 +160,13 @@ namespace HealthGateway.WebClient.Services
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
             this.profileDelegate.Update(profile, false);
-
-            foreach (Note note in dbNotes)
+            foreach (Note note in dbNotes.ToList())
             {
-                string encryptedTitle = this.cryptoDelegate.Encrypt(key, note.Title);
-                string encryptedText = this.cryptoDelegate.Encrypt(key, note.Text);
-                note.Title = encryptedTitle;
-                note.Text = encryptedText;
+                note.Title = this.cryptoDelegate.Encrypt(key, note.Title ?? string.Empty);
+                note.Text = this.cryptoDelegate.Encrypt(key, note.Text ?? string.Empty);
             }
 
             this.noteDelegate.BatchUpdate(dbNotes, true);
-
             return key;
         }
     }

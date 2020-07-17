@@ -46,6 +46,11 @@ namespace HealthGateway.Database.Constants
         public const string Medication = "MED";
 
         /// <summary>
+        /// Represents the Laboratory application.
+        /// </summary>
+        public const string Laboratory = "LAB";
+
+        /// <summary>
         /// Represents the Admin Client application.
         /// </summary>
         public const string AdminWebClient = "ADMIN";

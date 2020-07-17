@@ -48,7 +48,6 @@ namespace HealthGateway.Patient.Services
         /// <param name="correlationState">Correlation State.</param>
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
-            Contract.Requires(reply != null);
             this.logger.LogTrace($"Getting the reply response... {reply.State}");
             using (MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
@@ -67,7 +66,6 @@ namespace HealthGateway.Patient.Services
         /// <returns>The object that is returned as the correlationState argument of the AfterReceiveReply(Message, Object) method.</returns>
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            Contract.Requires(request != null);
             this.logger.LogTrace($"Getting the reply request... {request.State}");
 
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
@@ -75,7 +73,7 @@ namespace HealthGateway.Patient.Services
                 var document = this.GetDocument(buffer.CreateMessage());
                 this.logger.LogDebug($"Finished getting the reply request. {document.OuterXml}");
                 request = buffer.CreateMessage();
-                return null;
+                return null!;
             }
         }
 

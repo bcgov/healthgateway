@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,6 @@ namespace HealthGateway.Admin.Services
     /// </summary>
     public class EmailAdminService : IEmailAdminService
     {
-
         private const string EmailAdminSectionConfigKey = "EmailAdmin";
         private const string MaxEmailsConfigKey = "MaxEmails";
         private const int DefaultMaxEmails = 1000;
@@ -42,7 +41,7 @@ namespace HealthGateway.Admin.Services
         private readonly IConfiguration configuration;
         private readonly ILogger<EmailAdminService> logger;
         private readonly IEmailDelegate emailDelegate;
-        private readonly IEmailInviteDelegate emailInviteDelegate;
+        private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly int maxEmails;
 
         /// <summary>
@@ -56,7 +55,7 @@ namespace HealthGateway.Admin.Services
             IConfiguration configuration,
             ILogger<EmailAdminService> logger,
             IEmailDelegate emailDelegate,
-            IEmailInviteDelegate emailInviteDelegate)
+            IMessagingVerificationDelegate emailInviteDelegate)
         {
             this.configuration = configuration;
             this.logger = logger;
@@ -71,14 +70,14 @@ namespace HealthGateway.Admin.Services
         {
             int pageIndex = 0;
             DBResult<List<Email>> dbEmail = this.emailDelegate.GetEmails(pageIndex, this.maxEmails);
-            IEnumerable<EmailInvite> emailInvites = this.emailInviteDelegate.GetAll();
+            IEnumerable<MessagingVerification> emailInvites = this.emailInviteDelegate.GetAllEmail();
             RequestResult<IEnumerable<AdminEmail>> result = new RequestResult<IEnumerable<AdminEmail>>()
             {
                 ResourcePayload = dbEmail.Payload.Select(e =>
                 {
-                    EmailInvite emailInvite = emailInvites.FirstOrDefault(ei =>
+                    MessagingVerification emailInvite = emailInvites.FirstOrDefault(ei =>
                         e.To!.Equals(ei.Email?.To, System.StringComparison.CurrentCultureIgnoreCase));
-                    string inviteStatus = this.GetEmailInviteStatus(emailInvite);
+                    string inviteStatus = GetEmailInviteStatus(emailInvite);
                     return AdminEmail.CreateFromDbModel(e, inviteStatus);
                 }),
                 PageIndex = pageIndex,
@@ -90,7 +89,7 @@ namespace HealthGateway.Admin.Services
             return result;
         }
 
-        private string GetEmailInviteStatus(EmailInvite emailInvite)
+        private static string GetEmailInviteStatus(MessagingVerification emailInvite)
         {
             if (emailInvite == null)
             {
