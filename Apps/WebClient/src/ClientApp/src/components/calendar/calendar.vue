@@ -4,6 +4,7 @@
         <CalendarHeader
             :current-date.sync="currentDate"
             :title-format="titleFormat"
+            :date-groups="dateGroups"
         >
         </CalendarHeader>
         <!-- body display date day and events -->
