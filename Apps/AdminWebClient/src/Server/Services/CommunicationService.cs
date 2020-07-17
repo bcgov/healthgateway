@@ -49,11 +49,16 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Add(Communication communication)
         {
-            if (/* is email */ false) {
-                if (communication.Text.Length == 0 || communication.Subject.Length == 0 || communication.EffectiveDateTime < DateTime.Now)
+            this.logger.LogTrace($"Communication recieved:  {JsonConvert.SerializeObject(communication)}");
+            if (communication.CommunicationTypeCode == "Email")
+            {
+                if (communication.Text.Length == 0 || communication.Subject.Length == 0)
                 {
-                    throw new ArgumentException("One of: Email Subject, Email Content or Email Scheduled DateTime is invalid.");
+                    throw new ArgumentException("One of: Email Subject, Email Content is invalid.");
                 }
+
+                communication.EffectiveDateTime = DateTime.Now;
+                communication.ExpiryDateTime = DateTime.Now;
             }
 
             this.logger.LogTrace($"Adding communication... {JsonConvert.SerializeObject(communication)}");

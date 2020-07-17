@@ -16,7 +16,10 @@ export default interface Communication {
     expiryDateTime: Date;
 
     // Gets or sets the email communication priority
-    priority?: string;
+    priority: number;
+
+    // Gets or sets the communication type: email or banner
+    communicationTypeCode: string;
 
     // The communication version number.
     version: number;
