@@ -20,7 +20,6 @@ namespace HealthGateway.WebClient.Controllers
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
@@ -68,31 +67,24 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a user profile json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The resource hdid.</param>
         /// <param name="createUserRequest">The user profile request model.</param>
         /// <response code="200">The user profile record was saved.</response>
-        /// <response code="400">The user profile was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserPolicy.Write)]
-        public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult CreateUserProfile([FromHeader] string authorization, string hdid, [FromBody] CreateUserRequest createUserRequest)
         {
-            // Validate that the query parameter matches the post body
-            if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return new BadRequestResult();
-            }
-
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
+            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), authorization);
             return new JsonResult(result);
         }
 
@@ -100,6 +92,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Gets a user profile json.
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -107,7 +100,8 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserPolicy.Read)]
-        public IActionResult GetUserProfile(string hdid)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult GetUserProfile([FromHeader] string authorization, string hdid)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string rowAuthTime = user.FindFirst(c => c.Type == "auth_time").Value;
@@ -131,6 +125,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Closes a user profile.
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -138,7 +133,8 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserPolicy.Write)]
-        public IActionResult CloseUserProfile(string hdid)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult CloseUserProfile([FromHeader] string authorization, string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
@@ -157,6 +153,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Restore a user profile.
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -164,7 +161,8 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserPolicy.Write)]
-        public IActionResult RecoverUserProfile(string hdid)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult RecoverUserProfile([FromHeader] string authorization, string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
@@ -179,12 +177,14 @@ namespace HealthGateway.WebClient.Controllers
         /// Gets the terms of service json.
         /// </summary>
         /// <returns>The terms of service model wrapped in a request result.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <response code="200">Returns the terms of service json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("termsofservice")]
-        public IActionResult GetLastTermsOfService()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult GetLastTermsOfService([FromHeader] string authorization)
         {
             RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();
             return new JsonResult(result);
@@ -194,6 +194,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Validates an email invite.
         /// </summary>
         /// <returns>The an empty response.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
         /// <response code="200">The email was validated.</response>
@@ -202,11 +203,10 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/email/validate/{inviteKey}")]
         [Authorize(Policy = UserPolicy.Write)]
-        public async Task<IActionResult> ValidateEmail(string hdid, Guid inviteKey)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult ValidateEmail([FromHeader] string authorization, string hdid, Guid inviteKey)
         {
-            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-            if (this.userEmailService.ValidateEmail(hdid, inviteKey, bearerToken))
+            if (this.userEmailService.ValidateEmail(hdid, inviteKey, authorization))
             {
                 return new OkResult();
             }
@@ -220,6 +220,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Validates a sms invite.
         /// </summary>
         /// <returns>An empty response.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="validationCode">The sms invite validation code.</param>
         /// <response code="200">The sms was validated.</response>
@@ -228,11 +229,10 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserPolicy.Write)]
-        public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult ValidateSMS([FromHeader] string authorization, string hdid, string validationCode)
         {
-            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-            if (this.userSMSService.ValidateSMS(hdid, validationCode, bearerToken))
+            if (this.userSMSService.ValidateSMS(hdid, validationCode, authorization))
             {
                 return new OkResult();
             }
@@ -247,6 +247,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Validates an email invite.
         /// </summary>
         /// <returns>The invite email.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user email invite json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -254,7 +255,8 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/email/invite")]
         [Authorize(Policy = UserPolicy.Read)]
-        public IActionResult GetUserEmailInvite(string hdid)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult GetUserEmailInvite([FromHeader] string authorization, string hdid)
         {
             MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
             UserEmailInvite? result = UserEmailInvite.CreateFromDbModel(emailInvite);
@@ -265,6 +267,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Validates an email invite.
         /// </summary>
         /// <returns>The invite email.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user email invite json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -272,7 +275,8 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/sms/invite")]
         [Authorize(Policy = UserPolicy.Read)]
-        public IActionResult GetUserSMSInvite(string hdid)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult GetUserSMSInvite([FromHeader] string authorization, string hdid)
         {
             MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
             UserSMSInvite? result = UserSMSInvite.CreateFromDbModel(smsInvite);
@@ -282,6 +286,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Updates the user email.
         /// </summary>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">The new email.</param>
         /// <returns>True if the action was successful.</returns>
@@ -291,22 +296,22 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserPolicy.Write)]
-        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string emailAddress)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult UpdateUserEmail([FromHeader] string authorization, string hdid, [FromBody] string emailAddress)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), bearerToken);
+            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), authorization);
             return new JsonResult(result);
         }
 
         /// <summary>
         /// Updates the user sms number.
         /// </summary>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="smsNumber">The new sms number.</param>
         /// <returns>True if the action was successful.</returns>
@@ -316,16 +321,15 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserPolicy.Write)]
-        public async Task<IActionResult> UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult UpdateUserSMSNumber([FromHeader] string authorization, string hdid, [FromBody] string smsNumber)
         {
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer
                 .GetLeftPart(UriPartial.Authority);
 
-            string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
+            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), authorization);
             return new JsonResult(result);
         }
 
@@ -333,6 +337,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Updates a user preference.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="name">The preference name.</param>
         /// <param name="value">The preference value.</param>
@@ -342,7 +347,8 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/preference/{name}")]
         [Authorize(Policy = UserPolicy.Write)]
-        public IActionResult UpdateUserPreference(string hdid, string name, [FromBody] string value)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
+        public IActionResult UpdateUserPreference([FromHeader] string authorization, string hdid, string name, [FromBody] string value)
         {
             if (name == null)
             {

@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 smsServiceMock.Object
             );
-            IActionResult actualResult = service.GetUserProfile(hdid);
+            IActionResult actualResult = service.GetUserProfile(token, hdid);
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
@@ -114,7 +114,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 smsServiceMock.Object
             );
-            IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest);
+            IActionResult actualResult = service.CreateUserProfile(token, hdid, createUserRequest);
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
