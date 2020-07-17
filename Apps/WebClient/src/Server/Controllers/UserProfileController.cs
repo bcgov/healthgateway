@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -91,7 +92,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken).ConfigureAwait(true);
+            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
             return new JsonResult(result);
         }
 
@@ -116,6 +117,13 @@ namespace HealthGateway.WebClient.Controllers
                 .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
+
+            if (result.ResourcePayload != null)
+            {
+                RequestResult<Dictionary<string, string>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
+                result.ResourcePayload.Preferences = userPreferences.ResourcePayload != null ? userPreferences.ResourcePayload : new Dictionary<string, string>();
+            }
+
             return new JsonResult(result);
         }
 
@@ -319,6 +327,32 @@ namespace HealthGateway.WebClient.Controllers
 
             bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), bearerToken);
             return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Updates a user preference.
+        /// </summary>
+        /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="name">The preference name.</param>
+        /// <param name="value">The preference value.</param>
+        /// <response code="200">The user preference record was saved.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Route("{hdid}/preference/{name}")]
+        [Authorize(Policy = UserPolicy.Write)]
+        public IActionResult UpdateUserPreference(string hdid, string name, [FromBody] string value)
+        {
+            if (name == null)
+            {
+                return new BadRequestResult();
+            }
+            else
+            {
+                bool result = this.userProfileService.UpdateUserPreference(hdid, name, value);
+                return new JsonResult(result);
+            }
         }
     }
 }
