@@ -16,10 +16,6 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
-    using System.Diagnostics.Contracts;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
@@ -57,6 +53,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a beta request json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="authorization">The users access token.</param>
         /// <param name="betaRequest">The beta request model.</param>
         /// <response code="200">The beta request record was saved.</response>
         /// <response code="400">The beta request was already inserted.</response>
@@ -64,8 +61,9 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult CreateBetaRequest([FromBody] BetaRequest betaRequest)
+        public IActionResult CreateBetaRequest([FromHeader] string authorization, [FromBody] BetaRequest betaRequest)
         {
+            // this.logger.logTrace(authorization);
             string referer = this.httpContextAccessor.HttpContext.Request
                 .GetTypedHeaders()
                 .Referer?
