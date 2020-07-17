@@ -16,11 +16,8 @@
 namespace HealthGateway.AdminWebClient
 {
     using System.IdentityModel.Tokens.Jwt;
-    using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Hangfire;
-    using Hangfire.PostgreSql;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
@@ -77,6 +74,7 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.ConfigureAuditServices(services);
             this.ConfigureAuthenticationService(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
@@ -105,9 +103,6 @@ namespace HealthGateway.AdminWebClient
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-
-            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
-            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         /// <summary>
