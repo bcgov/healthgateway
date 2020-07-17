@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,15 +55,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a UserComment json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="comment">The Comment request model.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult Create([FromHeader] string authorization, [FromBody] UserComment comment)
+        public IActionResult Create([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -85,15 +83,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Puts a UserComment json to be updated in the database.
         /// </summary>
         /// <returns>The updated Comment wrapped in a RequestResult.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="comment">The Comment to be updated.</param>
         /// <response code="200">The comment was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult Update([FromHeader] string authorization, [FromBody] UserComment comment)
+        public IActionResult Update([FromBody] UserComment comment)
         {
             if (comment == null)
             {
@@ -116,15 +112,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Deletes a UserComment from the database.
         /// </summary>
         /// <returns>The deleted UserComment wrapped in a RequestResult.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="comment">The comment to be deleted.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult Delete([FromHeader] string authorization, [FromBody] UserComment comment)
+        public IActionResult Delete([FromBody] UserComment comment)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
@@ -140,16 +134,14 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Gets all comments for the authorized user and event id.
         /// </summary>
-        /// <returns>The list of comments wrapped in a request result.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
+        /// <returns>The list of comments wrapped in a request result.</returns>
         /// <response code="200">Returns the list of comments.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult GetAllForEntry([FromHeader] string authorization, [FromQuery] string parentEntryId)
+        public IActionResult GetAllForEntry([FromQuery] string parentEntryId)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;

@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,18 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -45,6 +54,8 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The active communication or null if not found.</returns>
         /// <response code="200">Returns the communication json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         public IActionResult Get()
         {

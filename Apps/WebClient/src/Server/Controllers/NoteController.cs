@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
@@ -57,15 +58,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a patient note json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="note">The patient note request model.</param>
         /// <response code="200">The note record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult CreateNote([FromHeader] string authorization, [FromBody] UserNote note)
+        public IActionResult CreateNote([FromBody] UserNote note)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
@@ -80,15 +79,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Puts a patient note json to be updated in the database.
         /// </summary>
         /// <returns>The updated Note wrapped in a RequestResult.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="note">The patient note.</param>
         /// <response code="200">The note was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult UpdateNote([FromHeader] string authorization, [FromBody] UserNote note)
+        public IActionResult UpdateNote([FromBody] UserNote note)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;
@@ -101,15 +98,13 @@ namespace HealthGateway.WebClient.Controllers
         /// Deletes a note from the database.
         /// </summary>
         /// <returns>The deleted Note wrapped in a RequestResult.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="note">The patient note.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult DeleteNote([FromHeader] string authorization, [FromBody] UserNote note)
+        public IActionResult DeleteNote([FromBody] UserNote note)
         {
             // Validate the hdid to be a patient.
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -123,14 +118,12 @@ namespace HealthGateway.WebClient.Controllers
         /// Gets all notes for the specified user.
         /// </summary>
         /// <returns>The list of notes model wrapped in a request result.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <response code="200">Returns the list of notes.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult GetAll([FromHeader] string authorization)
+        public IActionResult GetAll()
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string userHdid = user.FindFirst("hdid").Value;

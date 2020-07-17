@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,6 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a user feedback json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="authorization">The bearer token of the authenticated user.</param>
         /// <param name="userFeedback">The user feedback model.</param>
         /// <response code="200">The user feedback record was saved.</response>
         /// <response code="400">The user feedback object is invalid.</response>
@@ -65,8 +64,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Used by Swagger to display input for authorization header.")]
-        public IActionResult CreateUserFeedback([FromHeader] string authorization, [FromBody] UserFeedback userFeedback)
+        public IActionResult CreateUserFeedback([FromBody] UserFeedback userFeedback)
         {
             if (userFeedback == null)
             {
