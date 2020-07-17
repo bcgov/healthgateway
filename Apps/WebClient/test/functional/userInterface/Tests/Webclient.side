@@ -594,8 +594,8 @@
     }, {
       "id": "62bd6f44-36ac-456a-a529-7d042a1ed44f",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -682,14 +682,9 @@
     }, {
       "id": "d9da2318-7e9f-463f-b238-cb2a0e8461ba",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "d74b95b9-eb06-4723-a53a-e2306e2b137a",
@@ -744,8 +739,8 @@
     }, {
       "id": "ea2e120a-899b-4698-a3d8-9de6c448e7c6",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -1004,8 +999,8 @@
     }, {
       "id": "793d5b06-30a3-4d72-92b4-37cef1b2a3d9",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -1695,14 +1690,9 @@
     }, {
       "id": "f0b06508-9066-4109-bb51-de956146d5cc",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "bfc4a309-9c77-43e5-9bff-3630a321e445",
@@ -2180,8 +2170,8 @@
     }, {
       "id": "1080cd19-81d9-4684-a3e2-0d0c45948fec",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -2466,8 +2456,8 @@
     }, {
       "id": "02bf800d-869e-470a-abee-c01ebc9f9a54",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -2686,14 +2676,9 @@
     }, {
       "id": "2bec0642-6ebe-4839-854f-b8d3fb5fe6ff",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "64395a39-1980-4e46-ae91-5b17bf09513b",
@@ -2759,8 +2744,8 @@
     }, {
       "id": "2f729b40-895c-4e69-ac29-149aad9a6f4c",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -2855,14 +2840,9 @@
     }, {
       "id": "f176063b-6354-4ac2-b245-a3554a03bc39",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "ee714a00-57a8-490a-9fca-b06aeb4f557f",
@@ -3019,14 +2999,9 @@
     }, {
       "id": "890927f0-b343-4e6a-a72b-2a0813f05c88",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "419dc99a-bee4-4a37-a99b-f0fef21c2804",
@@ -3185,14 +3160,9 @@
     }, {
       "id": "671d15a2-30fa-4ae0-94df-53c44abd6dc4",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "f8b1d6f8-0a15-424b-9b6c-8d52a5cca598",
@@ -3269,8 +3239,8 @@
     }, {
       "id": "ab472848-467b-474f-a661-6ed1ce3fd60c",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -3612,8 +3582,8 @@
     }, {
       "id": "c5175800-bb52-4727-a4a5-de70c02a3d60",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -3724,8 +3694,8 @@
     }, {
       "id": "96c9b263-00dd-48bd-be9e-8e9746222303",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
@@ -3859,14 +3829,9 @@
     }, {
       "id": "a3a285f1-a521-47ff-b747-60c1fdc815ba",
       "comment": "",
-      "command": "waitForElementNotVisible",
-      "target": "css=.vld-icon > svg",
-      "targets": [
-        ["css=#menuBtndUser__BV_button_ > span", "css:finder"],
-        ["xpath=//a[@id='menuBtndUser__BV_button_']/span", "xpath:idRelative"],
-        ["xpath=//a/span", "xpath:position"],
-        ["xpath=//span[contains(.,'Hi Dr Gateway')]", "xpath:innerText"]
-      ],
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
       "value": "30000"
     }, {
       "id": "6d3efcda-d10f-4a9b-bd87-1d7eb01fef06",

@@ -2,80 +2,79 @@ name: 1.0.0$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/JobScheduler
-  App.Name: hangfire
-  App.UnitTests: $(App.Home)/test/unit
-  App.FunctionalTests: $(App.Home)/test/functional
+    App.Home: $(Build.SourcesDirectory)/Apps/JobScheduler
+    App.Name: hangfire
+    App.UnitTests: $(App.Home)/test/unit
+    App.FunctionalTests: $(App.Home)/test/functional
 
 pr: none
 
 trigger:
- batch: 'true'
- branches:
-   include:
-     - dev
- paths:
-   include:
-     - Apps/JobScheduler
-     - Apps/Common
-     - Apps/Database
+    batch: "true"
+    branches:
+        include:
+            - dev
+    paths:
+        include:
+            - Apps/JobScheduler
+            - Apps/Common
+            - Apps/Database
 
 pool:
-  name: 'HealthGateway'
+    name: "HealthGateway"
 
 steps:
-# - task: DotNetCoreCLI@2
-#   displayName: Run dotnet Tests
-#   inputs:
-#     command: 'test'
-#     projects: '$(App.Home)/test/unit/JobSchedulerTests.csproj'
-#     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-#     testRunTitle: 'JobScheduler Tests'
-  
-# - script: |
-#     set -e
-#     dotnet tool install -g dotnet-reportgenerator-globaltool
-#     reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-#   displayName: Create Code Coverage Report    
-      
-# - task: PublishCodeCoverageResults@1
-#   displayName: 'Publish Code Coverage'
-#   inputs:
-#     codeCoverageTool: Cobertura
-#     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
-#     pathToSources: '$(App.Home)/src'
-#     reportDirectory: '$(App.Home)/CodeCoverage'   
-    
-- task: DotNetCoreCLI@2
-  displayName: Building and Publishing JobScheduler
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+    # - task: DotNetCoreCLI@2
+    #   displayName: Run dotnet Tests
+    #   inputs:
+    #     command: 'test'
+    #     projects: '$(App.Home)/test/unit/JobSchedulerTests.csproj'
+    #     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    #     testRunTitle: 'JobScheduler Tests'
 
-- script: |
-    set -e
-    cat $(App.Home)/src/appsettings.json
-    cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-    cat $(Build.BinariesDirectory)/appsettings.json
-    oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
-    oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-    oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-  displayName: 'Build OpenShift Image and push to Image Stream'
+    # - script: |
+    #     set -e
+    #     reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+    #   displayName: Create Code Coverage Report
 
-- task: CopyFiles@2
-  displayName: Copy Functional Tests to Staging
-  inputs:
-    SourceFolder: '$(App.FunctionalTests)'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-  enabled: 'false'
+    # - task: PublishCodeCoverageResults@1
+    #   displayName: 'Publish Code Coverage'
+    #   inputs:
+    #     codeCoverageTool: Cobertura
+    #     summaryFileLocation: '$(App.Home)/CodeCoverage/Cobertura.xml'
+    #     pathToSources: '$(App.Home)/src'
+    #     reportDirectory: '$(App.Home)/CodeCoverage'
 
-- task: PublishPipelineArtifact@0
-  displayName: 'Publish Pipeline Artifact'
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)'
+    - task: DotNetCoreCLI@2
+      displayName: Building and Publishing JobScheduler
+      inputs:
+          modifyOutputPath: false
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(App.Home)/src"
+          arguments: "-o $(Build.BinariesDirectory)"
+          zipAfterPublish: false
+
+    - script: |
+          set -e
+          cat $(App.Home)/src/appsettings.json
+          cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+          cat $(Build.BinariesDirectory)/appsettings.json
+          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
+          oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+          oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+      displayName: "Build OpenShift Image and push to Image Stream"
+
+    - task: CopyFiles@2
+      displayName: Copy Functional Tests to Staging
+      inputs:
+          SourceFolder: "$(App.FunctionalTests)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+      enabled: "false"
+
+    - task: PublishPipelineArtifact@0
+      displayName: "Publish Pipeline Artifact"
+      inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)"

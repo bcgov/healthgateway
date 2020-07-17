@@ -128,8 +128,7 @@ export default class LoginView extends Vue {
             this.routeHandler.push({ path: this.redirectPath });
         } else if (
             !this.oidcIsAuthenticated &&
-            this.identityProviders.length == 1 &&
-            !this.isRetry
+            this.identityProviders.length == 1
         ) {
             this.oidcLogin(this.identityProviders[0].hint);
         } else {

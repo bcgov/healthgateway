@@ -210,10 +210,6 @@
         max-width: 8rem;
     }
 }
-
-.action-side-menu {
-    display: inline !important;
-}
 </style>
 
 <template>
@@ -248,7 +244,7 @@
                             >
                         </b-row>
                     </router-link>
-                    <div v-if="isProfile">
+                    <div v-show="isProfile">
                         <!-- Terms of Service button -->
                         <router-link
                             id="termsOfService"
@@ -345,7 +341,7 @@
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-if="isTimeline" class="action-side-menu">
+                    <div v-show="isTimeline">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
@@ -512,7 +508,7 @@ export default class SidebarComponent extends Vue {
     private name: string = "";
     private windowWidth: number = 0;
 
-    private isTutorialEnabled: boolean = true;
+    private isTutorialEnabled: boolean = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -588,6 +584,7 @@ export default class SidebarComponent extends Vue {
                     oidcUser.family_name
                 );
             }
+            this.isTutorialEnabled = true;
         });
     }
 
@@ -638,6 +635,7 @@ export default class SidebarComponent extends Vue {
             );
         }
     }
+
     private set showTutorialPopover(value: boolean) {
         this.isTutorialEnabled = value;
     }

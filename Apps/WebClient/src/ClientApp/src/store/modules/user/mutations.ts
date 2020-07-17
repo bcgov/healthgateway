@@ -37,7 +37,12 @@ export const mutations: MutationTree<UserState> = {
             "closedDateTime",
             userProfile ? userProfile.closedDateTime : undefined
         );
-        Vue.set(state.user, "preferences", userProfile.preferences);
+
+        Vue.set(
+            state.user,
+            "preferences",
+            userProfile ? userProfile.preferences : {}
+        );
         console.log(state.user);
         state.error = false;
         state.statusMessage = "success";
