@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A system Communication Email.
@@ -26,7 +25,7 @@ namespace HealthGateway.Database.Models
     public class CommunicationEmail : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the id.
+        /// Gets or sets the unique id and primary key for this CommunicationEmail.
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -34,18 +33,37 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the Communication Id.
+        /// Gets or sets the Communication Id (foreign key).
         /// </summary>
+        [ForeignKey("Communication")]
         public Guid CommunicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the Email Id.
+        /// Gets or sets the communication related to this Communication Email.
         /// </summary>
+        public virtual Communication Communication { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the user profile hdid (foreign key).
+        /// </summary>
+        [MaxLength(52)]
+        [ForeignKey("UserProfile")]
+        public string UserProfileHdId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the user profile related to this Communication Email.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the Email Id (foreign key).
+        /// </summary>
+        [ForeignKey("Email")]
         public Guid EmailId { get; set; }
 
         /// <summary>
-        /// Gets or sets the User Profile Id.
+        /// Gets or sets the email related to this Communication Email.
         /// </summary>
-        public Guid UserProfileId { get; set; }
+        public virtual Email Email { get; set; } = null!;
     }
 }

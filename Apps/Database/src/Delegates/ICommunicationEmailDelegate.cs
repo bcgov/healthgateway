@@ -34,11 +34,13 @@ namespace HealthGateway.Database.Delegates
         DBResult<CommunicationEmail> Add(CommunicationEmail communicationEmail, bool commit = true);
 
         /// <summary>
-        /// Get a list of communication emails which are linked to a specific communication.
+        /// Get a list of active user profiles which are not linked to any communication email by the specified Communication Id
+        ///     AND were created on of after a specific date and time .
         /// </summary>
         /// <param name="communicationId">The communication id for filtering communication emails.</param>
-        /// <param name="userProfileIDs">The list of user profile IDs for filtering communication emails.</param>
+        /// <param name="createdOnOrAfter">The profiles must have created on or after to this date.</param>
+        /// <param name="maxRows">The maximum amount of user profiles to return.</param>
         /// <returns>A list of communication emails of the specified Communication, wrapped in a DBResult.</returns>
-        List<CommunicationEmail> GetCommunicationEmailsByCommunicationIdAndUserIDs(Guid communicationId, List<Guid> userProfileIDs);
+        List<UserProfile> GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(Guid communicationId, DateTime? createdOnOrAfter = null, int maxRows = 500);
     }
 }

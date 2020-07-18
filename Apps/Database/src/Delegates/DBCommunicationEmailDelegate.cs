@@ -75,13 +75,25 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<CommunicationEmail> GetCommunicationEmailsByCommunicationIdAndUserIDs(Guid communicationId, List<Guid> userProfileIDs)
+        public List<UserProfile> GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(Guid communicationId, DateTime? createdOnOrAfter = null, int maxRows = 500)
         {
             this.logger.LogTrace($"Getting Communication Emails by Communication Id from DB...");
-            List<CommunicationEmail> retVal = this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId && userProfileIDs.Contains(c.UserProfileId))
-                .OrderByDescending(c => c.CreatedDateTime).ToList();
-            this.logger.LogDebug($"Finished getting list of Communication Emails from DB. {JsonSerializer.Serialize(retVal)}");
-            return retVal;
+
+            if (!createdOnOrAfter.HasValue)
+            {
+                var commEmails = this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId).OrderByDescending(c => c.CreatedDateTime).Take(1)
+                    .Include(commEmail => commEmail.UserProfile).ToList();
+                if (commEmails.Count > 0)
+                {
+                    createdOnOrAfter = commEmails[0].UserProfile.CreatedDateTime;
+                }
+            }
+
+            var userProfiles = this.dbContext.UserProfile.Where(profile => !profile.ClosedDateTime.HasValue && (!createdOnOrAfter.HasValue || profile.CreatedDateTime > createdOnOrAfter)).OrderBy(profile => profile.CreatedDateTime).Take(maxRows).ToList();
+
+            this.logger.LogDebug($"Finished getting list of Communication Emails from DB. {JsonSerializer.Serialize(userProfiles)}");
+
+            return userProfiles;
         }
     }
 }

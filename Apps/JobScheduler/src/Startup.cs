@@ -98,7 +98,8 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
 
-            // Todo: Leo to add Communication service here
+            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
+            services.AddTransient<ICommunicationEmailDelegate, DBCommunicationEmailDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
@@ -112,6 +113,7 @@ namespace HealthGateway.JobScheduler
             // Add Jobs
             services.AddTransient<FedDrugJob>();
             services.AddTransient<ProvincialDrugJob>();
+            services.AddTransient<ICommunicationJob, CommunicationJob>();
             services.AddTransient<IEmailJob, EmailJob>();
             services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
 
@@ -152,8 +154,7 @@ namespace HealthGateway.JobScheduler
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
 
-            // Todo: Leo to add Communication service here
-
+            SchedulerHelper.ScheduleJob<ICommunicationJob>(this.configuration, "CreateCommEmailsForNewCommunications", j => j.CreateCommunicationEmailsForNewCommunications());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");

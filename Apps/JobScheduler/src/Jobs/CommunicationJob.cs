@@ -37,41 +37,34 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IConfiguration configuration;
         private readonly ILogger<CommunicationJob> logger;
         private readonly ICommunicationDelegate communicationDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly ICommunicationEmailDelegate commEmailDelegate;
         private readonly IEmailDelegate emailDelegate;
-        private readonly string host;
-        private readonly int port;
         private readonly int retryFetchSize;
-        private readonly int maxRetries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationJob"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
-        /// <param name="communicationDelegate">The communication delegate to use.</param>
-        /// <param name="userProfileDelegate">The user Profile delegate to use.</param>
+        /// <param name="communicationDelegate">The Communication delegate to use.</param>
+        /// <param name="commEmailDelegate">The Communication Email delegate to use.</param>
         /// <param name="emailDelegate">The email delegate to use.</param>
-        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, IUserProfileDelegate userProfileDelegate, IEmailDelegate emailDelegate)
+        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, ICommunicationEmailDelegate commEmailDelegate, IEmailDelegate emailDelegate)
         {
             Contract.Requires((configuration != null) && (emailDelegate != null));
             this.configuration = configuration!;
             this.logger = logger;
             this.communicationDelegate = communicationDelegate!;
-            this.userProfileDelegate = userProfileDelegate!;
+            this.commEmailDelegate = commEmailDelegate!;
             this.emailDelegate = emailDelegate!;
-            IConfigurationSection section = configuration!.GetSection("Smtp");
-            this.host = section.GetValue<string>("Host");
-            this.port = section.GetValue<int>("Port");
 
-            section = configuration.GetSection("EmailJob");
-            this.maxRetries = section.GetValue<int>("MaxRetries", 9);
+            IConfigurationSection section = this.configuration.GetSection("EmailJob");
             this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 250);
         }
 
         /// <inheritdoc />
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void CreateCommunicationEmailsForNewCommunication()
+        public void CreateCommunicationEmailsForNewCommunications()
         {
             this.logger.LogDebug($"Creating emails & communication emails...");
             List<Communication> communications = this.communicationDelegate.GetCommunicationsByTypeAndStatusCode(CommunicationType.Email, CommunicationStatus.New);
@@ -79,17 +72,51 @@ namespace Healthgateway.JobScheduler.Jobs
             if (communications.Count > 0)
             {
                 this.logger.LogInformation($"Found {communications.Count} communications which are in New status.");
+
                 foreach (Communication comm in communications)
                 {
 #pragma warning disable CA1031 //We want to catch exception.
                     try
                     {
-                        // this.SendEmail(comm);
+                        DateTime? createdOnOrAfterFilter = null;
+                        List<UserProfile> usersToSendCommEmails;
+                        do
+                        {
+                            usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(comm.Id, createdOnOrAfterFilter, this.retryFetchSize);
+                            foreach (UserProfile profile in usersToSendCommEmails)
+                            {
+                                // Idea for Improvement: we can look into a lib for Bulk Insert / Update using .NET Core for Postgres (if needed).
+                                // Insert a new Email record into db.
+                                Email email = new Email()
+                                {
+                                    From = EmailConsts.FromEmailAddressHGDonotreply,
+                                    To = profile.Email,
+                                    Subject = comm.Subject,
+                                    Body = comm.Text,
+                                    FormatCode = EmailFormat.HTML,
+                                    Priority = comm.Priority,
+                                };
+                                Guid createdEmailId = this.emailDelegate.InsertEmail(email, true);
+
+                                // Inser a new CommunicationEmail record into 
+                                CommunicationEmail commEmail = new CommunicationEmail()
+                                {
+                                    EmailId = createdEmailId,
+                                    UserProfileHdId = profile.HdId,
+                                    CommunicationId = comm.Id,
+                                };
+                                this.commEmailDelegate.Add(commEmail, true);
+                            }
+
+                            // Set the createdOnOrAfterFilter for the next query retrieving the next chunk of user profiles.
+                            createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
+                        }
+                        while (usersToSendCommEmails.Count > 0 && usersToSendCommEmails.Count == this.retryFetchSize); // keep looping when the above query returns the max return rows (or user profiles).
                     }
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
-                        this.logger.LogWarning($"Error while sending - skipping for now\n{e.ToString()}");
+                        this.logger.LogWarning($"Error while creating new emails and communication email records for Email Communication - skipping for now\n{e.ToString()}");
                     }
 #pragma warning restore CA1031 // Restore warnings.
                 }
@@ -98,38 +125,27 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(communications)}");
         }
 
-        /// <inheritdoc />
-        private void SendEmail(Guid emailId)
+        private void TestCreateNewComm()
         {
-            this.logger.LogTrace($"Sending email... {emailId}");
-            Email email = this.emailDelegate.GetNewEmail(emailId);
-            if (email != null)
+            Communication comm = new Communication()
             {
-                // this.SendEmail(email);
-                this.logger.LogInformation($"Todo Leo.");
-            }
-            else
-            {
-                this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
-            }
-
-            this.logger.LogDebug($"Finished sending email. {JsonConvert.SerializeObject(email)}");
-        }
-
-        private static MimeMessage PrepareMessage(Communication comm, List<MailboxAddress> emailBccList)
-        {
-            MimeMessage msg = new MimeMessage();
-            msg.From.Add(new MailboxAddress("Health Gateway", EmailConsts.FromEmailAddressHGDonotreply));
-            msg.To.Add(new MailboxAddress(EmailConsts.ToEmailAddressUndisclosedRecipients));
-            msg.Bcc.AddRange(emailBccList);
-
-            msg.Subject = comm.Subject;
-            msg.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = comm.Text,
+                CommunicationStatusCode = CommunicationStatus.New,
+                CommunicationTypeCode = CommunicationType.Email,
+                Subject = "Testing Communication Job 01",
+                Text = @"<html>
+                            <body>
+                            <h1>Enter the main heading, usually the same as the title.</h1>
+                            <p>Be <b>bold</b> in stating your key points. Put them in a list: </p>
+                            <ul>
+                            <li>The first item in your list</li>
+                            <li>The second item; <i>italicize</i> key words</li>
+                            </ul>
+                            <p>Improve your image by including an image. </p>
+                            </body>
+                            </html>",
+                Priority = EmailPriority.Standard,
             };
-            return msg;
+            this.communicationDelegate.Add(comm, true);
         }
-
     }
 }

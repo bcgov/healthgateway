@@ -23,8 +23,8 @@ namespace HealthGateway.Common.Jobs
     public interface ICommunicationJob
     {
         /// <summary>
-        /// Attempts to send email communications.
+        /// Attempts to create communication email records for the new communications.
         /// </summary>
-        void CreateCommunicationEmailsForNewCommunication();
+        void CreateCommunicationEmailsForNewCommunications();
     }
 }

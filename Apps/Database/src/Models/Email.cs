@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using HealthGateway.Database.Constants;
@@ -99,5 +100,17 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(10)]
         public string EmailStatusCode { get; set; } = EmailStatus.New;
+
+#pragma warning disable CA2227 // Collection properties should be read only
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
+        /// <summary>
+        /// Gets or sets the list containing all the communication emails related to this email.
+        /// </summary>
+        public virtual List<CommunicationEmail> CommunicationEmails { get; set; }
+
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+#pragma warning restore CA2227 // Collection properties should be read only
+
     }
 }

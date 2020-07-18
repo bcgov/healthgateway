@@ -192,7 +192,7 @@ namespace HealthGateway.Database.Delegates
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
                                 .Where(p => (p.LastLoginDateTime == null ||
-                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < createdOnOrAfter)) &&
                                              p.ClosedDateTime == null &&
                                              !string.IsNullOrWhiteSpace(p.Email))
                                 .OrderBy(o => o.CreatedDateTime)

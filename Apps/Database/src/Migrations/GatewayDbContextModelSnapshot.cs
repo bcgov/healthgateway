@@ -531,8 +531,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("UserProfileId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("UserProfileHdId")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -541,6 +543,12 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("xid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommunicationId");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("UserProfileHdId");
 
                     b.ToTable("CommunicationEmail");
                 });
@@ -3196,6 +3204,27 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.CommunicationTypeCode", null)
                         .WithMany()
                         .HasForeignKey("CommunicationTypeCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.Communication", "Communication")
+                        .WithMany("CommunicationEmails")
+                        .HasForeignKey("CommunicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
+                        .WithMany("CommunicationEmails")
+                        .HasForeignKey("EmailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany("CommunicationEmails")
+                        .HasForeignKey("UserProfileHdId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
