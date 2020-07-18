@@ -70,6 +70,8 @@ namespace HealthGateway.Common.Swagger
                 In = ParameterLocation.Header,
                 Scheme = "bearer",
             });
+
+            // Add auth header filter
             options.OperationFilter<AuthenticationRequirementsOperationFilter>();
 
             this.AddSwaggerDocumentForEachDiscoveredApiVersion(options);
