@@ -23,11 +23,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// Constant value to represent undisclosed-recipients of the To field of the email.
         /// </summary>
-        public const string ToEmailAddressUndisclosedRecipients = "undisclosed-recipients";
-
-        /// <summary>
-        /// Constant value to represent undisclosed-recipients of the To field of the email.
-        /// </summary>
         public const string FromEmailAddressHGDonotreply = "HG_Donotreply@gov.bc.ca";
     }
 }
