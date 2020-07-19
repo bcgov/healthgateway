@@ -76,9 +76,15 @@ namespace Healthgateway.JobScheduler.Jobs
                     try
                     {
                         DateTime? createdOnOrAfterFilter = null;
-                        List<UserProfile> usersToSendCommEmails;
+                        string lastProcessedProfileHdid = string.Empty;
+                        List<UserProfile>? usersToSendCommEmails = null;
                         do
                         {
+                            if (usersToSendCommEmails != null && usersToSendCommEmails.Count > 0)
+                            {
+                                lastProcessedProfileHdid = usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId;
+                            }
+
                             usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(comm.Id, createdOnOrAfterFilter, this.retryFetchSize);
                             foreach (UserProfile profile in usersToSendCommEmails)
                             {
@@ -111,7 +117,8 @@ namespace Healthgateway.JobScheduler.Jobs
                                 createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
                             }
                         }
-                        while (usersToSendCommEmails.Count == this.retryFetchSize); // keep looping when the above query returns the max return rows (or user profiles).
+                        while (usersToSendCommEmails.Count == this.retryFetchSize
+                               && lastProcessedProfileHdid != usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId); // keep looping when the above query returns the max return rows (or user profiles).
 
                         // Update Communication Status to Processed
                         comm.CommunicationStatusCode = CommunicationStatus.Processed;
@@ -125,8 +132,6 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning restore CA1031 // Restore warnings.
                 }
             }
-
-            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(communications)}");
         }
     }
 }

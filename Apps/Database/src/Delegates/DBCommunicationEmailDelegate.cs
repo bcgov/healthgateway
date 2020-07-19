@@ -18,12 +18,14 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Internal;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -79,19 +81,33 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting Communication Emails by Communication Id from DB...");
 
-            if (!createdOnOrAfter.HasValue)
+            // Retrieves the communication emails and user profiles by communicationId and createdOnOrAfter.
+            var commEmails = this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId).OrderByDescending(c => c.CreatedDateTime).Take(maxRows)
+                    .Include(commEmail => commEmail.UserProfile).Where(c => !createdOnOrAfter.HasValue || c.UserProfile.CreatedDateTime >= createdOnOrAfter).ToList();
+            string hdidsWithMostRecentCreatedCommEmails = string.Empty;
+            if (commEmails.Count > 0)
             {
-                var commEmails = this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId).OrderByDescending(c => c.CreatedDateTime).Take(1)
-                    .Include(commEmail => commEmail.UserProfile).ToList();
-                if (commEmails.Count > 0)
+                createdOnOrAfter = commEmails[0].UserProfile.CreatedDateTime;
+                StringBuilder hdids = new StringBuilder();
+                foreach (var commEmail in commEmails)
                 {
-                    createdOnOrAfter = commEmails[0].UserProfile.CreatedDateTime;
+                    hdids.Append(commEmail.UserProfileHdId + "|");
                 }
+
+                hdidsWithMostRecentCreatedCommEmails = hdids.ToString();
             }
 
-            var userProfiles = this.dbContext.UserProfile.Where(profile => !profile.ClosedDateTime.HasValue && (!createdOnOrAfter.HasValue || profile.CreatedDateTime > createdOnOrAfter)).OrderBy(profile => profile.CreatedDateTime).Take(maxRows).ToList();
+            var userProfiles = this.dbContext.UserProfile
+                .Where(profile => !profile.ClosedDateTime.HasValue
+                        && (!createdOnOrAfter.HasValue || profile.CreatedDateTime >= createdOnOrAfter)
 
-            this.logger.LogDebug($"Finished getting list of Communication Emails from DB. {JsonSerializer.Serialize(userProfiles)}");
+#pragma warning disable CA1307 // Specify StringComparison
+                        && !hdidsWithMostRecentCreatedCommEmails.Contains(profile.HdId))
+#pragma warning restore CA1307 // Specify StringComparison
+
+                .OrderBy(profile => profile.CreatedDateTime)
+                .Take(maxRows)
+                .ToList();
 
             return userProfiles;
         }
