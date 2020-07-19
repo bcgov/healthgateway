@@ -86,15 +86,5 @@ namespace HealthGateway.Database.Delegates
         /// <param name="offset">The clients offset to get to UTC.</param>
         /// <returns>The count of logged in users.</returns>
         int GetLoggedInUsersCount(TimeSpan offset);
-
-        /// <summary>
-        /// Returns the list of all active UserProfiles who have an email address and have
-        /// been created on or after the createdOnOrAfter date.
-        /// </summary>
-        /// <param name="createdOnOrAfter">The profiles must have created on or after to this date.</param>
-        /// <param name="page">The page to request, defaults to 0.</param>
-        /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
-        /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DBResult<List<UserProfile>> GetAllUserProfilesCreatedOnOrAfter(DateTime createdOnOrAfter, int page = 0, int pagesize = 500);
     }
 }
