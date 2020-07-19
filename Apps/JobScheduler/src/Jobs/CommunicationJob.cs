@@ -23,17 +23,14 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using MailKit.Net.Smtp;
-    using MailKit.Security;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using MimeKit;
     using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class CommunicationJob : ICommunicationJob
     {
-        private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
+        private const int ConcurrencyTimeout = 30 * 60; // 5 minutes
         private readonly IConfiguration configuration;
         private readonly ILogger<CommunicationJob> logger;
         private readonly ICommunicationDelegate communicationDelegate;
@@ -98,7 +95,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                 };
                                 Guid createdEmailId = this.emailDelegate.InsertEmail(email, true);
 
-                                // Inser a new CommunicationEmail record into 
+                                // Inser a new CommunicationEmail record into
                                 CommunicationEmail commEmail = new CommunicationEmail()
                                 {
                                     EmailId = createdEmailId,
@@ -108,10 +105,17 @@ namespace Healthgateway.JobScheduler.Jobs
                                 this.commEmailDelegate.Add(commEmail, true);
                             }
 
-                            // Set the createdOnOrAfterFilter for the next query retrieving the next chunk of user profiles.
-                            createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
+                            if (usersToSendCommEmails.Count > 0)
+                            {
+                                // Set the createdOnOrAfterFilter for the next query retrieving the next chunk of user profiles.
+                                createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
+                            }
                         }
-                        while (usersToSendCommEmails.Count > 0 && usersToSendCommEmails.Count == this.retryFetchSize); // keep looping when the above query returns the max return rows (or user profiles).
+                        while (usersToSendCommEmails.Count == this.retryFetchSize); // keep looping when the above query returns the max return rows (or user profiles).
+
+                        // Update Communication Status to Processed
+                        comm.CommunicationStatusCode = CommunicationStatus.Processed;
+                        this.communicationDelegate.Update(comm, true);
                     }
                     catch (Exception e)
                     {
@@ -123,29 +127,6 @@ namespace Healthgateway.JobScheduler.Jobs
             }
 
             this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(communications)}");
-        }
-
-        private void TestCreateNewComm()
-        {
-            Communication comm = new Communication()
-            {
-                CommunicationStatusCode = CommunicationStatus.New,
-                CommunicationTypeCode = CommunicationType.Email,
-                Subject = "Testing Communication Job 01",
-                Text = @"<html>
-                            <body>
-                            <h1>Enter the main heading, usually the same as the title.</h1>
-                            <p>Be <b>bold</b> in stating your key points. Put them in a list: </p>
-                            <ul>
-                            <li>The first item in your list</li>
-                            <li>The second item; <i>italicize</i> key words</li>
-                            </ul>
-                            <p>Improve your image by including an image. </p>
-                            </body>
-                            </html>",
-                Priority = EmailPriority.Standard,
-            };
-            this.communicationDelegate.Add(comm, true);
         }
     }
 }
