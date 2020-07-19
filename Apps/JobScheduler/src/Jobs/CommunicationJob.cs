@@ -30,7 +30,7 @@ namespace Healthgateway.JobScheduler.Jobs
     /// <inheritdoc />
     public class CommunicationJob : ICommunicationJob
     {
-        private const int ConcurrencyTimeout = 30 * 60; // 5 minutes
+        private const int ConcurrencyTimeout = 30 * 60; // 30 minutes
         private readonly IConfiguration configuration;
         private readonly ILogger<CommunicationJob> logger;
         private readonly ICommunicationDelegate communicationDelegate;

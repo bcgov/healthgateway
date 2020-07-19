@@ -97,7 +97,6 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<ICommunicationEmailDelegate, DBCommunicationEmailDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
@@ -153,7 +152,6 @@ namespace HealthGateway.JobScheduler
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
-
             SchedulerHelper.ScheduleJob<ICommunicationJob>(this.configuration, "CreateCommEmailsForNewCommunications", j => j.CreateCommunicationEmailsForNewCommunications());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
