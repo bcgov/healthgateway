@@ -25,7 +25,6 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class CommunicationJob : ICommunicationJob
