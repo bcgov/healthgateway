@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
-ARG DEVOPS_AGENT_VERSION=2.169.1
-ARG NODE_VERSION=v12.13.1
+ARG DEVOPS_AGENT_VERSION=2.171.1
+ARG NODE_VERSION=v12.18.2
 ARG DOTNET_VERSION=3.1
 ARG OPENSHIFT_VERSION=v3.11.0-0cbc58b
 
@@ -8,23 +8,23 @@ ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent v${DEVOPS_AGENT_VERSION} with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI ${OPENSHIFT_VERSION}"
 
 LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="azure-devlops-.net${DOTNET_VERSION}" \
-      io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,azure,devops,agent-v${DEVOPS_AGENT_VERSION},.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
-      release="1"
+    description="$DESCRIPTION" \
+    io.k8s.description="$DESCRIPTION" \
+    io.k8s.display-name="azure-devlops-.net${DOTNET_VERSION}" \
+    io.openshift.expose-services="8080:http" \
+    io.openshift.tags="builder,azure,devops,agent-v${DEVOPS_AGENT_VERSION},.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
+    release="1"
 
 RUN  export DEBIAN_FRONTEND=noninteractive && \
-     apt-get update -y -qq && \
-     apt-get install -y -qq git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https && \
-     curl -sLO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
-     dpkg -i packages-microsoft-prod.deb && \ 
-     rm packages-microsoft-prod.deb && \
-     apt-get update -y -qq  && \ 
-     apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION} && \
-     ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-     dpkg-reconfigure --frontend noninteractive tzdata
+    apt-get update -y -qq && \
+    apt-get install -y -qq git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev && \
+    curl -sLO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \ 
+    rm packages-microsoft-prod.deb && \
+    apt-get update -y -qq  && \ 
+    apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION} && \
+    ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
 
 # Fetch stock azure client and install
 RUN mkdir -p /opt/az/agent && \
@@ -65,13 +65,12 @@ RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
     node -v && \
     npm -v
 
-# Install the SonarQube scanner for dotnet
-RUN dotnet tool install --global dotnet-sonarscanner --version 4.8.0
-# Allow other users to execute the tools
-RUN chmod -R 777 $HOME
-# Fix nugget permissions
-RUN rm -rf /tmp/NuGetScratch/lock/*
-RUN chmod 777 /tmp/.nuget
+# Install .Net tooling for SonarQube and Test Results
+RUN dotnet tool install --global dotnet-sonarscanner --version 4.8.0 && \
+    dotnet tool install -g dotnet-reportgenerator-globaltool && \
+    chmod -R 777 $HOME && \
+    rm -rf /tmp/NuGetScratch/lock/* && \
+    chmod 777 /tmp/.nuget
 
 WORKDIR /opt/az/_work
 
