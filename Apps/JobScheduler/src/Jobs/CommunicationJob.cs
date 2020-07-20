@@ -20,7 +20,9 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Diagnostics.Contracts;
     using Hangfire;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
@@ -34,7 +36,9 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ILogger<CommunicationJob> logger;
         private readonly ICommunicationDelegate communicationDelegate;
         private readonly ICommunicationEmailDelegate commEmailDelegate;
-        private readonly IEmailDelegate emailDelegate;
+        private readonly IEmailQueueService emailQueueService;
+        private readonly GatewayDbContext dbContext;
+
         private readonly int retryFetchSize;
         private readonly string fromEmailAddressHGDonotreply;
 
@@ -45,15 +49,17 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="logger">The logger to use.</param>
         /// <param name="communicationDelegate">The Communication delegate to use.</param>
         /// <param name="commEmailDelegate">The Communication Email delegate to use.</param>
-        /// <param name="emailDelegate">The email delegate to use.</param>
-        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, ICommunicationEmailDelegate commEmailDelegate, IEmailDelegate emailDelegate)
+        /// <param name="emailQueueService">The email queue service to use.</param>
+        /// <param name="dbContext">The db context to use.</param>
+        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, ICommunicationEmailDelegate commEmailDelegate, IEmailQueueService emailQueueService, GatewayDbContext dbContext)
         {
-            Contract.Requires((configuration != null) && (emailDelegate != null));
+            Contract.Requires((configuration != null) && (emailQueueService != null));
             this.configuration = configuration!;
             this.logger = logger;
             this.communicationDelegate = communicationDelegate!;
             this.commEmailDelegate = commEmailDelegate!;
-            this.emailDelegate = emailDelegate!;
+            this.emailQueueService = emailQueueService!;
+            this.dbContext = dbContext;
 
             IConfigurationSection emailJobSection = this.configuration.GetSection("EmailJob");
             this.retryFetchSize = emailJobSection.GetValue<int>("MaxRetryFetchSize", 250);
@@ -101,16 +107,16 @@ namespace Healthgateway.JobScheduler.Jobs
                                     FormatCode = EmailFormat.HTML,
                                     Priority = comm.Priority,
                                 };
-                                Guid createdEmailId = this.emailDelegate.InsertEmail(email, true);
+                                this.emailQueueService.QueueNewEmail(email, false);
 
                                 // Inser a new CommunicationEmail record into
                                 CommunicationEmail commEmail = new CommunicationEmail()
                                 {
-                                    EmailId = createdEmailId,
-                                    UserProfileHdId = profile.HdId,
-                                    CommunicationId = comm.Id,
+                                    Email = email,
+                                    UserProfile = profile,
+                                    Communication = comm,
                                 };
-                                this.commEmailDelegate.Add(commEmail, true);
+                                this.commEmailDelegate.Add(commEmail, false);
                             }
 
                             if (usersToSendCommEmails.Count > 0)
@@ -118,6 +124,8 @@ namespace Healthgateway.JobScheduler.Jobs
                                 // Set the createdOnOrAfterFilter for the next query retrieving the next chunk of user profiles.
                                 createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
                             }
+
+                            this.dbContext.SaveChanges(); // commit after every retryFetchSize (or 250) pairs of Email & CommunicationEmail.
                         }
                         while (usersToSendCommEmails.Count == this.retryFetchSize
                                && lastProcessedProfileHdid != usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId); // keep looping when the above query returns the max return rows (or user profiles).
