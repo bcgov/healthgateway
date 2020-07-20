@@ -17,13 +17,11 @@
 namespace HealthGateway.Common.Swagger
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
-    using Microsoft.CodeAnalysis.Options;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
