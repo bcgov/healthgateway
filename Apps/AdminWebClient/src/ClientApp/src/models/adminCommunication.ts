@@ -1,4 +1,4 @@
-export enum EntryType {
+export enum CommunicationType {
     Email = "Email",
     Banner = "Banner"
 }
