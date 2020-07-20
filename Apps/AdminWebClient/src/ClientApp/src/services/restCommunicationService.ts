@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { IHttpDelegate, ICommunicationService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import RequestResult from "@/models/requestResult";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 
 @injectable()

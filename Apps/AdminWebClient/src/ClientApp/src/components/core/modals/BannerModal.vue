@@ -96,7 +96,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import { ValidationProvider, extend, validate } from "vee-validate";
 import { required, email } from "vee-validate/dist/rules";
