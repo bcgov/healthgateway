@@ -99,6 +99,7 @@ namespace HealthGateway.Database.Delegates
 
             var userProfiles = this.dbContext.UserProfile
                 .Where(profile => !profile.ClosedDateTime.HasValue
+                        && !string.IsNullOrEmpty(profile.Email)
                         && (!createdOnOrAfter.HasValue || profile.CreatedDateTime >= createdOnOrAfter)
 
 #pragma warning disable CA1307 // Specify StringComparison
