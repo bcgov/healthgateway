@@ -62,7 +62,7 @@ import { Component, Vue, Watch, Emit } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
-import Communication from "../../models/communication";
+import Communication, { EntryType } from "../../models/adminCommunication";
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -96,7 +96,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         text: "",
         subject: "",
-        communicationTypeCode: "Banner",
+        communicationTypeCode: EntryType.Banner,
         priority: 10,
         version: 0,
         effectiveDateTime: moment(new Date()).toDate(),
@@ -108,7 +108,7 @@ export default class CommunicationTable extends Vue {
     private editedEmail: Communication = {
         id: "-1",
         subject: "",
-        communicationTypeCode: "Email",
+        communicationTypeCode: EntryType.Email,
         text: "<p></p>",
         priority: 10,
         effectiveDateTime: new Date(),
@@ -120,7 +120,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         text: "",
         subject: "",
-        communicationTypeCode: "Banner",
+        communicationTypeCode: EntryType.Banner,
         version: 0,
         priority: 10,
         effectiveDateTime: new Date(),
@@ -132,7 +132,7 @@ export default class CommunicationTable extends Vue {
     private defaultEmail: Communication = {
         id: "-1",
         subject: "",
-        communicationTypeCode: "Email",
+        communicationTypeCode: EntryType.Email,
         text: "<p></p>",
         priority: 10,
         effectiveDateTime: new Date(),
@@ -299,10 +299,10 @@ export default class CommunicationTable extends Vue {
 
     private parseComms(communication: Communication[]) {
         this.bannerList = communication.filter(
-            (comm: Communication) => comm.communicationTypeCode === "Banner"
+            (comm: Communication) => comm.communicationTypeCode === EntryType.Banner
         );
         this.emailList = communication.filter(
-            (comm: Communication) => comm.communicationTypeCode === "Email"
+            (comm: Communication) => comm.communicationTypeCode === EntryType.Email
         );
         if (this.tab === 0) {
             this.communicationList = this.bannerList;

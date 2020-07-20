@@ -1,3 +1,9 @@
+export enum EntryType {
+    Email = "Email",
+    Banner = "Banner"
+}
+
+
 // Model that provides a user representation of admin communications.
 export default interface Communication {
     // Gets or sets the id.
