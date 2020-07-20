@@ -101,16 +101,9 @@ namespace HealthGateway.Database.Models
         [MaxLength(10)]
         public string EmailStatusCode { get; set; } = EmailStatus.New;
 
-#pragma warning disable CA2227 // Collection properties should be read only
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
         /// <summary>
-        /// Gets or sets the list containing all the communication emails related to this email.
+        /// Gets the list containing all the communication emails related to this email.
         /// </summary>
-        public virtual List<CommunicationEmail> CommunicationEmails { get; set; }
-
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-#pragma warning restore CA2227 // Collection properties should be read only
-
+        public virtual List<CommunicationEmail> CommunicationEmails { get; } = null!;
     }
 }

@@ -101,11 +101,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(profile => !profile.ClosedDateTime.HasValue
                         && !string.IsNullOrEmpty(profile.Email)
                         && (!createdOnOrAfter.HasValue || profile.CreatedDateTime >= createdOnOrAfter)
-
-#pragma warning disable CA1307 // Specify StringComparison
-                        && !hdidsWithMostRecentCreatedCommEmails.Contains(profile.HdId))
-#pragma warning restore CA1307 // Specify StringComparison
-
+                        && hdidsWithMostRecentCreatedCommEmails != profile.HdId)
                 .OrderBy(profile => profile.CreatedDateTime)
                 .Take(maxRows)
                 .ToList();

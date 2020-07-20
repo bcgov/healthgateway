@@ -36,6 +36,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ICommunicationEmailDelegate commEmailDelegate;
         private readonly IEmailDelegate emailDelegate;
         private readonly int retryFetchSize;
+        private readonly string fromEmailAddressHGDonotreply;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationJob"/> class.
@@ -54,8 +55,10 @@ namespace Healthgateway.JobScheduler.Jobs
             this.commEmailDelegate = commEmailDelegate!;
             this.emailDelegate = emailDelegate!;
 
-            IConfigurationSection section = this.configuration.GetSection("EmailJob");
-            this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 250);
+            IConfigurationSection emailJobSection = this.configuration.GetSection("EmailJob");
+            this.retryFetchSize = emailJobSection.GetValue<int>("MaxRetryFetchSize", 250);
+            IConfigurationSection commEmailJobSection = this.configuration.GetSection("CreateCommEmailsForNewCommunications");
+            this.fromEmailAddressHGDonotreply = commEmailJobSection.GetValue<string>("FromEmailAddressHGDonotreply");
         }
 
         /// <inheritdoc />
@@ -91,7 +94,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                 // Insert a new Email record into db.
                                 Email email = new Email()
                                 {
-                                    From = EmailConsts.FromEmailAddressHGDonotreply,
+                                    From = this.fromEmailAddressHGDonotreply,
                                     To = profile.Email,
                                     Subject = comm.Subject,
                                     Body = comm.Text,
