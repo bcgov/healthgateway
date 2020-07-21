@@ -73,6 +73,7 @@ import moment from "moment";
 import EventBus from "@/eventbus";
 import TimelineEntry from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
+import { EventMessageName } from "@/constants/eventMessageName";
 
 interface DateGroup {
     key: string;
@@ -102,6 +103,14 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
             self.setPageFromDate(eventDate);
         });
+
+        this.eventBus.$on(
+            EventMessageName.TimelineCurrentDateUpdated,
+            function (currentDate: Date) {
+                self.setPageFromDate(currentDate);
+                self.currentPage = 3; // debug only, to be updated when Leo works on 8693
+            }
+        );
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize();

@@ -61,10 +61,12 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
+import EventBus from "@/eventbus";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import moment from "moment";
 import CalendarBody from "./body.vue";
 import DateUtil from "@/utility/dateUtil";
+import { EventMessageName } from "@/constants/eventMessageName";
 
 @Component({
     components: {
@@ -76,6 +78,7 @@ export default class CalendarComponent extends Vue {
     @Prop() titleFormat!: string;
 
     private headerDate: Date = new Date();
+    private eventBus = EventBus;
     private leftIcon: string = "chevron-left";
     private rightIcon: string = "chevron-right";
 
@@ -105,6 +108,10 @@ export default class CalendarComponent extends Vue {
     private dispatchEvent() {
         let startDate = DateUtil.getMonthFirstDate(this.headerDate);
         this.$emit("update:currentDate", startDate);
+        this.eventBus.$emit(
+            EventMessageName.TimelineCurrentDateUpdated,
+            this.currentDate
+        ); // emit the timelineCurrentDateUpdated event to the linearTImeline vue sibling
     }
 }
 </script>
