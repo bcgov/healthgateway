@@ -107,7 +107,7 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineCurrentDateUpdated,
             function (currentDate: Date) {
-                self.setPageFromDate(currentDate);
+                console.log("todo: leo to implement 8693 here");
                 // self.currentPage = 3; // debug only, to be updated when Leo works on 8693
             }
         );

@@ -111,7 +111,7 @@ export default class CalendarComponent extends Vue {
         this.eventBus.$emit(
             EventMessageName.TimelineCurrentDateUpdated,
             this.currentDate
-        ); // emit the timelineCurrentDateUpdated event to the linearTImeline vue sibling
+        );
     }
 }
 </script>
