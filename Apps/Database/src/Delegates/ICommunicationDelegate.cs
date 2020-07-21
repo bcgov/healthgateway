@@ -56,6 +56,6 @@ namespace HealthGateway.Database.Delegates
         /// Gets the email communications which are in New or Processing from the DB.
         /// </summary>
         /// <returns>The list of communications.</returns>
-        List<Communication> GetEmailCommunicationsInNewProcessingOrError();
+        List<Communication> GetEmailCommunicationsToSend();
     }
 }

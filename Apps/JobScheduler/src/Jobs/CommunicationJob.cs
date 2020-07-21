@@ -71,7 +71,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void CreateCommunicationEmailsForNewCommunications()
         {
             this.logger.LogDebug($"Creating emails & communication emails...");
-            List<Communication> communications = this.communicationDelegate.GetEmailCommunicationsInNewProcessingOrError();
+            List<Communication> communications = this.communicationDelegate.GetEmailCommunicationsToSend();
 
             if (communications.Count > 0)
             {
