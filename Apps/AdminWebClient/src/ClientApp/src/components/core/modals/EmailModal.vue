@@ -54,8 +54,15 @@
                 <v-btn color="blue darken-1" text @click="close()"
                     >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="emitSend()"
+                <v-btn
+                    v-if="editedIndex == -1"
+                    color="blue darken-1"
+                    text
+                    @click="emitSend()"
                     >Send</v-btn
+                >
+                <v-btn v-else color="blue darken-1" text @click="emitUpdate()"
+                    >Update</v-btn
                 >
             </v-card-actions>
         </v-card>
@@ -168,6 +175,17 @@ export default class EmailModal extends Vue {
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
+            return this.editedItem;
+        }
+    }
+
+    @Emit()
+    private emitUpdate() {
+        if (
+            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+            this.contentValid()
+        ) {
+            this.close();
             return this.editedItem;
         }
     }

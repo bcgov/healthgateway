@@ -32,7 +32,7 @@
                     :edited-item="editedBanner"
                     :edited-index="editedIndex"
                     @emit-add="add"
-                    @emit-update="updateBanner"
+                    @emit-update="update"
                     @emit-close="close"
                 />
                 <EmailModal
@@ -40,12 +40,13 @@
                     :edited-item="editedEmail"
                     :edited-index="editedIndex"
                     @emit-send="add"
+                    @emit-update="update"
                     @emit-close="close"
                 />
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn @click="editBanner(item)">
+            <v-btn @click="edit(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
         </template>
@@ -62,7 +63,9 @@ import { Component, Vue, Watch, Emit } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
-import Communication, { CommunicationType } from "../../models/adminCommunication";
+import Communication, {
+    CommunicationType
+} from "../../models/adminCommunication";
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -228,11 +231,10 @@ export default class CommunicationTable extends Vue {
         }
     }
 
-    private editBanner(item: Communication) {
+    private edit(item: Communication) {
         this.editedIndex = this.communicationList.indexOf(item);
         this.editedBanner = item;
-        this.editedBanner.effectiveDateTime = new Date(item.effectiveDateTime);
-        this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+        this.editedEmail = item;
     }
 
     private sortCommunicationsByDate(
@@ -299,10 +301,12 @@ export default class CommunicationTable extends Vue {
 
     private parseComms(communication: Communication[]) {
         this.bannerList = communication.filter(
-            (comm: Communication) => comm.communicationTypeCode === CommunicationType.Banner
+            (comm: Communication) =>
+                comm.communicationTypeCode === CommunicationType.Banner
         );
         this.emailList = communication.filter(
-            (comm: Communication) => comm.communicationTypeCode === CommunicationType.Email
+            (comm: Communication) =>
+                comm.communicationTypeCode === CommunicationType.Email
         );
         if (this.tab === 0) {
             this.communicationList = this.bannerList;
@@ -347,7 +351,7 @@ export default class CommunicationTable extends Vue {
             });
     }
 
-    private updateBanner(comm: Communication): void {
+    private update(comm: Communication): void {
         this.isLoading = true;
         this.isFinishedLoading();
         this.communicationService
