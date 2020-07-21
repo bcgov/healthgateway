@@ -74,11 +74,9 @@ namespace HealthGateway.Medication
 
             // Add services
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
             services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
-            services.AddTransient<IPharmacyService, RestPharmacyService>();
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HMACHashDelegate>();

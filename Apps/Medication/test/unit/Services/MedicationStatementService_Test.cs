@@ -91,7 +91,6 @@ namespace HealthGateway.Medication.Test
                 new Mock<ITraceService>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
-                hnClientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object);
 
