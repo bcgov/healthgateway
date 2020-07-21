@@ -72,7 +72,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void CreateCommunicationEmailsForNewCommunications()
         {
             this.logger.LogDebug($"Creating emails & communication emails...");
-            List<Communication> communications = this.communicationDelegate.GetCommunicationsByTypeAndStatusCode(CommunicationType.Email, CommunicationStatus.New);
+            List<Communication> communications = this.communicationDelegate.GetEmailCommunicationsInNewProcessingOrError();
 
             if (communications.Count > 0)
             {
@@ -96,7 +96,6 @@ namespace Healthgateway.JobScheduler.Jobs
                             usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(comm.Id, createdOnOrAfterFilter, this.retryFetchSize);
                             foreach (UserProfile profile in usersToSendCommEmails)
                             {
-                                // Idea for Improvement: we can look into a lib for Bulk Insert / Update using .NET Core for Postgres (if needed).
                                 // Insert a new Email record into db.
                                 Email email = new Email()
                                 {
@@ -125,6 +124,12 @@ namespace Healthgateway.JobScheduler.Jobs
                                 createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
                             }
 
+                            if (comm.CommunicationStatusCode != CommunicationStatus.Processing)
+                            {
+                                comm.CommunicationStatusCode = CommunicationStatus.Processing;
+                                this.communicationDelegate.Update(comm, false);
+                            }
+
                             this.dbContext.SaveChanges(); // commit after every retryFetchSize (or 250) pairs of Email & CommunicationEmail.
                         }
                         while (usersToSendCommEmails.Count == this.retryFetchSize
@@ -138,6 +143,21 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         // log the exception as a warning but we can continue
                         this.logger.LogWarning($"Error while creating new emails and communication email records for Email Communication - skipping for now\n{e.ToString()}");
+
+                        if (comm.CommunicationStatusCode != CommunicationStatus.Processed)
+                        {
+                            try
+                            {
+                                // Update Communication Status to Error
+                                comm.CommunicationStatusCode = CommunicationStatus.Error;
+                                this.communicationDelegate.Update(comm, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                // log the exception as a warning but we can continue
+                                this.logger.LogWarning($"Error while updating communication with Error status - skipping for now\n{ex.ToString()}");
+                            }
+                        }
                     }
 #pragma warning restore CA1031 // Restore warnings.
                 }

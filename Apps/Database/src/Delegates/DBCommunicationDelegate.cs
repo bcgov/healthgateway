@@ -135,12 +135,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Communication> GetCommunicationsByTypeAndStatusCode(string communicationType, string communicationStatusCode)
+        public List<Communication> GetEmailCommunicationsInNewProcessingOrError()
         {
             this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
-            List<Communication> retVal = this.dbContext.Communication.Where(c => c.CommunicationTypeCode == communicationType && c.CommunicationStatusCode == communicationStatusCode)
+            List<Communication> retVal = this.dbContext.Communication.Where(c => c.CommunicationTypeCode == CommunicationType.Email && (c.CommunicationStatusCode == CommunicationStatus.New || c.CommunicationStatusCode == CommunicationStatus.Processing || c.CommunicationStatusCode == CommunicationStatus.Error))
                 .OrderByDescending(c => c.CreatedDateTime).ToList();
-            this.logger.LogDebug($"Finished getting list of low priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug($"Finished getting list of New & Processing Email Communications from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
     }

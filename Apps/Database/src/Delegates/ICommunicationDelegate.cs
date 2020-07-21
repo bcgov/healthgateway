@@ -53,11 +53,9 @@ namespace HealthGateway.Database.Delegates
         DBResult<Communication> Update(Communication communication, bool commit = true);
 
         /// <summary>
-        /// Gets the communications from the DB.
+        /// Gets the email communications which are in New or Processing from the DB.
         /// </summary>
-        /// <param name="communicationType">The Communication Type to be retrieved from the database.</param>
-        /// <param name="communicationStatusCode">The CSommunication Status Code to be retrieved from the database.</param>
         /// <returns>The list of communications.</returns>
-        List<Communication> GetCommunicationsByTypeAndStatusCode(string communicationType, string communicationStatusCode);
+        List<Communication> GetEmailCommunicationsInNewProcessingOrError();
     }
 }

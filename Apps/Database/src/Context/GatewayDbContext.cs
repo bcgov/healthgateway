@@ -689,6 +689,15 @@ namespace HealthGateway.Database.Context
                 },
                 new CommunicationStatusCode
                 {
+                    StatusCode = CommunicationStatus.Processing,
+                    Description = "A Communication is in process by batch",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
                     StatusCode = CommunicationStatus.Processed,
                     Description = "A Communication which has been sent",
                     CreatedBy = UserId.DefaultUser,
