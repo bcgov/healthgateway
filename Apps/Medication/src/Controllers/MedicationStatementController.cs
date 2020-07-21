@@ -70,8 +70,6 @@ namespace HealthGateway.Medication.Controllers
         [Authorize(Policy = MedicationPolicy.MedicationStatementRead)]
         public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
         {
-            string medicationDataSource = this.configuration.GetSection("MedicationDataSource").Value;
-
             return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
         }
     }
