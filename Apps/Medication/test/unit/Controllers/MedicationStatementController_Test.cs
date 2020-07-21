@@ -85,9 +85,9 @@ namespace HealthGateway.Medication.Test
             Assert.IsType<JsonResult>(actual);
 
             JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<List<MedicationStatement>>>(jsonResult.Value);
+            Assert.IsType<RequestResult<List<MedicationStatementHistory>>>(jsonResult.Value);
 
-            RequestResult<List<MedicationStatement>> requestResult = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
+            RequestResult<List<MedicationStatementHistory>> requestResult = (RequestResult<List<MedicationStatementHistory>>)jsonResult.Value;
             Assert.Null(requestResult.ResourcePayload);
             Assert.Equal(errorMessage, requestResult.ResultMessage);
         }
