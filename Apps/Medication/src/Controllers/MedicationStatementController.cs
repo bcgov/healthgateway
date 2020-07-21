@@ -72,19 +72,7 @@ namespace HealthGateway.Medication.Controllers
         {
             string medicationDataSource = this.configuration.GetSection("MedicationDataSource").Value;
 
-            // Switch between both types of systems
-            if (medicationDataSource == "PharmaNet")
-            {
-                return new JsonResult(await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true));
-            }
-            else if (medicationDataSource == "ODR")
-            {
-                return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
-            }
-            else
-            {
-                throw new KeyNotFoundException("No valid data source configured");
-            }
+            return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
         }
     }
 }
