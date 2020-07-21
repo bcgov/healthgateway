@@ -4,6 +4,7 @@
         <CalendarHeader
             :current-date.sync="currentDate"
             :title-format="titleFormat"
+            :availiable-months="availiableMonths"
         >
         </CalendarHeader>
         <!-- body display date day and events -->
@@ -19,10 +20,17 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
 import CalendarHeader from "./header.vue";
 import CalendarBody from "./body.vue";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
+import {
+    CalendarEntry,
+    CalendarWeek,
+    CalendarMonth,
+} from "@/components/calendar/models";
+import DateUtil from "@/utility/dateUtil";
+import moment from "moment";
 
 @Component({
     components: {
@@ -32,6 +40,9 @@ import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 })
 export default class CalendarComponent extends Vue {
     @Prop() dateGroups!: DateGroup[];
+    @Prop() private filterText!: string;
+    @Prop() private filterTypes!: string[];
+
     @Prop({ default: 0, required: false }) firstDay!: number;
     @Prop({ default: "MMMM yyyy", required: false }) titleFormat!: string;
     @Prop({
@@ -65,6 +76,39 @@ export default class CalendarComponent extends Vue {
     })
     weekNames!: Array<string>;
 
+    private availiableMonths: Date[] = [];
+
     private currentDate: Date = new Date();
+
+    private mounted() {
+        this.updateAvailiableMonths();
+    }
+
+    @Watch("dateGroups")
+    private updateAvailiableMonths() {
+        this.availiableMonths = this.dateGroups.reduce<Date[]>(
+            (groups, entry) => {
+                // Get the month and year and dismiss the day
+                const monthYear = new Date(
+                    entry.date.getFullYear(),
+                    entry.date.getMonth(),
+                    1
+                );
+
+                // Create a new group if it the date doesnt exist in the map
+                if (
+                    groups.findIndex(
+                        (month) =>
+                            month.getFullYear() === monthYear.getFullYear() &&
+                            month.getMonth() === monthYear.getMonth()
+                    ) === -1
+                ) {
+                    groups.push(monthYear);
+                }
+                return groups;
+            },
+            []
+        );
+    }
 }
 </script>

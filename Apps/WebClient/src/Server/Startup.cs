@@ -85,7 +85,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IUserPreferenceDelegate , DBUserPreferenceDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
@@ -169,7 +169,7 @@ namespace HealthGateway.WebClient
                         "{*path}",
                         new SpaOptions { SourcePath = "ClientApp" },
                         npmScript: "serve",
-                        port:8585,
+                        port: 8585,
                         regex: "Compiled successfully",
                         forceKill: true);
                 }

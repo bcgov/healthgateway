@@ -162,28 +162,7 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import EventBus from "@/eventbus";
-
-interface CalendarWeek {
-    id: string;
-    days: CalendarDay[];
-}
-
-interface CalendarDay {
-    id: string;
-    monthDay: number;
-    isToday: boolean;
-    isCurMonth: boolean;
-    weekDay: number;
-    date: Date;
-    events: CalendarEntry[];
-}
-
-interface CalendarEntry {
-    id: string;
-    type: EntryType;
-    cellIndex: number;
-    entries: TimelineEntry[];
-}
+import { CalendarEntry, CalendarWeek } from "./models";
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
