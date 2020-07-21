@@ -104,6 +104,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets the list containing all the communication emails related to this email.
         /// </summary>
-        public virtual List<CommunicationEmail> CommunicationEmails { get; } = null!;
+        public virtual List<CommunicationEmail> CommunicationEmails { get; } = new List<CommunicationEmail>();
     }
 }

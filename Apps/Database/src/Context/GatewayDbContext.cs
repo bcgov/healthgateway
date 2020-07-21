@@ -690,7 +690,7 @@ namespace HealthGateway.Database.Context
                 new CommunicationStatusCode
                 {
                     StatusCode = CommunicationStatus.Processing,
-                    Description = "A Communication is in process by batch",
+                    Description = "Communication is being processed by batch",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

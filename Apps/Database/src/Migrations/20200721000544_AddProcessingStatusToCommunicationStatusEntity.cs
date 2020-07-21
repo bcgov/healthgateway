@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "CommunicationStatusCode",
                 columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Processing", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A Communication is in process by batch", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { "Processing", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Communication is being processed by batch", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.UpdateData(
                 schema: "gateway",

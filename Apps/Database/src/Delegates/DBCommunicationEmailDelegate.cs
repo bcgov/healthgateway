@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<UserProfile> GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(Guid communicationId, DateTime? createdOnOrAfter = null, int maxRows = 500)
+        public List<UserProfile> GetActiveUserProfilesByCommunicationId(Guid communicationId, DateTime? createdOnOrAfter, int maxRows)
         {
             this.logger.LogTrace($"Getting Communication Emails by Communication Id from DB...");
 

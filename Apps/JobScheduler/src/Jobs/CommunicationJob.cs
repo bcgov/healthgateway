@@ -39,7 +39,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly IEmailQueueService emailQueueService;
         private readonly GatewayDbContext dbContext;
 
-        private readonly int retryFetchSize;
+        private readonly int maxFetchSize;
         private readonly string fromEmailAddressHGDonotreply;
 
         /// <summary>
@@ -61,10 +61,9 @@ namespace Healthgateway.JobScheduler.Jobs
             this.emailQueueService = emailQueueService!;
             this.dbContext = dbContext;
 
-            IConfigurationSection emailJobSection = this.configuration.GetSection("EmailJob");
-            this.retryFetchSize = emailJobSection.GetValue<int>("MaxRetryFetchSize", 250);
             IConfigurationSection commEmailJobSection = this.configuration.GetSection("CreateCommEmailsForNewCommunications");
             this.fromEmailAddressHGDonotreply = commEmailJobSection.GetValue<string>("FromEmailAddressHGDonotreply");
+            this.maxFetchSize = commEmailJobSection.GetValue<int>("MaxFetchSize", 250);
         }
 
         /// <inheritdoc />
@@ -76,9 +75,9 @@ namespace Healthgateway.JobScheduler.Jobs
 
             if (communications.Count > 0)
             {
-                this.logger.LogInformation($"Found {communications.Count} communications which are in New status.");
+                this.logger.LogInformation($"Found {communications.Count} communications which need to be processed / re-processed.");
 
-                foreach (Communication comm in communications)
+                foreach (Communication communication in communications)
                 {
 #pragma warning disable CA1031 //We want to catch exception.
                     try
@@ -93,7 +92,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                 lastProcessedProfileHdid = usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId;
                             }
 
-                            usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesWithoutCommEmailByCommunicationIdAndByCreatedOnOrAfter(comm.Id, createdOnOrAfterFilter, this.retryFetchSize);
+                            usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesByCommunicationId(communication.Id, createdOnOrAfterFilter, this.maxFetchSize);
                             foreach (UserProfile profile in usersToSendCommEmails)
                             {
                                 // Insert a new Email record into db.
@@ -101,10 +100,10 @@ namespace Healthgateway.JobScheduler.Jobs
                                 {
                                     From = this.fromEmailAddressHGDonotreply,
                                     To = profile.Email,
-                                    Subject = comm.Subject,
-                                    Body = comm.Text,
+                                    Subject = communication.Subject,
+                                    Body = communication.Text,
                                     FormatCode = EmailFormat.HTML,
-                                    Priority = comm.Priority,
+                                    Priority = communication.Priority,
                                 };
                                 this.emailQueueService.QueueNewEmail(email, false);
 
@@ -113,7 +112,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                 {
                                     Email = email,
                                     UserProfile = profile,
-                                    Communication = comm,
+                                    Communication = communication,
                                 };
                                 this.commEmailDelegate.Add(commEmail, false);
                             }
@@ -124,33 +123,33 @@ namespace Healthgateway.JobScheduler.Jobs
                                 createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
                             }
 
-                            if (comm.CommunicationStatusCode != CommunicationStatus.Processing)
+                            if (communication.CommunicationStatusCode != CommunicationStatus.Processing)
                             {
-                                comm.CommunicationStatusCode = CommunicationStatus.Processing;
-                                this.communicationDelegate.Update(comm, false);
+                                communication.CommunicationStatusCode = CommunicationStatus.Processing;
+                                this.communicationDelegate.Update(communication, false);
                             }
 
                             this.dbContext.SaveChanges(); // commit after every retryFetchSize (or 250) pairs of Email & CommunicationEmail.
                         }
-                        while (usersToSendCommEmails.Count == this.retryFetchSize
+                        while (usersToSendCommEmails.Count == this.maxFetchSize
                                && lastProcessedProfileHdid != usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId); // keep looping when the above query returns the max return rows (or user profiles).
 
                         // Update Communication Status to Processed
-                        comm.CommunicationStatusCode = CommunicationStatus.Processed;
-                        this.communicationDelegate.Update(comm, true);
+                        communication.CommunicationStatusCode = CommunicationStatus.Processed;
+                        this.communicationDelegate.Update(communication, true);
                     }
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
                         this.logger.LogWarning($"Error while creating new emails and communication email records for Email Communication - skipping for now\n{e.ToString()}");
 
-                        if (comm.CommunicationStatusCode != CommunicationStatus.Processed)
+                        if (communication.CommunicationStatusCode != CommunicationStatus.Processed)
                         {
                             try
                             {
                                 // Update Communication Status to Error
-                                comm.CommunicationStatusCode = CommunicationStatus.Error;
-                                this.communicationDelegate.Update(comm, true);
+                                communication.CommunicationStatusCode = CommunicationStatus.Error;
+                                this.communicationDelegate.Update(communication, true);
                             }
                             catch (Exception ex)
                             {
