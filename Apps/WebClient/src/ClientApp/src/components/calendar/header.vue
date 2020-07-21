@@ -74,7 +74,7 @@ import DateUtil from "@/utility/dateUtil";
 export default class CalendarComponent extends Vue {
     @Prop() currentDate!: Date;
     @Prop() titleFormat!: string;
-    @Prop() availiableMonths!: Date[];
+    @Prop() availableMonths!: Date[];
 
     private monthIndex: number = 0;
     private headerDate: Date = new Date();
@@ -85,8 +85,8 @@ export default class CalendarComponent extends Vue {
         return moment(this.currentDate).format(this.titleFormat);
     }
 
-    @Watch("availiableMonths")
-    public onAvailiableMonthsChange() {
+    @Watch("availableMonths")
+    public onAvailableMonthsChange() {
         if (this.monthIndex !== 0) {
             this.monthIndex = 0;
         } else {
@@ -96,7 +96,7 @@ export default class CalendarComponent extends Vue {
 
     @Watch("monthIndex")
     public onMonthIndexChange() {
-        this.headerDate = this.availiableMonths[this.monthIndex];
+        this.headerDate = this.availableMonths[this.monthIndex];
         this.dispatchEvent();
     }
 
@@ -105,7 +105,7 @@ export default class CalendarComponent extends Vue {
     }
 
     private previousMonth() {
-        if (this.monthIndex + 1 < this.availiableMonths.length) {
+        if (this.monthIndex + 1 < this.availableMonths.length) {
             this.monthIndex += 1;
         }
     }

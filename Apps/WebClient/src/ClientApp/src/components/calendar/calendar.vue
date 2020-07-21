@@ -4,7 +4,7 @@
         <CalendarHeader
             :current-date.sync="currentDate"
             :title-format="titleFormat"
-            :availiable-months="availiableMonths"
+            :available-months="availableMonths"
         >
         </CalendarHeader>
         <!-- body display date day and events -->
@@ -76,17 +76,17 @@ export default class CalendarComponent extends Vue {
     })
     weekNames!: Array<string>;
 
-    private availiableMonths: Date[] = [];
+    private availableMonths: Date[] = [];
 
     private currentDate: Date = new Date();
 
     private mounted() {
-        this.updateAvailiableMonths();
+        this.updateAvailableMonths();
     }
 
     @Watch("dateGroups")
-    private updateAvailiableMonths() {
-        this.availiableMonths = this.dateGroups.reduce<Date[]>(
+    private updateAvailableMonths() {
+        this.availableMonths = this.dateGroups.reduce<Date[]>(
             (groups, entry) => {
                 // Get the month and year and dismiss the day
                 const monthYear = new Date(
