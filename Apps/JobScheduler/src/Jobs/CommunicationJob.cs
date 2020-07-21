@@ -84,7 +84,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         DateTime? createdOnOrAfterFilter = null;
                         string lastProcessedProfileHdid = string.Empty;
-                        List<UserProfile>? usersToSendCommEmails = null;
+                        List<UserProfile> usersToSendCommEmails = new List<UserProfile>();
                         do
                         {
                             if (usersToSendCommEmails != null && usersToSendCommEmails.Count > 0)
