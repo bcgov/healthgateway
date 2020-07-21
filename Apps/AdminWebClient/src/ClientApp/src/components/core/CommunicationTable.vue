@@ -30,7 +30,7 @@
                 <BannerModal
                     v-if="tab == 0"
                     :edited-item="editedBanner"
-                    :edited-index="editedIndex"
+                    :is-new="isNewCommunication"
                     @emit-add="add"
                     @emit-update="update"
                     @emit-close="close"
@@ -38,7 +38,7 @@
                 <EmailModal
                     v-if="tab == 1"
                     :edited-item="editedEmail"
-                    :edited-index="editedIndex"
+                    :is-new="isNewCommunication"
                     @emit-send="add"
                     @emit-update="update"
                     @emit-close="close"
@@ -63,9 +63,7 @@ import { Component, Vue, Watch, Emit } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
-import Communication, {
-    CommunicationType
-} from "../../models/adminCommunication";
+import Communication, { CommunicationType } from "@/models/adminCommunication";
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -93,7 +91,7 @@ export default class CommunicationTable extends Vue {
     };
     // 0: Banners, 1: Emails
     private tab: number = 0;
-    private editedIndex: number = -1;
+    private isNewCommunication: boolean = true;
     private headers: any[] = [];
     private editedBanner: Communication = {
         id: "-1",
@@ -232,7 +230,8 @@ export default class CommunicationTable extends Vue {
     }
 
     private edit(item: Communication) {
-        this.editedIndex = this.communicationList.indexOf(item);
+        console.log(item);
+        this.isNewCommunication = false;
         this.editedBanner = item;
         this.editedEmail = item;
     }
@@ -391,7 +390,7 @@ export default class CommunicationTable extends Vue {
     private close() {
         this.editedBanner = Object.assign({}, this.defaultBanner);
         this.editedEmail = Object.assign({}, this.defaultEmail);
-        this.editedIndex = -1;
+        this.isNewCommunication = true;
     }
 
     private emitResult() {

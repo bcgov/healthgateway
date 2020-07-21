@@ -55,7 +55,7 @@
                     >Cancel</v-btn
                 >
                 <v-btn
-                    v-if="editedIndex == -1"
+                    v-if="isNewCommunication"
                     color="blue darken-1"
                     text
                     @click="emitSend()"
@@ -131,17 +131,17 @@ export default class EmailModal extends Vue {
     ];
 
     @Prop() editedItem!: Communication;
-    @Prop() editedIndex!: number;
+    @Prop() isNew!: number;
 
     @Watch("editedItem")
     private onPropChange() {
-        if (this.editedIndex > -1) {
+        if (!this.isNew) {
             this.dialog = true;
         }
     }
 
     private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Email" : "Edit Email";
+        return this.isNew ? "New Email" : "Edit Email";
     }
 
     @Watch("dialog")
