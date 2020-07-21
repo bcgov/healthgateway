@@ -33,60 +33,7 @@ namespace HealthGateway.Medication.Test
 
     public class MedicationStatementController_Test
     {
-        [Fact]
-        public async Task ShouldGetMedicationStatements()
-        {
-            // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string userId = "1001";
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
-            Mock<IIdentity> identityMock = new Mock<IIdentity>();
-            identityMock.Setup(s => s.Name).Returns(userId);
-
-            Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
-            claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
-
-            Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-
-            Mock<IAuthorizationService> authzMock = new Mock<IAuthorizationService>();
-
-            svcMock.Setup(s => s.GetMedicationStatements(hdid, null)).ReturnsAsync(new RequestResult<List<MedicationStatement>>()
-                {
-                    ResourcePayload = new List<MedicationStatement>()
-                });
-            Mock<IConfigurationSection> configurationSection = new Mock<IConfigurationSection>();
-            configurationSection.Setup(a => a.Value).Returns("PharmaNet");
-            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
-            configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
-
-            MedicationStatementController controller = new MedicationStatementController(configMock.Object, svcMock.Object);
-
-            // Act
-            IActionResult actual = await controller.GetMedicationStatements(hdid);
-
-            // Verify
-            Assert.IsType<JsonResult>(actual);
-
-            JsonResult jsonResult = (JsonResult)actual;
-
-            Assert.IsType<RequestResult<List<MedicationStatement>>>(jsonResult.Value);
-
-            RequestResult<List<MedicationStatement>> result = (RequestResult<List<MedicationStatement>>)jsonResult.Value;
-
-            Assert.True(result.ResourcePayload.Count == 0);
-        }
-
+        
         [Fact]
         public async Task ShouldMapError()
         {
@@ -115,8 +62,8 @@ namespace HealthGateway.Medication.Test
 
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
             svcMock
-                .Setup(s => s.GetMedicationStatements(hdid, null))
-                .ReturnsAsync(new RequestResult<List<MedicationStatement>>()
+                .Setup(s => s.GetMedicationStatementsHistory(hdid, null))
+                .ReturnsAsync(new RequestResult<List<MedicationStatementHistory>>()
                 {
                     ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
                     ResultMessage = errorMessage
@@ -125,7 +72,7 @@ namespace HealthGateway.Medication.Test
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             Mock<IConfigurationSection> configurationSection = new Mock<IConfigurationSection>();
-            configurationSection.Setup(a => a.Value).Returns("PharmaNet");
+            configurationSection.Setup(a => a.Value).Returns("ODR");
             Mock<IConfiguration> configMock = new Mock<IConfiguration>();
             configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
 
