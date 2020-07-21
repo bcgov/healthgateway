@@ -55,7 +55,7 @@
                     >Cancel</v-btn
                 >
                 <v-btn
-                    v-if="isNewCommunication"
+                    v-if="isNew"
                     color="blue darken-1"
                     text
                     @click="emitSend()"
