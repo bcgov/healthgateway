@@ -87,7 +87,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug("Getting drug brand names from DB");
             this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(drugIdentifiers)}");
             List<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
-            this.logger.LogDebug($"Total DrugIdentifiers: {drugIdentifiers.Count()} | Unique identifiers:{uniqueDrugIdentifers.Count()} ");
+            this.logger.LogDebug($"Total DrugIdentifiers: {drugIdentifiers.Count} | Unique identifiers:{uniqueDrugIdentifers.Count} ");
 
             // Retrieve the brand names using the Federal data
             List<DrugProduct> drugProducts = this.GetDrugProductsByDIN(uniqueDrugIdentifers);
