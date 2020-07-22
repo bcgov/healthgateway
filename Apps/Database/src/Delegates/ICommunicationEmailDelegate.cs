@@ -40,6 +40,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="communicationId">The communication id for filtering communication emails.</param>
         /// <param name="maxRows">The maximum amount of user profiles to return.</param>
         /// <returns>A list of communication emails of the specified Communication, wrapped in a DBResult.</returns>
-        List<UserProfile> GetActiveUserProfilesByCommunicationId(Guid communicationId, int maxRows);
+        List<UserProfile> GetProfilesForCommunication(Guid communicationId, int maxRows);
     }
 }

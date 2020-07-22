@@ -100,10 +100,5 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(10)]
         public string EmailStatusCode { get; set; } = EmailStatus.New;
-
-        /// <summary>
-        /// Gets the list containing all the communication emails related to this email.
-        /// </summary>
-        public virtual List<CommunicationEmail> CommunicationEmails { get; } = new List<CommunicationEmail>();
     }
 }

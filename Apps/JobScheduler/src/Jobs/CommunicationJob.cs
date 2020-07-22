@@ -86,7 +86,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         bool moreUsersToCreateCommunicationEmails = false;
                         do
                         {
-                            usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesByCommunicationId(communication.Id, this.maxFetchSize);
+                            usersToSendCommEmails = this.commEmailDelegate.GetProfilesForCommunication(communication.Id, this.maxFetchSize);
                             foreach (UserProfile profile in usersToSendCommEmails)
                             {
                                 // Insert a new Email record into db.
@@ -119,7 +119,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
                             this.dbContext.SaveChanges(); // commit after every retryFetchSize (or 250) pairs of Email & CommunicationEmail.
 
-                            moreUsersToCreateCommunicationEmails = usersToSendCommEmails.Count == this.maxFetchSize ? true : false;
+                            moreUsersToCreateCommunicationEmails = usersToSendCommEmails.Count == this.maxFetchSize;
                         }
                         while (moreUsersToCreateCommunicationEmails); // keep looping when the above query returns the max return rows (or user profiles).
 
