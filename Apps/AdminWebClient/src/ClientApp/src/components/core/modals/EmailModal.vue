@@ -26,6 +26,8 @@
                             <v-select
                                 v-model="editedItem.priority"
                                 :items="priorityItems"
+                                item-text="text"
+                                item-value="number"
                                 label="Priority"
                                 :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
@@ -62,7 +64,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import moment from "moment";
 import {
@@ -90,7 +92,12 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
-    private priorityItems = ["Urgent", "Medium", "Low"];
+    private priorityItems = [
+        { text: "Urgent", number: 1000 },
+        { text: "High", number: 100 },
+        { text: "Standard", number: 10 },
+        { text: "Low", number: 1 }
+    ];
     private extensions: any = [
         History,
         Blockquote,
@@ -152,7 +159,7 @@ export default class EmailModal extends Vue {
     }
 
     @Emit()
-    private emitSend(communication: Communication) {
+    private emitSend() {
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
@@ -161,7 +168,7 @@ export default class EmailModal extends Vue {
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
-            return communication;
+            return this.editedItem;
         }
     }
 

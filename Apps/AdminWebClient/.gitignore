@@ -1,3 +1,4 @@
+src/AdminWebClient.xml
 #SonarQube files
 sonar_reports/
 test*/coverage.opencover.xml

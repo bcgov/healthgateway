@@ -1,14 +1,21 @@
-<style lang="scss">
-</style>
+<style lang="scss"></style>
 <template>
     <div class="timeline-calendar">
-        <CalendarComponent :date-groups="dateGroups" locale="en" />
+        <CalendarComponent
+            v-if="filteredTimelineEntries.length > 0"
+            :date-groups="dateGroups"
+            :filter-text="filterText"
+            :filter-types="filterTypes"
+        />
+        <div v-else class="text-center">
+            No records
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
 import moment from "moment";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import CalendarComponent from "@/components/calendar/calendar.vue";
@@ -21,12 +28,29 @@ import CalendarComponent from "@/components/calendar/calendar.vue";
 export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop() private totalEntries!: number;
+    @Prop() private filterText!: string;
+    @Prop() private filterTypes!: string[];
+
+    private filteredTimelineEntries: TimelineEntry[] = [];
+
+    @Watch("filterText")
+    @Watch("filterTypes")
+    private applyTimelineFilter() {
+        this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
+            entry.filterApplies(this.filterText, this.filterTypes)
+        );
+    }
+
+    @Watch("timelineEntries")
+    private refreshEntries() {
+        this.applyTimelineFilter();
+    }
 
     private get dateGroups(): DateGroup[] {
-        if (this.timelineEntries.length === 0) {
+        if (this.filteredTimelineEntries.length === 0) {
             return [];
         }
-        let groups = this.timelineEntries.reduce<
+        let groups = this.filteredTimelineEntries.reduce<
             Record<string, TimelineEntry[]>
         >((groups, entry) => {
             // Get the string version of the date and get the date
@@ -42,7 +66,7 @@ export default class CalendarTimelineComponent extends Vue {
         let groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
             return {
                 key: dateKey,
-                date: groups[dateKey][0].date,
+                date: new Date(groups[dateKey][0].date),
                 entries: groups[
                     dateKey
                 ].sort((a: TimelineEntry, b: TimelineEntry) =>

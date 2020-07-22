@@ -4,7 +4,7 @@ import UserBetaRequest from "@/models/userBetaRequest";
 import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import Email from "@/models/email";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;

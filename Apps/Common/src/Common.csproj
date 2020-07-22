@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.8" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.6.3" />
     <PackageReference Include="Macross.Json.Extensions" Version="1.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
@@ -37,7 +38,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.OpenApi" Version="1.1.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,7 +66,6 @@
     <Folder Include="Filters\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
-    <Folder Include="Swagger\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
