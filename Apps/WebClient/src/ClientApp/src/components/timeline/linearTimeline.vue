@@ -107,15 +107,49 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineCurrentDateUpdated,
             function (currentDate: Date) {
-                const currentMonth = currentDate.getMonth();
-                debugger;
-                console.log("todo: leo to implement 8693 here");
-                // self.currentPage = 3; // debug only, to be updated when Leo works on 8693
+                self.goToPageByCurrentDate(currentDate);
             }
         );
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
+    }
+
+    private goToPageByCurrentDate(currentDate: Date) {
+        const selectedYearMonth = moment(currentDate).format("YYYY-MM");
+        let currentPage = 1;
+        let currentEntryIndex = 1;
+        let i = 0;
+        let foundLastEntryOfSelectedMonth = false;
+        const timelineEntriesLenght = this.timelineEntries.length;
+        // scan from the most recent entries to the older ones
+        while (i < timelineEntriesLenght && !foundLastEntryOfSelectedMonth) {
+            let entry = this.timelineEntries[i];
+            if (
+                entry.date !== undefined &&
+                entry.date.toString().indexOf(selectedYearMonth) == 0
+            ) {
+                console.log("found the last entry of the selected month");
+                foundLastEntryOfSelectedMonth = true;
+            } else {
+                currentEntryIndex++;
+                if (currentEntryIndex > this.numberOfEntriesPerPage) {
+                    currentEntryIndex = 1;
+                    currentPage++;
+                }
+            }
+            i++;
+        }
+        if (foundLastEntryOfSelectedMonth) {
+            // If found entry is at the bottom of the to-go page, move to the next page
+            if (
+                currentEntryIndex > this.numberOfEntriesPerPage - 3 &&
+                currentPage < this.numberOfPages
+            ) {
+                currentPage++;
+            }
+            this.currentPage = currentPage;
+        }
     }
 
     private destroyed() {
