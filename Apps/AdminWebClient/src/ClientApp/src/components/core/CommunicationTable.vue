@@ -70,7 +70,6 @@ import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import { EntryType } from "../../../../../../WebClient/src/ClientApp/src/models/timelineEntry";
 
 @Component({
     components: {
