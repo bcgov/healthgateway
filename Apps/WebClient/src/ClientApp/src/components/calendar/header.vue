@@ -97,6 +97,21 @@ export default class CalendarComponent extends Vue {
         );
     }
 
+    @Watch("availableMonths")
+    public onAvailableMonthsChange() {
+        if (this.monthIndex !== 0) {
+            this.monthIndex = 0;
+        } else {
+            this.onMonthIndexChange();
+        }
+    }
+
+    @Watch("monthIndex")
+    public onMonthIndexChange() {
+        this.headerDate = this.availableMonths[this.monthIndex];
+        this.dispatchEvent();
+    }
+
     private created() {
         this.dispatchEvent();
     }
