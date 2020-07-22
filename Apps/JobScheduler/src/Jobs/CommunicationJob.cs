@@ -82,17 +82,11 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning disable CA1031 //We want to catch exception.
                     try
                     {
-                        DateTime? createdOnOrAfterFilter = null;
-                        string lastProcessedProfileHdid = string.Empty;
                         List<UserProfile> usersToSendCommEmails = new List<UserProfile>();
+                        bool moreUsersToCreateCommunicationEmails = false;
                         do
                         {
-                            if (usersToSendCommEmails != null && usersToSendCommEmails.Count > 0)
-                            {
-                                lastProcessedProfileHdid = usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId;
-                            }
-
-                            usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesByCommunicationId(communication.Id, createdOnOrAfterFilter, this.maxFetchSize);
+                            usersToSendCommEmails = this.commEmailDelegate.GetActiveUserProfilesByCommunicationId(communication.Id, this.maxFetchSize);
                             foreach (UserProfile profile in usersToSendCommEmails)
                             {
                                 // Insert a new Email record into db.
@@ -117,12 +111,6 @@ namespace Healthgateway.JobScheduler.Jobs
                                 this.commEmailDelegate.Add(commEmail, false);
                             }
 
-                            if (usersToSendCommEmails.Count > 0)
-                            {
-                                // Set the createdOnOrAfterFilter for the next query retrieving the next chunk of user profiles.
-                                createdOnOrAfterFilter = usersToSendCommEmails[usersToSendCommEmails.Count - 1].CreatedDateTime;
-                            }
-
                             if (communication.CommunicationStatusCode != CommunicationStatus.Processing)
                             {
                                 communication.CommunicationStatusCode = CommunicationStatus.Processing;
@@ -130,9 +118,10 @@ namespace Healthgateway.JobScheduler.Jobs
                             }
 
                             this.dbContext.SaveChanges(); // commit after every retryFetchSize (or 250) pairs of Email & CommunicationEmail.
+
+                            moreUsersToCreateCommunicationEmails = usersToSendCommEmails.Count == this.maxFetchSize ? true : false;
                         }
-                        while (usersToSendCommEmails.Count == this.maxFetchSize
-                               && lastProcessedProfileHdid != usersToSendCommEmails[usersToSendCommEmails.Count - 1].HdId); // keep looping when the above query returns the max return rows (or user profiles).
+                        while (moreUsersToCreateCommunicationEmails); // keep looping when the above query returns the max return rows (or user profiles).
 
                         // Update Communication Status to Processed
                         communication.CommunicationStatusCode = CommunicationStatus.Processed;

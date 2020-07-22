@@ -38,9 +38,8 @@ namespace HealthGateway.Database.Delegates
         ///     AND were created on of after a specific date and time .
         /// </summary>
         /// <param name="communicationId">The communication id for filtering communication emails.</param>
-        /// <param name="createdOnOrAfter">The profiles must have created on or after to this date.</param>
         /// <param name="maxRows">The maximum amount of user profiles to return.</param>
         /// <returns>A list of communication emails of the specified Communication, wrapped in a DBResult.</returns>
-        List<UserProfile> GetActiveUserProfilesByCommunicationId(Guid communicationId, DateTime? createdOnOrAfter, int maxRows);
+        List<UserProfile> GetActiveUserProfilesByCommunicationId(Guid communicationId, int maxRows);
     }
 }

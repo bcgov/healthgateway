@@ -77,36 +77,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<UserProfile> GetActiveUserProfilesByCommunicationId(Guid communicationId, DateTime? createdOnOrAfter, int maxRows)
+        public List<UserProfile> GetActiveUserProfilesByCommunicationId(Guid communicationId, int maxRows)
         {
-            this.logger.LogTrace($"Getting Communication Emails by Communication Id from DB...");
+            this.logger.LogTrace($"Getting active user profiles to send emails from DB...");
 
-            // Retrieves the communication emails and user profiles by communicationId and createdOnOrAfter.
-            var commEmails = this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId).OrderByDescending(c => c.CreatedDateTime).Take(maxRows)
-                    .Include(commEmail => commEmail.UserProfile).Where(c => !createdOnOrAfter.HasValue || c.UserProfile.CreatedDateTime >= createdOnOrAfter).ToList();
-            string hdidsWithMostRecentCreatedCommEmails = string.Empty;
-            if (commEmails.Count > 0)
-            {
-                createdOnOrAfter = commEmails[0].UserProfile.CreatedDateTime;
-                StringBuilder hdids = new StringBuilder();
-                foreach (var commEmail in commEmails)
-                {
-                    hdids.Append(commEmail.UserProfileHdId + "|");
-                }
+            var userProfiles = (from p in this.dbContext.UserProfile
+                                join c in this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId) on p.HdId equals c.UserProfileHdId into lj
+                                from c in lj.DefaultIfEmpty()
+                                where !p.ClosedDateTime.HasValue && c == null
+                                select p).Take(maxRows);
 
-                hdidsWithMostRecentCreatedCommEmails = hdids.ToString();
-            }
-
-            var userProfiles = this.dbContext.UserProfile
-                .Where(profile => !profile.ClosedDateTime.HasValue
-                        && !string.IsNullOrEmpty(profile.Email)
-                        && (!createdOnOrAfter.HasValue || profile.CreatedDateTime >= createdOnOrAfter)
-                        && hdidsWithMostRecentCreatedCommEmails != profile.HdId)
-                .OrderBy(profile => profile.CreatedDateTime)
-                .Take(maxRows)
-                .ToList();
-
-            return userProfiles;
+            return userProfiles.ToList();
         }
     }
 }
