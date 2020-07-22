@@ -1,15 +1,23 @@
-# Health Gateway Application Listing 
+# Developer Documentation
 
-## Common
+1. Workstation Setup
+    * [Windows](./Documentation/Windows.md)
+    * TODO: [Mac](./Documentation/Mac.md)
+    * [Linux](./Documentation/Linux.md)
 
-## HNClient
+2. [General Setup](./Documentation/Configuration.md)
 
-## Immunization
+3. Applications Overview and Configuration
+    * [WebClient](./WebClient/README.md)
+    * [JobScheduler](./JobScheduler/README.md)
+    * [AdminWebClient](./AdminWebClient/README.md)
+    * [Patient](./Patient/README.md)
+    * [Medication](./Medication/README.md)
+    * [Immunization](./Immunization/README.md)
+    * [Laboratory](./Laboratory/README.md)
+    * [ODRProxy](./ODRProxy/README.md)
+    * [Common](./Common/README.md)
+    * [DBMaintainer](./DBMaintainer/README.md)
+    * [Database](./Database/README.md)
 
-## Medication
-
-## Patient
-
-## WebClient
-The Health Gateway VUE application which will ultimately provide Immunization, Medication, and Prescription data to BC residents using BC Services card for authentication.
-
+3. [Git and Azure Development Processes](./Documentation/processes.md)
