@@ -73,10 +73,5 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(44)]
         public string? EncryptionKey { get; set; }
-
-        /// <summary>
-        /// Gets the list containing all the communication emails related to this user profile.
-        /// </summary>
-        public virtual List<CommunicationEmail> CommunicationEmails { get; } = new List<CommunicationEmail>();
     }
 }

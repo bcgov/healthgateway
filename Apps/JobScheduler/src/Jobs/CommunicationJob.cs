@@ -53,12 +53,11 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="dbContext">The db context to use.</param>
         public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, ICommunicationEmailDelegate commEmailDelegate, IEmailQueueService emailQueueService, GatewayDbContext dbContext)
         {
-            Contract.Requires((configuration != null) && (emailQueueService != null));
-            this.configuration = configuration!;
+            this.configuration = configuration;
             this.logger = logger;
-            this.communicationDelegate = communicationDelegate!;
-            this.commEmailDelegate = commEmailDelegate!;
-            this.emailQueueService = emailQueueService!;
+            this.communicationDelegate = communicationDelegate;
+            this.commEmailDelegate = commEmailDelegate;
+            this.emailQueueService = emailQueueService;
             this.dbContext = dbContext;
 
             IConfigurationSection commEmailJobSection = this.configuration.GetSection("CreateCommEmailsForNewCommunications");
@@ -84,6 +83,13 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         List<UserProfile> usersToSendCommEmails = new List<UserProfile>();
                         bool moreUsersToCreateCommunicationEmails = false;
+
+                        if (communication.CommunicationStatusCode != CommunicationStatus.Processing)
+                        {
+                            communication.CommunicationStatusCode = CommunicationStatus.Processing;
+                            this.communicationDelegate.Update(communication, false);
+                        }
+
                         do
                         {
                             usersToSendCommEmails = this.commEmailDelegate.GetProfilesForCommunication(communication.Id, this.maxFetchSize);
@@ -111,17 +117,11 @@ namespace Healthgateway.JobScheduler.Jobs
                                 this.commEmailDelegate.Add(commEmail, false);
                             }
 
-                            if (communication.CommunicationStatusCode != CommunicationStatus.Processing)
-                            {
-                                communication.CommunicationStatusCode = CommunicationStatus.Processing;
-                                this.communicationDelegate.Update(communication, false);
-                            }
-
-                            this.dbContext.SaveChanges(); // commit after every retryFetchSize (or 250) pairs of Email & CommunicationEmail.
+                            this.dbContext.SaveChanges();
 
                             moreUsersToCreateCommunicationEmails = usersToSendCommEmails.Count == this.maxFetchSize;
                         }
-                        while (moreUsersToCreateCommunicationEmails); // keep looping when the above query returns the max return rows (or user profiles).
+                        while (moreUsersToCreateCommunicationEmails);
 
                         // Update Communication Status to Processed
                         communication.CommunicationStatusCode = CommunicationStatus.Processed;

@@ -81,13 +81,13 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting active user profiles to send emails from DB...");
 
-            var userProfiles = (from profile in this.dbContext.UserProfile
-                                join communicationEmail in this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId) on profile.HdId equals communicationEmail.UserProfileHdId into profileCommunicationEmails
-                                from profilesWithoutCommunicationEmail in profileCommunicationEmails.DefaultIfEmpty()
-                                where !profile.ClosedDateTime.HasValue && profilesWithoutCommunicationEmail == null
-                                select profile).Take(maxRows);
+            var userProfileList = this.dbContext.UserProfile
+                .Where(userProfile => !userProfile.ClosedDateTime.HasValue)
+                .Where(userProfile => !this.dbContext.CommunicationEmail.Any(communicationEmail => communicationEmail.UserProfileHdId == userProfile.HdId && communicationEmail.CommunicationId == communicationId))
+                .Take(maxRows)
+                .ToList();
 
-            return userProfiles.ToList();
+            return userProfileList;
         }
     }
 }

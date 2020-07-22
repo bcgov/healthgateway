@@ -75,10 +75,5 @@ namespace HealthGateway.Database.Models
         /// The lower the value the lower the priority.
         /// </summary>
         public int Priority { get; set; } = EmailPriority.Standard;
-
-        /// <summary>
-        /// Gets the list containing all the communication emails related to this communication.
-        /// </summary>
-        public virtual List<CommunicationEmail> CommunicationEmails { get; } = new List<CommunicationEmail>();
     }
 }

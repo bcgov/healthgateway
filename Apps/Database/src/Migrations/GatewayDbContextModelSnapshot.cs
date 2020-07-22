@@ -616,7 +616,7 @@ namespace HealthGateway.Database.Migrations
                             StatusCode = "Processing",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Communication is being processed by batch",
+                            Description = "Communication is being processed",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
