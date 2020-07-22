@@ -26,7 +26,7 @@ import LoadingComponent from "@/components/core/Loading.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import CommunicationTable from "../components/core/CommunicationTable.vue";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";

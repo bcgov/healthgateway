@@ -1,3 +1,9 @@
+export enum CommunicationType {
+    Email = "Email",
+    Banner = "Banner"
+}
+
+
 // Model that provides a user representation of admin communications.
 export default interface Communication {
     // Gets or sets the id.
@@ -16,7 +22,10 @@ export default interface Communication {
     expiryDateTime: Date;
 
     // Gets or sets the email communication priority
-    priority?: string;
+    priority: number;
+
+    // Gets or sets the communication type: email or banner
+    communicationTypeCode: string;
 
     // The communication version number.
     version: number;

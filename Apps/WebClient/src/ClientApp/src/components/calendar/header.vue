@@ -76,7 +76,9 @@ import { EventMessageName } from "@/constants/eventMessageName";
 export default class CalendarComponent extends Vue {
     @Prop() currentDate!: Date;
     @Prop() titleFormat!: string;
+    @Prop() availableMonths!: Date[];
 
+    private monthIndex: number = 0;
     private headerDate: Date = new Date();
     private eventBus = EventBus;
     private leftIcon: string = "chevron-left";
@@ -100,13 +102,15 @@ export default class CalendarComponent extends Vue {
     }
 
     private previousMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, -1);
-        this.dispatchEvent();
+        if (this.monthIndex + 1 < this.availableMonths.length) {
+            this.monthIndex += 1;
+        }
     }
 
     private nextMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, 1);
-        this.dispatchEvent();
+        if (this.monthIndex > 0) {
+            this.monthIndex -= 1;
+        }
     }
 
     private dispatchEvent() {
