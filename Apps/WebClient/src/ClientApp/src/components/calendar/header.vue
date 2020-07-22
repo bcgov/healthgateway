@@ -89,6 +89,10 @@ export default class CalendarComponent extends Vue {
     @Watch("currentDate")
     public onCurrentDateChange(currentDate: Date) {
         this.headerDate = this.currentDate;
+        this.eventBus.$emit(
+            EventMessageName.TimelineCurrentDateUpdated,
+            this.currentDate
+        );
     }
 
     private created() {
@@ -108,10 +112,6 @@ export default class CalendarComponent extends Vue {
     private dispatchEvent() {
         let startDate = DateUtil.getMonthFirstDate(this.headerDate);
         this.$emit("update:currentDate", startDate);
-        this.eventBus.$emit(
-            EventMessageName.TimelineCurrentDateUpdated,
-            this.currentDate
-        );
     }
 }
 </script>
