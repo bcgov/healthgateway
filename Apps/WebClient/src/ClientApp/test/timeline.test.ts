@@ -8,7 +8,7 @@ import {
     ExternalConfiguration,
     WebClientConfiguration,
 } from "@/models/configData";
-import MedicationStatement from "@/models/medicationStatement";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { injectable } from "inversify";
 import container from "@/plugins/inversify.config";
@@ -30,15 +30,16 @@ const userWithResults = new User();
 userWithResults.hdid = "hdid_with_results";
 
 yesterday.setDate(today.getDate() - 1);
-const medicationStatements: MedicationStatement[] = [
+const medicationStatements: MedicationStatementHistory[] = [
     {
         medicationSumary: {
             din: "1233",
             brandName: "brand_name_A",
             genericName: "generic_name_A",
         },
+        prescriptionIdentifier: "abcmed1",
         dispensedDate: today,
-        pharmacyId: "pharmacyId",
+        dispensingPharmacy: {},
     },
     {
         medicationSumary: {
@@ -46,8 +47,9 @@ const medicationStatements: MedicationStatement[] = [
             brandName: "brand_name_B",
             genericName: "generic_name_B",
         },
+        prescriptionIdentifier: "abcmed2",
         dispensedDate: today,
-        pharmacyId: "pharmacyId",
+        dispensingPharmacy: {},
     },
     {
         medicationSumary: {
@@ -55,27 +57,22 @@ const medicationStatements: MedicationStatement[] = [
             brandName: "brand_name_C",
             genericName: "generic_name_C",
         },
+        prescriptionIdentifier: "abcmed3",
         dispensedDate: yesterday,
-        pharmacyId: "pharmacyId",
+        dispensingPharmacy: {},
     },
 ];
 
 @injectable()
 class MockMedicationService implements IMedicationService {
-    getPatientMedicationStatementHistory(
-        hdid: string,
-        protectiveWord?: string | undefined
-    ): Promise<RequestResult<MedicationStatement[]>> {
-        throw new Error("Method not implemented.");
-    }
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
         // No need to implement for the mock
         throw new Error(METHOD_NOT_IMPLEMENTED);
     }
-    getPatientMedicationStatements(
+    getPatientMedicationStatementHistory(
         hdid: string
-    ): Promise<RequestResult<MedicationStatement[]>> {
-        return new Promise<RequestResult<MedicationStatement[]>>(
+    ): Promise<RequestResult<MedicationStatementHistory[]>> {
+        return new Promise<RequestResult<MedicationStatementHistory[]>>(
             (resolve, reject) => {
                 if (hdid === "hdid_with_results") {
                     resolve({

@@ -1,5 +1,4 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import MedicationStatement from "@/models/medicationStatement";
 import Pharmacy from "./pharmacy";
 import MedicationSumary from "./medicationSumary";
 import MedicationResult from "./medicationResult";
@@ -13,40 +12,20 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public practitionerSurname: string;
     public prescriptionIdentifier: string;
 
-    public constructor(
-        model: MedicationStatement | MedicationStatementHistory
-    ) {
-        if (model.prescriptionIdentifier) {
-            // ODR result
-            super(
-                model.prescriptionIdentifier,
-                EntryType.Medication,
-                model.dispensedDate
-            );
-        } else {
-            // PharmaNet result - generate a random unique id for entry
-            super(
-                "id-" + Math.random(),
-                EntryType.Medication,
-                model.dispensedDate
-            );
-        }
+    public constructor(model: MedicationStatementHistory) {
+        super(
+            model.prescriptionIdentifier,
+            EntryType.Medication,
+            model.dispensedDate
+        );
 
         this.medication = new MedicationViewModel(model.medicationSumary);
+        this.pharmacy = new PharmacyViewModel(
+            model.dispensingPharmacy?.pharmacyId
+        );
 
-        if (model.hasOwnProperty("dispensingPharmacy")) {
-            const historyModel = model as MedicationStatementHistory;
-            this.pharmacy = new PharmacyViewModel(
-                historyModel.dispensingPharmacy?.pharmacyId
-            );
-
-            if (historyModel.dispensingPharmacy) {
-                this.pharmacy.populateFromModel(
-                    historyModel.dispensingPharmacy
-                );
-            }
-        } else {
-            this.pharmacy = new PharmacyViewModel(model.pharmacyId);
+        if (model.dispensingPharmacy) {
+            this.pharmacy.populateFromModel(model.dispensingPharmacy);
         }
 
         this.practitionerSurname = model.practitionerSurname || "N/A";
@@ -74,14 +53,12 @@ class PharmacyViewModel {
     public address?: string;
     public phoneType?: string;
     public phoneNumber?: string;
-    public isLoaded: boolean = false;
 
     constructor(id: string | undefined) {
         this.id = id ? id : "";
     }
 
     public populateFromModel(model: Pharmacy): void {
-        this.isLoaded = true;
         this.name = model.name;
         this.phoneType = model.phoneType;
         this.phoneNumber = model.phoneNumber;
