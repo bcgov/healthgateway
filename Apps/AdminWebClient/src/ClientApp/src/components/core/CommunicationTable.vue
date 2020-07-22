@@ -70,6 +70,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
 import { faWater } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
+import { EntryType } from "../../../../../../WebClient/src/ClientApp/src/models/timelineEntry";
 
 @Component({
     components: {
@@ -232,8 +233,15 @@ export default class CommunicationTable extends Vue {
     private edit(item: Communication) {
         console.log(item);
         this.isNewCommunication = false;
-        this.editedBanner = item;
-        this.editedEmail = item;
+        if (item.communicationTypeCode === CommunicationType.Email) {
+            this.editedEmail = item;
+        } else {
+            this.editedBanner = item;
+            this.editedBanner.effectiveDateTime = new Date(
+                item.effectiveDateTime
+            );
+            this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+        }
     }
 
     private sortCommunicationsByDate(
