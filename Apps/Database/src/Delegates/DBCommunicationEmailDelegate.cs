@@ -81,11 +81,11 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting active user profiles to send emails from DB...");
 
-            var userProfiles = (from p in this.dbContext.UserProfile
-                                join c in this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId) on p.HdId equals c.UserProfileHdId into lj
-                                from c in lj.DefaultIfEmpty()
-                                where !p.ClosedDateTime.HasValue && c == null
-                                select p).Take(maxRows);
+            var userProfiles = (from profile in this.dbContext.UserProfile
+                                join communicationEmail in this.dbContext.CommunicationEmail.Where(c => c.CommunicationId == communicationId) on profile.HdId equals communicationEmail.UserProfileHdId into profileCommunicationEmails
+                                from profilesWithoutCommunicationEmail in profileCommunicationEmails.DefaultIfEmpty()
+                                where !profile.ClosedDateTime.HasValue && profilesWithoutCommunicationEmail == null
+                                select profile).Take(maxRows);
 
             return userProfiles.ToList();
         }
