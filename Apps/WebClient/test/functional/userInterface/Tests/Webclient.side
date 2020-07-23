@@ -3942,6 +3942,139 @@
       "targets": [],
       "value": ""
     }]
+  }, {
+    "id": "9aa3e8d4-df29-4fdf-9988-c3a52a8c5091",
+    "name": "Timeline - Submenu",
+    "commands": [{
+      "id": "a1e0192e-691b-474d-b053-40cfd9a84cf4",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f2e97963-f0db-4461-9c2d-4bf532badf3b",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "5b47fb1d-1dda-4451-98ea-3b73fc7c4dd9",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "9d92ddea-586b-4cc6-b2bb-4840a4f4ab99",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "39d675c9-96b5-4d33-b646-b36c7bcdf9d4",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "dc3510b2-cc43-42ae-944f-883abb00243d",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [
+        ["css=.name-wrapper > .button-title", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div/div[2]", "xpath:idRelative"],
+        ["xpath=//a/div/div[2]", "xpath:position"]
+      ],
+      "value": "Dr Gateway"
+    }, {
+      "id": "a814374f-e3ca-4474-bc8b-137a83ce7715",
+      "comment": "",
+      "command": "click",
+      "target": "css=.fa-user-circle > path",
+      "targets": [
+        ["css=.fa-user-circle > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "ede3fd68-5555-4471-a256-5150a9da067e",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [
+        ["id=subject", "id"],
+        ["css=#subject", "css:finder"],
+        ["xpath=//h1[@id='subject']", "xpath:attributes"],
+        ["xpath=//div[@id='pageTitle']/h1", "xpath:idRelative"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Profile')]", "xpath:innerText"]
+      ],
+      "value": "Profile"
+    }, {
+      "id": "59cd143c-52eb-4323-9f7a-f1d69d5675ef",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#termsOfService span",
+      "targets": [
+        ["css=#termsOfService span", "css:finder"],
+        ["xpath=//a[@id='termsOfService']/div/div[2]/span", "xpath:idRelative"],
+        ["xpath=//div[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Terms of Service')]", "xpath:innerText"]
+      ],
+      "value": "Terms of Service"
+    }, {
+      "id": "052954f9-9bb7-4c79-b8f3-bcd449cf63fb",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#releaseNotes span",
+      "targets": [
+        ["css=#releaseNotes span", "css:finder"],
+        ["xpath=//a[@id='releaseNotes']/div/div[2]/span", "xpath:idRelative"],
+        ["xpath=//a[2]/div/div[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Release Notes')]", "xpath:innerText"]
+      ],
+      "value": "Release Notes"
+    }, {
+      "id": "175a32b2-fb0d-441f-8ca4-1683c2f94acb",
+      "comment": "",
+      "command": "click",
+      "target": "css=#menuBtnTimeline > .row",
+      "targets": [
+        ["css=#menuBtnTimeline > .row", "css:finder"],
+        ["xpath=//a[@id='menuBtnTimeline']/div", "xpath:idRelative"],
+        ["xpath=//nav/div/div/a[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "eb09d6d2-62e2-4f89-9f1e-59cb81e702d1",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=#add-a-note-row span",
+      "targets": [
+        ["css=#add-a-note-row span", "css:finder"],
+        ["xpath=//div[@id='add-a-note-row']/div[2]/span", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Add a Note')]", "xpath:innerText"]
+      ],
+      "value": "Add a Note"
+    }, {
+      "id": "3488fd94-50d4-4d47-a10c-90038a45897c",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.align-items-center:nth-child(2)",
+      "targets": [
+        ["css=.align-items-center:nth-child(2)", "css:finder"],
+        ["xpath=//nav[@id='sidebar']/div/div/div[2]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div[2]", "xpath:position"]
+      ],
+      "value": "Print"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -3970,7 +4103,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22"]
+    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22", "9aa3e8d4-df29-4fdf-9988-c3a52a8c5091"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",

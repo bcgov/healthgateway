@@ -115,6 +115,16 @@ export default class LinearTimelineComponent extends Vue {
         this.applyTimelineFilter();
     }
 
+    @Watch("visibleTimelineEntries")
+    private onVisibleEntriesUpdate() {
+        if (this.visibleTimelineEntries.length > 0) {
+            this.eventBus.$emit(
+                "timelinePageUpdate",
+                new Date(this.visibleTimelineEntries[0].date)
+            );
+        }
+    }
+
     private created() {
         let self = this;
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
