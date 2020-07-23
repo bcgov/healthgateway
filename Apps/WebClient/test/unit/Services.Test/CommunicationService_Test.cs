@@ -46,13 +46,13 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.GetActive()).Returns(dbResult);
+            communicationDelegateMock.Setup(s => s.GetActiveBanner()).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object
             );
-            RequestResult<Communication> actualResult = service.GetActive();
+            RequestResult<Communication> actualResult = service.GetActiveBanner();
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(communication));
