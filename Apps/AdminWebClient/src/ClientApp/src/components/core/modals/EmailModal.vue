@@ -26,6 +26,8 @@
                             <v-select
                                 v-model="editedItem.priority"
                                 :items="priorityItems"
+                                item-text="text"
+                                item-value="number"
                                 label="Priority"
                                 :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
@@ -52,8 +54,15 @@
                 <v-btn color="blue darken-1" text @click="close()"
                     >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="emitSend()"
+                <v-btn
+                    v-if="isNew"
+                    color="blue darken-1"
+                    text
+                    @click="emitSend()"
                     >Send</v-btn
+                >
+                <v-btn v-else color="blue darken-1" text @click="emitUpdate()"
+                    >Update</v-btn
                 >
             </v-card-actions>
         </v-card>
@@ -62,7 +71,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import moment from "moment";
 import {
@@ -90,7 +99,12 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
-    private priorityItems = ["Urgent", "Medium", "Low"];
+    private priorityItems = [
+        { text: "Urgent", number: 1000 },
+        { text: "High", number: 100 },
+        { text: "Standard", number: 10 },
+        { text: "Low", number: 1 }
+    ];
     private extensions: any = [
         History,
         Blockquote,
@@ -117,17 +131,17 @@ export default class EmailModal extends Vue {
     ];
 
     @Prop() editedItem!: Communication;
-    @Prop() editedIndex!: number;
+    @Prop() isNew!: number;
 
     @Watch("editedItem")
     private onPropChange() {
-        if (this.editedIndex > -1) {
+        if (!this.isNew) {
             this.dialog = true;
         }
     }
 
     private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Email" : "Edit Email";
+        return this.isNew ? "New Email" : "Edit Email";
     }
 
     @Watch("dialog")
@@ -152,7 +166,7 @@ export default class EmailModal extends Vue {
     }
 
     @Emit()
-    private emitSend(communication: Communication) {
+    private emitSend() {
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
@@ -161,7 +175,18 @@ export default class EmailModal extends Vue {
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
-            return communication;
+            return this.editedItem;
+        }
+    }
+
+    @Emit()
+    private emitUpdate() {
+        if (
+            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+            this.contentValid()
+        ) {
+            this.close();
+            return this.editedItem;
         }
     }
 

@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ namespace HealthGateway.Common.Swagger
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
     /// <inheritdoc />
@@ -57,6 +58,19 @@ namespace HealthGateway.Common.Swagger
             options.OperationFilter<SwaggerDefaultValues>();
             options.IgnoreObsoleteActions();
             options.IgnoreObsoleteProperties();
+
+            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Scheme = "bearer",
+            });
+
+            // Add auth header filter
+            options.OperationFilter<AuthenticationRequirementsOperationFilter>();
 
             this.AddSwaggerDocumentForEachDiscoveredApiVersion(options);
             SetCommentsPathForSwaggerJsonAndUi(options);

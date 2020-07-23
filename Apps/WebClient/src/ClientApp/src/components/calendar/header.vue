@@ -54,7 +54,7 @@
         <b-col cols="auto" class="mx-4">
             <MonthYearPickerComponent
                 :current-date="currentDate"
-                :date-groups="dateGroups"
+                :available-months="availableMonths"
                 @date-changed="dateSelected"
             />
         </b-col>
@@ -81,8 +81,9 @@ import { DateGroup } from "@/models/timelineEntry";
 export default class CalendarComponent extends Vue {
     @Prop() currentDate!: Date;
     @Prop() titleFormat!: string;
-    @Prop() dateGroups!: DateGroup[];
+    @Prop() availableMonths!: Date[];
 
+    private monthIndex: number = 0;
     private headerDate: Date = new Date();
     private leftIcon: string = "chevron-left";
     private rightIcon: string = "chevron-right";
@@ -91,9 +92,19 @@ export default class CalendarComponent extends Vue {
         return moment(this.currentDate).format(this.titleFormat);
     }
 
-    @Watch("currentDate")
-    public onCurrentDateChange(currentDate: Date) {
-        this.headerDate = this.currentDate;
+    @Watch("availableMonths")
+    public onAvailableMonthsChange() {
+        if (this.monthIndex !== 0) {
+            this.monthIndex = 0;
+        } else {
+            this.onMonthIndexChange();
+        }
+    }
+
+    @Watch("monthIndex")
+    public onMonthIndexChange() {
+        this.headerDate = this.availableMonths[this.monthIndex];
+        this.dispatchEvent();
     }
 
     private created() {
@@ -101,13 +112,15 @@ export default class CalendarComponent extends Vue {
     }
 
     private previousMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, -1);
-        this.dispatchEvent();
+        if (this.monthIndex + 1 < this.availableMonths.length) {
+            this.monthIndex += 1;
+        }
     }
 
     private nextMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, 1);
-        this.dispatchEvent();
+        if (this.monthIndex > 0) {
+            this.monthIndex -= 1;
+        }
     }
 
     private dispatchEvent() {

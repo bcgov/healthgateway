@@ -96,7 +96,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import { ValidationProvider, extend, validate } from "vee-validate";
 import { required, email } from "vee-validate/dist/rules";
@@ -120,17 +120,17 @@ export default class BannerModal extends Vue {
     private dialog: boolean = false;
 
     @Prop() editedItem!: Communication;
-    @Prop() editedIndex!: number;
+    @Prop() isNew!: number;
 
     @Watch("editedItem")
     private onPropChange() {
-        if (this.editedIndex > -1) {
+        if (!this.isNew) {
             this.dialog = true;
         }
     }
 
     private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Banner Post" : "Edit Banner Post";
+        return this.isNew ? "New Banner Post" : "Edit Banner Post";
     }
 
     private dateTimeRules(effective: Date, expiry: Date) {
@@ -153,7 +153,7 @@ export default class BannerModal extends Vue {
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.dateTimeValid()
         ) {
-            if (this.editedIndex > -1) {
+            if (!this.isNew) {
                 this.emitUpdate(this.editedItem);
             } else {
                 this.emitAdd(this.editedItem);

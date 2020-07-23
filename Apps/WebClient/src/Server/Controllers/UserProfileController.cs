@@ -20,7 +20,6 @@ namespace HealthGateway.WebClient.Controllers
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
@@ -184,6 +183,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("termsofservice")]
+        [AllowAnonymous]
         public IActionResult GetLastTermsOfService()
         {
             RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();

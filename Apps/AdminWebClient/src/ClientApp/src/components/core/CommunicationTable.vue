@@ -30,24 +30,28 @@
                 <BannerModal
                     v-if="tab == 0"
                     :edited-item="editedBanner"
-                    :edited-index="editedIndex"
+                    :is-new="isNewCommunication"
                     @emit-add="add"
-                    @emit-update="updateBanner"
+                    @emit-update="update"
                     @emit-close="close"
                 />
                 <EmailModal
                     v-if="tab == 1"
                     :edited-item="editedEmail"
-                    :edited-index="editedIndex"
-                    @emit-send="sendEmail"
+                    :is-new="isNewCommunication"
+                    @emit-send="add"
+                    @emit-update="update"
                     @emit-close="close"
                 />
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn @click="editBanner(item)">
+            <v-btn @click="edit(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
+        </template>
+        <template v-slot:item.priority="{ item }">
+            <span>{{ formatPriority(item.priority) }}</span>
         </template>
         <template v-slot:no-data>
             <span>Nothing to show here.</span>
@@ -59,7 +63,7 @@ import { Component, Vue, Watch, Emit } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
-import Communication from "@/models/communication";
+import Communication, { CommunicationType } from "@/models/adminCommunication";
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -87,12 +91,14 @@ export default class CommunicationTable extends Vue {
     };
     // 0: Banners, 1: Emails
     private tab: number = 0;
-    private editedIndex: number = -1;
+    private isNewCommunication: boolean = true;
     private headers: any[] = [];
     private editedBanner: Communication = {
         id: "-1",
         text: "",
         subject: "",
+        communicationTypeCode: CommunicationType.Banner,
+        priority: 10,
         version: 0,
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date())
@@ -103,8 +109,9 @@ export default class CommunicationTable extends Vue {
     private editedEmail: Communication = {
         id: "-1",
         subject: "",
+        communicationTypeCode: CommunicationType.Email,
         text: "<p></p>",
-        priority: "",
+        priority: 10,
         effectiveDateTime: new Date(),
         expiryDateTime: new Date(),
         version: 0
@@ -114,7 +121,9 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         text: "",
         subject: "",
+        communicationTypeCode: CommunicationType.Banner,
         version: 0,
+        priority: 10,
         effectiveDateTime: new Date(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
@@ -124,8 +133,9 @@ export default class CommunicationTable extends Vue {
     private defaultEmail: Communication = {
         id: "-1",
         subject: "",
+        communicationTypeCode: CommunicationType.Email,
         text: "<p></p>",
-        priority: "",
+        priority: 10,
         effectiveDateTime: new Date(),
         expiryDateTime: new Date(),
         version: 0
@@ -189,13 +199,7 @@ export default class CommunicationTable extends Vue {
             sortable: false
         },
         {
-            text: "Email Content",
-            width: "20%",
-            value: "text",
-            sortable: false
-        },
-        {
-            text: "Scheduled For",
+            text: "Date",
             value: "effectiveDateTime"
         },
         {
@@ -213,11 +217,30 @@ export default class CommunicationTable extends Vue {
         return new Date(Date.parse(date + "Z")).toLocaleString();
     }
 
-    private editBanner(item: Communication) {
-        this.editedIndex = this.communicationList.indexOf(item);
-        this.editedBanner = item;
-        this.editedBanner.effectiveDateTime = new Date(item.effectiveDateTime);
-        this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+    private formatPriority(priority: number) {
+        if (priority === 1) {
+            return "Low";
+        } else if (priority === 10) {
+            return "Standard";
+        } else if (priority === 100) {
+            return "High";
+        } else {
+            return "Urgent";
+        }
+    }
+
+    private edit(item: Communication) {
+        console.log(item);
+        this.isNewCommunication = false;
+        if (item.communicationTypeCode === CommunicationType.Email) {
+            this.editedEmail = item;
+        } else {
+            this.editedBanner = item;
+            this.editedBanner.effectiveDateTime = new Date(
+                item.effectiveDateTime
+            );
+            this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+        }
     }
 
     private sortCommunicationsByDate(
@@ -264,7 +287,6 @@ export default class CommunicationTable extends Vue {
     }
 
     private loadCommunicationList() {
-        console.log("retrieving communications...");
         this.communicationService
             .getAll()
             .then((banners: Communication[]) => {
@@ -284,10 +306,19 @@ export default class CommunicationTable extends Vue {
     }
 
     private parseComms(communication: Communication[]) {
-        // this.bannerList = communication.filter((comm: Communication) => comm.type === "banner");
-        // this.emailList = communication.filter((comm: Communication) => comm.type === "email");
-        this.bannerList = communication;
-        this.communicationList = this.bannerList;
+        this.bannerList = communication.filter(
+            (comm: Communication) =>
+                comm.communicationTypeCode === CommunicationType.Banner
+        );
+        this.emailList = communication.filter(
+            (comm: Communication) =>
+                comm.communicationTypeCode === CommunicationType.Email
+        );
+        if (this.tab === 0) {
+            this.communicationList = this.bannerList;
+        } else {
+            this.communicationList = this.emailList;
+        }
     }
 
     private add(comm: Communication): void {
@@ -297,6 +328,8 @@ export default class CommunicationTable extends Vue {
             .add({
                 subject: comm.subject,
                 text: comm.text,
+                communicationTypeCode: comm.communicationTypeCode,
+                priority: comm.priority,
                 version: 0,
                 effectiveDateTime: comm.effectiveDateTime,
                 expiryDateTime: comm.expiryDateTime
@@ -308,7 +341,6 @@ export default class CommunicationTable extends Vue {
                     title: "Success",
                     message: "Communication Added."
                 };
-
                 this.loadCommunicationList();
             })
             .catch((err: any) => {
@@ -325,7 +357,7 @@ export default class CommunicationTable extends Vue {
             });
     }
 
-    private updateBanner(comm: Communication): void {
+    private update(comm: Communication): void {
         this.isLoading = true;
         this.isFinishedLoading();
         this.communicationService
@@ -333,6 +365,8 @@ export default class CommunicationTable extends Vue {
                 id: comm.id,
                 subject: comm.subject,
                 text: comm.text,
+                communicationTypeCode: comm.communicationTypeCode,
+                priority: comm.priority,
                 version: comm.version,
                 effectiveDateTime: comm.effectiveDateTime,
                 expiryDateTime: comm.expiryDateTime
@@ -363,17 +397,7 @@ export default class CommunicationTable extends Vue {
     private close() {
         this.editedBanner = Object.assign({}, this.defaultBanner);
         this.editedEmail = Object.assign({}, this.defaultEmail);
-        this.editedIndex = -1;
-    }
-
-    private sendEmail(comm: Communication) {
-        // NETWORK REQUEST GOES HERE!
-        this.showFeedback = true;
-        this.bannerFeedback = {
-            type: ResultType.Success,
-            title: "Success",
-            message: "Email sent."
-        };
+        this.isNewCommunication = true;
     }
 
     private emitResult() {

@@ -208,13 +208,17 @@
                 </b-row>
                 <LinearTimeline
                     v-show="isListView && !isLoading"
-                    :timeline-entries="filteredTimelineEntries"
+                    :timeline-entries="timelineEntries"
                     :total-entries="getTotalCount()"
+                    :filter-text="filterText"
+                    :filter-types="filterTypes"
                 />
                 <CalendarTimeline
                     v-show="!isListView && !isLoading"
-                    :timeline-entries="filteredTimelineEntries"
+                    :timeline-entries="timelineEntries"
                     :total-entries="getTotalCount()"
+                    :filter-text="filterText"
+                    :filter-types="filterTypes"
                 />
                 <b-row v-if="isLoading">
                     <b-col>
@@ -326,8 +330,8 @@ export default class TimelineView extends Vue {
     config!: WebClientConfiguration;
 
     private filterText: string = "";
+    private filterTypes: string[] = [];
     private timelineEntries: TimelineEntry[] = [];
-    private filteredTimelineEntries: TimelineEntry[] = [];
     private isMedicationLoading: boolean = false;
     private isImmunizationLoading: boolean = false;
     private isLaboratoryLoading: boolean = false;
@@ -339,8 +343,6 @@ export default class TimelineView extends Vue {
     private isEditingEntry: boolean = false;
     private unsavedChangesText: string =
         "You have unsaved changes. Are you sure you want to leave?";
-
-    private filterTypes: string[] = [];
 
     private isListView: boolean = true;
     private eventBus = EventBus;
@@ -521,7 +523,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
                 } else if (results.resultStatus == ResultType.Protected) {
                     if (!this.covidModal.show) {
                         this.protectiveWordModal.showModal();
@@ -560,7 +561,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
                 } else {
                     console.log(
                         "Error returned from the immunization call: " +
@@ -593,7 +593,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
 
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
@@ -632,7 +631,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
                 } else {
                     console.log(
                         "Error returned from the note call: " +
@@ -655,7 +653,6 @@ export default class TimelineView extends Vue {
         if (entry) {
             this.timelineEntries.push(entry);
             this.sortEntries();
-            this.applyTimelineFilter();
         }
     }
 
@@ -680,7 +677,6 @@ export default class TimelineView extends Vue {
         this.timelineEntries.push(entry);
         this.isEditingEntry = false;
         this.sortEntries();
-        this.applyTimelineFilter();
     }
 
     private onEntryDeleted(entry: TimelineEntry) {
@@ -688,7 +684,6 @@ export default class TimelineView extends Vue {
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
-        this.applyTimelineFilter();
     }
 
     private onProtectiveWordSubmit(value: string) {
@@ -698,14 +693,6 @@ export default class TimelineView extends Vue {
     private onProtectiveWordCancel() {
         // Does nothing as it won't be able to fetch pharmanet data.
         console.log("protective word cancelled");
-    }
-
-    @Watch("filterText")
-    @Watch("filterTypes")
-    private applyTimelineFilter() {
-        this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filterText, this.filterTypes)
-        );
     }
 
     private getTotalCount(): number {

@@ -80,7 +80,7 @@ $radius: 15px;
                     <b-col cols="8">
                         {{ entry.summaryDescription }}
                     </b-col>
-                    <b-col v-if="reportAvailiable" cols="auto" class="pr-0">
+                    <b-col v-if="reportAvailable" cols="auto" class="pr-0">
                         <b-spinner v-if="isLoadingDocument"></b-spinner>
                         <span v-else>
                             <strong>Report:</strong>
@@ -295,7 +295,7 @@ export default class LaboratoryTimelineComponent extends Vue {
             });
     }
 
-    private get reportAvailiable(): boolean {
+    private get reportAvailable(): boolean {
         return this.entry.reportAvailable;
     }
 }
