@@ -31,6 +31,7 @@ import {
 } from "@/components/calendar/models";
 import DateUtil from "@/utility/dateUtil";
 import moment from "moment";
+import EventBus from "@/eventbus";
 
 @Component({
     components: {
@@ -77,11 +78,15 @@ export default class CalendarComponent extends Vue {
     weekNames!: Array<string>;
 
     private availableMonths: Date[] = [];
-
     private currentDate: Date = new Date();
+    private eventBus = EventBus;
 
     private mounted() {
         this.updateAvailableMonths();
+        var self = this;
+        this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
+            self.currentDate = DateUtil.getMonthFirstDate(eventDate);
+        });
     }
 
     @Watch("dateGroups")
