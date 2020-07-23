@@ -47,7 +47,6 @@ namespace HealthGateway.Medication.Services
         private readonly ITraceService traceService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientDelegate patientDelegate;
-        private readonly IHNClientDelegate hnClientDelegate;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IMedStatementDelegate medicationStatementDelegate;
 
@@ -58,7 +57,6 @@ namespace HealthGateway.Medication.Services
         /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientService">The injected patientService patient registry provider.</param>
-        /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
@@ -66,7 +64,6 @@ namespace HealthGateway.Medication.Services
             ITraceService traceService,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientService,
-            IHNClientDelegate hnClientDelegate,
             IDrugLookupDelegate drugLookupDelegate,
             IMedStatementDelegate medicationStatementDelegate)
         {
@@ -74,47 +71,8 @@ namespace HealthGateway.Medication.Services
             this.traceService = traceService;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientService;
-            this.hnClientDelegate = hnClientDelegate;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
-        {
-            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            this.logger.LogTrace($"Getting list of medication statements... {hdid}");
-            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (hnClientMedicationResult.Result == ResultType.Success)
-            {
-                // Filter the results to return only Dispensed or Filled prescriptions.
-                hnClientMedicationResult.Message = hnClientMedicationResult.Message
-                    .Where(rx => rx.PrescriptionStatus == PrescriptionStatus.Filled ||
-                                 rx.PrescriptionStatus == PrescriptionStatus.Discontinued)
-                    .ToList<MedicationStatement>();
-                this.PopulateBrandName(hnClientMedicationResult.Message.Select(r => r.MedicationSumary!).ToList());
-            }
-
-            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
-            {
-                ResultStatus = hnClientMedicationResult.Result,
-                ResultMessage = hnClientMedicationResult.ResultMessage,
-            };
-
-            if (result.ResultStatus == Common.Constants.ResultType.Success)
-            {
-                result.ResourcePayload = hnClientMedicationResult.Message;
-                result.PageIndex = 0;
-                if (hnClientMedicationResult.Message != null)
-                {
-                    result.PageSize = hnClientMedicationResult.Message.Count;
-                    result.TotalResultCount = hnClientMedicationResult.Message.Count;
-                }
-            }
-
-            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(result)}");
-
-            return result;
         }
 
         /// <inheritdoc/>
@@ -203,36 +161,6 @@ namespace HealthGateway.Medication.Services
             }
 
             return Tuple.Create(valid, errMsg);
-        }
-
-        private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string? protectiveWord)
-        {
-            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            HNMessage<List<MedicationStatement>> retMessage;
-            Tuple<bool, string?> validationResult = ValidateProtectiveWord(protectiveWord);
-            bool okProtectiveWord = validationResult.Item1;
-            if (okProtectiveWord)
-            {
-                string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-                string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
-
-                if (string.IsNullOrEmpty(phn))
-                {
-                    return new HNMessage<List<MedicationStatement>>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
-                }
-
-                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                string ipv4Address = address.MapToIPv4().ToString();
-                protectiveWord = (protectiveWord ?? string.Empty).ToUpper(CultureInfo.CurrentCulture);
-                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord, phn, ipv4Address).ConfigureAwait(true);
-            }
-            else
-            {
-                this.logger.LogInformation($"Invalid protective word. {hdid}");
-                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, validationResult.Item2!);
-            }
-
-            return retMessage;
         }
 
         private void PopulateBrandName(List<MedicationSumary> medSummaries)
