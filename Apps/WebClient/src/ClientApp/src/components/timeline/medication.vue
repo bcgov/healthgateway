@@ -223,10 +223,6 @@ export default class MedicationTimelineComponent extends Vue {
     @Action("getMedication", { namespace: "medication" })
     getMedication!: (params: { din: string }) => Promise<MedicationResult>;
 
-    @Action("getPharmacy", { namespace: "pharmacy" }) getPharmacy!: (params: {
-        pharmacyId: string;
-    }) => Promise<Pharmacy>;
-
     private faxPhoneType: PhoneType = PhoneType.Fax;
     private isLoadingMedication: boolean = false;
     private isLoadingPharmacy: boolean = false;
@@ -235,7 +231,7 @@ export default class MedicationTimelineComponent extends Vue {
     private detailsVisible: boolean = false;
 
     private get detailsLoaded(): boolean {
-        return this.medicationLoaded && this.entry?.pharmacy?.isLoaded;
+        return this.medicationLoaded;
     }
 
     private get isLoading(): boolean {
@@ -273,25 +269,6 @@ export default class MedicationTimelineComponent extends Vue {
                     console.log(err);
                     this.hasErrors = true;
                     this.isLoadingMedication = false;
-                });
-        }
-
-        if (!medicationEntry.pharmacy.isLoaded) {
-            this.isLoadingPharmacy = true;
-            var pharmacyPromise = this.getPharmacy({
-                pharmacyId: medicationEntry.pharmacy.id,
-            })
-                .then((result) => {
-                    if (result) {
-                        medicationEntry.pharmacy.populateFromModel(result);
-                    }
-                    this.isLoadingPharmacy = false;
-                })
-                .catch((err) => {
-                    console.log("Error loading pharmacy details");
-                    console.log(err);
-                    this.hasErrors = true;
-                    this.isLoadingPharmacy = false;
                 });
         }
     }
