@@ -1,5 +1,9 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+#currentDate {
+    width: 200px;
+}
 .select {
     position: relative;
     width: 100%;
@@ -21,6 +25,11 @@
     left: 0;
     right: 0;
     z-index: 10000;
+}
+
+.years {
+    max-height: 250px;
+    overflow-y: scroll;
 }
 
 .item {
@@ -48,7 +57,7 @@
         >
             {{ dateText }}
         </b-btn>
-        <b-row class="items" :class="{ selectHide: !isYearOpen }">
+        <b-row class="items years" :class="{ selectHide: !isYearOpen }">
             <b-col
                 v-for="(year, i) of years"
                 :key="i"
