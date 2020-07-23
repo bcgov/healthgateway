@@ -117,15 +117,13 @@ export default class CalendarComponent extends Vue {
     }
 
     private previousMonth() {
-        if (this.monthIndex + 1 < this.availableMonths.length) {
-            this.monthIndex += 1;
-        }
+        this.headerDate = DateUtil.changeMonth(this.currentDate, -1);
+        this.dispatchEvent();
     }
 
     private nextMonth() {
-        if (this.monthIndex > 0) {
-            this.monthIndex -= 1;
-        }
+        this.headerDate = DateUtil.changeMonth(this.currentDate, 1);
+        this.dispatchEvent();
     }
 
     private dispatchEvent() {
