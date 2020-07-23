@@ -13,7 +13,7 @@
                 <v-form ref="form" lazy-validation>
                     <!-- Subject and priority -->
                     <v-row>
-                        <v-col cols="9">
+                        <v-col cols="8">
                             <v-text-field
                                 v-model="editedItem.subject"
                                 label="Subject"
@@ -21,6 +21,13 @@
                                 validate-on-blur
                                 required
                             ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-datetime-picker
+                                v-model="editedItem.effectiveDateTime"
+                                requried
+                                label="Scheduled For"
+                            ></v-datetime-picker>
                         </v-col>
                         <v-col>
                             <v-select
@@ -164,6 +171,7 @@ export default class EmailModal extends Vue {
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
         ) {
+            this.editedItem.expiryDateTime = this.editedItem.effectiveDateTime;
             this.close();
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
