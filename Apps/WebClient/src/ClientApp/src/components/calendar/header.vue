@@ -129,7 +129,11 @@ export default class CalendarComponent extends Vue {
     }
 
     private dateSelected(date: Date) {
-        this.headerDate = date;
+        this.monthIndex = this.availableMonths.findIndex(
+            (d) =>
+                d.getFullYear() == date.getFullYear() &&
+                d.getMonth() == date.getMonth()
+        );
         this.dispatchEvent();
     }
 }

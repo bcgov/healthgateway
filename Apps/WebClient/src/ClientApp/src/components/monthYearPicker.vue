@@ -41,6 +41,7 @@
 <template>
     <div v-on-clickaway="close" class="select">
         <b-btn
+            id="currentDate"
             class="px-2 m-0"
             :variant="isOpen ? 'primary' : 'outline-primary'"
             @click="open()"
@@ -87,7 +88,7 @@ import { DateGroup } from "@/models/timelineEntry";
 })
 export default class MonthYearPickerComponent extends Vue {
     @Prop() currentDate!: Date;
-    @Prop() dateGroups!: DateGroup[];
+    @Prop() availableMonths!: Date[];
     public isYearOpen: boolean = false;
     public isMonthOpen: boolean = false;
     public selectedYear: number = new Date().getFullYear();
@@ -152,10 +153,10 @@ export default class MonthYearPickerComponent extends Vue {
         this.close();
     }
 
-    @Watch("dateGroups")
-    public onDateGroupsChange(currentDate: Date) {
-        this.dateGroups.forEach((dateGroup) => {
-            var year: number = new Date(dateGroup.date).getFullYear();
+    @Watch("availableMonths")
+    public onAvailableMonths() {
+        this.availableMonths.forEach((date) => {
+            var year: number = date.getFullYear();
             if (!this.years.some((y) => y == year)) {
                 this.years.push(year);
             }
