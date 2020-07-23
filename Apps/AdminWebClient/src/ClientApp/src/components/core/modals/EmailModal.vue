@@ -24,7 +24,7 @@
                         </v-col>
                         <v-col>
                             <v-datetime-picker
-                                v-model="editedItem.effectiveDateTime"
+                                v-model="scheduledDate"
                                 requried
                                 label="Scheduled For"
                             ></v-datetime-picker>
@@ -106,6 +106,7 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
+    private scheduledDate = new Date();
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
@@ -174,11 +175,11 @@ export default class EmailModal extends Vue {
 
     @Emit()
     private emitSend() {
+        // TODO: WIRE UP SCHEDULED DATE TO SERVICE
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
         ) {
-            this.editedItem.expiryDateTime = this.editedItem.effectiveDateTime;
             this.close();
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
