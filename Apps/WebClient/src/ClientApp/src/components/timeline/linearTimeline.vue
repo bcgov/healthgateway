@@ -101,6 +101,7 @@ export default class LinearTimelineComponent extends Vue {
     private hasErrors: boolean = false;
 
     private eventBus = EventBus;
+    private emitTimelinePageUpdateEnabled = true;
 
     @Watch("filterText")
     @Watch("filterTypes")
@@ -118,10 +119,14 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
         if (this.visibleTimelineEntries.length > 0) {
-            this.eventBus.$emit(
-                "timelinePageUpdate",
-                new Date(this.visibleTimelineEntries[0].date)
-            );
+            if (this.emitTimelinePageUpdateEnabled) {
+                this.eventBus.$emit(
+                    "timelinePageUpdate",
+                    new Date(this.visibleTimelineEntries[0].date)
+                );
+            } else {
+                this.emitTimelinePageUpdateEnabled = true;
+            }
         }
     }
 
@@ -140,43 +145,6 @@ export default class LinearTimelineComponent extends Vue {
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
-    }
-
-    private goToPageByCurrentDate(currentDate: Date) {
-        const selectedYearMonth = moment(currentDate).format("YYYY-MM");
-        let currentPage = 1;
-        let currentEntryIndex = 1;
-        let i = 0;
-        let foundLastEntryOfSelectedMonth = false;
-        const timelineEntriesLenght = this.timelineEntries.length;
-        // scan from the most recent entries to the older ones
-        while (i < timelineEntriesLenght && !foundLastEntryOfSelectedMonth) {
-            let entry = this.timelineEntries[i];
-            if (
-                entry.date !== undefined &&
-                entry.date.toString().indexOf(selectedYearMonth) == 0
-            ) {
-                console.log("found the last entry of the selected month");
-                foundLastEntryOfSelectedMonth = true;
-            } else {
-                currentEntryIndex++;
-                if (currentEntryIndex > this.numberOfEntriesPerPage) {
-                    currentEntryIndex = 1;
-                    currentPage++;
-                }
-            }
-            i++;
-        }
-        if (foundLastEntryOfSelectedMonth) {
-            // If found entry is at the bottom of the to-go page, move to the next page
-            if (
-                currentEntryIndex > this.numberOfEntriesPerPage - 3 &&
-                currentPage < this.numberOfPages
-            ) {
-                currentPage++;
-            }
-            this.currentPage = currentPage;
-        }
     }
 
     private destroyed() {
@@ -298,6 +266,60 @@ export default class LinearTimelineComponent extends Vue {
             let container: HTMLElement[] = self.$refs[date] as HTMLElement[];
             container[0].focus();
         });
+    }
+
+    private goToPageByCurrentDate(currentDate: Date) {
+        const selectedYearMonth = moment(currentDate).format("YYYY-MM");
+        // Checks if current page has at least 1 event in the selected month.
+        let foundEntry = this.visibleTimelineEntries.find(
+            (e) =>
+                e.date !== undefined &&
+                e.date.toString().indexOf(selectedYearMonth) == 0
+        );
+        if (foundEntry === undefined) {
+            var currentPage = 1;
+            var currentEntryIndex = 1;
+            var foundLastEntryOfSelectedMonth: boolean = false;
+            const timelineEntriesLenght = this.timelineEntries.length;
+            var that = this;
+            // scan from the most recent entries to the older ones
+            for (
+                var i = 0;
+                i < timelineEntriesLenght && !foundLastEntryOfSelectedMonth;
+                i++
+            ) {
+                let timelineEntry = this.timelineEntries[i];
+                if (
+                    this.timelineEntries[i].date !== undefined &&
+                    this.timelineEntries[i].date
+                        .toString()
+                        .indexOf(selectedYearMonth) == 0
+                ) {
+                    foundLastEntryOfSelectedMonth = true;
+                    console.log(
+                        "found the last entry of the selected month " +
+                            selectedYearMonth +
+                            ", moving timeline from the current page #: " +
+                            this.currentPage +
+                            " to the page # " +
+                            currentPage
+                    );
+                    this.emitTimelinePageUpdateEnabled = false;
+                    this.currentPage = currentPage;
+                } else {
+                    currentEntryIndex++;
+                    if (currentEntryIndex > that.numberOfEntriesPerPage) {
+                        currentEntryIndex = 1;
+                        currentPage++;
+                    }
+                }
+            }
+        } else {
+            console.log(
+                "found an entry displaying for the selected month, no need to change page. current page: " +
+                    this.currentPage
+            );
+        }
     }
 }
 </script>

@@ -9,7 +9,9 @@ import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserComment from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
 import { Dictionary } from "vue-router/types/router";
+import Pharmacy from "@/models/pharmacy";
 import MedicationResult from "@/models/medicationResult";
+import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
 import BetaRequest from "@/models/betaRequest";
@@ -18,7 +20,6 @@ import UserNote from "@/models/userNote";
 import Communication from "@/models/communication";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -50,11 +51,16 @@ export interface IPatientService {
 
 export interface IMedicationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getPatientMedicationStatements(
+        hdid: string,
+        protectiveWord?: string
+    ): Promise<RequestResult<MedicationStatement[]>>;
     getPatientMedicationStatementHistory(
         hdid: string,
         protectiveWord?: string
-    ): Promise<RequestResult<MedicationStatementHistory[]>>;
+    ): Promise<RequestResult<MedicationStatement[]>>;
     getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;
+    getPharmacyInfo(pharmacyId: string): Promise<Pharmacy>;
 }
 
 export interface ILaboratoryService {

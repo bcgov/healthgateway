@@ -283,8 +283,8 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
-import MedicationStatementHistory from "../models/medicationStatementHistory";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import MedicationStatement from "@/models/medicationStatement";
 import UserNote from "@/models/userNote";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -449,7 +449,10 @@ export default class TimelineView extends Vue {
     }
 
     private get isMedicationEnabled(): boolean {
-        return this.config.modules["Medication"];
+        return (
+            this.config.modules["MedicationHistory"] ||
+            this.config.modules["Medication"]
+        );
     }
 
     private get isImmunizationEnabled(): boolean {
@@ -495,12 +498,19 @@ export default class TimelineView extends Vue {
             SERVICE_IDENTIFIER.MedicationService
         );
         this.isMedicationLoading = true;
-        let promise: Promise<RequestResult<MedicationStatementHistory[]>>;
-
-        promise = medicationService.getPatientMedicationStatementHistory(
-            this.user.hdid,
-            protectiveWord
-        );
+        const isOdrEnabled = this.config.modules["MedicationHistory"];
+        let promise: Promise<RequestResult<MedicationStatement[]>>;
+        if (isOdrEnabled) {
+            promise = medicationService.getPatientMedicationStatementHistory(
+                this.user.hdid,
+                protectiveWord
+            );
+        } else {
+            promise = medicationService.getPatientMedicationStatements(
+                this.user.hdid,
+                protectiveWord
+            );
+        }
 
         promise
             .then((results) => {

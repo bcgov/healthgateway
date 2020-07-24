@@ -3,6 +3,7 @@
         <!-- header pick month -->
         <CalendarHeader
             :current-date.sync="currentDate"
+            :emit-current-date-update-enabled="emitCurrentDateUpdateEnabled"
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
@@ -32,6 +33,7 @@ import {
 import DateUtil from "@/utility/dateUtil";
 import moment from "moment";
 import EventBus from "@/eventbus";
+import { EventMessageName } from "@/constants/eventMessageName";
 
 @Component({
     components: {
@@ -79,14 +81,29 @@ export default class CalendarComponent extends Vue {
 
     private availableMonths: Date[] = [];
     private currentDate: Date = new Date();
+    private emitCurrentDateUpdateEnabled: boolean = true;
     private eventBus = EventBus;
 
     private mounted() {
         this.updateAvailableMonths();
         var self = this;
         this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
+            self.emitCurrentDateUpdateEnabled = false; // prevents calendar to emit the TimelineCurrentDateUpdated event back to linear timeline.
             self.currentDate = DateUtil.getMonthFirstDate(eventDate);
         });
+    }
+
+    @Watch("currentDate")
+    public onCurrentDateChange(currentDate: Date) {
+        console.log("calendar's current date updated to " + currentDate);
+        if (this.emitCurrentDateUpdateEnabled) {
+            this.eventBus.$emit(
+                EventMessageName.TimelineCurrentDateUpdated,
+                this.currentDate
+            );
+        } else {
+            this.emitCurrentDateUpdateEnabled = true;
+        }
     }
 
     @Watch("dateGroups")

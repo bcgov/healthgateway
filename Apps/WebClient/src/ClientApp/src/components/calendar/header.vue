@@ -66,7 +66,6 @@ import { Component, Prop, Watch } from "vue-property-decorator";
 import moment from "moment";
 import CalendarBody from "./body.vue";
 import DateUtil from "@/utility/dateUtil";
-import { EventMessageName } from "@/constants/eventMessageName";
 
 @Component({
     components: {
@@ -91,10 +90,6 @@ export default class CalendarComponent extends Vue {
     @Watch("currentDate")
     public onCurrentDateChange(currentDate: Date) {
         this.headerDate = this.currentDate;
-        this.eventBus.$emit(
-            EventMessageName.TimelineCurrentDateUpdated,
-            this.currentDate
-        );
     }
 
     @Watch("availableMonths")
@@ -117,13 +112,15 @@ export default class CalendarComponent extends Vue {
     }
 
     private previousMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, -1);
-        this.dispatchEvent();
+        if (this.monthIndex + 1 < this.availableMonths.length) {
+            this.monthIndex += 1;
+        }
     }
 
     private nextMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, 1);
-        this.dispatchEvent();
+        if (this.monthIndex > 0) {
+            this.monthIndex -= 1;
+        }
     }
 
     private dispatchEvent() {

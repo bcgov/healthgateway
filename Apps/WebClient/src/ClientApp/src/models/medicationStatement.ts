@@ -1,9 +1,8 @@
 import MedicationSumary from "./medicationSumary";
-import Pharmacy from "./pharmacy";
 
 // Medication statement model
-export default interface MedicationStatementHistory {
-    // The medication statement identifier.
+export default interface MedicationStatement {
+    // The prescription identifier for this statment.
     prescriptionIdentifier?: string;
     // Medication statement prescription status.
     prescriptionStatus?: string;
@@ -19,6 +18,4 @@ export default interface MedicationStatementHistory {
     medicationSumary: MedicationSumary;
     // The pharmacy where the medication was filled.
     pharmacyId?: string;
-    // Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
-    dispensingPharmacy: Pharmacy;
 }
