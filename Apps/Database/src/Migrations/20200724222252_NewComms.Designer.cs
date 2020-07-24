@@ -27,8 +27,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200724041910_AddCommunicationEmailEntityAndCommunicationProcessingStatus")]
-    partial class AddCommunicationEmailEntityAndCommunicationProcessingStatus
+    [Migration("20200724222252_NewComms")]
+    partial class NewComms
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
