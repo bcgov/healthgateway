@@ -89,7 +89,7 @@ interface DateGroup {
 export default class LinearTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop({ default: 0 }) private totalEntries!: number;
-    @Prop() private isListView!: boolean;
+    @Prop() private isVisible!: boolean;
 
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
@@ -119,7 +119,7 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
         if (this.visibleTimelineEntries.length > 0) {
-            if (this.isListView) {
+            if (this.isVisible) {
                 console.log(
                     "notifying calendar vue about timeline's page updated..."
                 );

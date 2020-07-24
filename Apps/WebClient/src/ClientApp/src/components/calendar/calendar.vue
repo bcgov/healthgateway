@@ -14,7 +14,7 @@
             :month-names="monthNames"
             :week-names="weekNames"
             :first-day="firstDay"
-            :is-list-view="isListView"
+            :is-visible="isVisible"
         >
         </CalendarBody>
     </div>
@@ -44,7 +44,7 @@ export default class CalendarComponent extends Vue {
     @Prop() dateGroups!: DateGroup[];
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
-    @Prop() private isListView!: boolean;
+    @Prop() private isVisible!: boolean;
 
     @Prop({ default: 0, required: false }) firstDay!: number;
     @Prop({ default: "MMMM yyyy", required: false }) titleFormat!: string;

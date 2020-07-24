@@ -172,7 +172,7 @@ export default class CalendarBodyComponent extends Vue {
     @Prop() weekNames!: string[];
     @Prop() monthNames!: string[];
     @Prop() firstDay!: number;
-    @Prop() private isListView!: boolean;
+    @Prop() private isVisible!: boolean;
 
     private eventLimit: number = 4;
     private firstEventDateOfCurrentMonth: Date | null = null;
@@ -224,7 +224,7 @@ export default class CalendarBodyComponent extends Vue {
                 ) {
                     this.firstEventDateOfCurrentMonth =
                         dayEvent.events[0].entries[0].date;
-                    if (!this.isListView) {
+                    if (!this.isVisible) {
                         this.eventBus.$emit(
                             EventMessageName.TimelineCurrentDateUpdated,
                             this.firstEventDateOfCurrentMonth
