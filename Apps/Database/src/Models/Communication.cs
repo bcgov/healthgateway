@@ -58,6 +58,11 @@ namespace HealthGateway.Database.Models
         public DateTime ExpiryDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the scheduled datetime.
+        /// </summary>
+        public DateTime? ScheduledDateTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the type of the Communication (Banner vs Email).
         /// </summary>
         [MaxLength(10)]
