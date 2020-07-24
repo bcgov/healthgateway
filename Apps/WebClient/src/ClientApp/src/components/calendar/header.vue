@@ -52,7 +52,11 @@
             </b-btn>
         </b-col>
         <b-col cols="auto" class="mx-4">
-            <span class="title">{{ title }}</span>
+            <MonthYearPickerComponent
+                :current-date="currentDate"
+                :available-months="availableMonths"
+                @date-changed="dateSelected"
+            />
         </b-col>
         <b-col class="header-right">
             <slot name="header-right"> </slot>
@@ -62,13 +66,16 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import moment from "moment";
 import CalendarBody from "./body.vue";
 import DateUtil from "@/utility/dateUtil";
+import { DateGroup } from "@/models/timelineEntry";
 
 @Component({
     components: {
         CalendarBody,
+        MonthYearPickerComponent,
     },
 })
 export default class CalendarComponent extends Vue {
@@ -119,6 +126,15 @@ export default class CalendarComponent extends Vue {
     private dispatchEvent() {
         let startDate = DateUtil.getMonthFirstDate(this.headerDate);
         this.$emit("update:currentDate", startDate);
+    }
+
+    private dateSelected(date: Date) {
+        this.monthIndex = this.availableMonths.findIndex(
+            (d) =>
+                d.getFullYear() == date.getFullYear() &&
+                d.getMonth() == date.getMonth()
+        );
+        this.dispatchEvent();
     }
 }
 </script>
