@@ -13,7 +13,7 @@
                 <v-form ref="form" lazy-validation>
                     <!-- Subject and priority -->
                     <v-row>
-                        <v-col cols="9">
+                        <v-col cols="8">
                             <v-text-field
                                 v-model="editedItem.subject"
                                 label="Subject"
@@ -21,6 +21,13 @@
                                 validate-on-blur
                                 required
                             ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-datetime-picker
+                                v-model="scheduledDate"
+                                requried
+                                label="Scheduled For"
+                            ></v-datetime-picker>
                         </v-col>
                         <v-col>
                             <v-select
@@ -99,6 +106,7 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
+    private scheduledDate = new Date();
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
@@ -167,6 +175,7 @@ export default class EmailModal extends Vue {
 
     @Emit()
     private emitSend() {
+        // TODO: WIRE UP SCHEDULED DATE TO SERVICE
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()

@@ -199,7 +199,7 @@ export default class CommunicationTable extends Vue {
             sortable: false
         },
         {
-            text: "Date",
+            text: "Scheduled For",
             value: "effectiveDateTime"
         },
         {
@@ -230,7 +230,6 @@ export default class CommunicationTable extends Vue {
     }
 
     private edit(item: Communication) {
-        console.log(item);
         this.isNewCommunication = false;
         if (item.communicationTypeCode === CommunicationType.Email) {
             this.editedEmail = item;
