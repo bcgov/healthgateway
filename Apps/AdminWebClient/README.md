@@ -54,6 +54,13 @@ npm run serve
 * Click Ok
 * Click F5 or Debug/Start Debugging
 
+### Visual Studio for Mac
+
+* Right Click on the solution and select set startup project
+* Ensure that the AdminWebClient solution item is checked
+* Click Ok
+* Select Run Menu then Start Debugging
+
 ## Admin WebClient Verification
 
 * Open a Chrome session to [http://localhost:5010/admin](http://localhost:5010/admin)

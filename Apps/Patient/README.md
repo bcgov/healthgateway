@@ -52,6 +52,13 @@ dotnet run
 * Click Ok
 * Click F5 or Debug/Start Debugging
 
+### Visual Studio for Mac
+
+* Right Click on the solution and select set startup project
+* Ensure that the Patient solution item is checked
+* Click Ok
+* Select Run Menu then Start Debugging
+
 ## Patient Service Verification
 
 * Ensure WebClient is running

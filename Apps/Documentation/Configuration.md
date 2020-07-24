@@ -14,17 +14,22 @@ You may want to run VS Code and add one or more of the following extensions:
 * Beautify
 * Bracket Pair Colorizer 2
 * Docker
+* GitLens
+* Material Theme
+* Material Theme Icons
 * markdownlint
 * npm
 * ESlint
+* Remote - WSL
+* Auto Rename Tag
+* Auto Close Tag
 
 ## Acquiring the Health Gateway code
 
-Open an Ubuntu 20.04 terminal or Windows command window.  
+Open an Ubuntu 20.04 terminal or Windows command window or Mac Terminal/iTerm window.  
 Navigate to a location where you want the application files to be created or create a new directory which will be referenced as $GATEWAYHOME going forward.
 
 ```bash
-cd Projects/Health
 git clone https://github.com/bcgov/healthgateway.git
 cd healthgateway
 ```

@@ -55,6 +55,14 @@ npm run serve
 * Click Ok
 * Click F5 or Debug/Start Debugging
 
+### Visual Studio for Mac
+
+* Right Click on the solution and select set startup project
+* Click on Create Run Configuration
+* Ensure that the WebClient solution item is checked
+* Click Ok
+* Select Run Menu then Start Debugging
+
 ## WebClient Verification
 
 * Open a Chrome session to [http://localhost:5000](http://localhost:5000)
