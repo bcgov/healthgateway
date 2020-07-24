@@ -4,7 +4,7 @@ import Pharmacy from "./pharmacy";
 // Medication statement model
 export default interface MedicationStatementHistory {
     // The medication statement identifier.
-    prescriptionIdentifier?: string;
+    prescriptionIdentifier: string;
     // Medication statement prescription status.
     prescriptionStatus?: string;
     // Date the medication statement was dispensed.
