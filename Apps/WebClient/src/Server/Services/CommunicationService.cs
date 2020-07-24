@@ -42,9 +42,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<Communication> GetActive()
+        public RequestResult<Communication> GetActiveBanner()
         {
-            DBResult<Communication> dbComm = this.communicationDelegate.GetActive();
+            DBResult<Communication> dbComm = this.communicationDelegate.GetActiveBanner();
             RequestResult<Communication> result = new RequestResult<Communication>()
             {
                 ResourcePayload = dbComm.Payload,

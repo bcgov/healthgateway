@@ -45,7 +45,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Communication> GetActive()
+        public DBResult<Communication> GetActiveBanner()
         {
             this.logger.LogTrace($"Getting active Communication from DB...");
             DBResult<Communication> result = new DBResult<Communication>()
@@ -54,7 +54,7 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Email || (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
+                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Banner && (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
 
             if (result.Payload != null)
             {
