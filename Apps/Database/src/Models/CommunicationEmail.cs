@@ -36,6 +36,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Communication Id (foreign key).
         /// </summary>
         [ForeignKey("Communication")]
+        [Required]
         public Guid CommunicationId { get; set; }
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(52)]
         [ForeignKey("UserProfile")]
+        [Required]
         public string UserProfileHdId { get; set; } = null!;
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Email Id (foreign key).
         /// </summary>
         [ForeignKey("Email")]
+        [Required]
         public Guid EmailId { get; set; }
 
         /// <summary>

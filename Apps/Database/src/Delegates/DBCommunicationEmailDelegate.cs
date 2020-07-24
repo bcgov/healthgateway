@@ -82,7 +82,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting active user profiles to send emails from DB...");
 
             var userProfileList = this.dbContext.UserProfile
-                .Where(userProfile => !userProfile.ClosedDateTime.HasValue)
+                .Where(userProfile => !userProfile.ClosedDateTime.HasValue && !string.IsNullOrWhiteSpace(userProfile.Email))
                 .Where(userProfile => !this.dbContext.CommunicationEmail.Any(communicationEmail => communicationEmail.UserProfileHdId == userProfile.HdId && communicationEmail.CommunicationId == communicationId))
                 .Take(maxRows)
                 .ToList();
