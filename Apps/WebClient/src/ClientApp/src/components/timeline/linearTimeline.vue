@@ -89,6 +89,7 @@ interface DateGroup {
 export default class LinearTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop({ default: 0 }) private totalEntries!: number;
+    @Prop() private isListView!: boolean;
 
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
@@ -101,7 +102,6 @@ export default class LinearTimelineComponent extends Vue {
     private hasErrors: boolean = false;
 
     private eventBus = EventBus;
-    private emitTimelinePageUpdateEnabled = true;
 
     @Watch("filterText")
     @Watch("filterTypes")
@@ -119,13 +119,14 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
         if (this.visibleTimelineEntries.length > 0) {
-            if (this.emitTimelinePageUpdateEnabled) {
+            if (this.isListView) {
+                console.log(
+                    "notifying calendar vue about timeline's page updated..."
+                );
                 this.eventBus.$emit(
                     "timelinePageUpdate",
                     new Date(this.visibleTimelineEntries[0].date)
                 );
-            } else {
-                this.emitTimelinePageUpdateEnabled = true;
             }
         }
     }
@@ -139,7 +140,7 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineCurrentDateUpdated,
             function (currentDate: Date) {
-                self.goToPageByCurrentDate(currentDate);
+                self.setPageFromDate(currentDate);
             }
         );
 
@@ -266,60 +267,6 @@ export default class LinearTimelineComponent extends Vue {
             let container: HTMLElement[] = self.$refs[date] as HTMLElement[];
             container[0].focus();
         });
-    }
-
-    private goToPageByCurrentDate(currentDate: Date) {
-        const selectedYearMonth = moment(currentDate).format("YYYY-MM");
-        // Checks if current page has at least 1 event in the selected month.
-        let foundEntry = this.visibleTimelineEntries.find(
-            (e) =>
-                e.date !== undefined &&
-                e.date.toString().indexOf(selectedYearMonth) == 0
-        );
-        if (foundEntry === undefined) {
-            var currentPage = 1;
-            var currentEntryIndex = 1;
-            var foundLastEntryOfSelectedMonth: boolean = false;
-            const timelineEntriesLenght = this.timelineEntries.length;
-            var that = this;
-            // scan from the most recent entries to the older ones
-            for (
-                var i = 0;
-                i < timelineEntriesLenght && !foundLastEntryOfSelectedMonth;
-                i++
-            ) {
-                let timelineEntry = this.timelineEntries[i];
-                if (
-                    this.timelineEntries[i].date !== undefined &&
-                    this.timelineEntries[i].date
-                        .toString()
-                        .indexOf(selectedYearMonth) == 0
-                ) {
-                    foundLastEntryOfSelectedMonth = true;
-                    console.log(
-                        "found the last entry of the selected month " +
-                            selectedYearMonth +
-                            ", moving timeline from the current page #: " +
-                            this.currentPage +
-                            " to the page # " +
-                            currentPage
-                    );
-                    this.emitTimelinePageUpdateEnabled = false;
-                    this.currentPage = currentPage;
-                } else {
-                    currentEntryIndex++;
-                    if (currentEntryIndex > that.numberOfEntriesPerPage) {
-                        currentEntryIndex = 1;
-                        currentPage++;
-                    }
-                }
-            }
-        } else {
-            console.log(
-                "found an entry displaying for the selected month, no need to change page. current page: " +
-                    this.currentPage
-            );
-        }
     }
 }
 </script>
