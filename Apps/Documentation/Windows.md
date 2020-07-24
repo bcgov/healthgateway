@@ -10,7 +10,7 @@
 
 The following software will be installed:
 
-* Chocolately
+* Chocolatey
 * Docker
 * VS Code
 * PG Admin
