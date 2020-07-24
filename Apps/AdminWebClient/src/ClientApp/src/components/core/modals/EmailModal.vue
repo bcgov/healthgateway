@@ -65,11 +65,11 @@
                     v-if="isNew"
                     color="blue darken-1"
                     text
-                    @click="emitSend()"
+                    @click="saveChanges()"
                     >Send</v-btn
                 >
-                <v-btn v-else color="blue darken-1" text @click="emitUpdate()"
-                    >Update</v-btn
+                <v-btns v-else color="blue darken-1" text @click="saveChanges()"
+                    >Update</v-btns
                 >
             </v-card-actions>
         </v-card>
@@ -173,30 +173,31 @@ export default class EmailModal extends Vue {
             : false;
     }
 
-    @Emit()
-    private emitSend() {
-        // TODO: WIRE UP SCHEDULED DATE TO SERVICE
+    private saveChanges() {
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
         ) {
+            if (this.isNew) {
+                this.emitSend();
+            } else {
+                this.emitUpdate();
+            }
             this.close();
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
-            return this.editedItem;
         }
     }
 
     @Emit()
+    private emitSend() {
+        return this.editedItem;
+    }
+
+    @Emit()
     private emitUpdate() {
-        if (
-            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
-            this.contentValid()
-        ) {
-            this.close();
-            return this.editedItem;
-        }
+        return this.editedItem;
     }
 
     @Emit()
