@@ -46,6 +46,10 @@
 .selectHide {
     display: none;
 }
+
+.no-data {
+    background-color: lightgray;
+}
 </style>
 <template>
     <div v-on-clickaway="close" class="select">
@@ -72,12 +76,12 @@
                 {{ selectedYear }}
             </b-col>
             <b-col
-                v-for="(month, i) of months"
+                v-for="(month, i) of monthsToDisplay"
                 :key="i"
-                class="item col-4"
+                :class="getDisplayMonthCss(month)"
                 @click="selectMonth(i)"
             >
-                {{ month }}
+                {{ month.Title }}
             </b-col>
         </b-row>
     </div>
@@ -89,6 +93,12 @@ import { Component, Prop, Watch, Emit } from "vue-property-decorator";
 import moment from "moment";
 import { directive as onClickaway } from "vue-clickaway";
 import { DateGroup } from "@/models/timelineEntry";
+import { mount } from "@vue/test-utils";
+
+class MonthToDisplay {
+    public Title: string = "";
+    public HasData: boolean = false;
+}
 
 @Component({
     directives: {
@@ -104,20 +114,36 @@ export default class MonthYearPickerComponent extends Vue {
     public selectedMonth: number = new Date().getMonth();
     private selectedDate: Date = new Date();
     private years: number[] = [];
-    private months: string[] = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ];
+    private get monthsToDisplay() {
+        let availableMonthsOfSelectedYear = this.availableMonths.filter(
+            (m) => m.getFullYear() === this.selectedYear
+        );
+        let monthsToDisplay = [
+            { Title: "Jan", HasData: false },
+            { Title: "Feb", HasData: false },
+            { Title: "Mar", HasData: false },
+            { Title: "Apr", HasData: false },
+            { Title: "May", HasData: false },
+            { Title: "Jun", HasData: false },
+            { Title: "Jul", HasData: false },
+            { Title: "Aug", HasData: false },
+            { Title: "Sep", HasData: false },
+            { Title: "Oct", HasData: false },
+            { Title: "Nov", HasData: false },
+            { Title: "Dec", HasData: false },
+        ];
+        availableMonthsOfSelectedYear.forEach((date) => {
+            const month: number = date.getMonth();
+            monthsToDisplay[month].HasData = true;
+        });
+        debugger;
+        return monthsToDisplay;
+    }
+
+    private getDisplayMonthCss(displayMonth: MonthToDisplay) {
+        if (displayMonth.HasData) return "item col-4";
+        else return "item col-4 no-data";
+    }
 
     private get isOpen(): boolean {
         return this.isYearOpen || this.isMonthOpen;
@@ -133,10 +159,16 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     private selectMonth(month: number): void {
-        this.selectedMonth = month;
-        this.selectedDate = new Date(this.selectedYear, this.selectedMonth, 1);
-        this.dateChanged();
-        this.close();
+        if (this.monthsToDisplay[month].HasData) {
+            this.selectedMonth = month;
+            this.selectedDate = new Date(
+                this.selectedYear,
+                this.selectedMonth,
+                1
+            );
+            this.dateChanged();
+            this.close();
+        }
     }
 
     @Emit()
