@@ -103,6 +103,7 @@ export default class CommunicationTable extends Vue {
         communicationTypeCode: CommunicationType.Banner,
         priority: 10,
         version: 0,
+        scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
@@ -116,6 +117,8 @@ export default class CommunicationTable extends Vue {
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date()).toDate(),
         version: 0
     };
 
@@ -126,6 +129,7 @@ export default class CommunicationTable extends Vue {
         communicationTypeCode: CommunicationType.Banner,
         version: 0,
         priority: 10,
+        scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
@@ -139,6 +143,8 @@ export default class CommunicationTable extends Vue {
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date()).toDate(),
         version: 0
     };
 
