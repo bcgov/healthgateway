@@ -51,5 +51,11 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The updated communication wrapped in a DBResult.</returns>
         DBResult<Communication> Update(Communication communication, bool commit = true);
+
+        /// <summary>
+        /// Gets the email communications which are in New or Processing from the DB.
+        /// </summary>
+        /// <returns>The list of communications.</returns>
+        List<Communication> GetEmailCommunicationsToSend();
     }
 }

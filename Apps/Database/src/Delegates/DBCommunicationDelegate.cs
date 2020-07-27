@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -131,6 +132,16 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished updating Communication in DB");
             return result;
+        }
+
+        /// <inheritdoc />
+        public List<Communication> GetEmailCommunicationsToSend()
+        {
+            this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
+            List<Communication> retVal = this.dbContext.Communication.Where(c => c.CommunicationTypeCode == CommunicationType.Email && (c.CommunicationStatusCode != CommunicationStatus.Processed))
+                .OrderByDescending(c => c.CreatedDateTime).ToList();
+            this.logger.LogDebug($"Finished getting list of New & Processing Email Communications from DB. {JsonSerializer.Serialize(retVal)}");
+            return retVal;
         }
     }
 }
