@@ -65,6 +65,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
+import EventBus from "@/eventbus";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import moment from "moment";
@@ -85,11 +86,17 @@ export default class CalendarComponent extends Vue {
 
     private monthIndex: number = 0;
     private headerDate: Date = new Date();
+    private eventBus = EventBus;
     private leftIcon: string = "chevron-left";
     private rightIcon: string = "chevron-right";
 
     public get title(): string {
         return moment(this.currentDate).format(this.titleFormat);
+    }
+
+    @Watch("currentDate")
+    public onCurrentDateChange(currentDate: Date) {
+        this.headerDate = this.currentDate;
     }
 
     @Watch("availableMonths")

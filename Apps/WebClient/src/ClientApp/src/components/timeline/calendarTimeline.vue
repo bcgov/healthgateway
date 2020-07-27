@@ -6,6 +6,7 @@
             :date-groups="dateGroups"
             :filter-text="filterText"
             :filter-types="filterTypes"
+            :is-visible="isVisible"
         />
         <div v-else class="text-center">
             No records
@@ -27,6 +28,7 @@ import CalendarComponent from "@/components/calendar/calendar.vue";
 })
 export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
+    @Prop() private isVisible!: boolean;
     @Prop() private totalEntries!: number;
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];

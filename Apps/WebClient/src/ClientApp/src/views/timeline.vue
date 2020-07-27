@@ -209,6 +209,7 @@
                 <LinearTimeline
                     v-show="isListView && !isLoading"
                     :timeline-entries="timelineEntries"
+                    :is-visible="isListView"
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
@@ -216,6 +217,7 @@
                 <CalendarTimeline
                     v-show="!isListView && !isLoading"
                     :timeline-entries="timelineEntries"
+                    :is-visible="!isListView"
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"

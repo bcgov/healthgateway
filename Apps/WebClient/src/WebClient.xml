@@ -1,0 +1,1398 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebClient</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.WebClient.Constant.RegistrationStatus">
+            <summary>
+            Registration status modes.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Constant.RegistrationStatus.Open">
+            <summary>
+            Registration is open.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Constant.RegistrationStatus.Closed">
+            <summary>
+            Registration is closed.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Constant.RegistrationStatus.InviteOnly">
+            <summary>
+            Registration is on Invite only mode.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.BetaRequestController">
+            <summary>
+            Web API to handle requests for beta users.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.#ctor(HealthGateway.WebClient.Services.IBetaRequestService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.BetaRequestController"/> class.
+            </summary>
+            <param name="betaRequestService">The injected beta request service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.CreateBetaRequest(HealthGateway.Database.Models.BetaRequest)">
+            <summary>
+            Posts a beta request json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="betaRequest">The beta request model.</param>
+            <response code="200">The beta request record was saved.</response>
+            <response code="400">The beta request was already inserted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.BetaRequestController.GetBetaRequest(System.String)">
+            <summary>
+            Retrieves the latest user queued email.
+            </summary>
+            <returns>The email for the suer queued.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the email for the queued user.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.CommentController">
+            <summary>
+            Web API to handle patient notes interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.#ctor(HealthGateway.WebClient.Services.ICommentService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.CommentController"/> class.
+            </summary>
+            <param name="commentService">The injected comment service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.Create(HealthGateway.WebClient.Models.UserComment)">
+            <summary>
+            Posts a UserComment json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="comment">The Comment request model.</param>
+            <response code="200">The comment record was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.Update(HealthGateway.WebClient.Models.UserComment)">
+            <summary>
+            Puts a UserComment json to be updated in the database.
+            </summary>
+            <returns>The updated Comment wrapped in a RequestResult.</returns>
+            <param name="comment">The Comment to be updated.</param>
+            <response code="200">The comment was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.Delete(HealthGateway.WebClient.Models.UserComment)">
+            <summary>
+            Deletes a UserComment from the database.
+            </summary>
+            <returns>The deleted UserComment wrapped in a RequestResult.</returns>
+            <param name="comment">The comment to be deleted.</param>
+            <response code="200">The note was deleted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.GetAllForEntry(System.String)">
+            <summary>
+            Gets all comments for the authorized user and event id.
+            </summary>
+            <param name="parentEntryId">The parent entry id.</param>
+            <returns>The list of comments wrapped in a request result.</returns>
+            <response code="200">Returns the list of comments.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.CommunicationController">
+            <summary>
+            Web API to handle system communications.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommunicationController.#ctor(HealthGateway.WebClient.Services.ICommunicationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.CommunicationController"/> class.
+            </summary>
+            <param name="communicationService">The injected communication service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.CommunicationController.Get">
+            <summary>
+            Gets the latest active communication.
+            </summary>
+            <returns>The active communication or null if not found.</returns>
+            <response code="200">Returns the communication json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.ConfigurationController">
+            <summary>
+            Web API to return Health Gateway configuration to approved clients.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ConfigurationController.#ctor(HealthGateway.WebClient.Services.IConfigurationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.ConfigurationController"/> class.
+            </summary>
+            <param name="service">The injected configuration service provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ConfigurationController.Index">
+            <summary>
+            Returns the external Health Gateway configuration.
+            </summary>
+            <returns>The Health Gatway Configuration.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.DumpHeadersController">
+            <summary>
+            HomeController for Vue WebClient app.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.DumpHeadersController.Index">
+            <summary>
+            The default page for the home controller.
+            </summary>
+            <returns>The default view.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.NoteController">
+            <summary>
+            Web API to handle patient notes interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.INoteService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.NoteController"/> class.
+            </summary>
+            <param name="noteService">The injected patient notes service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(HealthGateway.WebClient.Models.UserNote)">
+            <summary>
+            Posts a patient note json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="note">The patient note request model.</param>
+            <response code="200">The note record was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.UpdateNote(HealthGateway.WebClient.Models.UserNote)">
+            <summary>
+            Puts a patient note json to be updated in the database.
+            </summary>
+            <returns>The updated Note wrapped in a RequestResult.</returns>
+            <param name="note">The patient note.</param>
+            <response code="200">The note was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.DeleteNote(HealthGateway.WebClient.Models.UserNote)">
+            <summary>
+            Deletes a note from the database.
+            </summary>
+            <returns>The deleted Note wrapped in a RequestResult.</returns>
+            <param name="note">The patient note.</param>
+            <response code="200">The note was deleted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.GetAll">
+            <summary>
+            Gets all notes for the specified user.
+            </summary>
+            <returns>The list of notes model wrapped in a request result.</returns>
+            <response code="200">Returns the list of notes.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.RobotsController">
+            <summary>
+            Dynamic Robots.txt for search engines.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Controllers.RobotsController.DefaultRobotsContent">
+            <summary>
+            The Default Robots.txt content if not overriden using the robots.txt configuration value.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.RobotsController.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.RobotsController"/> class.
+            </summary>
+            <param name="configuration">The injected configuration.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.RobotsController.Robots">
+            <summary>
+            Serves up an environment specific robots.txt.
+            </summary>
+            <returns>The robots text file.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.UserFeedbackController">
+            <summary>
+            Web API to handle user feedback interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.#ctor(HealthGateway.WebClient.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserFeedbackController"/> class.
+            </summary>
+            <param name="userFeedbackService">The injected user feedback service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
+            <summary>
+            Posts a user feedback json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="userFeedback">The user feedback model.</param>
+            <response code="200">The user feedback record was saved.</response>
+            <response code="400">The user feedback object is invalid.</response>
+            <response code="409">The user feedback was already inserted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.UserProfileController">
+            <summary>
+            Web API to handle user profile interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.#ctor(HealthGateway.WebClient.Services.IUserProfileService,Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.WebClient.Services.IUserEmailService,HealthGateway.WebClient.Services.IUserSMSService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserProfileController"/> class.
+            </summary>
+            <param name="userProfileService">The injected user profile service.</param>
+            <param name="httpContextAccessor">The injected http context accessor provider.</param>
+            <param name="userEmailService">The injected user email service.</param>
+            <param name="userSMSService">The injected user sms service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CreateUserProfile(System.String,HealthGateway.WebClient.Models.CreateUserRequest)">
+            <summary>
+            Posts a user profile json to be inserted into the database.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="hdid">The resource hdid.</param>
+            <param name="createUserRequest">The user profile request model.</param>
+            <response code="200">The user profile record was saved.</response>
+            <response code="400">The user profile was already inserted.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetUserProfile(System.String)">
+            <summary>
+            Gets a user profile json.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.CloseUserProfile(System.String)">
+            <summary>
+            Closes a user profile.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.RecoverUserProfile(System.String)">
+            <summary>
+            Restore a user profile.
+            </summary>
+            <returns>The user profile model wrapped in a request result.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user profile json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetLastTermsOfService">
+            <summary>
+            Gets the terms of service json.
+            </summary>
+            <returns>The terms of service model wrapped in a request result.</returns>
+            <response code="200">Returns the terms of service json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.ValidateEmail(System.String,System.Guid)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The an empty response.</returns>
+            <param name="hdid">The user hdid.</param>
+            <param name="inviteKey">The email invite key.</param>
+            <response code="200">The email was validated.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="404">The invite key was not found.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.ValidateSMS(System.String,System.String)">
+            <summary>
+            Validates a sms invite.
+            </summary>
+            <returns>An empty response.</returns>
+            <param name="hdid">The user hdid.</param>
+            <param name="validationCode">The sms invite validation code.</param>
+            <response code="200">The sms was validated.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="404">The invite key was not found.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetUserEmailInvite(System.String)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user email invite json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.GetUserSMSInvite(System.String)">
+            <summary>
+            Validates an email invite.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="hdid">The user hdid.</param>
+            <response code="200">Returns the user email invite json.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserEmail(System.String,System.String)">
+            <summary>
+            Updates the user email.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="emailAddress">The new email.</param>
+            <returns>True if the action was successful.</returns>
+            <response code="200">Returns true if the call was successful.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserSMSNumber(System.String,System.String)">
+            <summary>
+            Updates the user sms number.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="smsNumber">The new sms number.</param>
+            <returns>True if the action was successful.</returns>
+            <response code="200">Returns true if the call was successful.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.UserProfileController.UpdateUserPreference(System.String,System.String,System.String)">
+            <summary>
+            Updates a user preference.
+            </summary>
+            <returns>The http status.</returns>
+            <param name="hdid">The user hdid.</param>
+            <param name="name">The preference name.</param>
+            <param name="value">The preference value.</param>
+            <response code="200">The user preference record was saved.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CreateNoteRequest">
+            <summary>
+            Object that defines the request for creating a User.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.Text">
+            <summary>
+            Gets or sets the note text.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.Title">
+            <summary>
+            Gets or sets the note title.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.JournalDateTime">
+            <summary>
+            Gets or sets the note date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateNoteRequest.HdId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CreateUserRequest">
+            <summary>
+            Object that defines the request for creating a User.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateUserRequest.Profile">
+            <summary>
+            Gets or sets the user profile.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CreateUserRequest.InviteCode">
+            <summary>
+            Gets or sets the code used to validate if the user has an invite.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.ExternalConfiguration">
+            <summary>
+            A collection of configuration items for use by Health Gateway and
+            approved applications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.OpenIdConnect">
+            <summary>
+            Gets or sets the OpenIdConnect configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.IdentityProviders">
+            <summary>
+            Gets or sets the List of Identity providers.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.WebClient">
+            <summary>
+            Gets or sets the Health Gateway Webclient specific configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ExternalConfiguration.ServiceEndpoints">
+            <summary>
+            Gets or sets the Service Endpoints.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.IdentityProviderConfiguration">
+            <summary>
+            An object representing a configured Health Gateway IdentityProvider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Id">
+            <summary>
+            Gets or sets the Id of the Identity Provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Name">
+            <summary>
+            Gets or sets the name of the Identity Provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Icon">
+            <summary>
+            Gets or sets the Font Awesome Icon that we recommend to use.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Hint">
+            <summary>
+            Gets or sets the Identity Provider hint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.IdentityProviderConfiguration.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this identity provider
+            should be used.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.NotificationSettingsConfig">
+            <summary>
+            Provides configuration data for the Notifications Settings PHSA API.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.NotificationSettingsConfig.Endpoint">
+            <summary>
+            Gets or sets the PHSA Notification Settings external endpoint.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.OpenIdConnectConfiguration">
+            <summary>
+            Configuration to be used by external clients for authentication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Authority">
+            <summary>
+            Gets or sets the OpenIDConnect Authority.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.ClientId">
+            <summary>
+            Gets or sets the OpenIdConnect Client ID.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.ResponseType">
+            <summary>
+            Gets or sets the OpenIDConnect Response types.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Scope">
+            <summary>
+            Gets or sets the OpenIDConnect Scopes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Callbacks">
+            <summary>
+            Gets or sets the Callback URIs.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.TermsOfServiceModel">
+            <summary>
+            Model that provides a user representation of an EmailInvite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.Id">
+            <summary>
+            Gets or sets the terms of service id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.Content">
+            <summary>
+            Gets or sets the terms of service html.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TermsOfServiceModel.EffectiveDate">
+            <summary>
+            Gets or sets the date the terms of service becomes active.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.TermsOfServiceModel.CreateFromDbModel(HealthGateway.Database.Models.LegalAgreement)">
+            <summary>
+            Constructs a TermsOfService model from a LegalAgreement database model.
+            </summary>
+            <param name="model">The legal agreement database model.</param>
+            <returns>The terms of service model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.TimeOutsConfiguration">
+            <summary>
+            Various timeout values used by the VUE WebClient application.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TimeOutsConfiguration.Idle">
+            <summary>
+            Gets or sets the idle time in seconds that the Webclient will use
+            before it automatically logs the user out.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.TimeOutsConfiguration.LogoutRedirect">
+            <summary>
+            Gets or sets the amount of time in seconds after which the user will be
+            redirected from the logout page back to the home.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UserComment">
+            <summary>
+            Model that provides a user representation of an user profile database model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.Id">
+            <summary>
+            Gets or sets the id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.UserProfileId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.Text">
+            <summary>
+            Gets or sets the text of the comment.
+            Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.EntryTypeCode">
+            <summary>
+            Gets or sets the entry type code.
+            The value is one of <see cref="T:HealthGateway.Database.Constants.CommentEntryType"/>.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.ParentEntryId">
+            <summary>
+            Gets or sets the related event id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.Version">
+            <summary>
+            Gets or sets the comment db version.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.CreatedDateTime">
+            <summary>
+            Gets or sets the datetime the entity was created.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.CreatedBy">
+            <summary>
+            Gets or sets the user/system that created the entity.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.UpdatedDateTime">
+            <summary>
+            Gets or sets the datetime the entity was updated.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserComment.UpdatedBy">
+            <summary>
+            Gets or sets the user/system that created the entity.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserComment.CreateFromDbModel(HealthGateway.Database.Models.Comment,HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a UserComment model from a Node database model.
+            </summary>
+            <param name="model">The comment database model.</param>
+            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+            <param name="key">The security key.</param>
+            <returns>The user comment model.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserComment.CreateListFromDbModel(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.Comment},HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a List of UserComment models from a List of Node database models.
+            </summary>
+            <param name="models">The list of comment database model.</param>
+            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+            <param name="key">The security key.</param>
+            <returns>A list of use comments.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserComment.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a database comment model from a user Node model.
+            </summary>
+            <param name="cryptoDelegate">Crypto delegate to decrypt comment.</param>
+            <param name="key">The security key.</param>
+            <returns>The database user comment model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UserEmailInvite">
+            <summary>
+            Model that provides a user representation of an EmailInvite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.Id">
+            <summary>
+            Gets or sets the email invite id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.HdId">
+            <summary>
+            Gets or sets the users directed identifier.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.Validated">
+            <summary>
+            Gets or sets a value indicating whether the invite was validated.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.EmailId">
+            <summary>
+            Gets or sets the associated email that was sent for this invite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserEmailInvite.EmailAddress">
+            <summary>
+            Gets or sets the associated email that was sent for this invite.
+            </summary>
+            <summary>
+            Gets or sets the email address for the invite.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserEmailInvite.CreateFromDbModel(HealthGateway.Database.Models.MessagingVerification)">
+            <summary>
+            Constructs a UserInviteEmail from a EmailInvite.
+            </summary>
+            <param name="model">The messaging verification database model.</param>
+            <returns>The user email invite model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UserNote">
+            <summary>
+            Model that provides a user representation of an user profile database model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.Id">
+            <summary>
+            Gets or sets the id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.HdId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.Title">
+            <summary>
+            Gets or sets the title.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.Text">
+            <summary>
+            Gets or sets the text of the note.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.JournalDateTime">
+            <summary>
+            Gets or sets the Note timeline datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.Version">
+            <summary>
+            Gets or sets the note db version.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.CreatedDateTime">
+            <summary>
+            Gets or sets the datetime the entity was created.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.CreatedBy">
+            <summary>
+            Gets or sets the user/system that created the entity.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.UpdatedDateTime">
+            <summary>
+            Gets or sets the datetime the entity was updated.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserNote.UpdatedBy">
+            <summary>
+            Gets or sets the user/system that created the entity.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserNote.CreateFromDbModel(HealthGateway.Database.Models.Note,HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a UserNote model from a Node database model.
+            </summary>
+            <param name="model">The note database model.</param>
+            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+            <param name="key">The security key.</param>
+            <returns>The user note model.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserNote.CreateListFromDbModel(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.Note},HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a List of UserNote models from a List of Node database models.
+            </summary>
+            <param name="models">The list of note database model.</param>
+            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+            <param name="key">The security key.</param>
+            <returns>A list of use notes.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserNote.ToDbModel(HealthGateway.Common.Delegates.ICryptoDelegate,System.String)">
+            <summary>
+            Constructs a database Note model from a user Node model.
+            </summary>
+            <param name="cryptoDelegate">Crypto delegate to decrypt note.</param>
+            <param name="key">The security key.</param>
+            <returns>The database user note model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UserProfileModel">
+            <summary>
+            Model that provides a user representation of an user profile database model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.HdId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.AcceptedTermsOfService">
+            <summary>
+            Gets or sets a value indicating whether the user accepted the terms of service.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.Email">
+            <summary>
+            Gets or sets the user email.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.SMSNumber">
+            <summary>
+            Gets or sets the user SMS number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.HasTermsOfServiceUpdated">
+            <summary>
+            Gets or sets a value indicating whether the user needs to be notified about new terms of service.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.LastLoginDateTime">
+            <summary>
+            Gets or sets the value indicating the date when the user last logon.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.ClosedDateTime">
+            <summary>
+            Gets or sets the Closed datetime of the account.
+            After an account has been closed for n amount of days the row is physically deleted.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.Preferences">
+            <summary>
+            Gets or sets the user preference.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserProfileModel.CreateFromDbModel(HealthGateway.Database.Models.UserProfile)">
+            <summary>
+            Constructs a UserProfile model from a UserProfile database model.
+            </summary>
+            <param name="model">The user profile database model.</param>
+            <returns>The user profile model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.UserSMSInvite">
+            <summary>
+            Model that provides a user representation of a sms verification invite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.Validated">
+            <summary>
+            Gets or sets a value indicating whether the invite was validated.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.SMSNumber">
+            <summary>
+            Gets or sets the sms number for the invite.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.TooManyFailedAttempts">
+            <summary>
+            Gets or sets a value indicating whether the code had too many verification attempts.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.UserSMSInvite.Expired">
+            <summary>
+            Gets or sets a value indicating whether the code is expired.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.UserSMSInvite.CreateFromDbModel(HealthGateway.Database.Models.MessagingVerification)">
+            <summary>
+            Constructs a UserSMSInvite from a MessagingVerification.
+            </summary>
+            <param name="model">The database messaging verification model.</param>
+            <returns>The UserSMSInvite model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
+            <summary>
+            Configuration data to be used by the Health Gateway Webclient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.LogLevel">
+            <summary>
+            Gets or sets the logging level used by the Webclient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.Timeouts">
+            <summary>
+            Gets or sets the Webclient timeout values.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.RegistrationStatus">
+            <summary>
+            Gets or sets the Webclient registration status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.ExternalURLs">
+            <summary>
+            Gets or sets the ExternalURLs used by the Webclient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.Modules">
+            <summary>
+            Gets or sets the state for each of our modules.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.HoursForDeletion">
+            <summary>
+            Gets or sets the number of hours until an account is removed after being closed.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.BetaRequestService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IBetaRequestDelegate,HealthGateway.Common.Services.IEmailQueueService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.BetaRequestService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="betaRequestDelegate">The email delegate to interact with the DB.</param>
+            <param name="emailQueueService">The email service to queue emails.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.GetBetaRequest(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.BetaRequestService.PutBetaRequest(HealthGateway.Database.Models.BetaRequest,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.CommentService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.CommentService},HealthGateway.Database.Delegates.ICommentDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Common.Delegates.ICryptoDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.CommentService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="commentDelegate">Injected Comment delegate.</param>
+            <param name="profileDelegate">Injected Profile delegate.</param>
+            <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.Add(HealthGateway.WebClient.Models.UserComment)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.GetList(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.Update(HealthGateway.WebClient.Models.UserComment)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommentService.Delete(HealthGateway.WebClient.Models.UserComment)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.CommunicationService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.CommunicationService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.CommunicationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="communicationDelegate">Injected Note delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActive">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
+            <summary>
+            Provides external configuration data.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ConfigurationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.ConfigurationService},Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ConfigurationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="configuration">Injected Configuration Provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ConfigurationService.GetConfiguration">
+            <summary>
+            Reads the external configuration and returns it to the caller.
+            </summary>
+            <returns>The external configuration data.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IBetaRequestService">
+            <summary>
+            Service that provides functionality to access and create requests for beta access.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IBetaRequestService.GetBetaRequest(System.String)">
+            <summary>
+            Retrieves the beta request for a user.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <returns>returns the beta request for the user if found.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IBetaRequestService.PutBetaRequest(HealthGateway.Database.Models.BetaRequest,System.String)">
+            <summary>
+            Saves the user profile to the database.
+            </summary>
+            <param name="betaRequest">The request to create a beta request.</param>
+            <param name="hostUrl">The host url for referal purposes.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ICommentService">
+            <summary>
+            Service to interact with the Comment Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.Add(HealthGateway.WebClient.Models.UserComment)">
+            <summary>
+            Adds a UserComment in the backend.
+            </summary>
+            <param name="userComment">The UserComment to be created.</param>
+            <returns>A UserComment wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.GetList(System.String,System.String)">
+            <summary>
+            Gets a list of UserComment for the given hdId and event id.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <param name="parentEntryId">The parent entry id.</param>
+            <returns>A List of UserComment wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.Update(HealthGateway.WebClient.Models.UserComment)">
+            <summary>
+            Updates the given UserComment in the backend.
+            Any changes to HDID will be ignored.
+            </summary>
+            <param name="userComment">The UserComment to update.</param>
+            <returns>The updated UserComment.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommentService.Delete(HealthGateway.WebClient.Models.UserComment)">
+            <summary>
+            Deletes the given UserComment from the backend.
+            </summary>
+            <param name="userComment">The Comment to be deleted.</param>
+            <returns>The deleted Comment wrapped in a RequestResult.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ICommunicationService">
+            <summary>
+            Service to interact with the Communication Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetActive">
+            <summary>
+            Gets the active communication from the backend.
+            </summary>
+            <returns>The active communication wrapped in a RequestResult.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
+            <summary>
+            Webclient configuration.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IConfigurationService.GetConfiguration">
+            <summary>
+            Creates and returns Configuration data for clients.
+            </summary>
+            <returns>The Config object containing configuration elements useful for client consumption.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.INoteService">
+            <summary>
+            Service to interact with the Note Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.CreateNote(HealthGateway.WebClient.Models.UserNote)">
+            <summary>
+            Creates a note in the backend.
+            </summary>
+            <param name="note">The note to create.</param>
+            <returns>A note wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets all the notes for the given hdId.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <param name="page">The page of data to fetch indexed from 0.</param>
+            <param name="pageSize">The amount of records per page.</param>
+            <returns>A List of notes wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.UpdateNote(HealthGateway.WebClient.Models.UserNote)">
+            <summary>
+            Updates the given note in the backend.
+            Any changes to HDID will be ignored.
+            </summary>
+            <param name="note">The note to update.</param>
+            <returns>The updated Note.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.INoteService.DeleteNote(HealthGateway.WebClient.Models.UserNote)">
+            <summary>
+            Deletes the given note from the backend.
+            </summary>
+            <param name="note">The note to delete.</param>
+            <returns>The deleted note wrapped in a RequestResult.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserEmailService">
+            <summary>
+            The User Email service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.ValidateEmail(System.String,System.Guid,System.String)">
+            <summary>
+            Validates the email that matches the given invite key.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="inviteKey">The email invite key.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>returns true if the email invite was found.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.RetrieveLastInvite(System.String)">
+            <summary>
+            Retrieves the last invite email.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <returns>returns the last email invite if found.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.UpdateUserEmail(System.String,System.String,System.Uri,System.String)">
+            <summary>
+            Updates the user email.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="email">Email to be set for the user.</param>
+            <param name="hostUri">The host uri for referal purposes.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>returns true if the email invite was sucessfully created.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserFeedbackService">
+            <summary>
+            The User Feedback service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
+            <summary>
+            Saves the user feedback to the database.
+            </summary>
+            <param name="userFeedback">The user feedback model to be saved.</param>
+            <returns>The wrappeed user feedback.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserProfileService">
+            <summary>
+            The User Profile service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
+            <summary>
+            Gets the user profile model.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="lastLogin">The date of last login performed by the user.</param>
+            <returns>The wrappeed user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri,System.String)">
+            <summary>
+            Saves the user profile to the database.
+            </summary>
+            <param name="createProfileRequest">The request to create a user profile model.</param>
+            <param name="hostUri">The host of the email validation endpoint.</param>
+            <param name="bearerToken">The access token of the authenticated user.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.Guid,System.String)">
+            <summary>
+            Closed the user profile.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="userId">The user id.</param>
+            <param name="hostUrl">The host of the email validation endpoint.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.RecoverUserProfile(System.String,System.String)">
+            <summary>
+            Recovers the user profile.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="hostUrl">The host of the email validation endpoint.</param>
+            <returns>The wrapped user profile.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetActiveTermsOfService">
+            <summary>
+            Gets the most recent active terms of service.
+            </summary>
+            <returns>The wrapped terms of service.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.UpdateUserPreference(System.String,System.String,System.String)">
+            <summary>
+            Creates a User Preference in the backend.
+            </summary>
+            <param name="userPreference">The userPreference to create.</param>
+            <returns>A userPreference wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserPreferences(System.String)">
+            <summary>
+            Gets the user preference model.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <returns>The wrappeed user reference.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.IUserSMSService">
+            <summary>
+            The User SMS service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserSMSService.UpdateUserSMS(System.String,System.String,System.Uri,System.String)">
+            <summary>
+            Updates the user SMS number.
+            </summary>
+            <param name="hdid">The user hdid.</param>
+            <param name="sms">SMS number to be set for the user.</param>
+            <param name="hostUri">The host uri for referal purposes.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>returns true if the sms number was sucessfully updated.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserSMSService.ValidateSMS(System.String,System.String,System.String)">
+            <summary>
+            Validates the sms number that matches the given validation code.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <param name="validationCode">The sms validation code.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>returns true if the sms invite was found and validated.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IUserSMSService.RetrieveLastInvite(System.String)">
+            <summary>
+            Retrieves the last invite SMS.
+            </summary>
+            <param name="hdid">The requested user hdid.</param>
+            <returns>returns the last SMS invite if found.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.NoteService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.NoteService},HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Common.Delegates.ICryptoDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.NoteService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="noteDelegate">Injected Note delegate.</param>
+            <param name="profileDelegate">Injected Profile delegate.</param>
+            <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.CreateNote(HealthGateway.WebClient.Models.UserNote)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.GetNotes(System.String,System.Int32,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.UpdateNote(HealthGateway.WebClient.Models.UserNote)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.NoteService.DeleteNote(HealthGateway.WebClient.Models.UserNote)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.UserEmailService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserEmailService},HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Common.Services.INotificationSettingsService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserEmailService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
+            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="emailQueueService">The email service to queue emails.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.ValidateEmail(System.String,System.Guid,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.RetrieveLastInvite(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.UpdateUserEmail(System.String,System.String,System.Uri,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.UserFeedbackService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.IFeedbackDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserFeedbackService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.UserProfileService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserProfileService},HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.IUserPreferenceDelegate,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Common.Delegates.ICryptoDelegate,HealthGateway.Common.Services.INotificationSettingsService,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserProfileService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
+            <param name="emailDelegate">The email delegate to interact with the DB.</param>
+            <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
+            <param name="configuration">The configuration service.</param>
+            <param name="emailQueueService">The email service to queue emails.</param>
+            <param name="legalAgreementDelegate">The terms of service delegate.</param>
+            <param name="cryptoDelegate">Injected Crypto delegate.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
+            <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.Nullable{System.DateTime})">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.Uri,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.Guid,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.RecoverUserProfile(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetActiveTermsOfService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.UpdateUserPreference(System.String,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserPreferences(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.UserSMSService">
+            <inheritdoc />
+        </member>
+        <member name="F:HealthGateway.WebClient.Services.UserSMSService.MaxVerificationAttempts">
+            <summary>
+            The maximum verification attempts.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserSMSService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserSMSService},HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Common.Services.INotificationSettingsService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserSMSService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
+            <param name="profileDelegate">The profile delegate to interact with the DB.</param>
+            <param name="notificationSettingsService">Notification settings delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserSMSService.ValidateSMS(System.String,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserSMSService.UpdateUserSMS(System.String,System.String,System.Uri,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.UserSMSService.RetrieveLastInvite(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Startup"/> class.
+            </summary>
+            <param name="env">The environment variables provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+            <param name="env">The hosting environment.</param>
+        </member>
+    </members>
+</doc>

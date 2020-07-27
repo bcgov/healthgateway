@@ -73,6 +73,7 @@ import moment from "moment";
 import EventBus from "@/eventbus";
 import TimelineEntry from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
+import { EventMessageName } from "@/constants/eventMessageName";
 
 interface DateGroup {
     key: string;
@@ -88,6 +89,7 @@ interface DateGroup {
 export default class LinearTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop({ default: 0 }) private totalEntries!: number;
+    @Prop() private isVisible!: boolean;
 
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
@@ -117,10 +119,15 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
         if (this.visibleTimelineEntries.length > 0) {
-            this.eventBus.$emit(
-                "timelinePageUpdate",
-                new Date(this.visibleTimelineEntries[0].date)
-            );
+            if (this.isVisible) {
+                console.log(
+                    "notifying calendar vue about timeline's page updated..."
+                );
+                this.eventBus.$emit(
+                    "timelinePageUpdate",
+                    new Date(this.visibleTimelineEntries[0].date)
+                );
+            }
         }
     }
 
@@ -129,6 +136,13 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
             self.setPageFromDate(eventDate);
         });
+
+        this.eventBus.$on(
+            EventMessageName.TimelineCurrentDateUpdated,
+            function (currentDate: Date) {
+                self.setPageFromDate(currentDate);
+            }
+        );
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize();

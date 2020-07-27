@@ -14,6 +14,7 @@
             :month-names="monthNames"
             :week-names="weekNames"
             :first-day="firstDay"
+            :is-visible="isVisible"
         >
         </CalendarBody>
     </div>
@@ -43,6 +44,7 @@ export default class CalendarComponent extends Vue {
     @Prop() dateGroups!: DateGroup[];
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
+    @Prop() private isVisible!: boolean;
 
     @Prop({ default: 0, required: false }) firstDay!: number;
     @Prop({ default: "MMMM yyyy", required: false }) titleFormat!: string;
@@ -85,6 +87,10 @@ export default class CalendarComponent extends Vue {
         this.updateAvailableMonths();
         var self = this;
         this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
+            console.log(
+                "calendar got the timelinePageUpdate sent by timeline vue for the " +
+                    eventDate
+            );
             self.currentDate = DateUtil.getMonthFirstDate(eventDate);
         });
     }
