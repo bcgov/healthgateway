@@ -93,7 +93,6 @@ import { Component, Prop, Watch, Emit } from "vue-property-decorator";
 import moment from "moment";
 import { directive as onClickaway } from "vue-clickaway";
 import { DateGroup } from "@/models/timelineEntry";
-import { mount } from "@vue/test-utils";
 
 class MonthToDisplay {
     public Title: string = "";
@@ -136,7 +135,6 @@ export default class MonthYearPickerComponent extends Vue {
             const month: number = date.getMonth();
             monthsToDisplay[month].HasData = true;
         });
-        debugger;
         return monthsToDisplay;
     }
 
