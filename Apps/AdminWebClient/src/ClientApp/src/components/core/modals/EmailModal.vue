@@ -24,7 +24,7 @@
                         </v-col>
                         <v-col>
                             <v-datetime-picker
-                                v-model="scheduledDate"
+                                v-model="editedItem.scheduledDateTime"
                                 requried
                                 label="Scheduled For"
                             ></v-datetime-picker>
@@ -68,8 +68,8 @@
                     @click="saveChanges()"
                     >Send</v-btn
                 >
-                <v-btns v-else color="blue darken-1" text @click="saveChanges()"
-                    >Update</v-btns
+                <v-btn v-else color="blue darken-1" text @click="saveChanges()"
+                    >Update</v-btn
                 >
             </v-card-actions>
         </v-card>
@@ -106,7 +106,6 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
-    private scheduledDate = new Date();
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
