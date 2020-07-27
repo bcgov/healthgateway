@@ -24,7 +24,7 @@
                         </v-col>
                         <v-col>
                             <v-datetime-picker
-                                v-model="scheduledDate"
+                                v-model="editedItem.scheduledDateTime"
                                 requried
                                 label="Scheduled For"
                             ></v-datetime-picker>
@@ -65,10 +65,10 @@
                     v-if="isNew"
                     color="blue darken-1"
                     text
-                    @click="emitSend()"
+                    @click="saveChanges()"
                     >Send</v-btn
                 >
-                <v-btn v-else color="blue darken-1" text @click="emitUpdate()"
+                <v-btn v-else color="blue darken-1" text @click="saveChanges()"
                     >Update</v-btn
                 >
             </v-card-actions>
@@ -106,7 +106,6 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
-    private scheduledDate = new Date();
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
@@ -173,30 +172,31 @@ export default class EmailModal extends Vue {
             : false;
     }
 
-    @Emit()
-    private emitSend() {
-        // TODO: WIRE UP SCHEDULED DATE TO SERVICE
+    private saveChanges() {
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
         ) {
+            if (this.isNew) {
+                this.emitSend();
+            } else {
+                this.emitUpdate();
+            }
             this.close();
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
-            return this.editedItem;
         }
     }
 
     @Emit()
+    private emitSend() {
+        return this.editedItem;
+    }
+
+    @Emit()
     private emitUpdate() {
-        if (
-            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
-            this.contentValid()
-        ) {
-            this.close();
-            return this.editedItem;
-        }
+        return this.editedItem;
     }
 
     @Emit()

@@ -16,6 +16,9 @@
         <template v-slot:item.expiryDateTime="{ item }">
             <span>{{ formatDate(item.expiryDateTime) }}</span>
         </template>
+        <template v-slot:item.scheduledDateTime="{ item }">
+            <span>{{ formatDate(item.scheduledDateTime) }}</span>
+        </template>
         <template v-slot:top>
             <v-toolbar dark>
                 <v-tabs v-model="tab" dark>
@@ -100,6 +103,7 @@ export default class CommunicationTable extends Vue {
         communicationTypeCode: CommunicationType.Banner,
         priority: 10,
         version: 0,
+        scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
@@ -112,8 +116,9 @@ export default class CommunicationTable extends Vue {
         communicationTypeCode: CommunicationType.Email,
         text: "<p></p>",
         priority: 10,
-        effectiveDateTime: new Date(),
-        expiryDateTime: new Date(),
+        scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date()).toDate(),
         version: 0
     };
 
@@ -124,7 +129,8 @@ export default class CommunicationTable extends Vue {
         communicationTypeCode: CommunicationType.Banner,
         version: 0,
         priority: 10,
-        effectiveDateTime: new Date(),
+        scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date())
             .add(1, "days")
             .toDate()
@@ -136,8 +142,9 @@ export default class CommunicationTable extends Vue {
         communicationTypeCode: CommunicationType.Email,
         text: "<p></p>",
         priority: 10,
-        effectiveDateTime: new Date(),
-        expiryDateTime: new Date(),
+        scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date()).toDate(),
         version: 0
     };
 
@@ -200,7 +207,7 @@ export default class CommunicationTable extends Vue {
         },
         {
             text: "Scheduled For",
-            value: "effectiveDateTime"
+            value: "scheduledDateTime"
         },
         {
             text: "Priority",
@@ -233,6 +240,9 @@ export default class CommunicationTable extends Vue {
         this.isNewCommunication = false;
         if (item.communicationTypeCode === CommunicationType.Email) {
             this.editedEmail = item;
+            this.editedEmail.scheduledDateTime = new Date(
+                item.scheduledDateTime
+            );
         } else {
             this.editedBanner = item;
             this.editedBanner.effectiveDateTime = new Date(
@@ -330,6 +340,7 @@ export default class CommunicationTable extends Vue {
                 communicationTypeCode: comm.communicationTypeCode,
                 priority: comm.priority,
                 version: 0,
+                scheduledDateTime: comm.scheduledDateTime,
                 effectiveDateTime: comm.effectiveDateTime,
                 expiryDateTime: comm.expiryDateTime
             })
@@ -367,6 +378,7 @@ export default class CommunicationTable extends Vue {
                 communicationTypeCode: comm.communicationTypeCode,
                 priority: comm.priority,
                 version: comm.version,
+                scheduledDateTime: comm.scheduledDateTime,
                 effectiveDateTime: comm.effectiveDateTime,
                 expiryDateTime: comm.expiryDateTime
             })

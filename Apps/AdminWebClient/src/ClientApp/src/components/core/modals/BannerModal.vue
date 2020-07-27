@@ -149,6 +149,7 @@ export default class BannerModal extends Vue {
     }
 
     private save() {
+        this.editedItem.scheduledDateTime = new Date();
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.dateTimeValid()
