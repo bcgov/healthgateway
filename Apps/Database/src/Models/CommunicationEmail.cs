@@ -20,57 +20,53 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user profile model.
+    /// A system Communication Email.
     /// </summary>
-    public class UserProfile : AuditableEntity
+    public class CommunicationEmail : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the user hdid.
+        /// Gets or sets the unique id and primary key for this CommunicationEmail.
         /// </summary>
         [Key]
-        [Column("UserProfileId")]
-        [MaxLength(52)]
-        public string HdId { get; set; } = null!;
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("CommunicationEmailId")]
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user accepted the terms of service.
+        /// Gets or sets the Communication Id (foreign key).
         /// </summary>
+        [ForeignKey("Communication")]
         [Required]
-        public bool AcceptedTermsOfService { get; set; }
+        public Guid CommunicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the user email.
+        /// Gets or sets the communication related to this Communication Email.
         /// </summary>
-        [MaxLength(254)]
-        public string? Email { get; set; }
+        public virtual Communication Communication { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the user SMS number.
+        /// Gets or sets the user profile hdid (foreign key).
         /// </summary>
-        [MaxLength(10)]
-        public string? SMSNumber { get; set; }
+        [MaxLength(52)]
+        [ForeignKey("UserProfile")]
+        [Required]
+        public string UserProfileHdId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the Closed datetime of the account.
-        /// After an account has been closed for n amount of days the row is physically deleted.
+        /// Gets or sets the user profile related to this Communication Email.
         /// </summary>
-        public DateTime? ClosedDateTime { get; set; }
+        public virtual UserProfile UserProfile { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the External Identity Management identifer for the user.
+        /// Gets or sets the Email Id (foreign key).
         /// </summary>
-        public Guid? IdentityManagementId { get; set; }
+        [ForeignKey("Email")]
+        [Required]
+        public Guid EmailId { get; set; }
 
         /// <summary>
-        /// Gets or sets the users last login datetime.
+        /// Gets or sets the email related to this Communication Email.
         /// </summary>
-        public DateTime? LastLoginDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the users encryption key.
-        /// Key is 16 byte string and is encoded to Base64.
-        /// </summary>
-        [MaxLength(44)]
-        public string? EncryptionKey { get; set; }
+        public virtual Email Email { get; set; } = null!;
     }
 }
