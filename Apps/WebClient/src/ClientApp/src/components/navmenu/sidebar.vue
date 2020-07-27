@@ -547,6 +547,8 @@ export default class SidebarComponent extends Vue {
                 transitionEvent.propertyName !== "max-width"
             ) {
                 return;
+            } else {
+                self.isTutorialEnabled = false;
             }
 
             self.isTutorialEnabled = true;
@@ -649,7 +651,10 @@ export default class SidebarComponent extends Vue {
     }
 
     private get isTimeline(): boolean {
-        return this.$route.path == "/timeline";
+        let isTimeLine = this.$route.path == "/timeline";
+        if (isTimeLine && !this.isTutorialEnabled)
+            this.isTutorialEnabled = true;
+        return isTimeLine;
     }
 
     private get isProfile(): boolean {
