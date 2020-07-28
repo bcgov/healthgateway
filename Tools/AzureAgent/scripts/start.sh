@@ -33,20 +33,19 @@ fi
 export AGENT_ALLOW_RUNASROOT="0"
 
 cleanup() {
-	  if [ -e config.sh ]; then
-		      print_header "Cleanup. Removing Azure Pipelines agent..."
-
-		          ./config.sh remove --unattended \
-				        --auth PAT \
-					      --token $(cat "$AZP_TOKEN_FILE")
-			    fi
-		    }
+	if [ -e config.sh ]; then
+		print_header "Cleanup. Removing Azure Pipelines agent..."
+		./config.sh remove --unattended \
+			--auth PAT \
+			--token $(cat "$AZP_TOKEN_FILE")
+	fi
+}
 
 print_header() {
-		lightcyan='\033[1;36m'
-		nocolor='\033[0m'
-		echo -e "${lightcyan}$1${nocolor}"
-	}
+	lightcyan='\033[1;36m'
+	nocolor='\033[0m'
+	echo -e "${lightcyan}$1${nocolor}"
+}
 
 # Let the agent ignore the token env variables
 export VSO_AGENT_IGNORE=AZP_TOKEN,AZP_TOKEN_FILE
