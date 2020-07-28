@@ -138,7 +138,10 @@ namespace HealthGateway.Database.Delegates
         public List<Communication> GetEmailCommunicationsToSend()
         {
             this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
-            List<Communication> retVal = this.dbContext.Communication.Where(c => c.CommunicationTypeCode == CommunicationType.Email && (c.CommunicationStatusCode != CommunicationStatus.Processed))
+            List<Communication> retVal = this.dbContext.Communication.Where(c =>
+                c.CommunicationTypeCode == CommunicationType.Email &&
+                c.CommunicationStatusCode != CommunicationStatus.Processed &&
+                c.ScheduledDateTime <= DateTime.UtcNow)
                 .OrderByDescending(c => c.CreatedDateTime).ToList();
             this.logger.LogDebug($"Finished getting list of New & Processing Email Communications from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
