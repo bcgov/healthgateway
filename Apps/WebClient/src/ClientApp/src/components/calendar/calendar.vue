@@ -99,22 +99,26 @@ export default class CalendarComponent extends Vue {
     private updateAvailableMonths() {
         this.availableMonths = this.dateGroups.reduce<Date[]>(
             (groups, entry) => {
-                // Get the month and year and dismiss the day
-                const monthYear = new Date(
-                    entry.date.getFullYear(),
-                    entry.date.getMonth(),
-                    1
-                );
+                const fullYear = entry.date.getFullYear();
+                if (!isNaN(fullYear)) {
+                    // Get the month and year and dismiss the day
+                    const monthYear = new Date(
+                        fullYear,
+                        entry.date.getMonth(),
+                        1
+                    );
 
-                // Create a new group if it the date doesnt exist in the map
-                if (
-                    groups.findIndex(
-                        (month) =>
-                            month.getFullYear() === monthYear.getFullYear() &&
-                            month.getMonth() === monthYear.getMonth()
-                    ) === -1
-                ) {
-                    groups.push(monthYear);
+                    // Create a new group if it the date doesnt exist in the map
+                    if (
+                        groups.findIndex(
+                            (month) =>
+                                month.getFullYear() ===
+                                    monthYear.getFullYear() &&
+                                month.getMonth() === monthYear.getMonth()
+                        ) === -1
+                    ) {
+                        groups.push(monthYear);
+                    }
                 }
                 return groups;
             },
