@@ -62,8 +62,9 @@ RUN dotnet tool install --global dotnet-sonarscanner --version 4.8.0 && \
 RUN mkdir /opt/az &&\
     chmod -R 777 /opt/az
 
-ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh 
-RUN chmod +rx /opt/az/start.sh
+ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh
+ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/stop.sh?raw=true /opt/az/stop.sh
+RUN chmod +rx /opt/az/*.sh
 
 WORKDIR /opt/az
 
