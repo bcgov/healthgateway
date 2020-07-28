@@ -37,7 +37,12 @@ error: map: map[] does not contain declared merge key: name
 
 Note:  The error above is from the service account not being re-recreated.
 
-## Updating Agent
+## Updating Agent Image
 
-The Azure DevOps agent will self-update on restart.
+If you need to update the base image that the Azure agent uses you would
 
+* Update the docker/Dockerfile
+* Commit to the dev branch
+* Trigger a new build in OpenShift UI
+
+This is only required if software version need to change, the Azure Agent itself will update on each start.
