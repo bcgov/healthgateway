@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Delegates
         Email GetNewEmail(Guid emailId);
 
         /// <summary>
-        /// Gets a sorted list of New low priority emails to process.
+        /// Gets a sorted list of new low priority emails to process.
         /// Low priority for this job is anything less than EmailPriority.Standard
         /// This is to ensure that any manual manipulation in the database that
         /// changes the ordinal values above those defined as EmailPriority.Low
@@ -50,6 +50,42 @@ namespace HealthGateway.Database.Delegates
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
         List<Email> GetLowPriorityEmail(int maxRows);
+
+        /// <summary>
+        /// Gets a sorted list of new standard priority emails to process.
+        /// Standard priority for this job is anything less than EmailPriority.High and more than or equal to EmailPriority.Standard
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.Standard
+        /// but below the ordinal value of EmailPriority.Standard will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of emails.</returns>
+        List<Email> GetStandardPriorityEmail(int maxRows);
+
+        /// <summary>
+        /// Gets a sorted list of new high priority emails to process.
+        /// Standard priority for this job is anything less than EmailPriority.Urgent and more than or equal to EmailPriority.High
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.High
+        /// but below the ordinal value of EmailPriority.High will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of emails.</returns>
+        List<Email> GetHighPriorityEmail(int maxRows);
+
+        /// <summary>
+        /// Gets a sorted list of new urgent priority emails to process.
+        /// Standard priority for this job is anything more than or equal to EmailPriority.Urgent
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.Urgent
+        /// but below the ordinal value of EmailPriority.Urgent will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of emails.</returns>
+        List<Email> GetUrgentPriorityEmail(int maxRows);
 
         /// <summary>
         /// Inserts an email using a populated Email object.

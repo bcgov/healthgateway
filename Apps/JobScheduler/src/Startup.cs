@@ -154,6 +154,9 @@ namespace HealthGateway.JobScheduler
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<ICommunicationJob>(this.configuration, "CreateCommEmailsForNewCommunications", j => j.CreateCommunicationEmailsForNewCommunications());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
+            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
+            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());
+            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendUrgentPriorityEmail", j => j.SendUrgentPriorityEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");
@@ -208,7 +211,7 @@ namespace HealthGateway.JobScheduler
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                    ValidateIssuer = true,
+                        ValidateIssuer = true,
                     };
                     this.configuration.GetSection(@"OpenIdConnect").Bind(options);
                     if (string.IsNullOrEmpty(options.Authority))

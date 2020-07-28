@@ -107,6 +107,90 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
 
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendStandardPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
+            if (resendEmails.Count > 0)
+            {
+                this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
+                foreach (Email email in resendEmails)
+                {
+#pragma warning disable CA1031 //We want to catch exception.
+                    try
+                    {
+                        this.SendEmail(email);
+                    }
+                    catch (Exception e)
+                    {
+                        // log the exception as a warning but we can continue
+                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now\n{e.ToString()}");
+                    }
+#pragma warning restore CA1031 // Restore warnings.
+                }
+            }
+
+            this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendHighPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
+            if (resendEmails.Count > 0)
+            {
+                this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
+                foreach (Email email in resendEmails)
+                {
+#pragma warning disable CA1031 //We want to catch exception.
+                    try
+                    {
+                        this.SendEmail(email);
+                    }
+                    catch (Exception e)
+                    {
+                        // log the exception as a warning but we can continue
+                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now\n{e.ToString()}");
+                    }
+#pragma warning restore CA1031 // Restore warnings.
+                }
+            }
+
+            this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendUrgentPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
+            if (resendEmails.Count > 0)
+            {
+                this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
+                foreach (Email email in resendEmails)
+                {
+#pragma warning disable CA1031 //We want to catch exception.
+                    try
+                    {
+                        this.SendEmail(email);
+                    }
+                    catch (Exception e)
+                    {
+                        // log the exception as a warning but we can continue
+                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now\n{e.ToString()}");
+                    }
+#pragma warning restore CA1031 // Restore warnings.
+                }
+            }
+
+            this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
         private static MimeMessage PrepareMessage(Email email)
         {
             MimeMessage msg = new MimeMessage();
