@@ -100,17 +100,17 @@ namespace HealthGateway.Medication.Services
                 };
                 IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
                 string ipv4Address = address.MapToIPv4().ToString();
-                HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
-                result.ResultStatus = response.Result;
+                RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                result.ResultStatus = response.ResultStatus;
                 result.ResultMessage = response.ResultMessage;
-                if (response.Result == ResultType.Success)
+                if (response.ResultStatus == ResultType.Success)
                 {
                     result.PageSize = historyQuery.PageSize;
                     result.PageIndex = historyQuery.PageNumber;
-                    if (response.Message != null && response.Message.Results != null)
+                    if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
                     {
-                        result.TotalResultCount = response.Message.Records;
-                        result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.Message.Results.ToList());
+                        result.TotalResultCount = response.ResourcePayload.Records;
+                        result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
                         this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
                     }
                     else

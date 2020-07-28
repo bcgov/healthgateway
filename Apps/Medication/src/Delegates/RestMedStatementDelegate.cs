@@ -24,6 +24,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
@@ -96,7 +97,7 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
+        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             if (query == null)
@@ -108,7 +109,7 @@ namespace HealthGateway.Medication.Delegates
                 throw new ArgumentNullException(nameof(query), "Query PHN cannot be null");
             }
 
-            HNMessage<MedicationHistoryResponse> retVal = new HNMessage<MedicationHistoryResponse>();
+            RequestResult<MedicationHistoryResponse> retVal = new RequestResult<MedicationHistoryResponse>();
             if (this.ValidateProtectiveWord(query.PHN, protectiveWord, hdid, ipAddress))
             {
                 using (this.traceService.TraceSection(this.GetType().Name, "ODRQuery"))
@@ -142,11 +143,12 @@ namespace HealthGateway.Medication.Delegates
                         if (response.IsSuccessStatusCode)
                         {
                             MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
-                            retVal.Message = medicationHistory.Response!;
+                            retVal.ResultStatus = Common.Constants.ResultType.Success;
+                            retVal.ResourcePayload = medicationHistory.Response!;
                         }
                         else
                         {
-                            retVal.Result = Common.Constants.ResultType.Error;
+                            retVal.ResultStatus = Common.Constants.ResultType.Error;
                             retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}";
                             this.logger.LogError(retVal.ResultMessage);
                         }
@@ -155,7 +157,7 @@ namespace HealthGateway.Medication.Delegates
                     catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
-                        retVal.Result = Common.Constants.ResultType.Error;
+                        retVal.ResultStatus = Common.Constants.ResultType.Error;
                         retVal.ResultMessage = e.ToString();
                         this.logger.LogError($"Unable to post message {e.ToString()}");
                     }
@@ -166,7 +168,7 @@ namespace HealthGateway.Medication.Delegates
             else
             {
                 this.logger.LogInformation($"Invalid protected word");
-                retVal.Result = Common.Constants.ResultType.Protected;
+                retVal.ResultStatus = Common.Constants.ResultType.Protected;
                 retVal.ResultMessage = ErrorMessages.ProtectiveWordErrorMessage;
             }
 

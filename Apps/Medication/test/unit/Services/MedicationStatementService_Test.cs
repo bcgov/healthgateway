@@ -82,7 +82,9 @@ namespace HealthGateway.Medication.Test
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<MedicationHistoryResponse>(new MedicationHistoryResponse()));
+            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>();
+            requestResult.ResourcePayload = new MedicationHistoryResponse();
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
