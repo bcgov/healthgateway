@@ -79,12 +79,8 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Finished sending email. {JsonConvert.SerializeObject(email)}");
         }
 
-        /// <inheritdoc />
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendLowPriorityEmails()
+        private void processEmails(List<Email> resendEmails)
         {
-            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             if (resendEmails.Count > 0)
             {
                 this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
@@ -103,8 +99,46 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning restore CA1031 // Restore warnings.
                 }
             }
+        }
 
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendLowPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
+            this.processEmails(resendEmails);
             this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendStandardPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
+            this.processEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendHighPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
+            this.processEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendUrgentPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
+            this.processEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
 
         private static MimeMessage PrepareMessage(Email email)
