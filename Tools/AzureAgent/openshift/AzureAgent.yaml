@@ -33,7 +33,7 @@ objects:
   data:
     AZ_DEVOPS_ORG_URL: ${AZ_DEVOPS_ORG_URL}
     AZ_DEVOPS_POOL: ${AZ_DEVOPS_POOL}
-    AZ_DEVOPS_WORK: ${AZ_DEVOPS_WORK_DIR}
+    AZ_DEVOPS_WORK_DIR: ${AZ_DEVOPS_WORK_DIR}
   kind: ConfigMap
   metadata:
     name: ${NAME}-config
@@ -45,6 +45,14 @@ objects:
   type: Opaque
   stringData:
     AZ_DEVOPS_TOKEN: ${AZ_DEVOPS_TOKEN}
+
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${NAME}-hooksecret
+  type: Opaque
+  stringData:
+    WebHookSecretKey: ${GIT_WEBHOOK_SECRET}
 
 - apiVersion: v1
   kind: ImageStream
@@ -65,10 +73,10 @@ objects:
     resources:
       limits:
         cpu: "2.5"
-        memory: 256Mi
+        memory: 6Gi
       requests:
         cpu: "100m"
-        memory: 6Gi
+        memory: 256Mi
     runPolicy: SerialLatestOnly
     source:
       contextDir: ${SOURCE_CONTEXT_DIR}
@@ -82,13 +90,19 @@ objects:
       dockerStrategy:
         from:
           kind: DockerImage
-          name: 'ubuntu:18.04'
-    successfulBuildsHistoryLimit: 3
-    failedBuildsHistoryLimit: 3
+          name: 'ubuntu:20.04'
+    successfulBuildsHistoryLimit: 2
+    failedBuildsHistoryLimit: 2
     triggers:
     - type: ConfigChange
     - imageChange: {}
       type: ImageChange
+    - type: ConfigChange
+    - github:
+        secretReference:
+          name: ${NAME}-hooksecret
+      type: GitHub
+
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -96,7 +110,7 @@ objects:
       name: ${NAME}
     name: ${NAME}
   spec:
-    replicas: 3
+    replicas: 2
     selector:
       name: ${NAME} #azagent
       deploymentconfig: ${NAME}
@@ -118,28 +132,36 @@ objects:
       spec:
         containers:
           - env:
-              - name: AZP_URL
+              - name: AZ_DEVOPS_ORG_URL
                 valueFrom:
                   configMapKeyRef:
                     key: AZ_DEVOPS_ORG_URL
                     name: ${NAME}-config
-              - name: AZP_TOKEN
+              - name: AZ_DEVOPS_TOKEN
                 valueFrom:
                   secretKeyRef:
                     key: AZ_DEVOPS_TOKEN
                     name: ${NAME}-token
-              - name: AZP_POOL
+              - name: AZ_DEVOPS_POOL
                 valueFrom:
                   configMapKeyRef:
                     key: AZ_DEVOPS_POOL
                     name: ${NAME}-config
               - name: AZP_WORK
                 valueFrom:
-                  configMapKeyref:
+                  configMapKeyRef:
                     key: AZ_DEVOPS_WORK_DIR
-                    name: ${NAME}-config
+                    name: ${NAME}-config                    
             image: ${NAME}
             imagePullPolicy: Always
+            lifecycle:
+              preStop:
+                exec:
+                  command:
+                    - bash
+                    - '-c'
+                    - >-
+                      kill -SIGTERM $(cat /opt/az/agent/agent.pid) >>/dev/termination-log
             name: ${NAME}
             resources: 
               limits:
@@ -153,7 +175,7 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         serviceAccount: ${NAME}
-        terminationGracePeriodSeconds: 180
+        terminationGracePeriodSeconds: 30
         hostAliases:
         - ip: "10.248.101.18"
           hostnames:
@@ -193,6 +215,10 @@ parameters:
   name: SOURCE_REPOSITORY_REF
   required: true
   value: dev
+- description: The secret to be used for GitHub webhook integration
+  name: GIT_WEBHOOK_SECRET
+  generate: expression
+  from: "[a-zA-Z0-9]{24}"  
 - description: Azure DevOps Organization URL
   name: AZ_DEVOPS_ORG_URL
   required: true
