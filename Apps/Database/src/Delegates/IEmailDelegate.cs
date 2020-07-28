@@ -65,7 +65,7 @@ namespace HealthGateway.Database.Delegates
 
         /// <summary>
         /// Gets a sorted list of new high priority emails to process.
-        /// Standard priority for this job is anything less than EmailPriority.Urgent and more than or equal to EmailPriority.High
+        /// High priority for this job is anything less than EmailPriority.Urgent and more than or equal to EmailPriority.High
         /// This is to ensure that any manual manipulation in the database that
         /// changes the ordinal values above those defined as EmailPriority.High
         /// but below the ordinal value of EmailPriority.High will still be processed
@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
 
         /// <summary>
         /// Gets a sorted list of new urgent priority emails to process.
-        /// Standard priority for this job is anything more than or equal to EmailPriority.Urgent
+        /// Urgent priority for this job is anything more than or equal to EmailPriority.Urgent
         /// This is to ensure that any manual manipulation in the database that
         /// changes the ordinal values above those defined as EmailPriority.Urgent
         /// but below the ordinal value of EmailPriority.Urgent will still be processed
