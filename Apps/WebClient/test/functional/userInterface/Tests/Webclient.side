@@ -4075,6 +4075,148 @@
       ],
       "value": "Print"
     }]
+  }, {
+    "id": "0a00e628-a6e7-438d-b03c-fafdde224a7a",
+    "name": "Timeline - Calendar View - Month Year Picker",
+    "commands": [{
+      "id": "4402285c-db47-4f03-8c98-14b66c5dee4a",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2be2c134-83d2-40ab-88ef-ff1f87a158f6",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "75c386a3-66c8-4039-b173-c3996906a7d6",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "4d332aef-21a5-4933-b20d-45486c75a73b",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.month-view-btn",
+      "targets": [
+        ["css=.month-view-btn", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[5]/div/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Month')]", "xpath:innerText"]
+      ],
+      "value": "Month"
+    }, {
+      "id": "48eabf71-ca2b-499a-9d39-7dcb9bf6cc15",
+      "comment": "",
+      "command": "clickAt",
+      "target": "id=currentDate",
+      "targets": [
+        ["id=currentDate", "id"],
+        ["css=#currentDate", "css:finder"],
+        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'December 2019')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d7632e1a-11aa-4c32-8e15-f23712d62351",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.row:nth-child(3) > .col-12",
+      "targets": [
+        ["css=.row:nth-child(3) > .col-12", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div[2]/div", "xpath:idRelative"],
+        ["xpath=//div[6]/div/div/div[3]/div/div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "68272d7a-c480-4fdf-9328-d712b60b4293",
+      "comment": "2019 year picker's item should be the 6th item from the bottom of the list",
+      "command": "assertText",
+      "target": "css=.years > .item:nth-last-child(6)",
+      "targets": [
+        ["css=.years > .item:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div/div", "xpath:idRelative"],
+        ["xpath=//main/div/div/div/div[6]/div/div/div[3]/div/div/div", "xpath:position"]
+      ],
+      "value": "2019"
+    }, {
+      "id": "e2e2768e-510f-4396-b0a9-fe830c870522",
+      "comment": "Click on the 2019 item",
+      "command": "clickAt",
+      "target": "css=.col-12:nth-last-child(6)",
+      "targets": [
+        ["css=.col-12:nth-child(6)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div/div[6]", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[6]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4c688ba9-23db-44cb-8220-50dab2dceb45",
+      "comment": "Click at Jan of 2019 which has no data",
+      "command": "clickAt",
+      "target": "css=.col-4:nth-child(2)",
+      "targets": [
+        ["css=.col-4:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div[2]/div[2]", "xpath:idRelative"],
+        ["xpath=//div[6]/div/div/div[3]/div/div[2]/div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "15b1abb2-2c2c-4e9c-91ca-67ec323ee3da",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=currentDate",
+      "targets": [
+        ["id=currentDate", "id"],
+        ["css=#currentDate", "css:finder"],
+        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'December 2019')]", "xpath:innerText"]
+      ],
+      "value": "December 2019"
+    }, {
+      "id": "c6295419-c406-4a42-b401-d952985c2c68",
+      "comment": "Click at Feb of 2019 which has data",
+      "command": "clickAt",
+      "target": "css=.col-4:nth-child(3)",
+      "targets": [
+        ["css=.col-4:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div[2]/div[3]", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div[2]/div[3]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "5b654d06-450b-4226-8f72-373f1e2241bd",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=currentDate",
+      "targets": [
+        ["id=currentDate", "id"],
+        ["css=#currentDate", "css:finder"],
+        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'December 2019')]", "xpath:innerText"]
+      ],
+      "value": "February 2019"
+    }, {
+      "id": "0ea3f6d5-18a0-4353-a944-2d5ed8bb1c79",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
