@@ -17,8 +17,25 @@ oc process -f ./openshift/AzureAgent.yaml --parameters
 To create the Azure Agent, be in your tools project and minimally execute:
 
 ```console
-oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT>
+oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> | oc apply -f -
 ```
+
+Resulting in
+
+```console
+laws@Crius:.../Health/healthgateway/Tools/AzureAgent$ oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> | oc apply -f -
+warning: error calculating patch from openapi spec: map: map[] does not contain declared merge key: name
+rolebinding.authorization.openshift.io/azure-agent configured
+configmap/azure-agent-config unchanged
+secret/azure-agent-token configured
+secret/azure-agent-hooksecret configured
+imagestream.image.openshift.io/azure-agent unchanged
+buildconfig.build.openshift.io/azure-agent-build configured
+deploymentconfig.apps.openshift.io/azure-agent configured
+error: map: map[] does not contain declared merge key: name
+```
+
+Note:  The error above is from the service account not being re-recreated.
 
 ## Updating Agent
 

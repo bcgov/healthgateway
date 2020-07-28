@@ -91,8 +91,8 @@ objects:
         from:
           kind: DockerImage
           name: 'ubuntu:20.04'
-    successfulBuildsHistoryLimit: 2
-    failedBuildsHistoryLimit: 2
+    successfulBuildsHistoryLimit: 5
+    failedBuildsHistoryLimit: 3
     triggers:
     - type: ConfigChange
     - imageChange: {}
@@ -110,7 +110,7 @@ objects:
       name: ${NAME}
     name: ${NAME}
   spec:
-    replicas: 2
+    replicas: 3
     selector:
       name: ${NAME} #azagent
       deploymentconfig: ${NAME}
@@ -132,17 +132,17 @@ objects:
       spec:
         containers:
           - env:
-              - name: AZ_DEVOPS_ORG_URL
+              - name: AZP_URL
                 valueFrom:
                   configMapKeyRef:
                     key: AZ_DEVOPS_ORG_URL
                     name: ${NAME}-config
-              - name: AZ_DEVOPS_TOKEN
+              - name: AZP_TOKEN
                 valueFrom:
                   secretKeyRef:
                     key: AZ_DEVOPS_TOKEN
                     name: ${NAME}-token
-              - name: AZ_DEVOPS_POOL
+              - name: AZP_POOL
                 valueFrom:
                   configMapKeyRef:
                     key: AZ_DEVOPS_POOL
@@ -154,14 +154,6 @@ objects:
                     name: ${NAME}-config                    
             image: ${NAME}
             imagePullPolicy: Always
-            lifecycle:
-              preStop:
-                exec:
-                  command:
-                    - bash
-                    - '-c'
-                    - >-
-                      kill -SIGTERM $(cat /opt/az/agent/agent.pid) >>/dev/termination-log
             name: ${NAME}
             resources: 
               limits:
