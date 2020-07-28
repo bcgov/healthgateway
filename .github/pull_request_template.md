@@ -9,7 +9,7 @@
 ## Reviewer Guidelines
 
 A reviewer should examine the PR if the Status above indicates the PR is **Ready**.
-Once ready, the reviwer should read the information below as well as supporting information like the Azure ticket to ensure they have a good understanding of the request.
+Once ready, the reviewer should read the information below as well as supporting information like the Azure ticket to ensure they have a good understanding of the request.
 
 The reviewer should then:
 
@@ -31,7 +31,7 @@ The reviewer should then:
 
     1. useful tips
 
-        * Any obvious errors or ommissions?
+        * Any obvious errors or omissions?
         * Does the code match the style of other similar work?
         * Is the code easy to understand?
         * Is the code well documented?
@@ -68,4 +68,4 @@ Provide an explanation for any test(s) not completed.
 
 ## Notes/Additional Comments
 
-Any addtional notes or comments that may be relevant.  Include any specialized deployment steps here.
+Any additional notes or comments that may be relevant.  Include any specialized deployment steps here.
