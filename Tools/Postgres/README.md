@@ -99,3 +99,24 @@ psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
 psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
 ```
 
+## Delete Database (Cleanup)
+
+1) Drop all current connections:
+
+``` bash
+psql -h localhost -p 5432 -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='gateway';"
+```
+
+2) Drop Database:
+
+``` bash
+psql -h localhost -p 5432 -U postgres -c 'drop database gateway;'
+```
+
+3) Create Database:
+
+``` bash
+psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
+```
+
+4) Run Migrations Scripts
