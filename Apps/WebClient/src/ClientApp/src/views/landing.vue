@@ -22,66 +22,19 @@
         background-color: $bcgold;
     }
 
-    .intro {
-        height: 750px;
-        background-size: cover;
+    .title-section {
+        color: $primary;
+    }
 
-        /* Small Devices */
-        @media (max-width: 767px) {
-            /* your desktop css */
-            height: 560px;
-        }
-
-        /* Very Small Devices */
-        @media (max-width: 400px) {
-            height: 480px;
-        }
-
-        .title-wrapper {
-            margin-bottom: auto;
-            margin-left: auto;
-            margin-right: auto;
-            max-width: 500px;
-
-            border-radius: 25px;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .logo {
-            margin-bottom: 1em;
-        }
-
-        .title-text {
-            color: white;
-            font-size: 2.2em;
-            max-width: 340px;
-        }
-
-        .register-link {
-            color: white;
-        }
-
-        .register-button {
-            max-width: 300px;
-        }
-
-        /* Small Devices */
-        @media (max-width: 440px) {
-            .title-wrapper {
-                margin-top: -40px;
-            }
-
-            .title-text {
-                font-size: 1.5em;
-            }
-        }
+    .title-section h2 {
+        font-weight: 200;
+        font-size: x-large;
     }
 
     .devices-section {
         .devices-image {
             margin-left: auto;
             margin-right: auto;
-            margin-top: -75px;
             margin-bottom: 20px;
         }
 
@@ -90,11 +43,9 @@
             margin-left: auto;
             margin-right: auto;
             margin-top: -40px;
-            .icon-wrapper {
-                /* Small Devices*/
-                @media (max-width: 816px) {
-                    display: none;
-                }
+            /* Small Devices*/
+            @media (max-width: 767px) {
+                font-size: small;
             }
             .icon-row {
                 display: block;
@@ -104,6 +55,9 @@
                     text-align: center;
                     border-radius: 50%;
                     width: 40px;
+                }
+                .edit {
+                    background-color: #fcba19 !important;
                 }
             }
 
@@ -132,26 +86,9 @@
                 margin-top: 5px;
             }
         }
-    }
 
-    .circle-icons {
-        background-color: $primary;
-        color: white;
-        display: flex;
-        justify-content: center;
-
-        .icon-wrapper {
-            margin: 40px 35px 40px 35px;
-        }
-
-        .icon {
-            color: $primary;
-            height: 110px;
-            width: 110px;
-            padding: 25px 25px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 10px;
+        #btnStart {
+            background-color: $primary;
         }
     }
 
@@ -160,6 +97,14 @@
         margin-right: 0px;
         padding-left: 0px;
         padding-right: 0px;
+
+        h4 {
+            color: $primary;
+            /* Small Devices*/
+            @media (max-width: 767px) {
+                font-size: larger;
+            }
+        }
 
         .col {
             padding-left: 0px;
@@ -230,90 +175,24 @@
             }
         }
     }
-
-    .secure {
-        height: 750px;
-        background-size: cover;
-
-        /* Large Devices, Wide Screens */
-        @media (max-width: 767px) {
-            /* your desktop css */
-            height: 560px;
-        }
-
-        .secure-wrapper {
-            margin-top: 130px;
-            margin-bottom: auto;
-        }
-
-        .title {
-            color: $primary;
-            font-size: 2.2em;
-        }
-
-        .description {
-            color: $primary;
-        }
-
-        .secure-buttons {
-            margin-top: 1em;
-        }
-    }
 }
 </style>
 <template>
     <div class="landing">
         <CommunicationComponent />
         <b-row
-            class="intro align-items-center"
-            :style="{ backgroundImage: 'url(\'' + introBackground + '\')' }"
+            class="title-section justify-content-center align-items-center mx-1 mx-md-5 my-2"
         >
-            <!--Empty Column for  fitting reasons-->
-            <b-col class="col-12 col-md-5 col-xl-6 d-none d-md-block" />
-            <b-col class="col-12 col-md-6 col-xl-4">
-                <div class="title-wrapper p-4">
-                    <img
-                        class="img-fluid logo d-block mx-auto"
-                        :src="logo"
-                        width="auto"
-                        height="auto"
-                        alt="B.C. Government Logo"
-                    />
-
-                    <div class="title-text my-4 mx-auto">
-                        <div>
-                            Empowering you
-                        </div>
-                        <div>to manage your health</div>
-                    </div>
-                    <b-row class="">
-                        <b-col
-                            class="justify-content-center align align-items-center"
-                        >
-                            <b-row>
-                                <b-button
-                                    id="btnStart"
-                                    :to="
-                                        isOpenRegistration
-                                            ? 'registration'
-                                            : 'registrationInfo'
-                                    "
-                                    class="btn btn-primary-landing mx-auto register-button w-100"
-                                    role="button"
-                                    >Register</b-button
-                                >
-                            </b-row>
-                            <b-row>
-                                <b-button
-                                    id="btnLogin"
-                                    to="login"
-                                    class="register-link mx-auto"
-                                    variant="link"
-                                    >Already registered?
-                                    <strong>Login</strong></b-button
-                                >
-                            </b-row>
-                        </b-col>
+            <b-col class="col-12">
+                <div class="title-text">
+                    <b-row>
+                        <h1 class="text-center w-100 p-3">HealthGateway</h1>
+                    </b-row>
+                    <b-row>
+                        <h2 class="w-100 p-3">
+                            A single place for BC residents to access their
+                            health records
+                        </h2>
                     </b-row>
                 </div>
             </b-col>
@@ -330,10 +209,7 @@
                     alt="Devices"
             /></b-col>
             <b-col class="col-12 col-md-6">
-                <div class="devices-text my-5 my-md-5 ml-md-4">
-                    <b-row>
-                        <h2>Browse your health records</h2>
-                    </b-row>
+                <div class="devices-text my-3 my-md-3 ml-md-4">
                     <b-row>
                         <b-col cols="0" class="icon-wrapper mr-4 px-0">
                             <div
@@ -347,7 +223,7 @@
                                 "
                                 align-content="center"
                             >
-                                <div class="icon">
+                                <div class="icon" :class="icon.definition">
                                     <font-awesome-icon
                                         :icon="icon.definition"
                                         size="lg"
@@ -387,26 +263,42 @@
                             </div>
                         </b-col>
                     </b-row>
+                    <b-row class="py-3">
+                        <b-col>
+                            <b-button
+                                id="btnStart"
+                                :to="
+                                    isOpenRegistration
+                                        ? 'registration'
+                                        : 'registrationInfo'
+                                "
+                                role="button"
+                                >Register</b-button
+                            >
+                            <b-button
+                                id="btnLogin"
+                                to="login"
+                                variant="outline-secondary"
+                                class="ml-4"
+                                >Log in</b-button
+                            >
+                        </b-col>
+                    </b-row>
                 </div>
             </b-col>
         </b-row>
-        <b-row class="circle-icons justify-content-center">
-            <div
-                v-for="icon in icons"
-                :key="icon.label"
-                class="icon-wrapper text-center px-xl-5"
-            >
-                <div class="icon rounded-circle bg-white">
-                    <h3>
-                        <font-awesome-icon :icon="icon.definition" size="2x" />
-                    </h3>
-                </div>
-                <span>
-                    {{ icon.label }}
-                </span>
-            </div>
-        </b-row>
         <b-row class="tile-section my-0 my-md-1">
+            <div class="w-100 p-3">
+                <b-row
+                    class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
+                >
+                    <b-col class="col-12 col-md-6">
+                        <h4 class="text-center">
+                            Where our journey is heading
+                        </h4>
+                    </b-col>
+                </b-row>
+            </div>
             <div>
                 <b-row
                     v-for="(tile, index) in tiles"
@@ -434,37 +326,6 @@
                 </b-row>
             </div>
         </b-row>
-        <b-row
-            class="secure justify-content-around"
-            :style="{ backgroundImage: 'url(\'' + bottomImage + '\')' }"
-        >
-            <b-col class="col-12 col-md-6">
-                <div class="secure-wrapper pl-2 pl-md-0">
-                    <div class="title">
-                        Securely access your information
-                    </div>
-                    <div class="description">
-                        Use your BC Services Card with two-factor authentication
-                    </div>
-                    <div class="secure-buttons">
-                        <b-button
-                            id="btnSecureStart"
-                            to="registrationInfo"
-                            class="btn btn-primary-landing m-2"
-                            role="button"
-                            >Sign Up</b-button
-                        >
-                        <b-button
-                            id="btnLearnMore"
-                            href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
-                            class="btn btn-secondary-landing m-2"
-                            >Learn More</b-button
-                        >
-                    </div>
-                </div>
-            </b-col>
-            <b-col class="col-0 col-md-1 d-none d-md-block" />
-        </b-row>
     </div>
 </template>
 
@@ -485,7 +346,6 @@ import {
 
 // @ts-ignore-start
 import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";
-import Image01 from "@/assets/images/landing/001_Hero-01_Duotone.jpeg";
 import Image02 from "@/assets/images/landing/002_Devices.png";
 import Image03 from "@/assets/images/landing/003_AdobeStock_143856492-edited_shoes.jpg";
 import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
@@ -515,22 +375,27 @@ export default class LandingView extends Vue {
     private icons: Icon[] = [
         {
             definition: "pills",
-            label: "Medications",
+            label: "Prescription Medication(Dec 2019)",
             active: true,
         },
         {
-            definition: "flask",
-            label: "Lab Tests",
-            active: false,
+            definition: "edit",
+            label: "Add Notes to Records(Mar 2020)",
+            active: true,
         },
         {
             definition: "syringe",
-            label: "Immunizations",
+            label: "Immunization(Coming soon)",
+            active: false,
+        },
+        {
+            definition: "flask",
+            label: "Lab Results(Coming soon)",
             active: false,
         },
         {
             definition: "user-md",
-            label: "Consultations",
+            label: "Health Visits(Coming soon)",
             active: false,
         },
     ];
@@ -562,7 +427,6 @@ export default class LandingView extends Vue {
     ];
 
     private logo: string = Image00;
-    private introBackground: string = Image01;
     private devices: string = Image02;
     private bottomImage: string = Image07;
     private isOpenRegistration: boolean = false;
