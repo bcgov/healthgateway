@@ -37,13 +37,13 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the message text.
         /// </summary>
         [MaxLength(1000)]
-        public string? Text { get; set; }
+        public string Text { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the message subject.
         /// </summary>
         [MaxLength(1000)]
-        public string? Subject { get; set; }
+        public string Subject { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the effective datetime.
@@ -56,6 +56,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public DateTime ExpiryDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scheduled datetime.
+        /// </summary>
+        public DateTime? ScheduledDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the Communication (Banner vs Email).

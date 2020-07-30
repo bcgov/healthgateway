@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models.Cacheable;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
@@ -33,7 +34,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>The Medication History response wrapped in an HNMessage.</returns>
-        Task<HNMessage<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress);
+        Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress);
 
         /// <summary>
         /// Updates the Protective word to the new value.

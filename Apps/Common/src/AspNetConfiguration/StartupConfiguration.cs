@@ -20,6 +20,8 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Hangfire;
+    using Hangfire.PostgreSql;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
@@ -313,6 +315,16 @@ namespace HealthGateway.Common.AspNetConfiguration
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// Configures the ability to trigger Hangfire jobs.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        public void ConfigureHangfireQueue(IServiceCollection services)
+        {
+            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         /// <summary>

@@ -24,7 +24,6 @@ namespace HealthGateway.Medication
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Parsers;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -74,18 +73,12 @@ namespace HealthGateway.Medication
 
             // Add services
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IHNClientDelegate, RestHNClientDelegate>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
-            services.AddTransient<IHNMessageParser<List<MedicationStatement>>, TRPMessageParser>();
-            services.AddTransient<IPharmacyService, RestPharmacyService>();
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HMACHashDelegate>();
             services.AddSingleton<ITraceService, TimedTraceService>();
-
-            // Add parsers
-            services.AddTransient<IHNMessageParser<Pharmacy>, TILMessageParser>();
 
             // Add delegates
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();

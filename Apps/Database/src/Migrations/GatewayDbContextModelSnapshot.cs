@@ -471,11 +471,16 @@ namespace HealthGateway.Database.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("ScheduledDateTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Subject")
+                        .IsRequired()
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
@@ -500,6 +505,57 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("CommunicationTypeCode");
 
                     b.ToTable("Communication");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CommunicationEmailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CommunicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("EmailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserProfileHdId")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommunicationId");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("UserProfileHdId");
+
+                    b.ToTable("CommunicationEmail");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationStatusCode", b =>
@@ -556,6 +612,16 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A Communication pending batch pickup",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "Processing",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Communication is being processed",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -3153,6 +3219,27 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.CommunicationTypeCode", null)
                         .WithMany()
                         .HasForeignKey("CommunicationTypeCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.Communication", "Communication")
+                        .WithMany()
+                        .HasForeignKey("CommunicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileHdId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

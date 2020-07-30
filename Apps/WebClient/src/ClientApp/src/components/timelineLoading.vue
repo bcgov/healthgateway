@@ -135,6 +135,7 @@ import {
 @Component
 export default class TimelineLoadingComponent extends Vue {
     private step: number = 0;
+    private intervalId: number = 0;
     private get ellipsis(): string {
         return ".".padEnd(this.step + 1, ".");
     }
@@ -158,8 +159,12 @@ export default class TimelineLoadingComponent extends Vue {
         this.resetTimeout();
     }
 
+    private destroyed() {
+        clearInterval(this.intervalId);
+    }
+
     private resetTimeout() {
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
             this.step++;
             if (this.step >= 4) {
                 this.step = 0;

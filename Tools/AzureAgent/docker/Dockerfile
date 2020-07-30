@@ -1,11 +1,10 @@
-FROM ubuntu:18.04
-ARG DEVOPS_AGENT_VERSION=2.171.1
-ARG NODE_VERSION=v12.18.2
+FROM ubuntu:20.04
+ARG NODE_VERSION=v12.18.3
 ARG DOTNET_VERSION=3.1
 ARG OPENSHIFT_VERSION=v3.11.0-0cbc58b
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
-    DESCRIPTION="Azure DevOps agent v${DEVOPS_AGENT_VERSION} with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI ${OPENSHIFT_VERSION}"
+    DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI ${OPENSHIFT_VERSION}"
 
 LABEL summary="$SUMMARY" \
     description="$DESCRIPTION" \
@@ -16,24 +15,15 @@ LABEL summary="$SUMMARY" \
     release="1"
 
 RUN  export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update -y -qq && \
-    apt-get install -y -qq git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev && \
-    curl -sLO https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && \
+    apt-get update -y && \
+    apt-get install -y git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev jq && \
+    curl -sLO https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \ 
     rm packages-microsoft-prod.deb && \
-    apt-get update -y -qq  && \ 
-    apt-get install -y -qq dotnet-sdk-${DOTNET_VERSION} && \
+    apt-get update -y && \ 
+    apt-get install -y dotnet-sdk-${DOTNET_VERSION} && \
     ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
-
-# Fetch stock azure client and install
-RUN mkdir -p /opt/az/agent && \
-    mkdir -p /opt/az/_work && \
-    cd /opt/az/agent && \
-    curl -sL https://vstsagentpackage.azureedge.net/agent/${DEVOPS_AGENT_VERSION}/vsts-agent-linux-x64-${DEVOPS_AGENT_VERSION}.tar.gz | tar -zx && \
-    rm -f vsts-agent-linux-x64-${DEVOPS_AGENT_VERSION}.tar.gz && \
-    cd .. && \
-    find /opt/az -exec chmod 777 {} \;
 
 # Fetch stock nodejs and install
 RUN mkdir -p /opt && \
@@ -47,13 +37,10 @@ RUN mkdir -p /opt && \
     curl -sL https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit.tar.gz | tar -zx && \
     rm -f openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit.tar.gz
 
-ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh 
-RUN chmod +rx /opt/az/start.sh
-
 # Update environment variables
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-ENV AZ_DEVOPS_ORG_URL=set_me_to_the_org_url
-ENV AZ_DEVOPS_TOKEN=set_me_to_a_pat
+ENV AZP_URL=set_me_to_the_org_url
+ENV AZP_TOKEN=set_me_to_a_pat
 ENV HOME=/tmp
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit:$HOME/.local/bin/:$HOME/.dotnet/tools
@@ -72,8 +59,15 @@ RUN dotnet tool install --global dotnet-sonarscanner --version 4.8.0 && \
     rm -rf /tmp/NuGetScratch/lock/* && \
     chmod 777 /tmp/.nuget
 
-WORKDIR /opt/az/_work
+RUN mkdir /opt/az &&\
+    chmod -R 777 /opt/az
+
+ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh
+ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/stop.sh?raw=true /opt/az/stop.sh
+RUN chmod +rx /opt/az/*.sh
+
+WORKDIR /opt/az
 
 USER 1001
 
-CMD ["bash", "-c", "/opt/az/start.sh", "-u", "$AZ_DEVOPS_ORG_URL", "-t", "$AZ_DEVOPS_TOKEN"]
+CMD ["bash", "-c", "/opt/az/start.sh"]

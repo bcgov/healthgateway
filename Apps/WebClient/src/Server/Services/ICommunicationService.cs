@@ -25,9 +25,9 @@ namespace HealthGateway.WebClient.Services
     public interface ICommunicationService
     {
         /// <summary>
-        /// Gets the active communication from the backend.
+        /// Gets the active communication banner from the backend.
         /// </summary>
         /// <returns>The active communication wrapped in a RequestResult.</returns>
-        public RequestResult<Communication> GetActive();
+        public RequestResult<Communication> GetActiveBanner();
     }
 }

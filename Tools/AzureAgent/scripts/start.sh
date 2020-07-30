@@ -1,124 +1,98 @@
-#! /bin/bash
-#
-# Copyright © 2019 Province of British Columbia
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http:#www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Created by Jason Leach on 2019-06-20
-# Updated by Stephen Laws 2019-07-03
-#
-## Exit handler enabled after configuration of Agent
-cleanup() {
-    exitStatus=$?
-    if [ ! -z ${AzureAgentPID+x} ]; then
-        echo "Killing AzureAgent ($AzureAgentPID) and children"
-        pkill -SIGTERM -P $AzureAgentPID
-        wait $AzureAgentPID
-    fi
-    echo Deregistering Agent
-    ./config.sh remove --unattended --auth PAT --token $PAT_TOKEN
-    trap - EXIT SIGINT SIGTERM 
-    exit $exitStatus
-}
+#!/usr/bin/env bash
+set -e
 
-set -Eeo pipefail
-
-# =================================================================================================================
-# Usage:
-# -----------------------------------------------------------------------------------------------------------------
-usage() {
-  cat <<-EOF
-  A helper script to configure and start the Azure DevOps Agent.
-
-  Usage: ${0} [ -h -x -n <AgentName -p <AgentPool>] -u <OrganizationURL> -t <PAT> ]
-
-  OPTIONS:
-  ========
-    -u The Azure DevOps Organization URL.
-       Example https://fullboar.visualstudio.com
-    -t The Personal Access Token (PAT) for this Agent.
-       Example kd2kdkj2ojldkajdf4jr938jf9edjsdkfjdfj20e
-    -n Optional. The name of the Agent.
-       Defaults to hostname.
-       Example d0e46b5cde65
-    -p Optional.  The name of the pool you would like this agent to be in.
-       Defaults to default
-
-    -h prints the usage for the script
-    -x run the script in debug mode to see what's happening
-
-EOF
-exit
-}
-
-# -----------------------------------------------------------------------------------------------------------------
-# Initialization:
-# -----------------------------------------------------------------------------------------------------------------
-PAT_TOKEN=$AZ_DEVOPS_TOKEN
-unset AZ_DEVOPS_TOKEN
-while getopts u:t:n:p:hx FLAG; do
-  case $FLAG in
-    u ) export AZ_DEVOPS_ORG_URL=$OPTARG ;;
-    t ) PAT_TOKEN=$OPTARG ;;
-    n ) export AZ_DEVOPS_AGENT_NAME=$OPTARG ;;
-    p ) export AZ_DEVOPS_POOL=$OPTARG ;;
-    x ) export DEBUG=1 ;;
-    h ) usage ;;
-    \? ) #unrecognized option - show help
-      echo -e \\n"Invalid script option: -${OPTARG}"\\n
-      usage
-      ;;
-  esac
-done
-
-# Shift the parameters in case there any more to be used
-shift $((OPTIND-1))
-
-if [ ! -z "${DEBUG}" ]; then
-  set -x
-fi
-
-if [ -z "${AZ_DEVOPS_ORG_URL}" ] || [ -z "${PAT_TOKEN}" ]; then
-  echo -e \\n"Missing parameters. Organization URL and Token are required."\\n
-  usage
-fi
-
-pushd $(dirname $0)/agent
-
-if [ ! -f .agent ]; then
-    echo Configuring Agent
-    ./config.sh --unattended \
-        --acceptTeeEula \
-        --agent "${AZ_DEVOPS_AGENT_NAME:-$HOSTNAME}" \
-        --url "${AZ_DEVOPS_ORG_URL}" \
-        --auth PAT \
-        --token $PAT_TOKEN \
-        --pool "${AZ_DEVOPS_POOL:-default}"\
-        --work "$(dirname $0)/_work" \
-        --replace
+if [ ! -d agent ]; then
+	mkdir agent
+	pushd agent
 else
-    echo Azure Agent already configured
+	echo 1>&2 "error: agent directory should not exist in working dir"
+	exit 1
 fi
 
-echo Registering exit trap
-trap cleanup SIGINT SIGTERM EXIT
-echo Script PID = $$
-echo $$ > agent.pid
+if [ -z "$AZP_URL" ]; then
+	  echo 1>&2 "error: missing AZP_URL environment variable"
+	    exit 1
+fi
 
-echo Starting agent at `date`
-./run.sh --once &
-AzureAgentPID=$!
-echo Azure Agent PID = $AzureAgentPID
-wait $AzureAgentPID
-unset AzureAgentPID
-echo Script Exiting
+if [ -z "$AZP_TOKEN_FILE" ]; then
+	if [ -z "$AZP_TOKEN" ]; then
+		echo 1>&2 "error: missing AZP_TOKEN environment variable"
+		exit 1
+	fi
+
+	AZP_TOKEN_FILE=.token
+	echo -n $AZP_TOKEN > "$AZP_TOKEN_FILE"
+fi
+
+unset AZP_TOKEN
+
+if [ -n "$AZP_WORK" ]; then
+	  mkdir -p "$AZP_WORK"
+fi
+
+export AGENT_ALLOW_RUNASROOT="0"
+
+cleanup() {
+	if [ -e config.sh ]; then
+		print_header "Cleanup. Removing Azure Pipelines agent..."
+		./config.sh remove --unattended \
+			--auth PAT \
+			--token $(cat "$AZP_TOKEN_FILE")
+	fi
+}
+
+print_header() {
+	lightcyan='\033[1;36m'
+	nocolor='\033[0m'
+	echo -e "${lightcyan}$1${nocolor}"
+}
+
+# Let the agent ignore the token env variables
+export VSO_AGENT_IGNORE=AZP_TOKEN,AZP_TOKEN_FILE
+
+print_header "1. Determining matching Azure Pipelines agent..."
+
+AZP_AGENT_RESPONSE=$(curl -LsS \
+	-u user:$(cat "$AZP_TOKEN_FILE") \
+		-H 'Accept:application/json;api-version=3.0-preview' \
+		"$AZP_URL/_apis/distributedtask/packages/agent?platform=linux-x64")
+
+if echo "$AZP_AGENT_RESPONSE" | jq . >/dev/null 2>&1; then
+	AZP_AGENTPACKAGE_URL=$(echo "$AZP_AGENT_RESPONSE" \
+			| jq -r '.value | map([.version.major,.version.minor,.version.patch,.downloadUrl]) | sort | .[length-1] | .[3]')
+fi
+
+if [ -z "$AZP_AGENTPACKAGE_URL" -o "$AZP_AGENTPACKAGE_URL" == "null" ]; then
+	echo 1>&2 "error: could not determine a matching Azure Pipelines agent - check that account '$AZP_URL' is correct and the token is valid for that account"
+		exit 1
+fi
+
+print_header "2. Downloading and installing Azure Pipelines agent from $AZP_AGENTPACKAGE_URL .."
+
+curl -LsS $AZP_AGENTPACKAGE_URL | tar -xz & wait $!
+
+source ./env.sh
+
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM
+
+print_header "3. Configuring Azure Pipelines agent..."
+
+./config.sh --unattended \
+  --agent "${AZP_AGENT_NAME:-$(hostname)}" \
+  --url "$AZP_URL" \
+  --auth PAT \
+  --token $(cat "$AZP_TOKEN_FILE") \
+  --pool "${AZP_POOL:-Default}" \
+  --work "${AZP_WORK:-_work}" \
+  --replace \
+  --acceptTeeEula & wait $!
+
+# remove the administrative token before accepting work
+rm $AZP_TOKEN_FILE
+
+print_header "4. Running Azure Pipelines agent..."
+
+# `exec` the node runtime so it's aware of TERM and INT signals
+# AgentService.js understands how to handle agent self-update and restart
+exec ./externals/node/bin/node ./bin/AgentService.js interactive

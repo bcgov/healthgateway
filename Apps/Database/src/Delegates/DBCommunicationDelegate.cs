@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -45,7 +46,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Communication> GetActive()
+        public DBResult<Communication> GetActiveBanner()
         {
             this.logger.LogTrace($"Getting active Communication from DB...");
             DBResult<Communication> result = new DBResult<Communication>()
@@ -54,7 +55,7 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Email || (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
+                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Banner && (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
 
             if (result.Payload != null)
             {
@@ -131,6 +132,19 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished updating Communication in DB");
             return result;
+        }
+
+        /// <inheritdoc />
+        public List<Communication> GetEmailCommunicationsToSend()
+        {
+            this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
+            List<Communication> retVal = this.dbContext.Communication.Where(c =>
+                c.CommunicationTypeCode == CommunicationType.Email &&
+                c.CommunicationStatusCode != CommunicationStatus.Processed &&
+                c.ScheduledDateTime <= DateTime.UtcNow)
+                .OrderByDescending(c => c.CreatedDateTime).ToList();
+            this.logger.LogDebug($"Finished getting list of New & Processing Email Communications from DB. {JsonSerializer.Serialize(retVal)}");
+            return retVal;
         }
     }
 }

@@ -52,7 +52,11 @@
             </b-btn>
         </b-col>
         <b-col cols="auto" class="mx-4">
-            <span class="title">{{ title }}</span>
+            <MonthYearPickerComponent
+                :current-date="currentDate"
+                :available-months="availableMonths"
+                @date-changed="dateSelected"
+            />
         </b-col>
         <b-col class="header-right">
             <slot name="header-right"> </slot>
@@ -61,21 +65,28 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
+import EventBus from "@/eventbus";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import moment from "moment";
 import CalendarBody from "./body.vue";
 import DateUtil from "@/utility/dateUtil";
+import { DateGroup } from "@/models/timelineEntry";
 
 @Component({
     components: {
         CalendarBody,
+        MonthYearPickerComponent,
     },
 })
 export default class CalendarComponent extends Vue {
     @Prop() currentDate!: Date;
     @Prop() titleFormat!: string;
+    @Prop() availableMonths!: Date[];
 
+    private monthIndex: number = 0;
     private headerDate: Date = new Date();
+    private eventBus = EventBus;
     private leftIcon: string = "chevron-left";
     private rightIcon: string = "chevron-right";
 
@@ -88,23 +99,49 @@ export default class CalendarComponent extends Vue {
         this.headerDate = this.currentDate;
     }
 
+    @Watch("availableMonths")
+    public onAvailableMonthsChange() {
+        if (this.monthIndex !== 0) {
+            this.monthIndex = 0;
+        } else {
+            this.onMonthIndexChange();
+        }
+    }
+
+    @Watch("monthIndex")
+    public onMonthIndexChange() {
+        this.headerDate = this.availableMonths[this.monthIndex];
+        this.dispatchEvent();
+    }
+
     private created() {
         this.dispatchEvent();
     }
 
     private previousMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, -1);
-        this.dispatchEvent();
+        if (this.monthIndex + 1 < this.availableMonths.length) {
+            this.monthIndex += 1;
+        }
     }
 
     private nextMonth() {
-        this.headerDate = DateUtil.changeMonth(this.currentDate, 1);
-        this.dispatchEvent();
+        if (this.monthIndex > 0) {
+            this.monthIndex -= 1;
+        }
     }
 
     private dispatchEvent() {
         let startDate = DateUtil.getMonthFirstDate(this.headerDate);
         this.$emit("update:currentDate", startDate);
+    }
+
+    private dateSelected(date: Date) {
+        this.monthIndex = this.availableMonths.findIndex(
+            (d) =>
+                d.getFullYear() == date.getFullYear() &&
+                d.getMonth() == date.getMonth()
+        );
+        this.dispatchEvent();
     }
 }
 </script>

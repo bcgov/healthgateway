@@ -39,5 +39,10 @@ namespace HealthGateway.Database.Constants
         /// Constant value to represent a Pending communication.
         /// </summary>
         public const string Pending = "Pending";
+
+        /// <summary>
+        /// Constant value to represent a Processing communication.
+        /// </summary>
+        public const string Processing = "Processing";
     }
 }

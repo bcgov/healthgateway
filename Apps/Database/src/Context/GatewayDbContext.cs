@@ -69,6 +69,7 @@ namespace HealthGateway.Database.Context
         public DbSet<GenericCache> GenericCache { get; set; } = null!;
         public DbSet<Comment> Comment { get; set; } = null!;
         public DbSet<Communication> Communication { get; set; } = null!;
+        public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -681,6 +682,15 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = CommunicationStatus.Pending,
                     Description = "A Communication pending batch pickup",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Processing,
+                    Description = "Communication is being processed",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

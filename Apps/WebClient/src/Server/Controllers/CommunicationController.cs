@@ -59,7 +59,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            RequestResult<Communication> result = this.communicationService.GetActive();
+            RequestResult<Communication> result = this.communicationService.GetActiveBanner();
             return new JsonResult(result);
         }
     }

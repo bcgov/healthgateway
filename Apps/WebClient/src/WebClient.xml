@@ -977,7 +977,7 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="communicationDelegate">Injected Note delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActive">
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActiveBanner">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
@@ -1058,9 +1058,9 @@
             Service to interact with the Communication Delegate.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetActive">
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetActiveBanner">
             <summary>
-            Gets the active communication from the backend.
+            Gets the active communication banner from the backend.
             </summary>
             <returns>The active communication wrapped in a RequestResult.</returns>
         </member>

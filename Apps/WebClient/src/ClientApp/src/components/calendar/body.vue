@@ -153,7 +153,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component, Prop, Ref, Watch } from "vue-property-decorator";
 import DateUtil from "@/utility/dateUtil";
 import moment from "moment";
 import TimelineEntry, { EntryType, DateGroup } from "@/models/timelineEntry";
@@ -162,28 +162,8 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import EventBus from "@/eventbus";
-
-interface CalendarWeek {
-    id: string;
-    days: CalendarDay[];
-}
-
-interface CalendarDay {
-    id: string;
-    monthDay: number;
-    isToday: boolean;
-    isCurMonth: boolean;
-    weekDay: number;
-    date: Date;
-    events: CalendarEntry[];
-}
-
-interface CalendarEntry {
-    id: string;
-    type: EntryType;
-    cellIndex: number;
-    entries: TimelineEntry[];
-}
+import { CalendarEntry, CalendarWeek } from "./models";
+import { EventMessageName } from "@/constants/eventMessageName";
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
@@ -192,13 +172,14 @@ export default class CalendarBodyComponent extends Vue {
     @Prop() weekNames!: string[];
     @Prop() monthNames!: string[];
     @Prop() firstDay!: number;
+    @Prop() private isVisible!: boolean;
 
     private eventLimit: number = 4;
+    private firstEventDateOfCurrentMonth: Date | null = null;
 
     private isHovering: boolean = false;
     private hoveringEvent: CalendarEntry | null = null;
     private eventBus = EventBus;
-
     private get currentDates() {
         return this.getCalendar();
     }
@@ -214,6 +195,7 @@ export default class CalendarBodyComponent extends Vue {
         startDate.setDate(startDate.getDate() - curWeekDay + this.firstDay);
 
         let calendar: CalendarWeek[] = [];
+        this.firstEventDateOfCurrentMonth = null;
 
         for (let perWeek = 0; perWeek < 6; perWeek++) {
             let week: CalendarWeek = {
@@ -222,7 +204,7 @@ export default class CalendarBodyComponent extends Vue {
             };
 
             for (let perDay = 0; perDay < 7; perDay++) {
-                week.days.push({
+                let dayEvent = {
                     id: startDate.getTime().toString() + "-" + perDay,
                     monthDay: startDate.getDate(),
                     isToday: now.toDateString() == startDate.toDateString(),
@@ -230,9 +212,25 @@ export default class CalendarBodyComponent extends Vue {
                     weekDay: perDay,
                     date: new Date(startDate),
                     events: this.slotEvents(startDate),
-                });
+                };
+                week.days.push(dayEvent);
 
                 startDate.setDate(startDate.getDate() + 1);
+
+                if (
+                    this.firstEventDateOfCurrentMonth === null &&
+                    dayEvent.isCurMonth &&
+                    dayEvent.events.length > 0
+                ) {
+                    this.firstEventDateOfCurrentMonth =
+                        dayEvent.events[0].entries[0].date;
+                    if (!this.isVisible) {
+                        this.eventBus.$emit(
+                            EventMessageName.TimelineCurrentDateUpdated,
+                            this.firstEventDateOfCurrentMonth
+                        );
+                    }
+                }
             }
 
             calendar.push(week);

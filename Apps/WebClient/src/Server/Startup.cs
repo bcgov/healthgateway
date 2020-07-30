@@ -17,9 +17,8 @@
 namespace HealthGateway.WebClient
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
-    using Hangfire;
-    using Hangfire.PostgreSql;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
@@ -71,6 +70,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
@@ -85,7 +85,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IUserPreferenceDelegate , DBUserPreferenceDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
@@ -114,9 +114,6 @@ namespace HealthGateway.WebClient
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-
-            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
-            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
         }
 
         /// <summary>
@@ -153,8 +150,6 @@ namespace HealthGateway.WebClient
                 app.UseResponseCompression();
             }
 
-            bool debugerAttached = false;
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
@@ -163,13 +158,13 @@ namespace HealthGateway.WebClient
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
 
-                if (env.IsDevelopment() && debugerAttached)
+                if (env.IsDevelopment() && Debugger.IsAttached)
                 {
                     endpoints.MapToVueCliProxy(
                         "{*path}",
                         new SpaOptions { SourcePath = "ClientApp" },
                         npmScript: "serve",
-                        port:8585,
+                        port: 8585,
                         regex: "Compiled successfully",
                         forceKill: true);
                 }
@@ -178,7 +173,7 @@ namespace HealthGateway.WebClient
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                if (env.IsDevelopment() && !debugerAttached)
+                if (env.IsDevelopment() && !Debugger.IsAttached)
                 {
                     // change this to whatever webpack dev server says it's running on
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");

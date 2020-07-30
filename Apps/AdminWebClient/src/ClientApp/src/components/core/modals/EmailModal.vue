@@ -13,7 +13,7 @@
                 <v-form ref="form" lazy-validation>
                     <!-- Subject and priority -->
                     <v-row>
-                        <v-col cols="9">
+                        <v-col cols="8">
                             <v-text-field
                                 v-model="editedItem.subject"
                                 label="Subject"
@@ -23,9 +23,18 @@
                             ></v-text-field>
                         </v-col>
                         <v-col>
+                            <v-datetime-picker
+                                v-model="editedItem.scheduledDateTime"
+                                requried
+                                label="Scheduled For"
+                            ></v-datetime-picker>
+                        </v-col>
+                        <v-col>
                             <v-select
                                 v-model="editedItem.priority"
                                 :items="priorityItems"
+                                item-text="text"
+                                item-value="number"
                                 label="Priority"
                                 :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
@@ -52,8 +61,15 @@
                 <v-btn color="blue darken-1" text @click="close()"
                     >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="emitSend()"
+                <v-btn
+                    v-if="isNew"
+                    color="blue darken-1"
+                    text
+                    @click="saveChanges()"
                     >Send</v-btn
+                >
+                <v-btn v-else color="blue darken-1" text @click="saveChanges()"
+                    >Update</v-btn
                 >
             </v-card-actions>
         </v-card>
@@ -62,7 +78,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/communication";
+import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import moment from "moment";
 import {
@@ -90,7 +106,12 @@ import {
 })
 export default class EmailModal extends Vue {
     private dialog: boolean = false;
-    private priorityItems = ["Urgent", "Medium", "Low"];
+    private priorityItems = [
+        { text: "Urgent", number: 1000 },
+        { text: "High", number: 100 },
+        { text: "Standard", number: 10 },
+        { text: "Low", number: 1 }
+    ];
     private extensions: any = [
         History,
         Blockquote,
@@ -117,17 +138,17 @@ export default class EmailModal extends Vue {
     ];
 
     @Prop() editedItem!: Communication;
-    @Prop() editedIndex!: number;
+    @Prop() isNew!: number;
 
     @Watch("editedItem")
     private onPropChange() {
-        if (this.editedIndex > -1) {
+        if (!this.isNew) {
             this.dialog = true;
         }
     }
 
     private get formTitle(): string {
-        return this.editedIndex === -1 ? "New Email" : "Edit Email";
+        return this.isNew ? "New Email" : "Edit Email";
     }
 
     @Watch("dialog")
@@ -151,18 +172,31 @@ export default class EmailModal extends Vue {
             : false;
     }
 
-    @Emit()
-    private emitSend(communication: Communication) {
+    private saveChanges() {
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.contentValid()
         ) {
+            if (this.isNew) {
+                this.emitSend();
+            } else {
+                this.emitUpdate();
+            }
             this.close();
             (this.$refs.form as Vue & {
                 resetValidation: () => any;
             }).resetValidation();
-            return communication;
         }
+    }
+
+    @Emit()
+    private emitSend() {
+        return this.editedItem;
+    }
+
+    @Emit()
+    private emitUpdate() {
+        return this.editedItem;
     }
 
     @Emit()

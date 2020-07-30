@@ -78,6 +78,45 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public List<Email> GetStandardPriorityEmail(int maxRows)
+        {
+            this.logger.LogTrace($"Getting list of standard priority emails from DB... {maxRows}");
+            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+                                                   p.Priority >= EmailPriority.Standard && p.Priority < EmailPriority.High)
+                                        .OrderByDescending(s => s.Priority)
+                                        .Take(maxRows)
+                                        .ToList();
+            this.logger.LogDebug($"Finished getting list of standard priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            return retVal;
+        }
+
+        /// <inheritdoc />
+        public List<Email> GetHighPriorityEmail(int maxRows)
+        {
+            this.logger.LogTrace($"Getting list of high priority emails from DB... {maxRows}");
+            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+                                                   p.Priority >= EmailPriority.High && p.Priority < EmailPriority.Urgent)
+                                        .OrderByDescending(s => s.Priority)
+                                        .Take(maxRows)
+                                        .ToList();
+            this.logger.LogDebug($"Finished getting list of high priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            return retVal;
+        }
+
+        /// <inheritdoc />
+        public List<Email> GetUrgentPriorityEmail(int maxRows)
+        {
+            this.logger.LogTrace($"Getting list of urgent priority emails from DB... {maxRows}");
+            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+                                                   p.Priority >= EmailPriority.Urgent)
+                                        .OrderByDescending(s => s.Priority)
+                                        .Take(maxRows)
+                                        .ToList();
+            this.logger.LogDebug($"Finished getting list of urgent priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            return retVal;
+        }
+
+        /// <inheritdoc />
         public Guid InsertEmail(Email email, bool shouldCommit = true)
         {
             this.logger.LogTrace($"Inserting email to DB... {email}");

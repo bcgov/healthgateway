@@ -208,13 +208,19 @@
                 </b-row>
                 <LinearTimeline
                     v-show="isListView && !isLoading"
-                    :timeline-entries="filteredTimelineEntries"
+                    :timeline-entries="timelineEntries"
+                    :is-visible="isListView"
                     :total-entries="getTotalCount()"
+                    :filter-text="filterText"
+                    :filter-types="filterTypes"
                 />
                 <CalendarTimeline
                     v-show="!isListView && !isLoading"
-                    :timeline-entries="filteredTimelineEntries"
+                    :timeline-entries="timelineEntries"
+                    :is-visible="!isListView"
                     :total-entries="getTotalCount()"
+                    :filter-text="filterText"
+                    :filter-types="filterTypes"
                 />
                 <b-row v-if="isLoading">
                     <b-col>
@@ -279,8 +285,8 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import MedicationStatementHistory from "../models/medicationStatementHistory";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import MedicationStatement from "@/models/medicationStatement";
 import UserNote from "@/models/userNote";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -326,8 +332,8 @@ export default class TimelineView extends Vue {
     config!: WebClientConfiguration;
 
     private filterText: string = "";
+    private filterTypes: string[] = [];
     private timelineEntries: TimelineEntry[] = [];
-    private filteredTimelineEntries: TimelineEntry[] = [];
     private isMedicationLoading: boolean = false;
     private isImmunizationLoading: boolean = false;
     private isLaboratoryLoading: boolean = false;
@@ -339,8 +345,6 @@ export default class TimelineView extends Vue {
     private isEditingEntry: boolean = false;
     private unsavedChangesText: string =
         "You have unsaved changes. Are you sure you want to leave?";
-
-    private filterTypes: string[] = [];
 
     private isListView: boolean = true;
     private eventBus = EventBus;
@@ -447,10 +451,7 @@ export default class TimelineView extends Vue {
     }
 
     private get isMedicationEnabled(): boolean {
-        return (
-            this.config.modules["MedicationHistory"] ||
-            this.config.modules["Medication"]
-        );
+        return this.config.modules["Medication"];
     }
 
     private get isImmunizationEnabled(): boolean {
@@ -496,19 +497,12 @@ export default class TimelineView extends Vue {
             SERVICE_IDENTIFIER.MedicationService
         );
         this.isMedicationLoading = true;
-        const isOdrEnabled = this.config.modules["MedicationHistory"];
-        let promise: Promise<RequestResult<MedicationStatement[]>>;
-        if (isOdrEnabled) {
-            promise = medicationService.getPatientMedicationStatementHistory(
-                this.user.hdid,
-                protectiveWord
-            );
-        } else {
-            promise = medicationService.getPatientMedicationStatements(
-                this.user.hdid,
-                protectiveWord
-            );
-        }
+        let promise: Promise<RequestResult<MedicationStatementHistory[]>>;
+
+        promise = medicationService.getPatientMedicationStatementHistory(
+            this.user.hdid,
+            protectiveWord
+        );
 
         promise
             .then((results) => {
@@ -521,7 +515,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
                 } else if (results.resultStatus == ResultType.Protected) {
                     if (!this.covidModal.show) {
                         this.protectiveWordModal.showModal();
@@ -560,7 +553,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
                 } else {
                     console.log(
                         "Error returned from the immunization call: " +
@@ -593,7 +585,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
 
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
@@ -632,7 +623,6 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.applyTimelineFilter();
                 } else {
                     console.log(
                         "Error returned from the note call: " +
@@ -655,7 +645,6 @@ export default class TimelineView extends Vue {
         if (entry) {
             this.timelineEntries.push(entry);
             this.sortEntries();
-            this.applyTimelineFilter();
         }
     }
 
@@ -680,7 +669,6 @@ export default class TimelineView extends Vue {
         this.timelineEntries.push(entry);
         this.isEditingEntry = false;
         this.sortEntries();
-        this.applyTimelineFilter();
     }
 
     private onEntryDeleted(entry: TimelineEntry) {
@@ -688,7 +676,6 @@ export default class TimelineView extends Vue {
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
-        this.applyTimelineFilter();
     }
 
     private onProtectiveWordSubmit(value: string) {
@@ -698,14 +685,6 @@ export default class TimelineView extends Vue {
     private onProtectiveWordCancel() {
         // Does nothing as it won't be able to fetch pharmanet data.
         console.log("protective word cancelled");
-    }
-
-    @Watch("filterText")
-    @Watch("filterTypes")
-    private applyTimelineFilter() {
-        this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filterText, this.filterTypes)
-        );
     }
 
     private getTotalCount(): number {
