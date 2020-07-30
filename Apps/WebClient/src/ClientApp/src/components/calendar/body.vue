@@ -175,17 +175,29 @@ export default class CalendarBodyComponent extends Vue {
     @Prop() private isVisible!: boolean;
 
     private eventLimit: number = 4;
-    private firstEventDateOfCurrentMonth: Date | null = null;
 
     private isHovering: boolean = false;
     private hoveringEvent: CalendarEntry | null = null;
     private eventBus = EventBus;
-    private get currentDates() {
-        return this.getCalendar();
+
+    private currentDates: CalendarWeek[] = [];
+
+    @Watch("currentDate")
+    private onCurrentDateUpdate() {
+        this.currentDates = this.generateCalendar();
+
+        if (this.isVisible) {
+            let dateGroup: DateGroup = this.dateGroups.find((d) =>
+                moment(this.currentDate).isSame(d.date, "month")
+            ) as DateGroup;
+            this.eventBus.$emit(
+                EventMessageName.CalendarCurrentDatesUpdated,
+                dateGroup.entries[0].date
+            );
+        }
     }
 
-    private getCalendar(): CalendarWeek[] {
-        let now = new Date();
+    private generateCalendar(): CalendarWeek[] {
         let current = new Date(this.currentDate);
 
         let startDate = DateUtil.getMonthFirstDate(current);
@@ -195,8 +207,8 @@ export default class CalendarBodyComponent extends Vue {
         startDate.setDate(startDate.getDate() - curWeekDay + this.firstDay);
 
         let calendar: CalendarWeek[] = [];
-        this.firstEventDateOfCurrentMonth = null;
 
+        let today = new Date();
         for (let perWeek = 0; perWeek < 6; perWeek++) {
             let week: CalendarWeek = {
                 id: startDate.getTime().toString(),
@@ -207,7 +219,7 @@ export default class CalendarBodyComponent extends Vue {
                 let dayEvent = {
                     id: startDate.getTime().toString() + "-" + perDay,
                     monthDay: startDate.getDate(),
-                    isToday: now.toDateString() == startDate.toDateString(),
+                    isToday: today.toDateString() == startDate.toDateString(),
                     isCurMonth: startDate.getMonth() == current.getMonth(),
                     weekDay: perDay,
                     date: new Date(startDate),
@@ -216,21 +228,6 @@ export default class CalendarBodyComponent extends Vue {
                 week.days.push(dayEvent);
 
                 startDate.setDate(startDate.getDate() + 1);
-
-                if (
-                    this.firstEventDateOfCurrentMonth === null &&
-                    dayEvent.isCurMonth &&
-                    dayEvent.events.length > 0
-                ) {
-                    this.firstEventDateOfCurrentMonth =
-                        dayEvent.events[0].entries[0].date;
-                    if (!this.isVisible) {
-                        this.eventBus.$emit(
-                            EventMessageName.TimelineCurrentDateUpdated,
-                            this.firstEventDateOfCurrentMonth
-                        );
-                    }
-                }
             }
 
             calendar.push(week);

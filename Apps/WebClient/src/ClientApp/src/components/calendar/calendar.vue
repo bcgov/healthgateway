@@ -87,10 +87,6 @@ export default class CalendarComponent extends Vue {
         this.updateAvailableMonths();
         var self = this;
         this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
-            console.log(
-                "calendar got the timelinePageUpdate sent by timeline vue for the " +
-                    eventDate
-            );
             self.currentDate = DateUtil.getMonthFirstDate(eventDate);
         });
     }
@@ -119,6 +115,8 @@ export default class CalendarComponent extends Vue {
                     ) {
                         groups.push(monthYear);
                     }
+                } else {
+                    console.log("Invalid entry date:", entry);
                 }
                 return groups;
             },

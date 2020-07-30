@@ -81,7 +81,7 @@ export default class CalendarTimelineComponent extends Vue {
 
     private sortGroup(groupArrays: DateGroup[]) {
         groupArrays.sort((a, b) =>
-            a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+            a.date > b.date ? 1 : a.date < b.date ? -1 : 0
         );
         return groupArrays;
     }
