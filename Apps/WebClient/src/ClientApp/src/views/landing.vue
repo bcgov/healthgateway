@@ -29,6 +29,10 @@
     .title-section h2 {
         font-weight: 200;
         font-size: x-large;
+        /* Small Devices*/
+        @media (max-width: 767px) {
+            text-align: left !important;
+        }
     }
 
     .devices-section {
@@ -189,7 +193,7 @@
                         <h1 class="text-center w-100 p-3">HealthGateway</h1>
                     </b-row>
                     <b-row>
-                        <h2 class="w-100 p-3">
+                        <h2 class="text-center w-100 p-3">
                             A single place for BC residents to access their
                             health records
                         </h2>
