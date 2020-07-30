@@ -2,6 +2,10 @@
 @import "@/assets/scss/_variables.scss";
 
 .landing {
+    h1 {
+        color: $primary;
+    }
+
     .btn-secondary-landing {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
             0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -81,6 +85,25 @@
                 }
             }
 
+            .btn {
+                width: 150px;
+            }
+
+            #btnLogin {
+                color: $primary;
+            }
+
+            .mobile-only {
+                /* Tablet & Desktop*/
+                @media (min-width: 768px) {
+                    display: none;
+                }
+                /* Mobile */
+                @media (max-width: 767px) {
+                    display: flex;
+                }
+            }
+
             .covid-container {
                 color: white;
                 background-color: $danger;
@@ -101,14 +124,6 @@
         margin-right: 0px;
         padding-left: 0px;
         padding-right: 0px;
-
-        h4 {
-            color: $primary;
-            /* Small Devices*/
-            @media (max-width: 767px) {
-                font-size: larger;
-            }
-        }
 
         .col {
             padding-left: 0px;
@@ -190,7 +205,7 @@
             <b-col class="col-12">
                 <div class="title-text">
                     <b-row>
-                        <h1 class="text-center w-100 p-3">HealthGateway</h1>
+                        <h1 class="text-center w-100 p-3">Health Gateway</h1>
                     </b-row>
                     <b-row>
                         <h2 class="text-center w-100 p-3">
@@ -204,7 +219,7 @@
         <b-row
             class="devices-section justify-content-center align-items-center mx-1 mx-md-5"
         >
-            <b-col class="d-none d-md-block text-center col-6 col-xl-4 m-auto">
+            <b-col class="d-none d-lg-block text-center col-6 col-xl-4 m-auto">
                 <img
                     class="img-fluid devices-image"
                     :src="devices"
@@ -277,13 +292,15 @@
                                         : 'registrationInfo'
                                 "
                                 role="button"
+                                class="m-2"
                                 >Register</b-button
                             >
+                            <div class="row mobile-only"></div>
                             <b-button
                                 id="btnLogin"
                                 to="login"
                                 variant="outline-secondary"
-                                class="ml-4"
+                                class="m-2"
                                 >Log in</b-button
                             >
                         </b-col>
@@ -297,9 +314,9 @@
                     class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
                 >
                     <b-col class="col-12 col-md-6">
-                        <h4 class="text-center">
-                            Where our journey is heading
-                        </h4>
+                        <h1 class="text-center">
+                            Future Goals
+                        </h1>
                     </b-col>
                 </b-row>
             </div>
