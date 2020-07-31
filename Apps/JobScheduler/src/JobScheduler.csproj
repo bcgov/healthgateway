@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
     <ProjectReference Include="..\..\Database\src\Database.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
@@ -46,8 +42,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+    <None Include="..\..\.editorconfig" />
     <None Include="appsettings.json" CopyToPublishDirectory="Always" />
-    <None Include="**/*" />
   </ItemGroup>  
   <ItemGroup>
     <Folder Include="Context\" />
@@ -84,8 +81,5 @@
     <Content Remove="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
     <Content Remove="Views\Home\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" />
   </ItemGroup>
 </Project>
