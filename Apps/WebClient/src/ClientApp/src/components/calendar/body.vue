@@ -184,50 +184,51 @@ export default class CalendarBodyComponent extends Vue {
 
     @Watch("currentDate")
     private onCurrentDateUpdate() {
-        this.currentDates = this.generateCalendar();
+        this.currentDates = this.getMonthCalendar(this.currentDate);
 
         if (this.isVisible) {
             let dateGroup: DateGroup = this.dateGroups.find((d) =>
                 moment(this.currentDate).isSame(d.date, "month")
             ) as DateGroup;
             this.eventBus.$emit(
-                EventMessageName.CalendarCurrentDatesUpdated,
+                EventMessageName.CalendarMonthChanged,
                 dateGroup.entries[0].date
             );
         }
     }
 
-    private generateCalendar(): CalendarWeek[] {
-        let current = new Date(this.currentDate);
+    private getMonthCalendar(monthDate: Date): CalendarWeek[] {
+        let firstMonthDate = DateUtil.getMonthFirstDate(monthDate);
 
-        let startDate = DateUtil.getMonthFirstDate(current);
-
-        let curWeekDay = startDate.getDay();
+        let curWeekDay = firstMonthDate.getDay();
         // begin date of this table may be some day of last month
-        startDate.setDate(startDate.getDate() - curWeekDay + this.firstDay);
+        firstMonthDate.setDate(
+            firstMonthDate.getDate() - curWeekDay + this.firstDay
+        );
 
         let calendar: CalendarWeek[] = [];
 
         let today = new Date();
         for (let perWeek = 0; perWeek < 6; perWeek++) {
             let week: CalendarWeek = {
-                id: startDate.getTime().toString(),
+                id: firstMonthDate.getTime().toString(),
                 days: [],
             };
 
             for (let perDay = 0; perDay < 7; perDay++) {
                 let dayEvent = {
-                    id: startDate.getTime().toString() + "-" + perDay,
-                    monthDay: startDate.getDate(),
-                    isToday: today.toDateString() == startDate.toDateString(),
-                    isCurMonth: startDate.getMonth() == current.getMonth(),
+                    id: firstMonthDate.getTime().toString() + "-" + perDay,
+                    monthDay: firstMonthDate.getDate(),
+                    isToday: moment(today).isSame(firstMonthDate),
+                    isCurMonth:
+                        firstMonthDate.getMonth() === monthDate.getMonth(),
                     weekDay: perDay,
-                    date: new Date(startDate),
-                    events: this.slotEvents(startDate),
+                    date: new Date(firstMonthDate),
+                    events: this.slotEvents(firstMonthDate),
                 };
                 week.days.push(dayEvent);
 
-                startDate.setDate(startDate.getDate() + 1);
+                firstMonthDate.setDate(firstMonthDate.getDate() + 1);
             }
 
             calendar.push(week);
