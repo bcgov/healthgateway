@@ -90,7 +90,7 @@
         <b-row class="dates">
             <b-col>
                 <b-row
-                    v-for="week in currentDates"
+                    v-for="week in monthData"
                     :key="week.id"
                     class="week-row"
                 >
@@ -167,7 +167,7 @@ import { EventMessageName } from "@/constants/eventMessageName";
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
-    @Prop() currentDate!: Date;
+    @Prop() currentMonth!: Date;
     @Prop() dateGroups!: DateGroup[];
     @Prop() weekNames!: string[];
     @Prop() monthNames!: string[];
@@ -180,18 +180,18 @@ export default class CalendarBodyComponent extends Vue {
     private hoveringEvent: CalendarEntry | null = null;
     private eventBus = EventBus;
 
-    private currentDates: CalendarWeek[] = [];
+    private monthData: CalendarWeek[] = [];
 
-    @Watch("currentDate")
-    private onCurrentDateUpdate() {
-        this.currentDates = this.getMonthCalendar(this.currentDate);
+    @Watch("currentMonth")
+    private onCurrentMonthUpdate() {
+        this.monthData = this.getMonthCalendar(this.currentMonth);
 
         if (this.isVisible) {
             let dateGroup: DateGroup = this.dateGroups.find((d) =>
-                moment(this.currentDate).isSame(d.date, "month")
+                moment(this.currentMonth).isSame(d.date, "month")
             ) as DateGroup;
             this.eventBus.$emit(
-                EventMessageName.CalendarMonthChanged,
+                EventMessageName.CalendarMonthUpdated,
                 dateGroup.entries[0].date
             );
         }

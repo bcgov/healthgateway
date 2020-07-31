@@ -53,7 +53,7 @@
         </b-col>
         <b-col cols="auto" class="mx-4">
             <MonthYearPickerComponent
-                :current-date="currentDate"
+                :current-month="currentMonth"
                 :available-months="availableMonths"
                 @date-changed="dateSelected"
             />
@@ -80,7 +80,7 @@ import { DateGroup } from "@/models/timelineEntry";
     },
 })
 export default class CalendarComponent extends Vue {
-    @Prop() currentDate!: Date;
+    @Prop() currentMonth!: Date;
     @Prop() titleFormat!: string;
     @Prop() availableMonths!: Date[];
 
@@ -91,12 +91,12 @@ export default class CalendarComponent extends Vue {
     private rightIcon: string = "chevron-right";
 
     public get title(): string {
-        return moment(this.currentDate).format(this.titleFormat);
+        return moment(this.currentMonth).format(this.titleFormat);
     }
 
-    @Watch("currentDate")
-    public onCurrentDateChange(currentDate: Date) {
-        this.dateSelected(currentDate);
+    @Watch("currentMonth")
+    public onCurrentMonthChange(currentMonth: Date) {
+        this.dateSelected(currentMonth);
     }
 
     @Watch("availableMonths")
@@ -139,8 +139,8 @@ export default class CalendarComponent extends Vue {
     }
 
     private dispatchEvent() {
-        let startDate = DateUtil.getMonthFirstDate(this.headerDate);
-        this.$emit("update:currentDate", startDate);
+        let firstMonthDate = DateUtil.getMonthFirstDate(this.headerDate);
+        this.$emit("update:currentMonth", firstMonthDate);
     }
 }
 </script>

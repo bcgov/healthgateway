@@ -1,3 +1,3 @@
 export enum EventMessageName {
-    CalendarMonthChanged = "calendarMonthChanged",
+    CalendarMonthUpdated = "calendarMonthUpdated",
 }

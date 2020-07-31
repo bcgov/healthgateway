@@ -142,10 +142,10 @@ export default class LinearTimelineComponent extends Vue {
             });
         });
 
-        this.eventBus.$on(EventMessageName.CalendarMonthChanged, function (
-            currentDate: Date
+        this.eventBus.$on(EventMessageName.CalendarMonthUpdated, function (
+            firstEntryDate: Date
         ) {
-            self.setPageFromDate(currentDate);
+            self.setPageFromDate(firstEntryDate);
         });
 
         window.addEventListener("resize", this.handleResize);
