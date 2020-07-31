@@ -120,9 +120,6 @@ export default class LinearTimelineComponent extends Vue {
     private onVisibleEntriesUpdate() {
         if (this.visibleTimelineEntries.length > 0) {
             if (this.isVisible) {
-                console.log(
-                    "notifying calendar vue about timeline's page updated..."
-                );
                 this.eventBus.$emit(
                     "timelinePageUpdate",
                     new Date(this.visibleTimelineEntries[0].date)
@@ -135,14 +132,21 @@ export default class LinearTimelineComponent extends Vue {
         let self = this;
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
             self.setPageFromDate(eventDate);
+            // Wait for next render cycle until the pages have been calculated and displayed
+            self.$nextTick().then(function () {
+                const date = new Date(eventDate).setHours(0, 0, 0, 0);
+                let container: HTMLElement[] = self.$refs[
+                    date
+                ] as HTMLElement[];
+                container[0].focus();
+            });
         });
 
-        this.eventBus.$on(
-            EventMessageName.TimelineCurrentDateUpdated,
-            function (currentDate: Date) {
-                self.setPageFromDate(currentDate);
-            }
-        );
+        this.eventBus.$on(EventMessageName.CalendarMonthUpdated, function (
+            firstEntryDate: Date
+        ) {
+            self.setPageFromDate(firstEntryDate);
+        });
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
@@ -259,14 +263,6 @@ export default class LinearTimelineComponent extends Vue {
             (entry) => entry.date === eventDate
         );
         this.currentPage = Math.floor(index / this.numberOfEntriesPerPage) + 1;
-
-        let self = this;
-        // Wait for next render cycle until the pages have been calculated and displayed
-        this.$nextTick().then(function () {
-            const date = new Date(eventDate).setHours(0, 0, 0, 0);
-            let container: HTMLElement[] = self.$refs[date] as HTMLElement[];
-            container[0].focus();
-        });
     }
 }
 </script>

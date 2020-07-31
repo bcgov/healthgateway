@@ -2,14 +2,14 @@
     <div class="calendar mx-3">
         <!-- header pick month -->
         <CalendarHeader
-            :current-date.sync="currentDate"
+            :current-month.sync="currentMonth"
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
         </CalendarHeader>
         <!-- body display date day and events -->
         <CalendarBody
-            :current-date="currentDate"
+            :current-month="currentMonth"
             :date-groups="dateGroups"
             :month-names="monthNames"
             :week-names="weekNames"
@@ -80,18 +80,14 @@ export default class CalendarComponent extends Vue {
     weekNames!: Array<string>;
 
     private availableMonths: Date[] = [];
-    private currentDate: Date = new Date();
+    private currentMonth: Date = new Date();
     private eventBus = EventBus;
 
     private mounted() {
         this.updateAvailableMonths();
         var self = this;
         this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
-            console.log(
-                "calendar got the timelinePageUpdate sent by timeline vue for the " +
-                    eventDate
-            );
-            self.currentDate = DateUtil.getMonthFirstDate(eventDate);
+            self.currentMonth = DateUtil.getMonthFirstDate(eventDate);
         });
     }
 
@@ -119,6 +115,8 @@ export default class CalendarComponent extends Vue {
                     ) {
                         groups.push(monthYear);
                     }
+                } else {
+                    console.log("Invalid entry date:", entry);
                 }
                 return groups;
             },
