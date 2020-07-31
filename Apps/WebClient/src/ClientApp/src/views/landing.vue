@@ -65,12 +65,6 @@
                     width: 150px;
                 }
             }
-            // @media screen and (min-width: 540px) and (max-width: 1100px) {
-            //     // Log in button's div container
-            //     .div-login {
-            //         padding-left: 100px;
-            //     }
-            // }
 
             .icon-row {
                 display: block;
