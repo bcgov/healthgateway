@@ -51,10 +51,27 @@
             margin-left: auto;
             margin-right: auto;
             margin-top: -40px;
-            /* Small Devices*/
-            @media (max-width: 767px) {
+
+            @media screen and (max-width: 575px) {
                 font-size: small;
+                // Register & Log in buttons
+                .btn {
+                    width: 100%;
+                }
             }
+            @media screen and (min-width: 540px) {
+                // Register & Log in buttons
+                .btn {
+                    width: 150px;
+                }
+            }
+            // @media screen and (min-width: 540px) and (max-width: 1100px) {
+            //     // Log in button's div container
+            //     .div-login {
+            //         padding-left: 100px;
+            //     }
+            // }
+
             .icon-row {
                 display: block;
                 line-height: 40px;
@@ -85,23 +102,8 @@
                 }
             }
 
-            .btn {
-                width: 150px;
-            }
-
             #btnLogin {
                 color: $primary;
-            }
-
-            .mobile-only {
-                /* Tablet & Desktop*/
-                @media (min-width: 768px) {
-                    display: none;
-                }
-                /* Mobile */
-                @media (max-width: 767px) {
-                    display: flex;
-                }
             }
 
             .covid-container {
@@ -283,7 +285,7 @@
                         </b-col>
                     </b-row>
                     <b-row class="py-3">
-                        <b-col>
+                        <div class="col-12 d-flex flex-column flex-sm-row">
                             <b-button
                                 id="btnStart"
                                 :to="
@@ -295,7 +297,6 @@
                                 class="m-2"
                                 >Register</b-button
                             >
-                            <div class="row mobile-only"></div>
                             <b-button
                                 id="btnLogin"
                                 to="login"
@@ -303,7 +304,7 @@
                                 class="m-2"
                                 >Log in</b-button
                             >
-                        </b-col>
+                        </div>
                     </b-row>
                 </div>
             </b-col>
@@ -396,27 +397,27 @@ export default class LandingView extends Vue {
     private icons: Icon[] = [
         {
             definition: "pills",
-            label: "Prescription Medication(Dec 2019)",
+            label: "Medications (Dec 2019)",
             active: true,
         },
         {
             definition: "edit",
-            label: "Add Notes to Records(Mar 2020)",
+            label: "Add Notes to Records (Mar 2020)",
             active: true,
         },
         {
             definition: "syringe",
-            label: "Immunization(Coming soon)",
+            label: "Immunizations (Coming soon)",
             active: false,
         },
         {
             definition: "flask",
-            label: "Lab Results(Coming soon)",
+            label: "Lab Results (Coming soon)",
             active: false,
         },
         {
             definition: "user-md",
-            label: "Health Visits(Coming soon)",
+            label: "Health Visits (Coming soon)",
             active: false,
         },
     ];
