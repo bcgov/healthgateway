@@ -127,6 +127,10 @@ namespace HealthGateway.Database.Delegates
                 {
                     this.dbContext.SaveChanges();
                     result.Status = DBStatusCode.Updated;
+
+                    // Forces the refresh from the database.
+                    this.dbContext.Entry(note).State = EntityState.Detached;
+                    result.Payload = this.dbContext.Note.Find(note.Id, note.HdId);
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
