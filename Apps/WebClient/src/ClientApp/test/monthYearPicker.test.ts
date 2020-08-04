@@ -6,7 +6,7 @@ describe("MonthYearPickerComponent", () => {
     test("renders component correctly", () => {
         const wrapper = shallowMount(MonthYearPickerComponent, {
             propsData: {
-                currentDate: new Date(),
+                currentMonth: new Date(),
                 availableMonths: [new Date()],
             },
         });

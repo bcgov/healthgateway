@@ -105,7 +105,7 @@ class MonthToDisplay {
     },
 })
 export default class MonthYearPickerComponent extends Vue {
-    @Prop() currentDate!: Date;
+    @Prop() currentMonth!: Date;
     @Prop() availableMonths!: Date[];
     public isYearOpen: boolean = false;
     public isMonthOpen: boolean = false;
@@ -186,9 +186,9 @@ export default class MonthYearPickerComponent extends Vue {
         this.isYearOpen = !this.isMonthOpen;
     }
 
-    @Watch("currentDate")
-    public onCurrentDateChange(currentDate: Date) {
-        this.selectedDate = currentDate;
+    @Watch("currentMonth")
+    public onCurrentMonthChange(currentMonth: Date) {
+        this.selectedDate = currentMonth;
         this.close();
     }
 
