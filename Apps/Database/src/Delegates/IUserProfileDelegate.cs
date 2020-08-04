@@ -92,7 +92,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="page">The page to request.</param>
         /// <param name="pageSize">The amount of records to retrieve in 1 request.</param>
-        /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
+        /// <returns>A list of UserProfiles wrapped in a DBResult.</returns>
         public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
     }
 }
