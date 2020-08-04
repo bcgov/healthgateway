@@ -2,6 +2,7 @@
     <b-alert dismissible variant="danger" class="no-print">
         <h4>{{ code }}: {{ title }}</h4>
         <span>{{ description }}</span>
+        <span>Test</span>
     </b-alert>
 </template>
 

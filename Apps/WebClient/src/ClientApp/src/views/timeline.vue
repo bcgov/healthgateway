@@ -64,18 +64,14 @@
                 id="timeline"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
-                <b-alert
+                <ErrorCard
                     :show="hasErrors"
-                    dismissible
-                    variant="danger"
-                    class="no-print"
-                >
-                    <h4>Error</h4>
-                    <span
-                        >An unexpected error occured while processing the
-                        request.</span
-                    >
-                </b-alert>
+                    :error="{
+                        code: '404',
+                        title: 'Whoops!',
+                        description: 'An error occurred.',
+                    }"
+                />
                 <b-alert
                     :show="hasNewTermsOfService"
                     dismissible
@@ -304,6 +300,7 @@ import {
 } from "@/models/laboratory";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
+import ErrorCardComponent from "@/components/timeline/errorCard.vue";
 
 const namespace: string = "user";
 
@@ -320,6 +317,7 @@ Component.registerHooks(["beforeRouteLeave"]);
         NoteTimelineComponent,
         LinearTimeline: LinearTimelineComponent,
         CalendarTimeline: CalendarTimelineComponent,
+        ErrorCard: ErrorCardComponent,
     },
 })
 export default class TimelineView extends Vue {
