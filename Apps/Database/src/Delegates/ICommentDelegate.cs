@@ -55,5 +55,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
         DBResult<Comment> Delete(Comment comment, bool commit = true);
+
+        /// <summary>
+        /// Gets a list of all the comments ordered by the CreatedDateTime in assending order.
+        /// </summary>
+        /// <param name="page">The starting offset for the query.</param>
+        /// <param name="pageSize">The maximum amount of rows to return.</param>
+        /// <returns>A list of comments wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<Comment>> GetAll(int page, int pageSize);
     }
 }

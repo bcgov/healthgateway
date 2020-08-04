@@ -205,5 +205,16 @@ namespace HealthGateway.Database.Delegates
                     .Where(w => w.Count() >= minNotes)
                     .Count();
         }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the notes for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.Note
+                    .OrderBy(note => note.CreatedDateTime),
+                page,
+                pageSize);
+        }
     }
 }

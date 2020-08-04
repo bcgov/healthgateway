@@ -86,5 +86,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="offset">The clients offset to get to UTC.</param>
         /// <returns>The count of logged in users.</returns>
         int GetLoggedInUsersCount(TimeSpan offset);
+
+        /// <summary>
+        /// Returns the list of all UserProfiles sorted by CreatedDateTime in assending order.
+        /// </summary>
+        /// <param name="page">The page to request.</param>
+        /// <param name="pageSize">The amount of records to retrieve in 1 request.</param>
+        /// <returns>A list of UserProfiles wrapped in a DBResult.</returns>
+        public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
     }
 }

@@ -144,5 +144,16 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished deleting Comment in DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Comment>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the comments for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.Comment
+                    .OrderBy(comment => comment.CreatedDateTime),
+                page,
+                pageSize);
+        }
     }
 }

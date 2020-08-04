@@ -80,5 +80,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="minNotes">The minimum number of notes to count.</param>
         /// <returns>The count of users.</returns>
         int GetUsersWithNotesCount(int minNotes);
+
+        /// <summary>
+        /// Gets a list of all the notes ordered by the CreatedDateTime in assending order.
+        /// </summary>
+        /// <param name="page">The starting offset for the query.</param>
+        /// <param name="pageSize">The maximum amount of rows to return.</param>
+        /// <returns>A list of Notes wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<Note>> GetAll(int page, int pageSize);
     }
 }
