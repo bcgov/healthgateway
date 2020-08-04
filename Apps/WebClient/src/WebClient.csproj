@@ -11,6 +11,7 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -63,6 +64,7 @@
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
     <Folder Include="Views\Robots\" />
+    <Folder Include="Listeners\" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />

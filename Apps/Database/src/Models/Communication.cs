@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Text.Json.Serialization;
     using HealthGateway.Database.Constants;
 
     /// <summary>
@@ -31,19 +32,20 @@ namespace HealthGateway.Database.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("CommunicationId")]
+        [JsonPropertyName("CommunicationId")]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the message text.
         /// </summary>
         [MaxLength(1000)]
-        public string Text { get; set; } = "";
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the message subject.
         /// </summary>
         [MaxLength(1000)]
-        public string Subject { get; set; } = "";
+        public string Subject { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the effective datetime.

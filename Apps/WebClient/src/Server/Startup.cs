@@ -18,12 +18,14 @@ namespace HealthGateway.WebClient
 {
     using System;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Extensions;
+    using HealthGateway.Common.Listeners;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.WebClient.Listeners;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -73,6 +75,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add services
+            services.AddMemoryCache();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
@@ -101,6 +104,9 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
 
+            // Add Background Services
+            services.AddHostedService<BannerListener>();
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -123,8 +129,6 @@ namespace HealthGateway.WebClient
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Contract.Requires(env != null);
-
             app.UseSpaStaticFiles();
 
             this.startupConfig.UseForwardHeaders(app);

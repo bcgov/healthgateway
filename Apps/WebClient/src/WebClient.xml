@@ -4,6 +4,26 @@
         <name>WebClient</name>
     </assembly>
     <members>
+        <member name="T:HealthGateway.WebClient.Listeners.BannerListener">
+            <summary>
+            Implements the abstract DB Listener and listens on the BannerChange channel.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Listeners.BannerListener.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Listeners.BannerListener},Microsoft.Extensions.Configuration.IConfiguration,System.IServiceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Listeners.BannerListener"/> class.
+            </summary>
+            <param name="logger">The injected logger.</param>
+            <param name="configuration">The injected configuration.</param>
+            <param name="services">The set of application services available.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Listeners.BannerListener.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            Creates a new DB Connection for push notifications from the DB for a specific channel.
+            </summary>
+            <param name="stoppingToken">The cancellation token to use.</param>
+            <returns>The task.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Constant.RegistrationStatus">
             <summary>
             Registration status modes.
@@ -394,6 +414,26 @@
             <response code="200">The user preference record was saved.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.BannerChangeEvent">
+            <summary>
+            Object that represents a banner change push.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.BannerChangeEvent.Table">
+            <summary>
+            Gets or sets Table name the action was performed on.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.BannerChangeEvent.Action">
+            <summary>
+            Gets or sets the action that triggered the push.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.BannerChangeEvent.Data">
+            <summary>
+            Gets or sets the Communication object.
+            </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.CreateNoteRequest">
             <summary>
@@ -970,14 +1010,18 @@
         <member name="T:HealthGateway.WebClient.Services.CommunicationService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.CommunicationService},HealthGateway.Database.Delegates.ICommunicationDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.CommunicationService},HealthGateway.Database.Delegates.ICommunicationDelegate,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.CommunicationService"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="communicationDelegate">Injected Note delegate.</param>
+            <param name="memoryCache">The cache to use to reduce lookups.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActiveBanner">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.SetActiveBannerCache(HealthGateway.Common.Models.RequestResult{HealthGateway.Database.Models.Communication})">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
@@ -1063,6 +1107,12 @@
             Gets the active communication banner from the backend.
             </summary>
             <returns>The active communication wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.SetActiveBannerCache(HealthGateway.Common.Models.RequestResult{HealthGateway.Database.Models.Communication})">
+            <summary>
+            Sets the Active Banner in the internal cache.
+            </summary>
+            <param name="cacheEntry">The Communication wrapped in a RequestResult.</param>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
             <summary>
