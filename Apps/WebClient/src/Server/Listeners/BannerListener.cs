@@ -1,18 +1,18 @@
-// //-------------------------------------------------------------------------
-// // Copyright © 2019 Province of British Columbia
-// //
-// // Licensed under the Apache License, Version 2.0 (the "License");
-// // you may not use this file except in compliance with the License.
-// // You may obtain a copy of the License at
-// //
-// // http://www.apache.org/licenses/LICENSE-2.0
-// //
-// // Unless required by applicable law or agreed to in writing, software
-// // distributed under the License is distributed on an "AS IS" BASIS,
-// // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// // See the License for the specific language governing permissions and
-// // limitations under the License.
-// //-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Listeners
 {
     using System;
@@ -20,12 +20,12 @@ namespace HealthGateway.WebClient.Listeners
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Listeners;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -46,8 +46,6 @@ namespace HealthGateway.WebClient.Listeners
         private readonly IConfiguration configuration;
         private readonly IServiceProvider services;
 
-        private ICommunicationService? CommunicationService { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BannerListener"/> class.
         /// </summary>
@@ -63,6 +61,8 @@ namespace HealthGateway.WebClient.Listeners
             this.configuration = configuration;
             this.services = services;
         }
+
+        private ICommunicationService? CommunicationService { get; set; }
 
         /// <summary>
         /// Creates a new DB Connection for push notifications from the DB for a specific channel.
@@ -80,16 +80,14 @@ namespace HealthGateway.WebClient.Listeners
                 using var scope = this.services.CreateScope();
                 GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
                 this.CommunicationService = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
-                NpgsqlConnection con = new NpgsqlConnection(this.configuration.GetConnectionString("GatewayConnection"));
+                NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
                 con.Open();
                 con.Notification += this.ReceiveEvent;
-                await using (var cmd = new NpgsqlCommand())
-                {
-                    cmd.CommandText = @$"LISTEN ""{Channel}"";";
-                    cmd.CommandType = CommandType.Text;
-                    cmd.Connection = con;
-                    cmd.ExecuteNonQuery();
-                }
+                using NpgsqlCommand cmd = new NpgsqlCommand();
+                cmd.CommandText = @$"LISTEN ""{Channel}"";";
+                cmd.CommandType = CommandType.Text;
+                cmd.Connection = con;
+                cmd.ExecuteNonQuery();
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
