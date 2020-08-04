@@ -184,5 +184,16 @@ namespace HealthGateway.Database.Delegates
                u.LastLoginDateTime.Value < queryEndTime);
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the user profiles for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.UserProfile
+                    .OrderBy(userProfile => userProfile.CreatedDateTime),
+                page,
+                pageSize);
+        }
     }
 }
