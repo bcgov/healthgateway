@@ -33,10 +33,6 @@
     .title-section h2 {
         font-weight: 200;
         font-size: x-large;
-        /* Small Devices*/
-        @media (max-width: 767px) {
-            text-align: left !important;
-        }
     }
 
     .devices-section {
@@ -48,36 +44,21 @@
 
         .devices-text {
             color: $primary;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: -40px;
+            max-width: 500px !important;
 
-            @media screen and (max-width: 575px) {
-                font-size: small;
-                // Register & Log in buttons
-                .btn {
-                    width: 100%;
-                }
-            }
-            @media screen and (min-width: 540px) {
-                // Register & Log in buttons
-                .btn {
-                    width: 150px;
-                }
-            }
-
-            .icon-row {
-                display: block;
+            .icon-wrapper {
                 line-height: 40px;
                 height: 40px;
-                .icon {
-                    text-align: center;
-                    border-radius: 50%;
-                    width: 40px;
-                }
-                .edit {
-                    background-color: #fcba19 !important;
-                }
+            }
+
+            .icon {
+                text-align: center;
+                border-radius: 50%;
+                height: 40px;
+                width: 40px;
+            }
+            .edit {
+                background-color: #fcba19 !important;
             }
 
             .status-active {
@@ -198,10 +179,10 @@
         <b-row
             class="title-section justify-content-center align-items-center mx-1 mx-md-5 my-2"
         >
-            <b-col class="col-12">
+            <b-col class="col-12 mx-0 px-0">
                 <div class="title-text">
-                    <b-row>
-                        <h1 class="text-center w-100 p-3">Health Gateway</h1>
+                    <b-row class="mx-0 px-0">
+                        <h1 class="text-center w-100 py-3">Health Gateway</h1>
                     </b-row>
                     <b-row>
                         <h2 class="text-center w-100 p-3">
@@ -213,9 +194,9 @@
             </b-col>
         </b-row>
         <b-row
-            class="devices-section justify-content-center align-items-center mx-1 mx-md-5"
+            class="devices-section justify-content-center justify-content-lg-around align-items-center mx-0 mx-md-5"
         >
-            <b-col class="d-none d-lg-block text-center col-6 col-xl-4 m-auto">
+            <b-col class="d-none d-lg-block text-center col-6 col-xl-4">
                 <img
                     class="img-fluid devices-image"
                     :src="devices"
@@ -223,84 +204,61 @@
                     height="auto"
                     alt="Devices"
             /></b-col>
-            <b-col class="col-12 col-md-6">
-                <div class="devices-text my-3 my-md-3 ml-md-4">
-                    <b-row>
-                        <b-col cols="0" class="icon-wrapper mr-4 px-0">
-                            <div
-                                v-for="icon in icons"
-                                :key="icon.label"
-                                class="mb-2 icon-row"
-                                :class="
-                                    icon.active
-                                        ? 'status-active'
-                                        : 'status-inactive'
-                                "
-                                align-content="center"
-                            >
-                                <div class="icon" :class="icon.definition">
-                                    <font-awesome-icon
-                                        :icon="icon.definition"
-                                        size="lg"
-                                    ></font-awesome-icon>
-                                </div>
-                            </div>
-                        </b-col>
-                        <b-col class="px-0">
-                            <div
-                                v-for="icon in icons"
-                                :key="icon.label"
-                                class="mb-2 d-flex icon-row"
-                                :class="
-                                    icon.active
-                                        ? 'status-active'
-                                        : 'status-inactive'
-                                "
-                                align-v="center"
-                            >
-                                <b-col cols="0" class="px-0">
-                                    <span>{{ icon.label }}</span>
-                                </b-col>
-                                <b-col
-                                    v-if="false && icon.label === 'Lab Tests'"
-                                    cols="0"
-                                    class="covid-container ml-2 px-2"
-                                >
-                                    <font-awesome-icon
-                                        class="px-1"
-                                        icon="exclamation-triangle"
-                                        size="1x"
-                                    ></font-awesome-icon>
-                                    <span class="pr-1"
-                                        >COVID-19 Test Result</span
-                                    >
-                                </b-col>
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row class="py-3">
-                        <div class="col-12 d-flex flex-column flex-sm-row">
-                            <b-button
-                                id="btnStart"
-                                :to="
-                                    isOpenRegistration
-                                        ? 'registration'
-                                        : 'registrationInfo'
-                                "
-                                role="button"
-                                class="m-2"
-                                >Register</b-button
-                            >
-                            <b-button
-                                id="btnLogin"
-                                to="login"
-                                variant="outline-secondary"
-                                class="m-2"
-                                >Log in</b-button
-                            >
-                        </div>
-                    </b-row>
-                </div>
+            <b-col class="col-12 col-sm-7 col-lg-5 devices-text my-3 ml-md-4">
+                <b-row
+                    v-for="icon in icons"
+                    :key="icon.label"
+                    class="icon-wrapper my-2 ml-auto justify-content-start"
+                    :class="icon.active ? 'status-active' : 'status-inactive'"
+                >
+                    <b-col
+                        class="mr-2 px-0 icon"
+                        :class="icon.definition"
+                        cols="0"
+                    >
+                        <font-awesome-icon
+                            :icon="icon.definition"
+                            size="lg"
+                        ></font-awesome-icon>
+                    </b-col>
+                    <b-col class="px-0 text-left" cols="auto">
+                        <span>{{ icon.label }}</span>
+                    </b-col>
+                    <b-col
+                        v-if="false && icon.label === 'Lab Tests'"
+                        cols="0"
+                        class="covid-container ml-2 px-2"
+                    >
+                        <font-awesome-icon
+                            class="px-1"
+                            icon="exclamation-triangle"
+                            size="1x"
+                        ></font-awesome-icon>
+                        <span class="pr-1">COVID-19 Test Result</span>
+                    </b-col>
+                </b-row>
+                <b-row
+                    class="py-1 justify-content-center justify-content-lg-start"
+                >
+                    <b-button
+                        id="btnStart"
+                        :to="
+                            isOpenRegistration
+                                ? 'registration'
+                                : 'registrationInfo'
+                        "
+                        role="button"
+                        class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"
+                        >Register</b-button
+                    >
+                    <b-button
+                        id="btnLogin"
+                        to="login"
+                        variant="outline-secondary"
+                        class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"
+                        >Log in</b-button
+                    >
+                </b-row>
             </b-col>
         </b-row>
         <b-row class="tile-section my-0 my-md-1">
