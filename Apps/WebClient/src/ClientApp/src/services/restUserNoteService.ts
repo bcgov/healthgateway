@@ -4,7 +4,7 @@ import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
-import moment from 'moment';
+import moment from "moment";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
