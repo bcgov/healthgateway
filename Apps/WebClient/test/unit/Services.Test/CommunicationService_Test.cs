@@ -26,6 +26,8 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.Models;
     using System;
     using HealthGateway.Database.Constants;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Caching.Memory;
 
     public class CommunicationServiceTest
     {
@@ -45,12 +47,19 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = DBStatusCode.Read
             };
 
+            ServiceCollection services = new ServiceCollection();
+            services.AddMemoryCache();
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            IMemoryCache memoryCache = serviceProvider.GetService<IMemoryCache>();
+
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
             communicationDelegateMock.Setup(s => s.GetActiveBanner()).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
-                communicationDelegateMock.Object
+                communicationDelegateMock.Object,
+                memoryCache
             );
             RequestResult<Communication> actualResult = service.GetActiveBanner();
 
