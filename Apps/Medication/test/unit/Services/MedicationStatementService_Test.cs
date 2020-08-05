@@ -76,7 +76,12 @@ namespace HealthGateway.Medication.Test
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
-            patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
+            patientDelegateMock.Setup(s => s.GetPatientPHN(hdid, "Bearer TestJWT")).Returns(
+                new RequestResult<string>()
+                {
+                    ResourcePayload = phn,
+                    ResultStatus = Common.Constants.ResultType.Success,
+                });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());

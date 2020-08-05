@@ -24,13 +24,12 @@ namespace HealthGateway.Medication.Test
     using System.Net;
     using System.Net.Http;
     using System.Net.Mime;
-    using System.Threading.Tasks;
     using System.Text;
-    using Newtonsoft.Json;
     using Xunit;
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Instrumentation;
+    using System.Text.Json;
 
     public class PatientDelegate_Test
     {
@@ -42,14 +41,14 @@ namespace HealthGateway.Medication.Test
         }
 
         [Fact]
-        public async Task ShouldGetPHN()
+        public void ShouldGetPHN()
         {
-            Patient expected = new Patient("1234", "", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture), string.Empty);
+            Patient expected = new Patient("1234", "912345678", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture), string.Empty);
             Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent(JsonSerializer.Serialize(expected), Encoding.UTF8, MediaTypeNames.Application.Json),
             });
             var client = new HttpClient(clientHandlerStub);
             httpMock.Setup(_ => _.CreateDefaultHttpClient()).Returns(client);
@@ -59,13 +58,13 @@ namespace HealthGateway.Medication.Test
                 new Mock<ITraceService>().Object,
                 httpMock.Object,
                 configuration);
-            string phn = await service.GetPatientPHNAsync(expected.HdId, "Bearer TheTestToken");
-
-            Assert.Equal(expected.PersonalHealthNumber, phn);
+            RequestResult<string> result = service.GetPatientPHN(expected.HdId, "Bearer TheTestToken");
+            
+            Assert.Equal(expected.PersonalHealthNumber, result.ResourcePayload);
         }
 
         [Fact]
-        public async Task ShouldCatchBadRequest()
+        public void ShouldCatchBadRequest()
         {
             Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
@@ -81,7 +80,8 @@ namespace HealthGateway.Medication.Test
                 new Mock<ITraceService>().Object,
                 httpMock.Object,
                 configuration);
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetPatientPHNAsync("", "Bearer TheTestToken"));
+            RequestResult<string> patientResult = service.GetPatientPHN("", "Bearer TheTestToken");
+            Assert.True(patientResult != null && patientResult.ResultStatus == Common.Constants.ResultType.Error);
         }
     }
 }
