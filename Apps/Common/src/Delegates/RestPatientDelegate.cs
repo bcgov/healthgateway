@@ -98,7 +98,8 @@ namespace HealthGateway.Common.Delegates
             {
                 using HttpResponseMessage response = Task.Run<HttpResponseMessage>(async () =>
                     await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true)).Result;
-                string payload = response.Content.ReadAsStringAsync().Result;
+                string payload = Task.Run<string>(async () =>
+                    await response.Content.ReadAsStringAsync().ConfigureAwait(true)).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     Patient patient = JsonSerializer.Deserialize<Patient>(payload);
