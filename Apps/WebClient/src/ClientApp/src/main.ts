@@ -16,7 +16,7 @@ const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
 import router from "@/router";
 import store from "@/store/store";
 import {
-    ILoggingService,
+    ILogger,
     IAuthenticationService,
     IBetaRequestService,
     ICommunicationService,
@@ -54,9 +54,7 @@ configService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     // Retrieve service interfaces
-    const loggingService: ILoggingService = container.get(
-        SERVICE_IDENTIFIER.LoggingService
-    );
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     const authService: IAuthenticationService = container.get(
         SERVICE_IDENTIFIER.AuthenticationService
     );
@@ -90,10 +88,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const userCommentService: IUserCommentService = container.get(
         SERVICE_IDENTIFIER.UserCommentService
     );
+    logger.initialize();
 
     // Initialize services
-    loggingService.initialize();
-
     authService.initialize(config.openIdConnect, httpDelegate);
     immunizationService.initialize(config, httpDelegate);
     patientService.initialize(config, httpDelegate);
