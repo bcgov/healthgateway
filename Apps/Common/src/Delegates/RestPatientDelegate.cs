@@ -20,6 +20,7 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -95,7 +96,8 @@ namespace HealthGateway.Common.Delegates
             client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
             try
             {
-                using HttpResponseMessage response = client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).Result;
+                using HttpResponseMessage response = Task.Run<HttpResponseMessage>(async () =>
+                    await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true)).Result;
                 string payload = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
@@ -126,7 +128,7 @@ namespace HealthGateway.Common.Delegates
                     this.logger.LogError($"Error getting patient. {hdid}, {payload}");
                 }
             }
-            catch (HttpRequestException e)
+            catch (AggregateException e)
             {
                 this.logger.LogError($"Error connecting to Patient service {e.ToString()}");
                 retVal.ResultMessage = "Unable to connect to Health Gateway Patient Service";
