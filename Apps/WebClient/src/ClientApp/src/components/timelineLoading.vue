@@ -160,11 +160,11 @@ export default class TimelineLoadingComponent extends Vue {
     }
 
     private destroyed() {
-        clearInterval(this.intervalId);
+        window.clearInterval(this.intervalId);
     }
 
     private resetTimeout() {
-        this.intervalId = setInterval(() => {
+        this.intervalId = window.setInterval(() => {
             this.step++;
             if (this.step >= 4) {
                 this.step = 0;
