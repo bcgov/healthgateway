@@ -244,3 +244,5 @@ sonar_reports/
 test*/coverage.opencover.xml
 test*/xUnitResults/
 
+#XML Documentation
+src/WebClient.xml
