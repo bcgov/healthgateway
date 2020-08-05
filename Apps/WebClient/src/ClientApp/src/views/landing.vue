@@ -44,6 +44,7 @@
 
         .devices-text {
             color: $primary;
+            max-width: 500px !important;
 
             .icon-wrapper {
                 line-height: 40px;
@@ -193,9 +194,9 @@
             </b-col>
         </b-row>
         <b-row
-            class="devices-section justify-content-center align-items-center mx-0 mx-md-5"
+            class="devices-section justify-content-center justify-content-lg-around align-items-center mx-0 mx-md-5"
         >
-            <b-col class="d-none d-lg-block text-center col-6 col-xl-4 m-auto">
+            <b-col class="d-none d-lg-block text-center col-6 col-xl-4">
                 <img
                     class="img-fluid devices-image"
                     :src="devices"
