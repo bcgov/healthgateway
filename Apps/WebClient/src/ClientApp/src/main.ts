@@ -93,7 +93,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 
     // Initialize services
     loggingService.initialize();
-    loggingService.info("Winston Logger initialized.");
 
     authService.initialize(config.openIdConnect, httpDelegate);
     immunizationService.initialize(config, httpDelegate);
