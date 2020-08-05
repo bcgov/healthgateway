@@ -10,6 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "isolatedModules": true,
+    "strictPropertyInitialization": false,
     "baseUrl": ".",
     "types": [
       "reflect-metadata",

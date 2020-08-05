@@ -65,12 +65,9 @@
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
                 <ErrorCard
+                    title="Whoops!"
+                    description="An error occurred."
                     :show="hasErrors"
-                    :error="{
-                        code: '404',
-                        title: 'Whoops!',
-                        description: 'An error occurred.',
-                    }"
                 />
                 <b-alert
                     :show="hasNewTermsOfService"
