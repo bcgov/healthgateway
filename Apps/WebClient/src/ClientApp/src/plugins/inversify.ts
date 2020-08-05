@@ -1,6 +1,6 @@
 export const SERVICE_IDENTIFIER = {
     ConfigService: Symbol.for("ConfigService"),
-    LoggingService: Symbol.for("LoggingService"),
+    Logger: Symbol.for("Logger"),
     AuthenticationService: Symbol.for("AuthService"),
     ImmunizationService: Symbol.for("ImmunizationService"),
     PatientService: Symbol.for("PatientService"),

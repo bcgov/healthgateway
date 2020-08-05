@@ -148,7 +148,7 @@ export interface IHttpDelegate {
     ): Promise<T>;
 }
 
-export interface ILoggingService {
+export interface ILogger {
     initialize(): void;
     log(level: string, message: string): void;
     warn(message: string): void;

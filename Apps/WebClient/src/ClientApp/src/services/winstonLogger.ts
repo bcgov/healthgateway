@@ -1,9 +1,9 @@
 import Winston from "winston";
-import { ILoggingService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { injectable } from "inversify";
 
 @injectable()
-export class LoggingService implements ILoggingService {
+export class WinstonLogger implements ILogger {
     private logger!: Winston.Logger;
 
     public initialize(): void {
