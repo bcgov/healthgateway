@@ -13,17 +13,13 @@ import { Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class ErrorCardComponent extends Vue {
-    @Prop() title: string;
-    @Prop() description: string;
-    @Prop() code: string;
-    @Prop() show: boolean;
+    @Prop() title: string = "";
+    @Prop() description: string = "";
+    @Prop() code: string = "";
+    @Prop() show: boolean = false;
 
     private getCodeText(): string {
-        if (!this.code) {
-            return "";
-        } else {
-            return this.code + ": ";
-        }
+        return !this.code ? "" : this.code + ": ";
     }
 }
 </script>

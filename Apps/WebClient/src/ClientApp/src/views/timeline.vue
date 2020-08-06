@@ -297,7 +297,7 @@ import {
 } from "@/models/laboratory";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
-import ErrorCardComponent from "@/components/timeline/errorCard.vue";
+import ErrorCardComponent from "@/components/errorCard.vue";
 
 const namespace: string = "user";
 
