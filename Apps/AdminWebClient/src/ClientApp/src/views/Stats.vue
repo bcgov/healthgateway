@@ -48,8 +48,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 @Component
 export default class StatsView extends Vue {
-    private downloadUserTable() {}
-    private downloadNotesTable() {}
-    private downloadCommentsTable() {}
+    private downloadUserInfoCSV() {}
+    private downloadUserNotesCSV() {}
+    private downloadUserCommentsCSV() {}
 }
 </script>
